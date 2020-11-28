@@ -541,31 +541,19 @@ vssq_messenger_group_epoch_keyknox_storage_remove_all(
     //
     //  Declare vars.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
     vssk_error_t keyknox_sdk_error;
     vssk_error_reset(&keyknox_sdk_error);
 
-    vssq_error_t error;
-    vssq_error_reset(&error);
-
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vsc_str_buffer_t *session_id_hex = NULL;
 
     //
-    //  Get JWT.
-    //
-    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
-    const vssc_jwt_t *base_jwt = vssq_messenger_auth_base_token(self->auth, &error);
-    if (NULL == base_jwt) {
-        goto cleanup;
-    }
-
-    //
-    //  Reset Keyknox enries.
+    //  Reset Keyknox entries.
     //
     session_id_hex = vsc_str_buffer_new_with_capacity(vscf_binary_to_hex_len(session_id.len));
     vscf_binary_to_hex(session_id, session_id_hex);
@@ -575,15 +563,13 @@ vssq_messenger_group_epoch_keyknox_storage_remove_all(
     http_request = vssk_keyknox_client_make_request_reset(keyknox_client, k_keyknox_root_id_group_sessions,
             vsc_str_buffer_str(session_id_hex), vsc_str_empty(), vsc_str_empty());
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, base_jwt, vssq_messenger_config_ca_bundle(config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_virgil_request(self->auth, http_request, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        error.status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (!vssc_http_response_is_success(http_response)) {
         error.status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
         goto cleanup;
     }
@@ -591,7 +577,7 @@ vssq_messenger_group_epoch_keyknox_storage_remove_all(
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vsc_str_buffer_destroy(&session_id_hex);
 
     return error.status;
@@ -620,18 +606,9 @@ vssq_messenger_group_epoch_keyknox_storage_read_epoch_nums(const vssq_messenger_
 
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vssc_number_list_t *epoch_nums = NULL;
     vsc_str_buffer_t *session_id_hex = NULL;
-
-    //
-    //  Get JWT.
-    //
-    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
-    const vssc_jwt_t *base_jwt = vssq_messenger_auth_base_token(self->auth, error);
-    if (NULL == base_jwt) {
-        return NULL;
-    }
 
     //
     //  Pull epochs from the Keyknox.
@@ -647,25 +624,23 @@ vssq_messenger_group_epoch_keyknox_storage_read_epoch_nums(const vssq_messenger_
     http_request = vssk_keyknox_client_make_request_get_keys(
             keyknox_client, k_keyknox_root_id_group_sessions, vsc_str_buffer_str(session_id_hex), owner_identity);
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, base_jwt, vssq_messenger_config_ca_bundle(config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_virgil_request(self->auth, http_request, error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_REQUEST_FAILED);
+    if (NULL == http_response) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (!vssc_http_response_is_success(http_response)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_body_is_json_array(http_response)) {
+    if (!vssc_http_response_body_is_json_array(http_response)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
-    const vssc_json_array_t *json_array = vssc_virgil_http_response_body_as_json_array(http_response);
+    const vssc_json_array_t *json_array = vssc_http_response_body_as_json_array(http_response);
 
     epoch_nums = vssc_json_array_get_number_values(json_array, &core_sdk_error);
 
@@ -677,7 +652,7 @@ vssq_messenger_group_epoch_keyknox_storage_read_epoch_nums(const vssq_messenger_
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vsc_str_buffer_destroy(&session_id_hex);
 
     return epoch_nums;
@@ -961,31 +936,15 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_push_entry(
     vssq_error_t error;
     vssq_error_reset(&error);
 
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+    vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new();
+    vssc_http_request_t *http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
+    vssc_http_response_t *http_response = vssq_messenger_auth_send_virgil_request(self->auth, http_request, &error);
 
-    vssk_keyknox_client_t *keyknox_client = NULL;
-    vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
-
-    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
-    const vssc_jwt_t *base_jwt = vssq_messenger_auth_base_token(self->auth, &error);
     if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
-    keyknox_client = vssk_keyknox_client_new();
-    http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
-
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, base_jwt, vssq_messenger_config_ca_bundle(config), &core_sdk_error);
-
-    if (vssc_error_has_error(&core_sdk_error)) {
-        error.status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
-        goto cleanup;
-    }
-
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (!vssc_http_response_is_success(http_response)) {
         error.status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
         goto cleanup;
     }
@@ -993,7 +952,7 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_push_entry(
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
 
     return error.status;
 }
@@ -1011,25 +970,13 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_pull_entry(const vssq_messeng
     //
     //  Declare vars.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
-
     vssk_error_t keyknox_sdk_error;
     vssk_error_reset(&keyknox_sdk_error);
 
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vssk_keyknox_entry_t *keyknox_entry = NULL;
-
-    //
-    //  Get JWT.
-    //
-    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
-    const vssc_jwt_t *base_jwt = vssq_messenger_auth_base_token(self->auth, error);
-    if (NULL == base_jwt) {
-        goto cleanup;
-    }
 
     //
     //  Pull encrypted credentials from the Keyknox.
@@ -1038,15 +985,14 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_pull_entry(const vssq_messeng
     http_request = vssk_keyknox_client_make_request_pull(
             keyknox_client, k_keyknox_root_id_group_sessions, session_id, group_epoch_num, owner_identity);
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, base_jwt, vssq_messenger_config_ca_bundle(config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_virgil_request(self->auth, http_request, error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
+    if (NULL == http_response) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_REQUEST_FAILED);
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (!vssc_http_response_is_success(http_response)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
@@ -1061,7 +1007,7 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_pull_entry(const vssq_messeng
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
 
     return keyknox_entry;
 }

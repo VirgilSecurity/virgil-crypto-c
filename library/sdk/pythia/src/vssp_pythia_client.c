@@ -426,23 +426,23 @@ vssp_pythia_client_make_request_generate_seed_with_id(
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_generate_seed(const vssc_virgil_http_response_t *response, vssp_error_t *error) {
+vssp_pythia_client_process_response_generate_seed(const vssc_http_response_t *response, vssp_error_t *error) {
 
     VSSP_ASSERT_PTR(response);
 
-    if (!vssc_virgil_http_response_is_success(response)) {
+    if (!vssc_http_response_is_success(response)) {
         VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
         return NULL;
     }
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_body_is_json_object(response)) {
+    if (!vssc_http_response_body_is_json_object(response)) {
         VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *response_body = vssc_virgil_http_response_body_as_json_object(response);
+    const vssc_json_object_t *response_body = vssc_http_response_body_as_json_object(response);
 
     const size_t seed_len = vssc_json_object_get_binary_value_len(response_body, k_json_key_seed);
     if (0 == seed_len) {

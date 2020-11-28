@@ -86,13 +86,17 @@ extern "C" {
     typedef struct vssq_messenger_config_t vssq_messenger_config_t;
 #endif // VSSQ_MESSENGER_CONFIG_T_DEFINED
 
-VSSQ_PUBLIC extern const char vssq_messenger_config_k_base_url_virgil_chars[];
+VSSQ_PUBLIC extern const char vssq_messenger_config_k_url_messenger_chars[];
 
-VSSQ_PUBLIC extern const vsc_str_t vssq_messenger_config_k_base_url_virgil;
+VSSQ_PUBLIC extern const vsc_str_t vssq_messenger_config_k_url_messenger;
 
-VSSQ_PUBLIC extern const char vssq_messenger_config_k_ejabberd_url_virgil_chars[];
+VSSQ_PUBLIC extern const char vssq_messenger_config_k_url_contact_discovery_chars[];
 
-VSSQ_PUBLIC extern const vsc_str_t vssq_messenger_config_k_ejabberd_url_virgil;
+VSSQ_PUBLIC extern const vsc_str_t vssq_messenger_config_k_url_contact_discovery;
+
+VSSQ_PUBLIC extern const char vssq_messenger_config_k_url_ejabberd_chars[];
+
+VSSQ_PUBLIC extern const vsc_str_t vssq_messenger_config_k_url_ejabberd;
 
 //
 //  Return size of 'vssq_messenger_config_t'.
@@ -123,14 +127,15 @@ vssq_messenger_config_new(void);
 //  Create object with required fields.
 //
 VSSQ_PUBLIC void
-vssq_messenger_config_init_with(vssq_messenger_config_t *self, vsc_str_t base_url, vsc_str_t ejabberd_url);
+vssq_messenger_config_init_with(vssq_messenger_config_t *self, vsc_str_t messenger_url, vsc_str_t contact_discovery_url,
+        vsc_str_t ejabberd_url);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object with required fields.
 //
 VSSQ_PUBLIC vssq_messenger_config_t *
-vssq_messenger_config_new_with(vsc_str_t base_url, vsc_str_t ejabberd_url);
+vssq_messenger_config_new_with(vsc_str_t messenger_url, vsc_str_t contact_discovery_url, vsc_str_t ejabberd_url);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -165,12 +170,27 @@ vssq_messenger_config_shallow_copy_const(const vssq_messenger_config_t *self);
 VSSQ_PUBLIC void
 vssq_messenger_config_set_ca_bundle(vssq_messenger_config_t *self, vsc_str_t ca_bundle);
 
+//
+//  Return URL of the Messenger backend (main service).
+//
 VSSQ_PUBLIC vsc_str_t
-vssq_messenger_config_base_url(const vssq_messenger_config_t *self);
+vssq_messenger_config_messenger_url(const vssq_messenger_config_t *self);
 
+//
+//  Return URL of the Messenger Contact Discovery service.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_config_contact_discovery_url(const vssq_messenger_config_t *self);
+
+//
+//  Return URL of the Messenger Ejabberd service.
+//
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_config_ejabberd_url(const vssq_messenger_config_t *self);
 
+//
+//  Return path to the custom CA bundle.
+//
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_config_ca_bundle(const vssq_messenger_config_t *self);
 

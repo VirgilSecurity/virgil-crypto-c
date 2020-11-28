@@ -47,17 +47,13 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This class contains HTTP response information alongside with information
-//  that is specific for Virgil services.
+//  Handles a list of map's list of key-value pairs.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
-#define VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
+#ifndef VSSC_STRING_MAP_BUCKET_H_INCLUDED
+#define VSSC_STRING_MAP_BUCKET_H_INCLUDED
 
 #include "vssc_library.h"
-#include "vssc_http_header_list.h"
-#include "vssc_json_array.h"
-#include "vssc_http_response.h"
 #include "vssc_error.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -84,136 +80,81 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'virgil http response' context.
+//  Handle 'string map bucket' context.
 //
-#ifndef VSSC_VIRGIL_HTTP_RESPONSE_T_DEFINED
-#define VSSC_VIRGIL_HTTP_RESPONSE_T_DEFINED
-    typedef struct vssc_virgil_http_response_t vssc_virgil_http_response_t;
-#endif // VSSC_VIRGIL_HTTP_RESPONSE_T_DEFINED
+#ifndef VSSC_STRING_MAP_BUCKET_T_DEFINED
+#define VSSC_STRING_MAP_BUCKET_T_DEFINED
+    typedef struct vssc_string_map_bucket_t vssc_string_map_bucket_t;
+#endif // VSSC_STRING_MAP_BUCKET_T_DEFINED
 
 //
-//  Return size of 'vssc_virgil_http_response_t'.
+//  Return size of 'vssc_string_map_bucket_t'.
 //
 VSSC_PUBLIC size_t
-vssc_virgil_http_response_ctx_size(void);
+vssc_string_map_bucket_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSSC_PUBLIC void
-vssc_virgil_http_response_init(vssc_virgil_http_response_t *self);
+vssc_string_map_bucket_init(vssc_string_map_bucket_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSSC_PUBLIC void
-vssc_virgil_http_response_cleanup(vssc_virgil_http_response_t *self);
+vssc_string_map_bucket_cleanup(vssc_string_map_bucket_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_response_new(void);
+VSSC_PUBLIC vssc_string_map_bucket_t *
+vssc_string_map_bucket_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSC_PUBLIC void
-vssc_virgil_http_response_delete(const vssc_virgil_http_response_t *self);
+vssc_string_map_bucket_delete(const vssc_string_map_bucket_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssc_virgil_http_response_new ()'.
+//  This is a reverse action of the function 'vssc_string_map_bucket_new ()'.
 //
 VSSC_PUBLIC void
-vssc_virgil_http_response_destroy(vssc_virgil_http_response_t **self_ref);
+vssc_string_map_bucket_destroy(vssc_string_map_bucket_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_response_shallow_copy(vssc_virgil_http_response_t *self);
+VSSC_PUBLIC vssc_string_map_bucket_t *
+vssc_string_map_bucket_shallow_copy(vssc_string_map_bucket_t *self);
 
 //
 //  Copy given class context by increasing reference counter.
 //  Reference counter is internally synchronized, so constness is presumed.
 //
-VSSC_PUBLIC const vssc_virgil_http_response_t *
-vssc_virgil_http_response_shallow_copy_const(const vssc_virgil_http_response_t *self);
+VSSC_PUBLIC const vssc_string_map_bucket_t *
+vssc_string_map_bucket_shallow_copy_const(const vssc_string_map_bucket_t *self);
 
 //
-//  Create self from the parsed HTTP response.
+//  Add key-value pair to the bucket.
 //
-VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_response_create_from_http_response(const vssc_http_response_t *http_response, vssc_error_t *error);
+VSSC_PUBLIC void
+vssc_string_map_bucket_put(vssc_string_map_bucket_t *self, vsc_str_t key, vsc_str_t value);
 
 //
-//  Return HTTP status code.
+//  Remove all items.
 //
-VSSC_PUBLIC size_t
-vssc_virgil_http_response_status_code(const vssc_virgil_http_response_t *self);
+VSSC_PUBLIC void
+vssc_string_map_bucket_clear(vssc_string_map_bucket_t *self);
 
 //
-//  Return true if correspond HTTP request was succeed.
-//
-VSSC_PUBLIC bool
-vssc_virgil_http_response_is_success(const vssc_virgil_http_response_t *self);
-
-//
-//  Return true if response handles a valid body as JSON object.
-//
-VSSC_PUBLIC bool
-vssc_virgil_http_response_body_is_json_object(const vssc_virgil_http_response_t *self);
-
-//
-//  Return true if response handles a valid body as JSON array.
-//
-VSSC_PUBLIC bool
-vssc_virgil_http_response_body_is_json_array(const vssc_virgil_http_response_t *self);
-
-//
-//  Return response body as JSON object.
-//
-VSSC_PUBLIC const vssc_json_object_t *
-vssc_virgil_http_response_body_as_json_object(const vssc_virgil_http_response_t *self);
-
-//
-//  Return response body as JSON array.
-//
-VSSC_PUBLIC const vssc_json_array_t *
-vssc_virgil_http_response_body_as_json_array(const vssc_virgil_http_response_t *self);
-
-//
-//  Return true if response handles a service error and it's description.
-//
-VSSC_PUBLIC bool
-vssc_virgil_http_response_has_service_error(const vssc_virgil_http_response_t *self);
-
-//
-//  Return service error code.
-//
-VSSC_PUBLIC size_t
-vssc_virgil_http_response_service_error_code(const vssc_virgil_http_response_t *self);
-
-//
-//  Return service error description.
-//  Note, empty string can be returned.
+//  Find value for a given key.
 //
 VSSC_PUBLIC vsc_str_t
-vssc_virgil_http_response_service_error_description(const vssc_virgil_http_response_t *self);
-
-//
-//  Return HTTP headers.
-//
-VSSC_PUBLIC const vssc_http_header_list_t *
-vssc_virgil_http_response_headers(const vssc_virgil_http_response_t *self);
-
-//
-//  Find header by it's name.
-//
-VSSC_PUBLIC vsc_str_t
-vssc_virgil_http_response_find_header(const vssc_virgil_http_response_t *self, vsc_str_t name, vssc_error_t *error);
+vssc_string_map_bucket_find(const vssc_string_map_bucket_t *self, vsc_str_t key, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -229,5 +170,5 @@ vssc_virgil_http_response_find_header(const vssc_virgil_http_response_t *self, v
 
 
 //  @footer
-#endif // VSSC_VIRGIL_HTTP_RESPONSE_H_INCLUDED
+#endif // VSSC_STRING_MAP_BUCKET_H_INCLUDED
 //  @end

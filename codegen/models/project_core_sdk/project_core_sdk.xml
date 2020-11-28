@@ -76,6 +76,8 @@
     <class name="unix time"/>
     <class name="string list"/>
     <class name="number list"/>
+    <class name="string map"/>
+    <class name="string map bucket"/>
 
     <!-- JWT modules -->
     <class name="base64 url"/>
@@ -93,10 +95,7 @@
     <interface name="http client"/>
     <implementor name="http client curl"/>
     <implementor name="http client x"/>
-
-    <!-- Common client modules -->
     <class name="virgil http client"/>
-    <class name="virgil http response"/>
 
     <!-- Key Handlers -->
     <class name="key handler"/>

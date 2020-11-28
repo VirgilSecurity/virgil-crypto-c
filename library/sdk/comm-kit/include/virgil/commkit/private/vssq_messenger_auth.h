@@ -64,12 +64,13 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
 #   include <virgil/crypto/common/vsc_str.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_http_response.h>
 #   include <virgil/sdk/core/vssc_jwt.h>
+#   include <virgil/sdk/core/vssc_http_request.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -77,12 +78,13 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
 #   include <VSCCommon/vsc_str.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <VSSC/vssc_jwt.h>
+#   include <VSSC/vssc_http_request.h>
+#   include <VSSC/vssc_http_response.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -138,14 +140,14 @@ vssq_messenger_auth_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
-//  Initialize messenger with a custom configuration.
+//  Initialize with a custom configuration.
 //
 VSSQ_PUBLIC void
 vssq_messenger_auth_init_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config);
 
 //
 //  Allocate class context and perform it's initialization.
-//  Initialize messenger with a custom configuration.
+//  Initialize with a custom configuration.
 //
 VSSQ_PUBLIC vssq_messenger_auth_t *
 vssq_messenger_auth_new_with_config(const vssq_messenger_config_t *config);
@@ -197,7 +199,7 @@ VSSQ_PUBLIC void
 vssq_messenger_auth_release_random(vssq_messenger_auth_t *self);
 
 //
-//  Return messenger configuration.
+//  Return configuration.
 //
 VSSQ_PUBLIC const vssq_messenger_config_t *
 vssq_messenger_auth_config(const vssq_messenger_auth_t *self);
@@ -229,6 +231,14 @@ VSSQ_PUBLIC const vssq_messenger_user_t *
 vssq_messenger_auth_user(const vssq_messenger_auth_t *self);
 
 //
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_auth_user_modifiable(vssq_messenger_auth_t *self);
+
+//
 //  Return true if user credentials are defined.
 //
 VSSQ_PUBLIC bool
@@ -239,6 +249,14 @@ vssq_messenger_auth_has_creds(const vssq_messenger_auth_t *self);
 //
 VSSQ_PUBLIC const vssq_messenger_creds_t *
 vssq_messenger_auth_creds(const vssq_messenger_auth_t *self);
+
+//
+//  Return user's private key from credentials.
+//
+//  Prerequisites: credentials are defined.
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_auth_private_key(const vssq_messenger_auth_t *self);
 
 //
 //  Check whether current credentials were backed up.
@@ -277,14 +295,24 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_remove_creds_backup(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
 
 //
-//  Get JWT to use with Messenger Backend based on the credentials.
+//  Get JWT to use with Virgil services based on the credentials.
 //
 //  Prerequisites: user should be authenticated.
 //
 //  Note, the cached token is returned if it is exist and not expired.
 //
 VSSQ_PUBLIC const vssc_jwt_t *
-vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *error);
+vssq_messenger_auth_virgil_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error);
+
+//
+//  Get JWT to use with Virgil Contact Discovery service based on the credentials.
+//
+//  Prerequisites: user should be authenticated.
+//
+//  Note, the cached token is returned if it is exist and not expired.
+//
+VSSQ_PUBLIC const vssc_jwt_t *
+vssq_messenger_auth_contact_discovery_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error);
 
 //
 //  Return JWT to access ejabberd server.
@@ -296,24 +324,34 @@ vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *
 //  Note, the cached token is returned if it is exist and not expired.
 //
 VSSQ_PUBLIC const vssq_ejabberd_jwt_t *
-vssq_messenger_auth_ejabberd_token(const vssq_messenger_auth_t *self, vssq_error_t *error);
+vssq_messenger_auth_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error);
 
 //
-//  Return buffer length enough to handle HTTP authorization header value.
+//  Send HTTP request to the a Virgil Messenger Backend.
 //
-VSSQ_PUBLIC size_t
-vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self);
+//  Note, Authorization is added if "with auth" option is true.
+//
+VSSQ_PUBLIC vssc_http_response_t *
+vssq_messenger_auth_send_messenger_request(const vssq_messenger_auth_t *self, vssc_http_request_t *http_request,
+        bool with_auth, vssq_error_t *error);
 
 //
-//  Generate HTTP authorization header value.
+//  Send HTTP request to the a Virgil Service, aka Cards, Keyknox etc.
 //
-//  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
+//  Note, Virgil JWT is updated automatically.
 //
-//  Prerequisites: user should be authenticated.
+VSSQ_PUBLIC vssc_http_response_t *
+vssq_messenger_auth_send_virgil_request(const vssq_messenger_auth_t *self, vssc_http_request_t *http_request,
+        vssq_error_t *error);
+
 //
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_auth_generate_auth_header(const vssq_messenger_auth_t *self,
-        vsc_str_buffer_t *auth_header) VSSQ_NODISCARD;
+//  Send HTTP request to the a Virgil Contact Discovery Service.
+//
+//  Note, Contact Discovery JWT is updated automatically.
+//
+VSSQ_PUBLIC vssc_http_response_t *
+vssq_messenger_auth_send_contact_discovery_request(const vssq_messenger_auth_t *self, vssc_http_request_t *http_request,
+        vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -71,12 +71,17 @@
 #endif
 
 #if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth_defs.h"
 #   include "vssq_messenger_auth.h"
+#   include "vssq_messenger_auth_defs.h"
 #endif
 
 #if VSSQ_MESSENGER_CONFIG
 #   include "vssq_messenger_config_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_CONTACTS
+#   include "vssq_messenger_contacts_defs.h"
+#   include "vssq_messenger_contacts.h"
 #endif
 
 #if VSSQ_MESSENGER_CREDS

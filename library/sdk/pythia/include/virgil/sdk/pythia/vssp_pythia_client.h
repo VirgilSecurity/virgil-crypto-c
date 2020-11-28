@@ -64,7 +64,7 @@
 
 #if !VSSP_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <virgil/sdk/core/vssc_http_request.h>
-#   include <virgil/sdk/core/vssc_virgil_http_response.h>
+#   include <virgil/sdk/core/vssc_http_response.h>
 #endif
 
 #if VSSP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -74,7 +74,7 @@
 
 #if VSSP_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <VSSC/vssc_http_request.h>
-#   include <VSSC/vssc_virgil_http_response.h>
+#   include <VSSC/vssc_http_response.h>
 #endif
 
 // clang-format on
@@ -183,7 +183,7 @@ vssp_pythia_client_make_request_generate_seed_with_id(const vssp_pythia_client_t
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_generate_seed(const vssc_virgil_http_response_t *response, vssp_error_t *error);
+vssp_pythia_client_process_response_generate_seed(const vssc_http_response_t *response, vssp_error_t *error);
 
 
 // --------------------------------------------------------------------------

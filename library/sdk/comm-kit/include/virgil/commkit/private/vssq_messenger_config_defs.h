@@ -92,7 +92,9 @@ struct vssq_messenger_config_t {
     //
     VSSQ_ATOMIC size_t refcnt;
 
-    vsc_str_mutable_t base_url;
+    vsc_str_mutable_t messenger_url;
+
+    vsc_str_mutable_t contact_discovery_url;
 
     vsc_str_mutable_t ejabberd_url;
 

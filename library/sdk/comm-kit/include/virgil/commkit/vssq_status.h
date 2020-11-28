@@ -81,13 +81,17 @@ enum vssq_status_t {
     //
     vssq_status_INTERNAL_ERROR = -1,
     //
-    //  Failed to initialze RNG.
+    //  Failed to initialize RNG.
     //
     vssq_status_RNG_FAILED = -101,
     //
     //  Generic error for any find operation.
     //
     vssq_status_NOT_FOUND = -102,
+    //
+    //  Failed to send HTTP request.
+    //
+    vssq_status_HTTP_SEND_FAILED = -103,
     //
     //  Failed to parse Ejabberd JWT.
     //
@@ -153,11 +157,11 @@ enum vssq_status_t {
     //
     vssq_status_GENERATE_BRAINKEY_FAILED_RNG_FAILED = -502,
     //
-    //  Failed to generate brain key because of deblind fail.
+    //  Failed to generate brain key because of blind fail.
     //
     vssq_status_GENERATE_BRAINKEY_FAILED_BLIND_FAILED = -503,
     //
-    //  Failed to generate brain key because of blind fail.
+    //  Failed to generate brain key because of deblind fail.
     //
     vssq_status_GENERATE_BRAINKEY_FAILED_DEBLIND_FAILED = -504,
     //
@@ -211,19 +215,19 @@ enum vssq_status_t {
     //
     //  Failed to refresh JWT because send operation failed.
     //
-    vssq_status_REFRESH_TOKEN_FAILED_REQUEST_FAILED = -701,
+    vssq_status_REFRESH_JWT_FAILED_REQUEST_FAILED = -701,
     //
     //  Failed to refresh JWT because response with error was returned.
     //
-    vssq_status_REFRESH_TOKEN_FAILED_RESPONSE_WITH_ERROR = -702,
+    vssq_status_REFRESH_JWT_FAILED_RESPONSE_WITH_ERROR = -702,
     //
     //  Failed to refresh JWT because response parsing failed.
     //
-    vssq_status_REFRESH_TOKEN_FAILED_PARSE_RESPONSE_FAILED = -703,
+    vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED = -703,
     //
     //  Failed to refresh JWT because JWT parsing failed.
     //
-    vssq_status_REFRESH_TOKEN_FAILED_PARSE_FAILED = -704,
+    vssq_status_REFRESH_JWT_FAILED_PARSE_FAILED = -704,
     //
     //  Failed to reset password because send operation failed.
     //
@@ -265,23 +269,23 @@ enum vssq_status_t {
     //
     vssq_status_SEARCH_CARD_FAILED_REQUIRED_IS_OUTDATED = -907,
     //
-    //  Failed to export creentials because initializing crypto module failed.
+    //  Failed to export credentials because initializing crypto module failed.
     //
     vssq_status_EXPORT_CREDS_FAILED_INIT_CRYPTO_FAILED = -1000,
     //
-    //  Failed to export creentials because exporting private key failed.
+    //  Failed to export credentials because exporting private key failed.
     //
     vssq_status_EXPORT_CREDS_FAILED_EXPORT_PRIVATE_KEY_FAILED = -1001,
     //
-    //  Failed to import creentials because initializing crypto module failed.
+    //  Failed to import credentials because initializing crypto module failed.
     //
     vssq_status_IMPORT_CREDS_FAILED_INIT_CRYPTO_FAILED = -1002,
     //
-    //  Failed to import creentials because parsing json failed.
+    //  Failed to import credentials because parsing JSON failed.
     //
     vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED = -1003,
     //
-    //  Failed to import creentials because importing private key failed.
+    //  Failed to import credentials because importing private key failed.
     //
     vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED = -1004,
     //
@@ -301,15 +305,15 @@ enum vssq_status_t {
     //
     vssq_status_ACCESS_GROUP_FAILED_PERMISSION_VIOLATION = -1201,
     //
-    //  Failed to create group because underlying crypo module failed.
+    //  Failed to create group because underlying crypto module failed.
     //
     vssq_status_CREATE_GROUP_FAILED_CRYPTO_FAILED = -1202,
     //
-    //  Failed to import group epoch because parsing json failed.
+    //  Failed to import group epoch because parsing JSON failed.
     //
     vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED = -1203,
     //
-    //  Failed to process group message because session id doesnt match.
+    //  Failed to process group message because session id doesn't match.
     //
     vssq_status_PROCESS_GROUP_MESSAGE_FAILED_SESSION_ID_DOESNT_MATCH = -1204,
     //
@@ -337,9 +341,45 @@ enum vssq_status_t {
     //
     vssq_status_PROCESS_GROUP_MESSAGE_FAILED_PLAIN_TEXT_TOO_LONG = -1210,
     //
-    //  Failed to process group message because underlying crypo module failed.
+    //  Failed to process group message because underlying crypto module failed.
     //
-    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_CRYPTO_FAILED = -1299
+    vssq_status_PROCESS_GROUP_MESSAGE_FAILED_CRYPTO_FAILED = -1299,
+    //
+    //  Failed to decrypt regular message because of invalid encrypted message.
+    //
+    vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_INVALID_ENCRYPTED_MESSAGE = -1301,
+    //
+    //  Failed to decrypt regular message because a private key can not decrypt.
+    //
+    vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_WRONG_PRIVATE_KEY = -1302,
+    //
+    //  Failed to decrypt regular message because recipient was not found.
+    //
+    vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_RECIPIENT_NOT_FOUND = -1303,
+    //
+    //  Failed to decrypt regular message because failed to verify signature.
+    //
+    vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE = -1304,
+    //
+    //  Failed to decrypt regular message because underlying crypto module failed.
+    //
+    vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED = -1398,
+    //
+    //  Failed to encrypt regular message because underlying crypto module failed.
+    //
+    vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED = -1399,
+    //
+    //  Failed to perform contacts operation because send operation failed.
+    //
+    vssq_status_CONTACTS_FAILED_SEND_REQUEST_FAILED = -1401,
+    //
+    //  Failed to perform contacts operation because response with error was returned.
+    //
+    vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR = -1402,
+    //
+    //  Failed to perform contacts operation because response parsing failed.
+    //
+    vssq_status_CONTACTS_FAILED_PARSE_RESPONSE_FAILED = -1403
 };
 #ifndef VSSQ_STATUS_T_DEFINED
 #define VSSQ_STATUS_T_DEFINED

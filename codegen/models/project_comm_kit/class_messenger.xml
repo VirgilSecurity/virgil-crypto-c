@@ -1,35 +1,22 @@
 <class name="messenger">
     Entrypoint to the messenger user management, authentication and encryption.
 
+    <require class="str buffer" project="common" api="defs"/>
     <require impl="ctr drbg" project="foundation"/>
+    <require class="padding params" project="foundation"/>
+    <require class="random padding" project="foundation"/>
+    <require class="recipient cipher" project="foundation"/>
     <require class="card client" project="core sdk"/>
     <require class="card manager" project="core sdk"/>
-    <require class="key handler list" project="core sdk" api="private"/>
     <require class="messenger group" api="private"/>
+    <require class="messenger user list" api="private"/>
 
     <property name="config" class="messenger config" access="readonly"/>
     <property name="auth" class="messenger auth"/>
-    <property name="cards cache" class="key handler list" project="core sdk"/> <!-- cache -->
+    <property name="contacts" class="messenger contacts"/>
 
     <dependency name="random" interface="random" project="foundation" has_observers="1"/>
 
-<!--DO WE REALY NEED THIS within comm-kit?
-    <constant name="k json key ciphertext" type="string" visibility="private">
-        <value value="ciphertext"/>
-    </constant>
-
-    <constant name="k json key date" type="string" visibility="private">
-        <value value="date"/>
-    </constant>
-
-    <constant name="k json key version" type="string" visibility="private">
-        <value value="version"/>
-    </constant>
-
-    <constant name="k json value v2" type="string" visibility="private">
-        <value value="v2"/>
-    </constant>
- -->
 
     <constructor name="with config">
         Initialize messenger with a custom configuration.
@@ -77,6 +64,15 @@
         Prerequisites: user should be authenticated.
 
         <return class="messenger user"/>
+    </method>
+
+
+    <method name="user modifiable">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user" access="readwrite"/>
     </method>
 
 
@@ -146,6 +142,115 @@
     </method>
 
 
+    <!-- Find users -->
+    <method name="find user with identity" is_const="1">
+        Return founded user or error.
+
+        <argument name="identity" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user" access="disown"/>
+    </method>
+
+
+    <method name="find user with username" is_const="1">
+        Return founded user or error.
+
+        <argument name="username" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user" access="disown"/>
+    </method>
+
+
+    <!-- Peer-to-Peer encryption -->
+    <method name="encrypted message len" is_const="1">
+        Return a buffer length enough to hold an encrypted message.
+
+        <argument name="message len" type="size"/>
+        <argument name="recipient" class="messenger user"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="encrypt text" is_const="1">
+        Encrypt a text message.
+
+        <argument name="text" class="str"/>
+        <argument name="recipient" class="messenger user"/>
+
+        <argument name="out" class="buffer">
+            <length method="encrypted len">
+                <proxy argument="recipient" to="recipient"/>
+                <proxy argument="text" to="message message len" cast="str_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="encrypt data" is_const="1">
+        Encrypt a binary message.
+
+        <argument name="data" class="data"/>
+        <argument name="recipient" class="messenger user"/>
+
+        <argument name="out" class="buffer">
+            <length method="encrypted len">
+                <proxy argument="recipient" to="recipient"/>
+                <proxy argument="data" to="message message len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="decrypted message len" is_const="1">
+        Return a buffer length enough to hold a decrypted message.
+
+        <argument name="encrypted message len" type="size"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="decrypt text" is_const="1">
+        Decrypt a text message.
+
+        <argument name="encrypted text" class="data"/>
+
+        <argument name="sender" class="messenger user"/>
+
+        <argument name="out" class="str buffer">
+            <length method="decrypted message  len">
+                <proxy argument="encrypted text" to="encrypted message len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="decrypt data" is_const="1">
+        Decrypt a binary message.
+
+        <argument name="encrypted data" class="data"/>
+
+        <argument name="sender" class="messenger user"/>
+
+        <argument name="out" class="buffer">
+            <length method="decrypted message  len">
+                <proxy argument="encrypted text" to="encrypted message len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
     <!-- Working with messenger groups -->
     <method name="create group" is_const="1">
         Create a new group for a group messaging.
@@ -171,5 +276,14 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="messenger group" access="disown"/>
+    </method>
+
+    <!-- Helpers -->
+    <method name="map foundation status of decryption" is_static="1" declaration="private">
+        Map status from the "foundation" library to a status related to the message decryption.
+
+        <argument name="foundation status" enum="status" project="foundation"/>
+
+        <return enum="status"/>
     </method>
 </class>

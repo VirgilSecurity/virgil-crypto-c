@@ -65,6 +65,7 @@
 #include "vssc_key_handler_list_private.h"
 #include "vssc_key_handler_private.h"
 #include "vssc_raw_card_list_private.h"
+#include "vssc_string_list_private.h"
 
 #if VSSC_CARD
 #   include "vssc_card_defs.h"
@@ -172,8 +173,13 @@
 #   include "vssc_string_list_defs.h"
 #endif
 
-#if VSSC_VIRGIL_HTTP_RESPONSE
-#   include "vssc_virgil_http_response_defs.h"
+#if VSSC_STRING_MAP
+#   include "vssc_string_map_defs.h"
+#endif
+
+#if VSSC_STRING_MAP_BUCKET
+#   include "vssc_string_map_bucket_defs.h"
+#   include "vssc_string_map_bucket.h"
 #endif
 
 // clang-format on

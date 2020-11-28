@@ -10,11 +10,15 @@
     </constant>
 
     <constant name="rng failed" value="-101">
-        Failed to initialze RNG.
+        Failed to initialize RNG.
     </constant>
 
     <constant name="not found" value="-102">
         Generic error for any find operation.
+    </constant>
+
+    <constant name="http send failed" value="-103">
+        Failed to send HTTP request.
     </constant>
 
     <constant name="parse ejabberd jwt failed" value="-201">
@@ -82,11 +86,11 @@
     </constant>
 
     <constant name="generate brainkey failed blind failed" value="-503">
-        Failed to generate brain key because of deblind fail.
+        Failed to generate brain key because of blind fail.
     </constant>
 
     <constant name="generate brainkey failed deblind failed" value="-504">
-        Failed to generate brain key because of blind fail.
+        Failed to generate brain key because of deblind fail.
     </constant>
 
     <constant name="generate brainkey failed seed request failed" value="-505">
@@ -137,19 +141,19 @@
         Failed to unpack Keyknox entry because import private key failed.
     </constant>
 
-    <constant name="refresh token failed request failed" value="-701">
+    <constant name="refresh jwt failed request failed" value="-701">
         Failed to refresh JWT because send operation failed.
     </constant>
 
-    <constant name="refresh token failed response with error" value="-702">
+    <constant name="refresh jwt failed response with error" value="-702">
         Failed to refresh JWT because response with error was returned.
     </constant>
 
-    <constant name="refresh token failed parse response failed" value="-703">
+    <constant name="refresh jwt failed parse response failed" value="-703">
         Failed to refresh JWT because response parsing failed.
     </constant>
 
-    <constant name="refresh token failed parse failed" value="-704">
+    <constant name="refresh jwt failed parse failed" value="-704">
         Failed to refresh JWT because JWT parsing failed.
     </constant>
 
@@ -194,23 +198,23 @@
     </constant>
 
     <constant name="export creds failed init crypto failed" value="-1000">
-        Failed to export creentials because initializing crypto module failed.
+        Failed to export credentials because initializing crypto module failed.
     </constant>
 
     <constant name="export creds failed export private key failed" value="-1001">
-        Failed to export creentials because exporting private key failed.
+        Failed to export credentials because exporting private key failed.
     </constant>
 
     <constant name="import creds failed init crypto failed" value="-1002">
-        Failed to import creentials because initializing crypto module failed.
+        Failed to import credentials because initializing crypto module failed.
     </constant>
 
     <constant name="import creds failed parse failed" value="-1003">
-        Failed to import creentials because parsing json failed.
+        Failed to import credentials because parsing JSON failed.
     </constant>
 
     <constant name="import creds failed import private key failed" value="-1004">
-        Failed to import creentials because importing private key failed.
+        Failed to import credentials because importing private key failed.
     </constant>
 
     <constant name="contact validation failed username too long" value="-1100">
@@ -230,15 +234,15 @@
     </constant>
 
     <constant name="create group failed crypto failed" value="-1202">
-        Failed to create group because underlying crypo module failed.
+        Failed to create group because underlying crypto module failed.
     </constant>
 
     <constant name="import group epoch failed parse failed" value="-1203">
-        Failed to import group epoch because parsing json failed.
+        Failed to import group epoch because parsing JSON failed.
     </constant>
 
     <constant name="process group message failed session id doesnt match" value="-1204">
-        Failed to process group message because session id doesnt match.
+        Failed to process group message because session id doesn't match.
     </constant>
 
     <constant name="process group message failed epoch not found" value="-1205">
@@ -266,6 +270,42 @@
     </constant>
 
     <constant name="process group message failed crypto failed" value="-1299">
-        Failed to process group message because underlying crypo module failed.
+        Failed to process group message because underlying crypto module failed.
+    </constant>
+
+    <constant name="decrypt regular message failed invalid encrypted message" value="-1301">
+        Failed to decrypt regular message because of invalid encrypted message.
+    </constant>
+
+    <constant name="decrypt regular message failed wrong private key" value="-1302">
+        Failed to decrypt regular message because a private key can not decrypt.
+    </constant>
+
+    <constant name="decrypt regular message failed recipient not found" value="-1303">
+        Failed to decrypt regular message because recipient was not found.
+    </constant>
+
+    <constant name="decrypt regular message failed verify signature" value="-1304">
+        Failed to decrypt regular message because failed to verify signature.
+    </constant>
+
+    <constant name="decrypt regular message failed crypto failed" value="-1398">
+        Failed to decrypt regular message because underlying crypto module failed.
+    </constant>
+
+    <constant name="encrypt regular message failed crypto failed" value="-1399">
+        Failed to encrypt regular message because underlying crypto module failed.
+    </constant>
+
+    <constant name="contacts failed send request failed" value="-1401">
+        Failed to perform contacts operation because send operation failed.
+    </constant>
+
+    <constant name="contacts failed response with error" value="-1402">
+        Failed to perform contacts operation because response with error was returned.
+    </constant>
+
+    <constant name="contacts failed parse response failed" value="-1403">
+        Failed to perform contacts operation because response parsing failed.
     </constant>
 </enum>

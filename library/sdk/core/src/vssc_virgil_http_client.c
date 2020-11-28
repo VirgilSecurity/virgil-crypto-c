@@ -80,7 +80,7 @@
 // --------------------------------------------------------------------------
 
 //
-//  Create palatform dependent implementation of HTTP Client.
+//  Create platform dependent implementation of HTTP Client.
 //
 //  Note, "ca bundle path" is optional.
 //
@@ -92,7 +92,7 @@ vssc_virgil_http_client_create_http_client_impl(vsc_str_t ca_bundle_path);
 //  Note, available only if VSSC_VIRGIL_HTTP_CLIENT_DEBUG option is ON.
 //
 static void
-vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt);
+vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_request);
 
 //
 //  Print HTTP response.
@@ -104,14 +104,14 @@ vssc_virgil_http_client_debug_print_response(const vssc_http_response_t *http_re
 //
 //  Authorization type: Virgil
 //
-static const char k_header_authorization_type_chars[] = "Virgil";
+VSSC_PUBLIC const char vssc_virgil_http_client_k_auth_type_virgil_chars[] = "Virgil";
 
 //
 //  Authorization type: Virgil
 //
-static const vsc_str_t k_header_authorization_type = {
-    k_header_authorization_type_chars,
-    sizeof(k_header_authorization_type_chars) - 1
+VSSC_PUBLIC const vsc_str_t vssc_virgil_http_client_k_auth_type_virgil = {
+    vssc_virgil_http_client_k_auth_type_virgil_chars,
+    sizeof(vssc_virgil_http_client_k_auth_type_virgil_chars) - 1
 };
 
 
@@ -125,13 +125,12 @@ static const vsc_str_t k_header_authorization_type = {
 //
 //  Send request over HTTP.
 //
-VSSC_PUBLIC vssc_virgil_http_response_t *
-vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vssc_error_t *error) {
+VSSC_PUBLIC vssc_http_response_t *
+vssc_virgil_http_client_send(const vssc_http_request_t *http_request, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(http_request);
-    VSSC_ASSERT_PTR(jwt);
 
-    return vssc_virgil_http_client_send_with_ca(http_request, jwt, vsc_str_empty(), error);
+    return vssc_virgil_http_client_send_with_ca(http_request, vsc_str_empty(), error);
 }
 
 //
@@ -139,79 +138,31 @@ vssc_virgil_http_client_send(const vssc_http_request_t *http_request, const vssc
 //
 //  Note, argument "ca bundle path" can be empty.
 //
-VSSC_PUBLIC vssc_virgil_http_response_t *
+VSSC_PUBLIC vssc_http_response_t *
 vssc_virgil_http_client_send_with_ca(
-        const vssc_http_request_t *http_request, const vssc_jwt_t *jwt, vsc_str_t ca_bundle_path, vssc_error_t *error) {
-
-    VSSC_ASSERT_PTR(http_request);
-    VSSC_ASSERT_PTR(jwt);
-    VSSC_ASSERT(vsc_str_is_valid(ca_bundle_path));
-
-    vssc_virgil_http_client_debug_print_request(http_request, jwt);
-
-    vssc_impl_t *http_client = vssc_virgil_http_client_create_http_client_impl(ca_bundle_path);
-    VSSC_ASSERT_PTR(http_client);
-
-    vssc_http_response_t *http_response = vssc_http_client_auth_send(
-            http_client, http_request, k_header_authorization_type, vssc_jwt_as_string(jwt), error);
-
-    vssc_virgil_http_response_t *virgil_http_response = NULL;
-
-    if (NULL == http_response) {
-        goto cleanup;
-    }
-
-    vssc_virgil_http_client_debug_print_response(http_response);
-
-    virgil_http_response = vssc_virgil_http_response_create_from_http_response(http_response, error);
-
-cleanup:
-
-    vssc_http_response_destroy(&http_response);
-    vssc_impl_destroy(&http_client);
-
-    return virgil_http_response;
-}
-
-//
-//  Send custom request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_virgil_http_client_send_custom(const vssc_http_request_t *http_request, vssc_error_t *error) {
-
-    VSSC_ASSERT_PTR(http_request);
-
-    return vssc_virgil_http_client_send_custom_with_ca(http_request, vsc_str_empty(), error);
-}
-
-//
-//  Send custom request over HTTP with a path to Certificate Authority bundle.
-//
-//  Note, argument ca_bundle can be empty.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_virgil_http_client_send_custom_with_ca(
         const vssc_http_request_t *http_request, vsc_str_t ca_bundle_path, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(http_request);
     VSSC_ASSERT(vsc_str_is_valid(ca_bundle_path));
 
-    vssc_virgil_http_client_debug_print_request(http_request, NULL);
+    vssc_virgil_http_client_debug_print_request(http_request);
 
     vssc_impl_t *http_client = vssc_virgil_http_client_create_http_client_impl(ca_bundle_path);
     VSSC_ASSERT_PTR(http_client);
 
     vssc_http_response_t *http_response = vssc_http_client_send(http_client, http_request, error);
 
-    vssc_impl_destroy(&http_client);
+    if (http_response) {
+        vssc_virgil_http_client_debug_print_response(http_response);
+    }
 
-    vssc_virgil_http_client_debug_print_response(http_response);
+    vssc_impl_destroy(&http_client);
 
     return http_response;
 }
 
 //
-//  Create palatform dependent implementation of HTTP Client.
+//  Create platform dependent implementation of HTTP Client.
 //
 //  Note, "ca bundle path" is optional.
 //
@@ -241,7 +192,7 @@ vssc_virgil_http_client_create_http_client_impl(vsc_str_t ca_bundle_path) {
 //  Note, available only if VSSC_VIRGIL_HTTP_CLIENT_DEBUG option is ON.
 //
 static void
-vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_request, const vssc_jwt_t *jwt) {
+vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_request) {
 
 #if VSSC_VIRGIL_HTTP_CLIENT_DEBUG
     printf("\n---------------------\n");
@@ -250,8 +201,10 @@ vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_requ
     printf("       URL: %s\n", vssc_http_request_url(http_request).chars);
     printf("      BODY: %s\n", vssc_http_request_body(http_request).chars);
 
-    if (jwt) {
-        printf("       JWT: %s\n", vssc_jwt_as_string(jwt).chars);
+
+    vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
+    if (!vsc_str_is_empty(auth_header_value)) {
+        printf("    HEADER: Authorization: %s\n", auth_header_value.chars);
     }
 
     for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
@@ -266,7 +219,6 @@ vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_requ
     }
 #else
     VSSC_UNUSED(http_request);
-    VSSC_UNUSED(jwt);
 #endif // VSSC_VIRGIL_HTTP_CLIENT_DEBUG
 }
 

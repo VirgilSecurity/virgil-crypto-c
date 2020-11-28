@@ -263,13 +263,13 @@ vssq_messenger_user_list_cleanup_ctx(vssq_messenger_user_list_t *self) {
 //  Note, ownership is transfered.
 //
 VSSQ_PUBLIC void
-vssq_messenger_user_list_add(vssq_messenger_user_list_t *self, const vssq_messenger_user_t *messenger_user) {
+vssq_messenger_user_list_add(vssq_messenger_user_list_t *self, vssq_messenger_user_t *messenger_user) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(messenger_user);
 
     if (NULL == self->item) {
-        self->item = vssq_messenger_user_shallow_copy_const(messenger_user);
+        self->item = vssq_messenger_user_shallow_copy(messenger_user);
     } else {
         if (NULL == self->next) {
             self->next = vssq_messenger_user_list_new();
@@ -345,6 +345,17 @@ vssq_messenger_user_list_item(const vssq_messenger_user_list_t *self) {
 }
 
 //
+//  Return list item.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_list_item_modifiable(vssq_messenger_user_list_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return self->item;
+}
+
+//
 //  Return true if list has next item.
 //
 VSSQ_PUBLIC bool
@@ -360,6 +371,17 @@ vssq_messenger_user_list_has_next(const vssq_messenger_user_list_t *self) {
 //
 VSSQ_PUBLIC const vssq_messenger_user_list_t *
 vssq_messenger_user_list_next(const vssq_messenger_user_list_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return self->next;
+}
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_user_list_next_modifiable(vssq_messenger_user_list_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
@@ -389,6 +411,17 @@ vssq_messenger_user_list_prev(const vssq_messenger_user_list_t *self) {
 }
 
 //
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_user_list_prev_modifiable(vssq_messenger_user_list_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return self->prev;
+}
+
+//
 //  Remove all items.
 //
 VSSQ_PUBLIC void
@@ -399,4 +432,50 @@ vssq_messenger_user_list_clear(vssq_messenger_user_list_t *self) {
     vssq_messenger_user_delete(self->item);
     self->item = NULL;
     vssq_messenger_user_list_destroy(&self->next);
+}
+
+//
+//  Find user with a given name.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_user_list_find_with_identity(
+        const vssq_messenger_user_list_t *self, vsc_str_t user_identity, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(user_identity));
+
+    for (const vssq_messenger_user_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
+        vsc_str_t candidate_user_identity = vssq_messenger_user_identity(it->item);
+
+        if (vsc_str_equal(user_identity, candidate_user_identity)) {
+            return it->item;
+        }
+    }
+
+    VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_NOT_FOUND);
+
+    return NULL;
+}
+
+//
+//  Find user with a given name.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_list_find_with_identity_modifiable(
+        vssq_messenger_user_list_t *self, vsc_str_t user_identity, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(user_identity));
+
+    for (vssq_messenger_user_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
+        vsc_str_t candidate_user_identity = vssq_messenger_user_identity(it->item);
+
+        if (vsc_str_equal(user_identity, candidate_user_identity)) {
+            return it->item;
+        }
+    }
+
+    VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_NOT_FOUND);
+
+    return NULL;
 }

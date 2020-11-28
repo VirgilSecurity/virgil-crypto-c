@@ -224,17 +224,17 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_string_map.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_unix_time.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_client.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_response.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -301,6 +301,7 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_request.h>"
             "$<$<BOOL:${VSSC_HTTP_REQUEST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_request_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_response.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_response_internal.h"
             "$<$<BOOL:${VSSC_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_response_defs.h>"
             "$<$<BOOL:${VSSC_JSON_ARRAY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_json_array.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_json_array_private.h"
@@ -338,11 +339,14 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_RAW_CARD_SIGNER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_raw_card_signer_defs.h>"
             "$<$<BOOL:${VSSC_RAW_CARD_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_raw_card_verifier.h>"
             "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_string_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_list_private.h"
             "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_list_defs.h>"
+            "$<$<BOOL:${VSSC_STRING_MAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_string_map.h>"
+            "$<$<BOOL:${VSSC_STRING_MAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_defs.h>"
+            "$<$<BOOL:${VSSC_STRING_MAP_BUCKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_bucket.h>"
+            "$<$<BOOL:${VSSC_STRING_MAP_BUCKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_bucket_defs.h>"
             "$<$<BOOL:${VSSC_UNIX_TIME}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_unix_time.h>"
             "$<$<BOOL:${VSSC_VIRGIL_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_client.h>"
-            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_virgil_http_response.h>"
-            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_virgil_http_response_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_status.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_core_sdk_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_core_sdk_private.h"
@@ -411,10 +415,12 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_RAW_CARD_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_raw_card_verifier.c>"
             "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_list.c>"
             "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_list_defs.c>"
+            "$<$<BOOL:${VSSC_STRING_MAP}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_map.c>"
+            "$<$<BOOL:${VSSC_STRING_MAP}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_map_defs.c>"
+            "$<$<BOOL:${VSSC_STRING_MAP_BUCKET}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_map_bucket.c>"
+            "$<$<BOOL:${VSSC_STRING_MAP_BUCKET}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_string_map_bucket_defs.c>"
             "$<$<BOOL:${VSSC_UNIX_TIME}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_unix_time.c>"
             "$<$<BOOL:${VSSC_VIRGIL_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_client.c>"
-            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_response.c>"
-            "$<$<BOOL:${VSSC_VIRGIL_HTTP_RESPONSE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_virgil_http_response_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssc_status.c"
         )
 

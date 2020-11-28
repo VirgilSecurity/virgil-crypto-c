@@ -740,6 +740,41 @@ vssc_json_object_as_str(const vssc_json_object_t *self) {
 }
 
 //
+//  Return JSON object as string map key->value.
+//  Return error, if at least one value is not a string.
+//
+VSSC_PUBLIC vssc_string_map_t *
+vssc_json_object_as_string_map(const vssc_json_object_t *self, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    vssc_string_map_t *result = vssc_string_map_new();
+
+    struct json_object_iterator it = json_object_iter_begin(self->json_obj);
+    struct json_object_iterator it_end = json_object_iter_end(self->json_obj);
+
+    for (; !json_object_iter_equal(&it, &it_end); json_object_iter_next(&it)) {
+        const char *name = json_object_iter_peek_name(&it);
+        json_object *value_obj = json_object_iter_peek_value(&it);
+
+        if (NULL != value_obj && json_object_is_type(value_obj, json_type_string)) {
+            const char *value = json_object_get_string(value_obj);
+            vssc_string_map_put(result, vsc_str_from_str(name), vsc_str_from_str(value));
+
+        } else if (NULL == value_obj || json_object_is_type(value_obj, json_type_null)) {
+            vssc_string_map_put(result, vsc_str_from_str(name), vsc_str_empty());
+
+        } else {
+            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_TYPE_MISMATCH);
+            vssc_string_map_destroy(&result);
+        }
+    }
+
+    return result;
+}
+
+//
 //  Parse a given JSON string.
 //
 VSSC_PUBLIC vssc_json_object_t *

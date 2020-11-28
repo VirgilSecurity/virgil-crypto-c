@@ -56,7 +56,7 @@
 #include "vssc_library.h"
 #include "vssc_raw_card.h"
 #include "vssc_http_request.h"
-#include "vssc_virgil_http_response.h"
+#include "vssc_http_response.h"
 #include "vssc_error.h"
 #include "vssc_raw_card_list.h"
 
@@ -170,7 +170,7 @@ vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const
 //  Return "raw card" of published Card.
 //
 VSSC_PUBLIC vssc_raw_card_t *
-vssc_card_client_process_response_publish_card(const vssc_virgil_http_response_t *response, vssc_error_t *error);
+vssc_card_client_process_response_publish_card(const vssc_http_response_t *response, vssc_error_t *error);
 
 //
 //  Create request that returns card from the Virgil Cards Service with given ID, if exists.
@@ -183,7 +183,7 @@ vssc_card_client_make_request_get_card(const vssc_card_client_t *self, vsc_str_t
 //  Return "raw card" if Card was found.
 //
 VSSC_PUBLIC vssc_raw_card_t *
-vssc_card_client_process_response_get_card(const vssc_virgil_http_response_t *response, vssc_error_t *error);
+vssc_card_client_process_response_get_card(const vssc_http_response_t *response, vssc_error_t *error);
 
 //
 //  Create request that returns cards list from the Virgil Cards Service for given identity.
@@ -196,7 +196,7 @@ vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_
 //  Return "raw card list" if founded Cards.
 //
 VSSC_PUBLIC vssc_raw_card_list_t *
-vssc_card_client_process_response_search_cards(const vssc_virgil_http_response_t *response, vssc_error_t *error);
+vssc_card_client_process_response_search_cards(const vssc_http_response_t *response, vssc_error_t *error);
 
 //
 //  Revoke an active Virgil Card using its ID only.

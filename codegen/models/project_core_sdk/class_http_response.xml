@@ -1,9 +1,24 @@
 <class name="http response">
-    Handles HTTP request in a most generic way.
+    This class contains HTTP response information alongside with information
+    that is specific for the Virgil services.
 
-    <property name="status code" type="size"/>
-    <property name="body" class="str buffer"/>
+    <require class="json object"/>
+
     <property name="headers" class="http header list"/>
+    <property name="body" class="str buffer"/>
+    <property name="body json object" class="json object"/>
+    <property name="body json array" class="json array"/>
+    <property name="status code" type="size"/>
+
+
+    <constant name="k json key service error code" type="string" visibility="private">
+        <value value="code"/>
+    </constant>
+
+
+    <constant name="k json key service error message" type="string" visibility="private">
+        <value value="message"/>
+    </constant>
 
 
     <constructor name="with status">
@@ -19,6 +34,27 @@
         <argument name="status code" type="size"/>
         <argument name="body" class="str"/>
     </constructor>
+
+
+    <method name="set status">
+        Set HTTP status.
+
+        <argument name="status code" type="size"/>
+    </method>
+
+
+    <method name="set body">
+        Set HTTP body.
+
+        <argument name="body" class="str"/>
+    </method>
+
+
+    <method name="set body disown" scope="internal">
+        Set HTTP body.
+
+        <argument name="body" class="str buffer" access="disown"/>
+    </method>
 
 
     <method name="add header">
@@ -62,6 +98,56 @@
 
         <argument name="name" class="str"/>
         <argument name="error" class="error"/>
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="body is json object" is_const="1">
+        Return true if response handles a valid body as JSON object.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="body is json array" is_const="1">
+        Return true if response handles a valid body as JSON array.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="body as json object" is_const="1">
+        Return response body as JSON object.
+
+        <return class="json object"/>
+    </method>
+
+
+    <method name="body as json array" is_const="1">
+        Return response body as JSON array.
+
+        <return class="json array"/>
+    </method>
+
+
+    <method name="has service error" is_const="1">
+        Return true if response handles a service error and it's description.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="service error code" is_const="1">
+        Return service error code.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="service error description" is_const="1">
+        Return service error description.
+        Note, empty string can be returned.
 
         <return class="str"/>
     </method>

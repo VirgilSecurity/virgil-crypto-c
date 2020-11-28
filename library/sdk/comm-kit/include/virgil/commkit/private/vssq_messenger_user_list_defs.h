@@ -86,7 +86,7 @@ struct vssq_messenger_user_list_t {
     //
     VSSQ_ATOMIC size_t refcnt;
 
-    const vssq_messenger_user_t *item;
+    vssq_messenger_user_t *item;
     //
     //  Class specific context.
     //

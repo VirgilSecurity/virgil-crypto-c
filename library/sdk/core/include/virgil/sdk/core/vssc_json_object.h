@@ -57,6 +57,7 @@
 #include "vssc_json_array.h"
 #include "vssc_error.h"
 #include "vssc_status.h"
+#include "vssc_string_map.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -237,6 +238,13 @@ vssc_json_object_get_array_value(const vssc_json_object_t *self, vsc_str_t key, 
 //
 VSSC_PUBLIC vsc_str_t
 vssc_json_object_as_str(const vssc_json_object_t *self);
+
+//
+//  Return JSON object as string map key->value.
+//  Return error, if at least one value is not a string.
+//
+VSSC_PUBLIC vssc_string_map_t *
+vssc_json_object_as_string_map(const vssc_json_object_t *self, vssc_error_t *error);
 
 //
 //  Parse a given JSON string.

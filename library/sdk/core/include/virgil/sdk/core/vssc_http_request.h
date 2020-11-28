@@ -236,6 +236,39 @@ vssc_http_request_body(const vssc_http_request_t *self);
 VSSC_PUBLIC const vssc_http_header_list_t *
 vssc_http_request_headers(const vssc_http_request_t *self);
 
+//
+//  Setup HTTP authorization header value: "<type> <credentials>".
+//
+//  Note, it is not added automatically to headers.
+//
+//  Motivation: some HTTP implementations require setting authorization header explicitly,
+//  and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+//
+//  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+//
+VSSC_PUBLIC void
+vssc_http_request_set_auth_header_value(vssc_http_request_t *self, vsc_str_t auth_header_value);
+
+//
+//  Setup HTTP authorization header value: "<type> <credentials>".
+//
+//  Note, it is not added automatically to headers.
+//
+//  Motivation: some HTTP implementations require setting authorization header explicitly,
+//  and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+//
+//  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+//
+VSSC_PUBLIC void
+vssc_http_request_set_auth_header_value_from_type_and_credentials(vssc_http_request_t *self, vsc_str_t auth_type,
+        vsc_str_t auth_credentials);
+
+//
+//  Return HTTP authorization header value: "<type> <credentials>".
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_request_auth_header_value(const vssc_http_request_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

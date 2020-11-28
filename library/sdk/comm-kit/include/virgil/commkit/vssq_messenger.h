@@ -65,7 +65,10 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -73,7 +76,10 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -220,6 +226,14 @@ VSSQ_PUBLIC const vssq_messenger_user_t *
 vssq_messenger_user(const vssq_messenger_t *self);
 
 //
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_modifiable(vssq_messenger_t *self);
+
+//
 //  Return name of the current user.
 //
 //  Prerequisites: user should be authenticated.
@@ -262,6 +276,59 @@ vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t 
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) VSSQ_NODISCARD;
+
+//
+//  Return founded user or error.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t identity, vssq_error_t *error);
+
+//
+//  Return founded user or error.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_find_user_with_username(const vssq_messenger_t *self, vsc_str_t username, vssq_error_t *error);
+
+//
+//  Return a buffer length enough to hold an encrypted message.
+//
+VSSQ_PUBLIC size_t
+vssq_messenger_encrypted_message_len(const vssq_messenger_t *self, size_t message_len,
+        const vssq_messenger_user_t *recipient);
+
+//
+//  Encrypt a text message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_encrypt_text(const vssq_messenger_t *self, vsc_str_t text, const vssq_messenger_user_t *recipient,
+        vsc_buffer_t *out) VSSQ_NODISCARD;
+
+//
+//  Encrypt a binary message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_encrypt_data(const vssq_messenger_t *self, vsc_data_t data, const vssq_messenger_user_t *recipient,
+        vsc_buffer_t *out) VSSQ_NODISCARD;
+
+//
+//  Return a buffer length enough to hold a decrypted message.
+//
+VSSQ_PUBLIC size_t
+vssq_messenger_decrypted_message_len(const vssq_messenger_t *self, size_t encrypted_message_len);
+
+//
+//  Decrypt a text message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_decrypt_text(const vssq_messenger_t *self, vsc_data_t encrypted_text,
+        const vssq_messenger_user_t *sender, vsc_str_buffer_t *out) VSSQ_NODISCARD;
+
+//
+//  Decrypt a binary message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_decrypt_data(const vssq_messenger_t *self, vsc_data_t encrypted_data,
+        const vssq_messenger_user_t *sender, vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
 //  Create a new group for a group messaging.

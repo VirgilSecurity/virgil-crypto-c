@@ -99,6 +99,8 @@ struct vssc_http_request_t {
 
     vsc_str_mutable_t body;
 
+    vsc_str_mutable_t auth_header_value;
+
     vssc_http_header_list_t *headers;
 };
 

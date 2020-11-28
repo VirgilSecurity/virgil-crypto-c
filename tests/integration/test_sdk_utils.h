@@ -44,9 +44,9 @@
 
 
 #define TEST_ASSERT_VIRGIL_HTTP_RESPONSE(VR)                                                                           \
-    if (vssc_virgil_http_response_has_service_error(VR)) {                                                             \
-        const size_t error_code = vssc_virgil_http_response_service_error_code(VR);                                    \
-        vsc_str_t error_message = vssc_virgil_http_response_service_error_description(VR);                             \
+    if (vssc_http_response_has_service_error(VR)) {                                                                    \
+        const size_t error_code = vssc_http_response_service_error_code(VR);                                           \
+        vsc_str_t error_message = vssc_http_response_service_error_description(VR);                                    \
         char message[256] = {'\0'};                                                                                    \
         snprintf(message, sizeof(message) - 1, "GOT SERVICE ERROR: %lu - %s\n", error_code, error_message.chars);      \
         TEST_FAIL_MESSAGE(message);                                                                                    \

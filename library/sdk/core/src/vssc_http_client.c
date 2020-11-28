@@ -78,20 +78,6 @@ vssc_http_client_send(vssc_impl_t *impl, const vssc_http_request_t *http_request
 }
 
 //
-//  Send given request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_http_client_auth_send(vssc_impl_t *impl, const vssc_http_request_t *http_request, vsc_str_t auth_type,
-        vsc_str_t auth_credentials, vssc_error_t *error) {
-
-    const vssc_http_client_api_t *http_client_api = vssc_http_client_api(impl);
-    VSSC_ASSERT_PTR (http_client_api);
-
-    VSSC_ASSERT_PTR (http_client_api->auth_send_cb);
-    return http_client_api->auth_send_cb (impl, http_request, auth_type, auth_credentials, error);
-}
-
-//
 //  Return http client API, or NULL if it is not implemented.
 //
 VSSC_PUBLIC const vssc_http_client_api_t *

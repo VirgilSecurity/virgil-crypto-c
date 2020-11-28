@@ -55,15 +55,26 @@
 
 #include "vssq_library.h"
 #include "vssq_status.h"
+#include "vssq_error.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
 #   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
+#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_string_list.h>
+#   include <virgil/sdk/core/vssc_string_map.h>
+#endif
+
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str.h>
 #   include <VSCCommon/vsc_str_buffer.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSC/vssc_string_list.h>
+#   include <VSSC/vssc_string_map.h>
 #endif
 
 // clang-format on
@@ -92,7 +103,7 @@ enum {
 //
 //  Validate and normalize username.
 //
-//  Valudation rules:
+//  Validation rules:
 //      1. Length in the range: [1..20]
 //      2. Do not start or end with an underscore
 //      3. Do not start with a number
@@ -109,6 +120,27 @@ vssq_contact_utils_normalize_username(vsc_str_t username, vsc_str_buffer_t *norm
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_contact_utils_hash_username(vsc_str_t username, vsc_str_buffer_t *digest_hex) VSSQ_NODISCARD;
+
+//
+//  Validate, normalize, and hash each username.
+//
+//  Return a map username->hash.
+//
+//  Note, usernames in the returned map equals to the given.
+//
+VSSQ_PUBLIC vssc_string_map_t *
+vssq_contact_utils_hash_usernames(const vssc_string_list_t *usernames, vssq_error_t *error);
+
+//
+//  Merge "contact request map" with "contact response map".
+//
+//  Contact request map : username | email | phone_number->hash
+//  Contact response map: hash->identity
+//  Final map : username | email | phone_number->identity
+//
+VSSQ_PUBLIC vssc_string_map_t *
+vssq_contact_utils_merge_contact_discovery_maps(const vssc_string_map_t *contact_request_map,
+        const vssc_string_map_t *contact_response_map);
 
 
 // --------------------------------------------------------------------------

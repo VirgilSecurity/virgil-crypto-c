@@ -180,6 +180,16 @@
     </method>
 
 
+    <method name="as string map" is_const="1">
+        Return JSON object as string map key->value.
+        Return error, if at least one value is not a string.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" access="disown"/>
+    </method>
+
+
     <method name="parse" is_static="1">
         Parse a given JSON string.
 

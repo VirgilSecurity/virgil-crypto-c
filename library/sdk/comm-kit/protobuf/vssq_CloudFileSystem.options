@@ -1,0 +1,18 @@
+CreateFileResp.upload_link max_length:512
+
+GetFileLinkReq.id max_length:64
+
+GetFileLinkResp.link max_length:512
+
+UpdateFileResp.link max_length:512
+
+DeleteFileReq.id max_length:512
+
+ListFolderReq.folder_id max_length:64
+
+ListFolderResp.file max_count:1024
+
+File.name max_length:512
+File.type max_length:512
+
+Meta.folder_id max_length:64

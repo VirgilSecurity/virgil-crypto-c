@@ -104,12 +104,16 @@ extern "C" {
 #cmakedefine01 VSSQ_MESSENGER_AUTH
 #endif
 
+#ifndef VSSQ_MESSENGER_CREDS
+#cmakedefine01 VSSQ_MESSENGER_CREDS
+#endif
+
 #ifndef VSSQ_MESSENGER_CONFIG
 #cmakedefine01 VSSQ_MESSENGER_CONFIG
 #endif
 
-#ifndef VSSQ_MESSENGER_CREDS
-#cmakedefine01 VSSQ_MESSENGER_CREDS
+#ifndef VSSQ_MESSENGER_CONTACTS
+#cmakedefine01 VSSQ_MESSENGER_CONTACTS
 #endif
 
 #ifndef VSSQ_MESSENGER_USER

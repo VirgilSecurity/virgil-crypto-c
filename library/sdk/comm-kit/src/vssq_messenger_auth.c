@@ -85,6 +85,7 @@
 #include <virgil/sdk/core/private/vssc_json_object_private.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_client.h>
 #include <virgil/sdk/pythia/vssp_pythia_client.h>
+#include <virgil/crypto/common/vsc_str_buffer.h>
 #include <virgil/sdk/core/vssc_card.h>
 
 // clang-format on
@@ -103,7 +104,8 @@
 enum {
     vssq_messenger_auth_CARD_IDENTITY_LEN = 16,
     vssq_messenger_auth_CARD_IDENTITY_LEN_HEX = 32,
-    vssq_messenger_auth_BASE_JWT_LEN_MAX = 512,
+    vssq_messenger_auth_VIRGIL_JWT_LEN_MAX = 512,
+    vssq_messenger_auth_CONTACT_DISCOVERY_JWT_LEN_MAX = 512,
     vssq_messenger_auth_EJABBERD_JWT_LEN_MAX = 256,
     vssq_messenger_auth_AUTH_HEADER_LEN_MAX = 256,
     vssq_messenger_auth_USERNAME_DIGEST_LEN = 64
@@ -126,7 +128,7 @@ static void
 vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self);
 
 //
-//  Initialize messenger with a custom configuration.
+//  Initialize with a custom configuration.
 //
 static void
 vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config);
@@ -138,26 +140,32 @@ static void
 vssq_messenger_auth_reset_creds(vssq_messenger_auth_t *self, const vssq_messenger_creds_t *creds);
 
 //
-//  Get JWT to use with Messenger Backend based on the password.
+//  Get JWT to use with Virgil Services based on the password.
 //
 //  Note, cache is not used.
 //
 static vssq_status_t
-vssq_messenger_auth_refresh_base_token_with_password(const vssq_messenger_auth_t *self, vsc_str_t username,
+vssq_messenger_auth_refresh_virgil_jwt_with_password(const vssq_messenger_auth_t *self, vsc_str_t username,
         vsc_data_t pwd) VSSQ_NODISCARD;
 
 //
-//  Request base JWt or Ejabberd JWT depends on the given endpoint.
+//  Request Virgil JWt, Ejabberd JWT, or Virgil Contact Discovery JWT depends on the given endpoint.
 //
 static vssq_status_t
 vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t endpoint,
         vsc_str_buffer_t *jwt_str) VSSQ_NODISCARD;
 
 //
+//  Refresh Virgil Contact Discovery JWT if it absent or expired.
+//
+static vssq_status_t
+vssq_messenger_auth_refresh_virgil_jwt(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
+
+//
 //  Refresh Virgil JWT if it absent or expired.
 //
 static vssq_status_t
-vssq_messenger_auth_refresh_base_token(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
+vssq_messenger_auth_refresh_contact_discovery_jwt(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
 
 //
 //  Refresh Ejabberd JWT if it absent or expired.
@@ -166,7 +174,7 @@ static vssq_status_t
 vssq_messenger_auth_refresh_ejabberd_token(const vssq_messenger_auth_t *self) VSSQ_NODISCARD;
 
 //
-//  Set a new password to the messenger backend to get base token when try to restore key.
+//  Set a new password to the messenger backend to get Virgil JWT when try to restore the key.
 //
 //  Note, password must be 32 bytes.
 //
@@ -174,7 +182,7 @@ static vssq_status_t
 vssq_messenger_auth_reset_sign_in_password(const vssq_messenger_auth_t *self, vsc_data_t pwd) VSSQ_NODISCARD;
 
 //
-//  Set a new password to the messenger backend to get base token when try to restore key.
+//  Use Pythia Service to generate private key that can decrypt the restored key.
 //
 //  Note, password must be 32 bytes.
 //
@@ -210,13 +218,20 @@ vssq_messenger_auth_keyknox_pull_creds(const vssq_messenger_auth_t *self, vsc_bu
         vsc_buffer_t *keyknox_value) VSSQ_NODISCARD;
 
 //
-//  Methhod is thread-safe.
+//  Method is thread-safe.
 //
 static void
-vssq_messenger_auth_reset_base_jwt(const vssq_messenger_auth_t *self, vssc_jwt_t **base_jwt_ref);
+vssq_messenger_auth_reset_virgil_jwt(const vssq_messenger_auth_t *self, vssc_jwt_t **virgil_jwt_ref);
 
 //
-//  Methhod is thread-safe.
+//  Method is thread-safe.
+//
+static void
+vssq_messenger_auth_reset_contact_discovery_jwt(const vssq_messenger_auth_t *self,
+        vssc_jwt_t **contact_discovery_jwt_ref);
+
+//
+//  Method is thread-safe.
 //
 static void
 vssq_messenger_auth_reset_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_ejabberd_jwt_t **ejabberd_jwt_ref);
@@ -225,7 +240,7 @@ vssq_messenger_auth_reset_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_e
 //  Fetch and store self card or error.
 //
 //  Prerequisites: user should be authenticated.
-//  Prerequisites: base token should be set and not expired.
+//  Prerequisites: Virgil JWT should be set and not expired.
 //
 static vssq_status_t
 vssq_messenger_auth_fetch_self_card(vssq_messenger_auth_t *self) VSSQ_NODISCARD;
@@ -243,6 +258,13 @@ static const char k_url_path_virgil_jwt_chars[] = "/virgil-jwt";
 static const vsc_str_t k_url_path_virgil_jwt = {
     k_url_path_virgil_jwt_chars,
     sizeof(k_url_path_virgil_jwt_chars) - 1
+};
+
+static const char k_url_path_contact_discovery_jwt_chars[] = "/contact-discovery-jwt";
+
+static const vsc_str_t k_url_path_contact_discovery_jwt = {
+    k_url_path_contact_discovery_jwt_chars,
+    sizeof(k_url_path_contact_discovery_jwt_chars) - 1
 };
 
 static const char k_url_path_ejabberd_jwt_chars[] = "/ejabberd-jwt";
@@ -273,18 +295,32 @@ static const vsc_str_t k_url_path_pwd_virgil_jwt = {
     sizeof(k_url_path_pwd_virgil_jwt_chars) - 1
 };
 
-static const char k_http_header_value_prefix_bearer_chars[] = "Bearer ";
+static const char k_http_header_auth_type_virgil_chars[] = "Virgil";
 
-static const vsc_str_t k_http_header_value_prefix_bearer = {
-    k_http_header_value_prefix_bearer_chars,
-    sizeof(k_http_header_value_prefix_bearer_chars) - 1
+static const vsc_str_t k_http_header_auth_type_virgil = {
+    k_http_header_auth_type_virgil_chars,
+    sizeof(k_http_header_auth_type_virgil_chars) - 1
 };
 
-static const char k_http_header_value_prefix_virgil_msg_pwd_chars[] = "VirgilMsgPwd ";
+static const char k_http_header_auth_type_virgil_msg_pwd_chars[] = "VirgilMsgPwd";
 
-static const vsc_str_t k_http_header_value_prefix_virgil_msg_pwd = {
-    k_http_header_value_prefix_virgil_msg_pwd_chars,
-    sizeof(k_http_header_value_prefix_virgil_msg_pwd_chars) - 1
+static const vsc_str_t k_http_header_auth_type_virgil_msg_pwd = {
+    k_http_header_auth_type_virgil_msg_pwd_chars,
+    sizeof(k_http_header_auth_type_virgil_msg_pwd_chars) - 1
+};
+
+static const char k_http_header_auth_type_virgil_contact_discovery_chars[] = "VirgilContDisc";
+
+static const vsc_str_t k_http_header_auth_type_virgil_contact_discovery = {
+    k_http_header_auth_type_virgil_contact_discovery_chars,
+    sizeof(k_http_header_auth_type_virgil_contact_discovery_chars) - 1
+};
+
+static const char k_http_header_auth_type_bearer_chars[] = "Bearer";
+
+static const vsc_str_t k_http_header_auth_type_bearer = {
+    k_http_header_auth_type_bearer_chars,
+    sizeof(k_http_header_auth_type_bearer_chars) - 1
 };
 
 static const char k_json_key_token_chars[] = "token";
@@ -437,7 +473,7 @@ vssq_messenger_auth_new(void) {
 
 //
 //  Perform initialization of pre-allocated context.
-//  Initialize messenger with a custom configuration.
+//  Initialize with a custom configuration.
 //
 VSSQ_PUBLIC void
 vssq_messenger_auth_init_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config) {
@@ -453,7 +489,7 @@ vssq_messenger_auth_init_with_config(vssq_messenger_auth_t *self, const vssq_mes
 
 //
 //  Allocate class context and perform it's initialization.
-//  Initialize messenger with a custom configuration.
+//  Initialize with a custom configuration.
 //
 VSSQ_PUBLIC vssq_messenger_auth_t *
 vssq_messenger_auth_new_with_config(const vssq_messenger_config_t *config) {
@@ -632,14 +668,15 @@ vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self) {
     vssq_messenger_config_delete(self->config);
     vssq_messenger_creds_delete(self->creds);
     vssq_messenger_user_destroy(&self->user);
-    vssc_jwt_destroy(&self->base_jwt);
+    vssc_jwt_destroy(&self->virgil_jwt);
+    vssc_jwt_destroy(&self->contact_discovery_jwt);
     vssq_ejabberd_jwt_destroy(&self->ejabberd_jwt);
 
     vscp_pythia_cleanup();
 }
 
 //
-//  Initialize messenger with a custom configuration.
+//  Initialize with a custom configuration.
 //
 static void
 vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq_messenger_config_t *config) {
@@ -654,7 +691,7 @@ vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq
 }
 
 //
-//  Return messenger configuration.
+//  Return configuration.
 //
 VSSQ_PUBLIC const vssq_messenger_config_t *
 vssq_messenger_auth_config(const vssq_messenger_auth_t *self) {
@@ -672,7 +709,7 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
 
     //
-    //  Check prepequsites.
+    //  Check prerequisites.
     //
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->random);
@@ -682,7 +719,8 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
     //
     //  Prepare vars and algorithms.
     //
-    vssq_status_t status = vssq_status_SUCCESS;
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
     vscf_error_t foundation_error;
     vscf_error_reset(&foundation_error);
@@ -710,7 +748,7 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
 
     vssc_http_request_t *http_request = NULL;
     vssc_http_response_t *http_response = NULL;
-    vssc_virgil_http_response_t *register_card_response = NULL;
+    vssc_http_response_t *register_card_response = NULL;
 
     vssq_messenger_creds_t *new_creds = NULL;
 
@@ -720,7 +758,7 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
     card_identity_bytes = vsc_buffer_new_with_capacity(vssq_messenger_auth_CARD_IDENTITY_LEN);
     foundation_error.status = vscf_random(self->random, vssq_messenger_auth_CARD_IDENTITY_LEN, card_identity_bytes);
     if (vscf_error_has_error(&foundation_error)) {
-        status = vssq_status_GENERATE_IDENTITY_FAILED;
+        vssq_error_update(&error, vssq_status_GENERATE_IDENTITY_FAILED);
         goto cleanup;
     }
 
@@ -734,7 +772,7 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
     //
     card_private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &foundation_error);
     if (vscf_error_has_error(&foundation_error)) {
-        status = vssq_status_GENERATE_PRIVATE_KEY_FAILED;
+        vssq_error_update(&error, vssq_status_GENERATE_PRIVATE_KEY_FAILED);
         goto cleanup;
     }
 
@@ -745,14 +783,14 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
     vssc_card_manager_use_random(card_manager, self->random);
     core_sdk_error.status = vssc_card_manager_configure(card_manager);
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_CREATE_CARD_MANAGER_FAILED;
+        vssq_error_update(&error, vssq_status_CREATE_CARD_MANAGER_FAILED);
         goto cleanup;
     }
 
     initial_raw_card = vssc_card_manager_generate_raw_card(
             card_manager, vsc_str_buffer_str(card_identity), card_private_key, &core_sdk_error);
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_GENERATE_CARD_FAILED;
+        vssq_error_update(&error, vssq_status_GENERATE_CARD_FAILED);
         goto cleanup;
     }
 
@@ -766,7 +804,7 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
 
     vssc_json_object_add_string_value(register_raw_card_json, k_json_key_username, username);
 
-    request_url = vsc_str_mutable_concat(vssq_messenger_config_base_url(self->config), k_url_path_signup);
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), k_url_path_signup);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
             vssc_json_object_as_str(register_raw_card_json));
@@ -774,45 +812,34 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
-    http_response = vssc_virgil_http_client_send_custom_with_ca(
-            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_messenger_request(self, http_request, false, &error);
+
+    if (NULL == http_response) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_REGISTER_CARD_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_body_is_json_object(http_response)) {
+        vssq_error_update(&error, vssq_status_REGISTER_CARD_FAILED_PARSE_FAILED);
+        goto cleanup;
+    }
+
+    registered_raw_card_json = vssc_json_object_get_object_value(
+            vssc_http_response_body_as_json_object(http_response), k_json_key_virgil_card, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REGISTER_CARD_FAILED_REQUEST_FAILED;
-        goto cleanup;
-    }
-
-    register_card_response = vssc_virgil_http_response_create_from_http_response(http_response, &core_sdk_error);
-
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REGISTER_CARD_FAILED_INVALID_RESPONSE;
-        goto cleanup;
-    }
-
-    if (!vssc_virgil_http_response_is_success(register_card_response)) {
-        status = vssq_status_REGISTER_CARD_FAILED_RESPONSE_WITH_ERROR;
-        goto cleanup;
-    }
-
-
-    if (!vssc_virgil_http_response_body_is_json_object(register_card_response)) {
-        status = vssq_status_REGISTER_CARD_FAILED_PARSE_FAILED;
-        goto cleanup;
-    }
-
-    registered_raw_card_json =
-            vssc_json_object_get_object_value(vssc_virgil_http_response_body_as_json_object(register_card_response),
-                    k_json_key_virgil_card, &core_sdk_error);
-
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REGISTER_CARD_FAILED_PARSE_FAILED;
+        vssq_error_update(&error, vssq_status_REGISTER_CARD_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
     registered_raw_card = vssc_raw_card_import_from_json(registered_raw_card_json, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REGISTER_CARD_FAILED_PARSE_FAILED;
+        vssq_error_update(&error, vssq_status_REGISTER_CARD_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
@@ -823,7 +850,7 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
             card_manager, registered_raw_card, initial_raw_card, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REGISTER_CARD_FAILED_IMPORT_FAILED;
+        vssq_error_update(&error, vssq_status_REGISTER_CARD_FAILED_IMPORT_FAILED);
         goto cleanup;
     }
 
@@ -849,10 +876,10 @@ cleanup:
     vssc_json_object_destroy(&registered_raw_card_json);
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
-    vssc_virgil_http_response_destroy(&register_card_response);
+    vssc_http_response_destroy(&register_card_response);
     vssq_messenger_creds_destroy(&new_creds);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
@@ -872,7 +899,7 @@ vssq_messenger_auth_authenticate(vssq_messenger_auth_t *self, const vssq_messeng
     //
     vssq_messenger_auth_reset_creds(self, creds);
 
-    vssq_status_t status = vssq_messenger_auth_refresh_base_token(self);
+    vssq_status_t status = vssq_messenger_auth_refresh_virgil_jwt(self);
     if (status != vssq_status_SUCCESS) {
         return status;
     }
@@ -913,6 +940,20 @@ vssq_messenger_auth_user(const vssq_messenger_auth_t *self) {
 }
 
 //
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_auth_user_modifiable(vssq_messenger_auth_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self));
+
+    return self->user;
+}
+
+//
 //  Return true if user credentials are defined.
 //
 VSSQ_PUBLIC bool
@@ -936,6 +977,20 @@ vssq_messenger_auth_creds(const vssq_messenger_auth_t *self) {
 }
 
 //
+//  Return user's private key from credentials.
+//
+//  Prerequisites: credentials are defined.
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_auth_private_key(const vssq_messenger_auth_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
+
+    return vssq_messenger_creds_private_key(self->creds);
+}
+
+//
 //  Check whether current credentials were backed up.
 //
 //  Prerequisites: user should be authenticated.
@@ -949,7 +1004,7 @@ vssq_messenger_auth_has_backup_creds(const vssq_messenger_auth_t *self, vssq_err
     //
     //  Update Virgil JWT first.
     //
-    const vssq_status_t status = vssq_messenger_auth_refresh_base_token(self);
+    const vssq_status_t status = vssq_messenger_auth_refresh_virgil_jwt(self);
     if (status != vssq_status_SUCCESS) {
         return status;
     }
@@ -965,7 +1020,7 @@ vssq_messenger_auth_has_backup_creds(const vssq_messenger_auth_t *self, vssq_err
 
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vssc_string_list_t *keys = NULL;
 
     bool result = false;
@@ -976,17 +1031,18 @@ vssq_messenger_auth_has_backup_creds(const vssq_messenger_auth_t *self, vssq_err
     keyknox_client = vssk_keyknox_client_new();
 
     http_request = vssk_keyknox_client_make_request_get_keys(
-            keyknox_client, k_keyknox_root_messenger, k_keyknox_path_credentials, vssc_jwt_identity(self->base_jwt));
+            keyknox_client, k_keyknox_root_messenger, k_keyknox_path_credentials, vssc_jwt_identity(self->virgil_jwt));
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            http_request, k_http_header_auth_type_virgil, vssc_jwt_as_string(self->virgil_jwt));
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_REQUEST_FAILED);
+    http_response = vssq_messenger_auth_send_virgil_request(self, http_request, error);
+
+    if (NULL == http_response) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (!vssc_http_response_is_success(http_response)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
@@ -1003,7 +1059,7 @@ vssq_messenger_auth_has_backup_creds(const vssq_messenger_auth_t *self, vssq_err
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vssc_string_list_destroy(&keys);
 
     return result;
@@ -1028,7 +1084,7 @@ vssq_messenger_auth_backup_creds(const vssq_messenger_auth_t *self, vsc_str_t pw
     vssq_error_t error;
     vssq_error_reset(&error);
 
-    error.status = vssq_messenger_auth_refresh_base_token(self);
+    error.status = vssq_messenger_auth_refresh_virgil_jwt(self);
     if (vssq_error_has_error(&error)) {
         return error.status;
     }
@@ -1136,11 +1192,11 @@ vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t usernam
     //
     //  Get Virgil JWT based on the password.
     //
-    error.status = vssq_messenger_auth_refresh_base_token_with_password(self, username, sign_in_pwd);
+    error.status = vssq_messenger_auth_refresh_virgil_jwt_with_password(self, username, sign_in_pwd);
     if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
-    VSSQ_ASSERT(!vssc_jwt_is_expired(self->base_jwt));
+    VSSQ_ASSERT(!vssc_jwt_is_expired(self->virgil_jwt));
 
     //
     //  Generate Brain Key.
@@ -1172,9 +1228,9 @@ vssq_messenger_auth_restore_creds(vssq_messenger_auth_t *self, vsc_str_t usernam
     //
     //  Preserve base token before reset credentials, as they will be destroyed.
     //
-    vssc_jwt_t *stored_jwt = vssc_jwt_shallow_copy(self->base_jwt);
+    vssc_jwt_t *stored_jwt = vssc_jwt_shallow_copy(self->virgil_jwt);
     vssq_messenger_auth_reset_creds(self, restored_creds);
-    vssq_messenger_auth_reset_base_jwt(self, &stored_jwt);
+    vssq_messenger_auth_reset_virgil_jwt(self, &stored_jwt);
 
     //
     //  Fetch our Virgil Card.
@@ -1209,71 +1265,92 @@ vssq_messenger_auth_remove_creds_backup(const vssq_messenger_auth_t *self) {
     //
     //  Declare vars.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_string_list_t *keyknox_identities = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vssk_keyknox_entry_t *keyknox_entry = NULL;
 
-    vsc_str_t identity = vssc_jwt_identity(self->base_jwt);
+    vsc_str_t identity = vssc_jwt_identity(self->virgil_jwt);
 
     //
     //  Reset previous record.
     //
-    vssq_status_t status = vssq_status_SUCCESS;
-
     keyknox_client = vssk_keyknox_client_new();
 
     http_request = vssk_keyknox_client_make_request_reset(
             keyknox_client, k_keyknox_root_messenger, k_keyknox_path_credentials, k_keyknox_alias_sign_in, identity);
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_virgil_request(self, http_request, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
-        status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
 
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_string_list_destroy(&keyknox_identities);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vssk_keyknox_entry_destroy(&keyknox_entry);
 
-    return status;
+    return error.status;
 }
 
 //
-//  Get JWT to use with Messenger Backend based on the credentials.
+//  Get JWT to use with Virgil services based on the credentials.
 //
 //  Prerequisites: user should be authenticated.
 //
 //  Note, the cached token is returned if it is exist and not expired.
 //
 VSSQ_PUBLIC const vssc_jwt_t *
-vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *error) {
+vssq_messenger_auth_virgil_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->creds);
 
-    const vssq_status_t status = vssq_messenger_auth_refresh_base_token(self);
+    const vssq_status_t status = vssq_messenger_auth_refresh_virgil_jwt(self);
 
     if (status == vssq_status_SUCCESS) {
-        VSSQ_ASSERT_PTR(self->base_jwt);
-        return self->base_jwt;
+        VSSQ_ASSERT_PTR(self->virgil_jwt);
+        return self->virgil_jwt;
+
+    } else {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+}
+
+//
+//  Get JWT to use with Virgil Contact Discovery service based on the credentials.
+//
+//  Prerequisites: user should be authenticated.
+//
+//  Note, the cached token is returned if it is exist and not expired.
+//
+VSSQ_PUBLIC const vssc_jwt_t *
+vssq_messenger_auth_contact_discovery_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->creds);
+
+    const vssq_status_t status = vssq_messenger_auth_refresh_contact_discovery_jwt(self);
+
+    if (status == vssq_status_SUCCESS) {
+        VSSQ_ASSERT_PTR(self->virgil_jwt);
+        return self->virgil_jwt;
 
     } else {
         VSSQ_ERROR_SAFE_UPDATE(error, status);
@@ -1291,7 +1368,7 @@ vssq_messenger_auth_base_token(const vssq_messenger_auth_t *self, vssq_error_t *
 //  Note, the cached token is returned if it is exist and not expired.
 //
 VSSQ_PUBLIC const vssq_ejabberd_jwt_t *
-vssq_messenger_auth_ejabberd_token(const vssq_messenger_auth_t *self, vssq_error_t *error) {
+vssq_messenger_auth_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->creds);
@@ -1318,99 +1395,18 @@ vssq_messenger_auth_reset_creds(vssq_messenger_auth_t *self, const vssq_messenge
     VSSQ_ASSERT_PTR(creds);
 
     vssq_messenger_creds_delete(self->creds);
-    vssc_jwt_destroy(&self->base_jwt);
+    vssc_jwt_destroy(&self->virgil_jwt);
     vssq_ejabberd_jwt_destroy(&self->ejabberd_jwt);
     self->creds = vssq_messenger_creds_shallow_copy_const(creds);
 }
 
 //
-//  Return buffer length enough to handle HTTP authorization header value.
-//
-VSSQ_PUBLIC size_t
-vssq_messenger_auth_auth_header_len(const vssq_messenger_auth_t *self) {
-
-    VSSQ_ASSERT_PTR(self);
-
-    return vssq_messenger_auth_AUTH_HEADER_LEN_MAX;
-    ;
-}
-
-//
-//  Generate HTTP authorization header value.
-//
-//  Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
-//
-//  Prerequisites: user should be authenticated.
-//
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_auth_generate_auth_header(const vssq_messenger_auth_t *self, vsc_str_buffer_t *auth_header) {
-
-    VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(self->creds);
-    VSSQ_ASSERT_PTR(self->random);
-    VSSQ_ASSERT(vsc_str_buffer_is_valid(auth_header));
-    VSSQ_ASSERT(vsc_str_buffer_unused_len(auth_header) >= vssq_messenger_auth_auth_header_len(self));
-
-    //
-    //  Calculate card id.
-    //
-
-    //
-    //  Create messenger JWT.
-    //
-    vscf_signer_t *signer = vscf_signer_new();
-    vscf_signer_use_random(signer, self->random);
-    vscf_signer_take_hash(signer, vscf_sha512_impl(vscf_sha512_new()));
-    const size_t jwt_signature_len = vscf_signer_signature_len(signer, vssq_messenger_creds_private_key(self->creds));
-
-    vsc_str_t card_id = vssq_messenger_creds_card_id(self->creds);
-
-    char timestamp_str[22] = {'\0'};
-    snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
-    vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
-
-    const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);
-    const size_t jwt_to_sign_len = card_id.len + 1 /* dot */ + timestamp.len;
-    const size_t jwt_len = jwt_to_sign_len + 1 /* dot */ + jwt_signature_str_len;
-    const size_t auth_header_len = k_http_header_value_prefix_bearer.len + jwt_len;
-
-    VSSQ_ASSERT(vsc_str_buffer_unused_len(auth_header) >= auth_header_len);
-
-    vsc_str_buffer_write_str(auth_header, k_http_header_value_prefix_bearer);
-
-    const char *jwt_to_sign_chars = vsc_str_buffer_unused_chars(auth_header);
-    vsc_str_buffer_write_str(auth_header, card_id);
-    vsc_str_buffer_write_char(auth_header, '.');
-    vsc_str_buffer_write_str(auth_header, timestamp);
-    vsc_str_buffer_write_char(auth_header, '.');
-
-    vsc_buffer_t *jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
-    vscf_signer_reset(signer);
-    vscf_signer_append_data(signer, vsc_data((const byte *)jwt_to_sign_chars, jwt_to_sign_len));
-    const vscf_status_t sign_status =
-            vscf_signer_sign(signer, vssq_messenger_creds_private_key(self->creds), jwt_signature);
-
-    if (sign_status == vscf_status_SUCCESS) {
-        vscf_base64_encode(vsc_buffer_data(jwt_signature), &(auth_header->buffer));
-    }
-
-    vscf_signer_destroy(&signer);
-    vsc_buffer_destroy(&jwt_signature);
-
-    if (sign_status == vscf_status_SUCCESS) {
-        return vssq_status_SUCCESS;
-    } else {
-        return vssq_status_GENERATE_AUTH_HEADER_FAILED;
-    }
-}
-
-//
-//  Get JWT to use with Messenger Backend based on the password.
+//  Get JWT to use with Virgil Services based on the password.
 //
 //  Note, cache is not used.
 //
 static vssq_status_t
-vssq_messenger_auth_refresh_base_token_with_password(
+vssq_messenger_auth_refresh_virgil_jwt_with_password(
         const vssq_messenger_auth_t *self, vsc_str_t username, vsc_data_t pwd) {
 
     VSSQ_ASSERT_PTR(self);
@@ -1421,60 +1417,56 @@ vssq_messenger_auth_refresh_base_token_with_password(
     //
     //  Declare result vars.
     //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
     vssc_json_object_t *token_json = NULL;
     vssc_http_response_t *http_response = NULL;
 
-    vsc_str_buffer_t *authorization_header = NULL;
-
-    vssq_status_t status = vssq_status_SUCCESS;
+    vsc_str_buffer_t *auth_header_value = NULL;
 
     //
     //  Prepare request.
     //
     vsc_str_mutable_t url =
-            vsc_str_mutable_concat(vssq_messenger_config_base_url(self->config), k_url_path_pwd_virgil_jwt);
+            vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), k_url_path_pwd_virgil_jwt);
 
     vssc_http_request_t *http_request =
-            vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_mutable_as_str(url));
+            vssc_http_request_new_with_url(vssc_http_request_method_post, vsc_str_mutable_as_str(url));
 
     vsc_str_mutable_release(&url);
 
-    const size_t authorization_header_len = k_http_header_value_prefix_virgil_msg_pwd.len +
-                                            vssq_messenger_auth_USERNAME_DIGEST_LEN + 1 /*.*/ +
-                                            vscf_base64_encoded_len(pwd.len);
+    const size_t auth_header_value_len =
+            vssq_messenger_auth_USERNAME_DIGEST_LEN + 1 /* . */ + vscf_base64_encoded_len(pwd.len);
 
-    authorization_header = vsc_str_buffer_new_with_capacity(authorization_header_len);
+    auth_header_value = vsc_str_buffer_new_with_capacity(auth_header_value_len);
 
-    vsc_str_buffer_write_str(authorization_header, k_http_header_value_prefix_virgil_msg_pwd);
+    error.status = vssq_contact_utils_hash_username(username, auth_header_value);
 
-    status = vssq_contact_utils_hash_username(username, authorization_header);
-
-    if (status != vssq_status_SUCCESS) {
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
-    vsc_str_buffer_write_char(authorization_header, '.');
-    vscf_base64_encode(pwd, &authorization_header->buffer);
+    vsc_str_buffer_write_char(auth_header_value, '.');
+    vscf_base64_encode(pwd, &auth_header_value->buffer);
 
-    vssc_http_request_add_header(
-            http_request, vssc_http_header_name_authorization, vsc_str_buffer_str(authorization_header));
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            http_request, k_http_header_auth_type_virgil_msg_pwd, vsc_str_buffer_str(auth_header_value));
 
     //
     //  Send.
     //
-    http_response = vssc_virgil_http_client_send_custom_with_ca(
-            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_messenger_request(self, http_request, false, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_REQUEST_FAILED;
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
     if (!vssc_http_response_is_success(http_response)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_RESPONSE_WITH_ERROR;
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
@@ -1484,14 +1476,14 @@ vssq_messenger_auth_refresh_base_token_with_password(
     token_json = vssc_json_object_parse(vssc_http_response_body(http_response), &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_PARSE_RESPONSE_FAILED;
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
     }
 
     vsc_str_t token_str = vssc_json_object_get_string_value(token_json, k_json_key_token, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_PARSE_RESPONSE_FAILED;
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
     }
 
@@ -1501,23 +1493,23 @@ vssq_messenger_auth_refresh_base_token_with_password(
     vssc_jwt_t *new_jwt = vssc_jwt_parse(token_str, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_PARSE_FAILED;
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
-    vssq_messenger_auth_reset_base_jwt(self, &new_jwt);
+    vssq_messenger_auth_reset_virgil_jwt(self, &new_jwt);
 
 cleanup:
-    vsc_str_buffer_destroy(&authorization_header);
+    vsc_str_buffer_destroy(&auth_header_value);
     vssc_json_object_destroy(&token_json);
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
-//  Request base JWt or Ejabberd JWT depends on the given endpoint.
+//  Request Virgil JWt, Ejabberd JWT, or Virgil Contact Discovery JWT depends on the given endpoint.
 //
 static vssq_status_t
 vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t endpoint, vsc_str_buffer_t *jwt_str) {
@@ -1530,60 +1522,47 @@ vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t e
     //
     //  Declare resources.
     //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
     vssc_http_request_t *http_request = NULL;
     vssc_http_response_t *http_response = NULL;
     vsc_str_mutable_t auth_url = {NULL, 0};
-    vsc_str_buffer_t *auth_header = NULL;
-    vssc_json_object_t *token_json = NULL;
-
-    //
-    //  Generarte authorization header.
-    //
-    auth_header = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_AUTH_HEADER_LEN_MAX);
-    vssq_status_t status = vssq_messenger_auth_generate_auth_header(self, auth_header);
-    if (status != vssq_status_SUCCESS) {
-        goto cleanup;
-    }
 
     //
     //  Request token.
     //
-    auth_url = vsc_str_mutable_concat(vssq_messenger_config_base_url(self->config), endpoint);
-    http_request = vssc_http_request_new_with_url(vssc_http_request_method_get, vsc_str_mutable_as_str(auth_url));
+    auth_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), endpoint);
 
-    vssc_http_request_add_header(http_request, vssc_http_header_name_authorization, vsc_str_buffer_str(auth_header));
-    vsc_str_buffer_destroy(&auth_header);
+    http_request = vssc_http_request_new_with_url(vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url));
 
-    http_response = vssc_virgil_http_client_send_custom_with_ca(
-            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_messenger_request(self, http_request, true, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_REQUEST_FAILED;
+    if (NULL == http_response) {
         goto cleanup;
     }
 
     if (!vssc_http_response_is_success(http_response)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_RESPONSE_WITH_ERROR;
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
     //
     //  Extract token from the response.
     //
-    token_json = vssc_json_object_parse(vssc_http_response_body(http_response), &core_sdk_error);
-
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_PARSE_RESPONSE_FAILED;
+    if (!vssc_http_response_body_is_json_object(http_response)) {
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
     }
 
-    vsc_str_t token_str = vssc_json_object_get_string_value(token_json, k_json_key_token, &core_sdk_error);
+    vsc_str_t token_str = vssc_json_object_get_string_value(
+            vssc_http_response_body_as_json_object(http_response), k_json_key_token, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_REFRESH_TOKEN_FAILED_PARSE_RESPONSE_FAILED;
+        vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
     }
 
@@ -1593,36 +1572,38 @@ cleanup:
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
     vsc_str_mutable_release(&auth_url);
-    vsc_str_buffer_destroy(&auth_header);
-    vssc_json_object_destroy(&token_json);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
-//  Refresh Virgil JWT if it absent or expired.
+//  Refresh Virgil Contact Discovery JWT if it absent or expired.
 //
 static vssq_status_t
-vssq_messenger_auth_refresh_base_token(const vssq_messenger_auth_t *self) {
+vssq_messenger_auth_refresh_virgil_jwt(const vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
 
     //
-    //  Check if the current token is up to date.
+    //  Check if the current token is up to date, i.e. was received via password authentication.
     //
-    if (self->base_jwt && !vssc_jwt_is_expired(self->base_jwt)) {
+    if (self->virgil_jwt && !vssc_jwt_is_expired(self->virgil_jwt)) {
         return vssq_status_SUCCESS;
     }
 
     //
+    //  At this point we need credentials.
+    //
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
+
+    //
     //  Request a new Virgil JWT.
     //
-    vsc_str_buffer_t *base_jwt_str = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_BASE_JWT_LEN_MAX);
+    vsc_str_buffer_t *virgil_jwt_str = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_VIRGIL_JWT_LEN_MAX);
 
-    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_virgil_jwt, base_jwt_str);
+    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_virgil_jwt, virgil_jwt_str);
     if (status != vssq_status_SUCCESS) {
-        vsc_str_buffer_destroy(&base_jwt_str);
+        vsc_str_buffer_destroy(&virgil_jwt_str);
         return status;
     }
 
@@ -1632,15 +1613,60 @@ vssq_messenger_auth_refresh_base_token(const vssq_messenger_auth_t *self) {
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vssc_jwt_t *base_jwt = vssc_jwt_parse(vsc_str_buffer_str(base_jwt_str), &core_sdk_error);
-    vsc_str_buffer_destroy(&base_jwt_str);
+    vssc_jwt_t *virgil_jwt = vssc_jwt_parse(vsc_str_buffer_str(virgil_jwt_str), &core_sdk_error);
+    vsc_str_buffer_destroy(&virgil_jwt_str);
 
-    vssq_messenger_auth_reset_base_jwt(self, &base_jwt);
+    vssq_messenger_auth_reset_virgil_jwt(self, &virgil_jwt);
 
     if (!vssc_error_has_error(&core_sdk_error)) {
         return vssq_status_SUCCESS;
     } else {
-        return vssq_status_REFRESH_TOKEN_FAILED_PARSE_FAILED;
+        return vssq_status_REFRESH_JWT_FAILED_PARSE_FAILED;
+    }
+}
+
+//
+//  Refresh Virgil JWT if it absent or expired.
+//
+static vssq_status_t
+vssq_messenger_auth_refresh_contact_discovery_jwt(const vssq_messenger_auth_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
+
+    //
+    //  Check if the current token is up to date.
+    //
+    if (self->contact_discovery_jwt && !vssc_jwt_is_expired(self->contact_discovery_jwt)) {
+        return vssq_status_SUCCESS;
+    }
+
+    //
+    //  Request a new Virgil Contact Discovery JWT.
+    //
+    vsc_str_buffer_t *jwt_str = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_CONTACT_DISCOVERY_JWT_LEN_MAX);
+
+    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_contact_discovery_jwt, jwt_str);
+    if (status != vssq_status_SUCCESS) {
+        vsc_str_buffer_destroy(&jwt_str);
+        return status;
+    }
+
+    //
+    //  Parse Virgil Contact Discovery JWT.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_jwt_t *jwt = vssc_jwt_parse(vsc_str_buffer_str(jwt_str), &core_sdk_error);
+    vsc_str_buffer_destroy(&jwt_str);
+
+    vssq_messenger_auth_reset_contact_discovery_jwt(self, &jwt);
+
+    if (!vssc_error_has_error(&core_sdk_error)) {
+        return vssq_status_SUCCESS;
+    } else {
+        return vssq_status_REFRESH_JWT_FAILED_PARSE_FAILED;
     }
 }
 
@@ -1685,12 +1711,12 @@ vssq_messenger_auth_refresh_ejabberd_token(const vssq_messenger_auth_t *self) {
     if (!vssq_error_has_error(&error)) {
         return vssq_status_SUCCESS;
     } else {
-        return vssq_status_REFRESH_TOKEN_FAILED_PARSE_FAILED;
+        return vssq_status_REFRESH_JWT_FAILED_PARSE_FAILED;
     }
 }
 
 //
-//  Set a new password to the messenger backend to get base token when try to restore key.
+//  Set a new password to the messenger backend to get Virgil JWT when try to restore the key.
 //
 //  Note, password must be 32 bytes.
 //
@@ -1705,11 +1731,10 @@ vssq_messenger_auth_reset_sign_in_password(const vssq_messenger_auth_t *self, vs
     //
     //  Declare vars.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
     vsc_str_mutable_t auth_url = {NULL, 0};
-    vsc_str_buffer_t *auth_header = NULL;
 
     vssc_http_request_t *http_request = NULL;
     vssc_http_response_t *http_response = NULL;
@@ -1717,58 +1742,43 @@ vssq_messenger_auth_reset_sign_in_password(const vssq_messenger_auth_t *self, vs
     vssc_json_object_t *body_json = NULL;
 
     //
-    //  Generarte authorization header.
-    //
-    auth_header = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_AUTH_HEADER_LEN_MAX);
-    vssq_status_t status = vssq_messenger_auth_generate_auth_header(self, auth_header);
-    if (status != vssq_status_SUCCESS) {
-        goto cleanup;
-    }
-
-    //
     //   Create request.
     //
     body_json = vssc_json_object_new();
     vssc_json_object_add_binary_value(body_json, k_json_key_password, pwd);
 
-    auth_url = vsc_str_mutable_concat(vssq_messenger_config_base_url(self->config), k_url_path_set_password);
+    auth_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), k_url_path_set_password);
     http_request = vssc_http_request_new_with_body(
             vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url), vssc_json_object_as_str(body_json));
 
     vssc_json_object_destroy(&body_json);
 
-    vssc_http_request_add_header(http_request, vssc_http_header_name_authorization, vsc_str_buffer_str(auth_header));
-    vsc_str_buffer_destroy(&auth_header);
-
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
 
-    http_response = vssc_virgil_http_client_send_custom_with_ca(
-            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_messenger_request(self, http_request, true, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_RESET_PASSWORD_FAILED_REQUEST_FAILED;
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
     if (!vssc_http_response_is_success(http_response)) {
-        status = vssq_status_RESET_PASSWORD_FAILED_RESPONSE_WITH_ERROR;
+        vssq_error_update(&error, vssq_status_RESET_PASSWORD_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
 cleanup:
     vsc_str_mutable_release(&auth_url);
-    vsc_str_buffer_destroy(&auth_header);
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
     vssc_json_object_destroy(&body_json);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
-//  Set a new password to the messenger backend to get base token when try to restore key.
+//  Use Pythia Service to generate private key that can decrypt the restored key.
 //
 //  Note, password must be 32 bytes.
 //
@@ -1777,7 +1787,7 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->config);
-    VSSQ_ASSERT_PTR(self->base_jwt);
+    VSSQ_ASSERT_PTR(self->virgil_jwt);
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(pwd));
     VSSQ_ASSERT(pwd.len == 32);
 
@@ -1798,7 +1808,7 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
     vssp_brain_key_seed_t *seed = NULL;
 
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
 
     vsc_buffer_t *blinded_password = NULL;
     vsc_buffer_t *blinding_secret = NULL;
@@ -1828,14 +1838,13 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
 
     vsc_buffer_destroy(&blinded_password);
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
-    if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_SEED_REQUEST_FAILED);
+    http_response = vssq_messenger_auth_send_virgil_request(self, http_request, error);
+
+    if (NULL == http_response) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
+    if (!vssc_http_response_is_success(http_response)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_SEED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
@@ -1847,7 +1856,7 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
     }
 
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
 
     deblinded_password = vsc_buffer_new_with_capacity(vscp_pythia_deblinded_password_buf_len());
 
@@ -1887,7 +1896,7 @@ cleanup:
     vssp_pythia_client_destroy(&pythia_client);
     vssp_brain_key_seed_destroy(&seed);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vsc_buffer_destroy(&blinded_password);
     vsc_buffer_destroy(&blinding_secret);
     vsc_buffer_destroy(&deblinded_password);
@@ -2212,42 +2221,41 @@ vssq_messenger_auth_keyknox_push_creds(
     //
     //  Declare vars.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_string_list_t *keyknox_identities = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vssk_keyknox_entry_t *keyknox_entry = NULL;
 
-    vsc_str_t identity = vssc_jwt_identity(self->base_jwt);
+    vsc_str_t identity = vssc_jwt_identity(self->virgil_jwt);
 
     //
     //  Reset previous record.
     //
-    vssq_status_t status = vssq_status_SUCCESS;
-
     keyknox_client = vssk_keyknox_client_new();
 
     http_request = vssk_keyknox_client_make_request_reset(
             keyknox_client, k_keyknox_root_messenger, k_keyknox_path_credentials, k_keyknox_alias_sign_in, identity);
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            http_request, k_http_header_auth_type_virgil, vssc_jwt_as_string(self->virgil_jwt));
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
+    http_response = vssq_messenger_auth_send_virgil_request(self, http_request, &error);
+
+    if (NULL == http_response) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
-        status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
 
     //
     //  Push.
@@ -2263,16 +2271,14 @@ vssq_messenger_auth_keyknox_push_creds(
 
     http_request = vssk_keyknox_client_make_request_push(keyknox_client, keyknox_entry);
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_virgil_request(self, http_request, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
+    if (NULL == http_response) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
-        status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
@@ -2280,10 +2286,10 @@ cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_string_list_destroy(&keyknox_identities);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vssk_keyknox_entry_destroy(&keyknox_entry);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
@@ -2296,50 +2302,46 @@ vssq_messenger_auth_keyknox_pull_creds(
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(keyknox_meta);
     VSSQ_ASSERT_PTR(keyknox_value);
-    VSSQ_ASSERT_PTR(self->base_jwt);
-    VSSQ_ASSERT(!vssc_jwt_is_expired(self->base_jwt));
+    VSSQ_ASSERT_PTR(self->virgil_jwt);
+    VSSQ_ASSERT(!vssc_jwt_is_expired(self->virgil_jwt));
 
     //
     //  Declare vars.
     //
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
     vssk_error_t keyknox_sdk_error;
     vssk_error_reset(&keyknox_sdk_error);
 
     vssk_keyknox_client_t *keyknox_client = NULL;
     vssc_http_request_t *http_request = NULL;
-    vssc_virgil_http_response_t *http_response = NULL;
+    vssc_http_response_t *http_response = NULL;
     vssk_keyknox_entry_t *keyknox_entry = NULL;
 
     //
     //  Pull encrypted credentials from the Keyknox.
     //
-    vssq_status_t status = vssq_status_SUCCESS;
-
     keyknox_client = vssk_keyknox_client_new();
 
     http_request = vssk_keyknox_client_make_request_pull(keyknox_client, k_keyknox_root_messenger,
-            k_keyknox_path_credentials, k_keyknox_alias_sign_in, vssc_jwt_identity(self->base_jwt));
+            k_keyknox_path_credentials, k_keyknox_alias_sign_in, vssc_jwt_identity(self->virgil_jwt));
 
-    http_response = vssc_virgil_http_client_send_with_ca(
-            http_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    http_response = vssq_messenger_auth_send_virgil_request(self, http_request, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_KEYKNOX_FAILED_REQUEST_FAILED;
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
-        status = vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR;
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
     keyknox_entry = vssk_keyknox_client_process_response_pull(http_response, &keyknox_sdk_error);
 
-    if (!vssc_virgil_http_response_is_success(http_response)) {
-        status = vssq_status_KEYKNOX_FAILED_PARSE_RESPONSE_FAILED;
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_KEYKNOX_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
     }
 
@@ -2352,36 +2354,59 @@ vssq_messenger_auth_keyknox_pull_creds(
 cleanup:
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&http_request);
-    vssc_virgil_http_response_destroy(&http_response);
+    vssc_http_response_destroy(&http_response);
     vssk_keyknox_entry_destroy(&keyknox_entry);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
-//  Methhod is thread-safe.
+//  Method is thread-safe.
 //
 static void
-vssq_messenger_auth_reset_base_jwt(const vssq_messenger_auth_t *self, vssc_jwt_t **base_jwt_ref) {
+vssq_messenger_auth_reset_virgil_jwt(const vssq_messenger_auth_t *self, vssc_jwt_t **virgil_jwt_ref) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(base_jwt_ref);
+    VSSQ_ASSERT_PTR(virgil_jwt_ref);
 
-    VSSQ_ATOMIC_CRITICAL_SECTION_DECLARE(reset_base_jwt);
-    VSSQ_ATOMIC_CRITICAL_SECTION_BEGIN(reset_base_jwt);
+    VSSQ_ATOMIC_CRITICAL_SECTION_DECLARE(reset_virgil_jwt);
+    VSSQ_ATOMIC_CRITICAL_SECTION_BEGIN(reset_virgil_jwt);
 
     vssq_messenger_auth_t *mutable_self = (vssq_messenger_auth_t *)self;
 
-    vssc_jwt_destroy(&mutable_self->base_jwt);
-    mutable_self->base_jwt = *base_jwt_ref;
+    vssc_jwt_destroy(&mutable_self->virgil_jwt);
+    mutable_self->virgil_jwt = *virgil_jwt_ref;
 
-    VSSQ_ATOMIC_CRITICAL_SECTION_END(reset_base_jwt);
+    VSSQ_ATOMIC_CRITICAL_SECTION_END(reset_virgil_jwt);
 
-    *base_jwt_ref = NULL;
+    *virgil_jwt_ref = NULL;
 }
 
 //
-//  Methhod is thread-safe.
+//  Method is thread-safe.
+//
+static void
+vssq_messenger_auth_reset_contact_discovery_jwt(
+        const vssq_messenger_auth_t *self, vssc_jwt_t **contact_discovery_jwt_ref) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(contact_discovery_jwt_ref);
+
+    VSSQ_ATOMIC_CRITICAL_SECTION_DECLARE(reset_contact_discovery_jwt);
+    VSSQ_ATOMIC_CRITICAL_SECTION_BEGIN(reset_contact_discovery_jwt);
+
+    vssq_messenger_auth_t *mutable_self = (vssq_messenger_auth_t *)self;
+
+    vssc_jwt_destroy(&mutable_self->contact_discovery_jwt);
+    mutable_self->contact_discovery_jwt = *contact_discovery_jwt_ref;
+
+    VSSQ_ATOMIC_CRITICAL_SECTION_END(reset_contact_discovery_jwt);
+
+    *contact_discovery_jwt_ref = NULL;
+}
+
+//
+//  Method is thread-safe.
 //
 static void
 vssq_messenger_auth_reset_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_ejabberd_jwt_t **ejabberd_jwt_ref) {
@@ -2406,30 +2431,31 @@ vssq_messenger_auth_reset_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_e
 //  Fetch and store self card or error.
 //
 //  Prerequisites: user should be authenticated.
-//  Prerequisites: base token should be set and not expired.
+//  Prerequisites: Virgil JWT should be set and not expired.
 //
 static vssq_status_t
 vssq_messenger_auth_fetch_self_card(vssq_messenger_auth_t *self) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->random);
-    VSSQ_ASSERT_PTR(self->base_jwt);
-    VSSQ_ASSERT(!vssc_jwt_is_expired(self->base_jwt));
+    VSSQ_ASSERT_PTR(self->virgil_jwt);
+    VSSQ_ASSERT(!vssc_jwt_is_expired(self->virgil_jwt));
 
     //
     // Declare vars.
     //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
     vssc_card_manager_t *card_manager = NULL;
     vssc_card_client_t *card_client = NULL;
     vssc_http_request_t *get_card_request = NULL;
-    vssc_virgil_http_response_t *get_cards_response = NULL;
+    vssc_http_response_t *get_cards_response = NULL;
     vssc_raw_card_t *founded_raw_card = NULL;
     vssc_card_t *founded_card = NULL;
-
-    vssq_status_t status = vssq_status_SUCCESS;
 
     //
     //  Configure algorithms.
@@ -2440,7 +2466,7 @@ vssq_messenger_auth_fetch_self_card(vssq_messenger_auth_t *self) {
     core_sdk_error.status = vssc_card_manager_configure(card_manager);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_SEARCH_CARD_FAILED_INIT_FAILED;
+        vssq_error_update(&error, vssq_status_SEARCH_CARD_FAILED_INIT_FAILED);
         goto cleanup;
     }
 
@@ -2451,39 +2477,37 @@ vssq_messenger_auth_fetch_self_card(vssq_messenger_auth_t *self) {
 
     get_card_request = vssc_card_client_make_request_get_card(card_client, vssq_messenger_creds_card_id(self->creds));
 
-    get_cards_response = vssc_virgil_http_client_send_with_ca(
-            get_card_request, self->base_jwt, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+    get_cards_response = vssq_messenger_auth_send_virgil_request(self, get_card_request, &error);
 
-    if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_SEARCH_CARD_FAILED_REQUEST_FAILED;
+    if (vssq_error_has_error(&error)) {
         goto cleanup;
     }
 
-    if (vssc_virgil_http_response_status_code(get_cards_response) == 404) {
-        status = vssq_status_SEARCH_CARD_FAILED_REQUIRED_NOT_FOUND;
+    if (vssc_http_response_status_code(get_cards_response) == 404) {
+        vssq_error_update(&error, vssq_status_SEARCH_CARD_FAILED_REQUIRED_NOT_FOUND);
         goto cleanup;
     }
 
-    if (!vssc_virgil_http_response_is_success(get_cards_response)) {
-        status = vssq_status_SEARCH_CARD_FAILED_RESPONSE_WITH_ERROR;
+    if (!vssc_http_response_is_success(get_cards_response)) {
+        vssq_error_update(&error, vssq_status_SEARCH_CARD_FAILED_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
     founded_raw_card = vssc_card_client_process_response_get_card(get_cards_response, &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_SEARCH_CARD_FAILED_PARSE_FAILED;
+        vssq_error_update(&error, vssq_status_SEARCH_CARD_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
     if (vssc_raw_card_is_outdated(founded_raw_card)) {
-        status = vssq_status_SEARCH_CARD_FAILED_REQUIRED_IS_OUTDATED;
+        vssq_error_update(&error, vssq_status_SEARCH_CARD_FAILED_REQUIRED_IS_OUTDATED);
         goto cleanup;
     }
 
     founded_card = vssc_card_manager_import_raw_card(card_manager, founded_raw_card, &core_sdk_error);
     if (vssc_error_has_error(&core_sdk_error)) {
-        status = vssq_status_SEARCH_CARD_FAILED_IMPORT_FAILED;
+        vssq_error_update(&error, vssq_status_SEARCH_CARD_FAILED_IMPORT_FAILED);
         goto cleanup;
     }
 
@@ -2493,10 +2517,10 @@ cleanup:
     vssc_card_manager_destroy(&card_manager);
     vssc_card_client_destroy(&card_client);
     vssc_http_request_destroy(&get_card_request);
-    vssc_virgil_http_response_destroy(&get_cards_response);
+    vssc_http_response_destroy(&get_cards_response);
     vssc_raw_card_destroy(&founded_raw_card);
 
-    return status;
+    return vssq_error_status(&error);
 }
 
 //
@@ -2515,4 +2539,165 @@ vssq_messenger_auth_update_user(vssq_messenger_auth_t *self, vssc_card_t **card_
 
     self->user = vssq_messenger_user_new_with_card_disown(card_ref);
     vssq_messenger_user_set_username(self->user, vssq_messenger_creds_username(self->creds));
+}
+
+//
+//  Send HTTP request to the a Virgil Messenger Backend.
+//
+//  Note, Authorization is added if "with auth" option is true.
+//
+VSSQ_PUBLIC vssc_http_response_t *
+vssq_messenger_auth_send_messenger_request(
+        const vssq_messenger_auth_t *self, vssc_http_request_t *http_request, bool with_auth, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(http_request);
+    VSSQ_ASSERT_PTR(self->random);
+
+    //
+    //  Set Messenger JWT first.
+    //
+    if (with_auth) {
+        VSSQ_ASSERT_PTR(vssq_messenger_auth_has_creds(self));
+
+        vscf_signer_t *signer = vscf_signer_new();
+        vscf_signer_use_random(signer, self->random);
+        vscf_signer_take_hash(signer, vscf_sha512_impl(vscf_sha512_new()));
+        const size_t jwt_signature_len =
+                vscf_signer_signature_len(signer, vssq_messenger_creds_private_key(self->creds));
+
+        vsc_str_t card_id = vssq_messenger_creds_card_id(self->creds);
+
+        char timestamp_str[22] = {'\0'};
+        snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
+        vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
+
+        const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);
+        const size_t jwt_to_sign_len = card_id.len + 1 /* dot */ + timestamp.len;
+        const size_t jwt_len = jwt_to_sign_len + 1 /* dot */ + jwt_signature_str_len;
+
+        vsc_str_buffer_t *jwt = vsc_str_buffer_new_with_capacity(jwt_len);
+
+        vsc_str_buffer_write_str(jwt, card_id);
+        vsc_str_buffer_write_char(jwt, '.');
+        vsc_str_buffer_write_str(jwt, timestamp);
+
+        vsc_buffer_t *jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
+        vscf_signer_reset(signer);
+        vscf_signer_append_data(signer, vsc_str_as_data(vsc_str_buffer_str(jwt)));
+        const vscf_status_t sign_status =
+                vscf_signer_sign(signer, vssq_messenger_creds_private_key(self->creds), jwt_signature);
+
+        if (sign_status == vscf_status_SUCCESS) {
+            vsc_str_buffer_write_char(jwt, '.');
+            vscf_base64_encode(vsc_buffer_data(jwt_signature), &(jwt->buffer));
+        }
+
+        vscf_signer_destroy(&signer);
+        vsc_buffer_destroy(&jwt_signature);
+
+        if (sign_status == vscf_status_SUCCESS) {
+            vssc_http_request_set_auth_header_value_from_type_and_credentials(
+                    http_request, k_http_header_auth_type_bearer, vsc_str_buffer_str(jwt));
+            vsc_str_buffer_destroy(&jwt);
+
+        } else {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_AUTH_HEADER_FAILED);
+            vsc_str_buffer_destroy(&jwt);
+            return NULL;
+        }
+    }
+
+    //
+    //  Send request.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_http_response_t *http_response = vssc_virgil_http_client_send_with_ca(
+            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_HTTP_SEND_FAILED);
+        return NULL;
+    }
+
+    return http_response;
+}
+
+//
+//  Send HTTP request to the a Virgil Service, aka Cards, Keyknox etc.
+//
+//  Note, Virgil JWT is updated automatically.
+//
+VSSQ_PUBLIC vssc_http_response_t *
+vssq_messenger_auth_send_virgil_request(
+        const vssq_messenger_auth_t *self, vssc_http_request_t *http_request, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(http_request);
+
+    //
+    //  Update Virgil JWT first.
+    //
+    const vssq_status_t status = vssq_messenger_auth_refresh_virgil_jwt(self);
+    if (status != vssq_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            http_request, k_http_header_auth_type_virgil, vssc_jwt_as_string(self->virgil_jwt));
+
+    vssc_http_response_t *http_response = vssc_virgil_http_client_send_with_ca(
+            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_HTTP_SEND_FAILED);
+        return NULL;
+    }
+
+    return http_response;
+}
+
+//
+//  Send HTTP request to the a Virgil Contact Discovery Service.
+//
+//  Note, Contact Discovery JWT is updated automatically.
+//
+VSSQ_PUBLIC vssc_http_response_t *
+vssq_messenger_auth_send_contact_discovery_request(
+        const vssq_messenger_auth_t *self, vssc_http_request_t *http_request, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(http_request);
+    VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
+
+    //
+    //  Update Virgil Contact Discovery JWT first.
+    //
+    const vssq_status_t status = vssq_messenger_auth_refresh_contact_discovery_jwt(self);
+    if (status != vssq_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        return NULL;
+    }
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(http_request,
+            k_http_header_auth_type_virgil_contact_discovery, vssc_jwt_as_string(self->contact_discovery_jwt));
+
+    vssc_http_response_t *http_response = vssc_virgil_http_client_send_with_ca(
+            http_request, vssq_messenger_config_ca_bundle(self->config), &core_sdk_error);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_HTTP_SEND_FAILED);
+        return NULL;
+    }
+
+    return http_response;
 }

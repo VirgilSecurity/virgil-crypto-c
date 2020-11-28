@@ -7,6 +7,8 @@
     <require class="sha256" project="foundation"/>
     <require class="sha256" project="foundation" api="defs"/>
     <require class="binary" project="foundation"/>
+    <require class="string map" project="core sdk" api="defs"/>
+    <require class="string map bucket" project="core sdk" api="defs"/>
 
 
     <constant name="digest hex len" value="64"/>
@@ -16,7 +18,7 @@
     <method name="normalize username">
         Validate and normalize username.
 
-        Valudation rules:
+        Validation rules:
             1. Length in the range: [1..20]
             2. Do not start or end with an underscore
             3. Do not start with a number
@@ -45,5 +47,33 @@
         </argument>
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="hash usernames">
+        Validate, normalize, and hash each username.
+
+        Return a map username->hash.
+
+        Note, usernames in the returned map equals to the given.
+
+        <argument name="usernames" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="merge contact discovery maps">
+        Merge "contact request map" with "contact response map".
+
+        Contact request map : username | email | phone_number -> hash
+        Contact response map: hash                            -> identity
+        Final map           : username | email | phone_number -> identity
+
+        <argument name="contact request map" class="string map" project="core sdk"/>
+        <argument name="contact response map" class="string map" project="core sdk"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
     </method>
 </class>

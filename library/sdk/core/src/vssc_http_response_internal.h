@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'virgil http response' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,26 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vssc_virgil_http_response_defs.h"
+#ifndef VSSC_HTTP_RESPONSE_INTERNAL_H_INCLUDED
+#define VSSC_HTTP_RESPONSE_INTERNAL_H_INCLUDED
+
+#include "vssc_http_response.h"
+
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
+#endif
+
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +72,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Set HTTP body.
+//
+VSSC_PUBLIC void
+vssc_http_response_set_body_disown(vssc_http_response_t *self, vsc_str_buffer_t **body_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSSC_HTTP_RESPONSE_INTERNAL_H_INCLUDED
 //  @end

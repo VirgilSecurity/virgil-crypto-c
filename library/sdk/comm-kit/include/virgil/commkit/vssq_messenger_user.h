@@ -56,6 +56,7 @@
 #include "vssq_library.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_str.h>
 #endif
 
@@ -63,12 +64,21 @@
 #   include <virgil/sdk/core/vssc_card.h>
 #endif
 
+#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_str.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <VSSC/vssc_card.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -164,6 +174,24 @@ vssq_messenger_user_shallow_copy_const(const vssq_messenger_user_t *self);
 //
 VSSQ_PUBLIC const vssc_card_t *
 vssq_messenger_user_card(const vssq_messenger_user_t *self);
+
+//
+//  Return a user's identity (Card's identity).
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_user_identity(const vssq_messenger_user_t *self);
+
+//
+//  Return a user's public key (Card's public key).
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_user_public_key(const vssq_messenger_user_t *self);
+
+//
+//  Return a user's public key identifier (Card's public key identifier).
+//
+VSSQ_PUBLIC vsc_data_t
+vssq_messenger_user_public_key_id(const vssq_messenger_user_t *self);
 
 //
 //  Return true if a username defined.

@@ -664,7 +664,7 @@ vsc_str_buffer_make_null_terminated(vsc_str_buffer_t *self) {
 }
 
 //
-//  Replace all occurences of one character to another character.
+//  Replace all occurrences of one character to another character.
 //
 VSC_PUBLIC void
 vsc_str_buffer_replace_char(vsc_str_buffer_t *self, char char_old, char char_new) {
@@ -681,7 +681,7 @@ vsc_str_buffer_replace_char(vsc_str_buffer_t *self, char char_old, char char_new
 }
 
 //
-//  Remove all occurences of given character from the string end.
+//  Remove all occurrences of given character from the string end.
 //
 VSC_PUBLIC void
 vsc_str_buffer_rtrim(vsc_str_buffer_t *self, char char_to_trim) {

@@ -388,6 +388,7 @@ vssc_http_request_cleanup_ctx(vssc_http_request_t *self) {
     vsc_str_mutable_release(&self->method);
     vsc_str_mutable_release(&self->url);
     vsc_str_mutable_release(&self->body);
+    vsc_str_mutable_release(&self->auth_header_value);
 
     vssc_http_header_list_destroy(&self->headers);
 }
@@ -487,4 +488,61 @@ vssc_http_request_headers(const vssc_http_request_t *self) {
     VSSC_ASSERT_PTR(self->headers);
 
     return self->headers;
+}
+
+//
+//  Setup HTTP authorization header value: "<type> <credentials>".
+//
+//  Note, it is not added automatically to headers.
+//
+//  Motivation: some HTTP implementations require setting authorization header explicitly,
+//  and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+//
+//  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+//
+VSSC_PUBLIC void
+vssc_http_request_set_auth_header_value(vssc_http_request_t *self, vsc_str_t auth_header_value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_header_value));
+
+    vsc_str_mutable_release(&self->auth_header_value);
+    self->auth_header_value = vsc_str_mutable_from_str(auth_header_value);
+}
+
+//
+//  Setup HTTP authorization header value: "<type> <credentials>".
+//
+//  Note, it is not added automatically to headers.
+//
+//  Motivation: some HTTP implementations require setting authorization header explicitly,
+//  and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+//
+//  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+//
+VSSC_PUBLIC void
+vssc_http_request_set_auth_header_value_from_type_and_credentials(
+        vssc_http_request_t *self, vsc_str_t auth_type, vsc_str_t auth_credentials) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_type));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_credentials));
+
+    vsc_str_mutable_release(&self->auth_header_value);
+    self->auth_header_value = vsc_str_mutable_concat_with_space_sep(auth_type, auth_credentials);
+}
+
+//
+//  Return HTTP authorization header value: "<type> <credentials>".
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_request_auth_header_value(const vssc_http_request_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    if (vsc_str_mutable_is_valid(self->auth_header_value)) {
+        return vsc_str_mutable_as_str(self->auth_header_value);
+    }
+
+    return vsc_str_empty();
 }

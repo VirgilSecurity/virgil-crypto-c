@@ -139,7 +139,6 @@ vssc_string_list_shallow_copy_const(const vssc_string_list_t *self);
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
 //
 VSSC_PUBLIC void
 vssc_string_list_add(vssc_string_list_t *self, vsc_str_t str);

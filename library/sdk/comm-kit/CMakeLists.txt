@@ -82,6 +82,10 @@ if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSSK_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK YES CACHE INTERNAL "")
 endif()
 
+#
+# Library with protobuf models
+#
+add_subdirectory(protobuf)
 
 #
 # Define sources

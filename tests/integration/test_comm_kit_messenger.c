@@ -86,9 +86,10 @@ create_messenger(void) {
     //  Configure.
     //
     vsc_str_t base_url = vsc_str_from_str("https://messenger-dev.virgilsecurity.com");
+    vsc_str_t contact_discovery_url = vsc_str_from_str("https://disco-dev-va.virgilsecurity.com");
     vsc_str_t ejabberd_url = vsc_str_from_str("xmpp-dev.virgilsecurity.com");
 
-    vssq_messenger_config_t *config = vssq_messenger_config_new_with(base_url, ejabberd_url);
+    vssq_messenger_config_t *config = vssq_messenger_config_new_with(base_url, contact_discovery_url, ejabberd_url);
 
     vssq_messenger_t *messenger = vssq_messenger_new_with_config(config);
     const vssq_status_t status = vssq_messenger_setup_defaults(messenger);
@@ -188,12 +189,51 @@ test__messenger_creds_backup_then_restore_then_remove__random_user__success(void
 }
 
 void
+test__messenger_find_user_with_username__random_user__success(void) {
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    //
+    //  Create messenger and random username.
+    //
+    vssq_messenger_t *bob_messenger = create_messenger_and_register_user();
+    vssq_messenger_t *alice_messenger = create_messenger_and_register_user();
+
+    //
+    //  Alice try to find Bob.
+    //
+    vssq_messenger_user_t *user_bob =
+            vssq_messenger_find_user_with_username(alice_messenger, vssq_messenger_username(bob_messenger), &error);
+
+    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, error.status, vssq_error_message_from_error(&error).chars);
+    TEST_ASSERT_NOT_NULL(user_bob);
+
+    //
+    //  Bob try to find Alice.
+    //
+    vssq_messenger_user_t *user_alice =
+            vssq_messenger_find_user_with_username(bob_messenger, vssq_messenger_username(alice_messenger), &error);
+
+    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, error.status, vssq_error_message_from_error(&error).chars);
+    TEST_ASSERT_NOT_NULL(user_alice);
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&bob_messenger);
+    vssq_messenger_destroy(&alice_messenger);
+    vssq_messenger_user_destroy(&user_bob);
+    vssq_messenger_user_destroy(&user_alice);
+}
+
+
+void
 test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__success() {
     vssq_messenger_t *owner_messenger = create_messenger_and_register_user();
     vssq_messenger_t *alice_messenger = create_messenger_and_register_user();
 
     vssq_messenger_user_list_t *other_participants = vssq_messenger_user_list_new();
-    vssq_messenger_user_list_add(other_participants, vssq_messenger_user(alice_messenger));
+    vssq_messenger_user_list_add(other_participants, vssq_messenger_user_modifiable(alice_messenger));
 
     vssq_error_t error;
     vssq_error_reset(&error);
@@ -281,6 +321,7 @@ main(void) {
     RUN_TEST(test__messenger_register__random_user__success);
     RUN_TEST(test__messenger_register_then_authenticate__random_user__success);
     RUN_TEST(test__messenger_creds_backup_then_restore_then_remove__random_user__success);
+    RUN_TEST(test__messenger_find_user_with_username__random_user__success);
     RUN_TEST(test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__success);
 
 #else

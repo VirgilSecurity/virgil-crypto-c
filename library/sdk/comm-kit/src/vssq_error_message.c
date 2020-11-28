@@ -85,7 +85,7 @@ static const vsc_str_t k_message_internal_error = {
     sizeof(k_message_internal_error_chars) - 1
 };
 
-static const char k_message_rng_failed_chars[] = "Failed to initialze RNG.";
+static const char k_message_rng_failed_chars[] = "Failed to initialize RNG.";
 
 static const vsc_str_t k_message_rng_failed = {
     k_message_rng_failed_chars,
@@ -97,6 +97,13 @@ static const char k_message_not_found_chars[] = "Generic error for any find oper
 static const vsc_str_t k_message_not_found = {
     k_message_not_found_chars,
     sizeof(k_message_not_found_chars) - 1
+};
+
+static const char k_message_http_send_failed_chars[] = "Failed to send HTTP request.";
+
+static const vsc_str_t k_message_http_send_failed = {
+    k_message_http_send_failed_chars,
+    sizeof(k_message_http_send_failed_chars) - 1
 };
 
 static const char k_message_parse_ejabberd_jwt_failed_chars[] = "Failed to parse Ejabberd JWT.";
@@ -211,14 +218,14 @@ static const vsc_str_t k_message_generate_brainkey_failed_rng_failed = {
     sizeof(k_message_generate_brainkey_failed_rng_failed_chars) - 1
 };
 
-static const char k_message_generate_brainkey_failed_blind_failed_chars[] = "Failed to generate brain key because of deblind fail.";
+static const char k_message_generate_brainkey_failed_blind_failed_chars[] = "Failed to generate brain key because of blind fail.";
 
 static const vsc_str_t k_message_generate_brainkey_failed_blind_failed = {
     k_message_generate_brainkey_failed_blind_failed_chars,
     sizeof(k_message_generate_brainkey_failed_blind_failed_chars) - 1
 };
 
-static const char k_message_generate_brainkey_failed_deblind_failed_chars[] = "Failed to generate brain key because of blind fail.";
+static const char k_message_generate_brainkey_failed_deblind_failed_chars[] = "Failed to generate brain key because of deblind fail.";
 
 static const vsc_str_t k_message_generate_brainkey_failed_deblind_failed = {
     k_message_generate_brainkey_failed_deblind_failed_chars,
@@ -309,32 +316,32 @@ static const vsc_str_t k_message_keyknox_unpack_entry_failed_import_private_key_
     sizeof(k_message_keyknox_unpack_entry_failed_import_private_key_failed_chars) - 1
 };
 
-static const char k_message_refresh_token_failed_request_failed_chars[] = "Failed to refresh JWT because send operation failed.";
+static const char k_message_refresh_jwt_failed_request_failed_chars[] = "Failed to refresh JWT because send operation failed.";
 
-static const vsc_str_t k_message_refresh_token_failed_request_failed = {
-    k_message_refresh_token_failed_request_failed_chars,
-    sizeof(k_message_refresh_token_failed_request_failed_chars) - 1
+static const vsc_str_t k_message_refresh_jwt_failed_request_failed = {
+    k_message_refresh_jwt_failed_request_failed_chars,
+    sizeof(k_message_refresh_jwt_failed_request_failed_chars) - 1
 };
 
-static const char k_message_refresh_token_failed_response_with_error_chars[] = "Failed to refresh JWT because response with error was returned.";
+static const char k_message_refresh_jwt_failed_response_with_error_chars[] = "Failed to refresh JWT because response with error was returned.";
 
-static const vsc_str_t k_message_refresh_token_failed_response_with_error = {
-    k_message_refresh_token_failed_response_with_error_chars,
-    sizeof(k_message_refresh_token_failed_response_with_error_chars) - 1
+static const vsc_str_t k_message_refresh_jwt_failed_response_with_error = {
+    k_message_refresh_jwt_failed_response_with_error_chars,
+    sizeof(k_message_refresh_jwt_failed_response_with_error_chars) - 1
 };
 
-static const char k_message_refresh_token_failed_parse_response_failed_chars[] = "Failed to refresh JWT because response parsing failed.";
+static const char k_message_refresh_jwt_failed_parse_response_failed_chars[] = "Failed to refresh JWT because response parsing failed.";
 
-static const vsc_str_t k_message_refresh_token_failed_parse_response_failed = {
-    k_message_refresh_token_failed_parse_response_failed_chars,
-    sizeof(k_message_refresh_token_failed_parse_response_failed_chars) - 1
+static const vsc_str_t k_message_refresh_jwt_failed_parse_response_failed = {
+    k_message_refresh_jwt_failed_parse_response_failed_chars,
+    sizeof(k_message_refresh_jwt_failed_parse_response_failed_chars) - 1
 };
 
-static const char k_message_refresh_token_failed_parse_failed_chars[] = "Failed to refresh JWT because JWT parsing failed.";
+static const char k_message_refresh_jwt_failed_parse_failed_chars[] = "Failed to refresh JWT because JWT parsing failed.";
 
-static const vsc_str_t k_message_refresh_token_failed_parse_failed = {
-    k_message_refresh_token_failed_parse_failed_chars,
-    sizeof(k_message_refresh_token_failed_parse_failed_chars) - 1
+static const vsc_str_t k_message_refresh_jwt_failed_parse_failed = {
+    k_message_refresh_jwt_failed_parse_failed_chars,
+    sizeof(k_message_refresh_jwt_failed_parse_failed_chars) - 1
 };
 
 static const char k_message_reset_password_failed_request_failed_chars[] = "Failed to reset password because send operation failed.";
@@ -407,35 +414,35 @@ static const vsc_str_t k_message_search_card_failed_required_is_outdated = {
     sizeof(k_message_search_card_failed_required_is_outdated_chars) - 1
 };
 
-static const char k_message_export_creds_failed_init_crypto_failed_chars[] = "Failed to export creentials because initializing crypto module failed.";
+static const char k_message_export_creds_failed_init_crypto_failed_chars[] = "Failed to export credentials because initializing crypto module failed.";
 
 static const vsc_str_t k_message_export_creds_failed_init_crypto_failed = {
     k_message_export_creds_failed_init_crypto_failed_chars,
     sizeof(k_message_export_creds_failed_init_crypto_failed_chars) - 1
 };
 
-static const char k_message_export_creds_failed_export_private_key_failed_chars[] = "Failed to export creentials because exporting private key failed.";
+static const char k_message_export_creds_failed_export_private_key_failed_chars[] = "Failed to export credentials because exporting private key failed.";
 
 static const vsc_str_t k_message_export_creds_failed_export_private_key_failed = {
     k_message_export_creds_failed_export_private_key_failed_chars,
     sizeof(k_message_export_creds_failed_export_private_key_failed_chars) - 1
 };
 
-static const char k_message_import_creds_failed_init_crypto_failed_chars[] = "Failed to import creentials because initializing crypto module failed.";
+static const char k_message_import_creds_failed_init_crypto_failed_chars[] = "Failed to import credentials because initializing crypto module failed.";
 
 static const vsc_str_t k_message_import_creds_failed_init_crypto_failed = {
     k_message_import_creds_failed_init_crypto_failed_chars,
     sizeof(k_message_import_creds_failed_init_crypto_failed_chars) - 1
 };
 
-static const char k_message_import_creds_failed_parse_failed_chars[] = "Failed to import creentials because parsing json failed.";
+static const char k_message_import_creds_failed_parse_failed_chars[] = "Failed to import credentials because parsing JSON failed.";
 
 static const vsc_str_t k_message_import_creds_failed_parse_failed = {
     k_message_import_creds_failed_parse_failed_chars,
     sizeof(k_message_import_creds_failed_parse_failed_chars) - 1
 };
 
-static const char k_message_import_creds_failed_import_private_key_failed_chars[] = "Failed to import creentials because importing private key failed.";
+static const char k_message_import_creds_failed_import_private_key_failed_chars[] = "Failed to import credentials because importing private key failed.";
 
 static const vsc_str_t k_message_import_creds_failed_import_private_key_failed = {
     k_message_import_creds_failed_import_private_key_failed_chars,
@@ -470,21 +477,21 @@ static const vsc_str_t k_message_access_group_failed_permission_violation = {
     sizeof(k_message_access_group_failed_permission_violation_chars) - 1
 };
 
-static const char k_message_create_group_failed_crypto_failed_chars[] = "Failed to create group because underlying crypo module failed.";
+static const char k_message_create_group_failed_crypto_failed_chars[] = "Failed to create group because underlying crypto module failed.";
 
 static const vsc_str_t k_message_create_group_failed_crypto_failed = {
     k_message_create_group_failed_crypto_failed_chars,
     sizeof(k_message_create_group_failed_crypto_failed_chars) - 1
 };
 
-static const char k_message_import_group_epoch_failed_parse_failed_chars[] = "Failed to import group epoch because parsing json failed.";
+static const char k_message_import_group_epoch_failed_parse_failed_chars[] = "Failed to import group epoch because parsing JSON failed.";
 
 static const vsc_str_t k_message_import_group_epoch_failed_parse_failed = {
     k_message_import_group_epoch_failed_parse_failed_chars,
     sizeof(k_message_import_group_epoch_failed_parse_failed_chars) - 1
 };
 
-static const char k_message_process_group_message_failed_session_id_doesnt_match_chars[] = "Failed to process group message because session id doesnt match.";
+static const char k_message_process_group_message_failed_session_id_doesnt_match_chars[] = "Failed to process group message because session id doesn't match.";
 
 static const vsc_str_t k_message_process_group_message_failed_session_id_doesnt_match = {
     k_message_process_group_message_failed_session_id_doesnt_match_chars,
@@ -533,11 +540,74 @@ static const vsc_str_t k_message_process_group_message_failed_plain_text_too_lon
     sizeof(k_message_process_group_message_failed_plain_text_too_long_chars) - 1
 };
 
-static const char k_message_process_group_message_failed_crypto_failed_chars[] = "Failed to process group message because underlying crypo module failed.";
+static const char k_message_process_group_message_failed_crypto_failed_chars[] = "Failed to process group message because underlying crypto module failed.";
 
 static const vsc_str_t k_message_process_group_message_failed_crypto_failed = {
     k_message_process_group_message_failed_crypto_failed_chars,
     sizeof(k_message_process_group_message_failed_crypto_failed_chars) - 1
+};
+
+static const char k_message_decrypt_regular_message_failed_invalid_encrypted_message_chars[] = "Failed to decrypt regular message because of invalid encrypted message.";
+
+static const vsc_str_t k_message_decrypt_regular_message_failed_invalid_encrypted_message = {
+    k_message_decrypt_regular_message_failed_invalid_encrypted_message_chars,
+    sizeof(k_message_decrypt_regular_message_failed_invalid_encrypted_message_chars) - 1
+};
+
+static const char k_message_decrypt_regular_message_failed_wrong_private_key_chars[] = "Failed to decrypt regular message because a private key can not decrypt.";
+
+static const vsc_str_t k_message_decrypt_regular_message_failed_wrong_private_key = {
+    k_message_decrypt_regular_message_failed_wrong_private_key_chars,
+    sizeof(k_message_decrypt_regular_message_failed_wrong_private_key_chars) - 1
+};
+
+static const char k_message_decrypt_regular_message_failed_recipient_not_found_chars[] = "Failed to decrypt regular message because recipient was not found.";
+
+static const vsc_str_t k_message_decrypt_regular_message_failed_recipient_not_found = {
+    k_message_decrypt_regular_message_failed_recipient_not_found_chars,
+    sizeof(k_message_decrypt_regular_message_failed_recipient_not_found_chars) - 1
+};
+
+static const char k_message_decrypt_regular_message_failed_verify_signature_chars[] = "Failed to decrypt regular message because failed to verify signature.";
+
+static const vsc_str_t k_message_decrypt_regular_message_failed_verify_signature = {
+    k_message_decrypt_regular_message_failed_verify_signature_chars,
+    sizeof(k_message_decrypt_regular_message_failed_verify_signature_chars) - 1
+};
+
+static const char k_message_decrypt_regular_message_failed_crypto_failed_chars[] = "Failed to decrypt regular message because underlying crypto module failed.";
+
+static const vsc_str_t k_message_decrypt_regular_message_failed_crypto_failed = {
+    k_message_decrypt_regular_message_failed_crypto_failed_chars,
+    sizeof(k_message_decrypt_regular_message_failed_crypto_failed_chars) - 1
+};
+
+static const char k_message_encrypt_regular_message_failed_crypto_failed_chars[] = "Failed to encrypt regular message because underlying crypto module failed.";
+
+static const vsc_str_t k_message_encrypt_regular_message_failed_crypto_failed = {
+    k_message_encrypt_regular_message_failed_crypto_failed_chars,
+    sizeof(k_message_encrypt_regular_message_failed_crypto_failed_chars) - 1
+};
+
+static const char k_message_contacts_failed_send_request_failed_chars[] = "Failed to perform contacts operation because send operation failed.";
+
+static const vsc_str_t k_message_contacts_failed_send_request_failed = {
+    k_message_contacts_failed_send_request_failed_chars,
+    sizeof(k_message_contacts_failed_send_request_failed_chars) - 1
+};
+
+static const char k_message_contacts_failed_response_with_error_chars[] = "Failed to perform contacts operation because response with error was returned.";
+
+static const vsc_str_t k_message_contacts_failed_response_with_error = {
+    k_message_contacts_failed_response_with_error_chars,
+    sizeof(k_message_contacts_failed_response_with_error_chars) - 1
+};
+
+static const char k_message_contacts_failed_parse_response_failed_chars[] = "Failed to perform contacts operation because response parsing failed.";
+
+static const vsc_str_t k_message_contacts_failed_parse_response_failed = {
+    k_message_contacts_failed_parse_response_failed_chars,
+    sizeof(k_message_contacts_failed_parse_response_failed_chars) - 1
 };
 
 //
@@ -555,6 +625,8 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_rng_failed;
         case vssq_status_NOT_FOUND:
             return k_message_not_found;
+        case vssq_status_HTTP_SEND_FAILED:
+            return k_message_http_send_failed;
         case vssq_status_PARSE_EJABBERD_JWT_FAILED:
             return k_message_parse_ejabberd_jwt_failed;
         case vssq_status_GENERATE_IDENTITY_FAILED:
@@ -615,14 +687,14 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_keyknox_unpack_entry_failed_parse_failed;
         case vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_IMPORT_PRIVATE_KEY_FAILED:
             return k_message_keyknox_unpack_entry_failed_import_private_key_failed;
-        case vssq_status_REFRESH_TOKEN_FAILED_REQUEST_FAILED:
-            return k_message_refresh_token_failed_request_failed;
-        case vssq_status_REFRESH_TOKEN_FAILED_RESPONSE_WITH_ERROR:
-            return k_message_refresh_token_failed_response_with_error;
-        case vssq_status_REFRESH_TOKEN_FAILED_PARSE_RESPONSE_FAILED:
-            return k_message_refresh_token_failed_parse_response_failed;
-        case vssq_status_REFRESH_TOKEN_FAILED_PARSE_FAILED:
-            return k_message_refresh_token_failed_parse_failed;
+        case vssq_status_REFRESH_JWT_FAILED_REQUEST_FAILED:
+            return k_message_refresh_jwt_failed_request_failed;
+        case vssq_status_REFRESH_JWT_FAILED_RESPONSE_WITH_ERROR:
+            return k_message_refresh_jwt_failed_response_with_error;
+        case vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED:
+            return k_message_refresh_jwt_failed_parse_response_failed;
+        case vssq_status_REFRESH_JWT_FAILED_PARSE_FAILED:
+            return k_message_refresh_jwt_failed_parse_failed;
         case vssq_status_RESET_PASSWORD_FAILED_REQUEST_FAILED:
             return k_message_reset_password_failed_request_failed;
         case vssq_status_RESET_PASSWORD_FAILED_RESPONSE_WITH_ERROR:
@@ -681,6 +753,24 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_process_group_message_failed_plain_text_too_long;
         case vssq_status_PROCESS_GROUP_MESSAGE_FAILED_CRYPTO_FAILED:
             return k_message_process_group_message_failed_crypto_failed;
+        case vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_INVALID_ENCRYPTED_MESSAGE:
+            return k_message_decrypt_regular_message_failed_invalid_encrypted_message;
+        case vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_WRONG_PRIVATE_KEY:
+            return k_message_decrypt_regular_message_failed_wrong_private_key;
+        case vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_RECIPIENT_NOT_FOUND:
+            return k_message_decrypt_regular_message_failed_recipient_not_found;
+        case vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE:
+            return k_message_decrypt_regular_message_failed_verify_signature;
+        case vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED:
+            return k_message_decrypt_regular_message_failed_crypto_failed;
+        case vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED:
+            return k_message_encrypt_regular_message_failed_crypto_failed;
+        case vssq_status_CONTACTS_FAILED_SEND_REQUEST_FAILED:
+            return k_message_contacts_failed_send_request_failed;
+        case vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR:
+            return k_message_contacts_failed_response_with_error;
+        case vssq_status_CONTACTS_FAILED_PARSE_RESPONSE_FAILED:
+            return k_message_contacts_failed_parse_response_failed;
         default:
             return k_message_unknown_error;
     }

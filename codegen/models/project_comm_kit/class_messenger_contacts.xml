@@ -1,0 +1,219 @@
+<class name="messenger contacts" scope="private">
+    Provides access to the messenger contacts endpoints.
+
+    <require header="stdio.h" is_system="1"/>
+    <require class="data" project="common"/>
+    <require class="buffer" project="common"/>
+    <require class="str mutable" project="common"/>
+    <require class="str buffer" project="common" api="defs"/>
+    <require class="buffer" project="common" api="defs"/>
+    <require impl="sha256" project="foundation"/>
+    <require impl="sha512" project="foundation"/>
+    <require impl="key material rng" project="foundation"/>
+    <require interface="random" project="foundation"/>
+    <require interface="private key" project="foundation"/>
+    <require class="key provider" project="foundation"/>
+    <require class="recipient cipher" project="foundation"/>
+    <require class="signer" project="foundation"/>
+    <require class="base64" project="foundation"/>
+    <require class="base64" project="foundation" api="private"/>
+    <require class="binary" project="foundation"/>
+    <require class="pythia" project="pythia"/>
+    <require class="unix time" project="core sdk"/>
+    <require class="virgil http client" project="core sdk"/>
+    <require class="card client" project="core sdk"/>
+    <require class="card manager" project="core sdk"/>
+    <require class="raw card" project="core sdk"/>
+    <require class="json object" project="core sdk"/>
+    <require class="json object" project="core sdk" api="private"/>
+    <require class="keyknox client" project="keyknox sdk"/>
+    <require class="pythia client" project="pythia sdk"/>
+    <require class="messenger creds" api="private"/>
+    <require class="messenger user" api="private"/>
+    <require class="contact utils"/>
+
+    <dependency name="auth" class="messenger auth"/>
+
+    <!-- URL paths -->
+    <constant name="k url path username discovery" type="string" visibility="private">
+        <value value="/username-discovery"/>
+    </constant>
+
+    <constant name="k url path phone add" type="string" visibility="private">
+        <value value="/phone-add"/>
+    </constant>
+
+    <constant name="k url path phone confirm" type="string" visibility="private">
+        <value value="/phone-confirm"/>
+    </constant>
+
+    <constant name="k url path phone delete" type="string" visibility="private">
+        <value value="/phone-delete"/>
+    </constant>
+
+    <constant name="k url path phone discovery" type="string" visibility="private">
+        <value value="/phone-discovery"/>
+    </constant>
+
+    <constant name="k url path email add" type="string" visibility="private">
+        <value value="/email-add"/>
+    </constant>
+
+    <constant name="k url path email confirm" type="string" visibility="private">
+        <value value="/email-confirm"/>
+    </constant>
+
+    <constant name="k url path email delete" type="string" visibility="private">
+        <value value="/email-delete"/>
+    </constant>
+
+    <constant name="k url path email discovery" type="string" visibility="private">
+        <value value="/email-discovery"/>
+    </constant>
+
+    <!-- JSON keys -->
+    <constant name="k json key phone number" type="string" visibility="private">
+        <value value="phone_number"/>
+    </constant>
+
+    <constant name="k json key phone hashes" type="string" visibility="private">
+        <value value="phone_hashes"/>
+    </constant>
+
+    <constant name="k json key phone numbers to identities" type="string" visibility="private">
+        <value value="phone_numbers_to_identities"/>
+    </constant>
+
+    <constant name="k json key email" type="string" visibility="private">
+        <value value="email"/>
+    </constant>
+
+    <constant name="k json key email hashes" type="string" visibility="private">
+        <value value="email_hashes"/>
+    </constant>
+
+    <constant name="k json key emails to identities" type="string" visibility="private">
+        <value value="emails_to_identities"/>
+    </constant>
+
+    <constant name="k json key username hashes" type="string" visibility="private">
+        <value value="username_hashes"/>
+    </constant>
+
+    <constant name="k json key username hashes to identities" type="string" visibility="private">
+        <value value="username_hashes_to_identities"/>
+    </constant>
+
+    <constant name="k json key confirmation code" type="string" visibility="private">
+        <value value="confirmation_code"/>
+    </constant>
+
+
+    <!-- User name -->
+    <method name="discover usernames" is_const="1">
+        Discover given user names.
+        Return map username->identity.
+
+        <argument name="usernames" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+    <!-- Phone numbers management -->
+    <method name="add phone number" is_const="1">
+        Register user's phone number.
+
+        <argument name="phone number" class="str"/>
+        <argument name="country code" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="confirm phone number" is_const="1">
+        Confirm user's phone number.
+
+        <argument name="phone number" class="str"/>
+        <argument name="country code" class="str"/>
+        <argument name="confirmation code" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="delete phone number" is_const="1">
+        Delete user's phone number.
+
+        <argument name="phone number" class="str"/>
+        <argument name="country code" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="discover phone numbers" is_const="1">
+        Discover given phone numbers.
+        Return map phone->identity.
+
+        <argument name="phone numbers" class="string list" project="core sdk"/>
+        <argument name="country code" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+
+    <!-- Emails management -->
+    <method name="add email" is_const="1">
+        Register user's email.
+
+        <argument name="email" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="confirm email" is_const="1">
+        Confirm user's email.
+
+        <argument name="email" class="str"/>
+        <argument name="confirmation code" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="delete email" is_const="1">
+        Delete user's email.
+
+        <argument name="email" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="discover emails" is_const="1">
+        Discover given emails.
+        Return map email->identity.
+
+        <argument name="emails" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+    <!-- Helpers -->
+    <method name="generic discover" is_const="1" declaration="private">
+        Generic discovery.
+        Return map contact->identity.
+
+        <argument name="contacts to hashes" class="string map" project="core sdk"/>
+        <argument name="contacts discovery url path" class="str"/>
+        <argument name="contacts hashes json key" class="str"/>
+        <argument name="contacts hashes to identities json key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+</class>

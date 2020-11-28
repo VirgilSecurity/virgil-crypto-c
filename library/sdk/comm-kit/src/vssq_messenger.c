@@ -56,12 +56,17 @@
 #include "vssq_messenger_private.h"
 #include "vssq_messenger_defs.h"
 #include "vssq_messenger_group_private.h"
+#include "vssq_messenger_user_list_private.h"
 #include "vssq_messenger_auth.h"
 
+#include <virgil/crypto/common/private/vsc_str_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
+#include <virgil/crypto/foundation/vscf_padding_params.h>
+#include <virgil/crypto/foundation/vscf_random_padding.h>
+#include <virgil/crypto/foundation/vscf_recipient_cipher.h>
 #include <virgil/sdk/core/vssc_card_client.h>
 #include <virgil/sdk/core/vssc_card_manager.h>
-#include <virgil/sdk/core/private/vssc_key_handler_list_private.h>
+#include <virgil/crypto/foundation/vscf_status.h>
 
 // clang-format on
 //  @end
@@ -106,6 +111,12 @@ vssq_messenger_did_setup_random(vssq_messenger_t *self);
 //
 static void
 vssq_messenger_did_release_random(vssq_messenger_t *self);
+
+//
+//  Map status from the "foundation" library to a status related to the message decryption.
+//
+static vssq_status_t
+vssq_messenger_map_foundation_status_of_decryption(vscf_status_t foundation_status) VSSQ_NODISCARD;
 
 //
 //  Return size of 'vssq_messenger_t'.
@@ -354,6 +365,8 @@ vssq_messenger_init_ctx(vssq_messenger_t *self) {
 
     self->config = vssq_messenger_config_new();
     self->auth = vssq_messenger_auth_new_with_config(self->config);
+    self->contacts = vssq_messenger_contacts_new();
+    vssq_messenger_contacts_use_auth(self->contacts, self->auth);
 }
 
 //
@@ -369,7 +382,7 @@ vssq_messenger_cleanup_ctx(vssq_messenger_t *self) {
     vscf_impl_delete(self->random);
     vssq_messenger_config_delete(self->config);
     vssq_messenger_auth_delete(self->auth);
-    vssc_key_handler_list_delete(self->cards_cache);
+    vssq_messenger_contacts_delete(self->contacts);
 }
 
 //
@@ -383,6 +396,8 @@ vssq_messenger_init_ctx_with_config(vssq_messenger_t *self, const vssq_messenger
 
     self->config = vssq_messenger_config_shallow_copy_const(config);
     self->auth = vssq_messenger_auth_new_with_config(self->config);
+    self->contacts = vssq_messenger_contacts_new();
+    vssq_messenger_contacts_use_auth(self->contacts, self->auth);
 }
 
 //
@@ -477,6 +492,20 @@ vssq_messenger_user(const vssq_messenger_t *self) {
 }
 
 //
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_modifiable(vssq_messenger_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+
+    return vssq_messenger_auth_user_modifiable(self->auth);
+}
+
+//
 //  Return name of the current user.
 //
 //  Prerequisites: user should be authenticated.
@@ -566,6 +595,405 @@ vssq_messenger_auth(const vssq_messenger_t *self) {
 }
 
 //
+//  Return founded user or error.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t identity, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(identity));
+
+    //
+    // Declare vars.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_card_manager_t *card_manager = NULL;
+    vssc_card_client_t *card_client = NULL;
+    vssc_http_request_t *search_cards_request = NULL;
+    vssc_http_response_t *search_cards_response = NULL;
+    vssc_raw_card_list_t *founded_raw_cards = NULL;
+    vssc_card_list_t *founded_cards = NULL;
+    vssq_messenger_user_t *founded_user = NULL;
+
+    //
+    //  Configure algorithms.
+    //
+    card_manager = vssc_card_manager_new();
+    vssc_card_manager_use_random(card_manager, self->random);
+
+    core_sdk_error.status = vssc_card_manager_configure(card_manager);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_SEARCH_CARD_FAILED_INIT_FAILED);
+        goto cleanup;
+    }
+
+    //
+    //  Send request.
+    //
+    card_client = vssc_card_client_new();
+
+    search_cards_request = vssc_card_client_make_request_search_cards_with_identity(card_client, identity);
+
+    search_cards_response = vssq_messenger_auth_send_virgil_request(self->auth, search_cards_request, error);
+
+    if (NULL == search_cards_response) {
+        goto cleanup;
+    }
+
+    if (vssc_http_response_status_code(search_cards_response) == 404) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_NOT_FOUND);
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(search_cards_response)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_SEARCH_CARD_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+    founded_raw_cards = vssc_card_client_process_response_search_cards(search_cards_response, &core_sdk_error);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_SEARCH_CARD_FAILED_PARSE_FAILED);
+        goto cleanup;
+    }
+
+    //
+    //  Import cards.
+    //
+    founded_cards = vssc_card_manager_import_raw_card_list(card_manager, founded_raw_cards, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_SEARCH_CARD_FAILED_IMPORT_FAILED);
+        goto cleanup;
+    }
+
+    //
+    //  Create User from the Card.
+    //
+    if (!vssc_card_list_has_item(founded_cards)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_NOT_FOUND);
+        goto cleanup;
+    }
+
+    VSSQ_ASSERT_SAFE(vsc_str_equal(identity, vssc_card_identity(vssc_card_list_item(founded_cards))));
+
+    founded_user = vssq_messenger_user_new_with_card(vssc_card_list_item(founded_cards));
+
+cleanup:
+    vssc_card_manager_destroy(&card_manager);
+    vssc_card_client_destroy(&card_client);
+    vssc_http_request_destroy(&search_cards_request);
+    vssc_http_response_destroy(&search_cards_response);
+    vssc_raw_card_list_destroy(&founded_raw_cards);
+    vssc_card_list_destroy(&founded_cards);
+
+    return founded_user;
+}
+
+//
+//  Return founded user or error.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_find_user_with_username(const vssq_messenger_t *self, vsc_str_t username, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(username));
+
+    //
+    //  Find identity for a given username via Contact Discovery.
+    //
+    vssc_string_list_t *usernames = vssc_string_list_new();
+    vssc_string_list_add(usernames, username);
+
+    vssc_string_map_t *usernames_to_identities =
+            vssq_messenger_contacts_discover_usernames(self->contacts, usernames, error);
+
+    vssc_string_list_destroy(&usernames);
+
+    if (NULL == usernames_to_identities) {
+        return NULL;
+    }
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vsc_str_t identity = vssc_string_map_get(usernames_to_identities, username, &core_sdk_error);
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_NOT_FOUND);
+        vssc_string_map_destroy(&usernames_to_identities);
+        return NULL;
+    }
+
+    //
+    //  Get user with identity.
+    //
+    vssq_messenger_user_t *founded_user = vssq_messenger_find_user_with_identity(self, identity, error);
+    if (founded_user) {
+        vssq_messenger_user_set_username(founded_user, username);
+    }
+
+    vssc_string_map_destroy(&usernames_to_identities);
+
+    return founded_user;
+}
+
+//
+//  Return a buffer length enough to hold an encrypted message.
+//
+VSSQ_PUBLIC size_t
+vssq_messenger_encrypted_message_len(
+        const vssq_messenger_t *self, size_t message_len, const vssq_messenger_user_t *recipient) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT_PTR(recipient);
+
+    return 512 + message_len + (vscf_padding_params_DEFAULT_FRAME - message_len % vscf_padding_params_DEFAULT_FRAME);
+}
+
+//
+//  Encrypt a text message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_encrypt_text(
+        const vssq_messenger_t *self, vsc_str_t text, const vssq_messenger_user_t *recipient, vsc_buffer_t *out) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid(text));
+    VSSQ_ASSERT(vsc_buffer_is_valid(out));
+
+    return vssq_messenger_encrypt_data(self, vsc_str_as_data(text), recipient, out);
+}
+
+//
+//  Encrypt a binary message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_encrypt_data(
+        const vssq_messenger_t *self, vsc_data_t data, const vssq_messenger_user_t *recipient, vsc_buffer_t *out) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT(vsc_data_is_valid(data));
+    VSSQ_ASSERT_PTR(recipient);
+    VSSQ_ASSERT(vsc_buffer_is_valid(out));
+    VSSQ_ASSERT(vsc_buffer_unused_len(out) >= vssq_messenger_encrypted_message_len(self, data.len, recipient));
+
+    //
+    // Get Sender's info.
+    //
+    const vssq_messenger_user_t *sender = vssq_messenger_auth_user(self->auth);
+    const vscf_impl_t *sender_private_key = vssq_messenger_auth_private_key(self->auth);
+    const vscf_impl_t *sender_public_key = vssq_messenger_user_public_key(sender);
+    vsc_data_t sender_public_key_id = vssq_messenger_user_public_key_id(sender);
+
+    //
+    // Get Recipient's info.
+    //
+    const vscf_impl_t *recipient_public_key = vssq_messenger_user_public_key(recipient);
+    vsc_data_t recipient_public_key_id = vssq_messenger_user_public_key_id(recipient);
+
+    //
+    //  Declare vars.
+    //
+    vscf_error_t foundation_error;
+    vscf_error_reset(&foundation_error);
+
+    vscf_recipient_cipher_t *cipher = NULL;
+
+    vssq_status_t status = vssq_status_SUCCESS;
+
+    //
+    //  Encrypt message.
+    //
+    vscf_random_padding_t *random_padding = vscf_random_padding_new();
+    vscf_random_padding_use_random(random_padding, self->random);
+
+    cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_use_random(cipher, self->random);
+    vscf_recipient_cipher_take_encryption_padding(cipher, vscf_random_padding_impl(random_padding));
+    random_padding = NULL;
+
+    vscf_recipient_cipher_add_key_recipient(cipher, recipient_public_key_id, recipient_public_key);
+
+    vscf_recipient_cipher_add_key_recipient(cipher, sender_public_key_id, sender_public_key);
+
+    foundation_error.status = vscf_recipient_cipher_add_signer(cipher, sender_public_key_id, sender_private_key);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        goto cleanup;
+    }
+
+    foundation_error.status = vscf_recipient_cipher_start_signed_encryption(cipher, data.len);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        goto cleanup;
+    }
+
+    vscf_recipient_cipher_pack_message_info(cipher, out);
+
+    foundation_error.status = vscf_recipient_cipher_process_encryption(cipher, data, out);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        goto cleanup;
+    }
+
+    foundation_error.status = vscf_recipient_cipher_finish_encryption(cipher, out);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        goto cleanup;
+    }
+
+    foundation_error.status = vscf_recipient_cipher_pack_message_info_footer(cipher, out);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        goto cleanup;
+    }
+
+cleanup:
+    vscf_recipient_cipher_destroy(&cipher);
+
+    return status;
+}
+
+//
+//  Return a buffer length enough to hold a decrypted message.
+//
+VSSQ_PUBLIC size_t
+vssq_messenger_decrypted_message_len(const vssq_messenger_t *self, size_t encrypted_message_len) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    // TODO: Optimize the calculation
+
+    return encrypted_message_len;
+}
+
+//
+//  Decrypt a text message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_decrypt_text(const vssq_messenger_t *self, vsc_data_t encrypted_text,
+        const vssq_messenger_user_t *sender, vsc_str_buffer_t *out) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_data_is_valid(encrypted_text));
+    VSSQ_ASSERT_PTR(sender);
+    VSSQ_ASSERT(vsc_str_buffer_is_valid(out));
+
+    return vssq_messenger_decrypt_data(self, encrypted_text, sender, &out->buffer);
+}
+
+//
+//  Decrypt a binary message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_decrypt_data(const vssq_messenger_t *self, vsc_data_t encrypted_data,
+        const vssq_messenger_user_t *sender, vsc_buffer_t *out) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT(vsc_data_is_valid(encrypted_data));
+    VSSQ_ASSERT_PTR(sender);
+    VSSQ_ASSERT(vsc_buffer_is_valid(out));
+
+    //
+    // Get Recipient's info.
+    //
+    const vssq_messenger_user_t *recipient = vssq_messenger_auth_user(self->auth);
+    const vscf_impl_t *recipient_private_key = vssq_messenger_auth_private_key(self->auth);
+    vsc_data_t recipient_public_key_id = vssq_messenger_user_public_key_id(recipient);
+
+    //
+    // Get Sender's info.
+    //
+    const vscf_impl_t *sender_public_key = vssq_messenger_user_public_key(sender);
+    vsc_data_t sender_public_key_id = vssq_messenger_user_public_key_id(sender);
+
+
+    //
+    //  Declare vars.
+    //
+    vscf_error_t foundation_error;
+    vscf_error_reset(&foundation_error);
+
+    vscf_recipient_cipher_t *cipher = NULL;
+
+    vssq_status_t status = vssq_status_SUCCESS;
+
+    //
+    //  Decrypt message.
+    //
+    cipher = vscf_recipient_cipher_new();
+    vscf_recipient_cipher_use_random(cipher, self->random);
+
+    foundation_error.status = vscf_recipient_cipher_start_decryption_with_key(
+            cipher, recipient_public_key_id, recipient_private_key, vsc_data_empty());
+
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_messenger_map_foundation_status_of_decryption(vscf_error_status(&foundation_error));
+        goto cleanup;
+    }
+
+    foundation_error.status = vscf_recipient_cipher_process_decryption(cipher, encrypted_data, out);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_messenger_map_foundation_status_of_decryption(vscf_error_status(&foundation_error));
+        goto cleanup;
+    }
+
+    foundation_error.status = vscf_recipient_cipher_finish_decryption(cipher, out);
+    if (vscf_error_has_error(&foundation_error)) {
+        status = vssq_messenger_map_foundation_status_of_decryption(vscf_error_status(&foundation_error));
+        goto cleanup;
+    }
+
+    //
+    //  Verify.
+    //
+    if (!vscf_recipient_cipher_is_data_signed(cipher)) {
+        status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        goto cleanup;
+    }
+
+    const vscf_signer_info_list_t *signer_infos = vscf_recipient_cipher_signer_infos(cipher);
+
+    if (!vscf_signer_info_list_has_item(signer_infos)) {
+        status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        goto cleanup;
+    }
+
+    const vscf_signer_info_t *signer_info = vscf_signer_info_list_item(signer_infos);
+
+    vsc_data_t signer_id = vscf_signer_info_signer_id(signer_info);
+    if (!vsc_data_equal(signer_id, sender_public_key_id)) {
+        status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        goto cleanup;
+    }
+
+    const bool verified = vscf_recipient_cipher_verify_signer_info(cipher, signer_info, sender_public_key);
+
+    if (!verified) {
+        status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        goto cleanup;
+    }
+
+
+cleanup:
+    vscf_recipient_cipher_destroy(&cipher);
+
+    return status;
+}
+
+//
 //  Create a new group for a group messaging.
 //
 //  Prerequisites: user should be authenticated.
@@ -622,4 +1050,30 @@ vssq_messenger_load_group(
     }
 
     return group;
+}
+
+//
+//  Map status from the "foundation" library to a status related to the message decryption.
+//
+static vssq_status_t
+vssq_messenger_map_foundation_status_of_decryption(vscf_status_t foundation_status) {
+
+    switch (foundation_status) {
+    case vscf_status_SUCCESS:
+        return vssq_status_SUCCESS;
+
+    case vscf_status_ERROR_NO_MESSAGE_INFO:
+    case vscf_status_ERROR_BAD_MESSAGE_INFO:
+    case vscf_status_ERROR_AUTH_FAILED:
+        return vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_INVALID_ENCRYPTED_MESSAGE;
+
+    case vscf_status_ERROR_KEY_RECIPIENT_IS_NOT_FOUND:
+        return vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_RECIPIENT_NOT_FOUND;
+
+    case vscf_status_ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG:
+        return vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_WRONG_PRIVATE_KEY;
+
+    default:
+        return vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+    }
 }

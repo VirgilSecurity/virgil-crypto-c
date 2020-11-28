@@ -62,7 +62,7 @@
 #endif
 
 #if !VSSK_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <virgil/sdk/core/vssc_virgil_http_response.h>
+#   include <virgil/sdk/core/vssc_http_response.h>
 #   include <virgil/sdk/core/vssc_http_request.h>
 #   include <virgil/sdk/core/vssc_string_list.h>
 #endif
@@ -72,7 +72,7 @@
 #endif
 
 #if VSSK_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_virgil_http_response.h>
+#   include <VSSC/vssc_http_response.h>
 #   include <VSSC/vssc_http_request.h>
 #   include <VSSC/vssc_string_list.h>
 #endif
@@ -175,7 +175,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
-vssk_keyknox_client_process_response_push(const vssc_virgil_http_response_t *response, vssk_error_t *error);
+vssk_keyknox_client_process_response_push(const vssc_http_response_t *response, vssk_error_t *error);
 
 //
 //  Create request that performs pull operation.
@@ -189,7 +189,7 @@ vssk_keyknox_client_make_request_pull(const vssk_keyknox_client_t *self, vsc_str
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
-vssk_keyknox_client_process_response_pull(const vssc_virgil_http_response_t *response, vssk_error_t *error);
+vssk_keyknox_client_process_response_pull(const vssc_http_response_t *response, vssk_error_t *error);
 
 //
 //  Create request that performs reset operation.
@@ -205,7 +205,7 @@ vssk_keyknox_client_make_request_reset(const vssk_keyknox_client_t *self, vsc_st
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
-vssk_keyknox_client_process_response_reset(const vssc_virgil_http_response_t *response, vssk_error_t *error);
+vssk_keyknox_client_process_response_reset(const vssc_http_response_t *response, vssk_error_t *error);
 
 //
 //  Create request that performs get keys operation.
@@ -220,7 +220,7 @@ vssk_keyknox_client_make_request_get_keys(const vssk_keyknox_client_t *self, vsc
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssc_string_list_t *
-vssk_keyknox_client_process_response_get_keys(const vssc_virgil_http_response_t *response, vssk_error_t *error);
+vssk_keyknox_client_process_response_get_keys(const vssc_http_response_t *response, vssk_error_t *error);
 
 
 // --------------------------------------------------------------------------

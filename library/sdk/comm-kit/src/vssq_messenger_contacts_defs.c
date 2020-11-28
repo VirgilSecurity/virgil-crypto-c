@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger contacts' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,27 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'virgil http response' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSSC_VIRGIL_HTTP_RESPONSE_DEFS_H_INCLUDED
-#define VSSC_VIRGIL_HTTP_RESPONSE_DEFS_H_INCLUDED
-
-#include "vssc_library.h"
-#include "vssc_atomic.h"
-#include "vssc_http_header_list.h"
-#include "vssc_json_array.h"
+#include "vssq_messenger_contacts_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -73,41 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'virgil http response' context.
-//
-struct vssc_virgil_http_response_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssc_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSC_ATOMIC size_t refcnt;
-
-    vssc_http_header_list_t *http_headers;
-
-    vssc_json_object_t *http_body;
-
-    vssc_json_array_t *http_array_body;
-
-    size_t http_status_code;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSC_VIRGIL_HTTP_RESPONSE_DEFS_H_INCLUDED
 //  @end

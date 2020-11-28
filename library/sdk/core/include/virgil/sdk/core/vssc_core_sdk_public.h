@@ -169,16 +169,16 @@
 #   include "vssc_string_list.h"
 #endif
 
+#if VSSC_STRING_MAP
+#   include "vssc_string_map.h"
+#endif
+
 #if VSSC_UNIX_TIME
 #   include "vssc_unix_time.h"
 #endif
 
 #if VSSC_VIRGIL_HTTP_CLIENT
 #   include "vssc_virgil_http_client.h"
-#endif
-
-#if VSSC_VIRGIL_HTTP_RESPONSE
-#   include "vssc_virgil_http_response.h"
 #endif
 
 // clang-format on

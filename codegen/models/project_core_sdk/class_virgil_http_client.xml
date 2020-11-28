@@ -12,7 +12,7 @@
 
     <feature name="debug" default="off"/>
 
-    <constant name="k header authorization type" type="string" visibility="private">
+    <constant name="k auth type virgil" type="string" visibility="public">
         Authorization type: Virgil
 
         <value value="Virgil"/>
@@ -23,10 +23,9 @@
         Send request over HTTP.
 
         <argument name="http request" class="http request"/>
-        <argument name="jwt" class="jwt"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="virgil http response" access="disown"/>
+        <return class="http response" access="disown"/>
     </method>
 
 
@@ -34,30 +33,6 @@
         Send request over HTTP with a path to Certificate Authority bundle.
 
         Note, argument "ca bundle path" can be empty.
-
-        <argument name="http request" class="http request"/>
-        <argument name="jwt" class="jwt"/>
-        <argument name="ca bundle path" class="str"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return class="virgil http response" access="disown"/>
-    </method>
-
-
-    <method name="send custom">
-        Send custom request over HTTP.
-
-        <argument name="http request" class="http request"/>
-        <argument name="error" class="error" access="readwrite"/>
-
-        <return class="http response" access="disown"/>
-    </method>
-
-
-    <method name="send custom with ca">
-        Send custom request over HTTP with a path to Certificate Authority bundle.
-
-        Note, argument ca_bundle can be empty.
 
         <argument name="http request" class="http request"/>
         <argument name="ca bundle path" class="str"/>
@@ -68,7 +43,7 @@
 
 
     <method name="create http client impl" is_static="1" declaration="private">
-        Create palatform dependent implementation of HTTP Client.
+        Create platform dependent implementation of HTTP Client.
 
         Note, "ca bundle path" is optional.
 
@@ -83,7 +58,6 @@
         Note, available only if VSSC_VIRGIL_HTTP_CLIENT_DEBUG option is ON.
 
         <argument name="http request" class="http request"/>
-        <argument name="jwt" class="jwt"/>
     </method>
 
 

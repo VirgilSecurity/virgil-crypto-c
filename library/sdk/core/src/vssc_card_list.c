@@ -399,7 +399,7 @@ vssc_card_list_find_with_identity(const vssc_card_list_t *self, vsc_str_t identi
         }
     }
 
-    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_LIST_ITEM_NOT_FOUND);
+    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_NOT_FOUND);
 
     return NULL;
 }
@@ -424,7 +424,7 @@ vssc_card_list_find_with_identifier(const vssc_card_list_t *self, vsc_str_t iden
         }
     }
 
-    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_LIST_ITEM_NOT_FOUND);
+    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_NOT_FOUND);
 
     return NULL;
 }

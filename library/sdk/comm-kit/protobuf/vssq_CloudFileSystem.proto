@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package vssq_pb;
+
+import "timestamp.proto";
+
+message CreateFileReq {
+    File file = 1;
+    Meta meta = 2;
+}
+
+message CreateFileResp {
+    string upload_link = 1;
+}
+
+message GetFileLinkReq {
+    string id = 1;
+}
+
+message GetFileLinkResp {
+    string link = 1;
+}
+
+message UpdateFileReq {
+    File file = 1;
+    Meta meta = 2;
+}
+
+message UpdateFileResp {
+    string link = 1;
+}
+
+message DeleteFileReq {
+    string id = 1;
+}
+
+message DeleteFileResp {}
+
+message ListFolderReq {
+   string folder_id = 1;
+   Pagination pagination = 2;
+}
+
+message ListFolderResp {
+    uint64 count = 1;
+    repeated File file = 2;
+}
+
+message File {
+    string name = 1;
+    string type = 2;
+}
+
+message Meta {
+    google.protobuf.Timestamp created_at = 1;
+    google.protobuf.Timestamp updated_at = 2;
+    uint64 size = 3;
+    string folder_id = 4;
+}
+
+message Pagination {
+    uint64 limit = 1;
+    uint64 offset = 2;
+}

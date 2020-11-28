@@ -25,6 +25,27 @@
     </method>
 
 
+    <method name="identity" is_const="1">
+        Return a user's identity (Card's identity).
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="public key" is_const="1">
+        Return a user's public key (Card's public key).
+
+        <return interface="public key" project="foundation"/>
+    </method>
+
+
+    <method name="public key id" is_const="1">
+        Return a user's public key identifier (Card's public key identifier).
+
+        <return class="data"/>
+    </method>
+
+
     <method name="has username" is_const="1">
         Return true if a username defined.
 

@@ -76,7 +76,7 @@
         Map response to the correspond model.
         Return "raw card" of published Card.
 
-        <argument name="response" class="virgil http response"/>
+        <argument name="response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card" access="disown"/>
@@ -96,7 +96,7 @@
         Map response to the correspond model.
         Return "raw card" if Card was found.
 
-        <argument name="response" class="virgil http response"/>
+        <argument name="response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card" access="disown"/>
@@ -116,7 +116,7 @@
         Map response to the correspond model.
         Return "raw card list" if founded Cards.
 
-        <argument name="response" class="virgil http response"/>
+        <argument name="response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card list" access="disown"/>

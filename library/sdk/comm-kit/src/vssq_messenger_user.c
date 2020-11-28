@@ -376,6 +376,42 @@ vssq_messenger_user_card(const vssq_messenger_user_t *self) {
 }
 
 //
+//  Return a user's identity (Card's identity).
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_user_identity(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->card);
+
+    return vssc_card_identity(self->card);
+}
+
+//
+//  Return a user's public key (Card's public key).
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_user_public_key(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->card);
+
+    return vssc_card_public_key(self->card);
+}
+
+//
+//  Return a user's public key identifier (Card's public key identifier).
+//
+VSSQ_PUBLIC vsc_data_t
+vssq_messenger_user_public_key_id(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->card);
+
+    return vssc_card_public_key_id(self->card);
+}
+
+//
 //  Return true if a username defined.
 //
 VSSQ_PUBLIC bool

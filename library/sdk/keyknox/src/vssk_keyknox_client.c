@@ -95,7 +95,7 @@ vssk_keyknox_client_init_ctx_with_base_url(vssk_keyknox_client_t *self, vsc_str_
 //  Parse keyknox entry from json object.
 //
 static vssk_keyknox_entry_t *
-vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *response, vssk_error_t *error);
+vssk_keyknox_client_parse_keyknox_entry(const vssc_http_response_t *response, vssk_error_t *error);
 
 //
 //  Base service URL.
@@ -599,7 +599,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
-vssk_keyknox_client_process_response_push(const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+vssk_keyknox_client_process_response_push(const vssc_http_response_t *response, vssk_error_t *error) {
 
     VSSK_ASSERT_PTR(response);
 
@@ -651,7 +651,7 @@ vssk_keyknox_client_make_request_pull(
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
-vssk_keyknox_client_process_response_pull(const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+vssk_keyknox_client_process_response_pull(const vssc_http_response_t *response, vssk_error_t *error) {
 
     VSSK_ASSERT_PTR(response);
 
@@ -719,26 +719,26 @@ vssk_keyknox_client_make_request_reset(
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssk_keyknox_entry_t *
-vssk_keyknox_client_process_response_reset(const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+vssk_keyknox_client_process_response_reset(const vssc_http_response_t *response, vssk_error_t *error) {
 
     VSSK_ASSERT_PTR(response);
 
     vssc_error_t core_error;
     vssc_error_reset(&core_error);
 
-    if (!vssc_virgil_http_response_is_success(response)) {
+    if (!vssc_http_response_is_success(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
         return NULL;
     }
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_body_is_json_object(response)) {
+    if (!vssc_http_response_body_is_json_object(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *json = vssc_virgil_http_response_body_as_json_object(response);
+    const vssc_json_object_t *json = vssc_http_response_body_as_json_object(response);
 
     vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner, &core_error);
     if (vsc_str_is_empty(owner)) {
@@ -817,26 +817,26 @@ vssk_keyknox_client_make_request_get_keys(
 //  Map response to the correspond model.
 //
 VSSK_PUBLIC vssc_string_list_t *
-vssk_keyknox_client_process_response_get_keys(const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+vssk_keyknox_client_process_response_get_keys(const vssc_http_response_t *response, vssk_error_t *error) {
 
     VSSK_ASSERT_PTR(response);
 
     vssc_error_t core_error;
     vssc_error_reset(&core_error);
 
-    if (!vssc_virgil_http_response_is_success(response)) {
+    if (!vssc_http_response_is_success(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
         return NULL;
     }
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_body_is_json_array(response)) {
+    if (!vssc_http_response_body_is_json_array(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_array_t *json_array = vssc_virgil_http_response_body_as_json_array(response);
+    const vssc_json_array_t *json_array = vssc_http_response_body_as_json_array(response);
 
     vssc_string_list_t *keys = vssc_string_list_new();
     for (size_t pos = 0; pos < vssc_json_array_count(json_array); ++pos) {
@@ -860,7 +860,7 @@ vssk_keyknox_client_process_response_get_keys(const vssc_virgil_http_response_t 
 //  Parse keyknox entry from json object.
 //
 static vssk_keyknox_entry_t *
-vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *response, vssk_error_t *error) {
+vssk_keyknox_client_parse_keyknox_entry(const vssc_http_response_t *response, vssk_error_t *error) {
 
     VSSK_ASSERT_PTR(response);
 
@@ -874,19 +874,19 @@ vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *respo
     vsc_buffer_t *hash = NULL;
 
 
-    if (!vssc_virgil_http_response_is_success(response)) {
+    if (!vssc_http_response_is_success(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
         goto fail;
     }
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_body_is_json_object(response)) {
+    if (!vssc_http_response_body_is_json_object(response)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         goto fail;
     }
 
-    const vssc_json_object_t *json = vssc_virgil_http_response_body_as_json_object(response);
+    const vssc_json_object_t *json = vssc_http_response_body_as_json_object(response);
 
     vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner, &core_error);
     if (vsc_str_is_empty(owner)) {
@@ -943,8 +943,7 @@ vssk_keyknox_client_parse_keyknox_entry(const vssc_virgil_http_response_t *respo
         goto fail;
     }
 
-    vsc_str_t hash_str =
-            vssc_virgil_http_response_find_header(response, k_header_name_virgil_keyknox_hash, &core_error);
+    vsc_str_t hash_str = vssc_http_response_find_header(response, k_header_name_virgil_keyknox_hash, &core_error);
 
     if (vssc_error_has_error(&core_error)) {
         VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);

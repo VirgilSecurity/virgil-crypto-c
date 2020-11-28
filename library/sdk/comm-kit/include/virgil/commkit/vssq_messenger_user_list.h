@@ -55,6 +55,15 @@
 
 #include "vssq_library.h"
 #include "vssq_messenger_user.h"
+#include "vssq_error.h"
+
+#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
@@ -135,7 +144,7 @@ vssq_messenger_user_list_shallow_copy_const(const vssq_messenger_user_list_t *se
 //  Note, ownership is transfered.
 //
 VSSQ_PUBLIC void
-vssq_messenger_user_list_add(vssq_messenger_user_list_t *self, const vssq_messenger_user_t *messenger_user);
+vssq_messenger_user_list_add(vssq_messenger_user_list_t *self, vssq_messenger_user_t *messenger_user);
 
 //
 //  Remove current node.
@@ -156,6 +165,12 @@ VSSQ_PUBLIC const vssq_messenger_user_t *
 vssq_messenger_user_list_item(const vssq_messenger_user_list_t *self);
 
 //
+//  Return list item.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_list_item_modifiable(vssq_messenger_user_list_t *self);
+
+//
 //  Return true if list has next item.
 //
 VSSQ_PUBLIC bool
@@ -166,6 +181,12 @@ vssq_messenger_user_list_has_next(const vssq_messenger_user_list_t *self);
 //
 VSSQ_PUBLIC const vssq_messenger_user_list_t *
 vssq_messenger_user_list_next(const vssq_messenger_user_list_t *self);
+
+//
+//  Return next list node if exists, or NULL otherwise.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_user_list_next_modifiable(vssq_messenger_user_list_t *self);
 
 //
 //  Return true if list has previous item.
@@ -180,10 +201,30 @@ VSSQ_PUBLIC const vssq_messenger_user_list_t *
 vssq_messenger_user_list_prev(const vssq_messenger_user_list_t *self);
 
 //
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_user_list_prev_modifiable(vssq_messenger_user_list_t *self);
+
+//
 //  Remove all items.
 //
 VSSQ_PUBLIC void
 vssq_messenger_user_list_clear(vssq_messenger_user_list_t *self);
+
+//
+//  Find user with a given name.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_user_list_find_with_identity(const vssq_messenger_user_list_t *self, vsc_str_t user_identity,
+        vssq_error_t *error);
+
+//
+//  Find user with a given name.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_list_find_with_identity_modifiable(vssq_messenger_user_list_t *self, vsc_str_t user_identity,
+        vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------

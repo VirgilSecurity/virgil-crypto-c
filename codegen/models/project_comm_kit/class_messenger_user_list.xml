@@ -1,7 +1,7 @@
 <class name="messenger user list">
     Handles a list of "messenger user" class objects.
 
-    <property name="item" class="messenger user" access="readonly"/>
+    <property name="item" class="messenger user"/>
     <property name="next" class="self"/>
     <property name="prev" class="self"/>
 
@@ -9,7 +9,7 @@
         Add new item to the list.
         Note, ownership is transfered.
 
-        <argument name="messenger user" class="messenger user"/>
+        <argument name="messenger user" class="messenger user" access="readwrite"/>
     </method>
 
 
@@ -40,6 +40,13 @@
     </method>
 
 
+    <method name="item modifiable">
+        Return list item.
+
+        <return class="messenger user" access="readwrite"/>
+    </method>
+
+
     <method name="has next" is_const="1">
         Return true if list has next item.
 
@@ -51,6 +58,13 @@
         Return next list node if exists, or NULL otherwise.
 
         <return class="self" access="readonly"/>
+    </method>
+
+
+    <method name="next modifiable">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readwrite"/>
     </method>
 
 
@@ -68,7 +82,34 @@
     </method>
 
 
+    <method name="prev modifiable">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self" access="readwrite"/>
+    </method>
+
+
     <method name="clear">
         Remove all items.
+    </method>
+
+
+    <method name="find with identity" is_const="1">
+        Find user with a given name.
+
+        <argument name="user identity" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="find with identity modifiable">
+        Find user with a given name.
+
+        <argument name="user identity" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user" access="readwrite"/>
     </method>
 </class>

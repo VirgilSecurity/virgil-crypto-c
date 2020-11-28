@@ -55,9 +55,9 @@
 
 #include "vssc_library.h"
 #include "vssc_impl.h"
+#include "vssc_http_response.h"
 #include "vssc_http_request.h"
 #include "vssc_error.h"
-#include "vssc_http_response.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -175,13 +175,6 @@ vssc_http_client_curl_new_with_ca(vsc_str_t ca_bundle_path);
 //
 VSSC_PUBLIC vssc_http_response_t *
 vssc_http_client_curl_send(vssc_http_client_curl_t *self, const vssc_http_request_t *http_request, vssc_error_t *error);
-
-//
-//  Send given request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_http_client_curl_auth_send(vssc_http_client_curl_t *self, const vssc_http_request_t *http_request,
-        vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

@@ -35,14 +35,16 @@
     <property name="config" class="messenger config" access="readonly"/>
     <property name="creds" class="messenger creds" access="readonly"/>
     <property name="user" class="messenger user"/>
-    <property name="base jwt" class="jwt" project="core sdk"/> <!-- cache -->
+    <property name="virgil jwt" class="jwt" project="core sdk"/> <!-- cache -->
+    <property name="contact discovery jwt" class="jwt" project="core sdk"/> <!-- cache -->
     <property name="ejabberd jwt" class="ejabberd jwt"/> <!-- cache -->
 
     <dependency name="random" interface="random" project="foundation"/>
 
     <constant name="card identity len" value="16" definition="private"/>
     <constant name="card identity len hex" value="32" definition="private"/>
-    <constant name="base jwt len max" value="512" definition="private"/>
+    <constant name="virgil jwt len max" value="512" definition="private"/>
+    <constant name="contact discovery jwt len max" value="512" definition="private"/>
     <constant name="ejabberd jwt len max" value="256" definition="private"/>
     <constant name="auth header len max" value="256" definition="private"/>
     <constant name="username digest len" value="64" definition="private"/>
@@ -50,6 +52,10 @@
     <!-- URL paths -->
     <constant name="k url path virgil jwt" type="string" visibility="private">
         <value value="/virgil-jwt"/>
+    </constant>
+
+    <constant name="k url path contact discovery jwt" type="string" visibility="private">
+        <value value="/contact-discovery-jwt"/>
     </constant>
 
     <constant name="k url path ejabberd jwt" type="string" visibility="private">
@@ -69,12 +75,20 @@
     </constant>
 
     <!-- HTTP Header names and values -->
-    <constant name="k http header value prefix bearer" type="string" visibility="private">
-        <value value="Bearer "/>
+    <constant name="k http header auth type virgil" type="string" visibility="private">
+        <value value="Virgil"/>
     </constant>
 
-    <constant name="k http header value prefix virgil msg pwd" type="string" visibility="private">
-        <value value="VirgilMsgPwd "/>
+    <constant name="k http header auth type virgil msg pwd" type="string" visibility="private">
+        <value value="VirgilMsgPwd"/>
+    </constant>
+
+    <constant name="k http header auth type virgil contact discovery" type="string" visibility="private">
+        <value value="VirgilContDisc"/>
+    </constant>
+
+    <constant name="k http header auth type bearer" type="string" visibility="private">
+        <value value="Bearer"/>
     </constant>
 
     <!-- Auth JSON keys -->
@@ -134,14 +148,14 @@
 
     <!-- Methods  -->
     <constructor name="with config">
-        Initialize messenger with a custom configuration.
+        Initialize with a custom configuration.
 
         <argument name="config" class="messenger config"/>
     </constructor>
 
 
     <method name="config" is_const="1">
-        Return messenger configuration.
+        Return configuration.
 
         <return class="messenger config"/>
     </method>
@@ -181,6 +195,15 @@
     </method>
 
 
+    <method name="user modifiable">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user" access="readwrite"/>
+    </method>
+
+
     <method name="has creds" is_const="1">
         Return true if user credentials are defined.
 
@@ -192,6 +215,15 @@
         Return user credentials.
 
         <return class="messenger creds"/>
+    </method>
+
+
+    <method name="private key" is_const="1">
+        Return user's private key from credentials.
+
+        Prerequisites: credentials are defined.
+
+        <return interface="private key" project="foundation"/>
     </method>
 
 
@@ -242,8 +274,8 @@
     </method>
 
 
-    <method name="base token" is_const="1">
-        Get JWT to use with Messenger Backend based on the credentials.
+    <method name="virgil jwt" is_const="1">
+        Get JWT to use with Virgil services based on the credentials.
 
         Prerequisites: user should be authenticated.
 
@@ -255,7 +287,20 @@
     </method>
 
 
-    <method name="ejabberd token" is_const="1">
+    <method name="contact discovery jwt" is_const="1">
+        Get JWT to use with Virgil Contact Discovery service based on the credentials.
+
+        Prerequisites: user should be authenticated.
+
+        Note, the cached token is returned if it is exist and not expired.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="jwt" project="core sdk"/>
+    </method>
+
+
+    <method name="ejabberd jwt" is_const="1">
         Return JWT to access ejabberd server.
 
         Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
@@ -277,31 +322,8 @@
     </method>
 
 
-
-    <method name="auth header len" is_const="1" scope="private">
-        Return buffer length enough to handle HTTP authorization header value.
-
-        <return type="size"/>
-    </method>
-
-
-    <method name="generate auth header" is_const="1" scope="private">
-        Generate HTTP authorization header value.
-
-        Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
-
-        Prerequisites: user should be authenticated.
-
-        <argument name="auth header" class="str buffer">
-            <length method="auth header len"/>
-        </argument>
-
-        <return enum="status"/>
-    </method>
-
-
-    <method name="refresh base token with password" is_const="1" declaration="private">
-        Get JWT to use with Messenger Backend based on the password.
+    <method name="refresh virgil jwt with password" is_const="1" declaration="private">
+        Get JWT to use with Virgil Services based on the password.
 
         Note, cache is not used.
 
@@ -313,7 +335,7 @@
 
 
     <method name="request token" is_const="1" declaration="private">
-        Request base JWt or Ejabberd JWT depends on the given endpoint.
+        Request Virgil JWt, Ejabberd JWT, or Virgil Contact Discovery JWT depends on the given endpoint.
 
         <argument name="endpoint" class="str"/>
         <argument name="jwt str" class="str buffer"/>
@@ -322,7 +344,14 @@
     </method>
 
 
-    <method name="refresh base token" is_const="1" declaration="private">
+    <method name="refresh virgil jwt" is_const="1" declaration="private">
+        Refresh Virgil Contact Discovery JWT if it absent or expired.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="refresh contact discovery jwt" is_const="1" declaration="private">
         Refresh Virgil JWT if it absent or expired.
 
         <return enum="status"/>
@@ -337,7 +366,7 @@
 
 
     <method name="reset sign in password" is_const="1" declaration="private">
-        Set a new password to the messenger backend to get base token when try to restore key.
+        Set a new password to the messenger backend to get Virgil JWT when try to restore the key.
 
         Note, password must be 32 bytes.
 
@@ -348,7 +377,7 @@
 
 
     <method name="generate brain key" is_const="1" declaration="private">
-        Set a new password to the messenger backend to get base token when try to restore key.
+        Use Pythia Service to generate private key that can decrypt the restored key.
 
         Note, password must be 32 bytes.
 
@@ -407,15 +436,22 @@
     </method>
 
 
-    <method name="reset base jwt" is_const="1" declaration="private">
-        Methhod is thread-safe.
+    <method name="reset virgil jwt" is_const="1" declaration="private">
+        Method is thread-safe.
 
-        <argument name="base jwt" class="jwt" project="core sdk" access="disown"/>
+        <argument name="virgil jwt" class="jwt" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="reset contact discovery jwt" is_const="1" declaration="private">
+        Method is thread-safe.
+
+        <argument name="contact discovery jwt" class="jwt" project="core sdk" access="disown"/>
     </method>
 
 
     <method name="reset ejabberd jwt" is_const="1" declaration="private">
-        Methhod is thread-safe.
+        Method is thread-safe.
 
         <argument name="ejabberd jwt" class="ejabberd jwt" access="disown"/>
     </method>
@@ -425,7 +461,7 @@
         Fetch and store self card or error.
 
         Prerequisites: user should be authenticated.
-        Prerequisites: base token should be set and not expired.
+        Prerequisites: Virgil JWT should be set and not expired.
 
         <return enum="status"/>
     </method>
@@ -437,5 +473,42 @@
         Prerequisites: user should be authenticated.
 
         <argument name="card" class="card" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="send messenger request" is_const="1">
+        Send HTTP request to the a Virgil Messenger Backend.
+
+        Note, Authorization is added if "with auth" option is true.
+
+        <argument name="http request" class="http request" project="core sdk" access="readwrite"/>
+        <argument name="with auth" type="boolean"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="send virgil request" is_const="1">
+        Send HTTP request to the a Virgil Service, aka Cards, Keyknox etc.
+
+        Note, Virgil JWT is updated automatically.
+
+        <argument name="http request" class="http request" project="core sdk" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="send contact discovery request" is_const="1">
+        Send HTTP request to the a Virgil Contact Discovery Service.
+
+        Note, Contact Discovery JWT is updated automatically.
+
+        <argument name="http request" class="http request" project="core sdk" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" project="core sdk" access="disown"/>
     </method>
 </class>

@@ -57,17 +57,10 @@
 #include "vssq_atomic.h"
 #include "vssq_messenger_config.h"
 #include "vssq_messenger_auth.h"
-
-#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <virgil/sdk/core/vssc_key_handler_list.h>
-#endif
+#include "vssq_messenger_contacts.h"
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_key_handler_list.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -110,7 +103,7 @@ struct vssq_messenger_t {
 
     vssq_messenger_auth_t *auth;
 
-    vssc_key_handler_list_t *cards_cache;
+    vssq_messenger_contacts_t *contacts;
 };
 
 

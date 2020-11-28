@@ -27,17 +27,5 @@
 
             <return class="NSString" access="disown" library="apple"/>
         </method>
-
-        <method name="send internal" declaration="private">
-            Send given request over HTTP.
-            Note, "auth type" and "auth credentials" can be empty.
-
-            <argument name="http request" class="http request"/>
-            <argument name="auth type" class="str"/>
-            <argument name="auth credentials" class="str"/>
-            <argument name="error" class="error" access="readwrite"/>
-
-            <return class="http response" access="disown"/>
-        </method>
     </implementation>
 </implementor>

@@ -47,7 +47,8 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles HTTP request in a most generic way.
+//  This class contains HTTP response information alongside with information
+//  that is specific for the Virgil services.
 // --------------------------------------------------------------------------
 
 #ifndef VSSC_HTTP_RESPONSE_H_INCLUDED
@@ -56,6 +57,7 @@
 #include "vssc_library.h"
 #include "vssc_http_header_list.h"
 #include "vssc_error.h"
+#include "vssc_json_array.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -168,6 +170,18 @@ VSSC_PUBLIC const vssc_http_response_t *
 vssc_http_response_shallow_copy_const(const vssc_http_response_t *self);
 
 //
+//  Set HTTP status.
+//
+VSSC_PUBLIC void
+vssc_http_response_set_status(vssc_http_response_t *self, size_t status_code);
+
+//
+//  Set HTTP body.
+//
+VSSC_PUBLIC void
+vssc_http_response_set_body(vssc_http_response_t *self, vsc_str_t body);
+
+//
 //  Add HTTP header.
 //
 VSSC_PUBLIC void
@@ -202,6 +216,49 @@ vssc_http_response_headers(const vssc_http_response_t *self);
 //
 VSSC_PUBLIC vsc_str_t
 vssc_http_response_find_header(const vssc_http_response_t *self, vsc_str_t name, vssc_error_t *error);
+
+//
+//  Return true if response handles a valid body as JSON object.
+//
+VSSC_PUBLIC bool
+vssc_http_response_body_is_json_object(const vssc_http_response_t *self);
+
+//
+//  Return true if response handles a valid body as JSON array.
+//
+VSSC_PUBLIC bool
+vssc_http_response_body_is_json_array(const vssc_http_response_t *self);
+
+//
+//  Return response body as JSON object.
+//
+VSSC_PUBLIC const vssc_json_object_t *
+vssc_http_response_body_as_json_object(const vssc_http_response_t *self);
+
+//
+//  Return response body as JSON array.
+//
+VSSC_PUBLIC const vssc_json_array_t *
+vssc_http_response_body_as_json_array(const vssc_http_response_t *self);
+
+//
+//  Return true if response handles a service error and it's description.
+//
+VSSC_PUBLIC bool
+vssc_http_response_has_service_error(const vssc_http_response_t *self);
+
+//
+//  Return service error code.
+//
+VSSC_PUBLIC size_t
+vssc_http_response_service_error_code(const vssc_http_response_t *self);
+
+//
+//  Return service error description.
+//  Note, empty string can be returned.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_response_service_error_description(const vssc_http_response_t *self);
 
 //
 //  Check status code range [200..299].

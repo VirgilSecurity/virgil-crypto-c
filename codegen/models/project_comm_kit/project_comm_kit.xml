@@ -36,8 +36,9 @@
     <class name="ejabberd jwt"/>
     <class name="messenger"/>
     <class name="messenger auth"/>
-    <class name="messenger config"/>
     <class name="messenger creds"/>
+    <class name="messenger config"/>
+    <class name="messenger contacts"/>
     <class name="messenger user"/>
     <class name="messenger user list"/>
 

@@ -55,7 +55,7 @@
 #include "vssc_memory.h"
 #include "vssc_http_client_curl_defs.h"
 #include "vssc_http_client_curl_internal.h"
-#include "vssc_http_response_defs.h"
+#include "vssc_http_response_internal.h"
 
 #include <curl/curl.h>
 #include <ctype.h>
@@ -74,15 +74,8 @@
 // --------------------------------------------------------------------------
 
 //
-//  Send given request over HTTP.
-//  Note, "auth type" and "auth credentials" can be empty.
-//
-static vssc_http_response_t *
-vssc_http_client_curl_send_internal(vssc_http_client_curl_t *self, const vssc_http_request_t *http_request,
-        vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error);
-
-//
 //  Concatenate header name and header value as "NAME: VALUE".
+//
 //  Note, given buffer is reset first and then strings are appended.
 //  Note, written string is null-terminated.
 //
@@ -90,21 +83,13 @@ static void
 vssc_http_client_curl_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buffer_t *out_str);
 
 //
-//  Make authorization header as "Authorization: TYPE CREDENTIALS".
-//  Note, given buffer is reset first and then strings are appended.
-//  Note, written string is null-terminated.
-//
-static void
-vssc_http_client_curl_format_authorization_header(vsc_str_t type, vsc_str_t credentials, vsc_str_buffer_t *out_str);
-
-//
-//  Callback for CURL body writing fucntion.
+//  Callback for CURL body writing function.
 //
 static size_t
-vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vssc_http_response_t *http_response);
+vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vsc_str_buffer_t *body_buffer);
 
 //
-//  Callback for CURL header writing fucntion.
+//  Callback for CURL header writing function.
 //
 static size_t
 vssc_http_client_curl_write_recevied_header(char *ptr, size_t size, size_t nmemb, vssc_http_response_t *http_response);
@@ -167,108 +152,8 @@ vssc_http_client_curl_init_ctx_with_ca(vssc_http_client_curl_t *self, vsc_str_t 
 }
 
 //
-//  Send given request over HTTP.
-//  Note, "auth type" and "auth credentials" can be empty.
-//
-static vssc_http_response_t *
-vssc_http_client_curl_send_internal(vssc_http_client_curl_t *self, const vssc_http_request_t *http_request,
-        vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error) {
-
-    VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_PTR(http_request);
-
-    //
-    //  Set URL and method.
-    //
-    CURL *curl = curl_easy_init();
-    curl_easy_setopt(curl, CURLOPT_URL, vssc_http_request_url(http_request).chars);
-    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, vssc_http_request_method(http_request).chars);
-
-    if (self->ca_bundle_path.chars && self->ca_bundle_path.len != 0) {
-        curl_easy_setopt(curl, CURLOPT_CAINFO, self->ca_bundle_path.chars);
-    }
-
-    //
-    //  Add headers.
-    //
-    vsc_str_buffer_t *header_buf = vsc_str_buffer_new_with_capacity(512);
-    struct curl_slist *headers = NULL;
-
-    // Authorization
-    if (vsc_str_is_valid_and_non_empty(auth_type) && vsc_str_is_valid_and_non_empty(auth_credentials)) {
-        vssc_http_client_curl_format_authorization_header(auth_type, auth_credentials, header_buf);
-
-        headers = curl_slist_append(headers, vsc_str_buffer_str(header_buf).chars);
-        VSSC_ASSERT_ALLOC(headers);
-    }
-
-    // Custom headers.
-    for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
-            header_it != NULL && vssc_http_header_list_has_item(header_it);
-            header_it = vssc_http_header_list_next(header_it)) {
-
-        const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
-        vsc_str_t header_name = vssc_http_header_name(header);
-        vsc_str_t header_value = vssc_http_header_value(header);
-
-        vssc_http_client_curl_format_header(header_name, header_value, header_buf);
-        headers = curl_slist_append(headers, vsc_str_buffer_str(header_buf).chars);
-        VSSC_ASSERT_ALLOC(headers);
-    }
-
-    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-    vsc_str_buffer_destroy(&header_buf);
-
-    //
-    //  Set body.
-    //
-    vsc_str_t body = vssc_http_request_body(http_request);
-    if (!vsc_str_is_empty(body)) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.chars);
-    }
-    //
-    //  Set callbacks to build response.
-    //
-    vssc_http_response_t *response = vssc_http_response_new();
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, vssc_http_client_curl_write_recevied_data);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
-
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, vssc_http_client_curl_write_recevied_header);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, response);
-
-    //
-    //  Perform the request.
-    //
-    const CURLcode send_status = curl_easy_perform(curl);
-    if (send_status != CURLE_OK) {
-        goto send_fail;
-    }
-
-    //
-    //  Parse response.
-    //
-    long response_code;
-    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
-
-    response->status_code = response_code;
-
-    goto maybe_succ;
-
-send_fail:
-    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_SEND_REQUEST_FAILED);
-    vssc_http_response_destroy(&response);
-
-maybe_succ:
-    curl_easy_cleanup(curl);
-    curl_slist_free_all(headers);
-
-    return response;
-}
-
-//
 //  Concatenate header name and header value as "NAME: VALUE".
+//
 //  Note, given buffer is reset first and then strings are appended.
 //  Note, written string is null-terminated.
 //
@@ -286,48 +171,25 @@ vssc_http_client_curl_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buf
 }
 
 //
-//  Make authorization header as "Authorization: TYPE CREDENTIALS".
-//  Note, given buffer is reset first and then strings are appended.
-//  Note, written string is null-terminated.
-//
-static void
-vssc_http_client_curl_format_authorization_header(vsc_str_t type, vsc_str_t credentials, vsc_str_buffer_t *out_str) {
-
-    VSSC_ASSERT(vsc_str_buffer_is_valid(out_str));
-
-    vsc_str_buffer_reset(out_str);
-    vsc_str_buffer_append_str(out_str, vssc_http_header_name_authorization);
-    vsc_str_buffer_append_str(out_str, k_header_name_value_separator);
-    vsc_str_buffer_append_str(out_str, type);
-    vsc_str_buffer_append_char(out_str, ' ');
-    vsc_str_buffer_append_str(out_str, credentials);
-    vsc_str_buffer_append_char(out_str, '\0');
-    vsc_str_buffer_dec_used(out_str, 1);
-}
-
-//
-//  Callback for CURL body writing fucntion.
+//  Callback for CURL body writing function.
 //
 static size_t
-vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vssc_http_response_t *http_response) {
+vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vsc_str_buffer_t *body_buffer) {
 
     VSSC_ASSERT_PTR(ptr);
+    VSSC_ASSERT_PTR(body_buffer);
 
     const size_t total_len = size * nmemb;
 
-    if (NULL == http_response->body) {
-        http_response->body = vsc_str_buffer_new_with_capacity(total_len);
-    }
-
     vsc_str_t str = vsc_str((const char *)ptr, total_len);
 
-    vsc_str_buffer_append_str(http_response->body, str);
+    vsc_str_buffer_append_str(body_buffer, str);
 
     return total_len;
 }
 
 //
-//  Callback for CURL header writing fucntion.
+//  Callback for CURL header writing function.
 //
 static size_t
 vssc_http_client_curl_write_recevied_header(char *ptr, size_t size, size_t nmemb, vssc_http_response_t *http_response) {
@@ -437,20 +299,98 @@ vssc_http_client_curl_send(
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(http_request);
 
-    return vssc_http_client_curl_send_internal(self, http_request, vsc_str_empty(), vsc_str_empty(), error);
-}
+    //
+    //  Set URL and method.
+    //
+    CURL *curl = curl_easy_init();
+    curl_easy_setopt(curl, CURLOPT_URL, vssc_http_request_url(http_request).chars);
+    curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, vssc_http_request_method(http_request).chars);
 
-//
-//  Send given request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_http_client_curl_auth_send(vssc_http_client_curl_t *self, const vssc_http_request_t *http_request,
-        vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error) {
+    if (self->ca_bundle_path.chars && self->ca_bundle_path.len != 0) {
+        curl_easy_setopt(curl, CURLOPT_CAINFO, self->ca_bundle_path.chars);
+    }
 
-    VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_PTR(http_request);
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_type));
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_credentials));
+    //
+    //  Add headers.
+    //
+    vsc_str_buffer_t *header_buf = vsc_str_buffer_new_with_capacity(512);
+    struct curl_slist *headers = NULL;
 
-    return vssc_http_client_curl_send_internal(self, http_request, auth_type, auth_credentials, error);
+    // Authorization
+    vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
+    if (!vsc_str_is_empty(auth_header_value)) {
+        vssc_http_client_curl_format_header(vssc_http_header_name_authorization, auth_header_value, header_buf);
+        headers = curl_slist_append(headers, vsc_str_buffer_str(header_buf).chars);
+        VSSC_ASSERT_ALLOC(headers);
+    }
+
+    // Custom headers.
+    for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
+            header_it != NULL && vssc_http_header_list_has_item(header_it);
+            header_it = vssc_http_header_list_next(header_it)) {
+
+        const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
+        vsc_str_t header_name = vssc_http_header_name(header);
+        vsc_str_t header_value = vssc_http_header_value(header);
+
+        vssc_http_client_curl_format_header(header_name, header_value, header_buf);
+        headers = curl_slist_append(headers, vsc_str_buffer_str(header_buf).chars);
+        VSSC_ASSERT_ALLOC(headers);
+    }
+
+    curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+    vsc_str_buffer_destroy(&header_buf);
+
+    //
+    //  Set body.
+    //
+    vsc_str_t body = vssc_http_request_body(http_request);
+    if (!vsc_str_is_empty(body)) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.chars);
+    }
+    //
+    //  Set callbacks to build response.
+    //
+    vssc_http_response_t *response = vssc_http_response_new();
+    vsc_str_buffer_t *body_buffer = vsc_str_buffer_new();
+
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, vssc_http_client_curl_write_recevied_data);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, body_buffer);
+
+    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, vssc_http_client_curl_write_recevied_header);
+    curl_easy_setopt(curl, CURLOPT_HEADERDATA, response);
+
+    //
+    //  Perform the request.
+    //
+    const CURLcode send_status = curl_easy_perform(curl);
+    if (send_status != CURLE_OK) {
+        goto send_fail;
+    }
+
+    //
+    //  Parse response.
+    //
+    long response_code;
+    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+
+    vssc_http_response_set_status(response, response_code);
+
+    if (vsc_str_buffer_is_valid(body_buffer)) {
+        vssc_http_response_set_body_disown(response, &body_buffer);
+    }
+
+    goto maybe_succ;
+
+send_fail:
+    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_SEND_REQUEST_FAILED);
+    vssc_http_response_destroy(&response);
+    vsc_str_buffer_destroy(&body_buffer);
+
+maybe_succ:
+    curl_easy_cleanup(curl);
+    curl_slist_free_all(headers);
+
+    return response;
 }

@@ -114,7 +114,9 @@ struct vssq_messenger_auth_t {
 
     vssq_messenger_user_t *user;
 
-    vssc_jwt_t *base_jwt;
+    vssc_jwt_t *virgil_jwt;
+
+    vssc_jwt_t *contact_discovery_jwt;
 
     vssq_ejabberd_jwt_t *ejabberd_jwt;
 };
