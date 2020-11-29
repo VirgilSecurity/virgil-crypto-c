@@ -34,9 +34,28 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-add_subdirectory(helpers)
-add_subdirectory(foundation)
+if (NOT CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    # not using regular Clang or AppleClang
 
-if(TARGET vsc::comm_kit)
-    add_subdirectory(comm_kit)
+    message(FATAL_ERROR "Expected LLVM clang to use for fuzzy testing")
 endif()
+
+macro(_add_test test)
+    add_executable(${test}  ${CMAKE_CURRENT_LIST_DIR}/src/${test}.c)
+    set_target_properties(${test} PROPERTIES C_STANDARD "99")
+    set_target_properties(${test} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${test})
+    add_test(NAME ${test} COMMAND ${test})
+
+    target_add_filename_definitions(${test})
+    target_link_libraries(${test}
+            PRIVATE
+                fuzzer_flags_helper
+                vsc::comm_kit
+            )
+
+    if(COMMAND add_clangformat)
+        add_clangformat(${test})
+    endif()
+endmacro()
+
+_add_test(fuzzy_test__ejabberd_jwt__parse)
