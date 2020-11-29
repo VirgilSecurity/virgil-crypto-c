@@ -4,6 +4,7 @@
 
     <require class="str buffer" project="common"/>
     <require class="json object"/>
+    <require class="json object" api="private"/>
     <require class="json array"/>
     <require class="raw card list" api="private"/>
 
@@ -39,10 +40,10 @@
     </constant>
 
 
-    <constant name="k json key identity" type="string" visibility="private" >
-        Json KEY: identity.
+    <constant name="k json key identities" type="string" visibility="private" >
+        JSON KEY: identities.
 
-        <value value="identity"/>
+        <value value="identities"/>
     </constant>
 
 
@@ -107,6 +108,17 @@
          Create request that returns cards list from the Virgil Cards Service for given identity.
 
         <argument name="identity" class="str"/>
+
+        <return class="http request" access="disown"/>
+    </method>
+
+
+    <method name="make request search cards with identities" is_const="1">
+        Create request that returns cards list from the Virgil Cards Service for given identities.
+
+        Note, current amount of identities to search in a single request is limited to 50 items.
+
+        <argument name="identities" class="string list"/>
 
         <return class="http request" access="disown"/>
     </method>

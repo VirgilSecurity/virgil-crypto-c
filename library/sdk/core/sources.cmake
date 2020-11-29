@@ -342,6 +342,7 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_list_private.h"
             "$<$<BOOL:${VSSC_STRING_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_list_defs.h>"
             "$<$<BOOL:${VSSC_STRING_MAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_string_map.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_private.h"
             "$<$<BOOL:${VSSC_STRING_MAP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_defs.h>"
             "$<$<BOOL:${VSSC_STRING_MAP_BUCKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_bucket.h>"
             "$<$<BOOL:${VSSC_STRING_MAP_BUCKET}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_string_map_bucket_defs.h>"

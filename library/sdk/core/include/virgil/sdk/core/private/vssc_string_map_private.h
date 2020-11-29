@@ -44,32 +44,17 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSC_STRING_MAP_PRIVATE_H_INCLUDED
+#define VSSC_STRING_MAP_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'messenger user' types definition.
-// --------------------------------------------------------------------------
+#include "vssc_string_map.h"
 
-#ifndef VSSQ_MESSENGER_USER_DEFS_H_INCLUDED
-#define VSSQ_MESSENGER_USER_DEFS_H_INCLUDED
-
-#include "vssq_library.h"
-#include "vssq_atomic.h"
-
-#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_mutable.h>
+#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
-#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <virgil/sdk/core/vssc_card.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_mutable.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_card.h>
+#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 // clang-format on
@@ -88,26 +73,12 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger user' context.
+//  Put a new pair to the map.
 //
-struct vssq_messenger_user_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssq_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSQ_ATOMIC size_t refcnt;
-
-    const vssc_card_t *card;
-
-    vsc_str_mutable_t username;
-
-    vsc_str_mutable_t phone_number;
-
-    vsc_str_mutable_t email;
-};
+//  Note, given buffers are shallow copied.
+//
+VSSC_PUBLIC void
+vssc_string_map_put_shallow_copy(vssc_string_map_t *self, const vsc_str_buffer_t *key, const vsc_str_buffer_t *value);
 
 
 // --------------------------------------------------------------------------
@@ -123,5 +94,5 @@ struct vssq_messenger_user_t {
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_USER_DEFS_H_INCLUDED
+#endif // VSSC_STRING_MAP_PRIVATE_H_INCLUDED
 //  @end

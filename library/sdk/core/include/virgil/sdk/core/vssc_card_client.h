@@ -58,6 +58,7 @@
 #include "vssc_http_request.h"
 #include "vssc_http_response.h"
 #include "vssc_error.h"
+#include "vssc_string_list.h"
 #include "vssc_raw_card_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -190,6 +191,15 @@ vssc_card_client_process_response_get_card(const vssc_http_response_t *response,
 //
 VSSC_PUBLIC vssc_http_request_t *
 vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_t *self, vsc_str_t identity);
+
+//
+//  Create request that returns cards list from the Virgil Cards Service for given identities.
+//
+//  Note, current amount of identities to search in a single request is limited to 50 items.
+//
+VSSC_PUBLIC vssc_http_request_t *
+vssc_card_client_make_request_search_cards_with_identities(const vssc_card_client_t *self,
+        const vssc_string_list_t *identities);
 
 //
 //  Map response to the correspond model.

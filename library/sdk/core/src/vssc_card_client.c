@@ -55,6 +55,7 @@
 #include "vssc_assert.h"
 #include "vssc_card_client_defs.h"
 #include "vssc_json_object.h"
+#include "vssc_json_object_private.h"
 #include "vssc_json_array.h"
 #include "vssc_raw_card_list_private.h"
 
@@ -145,16 +146,16 @@ static const vsc_str_t k_url_path_revoke = {
 };
 
 //
-//  Json KEY: identity.
+//  JSON KEY: identities.
 //
-static const char k_json_key_identity_chars[] = "identity";
+static const char k_json_key_identities_chars[] = "identities";
 
 //
-//  Json KEY: identity.
+//  JSON KEY: identities.
 //
-static const vsc_str_t k_json_key_identity = {
-    k_json_key_identity_chars,
-    sizeof(k_json_key_identity_chars) - 1
+static const vsc_str_t k_json_key_identities = {
+    k_json_key_identities_chars,
+    sizeof(k_json_key_identities_chars) - 1
 };
 
 //
@@ -528,10 +529,36 @@ vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
 
+    vssc_string_list_t *identities = vssc_string_list_new();
+    vssc_string_list_add(identities, identity);
+
+    vssc_http_request_t *http_request = vssc_card_client_make_request_search_cards_with_identities(self, identities);
+
+    vssc_string_list_destroy(&identities);
+
+    return http_request;
+}
+
+//
+//  Create request that returns cards list from the Virgil Cards Service for given identities.
+//
+//  Note, current amount of identities to search in a single request is limited to 50 items.
+//
+VSSC_PUBLIC vssc_http_request_t *
+vssc_card_client_make_request_search_cards_with_identities(
+        const vssc_card_client_t *self, const vssc_string_list_t *identities) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(identities);
+    VSSC_ASSERT(vssc_string_list_has_item(identities));
+
     vsc_str_mutable_t search_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_url_path_search);
 
+    vssc_json_array_t *identities_json = vssc_json_array_new();
+    vssc_json_array_add_string_values(identities_json, identities);
+
     vssc_json_object_t *json_body = vssc_json_object_new();
-    vssc_json_object_add_string_value(json_body, k_json_key_identity, identity);
+    vssc_json_object_add_array_value_disown(json_body, k_json_key_identities, &identities_json);
 
     vsc_str_t json_body_str = vssc_json_object_as_str(json_body);
 

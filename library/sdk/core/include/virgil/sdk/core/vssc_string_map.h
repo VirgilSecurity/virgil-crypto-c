@@ -59,10 +59,12 @@
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 // clang-format on
@@ -161,6 +163,12 @@ VSSC_PUBLIC const vssc_string_map_t *
 vssc_string_map_shallow_copy_const(const vssc_string_map_t *self);
 
 //
+//  Return map's capacity.
+//
+VSSC_PUBLIC size_t
+vssc_string_map_capacity(const vssc_string_map_t *self);
+
+//
 //  Put a new pair to the map.
 //
 VSSC_PUBLIC void
@@ -171,6 +179,12 @@ vssc_string_map_put(vssc_string_map_t *self, vsc_str_t key, vsc_str_t value);
 //
 VSSC_PUBLIC vsc_str_t
 vssc_string_map_get(const vssc_string_map_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Return a value of the given key, or error.
+//
+VSSC_PUBLIC const vsc_str_buffer_t *
+vssc_string_map_get_inner(const vssc_string_map_t *self, vsc_str_t key, vssc_error_t *error);
 
 //
 //  Return true if value of the given key exists.
@@ -189,6 +203,12 @@ vssc_string_map_keys(const vssc_string_map_t *self);
 //
 VSSC_PUBLIC vssc_string_list_t *
 vssc_string_map_values(const vssc_string_map_t *self);
+
+//
+//  Return a new map with all keys and it values being swapped.
+//
+VSSC_PUBLIC vssc_string_map_t *
+vssc_string_map_swap_key_values(const vssc_string_map_t *self);
 
 
 // --------------------------------------------------------------------------

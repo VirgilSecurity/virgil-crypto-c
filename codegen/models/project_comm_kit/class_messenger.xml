@@ -153,6 +153,16 @@
     </method>
 
 
+    <method name="find users with identities" is_const="1">
+        Return founded users or error.
+
+        <argument name="identities" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user list" access="disown"/>
+    </method>
+
+
     <method name="find user with username" is_const="1">
         Return founded user or error.
 
@@ -163,6 +173,86 @@
     </method>
 
 
+    <method name="find users by phones" is_const="1">
+        Return founded users.
+
+        <argument name="phones" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user list" access="disown"/>
+    </method>
+
+
+    <method name="find users by emails" is_const="1">
+        Return founded users.
+
+        <argument name="emails" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user list" access="disown"/>
+    </method>
+
+    <!-- Proxy Contact Discovery interface -->
+    <method name="add phone number" is_const="1">
+        Register user's phone number.
+
+        Prerequisites: phone numbers are formatted according to E.164 standard.
+
+        <argument name="phone number" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="confirm phone number" is_const="1">
+        Confirm user's phone number.
+
+        Prerequisites: phone numbers are formatted according to E.164 standard.
+
+        <argument name="phone number" class="str"/>
+        <argument name="confirmation code" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="delete phone number" is_const="1">
+        Delete user's phone number.
+
+        Prerequisites: phone numbers are formatted according to E.164 standard.
+
+        <argument name="phone number" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="add email" is_const="1">
+        Register user's email.
+
+        <argument name="email" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="confirm email" is_const="1">
+        Confirm user's email.
+
+        <argument name="email" class="str"/>
+        <argument name="confirmation code" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="delete email" is_const="1">
+        Delete user's email.
+
+        <argument name="email" class="str"/>
+
+        <return enum="status"/>
+    </method>
     <!-- Peer-to-Peer encryption -->
     <method name="encrypted message len" is_const="1">
         Return a buffer length enough to hold an encrypted message.

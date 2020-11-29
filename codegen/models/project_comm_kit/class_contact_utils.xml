@@ -8,6 +8,7 @@
     <require class="sha256" project="foundation" api="defs"/>
     <require class="binary" project="foundation"/>
     <require class="string map" project="core sdk" api="defs"/>
+    <require class="string map" project="core sdk" api="private"/>
     <require class="string map bucket" project="core sdk" api="defs"/>
 
 

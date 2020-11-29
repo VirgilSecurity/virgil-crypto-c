@@ -66,6 +66,7 @@
 #include "vssc_key_handler_private.h"
 #include "vssc_raw_card_list_private.h"
 #include "vssc_string_list_private.h"
+#include "vssc_string_map_private.h"
 
 #if VSSC_CARD
 #   include "vssc_card_defs.h"

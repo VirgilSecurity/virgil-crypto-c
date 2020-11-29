@@ -430,7 +430,11 @@ vssq_messenger_user_username(const vssq_messenger_user_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
-    return vsc_str_mutable_is_valid(self->username) ? vsc_str_mutable_as_str(self->username) : vsc_str_empty();
+    if (vsc_str_mutable_is_valid(self->username)) {
+        return vsc_str_mutable_as_str(self->username);
+    } else {
+        return vsc_str_empty();
+    }
 }
 
 //
@@ -442,5 +446,84 @@ vssq_messenger_user_set_username(vssq_messenger_user_t *self, vsc_str_t username
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(username));
 
+    vsc_str_mutable_release(&self->username);
     self->username = vsc_str_mutable_from_str(username);
+}
+
+//
+//  Return true if a phone number defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_user_has_phone_number(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vsc_str_mutable_is_valid(self->phone_number);
+}
+
+//
+//  Return phone number, or an empty string if phone number not defined.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_user_phone_number(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    if (vsc_str_mutable_is_valid(self->phone_number)) {
+        return vsc_str_mutable_as_str(self->phone_number);
+    } else {
+        return vsc_str_empty();
+    }
+}
+
+//
+//  Set an optional phone number.
+//
+VSSQ_PUBLIC void
+vssq_messenger_user_set_phone_number(vssq_messenger_user_t *self, vsc_str_t phone_number) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+
+    vsc_str_mutable_release(&self->phone_number);
+    self->phone_number = vsc_str_mutable_from_str(phone_number);
+}
+
+//
+//  Return true if a email defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_user_has_email(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vsc_str_mutable_is_valid(self->email);
+}
+
+//
+//  Return email, or an empty string if email not defined.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_user_email(const vssq_messenger_user_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    if (vsc_str_mutable_is_valid(self->email)) {
+        return vsc_str_mutable_as_str(self->email);
+    } else {
+        return vsc_str_empty();
+    }
+}
+
+//
+//  Set an optional email.
+//
+VSSQ_PUBLIC void
+vssq_messenger_user_set_email(vssq_messenger_user_t *self, vsc_str_t email) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+
+    vsc_str_mutable_release(&self->email);
+    self->email = vsc_str_mutable_from_str(email);
 }

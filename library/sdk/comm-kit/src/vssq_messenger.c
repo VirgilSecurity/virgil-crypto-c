@@ -605,6 +605,36 @@ vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t i
     VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(identity));
 
+    vssc_string_list_t *identities = vssc_string_list_new();
+    vssc_string_list_add(identities, identity);
+
+    vssq_messenger_user_list_t *founded_users = vssq_messenger_find_users_with_identities(self, identities, error);
+
+    vssq_messenger_user_t *founded_user = NULL;
+
+    if ((NULL != founded_users) && vssq_messenger_user_list_has_item(founded_users)) {
+        founded_user = vssq_messenger_user_shallow_copy(vssq_messenger_user_list_item_modifiable(founded_users));
+    }
+
+    vssc_string_list_destroy(&identities);
+    vssq_messenger_user_list_destroy(&founded_users);
+
+    return founded_user;
+}
+
+//
+//  Return founded users or error.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_find_users_with_identities(
+        const vssq_messenger_t *self, const vssc_string_list_t *identities, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT_PTR(identities);
+    VSSQ_ASSERT(vssc_string_list_has_item(identities));
+
     //
     // Declare vars.
     //
@@ -617,7 +647,7 @@ vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t i
     vssc_http_response_t *search_cards_response = NULL;
     vssc_raw_card_list_t *founded_raw_cards = NULL;
     vssc_card_list_t *founded_cards = NULL;
-    vssq_messenger_user_t *founded_user = NULL;
+    vssq_messenger_user_list_t *founded_users = NULL;
 
     //
     //  Configure algorithms.
@@ -637,7 +667,7 @@ vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t i
     //
     card_client = vssc_card_client_new();
 
-    search_cards_request = vssc_card_client_make_request_search_cards_with_identity(card_client, identity);
+    search_cards_request = vssc_card_client_make_request_search_cards_with_identities(card_client, identities);
 
     search_cards_response = vssq_messenger_auth_send_virgil_request(self->auth, search_cards_request, error);
 
@@ -672,16 +702,22 @@ vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t i
     }
 
     //
-    //  Create User from the Card.
+    //  Create Users from the Cards.
     //
     if (!vssc_card_list_has_item(founded_cards)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_NOT_FOUND);
         goto cleanup;
     }
 
-    VSSQ_ASSERT_SAFE(vsc_str_equal(identity, vssc_card_identity(vssc_card_list_item(founded_cards))));
+    founded_users = vssq_messenger_user_list_new();
 
-    founded_user = vssq_messenger_user_new_with_card(vssc_card_list_item(founded_cards));
+    for (const vssc_card_list_t *card_it = founded_cards; (card_it != NULL) && vssc_card_list_has_item(card_it);
+            card_it = vssc_card_list_next(card_it)) {
+
+        const vssc_card_t *user_card = vssc_card_list_item(card_it);
+        vssq_messenger_user_t *user = vssq_messenger_user_new_with_card(user_card);
+        vssq_messenger_user_list_add_disown(founded_users, &user);
+    }
 
 cleanup:
     vssc_card_manager_destroy(&card_manager);
@@ -691,7 +727,7 @@ cleanup:
     vssc_raw_card_list_destroy(&founded_raw_cards);
     vssc_card_list_destroy(&founded_cards);
 
-    return founded_user;
+    return founded_users;
 }
 
 //
@@ -741,6 +777,197 @@ vssq_messenger_find_user_with_username(const vssq_messenger_t *self, vsc_str_t u
     vssc_string_map_destroy(&usernames_to_identities);
 
     return founded_user;
+}
+
+//
+//  Return founded users.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_find_users_by_phones(
+        const vssq_messenger_t *self, const vssc_string_list_t *phones, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT_PTR(phones);
+    VSSQ_ASSERT(vssc_string_list_has_item(phones));
+
+    //
+    //  Find identity for a given phone numbers via Contact Discovery.
+    //
+    vssc_string_map_t *phone_numbers_to_identities =
+            vssq_messenger_contacts_discover_phone_numbers(self->contacts, phones, error);
+
+    if (NULL == phone_numbers_to_identities) {
+        return NULL;
+    }
+
+    //
+    //  Get user with identity.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_string_list_t *identities = vssc_string_map_values(phone_numbers_to_identities);
+
+    vssq_messenger_user_list_t *founded_users = vssq_messenger_find_users_with_identities(self, identities, error);
+
+    vssc_string_list_destroy(&identities);
+
+    vssc_string_map_t *identities_to_phone_numbers = vssc_string_map_swap_key_values(phone_numbers_to_identities);
+
+    for (vssq_messenger_user_list_t *user_it = founded_users;
+            (user_it != NULL) && vssq_messenger_user_list_has_item(user_it);
+            user_it = vssq_messenger_user_list_next_modifiable(user_it)) {
+
+
+        vssq_messenger_user_t *user = vssq_messenger_user_list_item_modifiable(user_it);
+        vsc_str_t user_identity = vssq_messenger_user_identity(user);
+
+        vsc_str_t user_phone_number = vssc_string_map_get(identities_to_phone_numbers, user_identity, NULL);
+        VSSQ_ASSERT_SAFE(vsc_str_is_valid_and_non_empty(user_phone_number));
+
+        vssq_messenger_user_set_phone_number(user, user_phone_number);
+    }
+
+    vssc_string_map_destroy(&identities_to_phone_numbers);
+    vssc_string_map_destroy(&phone_numbers_to_identities);
+
+    return founded_users;
+}
+
+//
+//  Return founded users.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_find_users_by_emails(
+        const vssq_messenger_t *self, const vssc_string_list_t *emails, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
+    VSSQ_ASSERT_PTR(emails);
+    VSSQ_ASSERT(vssc_string_list_has_item(emails));
+
+    //
+    //  Find identity for a given email numbers via Contact Discovery.
+    //
+    vssc_string_map_t *emails_to_identities = vssq_messenger_contacts_discover_emails(self->contacts, emails, error);
+
+    if (NULL == emails_to_identities) {
+        return NULL;
+    }
+
+    //
+    //  Get user with identity.
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssc_string_list_t *identities = vssc_string_map_values(emails_to_identities);
+
+    vssq_messenger_user_list_t *founded_users = vssq_messenger_find_users_with_identities(self, identities, error);
+
+    vssc_string_list_destroy(&identities);
+
+    vssc_string_map_t *identities_to_emails = vssc_string_map_swap_key_values(emails_to_identities);
+
+    for (vssq_messenger_user_list_t *user_it = founded_users;
+            (user_it != NULL) && vssq_messenger_user_list_has_item(user_it);
+            user_it = vssq_messenger_user_list_next_modifiable(user_it)) {
+
+
+        vssq_messenger_user_t *user = vssq_messenger_user_list_item_modifiable(user_it);
+        vsc_str_t user_identity = vssq_messenger_user_identity(user);
+
+        vsc_str_t user_email_number = vssc_string_map_get(identities_to_emails, user_identity, NULL);
+        VSSQ_ASSERT_SAFE(vsc_str_is_valid_and_non_empty(user_email_number));
+
+        vssq_messenger_user_set_email(user, user_email_number);
+    }
+
+    vssc_string_map_destroy(&identities_to_emails);
+    vssc_string_map_destroy(&emails_to_identities);
+
+    return founded_users;
+}
+
+//
+//  Register user's phone number.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_add_phone_number(const vssq_messenger_t *self, vsc_str_t phone_number) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+
+    return vssq_messenger_contacts_add_phone_number(self->contacts, phone_number);
+}
+
+//
+//  Confirm user's phone number.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_confirm_phone_number(const vssq_messenger_t *self, vsc_str_t phone_number, vsc_str_t confirmation_code) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(confirmation_code));
+
+    return vssq_messenger_contacts_confirm_phone_number(self->contacts, phone_number, confirmation_code);
+}
+
+//
+//  Delete user's phone number.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_delete_phone_number(const vssq_messenger_t *self, vsc_str_t phone_number) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+
+    return vssq_messenger_contacts_delete_phone_number(self->contacts, phone_number);
+}
+
+//
+//  Register user's email.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_add_email(const vssq_messenger_t *self, vsc_str_t email) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+
+    return vssq_messenger_contacts_add_email(self->contacts, email);
+}
+
+//
+//  Confirm user's email.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_confirm_email(const vssq_messenger_t *self, vsc_str_t email, vsc_str_t confirmation_code) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(confirmation_code));
+
+    return vssq_messenger_contacts_confirm_email(self->contacts, email, confirmation_code);
+}
+
+//
+//  Delete user's email.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_delete_email(const vssq_messenger_t *self, vsc_str_t email) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+
+    return vssq_messenger_contacts_delete_email(self->contacts, email);
 }
 
 //

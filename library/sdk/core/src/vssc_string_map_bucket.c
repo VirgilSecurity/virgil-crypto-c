@@ -270,14 +270,49 @@ vssc_string_map_bucket_put(vssc_string_map_bucket_t *self, vsc_str_t key, vsc_st
     for (vssc_string_map_bucket_t *it = self; (it != NULL); it = it->next) {
 
         if (NULL == it->key) {
-            // Insert values to the last empty bucket.
+            //  Insert values to the last empty bucket.
             it->key = vsc_str_buffer_new_with_str(key);
             it->value = vsc_str_buffer_new_with_str(value);
 
         } else if (vsc_str_equal(vsc_str_buffer_str(it->key), key)) {
-            // Rewrite value for the same key.
-            vsc_str_buffer_destroy(&it->value);
+            //  Rewrite value for the same key.
+            vsc_str_buffer_delete(it->value);
             it->value = vsc_str_buffer_new_with_str(value);
+
+        } else if (NULL == it->next) {
+            //  Create the last empty bucket.
+            it->next = vssc_string_map_bucket_new();
+            it->next->prev = it;
+        }
+
+        // Go to the next bucket.
+    }
+}
+
+//
+//  Add key-value pair to the bucket.
+//
+VSSC_PUBLIC void
+vssc_string_map_bucket_put_shallow_copy(
+        vssc_string_map_bucket_t *self, const vsc_str_buffer_t *key, const vsc_str_buffer_t *value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_buffer_is_valid(key));
+    VSSC_ASSERT(vsc_str_buffer_len(key) > 0);
+    VSSC_ASSERT(vsc_str_buffer_is_valid(value));
+
+    for (vssc_string_map_bucket_t *it = self; (it != NULL); it = it->next) {
+
+        if (NULL == it->key) {
+            //  Insert values to the last empty bucket.
+            it->key = vsc_str_buffer_shallow_copy_const(key);
+            it->value = vsc_str_buffer_shallow_copy_const(value);
+
+        } else if (vsc_str_equal(vsc_str_buffer_str(it->key), vsc_str_buffer_str(key))) {
+            //  Rewrite value for the same key.
+            vsc_str_buffer_delete(it->value);
+            it->value = vsc_str_buffer_shallow_copy_const(value);
+
         } else if (NULL == it->next) {
             //  Create the last empty bucket.
             it->next = vssc_string_map_bucket_new();
@@ -296,8 +331,8 @@ vssc_string_map_bucket_clear(vssc_string_map_bucket_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_buffer_destroy(&self->key);
-    vsc_str_buffer_destroy(&self->value);
+    vsc_str_buffer_delete(self->key);
+    vsc_str_buffer_delete(self->value);
     vssc_string_map_bucket_destroy(&self->next);
 }
 
@@ -310,16 +345,34 @@ vssc_string_map_bucket_find(const vssc_string_map_bucket_t *self, vsc_str_t key,
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(key));
 
+    const vsc_str_buffer_t *value = vssc_string_map_bucket_find_inner(self, key, error);
+
+    if (value) {
+        return vsc_str_buffer_str(value);
+    } else {
+        return vsc_str_empty();
+    }
+}
+
+//
+//  Find value for a given key.
+//
+VSSC_PUBLIC const vsc_str_buffer_t *
+vssc_string_map_bucket_find_inner(const vssc_string_map_bucket_t *self, vsc_str_t key, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(key));
+
     for (const vssc_string_map_bucket_t *it = self; (it != NULL) && (it->key != NULL); it = it->next) {
 
         vsc_str_t candidate_key = vsc_str_buffer_str(it->key);
 
         if (vsc_str_equal(candidate_key, key)) {
-            return vsc_str_buffer_str(it->value);
+            return it->value;
         }
     }
 
     VSSC_ERROR_SAFE_UPDATE(error, vssc_status_NOT_FOUND);
 
-    return vsc_str_empty();
+    return NULL;
 }

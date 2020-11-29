@@ -58,10 +58,12 @@
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 // clang-format on
@@ -145,6 +147,13 @@ VSSC_PUBLIC void
 vssc_string_map_bucket_put(vssc_string_map_bucket_t *self, vsc_str_t key, vsc_str_t value);
 
 //
+//  Add key-value pair to the bucket.
+//
+VSSC_PUBLIC void
+vssc_string_map_bucket_put_shallow_copy(vssc_string_map_bucket_t *self, const vsc_str_buffer_t *key,
+        const vsc_str_buffer_t *value);
+
+//
 //  Remove all items.
 //
 VSSC_PUBLIC void
@@ -155,6 +164,12 @@ vssc_string_map_bucket_clear(vssc_string_map_bucket_t *self);
 //
 VSSC_PUBLIC vsc_str_t
 vssc_string_map_bucket_find(const vssc_string_map_bucket_t *self, vsc_str_t key, vssc_error_t *error);
+
+//
+//  Find value for a given key.
+//
+VSSC_PUBLIC const vsc_str_buffer_t *
+vssc_string_map_bucket_find_inner(const vssc_string_map_bucket_t *self, vsc_str_t key, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------

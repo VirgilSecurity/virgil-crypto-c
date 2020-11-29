@@ -60,6 +60,7 @@
 #include <virgil/crypto/foundation/private/vscf_sha256_defs.h>
 #include <virgil/crypto/foundation/vscf_binary.h>
 #include <virgil/sdk/core/private/vssc_string_map_defs.h>
+#include <virgil/sdk/core/private/vssc_string_map_private.h>
 #include <virgil/sdk/core/private/vssc_string_map_bucket_defs.h>
 
 // clang-format on
@@ -219,7 +220,7 @@ vssq_contact_utils_hash_usernames(const vssc_string_list_t *usernames, vssq_erro
 
     VSSQ_ASSERT_PTR(usernames);
 
-    vssc_string_map_t *result = vssc_string_map_new();
+    vssc_string_map_t *result = vssc_string_map_new_with_capacity(vssc_string_list_count(usernames));
     vsc_str_buffer_t *username_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
 
     for (const vssc_string_list_t *username_it = usernames;
@@ -367,7 +368,7 @@ vssq_contact_utils_hash_phone_numbers(const vssc_string_list_t *phone_numbers, v
 
     VSSQ_ASSERT_PTR(phone_numbers);
 
-    vssc_string_map_t *result = vssc_string_map_new();
+    vssc_string_map_t *result = vssc_string_map_new_with_capacity(vssc_string_list_count(phone_numbers));
     vsc_str_buffer_t *phone_number_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
 
     for (const vssc_string_list_t *phone_number_it = phone_numbers;
@@ -617,7 +618,7 @@ vssq_contact_utils_hash_emails(const vssc_string_list_t *emails, vssq_error_t *e
 
     VSSQ_ASSERT_PTR(emails);
 
-    vssc_string_map_t *result = vssc_string_map_new();
+    vssc_string_map_t *result = vssc_string_map_new_with_capacity(vssc_string_list_count(emails));
     vsc_str_buffer_t *email_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
 
     for (const vssc_string_list_t *email_it = emails; (email_it != NULL) && vssc_string_list_has_item(email_it);
@@ -657,7 +658,7 @@ vssq_contact_utils_merge_contact_discovery_maps(
     VSSQ_ASSERT_PTR(contact_request_map);
     VSSQ_ASSERT_PTR(contact_response_map);
 
-    vssc_string_map_t *result_map = vssc_string_map_new();
+    vssc_string_map_t *result_map = vssc_string_map_new_with_capacity(contact_request_map->capacity);
 
     for (size_t pos = 0; pos < contact_request_map->capacity; ++pos) {
         for (vssc_string_map_bucket_t *contact_request_bucket = contact_request_map->buckets[pos];
@@ -665,18 +666,16 @@ vssq_contact_utils_merge_contact_discovery_maps(
                 contact_request_bucket = contact_request_bucket->next) {
 
 
-            vsc_str_t contact_request_key = vsc_str_buffer_str(contact_request_bucket->key);
             vsc_str_t contact_request_value = vsc_str_buffer_str(contact_request_bucket->value);
 
             vssc_error_t core_sdk_error;
             vssc_error_reset(&core_sdk_error);
 
-            const vsc_str_t contact_response_value =
-                    vssc_string_map_get(contact_response_map, contact_request_value, &core_sdk_error);
+            const vsc_str_buffer_t *contact_response_value =
+                    vssc_string_map_get_inner(contact_response_map, contact_request_value, &core_sdk_error);
 
             if (!vssc_error_has_error(&core_sdk_error)) {
-                // TODO: Optimize copy, by adding put that takes vsc_str_buffer.
-                vssc_string_map_put(result_map, contact_request_key, contact_response_value);
+                vssc_string_map_put_shallow_copy(result_map, contact_request_bucket->key, contact_response_value);
             }
         }
     }

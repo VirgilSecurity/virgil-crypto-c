@@ -3,6 +3,8 @@
 
     <property name="card" class="card" project="core sdk" access="readonly"/>
     <property name="username" class="str mutable"/>
+    <property name="phone number" class="str mutable"/>
+    <property name="email" class="str mutable"/>
 
     <constructor name="with card">
         Create an object with required fields.
@@ -64,5 +66,47 @@
         Set an optional username.
 
         <argument name="username" class="str"/>
+    </method>
+
+
+    <method name="has phone number" is_const="1">
+        Return true if a phone number defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="phone number" is_const="1">
+        Return phone number, or an empty string if phone number not defined.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="set phone number">
+        Set an optional phone number.
+
+        <argument name="phone number" class="str"/>
+    </method>
+
+
+    <method name="has email" is_const="1">
+        Return true if a email defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="email" is_const="1">
+        Return email, or an empty string if email not defined.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="set email">
+        Set an optional email.
+
+        <argument name="email" class="str"/>
     </method>
 </class>

@@ -192,6 +192,12 @@ VSSC_PUBLIC void
 vssc_string_list_clear(vssc_string_list_t *self);
 
 //
+//  Return number of items within list.
+//
+VSSC_PUBLIC size_t
+vssc_string_list_count(const vssc_string_list_t *self);
+
+//
 //  Return true if list contains a given value.
 //
 VSSC_PUBLIC bool

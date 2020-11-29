@@ -81,6 +81,13 @@
     </method>
 
 
+    <method name="count" is_const="1">
+        Return number of items within list.
+
+        <return type="size"/>
+    </method>
+
+
     <method name="contains" is_const="1">
         Return true if list contains a given value.
 

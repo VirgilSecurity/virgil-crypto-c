@@ -93,9 +93,9 @@ struct vssc_string_map_bucket_t {
     //
     VSSC_ATOMIC size_t refcnt;
 
-    vsc_str_buffer_t *key;
+    const vsc_str_buffer_t *key;
 
-    vsc_str_buffer_t *value;
+    const vsc_str_buffer_t *value;
     //
     //  Class specific context.
     //

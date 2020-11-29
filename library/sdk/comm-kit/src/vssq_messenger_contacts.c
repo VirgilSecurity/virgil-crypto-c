@@ -220,18 +220,18 @@ static const vsc_str_t k_json_key_email = {
     sizeof(k_json_key_email_chars) - 1
 };
 
-static const char k_json_key_email_hashes_chars[] = "email_hashes";
-
-static const vsc_str_t k_json_key_email_hashes = {
-    k_json_key_email_hashes_chars,
-    sizeof(k_json_key_email_hashes_chars) - 1
-};
-
 static const char k_json_key_email_hash_chars[] = "email_hash";
 
 static const vsc_str_t k_json_key_email_hash = {
     k_json_key_email_hash_chars,
     sizeof(k_json_key_email_hash_chars) - 1
+};
+
+static const char k_json_key_email_hashes_chars[] = "email_hashes";
+
+static const vsc_str_t k_json_key_email_hashes = {
+    k_json_key_email_hashes_chars,
+    sizeof(k_json_key_email_hashes_chars) - 1
 };
 
 static const char k_json_key_emails_to_identities_chars[] = "emails_to_identities";

@@ -65,10 +65,14 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_str_buffer.h>
 #   include <virgil/crypto/common/vsc_str.h>
-#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_string_list.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -76,10 +80,14 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_str.h>
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_str_buffer.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSC/vssc_string_list.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -284,10 +292,74 @@ VSSQ_PUBLIC vssq_messenger_user_t *
 vssq_messenger_find_user_with_identity(const vssq_messenger_t *self, vsc_str_t identity, vssq_error_t *error);
 
 //
+//  Return founded users or error.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_find_users_with_identities(const vssq_messenger_t *self, const vssc_string_list_t *identities,
+        vssq_error_t *error);
+
+//
 //  Return founded user or error.
 //
 VSSQ_PUBLIC vssq_messenger_user_t *
 vssq_messenger_find_user_with_username(const vssq_messenger_t *self, vsc_str_t username, vssq_error_t *error);
+
+//
+//  Return founded users.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_find_users_by_phones(const vssq_messenger_t *self, const vssc_string_list_t *phones,
+        vssq_error_t *error);
+
+//
+//  Return founded users.
+//
+VSSQ_PUBLIC vssq_messenger_user_list_t *
+vssq_messenger_find_users_by_emails(const vssq_messenger_t *self, const vssc_string_list_t *emails,
+        vssq_error_t *error);
+
+//
+//  Register user's phone number.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_add_phone_number(const vssq_messenger_t *self, vsc_str_t phone_number) VSSQ_NODISCARD;
+
+//
+//  Confirm user's phone number.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_confirm_phone_number(const vssq_messenger_t *self, vsc_str_t phone_number,
+        vsc_str_t confirmation_code) VSSQ_NODISCARD;
+
+//
+//  Delete user's phone number.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_delete_phone_number(const vssq_messenger_t *self, vsc_str_t phone_number) VSSQ_NODISCARD;
+
+//
+//  Register user's email.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_add_email(const vssq_messenger_t *self, vsc_str_t email) VSSQ_NODISCARD;
+
+//
+//  Confirm user's email.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_confirm_email(const vssq_messenger_t *self, vsc_str_t email, vsc_str_t confirmation_code) VSSQ_NODISCARD;
+
+//
+//  Delete user's email.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_delete_email(const vssq_messenger_t *self, vsc_str_t email) VSSQ_NODISCARD;
 
 //
 //  Return a buffer length enough to hold an encrypted message.

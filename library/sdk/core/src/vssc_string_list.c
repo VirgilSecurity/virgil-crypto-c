@@ -418,6 +418,21 @@ vssc_string_list_clear(vssc_string_list_t *self) {
 }
 
 //
+//  Return number of items within list.
+//
+VSSC_PUBLIC size_t
+vssc_string_list_count(const vssc_string_list_t *self) {
+
+    size_t count = 0;
+
+    for (const vssc_string_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
+        ++count;
+    }
+
+    return count;
+}
+
+//
 //  Return true if list contains a given value.
 //
 VSSC_PUBLIC bool

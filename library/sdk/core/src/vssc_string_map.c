@@ -53,6 +53,7 @@
 #include "vssc_string_map.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_string_map_private.h"
 #include "vssc_string_map_defs.h"
 #include "vssc_string_list_private.h"
 #include "vssc_string_map_bucket_defs.h"
@@ -338,6 +339,17 @@ vssc_string_map_init_ctx_with_capacity(vssc_string_map_t *self, size_t capacity)
 }
 
 //
+//  Return map's capacity.
+//
+VSSC_PUBLIC size_t
+vssc_string_map_capacity(const vssc_string_map_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    return self->capacity;
+}
+
+//
 //  Put a new pair to the map.
 //
 VSSC_PUBLIC void
@@ -356,6 +368,27 @@ vssc_string_map_put(vssc_string_map_t *self, vsc_str_t key, vsc_str_t value) {
 }
 
 //
+//  Put a new pair to the map.
+//
+//  Note, given buffers are shallow copied.
+//
+VSSC_PUBLIC void
+vssc_string_map_put_shallow_copy(vssc_string_map_t *self, const vsc_str_buffer_t *key, const vsc_str_buffer_t *value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_buffer_is_valid(key));
+    VSSC_ASSERT(vsc_str_buffer_len(key) > 0);
+    VSSC_ASSERT(vsc_str_buffer_is_valid(value));
+
+    const size_t bucket_index = vssc_string_map_calculate_bucket_index(self, vsc_str_buffer_str(key));
+    if (NULL == self->buckets[bucket_index]) {
+        self->buckets[bucket_index] = vssc_string_map_bucket_new();
+    }
+
+    vssc_string_map_bucket_put_shallow_copy(self->buckets[bucket_index], key, value);
+}
+
+//
 //  Return a value of the given key, or error.
 //
 VSSC_PUBLIC vsc_str_t
@@ -364,13 +397,31 @@ vssc_string_map_get(const vssc_string_map_t *self, vsc_str_t key, vssc_error_t *
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(key));
 
+    const vsc_str_buffer_t *value = vssc_string_map_get_inner(self, key, error);
+
+    if (value) {
+        return vsc_str_buffer_str(value);
+    } else {
+        return vsc_str_empty();
+    }
+}
+
+//
+//  Return a value of the given key, or error.
+//
+VSSC_PUBLIC const vsc_str_buffer_t *
+vssc_string_map_get_inner(const vssc_string_map_t *self, vsc_str_t key, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(key));
+
     const size_t bucket_index = vssc_string_map_calculate_bucket_index(self, key);
     if (NULL == self->buckets[bucket_index]) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_NOT_FOUND);
-        return vsc_str_empty();
+        return NULL;
     }
 
-    return vssc_string_map_bucket_find(self->buckets[bucket_index], key, error);
+    return vssc_string_map_bucket_find_inner(self->buckets[bucket_index], key, error);
 }
 
 //
@@ -389,7 +440,6 @@ vssc_string_map_contains(const vssc_string_map_t *self, vsc_str_t key) {
     VSSC_UNUSED(value);
 
     return !vssc_error_has_error(&error);
-    ;
 }
 
 //
@@ -430,6 +480,28 @@ vssc_string_map_values(const vssc_string_map_t *self) {
     }
 
     return values;
+}
+
+//
+//  Return a new map with all keys and it values being swapped.
+//
+VSSC_PUBLIC vssc_string_map_t *
+vssc_string_map_swap_key_values(const vssc_string_map_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(self->capacity > 0);
+
+    vssc_string_map_t *swapped_map = vssc_string_map_new_with_capacity(self->capacity);
+
+    for (size_t pos = 0; pos < self->capacity; ++pos) {
+        for (vssc_string_map_bucket_t *bucket = self->buckets[pos]; (bucket != NULL) && (bucket->key != NULL);
+                bucket = bucket->next) {
+
+            vssc_string_map_put_shallow_copy(swapped_map, bucket->value, bucket->key);
+        }
+    }
+
+    return swapped_map;
 }
 
 //

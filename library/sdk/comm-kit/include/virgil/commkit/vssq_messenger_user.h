@@ -211,6 +211,42 @@ vssq_messenger_user_username(const vssq_messenger_user_t *self);
 VSSQ_PUBLIC void
 vssq_messenger_user_set_username(vssq_messenger_user_t *self, vsc_str_t username);
 
+//
+//  Return true if a phone number defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_user_has_phone_number(const vssq_messenger_user_t *self);
+
+//
+//  Return phone number, or an empty string if phone number not defined.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_user_phone_number(const vssq_messenger_user_t *self);
+
+//
+//  Set an optional phone number.
+//
+VSSQ_PUBLIC void
+vssq_messenger_user_set_phone_number(vssq_messenger_user_t *self, vsc_str_t phone_number);
+
+//
+//  Return true if a email defined.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_user_has_email(const vssq_messenger_user_t *self);
+
+//
+//  Return email, or an empty string if email not defined.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_user_email(const vssq_messenger_user_t *self);
+
+//
+//  Set an optional email.
+//
+VSSQ_PUBLIC void
+vssq_messenger_user_set_email(vssq_messenger_user_t *self, vsc_str_t email);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
