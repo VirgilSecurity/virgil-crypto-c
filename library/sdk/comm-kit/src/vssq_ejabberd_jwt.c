@@ -435,6 +435,7 @@ vssq_ejabberd_jwt_parse(vsc_str_t str, vssq_error_t *error) {
     vsc_buffer_t *payload_json_buff = vsc_buffer_new_with_capacity(payload_json_str_len);
 
     vssc_json_object_t *payload_json_obj = NULL;
+    vssq_ejabberd_jwt_t *ejabberd_jwt = NULL;
 
     vsc_str_t jid = vsc_str_empty();
     int expires_at = 0;
@@ -462,6 +463,8 @@ vssq_ejabberd_jwt_parse(vsc_str_t str, vssq_error_t *error) {
         goto fail;
     }
 
+    ejabberd_jwt = vssq_ejabberd_jwt_new_with_members(str, jid, (size_t)expires_at);
+
     goto cleanup;
 
 fail:
@@ -471,11 +474,7 @@ cleanup:
     vssc_json_object_destroy(&payload_json_obj);
     vsc_buffer_destroy(&payload_json_buff);
 
-    if (!vsc_str_is_empty(jid) && expires_at > 0) {
-        return vssq_ejabberd_jwt_new_with_members(str, jid, (size_t)expires_at);
-    } else {
-        return NULL;
-    }
+    return ejabberd_jwt;
 }
 
 //

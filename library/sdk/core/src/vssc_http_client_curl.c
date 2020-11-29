@@ -379,6 +379,8 @@ vssc_http_client_curl_send(
 
     if (vsc_str_buffer_is_valid(body_buffer)) {
         vssc_http_response_set_body_disown(response, &body_buffer);
+    } else {
+        vsc_str_buffer_destroy(&body_buffer);
     }
 
     goto maybe_succ;
