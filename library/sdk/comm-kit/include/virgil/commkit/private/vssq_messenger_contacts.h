@@ -171,6 +171,7 @@ vssq_messenger_contacts_release_auth(vssq_messenger_contacts_t *self);
 
 //
 //  Discover given user names.
+//
 //  Return map username->identity.
 //
 VSSQ_PUBLIC vssc_string_map_t *
@@ -180,31 +181,39 @@ vssq_messenger_contacts_discover_usernames(const vssq_messenger_contacts_t *self
 //
 //  Register user's phone number.
 //
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_contacts_add_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number,
-        vsc_str_t country_code) VSSQ_NODISCARD;
+vssq_messenger_contacts_add_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number) VSSQ_NODISCARD;
 
 //
 //  Confirm user's phone number.
 //
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_contacts_confirm_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number,
-        vsc_str_t country_code, vsc_str_t confirmation_code) VSSQ_NODISCARD;
+        vsc_str_t confirmation_code) VSSQ_NODISCARD;
 
 //
 //  Delete user's phone number.
 //
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_contacts_delete_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number,
-        vsc_str_t country_code) VSSQ_NODISCARD;
+vssq_messenger_contacts_delete_phone_number(const vssq_messenger_contacts_t *self,
+        vsc_str_t phone_number) VSSQ_NODISCARD;
 
 //
 //  Discover given phone numbers.
-//  Return map phone->identity.
+//
+//  Return map phone-number->identity.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
 //
 VSSQ_PUBLIC vssc_string_map_t *
 vssq_messenger_contacts_discover_phone_numbers(const vssq_messenger_contacts_t *self,
-        const vssc_string_list_t *phone_numbers, vsc_str_t country_code, vssq_error_t *error);
+        const vssc_string_list_t *phone_numbers, vssq_error_t *error);
 
 //
 //  Register user's email.
@@ -227,6 +236,7 @@ vssq_messenger_contacts_delete_email(const vssq_messenger_contacts_t *self, vsc_
 
 //
 //  Discover given emails.
+//
 //  Return map email->identity.
 //
 VSSQ_PUBLIC vssc_string_map_t *

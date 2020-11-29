@@ -114,6 +114,7 @@ vssq_messenger_contacts_cleanup_ctx(vssq_messenger_contacts_t *self);
 
 //
 //  Generic discovery.
+//
 //  Return map contact->identity.
 //
 static vssc_string_map_t *
@@ -191,6 +192,13 @@ static const vsc_str_t k_json_key_phone_number = {
     sizeof(k_json_key_phone_number_chars) - 1
 };
 
+static const char k_json_key_phone_hash_chars[] = "phone_hash";
+
+static const vsc_str_t k_json_key_phone_hash = {
+    k_json_key_phone_hash_chars,
+    sizeof(k_json_key_phone_hash_chars) - 1
+};
+
 static const char k_json_key_phone_hashes_chars[] = "phone_hashes";
 
 static const vsc_str_t k_json_key_phone_hashes = {
@@ -219,11 +227,25 @@ static const vsc_str_t k_json_key_email_hashes = {
     sizeof(k_json_key_email_hashes_chars) - 1
 };
 
+static const char k_json_key_email_hash_chars[] = "email_hash";
+
+static const vsc_str_t k_json_key_email_hash = {
+    k_json_key_email_hash_chars,
+    sizeof(k_json_key_email_hash_chars) - 1
+};
+
 static const char k_json_key_emails_to_identities_chars[] = "emails_to_identities";
 
 static const vsc_str_t k_json_key_emails_to_identities = {
     k_json_key_emails_to_identities_chars,
     sizeof(k_json_key_emails_to_identities_chars) - 1
+};
+
+static const char k_json_key_username_hash_chars[] = "username_hash";
+
+static const vsc_str_t k_json_key_username_hash = {
+    k_json_key_username_hash_chars,
+    sizeof(k_json_key_username_hash_chars) - 1
 };
 
 static const char k_json_key_username_hashes_chars[] = "username_hashes";
@@ -463,6 +485,7 @@ vssq_messenger_contacts_cleanup_ctx(vssq_messenger_contacts_t *self) {
 
 //
 //  Discover given user names.
+//
 //  Return map username->identity.
 //
 VSSQ_PUBLIC vssc_string_map_t *
@@ -498,89 +521,284 @@ vssq_messenger_contacts_discover_usernames(
 //
 //  Register user's phone number.
 //
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_contacts_add_phone_number(
-        const vssq_messenger_contacts_t *self, vsc_str_t phone_number, vsc_str_t country_code) {
+vssq_messenger_contacts_add_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(phone_number);
-    VSSQ_UNUSED(country_code);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
-    //  TODO: This is STUB. Implement me.
+    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
 
+    //
+    //  Declare vars.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
 
-    VSSQ_UNUSED(k_url_path_username_discovery);
-    VSSQ_UNUSED(k_url_path_phone_add);
-    VSSQ_UNUSED(k_url_path_phone_confirm);
-    VSSQ_UNUSED(k_url_path_phone_delete);
-    VSSQ_UNUSED(k_url_path_phone_discovery);
-    VSSQ_UNUSED(k_url_path_email_add);
-    VSSQ_UNUSED(k_url_path_email_confirm);
-    VSSQ_UNUSED(k_url_path_email_delete);
-    VSSQ_UNUSED(k_url_path_email_discovery);
-    VSSQ_UNUSED(k_json_key_phone_number);
-    VSSQ_UNUSED(k_json_key_phone_hashes);
-    VSSQ_UNUSED(k_json_key_phone_numbers_to_identities);
-    VSSQ_UNUSED(k_json_key_email);
-    VSSQ_UNUSED(k_json_key_email_hashes);
-    VSSQ_UNUSED(k_json_key_emails_to_identities);
-    VSSQ_UNUSED(k_json_key_username_hashes);
-    VSSQ_UNUSED(k_json_key_username_hashes_to_identities);
-    VSSQ_UNUSED(k_json_key_confirmation_code);
+    vsc_str_mutable_t request_url = {NULL, 0};
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vssc_json_object_t *http_request_json = NULL;
+    vsc_str_buffer_t *username_hash = NULL;
 
+    //
+    //  Hash username.
+    //
+    const vssq_messenger_user_t *user = vssq_messenger_auth_user(self->auth);
+    vsc_str_t username = vssq_messenger_user_username(user);
 
-    return vssq_status_SUCCESS;
+    username_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
+    error.status = vssq_contact_utils_hash_username(username, username_hash);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Validate phone number.
+    //
+    error.status = vssq_contact_utils_validate_phone_number(phone_number);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Make request.
+    //
+    http_request_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(http_request_json, k_json_key_username_hash, vsc_str_buffer_str(username_hash));
+    vssc_json_object_add_string_value(http_request_json, k_json_key_phone_number, phone_number);
+
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_phone_add);
+
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
+            vssc_json_object_as_str(http_request_json));
+
+    vsc_str_mutable_release(&request_url);
+
+    //
+    //  Send request.
+    //
+    http_response = vssq_messenger_auth_send_contact_discovery_request(self->auth, http_request, &error);
+
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_str_mutable_release(&request_url);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&http_request_json);
+    vsc_str_buffer_destroy(&username_hash);
+
+    return vssq_error_status(&error);
 }
 
 //
 //  Confirm user's phone number.
 //
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_contacts_confirm_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number,
-        vsc_str_t country_code, vsc_str_t confirmation_code) {
+vssq_messenger_contacts_confirm_phone_number(
+        const vssq_messenger_contacts_t *self, vsc_str_t phone_number, vsc_str_t confirmation_code) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(phone_number);
-    VSSQ_UNUSED(country_code);
-    VSSQ_UNUSED(confirmation_code);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(confirmation_code));
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
-    //  TODO: This is STUB. Implement me.
+    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
 
-    return vssq_status_SUCCESS;
+    //
+    //  Declare vars.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    vsc_str_mutable_t request_url = {NULL, 0};
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vssc_json_object_t *http_request_json = NULL;
+    vsc_str_buffer_t *username_hash = NULL;
+
+    //
+    //  Hash username.
+    //
+    const vssq_messenger_user_t *user = vssq_messenger_auth_user(self->auth);
+    vsc_str_t username = vssq_messenger_user_username(user);
+
+    username_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
+    error.status = vssq_contact_utils_hash_username(username, username_hash);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Validate phone number.
+    //
+    error.status = vssq_contact_utils_validate_phone_number(phone_number);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Make request.
+    //
+    http_request_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(http_request_json, k_json_key_username_hash, vsc_str_buffer_str(username_hash));
+    vssc_json_object_add_string_value(http_request_json, k_json_key_phone_number, phone_number);
+    vssc_json_object_add_string_value(http_request_json, k_json_key_confirmation_code, confirmation_code);
+
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_phone_confirm);
+
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
+            vssc_json_object_as_str(http_request_json));
+
+    vsc_str_mutable_release(&request_url);
+
+    //
+    //  Send request.
+    //
+    http_response = vssq_messenger_auth_send_contact_discovery_request(self->auth, http_request, &error);
+
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_str_mutable_release(&request_url);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&http_request_json);
+    vsc_str_buffer_destroy(&username_hash);
+
+    return vssq_error_status(&error);
 }
 
 //
 //  Delete user's phone number.
 //
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
+//
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_contacts_delete_phone_number(
-        const vssq_messenger_contacts_t *self, vsc_str_t phone_number, vsc_str_t country_code) {
+vssq_messenger_contacts_delete_phone_number(const vssq_messenger_contacts_t *self, vsc_str_t phone_number) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(phone_number);
-    VSSQ_UNUSED(country_code);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(phone_number));
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
-    //  TODO: This is STUB. Implement me.
+    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
 
-    return vssq_status_SUCCESS;
+    //
+    //  Declare vars.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    vsc_str_mutable_t request_url = {NULL, 0};
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vssc_json_object_t *http_request_json = NULL;
+    vsc_str_buffer_t *phone_number_hash = NULL;
+
+    //
+    //  Hash phone number.
+    //
+    phone_number_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
+    error.status = vssq_contact_utils_hash_phone_number(phone_number, phone_number_hash);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Make request.
+    //
+    http_request_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(http_request_json, k_json_key_phone_hash, vsc_str_buffer_str(phone_number_hash));
+
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_phone_delete);
+
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
+            vssc_json_object_as_str(http_request_json));
+
+    vsc_str_mutable_release(&request_url);
+
+    //
+    //  Send request.
+    //
+    http_response = vssq_messenger_auth_send_contact_discovery_request(self->auth, http_request, &error);
+
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_str_mutable_release(&request_url);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&http_request_json);
+    vsc_str_buffer_destroy(&phone_number_hash);
+
+    return vssq_error_status(&error);
 }
 
 //
 //  Discover given phone numbers.
-//  Return map phone->identity.
+//
+//  Return map phone-number->identity.
+//
+//  Prerequisites: phone numbers are formatted according to E.164 standard.
 //
 VSSQ_PUBLIC vssc_string_map_t *
-vssq_messenger_contacts_discover_phone_numbers(const vssq_messenger_contacts_t *self,
-        const vssc_string_list_t *phone_numbers, vsc_str_t country_code, vssq_error_t *error) {
+vssq_messenger_contacts_discover_phone_numbers(
+        const vssq_messenger_contacts_t *self, const vssc_string_list_t *phone_numbers, vssq_error_t *error) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(phone_numbers);
-    VSSQ_UNUSED(country_code);
-    VSSQ_UNUSED(error);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
+    VSSQ_ASSERT_PTR(phone_numbers);
+    VSSQ_ASSERT(vssc_string_list_has_item(phone_numbers));
 
-    //  TODO: This is STUB. Implement me.
+    vssq_error_t internal_error;
+    vssq_error_reset(&internal_error);
 
-    return NULL;
+    vssc_string_map_t *phone_numbers_to_hashes = vssq_contact_utils_hash_phone_numbers(phone_numbers, &internal_error);
+    if (vssq_error_has_error(&internal_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_error_status(&internal_error));
+        return NULL;
+    }
+
+    vssc_string_map_t *result =
+            vssq_messenger_contacts_generic_discover(self, phone_numbers_to_hashes, k_url_path_phone_discovery,
+                    k_json_key_phone_hashes, k_json_key_phone_numbers_to_identities, &internal_error);
+
+    VSSQ_ERROR_SAFE_UPDATE(error, vssq_error_status(&internal_error));
+
+    vssc_string_map_destroy(&phone_numbers_to_hashes);
+
+    return result;
 }
 
 //
@@ -589,12 +807,81 @@ vssq_messenger_contacts_discover_phone_numbers(const vssq_messenger_contacts_t *
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_contacts_add_email(const vssq_messenger_contacts_t *self, vsc_str_t email) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(email);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
-    //  TODO: This is STUB. Implement me.
+    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
 
-    return vssq_status_SUCCESS;
+    //
+    //  Declare vars.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    vsc_str_mutable_t request_url = {NULL, 0};
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vssc_json_object_t *http_request_json = NULL;
+    vsc_str_buffer_t *username_hash = NULL;
+
+    //
+    //  Hash username.
+    //
+    const vssq_messenger_user_t *user = vssq_messenger_auth_user(self->auth);
+    vsc_str_t username = vssq_messenger_user_username(user);
+
+    username_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
+    error.status = vssq_contact_utils_hash_username(username, username_hash);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Validate email number.
+    //
+    error.status = vssq_contact_utils_validate_email(email);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Make request.
+    //
+    http_request_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(http_request_json, k_json_key_username_hash, vsc_str_buffer_str(username_hash));
+    vssc_json_object_add_string_value(http_request_json, k_json_key_email, email);
+
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_email_add);
+
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
+            vssc_json_object_as_str(http_request_json));
+
+    vsc_str_mutable_release(&request_url);
+
+    //
+    //  Send request.
+    //
+    http_response = vssq_messenger_auth_send_contact_discovery_request(self->auth, http_request, &error);
+
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_str_mutable_release(&request_url);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&http_request_json);
+    vsc_str_buffer_destroy(&username_hash);
+
+    return vssq_error_status(&error);
 }
 
 //
@@ -604,13 +891,83 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_contacts_confirm_email(
         const vssq_messenger_contacts_t *self, vsc_str_t email, vsc_str_t confirmation_code) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(email);
-    VSSQ_UNUSED(confirmation_code);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(confirmation_code));
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
-    //  TODO: This is STUB. Implement me.
+    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
 
-    return vssq_status_SUCCESS;
+    //
+    //  Declare vars.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    vsc_str_mutable_t request_url = {NULL, 0};
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vssc_json_object_t *http_request_json = NULL;
+    vsc_str_buffer_t *username_hash = NULL;
+
+    //
+    //  Hash username.
+    //
+    const vssq_messenger_user_t *user = vssq_messenger_auth_user(self->auth);
+    vsc_str_t username = vssq_messenger_user_username(user);
+
+    username_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
+    error.status = vssq_contact_utils_hash_username(username, username_hash);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Validate email.
+    //
+    error.status = vssq_contact_utils_validate_email(email);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Make request.
+    //
+    http_request_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(http_request_json, k_json_key_username_hash, vsc_str_buffer_str(username_hash));
+    vssc_json_object_add_string_value(http_request_json, k_json_key_email, email);
+    vssc_json_object_add_string_value(http_request_json, k_json_key_confirmation_code, confirmation_code);
+
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_email_confirm);
+
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
+            vssc_json_object_as_str(http_request_json));
+
+    vsc_str_mutable_release(&request_url);
+
+    //
+    //  Send request.
+    //
+    http_response = vssq_messenger_auth_send_contact_discovery_request(self->auth, http_request, &error);
+
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_str_mutable_release(&request_url);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&http_request_json);
+    vsc_str_buffer_destroy(&username_hash);
+
+    return vssq_error_status(&error);
 }
 
 //
@@ -619,33 +976,108 @@ vssq_messenger_contacts_confirm_email(
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_contacts_delete_email(const vssq_messenger_contacts_t *self, vsc_str_t email) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(email);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(email));
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
-    //  TODO: This is STUB. Implement me.
+    const vssq_messenger_config_t *config = vssq_messenger_auth_config(self->auth);
 
-    return vssq_status_SUCCESS;
+    //
+    //  Declare vars.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    vsc_str_mutable_t request_url = {NULL, 0};
+    vssc_http_request_t *http_request = NULL;
+    vssc_http_response_t *http_response = NULL;
+    vssc_json_object_t *http_request_json = NULL;
+    vsc_str_buffer_t *email_hash = NULL;
+
+    //
+    //  Hash email.
+    //
+    email_hash = vsc_str_buffer_new_with_capacity(vssq_contact_utils_DIGEST_HEX_LEN);
+    error.status = vssq_contact_utils_hash_email(email, email_hash);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Make request.
+    //
+    http_request_json = vssc_json_object_new();
+    vssc_json_object_add_string_value(http_request_json, k_json_key_email_hash, vsc_str_buffer_str(email_hash));
+
+    request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_email_delete);
+
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
+            vssc_json_object_as_str(http_request_json));
+
+    vsc_str_mutable_release(&request_url);
+
+    //
+    //  Send request.
+    //
+    http_response = vssq_messenger_auth_send_contact_discovery_request(self->auth, http_request, &error);
+
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    if (!vssc_http_response_is_success(http_response)) {
+        vssq_error_update(&error, vssq_status_CONTACTS_FAILED_RESPONSE_WITH_ERROR);
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_str_mutable_release(&request_url);
+    vssc_http_request_destroy(&http_request);
+    vssc_http_response_destroy(&http_response);
+    vssc_json_object_destroy(&http_request_json);
+    vsc_str_buffer_destroy(&email_hash);
+
+    return vssq_error_status(&error);
 }
 
 //
 //  Discover given emails.
+//
 //  Return map email->identity.
 //
 VSSQ_PUBLIC vssc_string_map_t *
 vssq_messenger_contacts_discover_emails(
         const vssq_messenger_contacts_t *self, const vssc_string_list_t *emails, vssq_error_t *error) {
 
-    VSSQ_UNUSED(self);
-    VSSQ_UNUSED(emails);
-    VSSQ_UNUSED(error);
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
+    VSSQ_ASSERT_PTR(emails);
+    VSSQ_ASSERT(vssc_string_list_has_item(emails));
 
-    //  TODO: This is STUB. Implement me.
+    vssq_error_t internal_error;
+    vssq_error_reset(&internal_error);
 
-    return NULL;
+    vssc_string_map_t *emails_to_hashes = vssq_contact_utils_hash_emails(emails, &internal_error);
+    if (vssq_error_has_error(&internal_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_error_status(&internal_error));
+        return NULL;
+    }
+
+    vssc_string_map_t *result = vssq_messenger_contacts_generic_discover(self, emails_to_hashes,
+            k_url_path_email_discovery, k_json_key_email_hashes, k_json_key_emails_to_identities, &internal_error);
+
+    VSSQ_ERROR_SAFE_UPDATE(error, vssq_error_status(&internal_error));
+
+    vssc_string_map_destroy(&emails_to_hashes);
+
+    return result;
 }
 
 //
 //  Generic discovery.
+//
 //  Return map contact->identity.
 //
 static vssc_string_map_t *

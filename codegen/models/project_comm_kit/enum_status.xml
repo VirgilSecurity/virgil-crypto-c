@@ -225,6 +225,14 @@
         Username validation failed because it contains invalid characters.
     </constant>
 
+    <constant name="contact validation failed phone number bad format" value="-1102">
+        Phone number validation failed because it does not conform to E.164 standard.
+    </constant>
+
+    <constant name="contact validation failed email bad format" value="-1103">
+        Email validation failed because it has invalid format.
+    </constant>
+
     <constant name="modify group failed permission violation" value="-1200">
         The current user can not modify the group - permission violation.
     </constant>

@@ -76,6 +76,10 @@
         <value value="phone_number"/>
     </constant>
 
+    <constant name="k json key phone hash" type="string" visibility="private">
+        <value value="phone_hash"/>
+    </constant>
+
     <constant name="k json key phone hashes" type="string" visibility="private">
         <value value="phone_hashes"/>
     </constant>
@@ -88,12 +92,20 @@
         <value value="email"/>
     </constant>
 
+    <constant name="k json key email hash" type="string" visibility="private">
+        <value value="email_hash"/>
+    </constant>
+
     <constant name="k json key email hashes" type="string" visibility="private">
         <value value="email_hashes"/>
     </constant>
 
     <constant name="k json key emails to identities" type="string" visibility="private">
         <value value="emails_to_identities"/>
+    </constant>
+
+    <constant name="k json key username hash" type="string" visibility="private">
+        <value value="username_hash"/>
     </constant>
 
     <constant name="k json key username hashes" type="string" visibility="private">
@@ -112,6 +124,7 @@
     <!-- User name -->
     <method name="discover usernames" is_const="1">
         Discover given user names.
+
         Return map username->identity.
 
         <argument name="usernames" class="string list" project="core sdk"/>
@@ -124,8 +137,9 @@
     <method name="add phone number" is_const="1">
         Register user's phone number.
 
+        Prerequisites: phone numbers are formatted according to E.164 standard.
+
         <argument name="phone number" class="str"/>
-        <argument name="country code" class="str"/>
 
         <return enum="status"/>
     </method>
@@ -134,8 +148,9 @@
     <method name="confirm phone number" is_const="1">
         Confirm user's phone number.
 
+        Prerequisites: phone numbers are formatted according to E.164 standard.
+
         <argument name="phone number" class="str"/>
-        <argument name="country code" class="str"/>
         <argument name="confirmation code" class="str"/>
 
         <return enum="status"/>
@@ -145,8 +160,9 @@
     <method name="delete phone number" is_const="1">
         Delete user's phone number.
 
+        Prerequisites: phone numbers are formatted according to E.164 standard.
+
         <argument name="phone number" class="str"/>
-        <argument name="country code" class="str"/>
 
         <return enum="status"/>
     </method>
@@ -154,10 +170,12 @@
 
     <method name="discover phone numbers" is_const="1">
         Discover given phone numbers.
-        Return map phone->identity.
+
+        Return map phone-number->identity.
+
+        Prerequisites: phone numbers are formatted according to E.164 standard.
 
         <argument name="phone numbers" class="string list" project="core sdk"/>
-        <argument name="country code" class="str"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="string map" project="core sdk" access="disown"/>
@@ -195,6 +213,7 @@
 
     <method name="discover emails" is_const="1">
         Discover given emails.
+
         Return map email->identity.
 
         <argument name="emails" class="string list" project="core sdk"/>
@@ -206,6 +225,7 @@
     <!-- Helpers -->
     <method name="generic discover" is_const="1" declaration="private">
         Generic discovery.
+
         Return map contact->identity.
 
         <argument name="contacts to hashes" class="string map" project="core sdk"/>

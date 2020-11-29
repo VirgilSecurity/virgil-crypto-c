@@ -297,6 +297,14 @@ enum vssq_status_t {
     //
     vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS = -1101,
     //
+    //  Phone number validation failed because it does not conform to E.164 standard.
+    //
+    vssq_status_CONTACT_VALIDATION_FAILED_PHONE_NUMBER_BAD_FORMAT = -1102,
+    //
+    //  Email validation failed because it has invalid format.
+    //
+    vssq_status_CONTACT_VALIDATION_FAILED_EMAIL_BAD_FORMAT = -1103,
+    //
     //  The current user can not modify the group - permission violation.
     //
     vssq_status_MODIFY_GROUP_FAILED_PERMISSION_VIOLATION = -1200,

@@ -463,6 +463,20 @@ static const vsc_str_t k_message_contact_validation_failed_username_bad_chars = 
     sizeof(k_message_contact_validation_failed_username_bad_chars_chars) - 1
 };
 
+static const char k_message_contact_validation_failed_phone_number_bad_format_chars[] = "Phone number validation failed because it does not conform to E.164 standard.";
+
+static const vsc_str_t k_message_contact_validation_failed_phone_number_bad_format = {
+    k_message_contact_validation_failed_phone_number_bad_format_chars,
+    sizeof(k_message_contact_validation_failed_phone_number_bad_format_chars) - 1
+};
+
+static const char k_message_contact_validation_failed_email_bad_format_chars[] = "Email validation failed because it has invalid format.";
+
+static const vsc_str_t k_message_contact_validation_failed_email_bad_format = {
+    k_message_contact_validation_failed_email_bad_format_chars,
+    sizeof(k_message_contact_validation_failed_email_bad_format_chars) - 1
+};
+
 static const char k_message_modify_group_failed_permission_violation_chars[] = "The current user can not modify the group - permission violation.";
 
 static const vsc_str_t k_message_modify_group_failed_permission_violation = {
@@ -729,6 +743,10 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_contact_validation_failed_username_too_long;
         case vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS:
             return k_message_contact_validation_failed_username_bad_chars;
+        case vssq_status_CONTACT_VALIDATION_FAILED_PHONE_NUMBER_BAD_FORMAT:
+            return k_message_contact_validation_failed_phone_number_bad_format;
+        case vssq_status_CONTACT_VALIDATION_FAILED_EMAIL_BAD_FORMAT:
+            return k_message_contact_validation_failed_email_bad_format;
         case vssq_status_MODIFY_GROUP_FAILED_PERMISSION_VIOLATION:
             return k_message_modify_group_failed_permission_violation;
         case vssq_status_ACCESS_GROUP_FAILED_PERMISSION_VIOLATION:
