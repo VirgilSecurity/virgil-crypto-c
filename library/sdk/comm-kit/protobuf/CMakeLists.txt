@@ -106,7 +106,7 @@ include (CMakePackageConfigHelpers)
 if(VIRGIL_INSTALL_DEPS_HDRS)
     install(
             DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
-            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/virgil/sdk/comm_kit"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/virgil/sdk/comm-kit"
             FILES_MATCHING PATTERN "*.h"
             PATTERN "CMakeFiles" EXCLUDE
             )

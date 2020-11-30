@@ -2,7 +2,7 @@
         name="comm kit"
         brief="Virgil Security Communications Platform (CommKit)"
         package="sdk comm-kit"
-        namespace="virgil commkit"
+        namespace="virgil sdk comm-kit"
         framework="VSSQ"
         prefix="vssq"
         wrappers=""

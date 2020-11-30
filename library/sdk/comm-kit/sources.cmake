@@ -54,138 +54,138 @@ check_include_files(assert.h VSSQ_HAVE_ASSERT_H)
 check_include_files(stdatomic.h VSSQ_HAVE_STDATOMIC_H)
 
 configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_platform.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/commkit/vssq_platform.h"
+        "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_platform.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/comm-kit/vssq_platform.h"
         )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_assert.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_assert.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_library.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_library.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_memory.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_memory.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/commkit/vssq_platform.h"
+    SOURCE "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/comm-kit/vssq_platform.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_contact_utils.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_contact_utils.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_ejabberd_jwt.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_ejabberd_jwt.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_error.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error_message.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_error_message.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_config.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_config.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_creds.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_creds.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_group.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group_epoch_list.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_group_epoch_list.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_user.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user_list.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_user_list.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_status.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_status.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_comm_kit_public.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_comm_kit_public.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 target_sources(comm_kit
     PRIVATE
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_assert.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_library.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_memory.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_atomic.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/commkit/vssq_platform.h"
-            "$<$<BOOL:${VSSQ_CONTACT_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_contact_utils.h>"
-            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_ejabberd_jwt.h>"
-            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_ejabberd_jwt_defs.h>"
-            "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error.h>"
-            "$<$<BOOL:${VSSQ_ERROR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_error_message.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_private.h"
-            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_auth_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_config.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_config_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_contacts.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_contacts_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_creds.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_creds_private.h"
-            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_creds_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_private.h"
-            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_defs.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_assert.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_library.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_memory.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_atomic.h"
+            "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/comm-kit/vssq_platform.h"
+            "$<$<BOOL:${VSSQ_CONTACT_UTILS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_contact_utils.h>"
+            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_ejabberd_jwt.h>"
+            "$<$<BOOL:${VSSQ_EJABBERD_JWT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_ejabberd_jwt_defs.h>"
+            "$<$<BOOL:${VSSQ_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_error.h>"
+            "$<$<BOOL:${VSSQ_ERROR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_error_message.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_auth.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_auth_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_config.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_config_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_contacts.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_contacts_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_creds.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_creds_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_creds_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_group.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_group_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_group_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_keyknox_storage.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch_keyknox_storage_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_group_epoch_list.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_epoch_list_private.h"
-            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_group_epoch_list_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_private.h"
-            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_defs.h>"
-            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_messenger_user_list.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_list_private.h"
-            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_messenger_user_list_defs.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_status.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/vssq_comm_kit_public.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private/vssq_comm_kit_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_group_epoch_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_group_epoch_list_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_group_epoch_list_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_user.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_user_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_user_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_user_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_user_list_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_user_list_defs.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_comm_kit_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_comm_kit_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_library.c"
@@ -223,10 +223,10 @@ target_sources(comm_kit
 target_include_directories(comm_kit
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/commkit/private>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/commkit>
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/commkit/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/comm-kit>
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/virgil/sdk/comm-kit/private>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/src>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
         )
