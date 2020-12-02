@@ -219,7 +219,7 @@ VSSC_PUBLIC vsc_str_t
 vssc_http_request_method(const vssc_http_request_t *self);
 
 //
-//  Return HTTP url.
+//  Return HTTP URL.
 //
 VSSC_PUBLIC vsc_str_t
 vssc_http_request_url(const vssc_http_request_t *self);

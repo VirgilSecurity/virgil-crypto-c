@@ -53,7 +53,9 @@
 #include "vssc_http_request.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_http_request_private.h"
 #include "vssc_http_request_defs.h"
+#include "vssc_http_header.h"
 
 // clang-format on
 //  @end
@@ -440,6 +442,18 @@ vssc_http_request_add_header(vssc_http_request_t *self, vsc_str_t name, vsc_str_
 }
 
 //
+//  Add HTTP header.
+//
+VSSC_PUBLIC void
+vssc_http_request_add_header_disown(vssc_http_request_t *self, vssc_http_header_t **header_ref) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_REF(header_ref);
+
+    vssc_http_header_list_add(self->headers, header_ref);
+}
+
+//
 //  Return HTTP method.
 //
 VSSC_PUBLIC vsc_str_t
@@ -452,7 +466,7 @@ vssc_http_request_method(const vssc_http_request_t *self) {
 }
 
 //
-//  Return HTTP url.
+//  Return HTTP URL.
 //
 VSSC_PUBLIC vsc_str_t
 vssc_http_request_url(const vssc_http_request_t *self) {

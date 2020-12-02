@@ -71,6 +71,7 @@
 #   include <virgil/sdk/core/vssc_http_response.h>
 #   include <virgil/sdk/core/vssc_jwt.h>
 #   include <virgil/sdk/core/vssc_http_request.h>
+#   include <virgil/sdk/core/vssc_http_header.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -82,6 +83,7 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSC/vssc_http_header.h>
 #   include <VSSC/vssc_jwt.h>
 #   include <VSSC/vssc_http_request.h>
 #   include <VSSC/vssc_http_response.h>
@@ -325,6 +327,17 @@ vssq_messenger_auth_contact_discovery_jwt(const vssq_messenger_auth_t *self, vss
 //
 VSSQ_PUBLIC const vssq_ejabberd_jwt_t *
 vssq_messenger_auth_ejabberd_jwt(const vssq_messenger_auth_t *self, vssq_error_t *error);
+
+//
+//  Generate authorization header for a Virgil Messenger Backend.
+//
+//  Header-Name : Authorization
+//  Header-Value: Bearer JWT
+//
+//  Prerequisites: credentials are defined.
+//
+VSSQ_PUBLIC vssc_http_header_t *
+vssq_messenger_auth_generate_messenger_auth_header(const vssq_messenger_auth_t *self, vssq_error_t *error);
 
 //
 //  Send HTTP request to the a Virgil Messenger Backend.

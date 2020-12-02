@@ -58,6 +58,7 @@
 #include "vssc_atomic.h"
 #include "vssc_card_list_private.h"
 #include "vssc_card_private.h"
+#include "vssc_http_request_private.h"
 #include "vssc_impl_private.h"
 #include "vssc_json_array_private.h"
 #include "vssc_json_object_private.h"

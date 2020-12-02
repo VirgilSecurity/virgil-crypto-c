@@ -476,6 +476,20 @@
     </method>
 
 
+    <method name="generate messenger auth header" is_const="1">
+        Generate authorization header for a Virgil Messenger Backend.
+
+        Header-Name : Authorization
+        Header-Value: Bearer JWT
+
+        Prerequisites: credentials are defined.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http header" project="core sdk" access="disown"/>
+    </method>
+
+
     <method name="send messenger request" is_const="1">
         Send HTTP request to the a Virgil Messenger Backend.
 

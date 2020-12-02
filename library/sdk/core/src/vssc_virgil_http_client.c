@@ -197,14 +197,14 @@ vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_requ
 #if VSSC_VIRGIL_HTTP_CLIENT_DEBUG
     printf("\n---------------------\n");
     printf("Sending HTTP request:\n");
-    printf("    METHOD: %s\n", vssc_http_request_method(http_request).chars);
-    printf("       URL: %s\n", vssc_http_request_url(http_request).chars);
-    printf("      BODY: %s\n", vssc_http_request_body(http_request).chars);
+    printf(" METHOD: %s\n", vssc_http_request_method(http_request).chars);
+    printf(" URL: %s\n", vssc_http_request_url(http_request).chars);
+    printf(" BODY: %s\n", vssc_http_request_body(http_request).chars);
 
 
     vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
     if (!vsc_str_is_empty(auth_header_value)) {
-        printf("    HEADER: Authorization: %s\n", auth_header_value.chars);
+        printf(" HEADER: Authorization: %s\n", auth_header_value.chars);
     }
 
     for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
@@ -215,7 +215,7 @@ vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_requ
         vsc_str_t header_name = vssc_http_header_name(header);
         vsc_str_t header_value = vssc_http_header_value(header);
 
-        printf("    HEADER: %s: %s\n", header_name.chars, header_value.chars);
+        printf(" HEADER: %s: %s\n", header_name.chars, header_value.chars);
     }
 #else
     VSSC_UNUSED(http_request);
@@ -236,8 +236,8 @@ vssc_virgil_http_client_debug_print_response(const vssc_http_response_t *http_re
 
     printf("\n---------------------\n");
     printf("Got HTTP response:\n");
-    printf("    STATUS: %zu\n", vssc_http_response_status_code(http_response));
-    printf("      BODY: %s\n", vssc_http_response_body(http_response).chars);
+    printf(" STATUS: %zu\n", vssc_http_response_status_code(http_response));
+    printf(" BODY: %s\n", vssc_http_response_body(http_response).chars);
 
     for (const vssc_http_header_list_t *header_it = vssc_http_response_headers(http_response);
             header_it != NULL && vssc_http_header_list_has_item(header_it);
@@ -247,7 +247,7 @@ vssc_virgil_http_client_debug_print_response(const vssc_http_response_t *http_re
         vsc_str_t header_name = vssc_http_header_name(header);
         vsc_str_t header_value = vssc_http_header_value(header);
 
-        printf("    HEADER: %s: %s\n", header_name.chars, header_value.chars);
+        printf(" HEADER: %s: %s\n", header_name.chars, header_value.chars);
     }
 #else
     VSSC_UNUSED(http_response);

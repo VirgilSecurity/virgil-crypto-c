@@ -61,6 +61,13 @@
     </method>
 
 
+    <method name="add header disown" scope="private">
+        Add HTTP header.
+
+        <argument name="header" class="http header" access="disown"/>
+    </method>
+
+
     <method name="method" is_const="1">
         Return HTTP method.
 
@@ -69,7 +76,7 @@
 
 
     <method name="url" is_const="1">
-        Return HTTP url.
+        Return HTTP URL.
 
         <return class="str"/>
     </method>

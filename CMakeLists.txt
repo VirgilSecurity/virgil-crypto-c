@@ -124,7 +124,7 @@ option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
 
 
 # ---------------------------------------------------------------------------
-#   Platfrom specific.
+#   Platform specific.
 # ---------------------------------------------------------------------------
 set(VIRGIL_PLATFORM_HDR "" CACHE STRING "Name or path to the header file that contains platform specific definitions.")
 set(VIRGIL_PLATFORM_INC_DIR "" CACHE STRING "Path to the platform specific include directory.")

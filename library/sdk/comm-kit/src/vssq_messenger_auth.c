@@ -267,7 +267,7 @@ static const vsc_str_t k_url_path_contact_discovery_jwt = {
     sizeof(k_url_path_contact_discovery_jwt_chars) - 1
 };
 
-static const char k_url_path_ejabberd_jwt_chars[] = "/ejabberd-jwt";
+static const char k_url_path_ejabberd_jwt_chars[] = "/vhost-jwt";
 
 static const vsc_str_t k_url_path_ejabberd_jwt = {
     k_url_path_ejabberd_jwt_chars,
@@ -2542,6 +2542,75 @@ vssq_messenger_auth_update_user(vssq_messenger_auth_t *self, vssc_card_t **card_
 }
 
 //
+//  Generate authorization header for a Virgil Messenger Backend.
+//
+//  Header-Name : Authorization
+//  Header-Value: Bearer JWT
+//
+//  Prerequisites: credentials are defined.
+//
+VSSQ_PUBLIC vssc_http_header_t *
+vssq_messenger_auth_generate_messenger_auth_header(const vssq_messenger_auth_t *self, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT_PTR(vssq_messenger_auth_has_creds(self));
+
+    vscf_signer_t *signer = vscf_signer_new();
+    vscf_signer_use_random(signer, self->random);
+    vscf_signer_take_hash(signer, vscf_sha512_impl(vscf_sha512_new()));
+    const size_t jwt_signature_len = vscf_signer_signature_len(signer, vssq_messenger_creds_private_key(self->creds));
+
+    vsc_str_t card_id = vssq_messenger_creds_card_id(self->creds);
+
+    char timestamp_str[22] = {'\0'};
+    snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
+    vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
+
+    const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);
+    const size_t jwt_to_sign_len = card_id.len + 1 /* dot */ + timestamp.len;
+    const size_t jwt_len = jwt_to_sign_len + 1 /* dot */ + jwt_signature_str_len;
+
+    vsc_str_buffer_t *jwt = vsc_str_buffer_new_with_capacity(jwt_len);
+
+    vsc_str_buffer_write_str(jwt, card_id);
+    vsc_str_buffer_write_char(jwt, '.');
+    vsc_str_buffer_write_str(jwt, timestamp);
+
+    vsc_buffer_t *jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
+    vscf_signer_reset(signer);
+    vscf_signer_append_data(signer, vsc_str_as_data(vsc_str_buffer_str(jwt)));
+    const vscf_status_t sign_status =
+            vscf_signer_sign(signer, vssq_messenger_creds_private_key(self->creds), jwt_signature);
+
+    if (sign_status == vscf_status_SUCCESS) {
+        vsc_str_buffer_write_char(jwt, '.');
+        vscf_base64_encode(vsc_buffer_data(jwt_signature), &(jwt->buffer));
+    }
+
+    vscf_signer_destroy(&signer);
+    vsc_buffer_destroy(&jwt_signature);
+
+    if (sign_status == vscf_status_SUCCESS) {
+        vsc_str_mutable_t header_value =
+                vsc_str_mutable_concat_with_space_sep(k_http_header_auth_type_bearer, vsc_str_buffer_str(jwt));
+
+        vssc_http_header_t *auth_header =
+                vssc_http_header_new_with(vssc_http_header_name_authorization, vsc_str_mutable_as_str(header_value));
+
+        vsc_str_buffer_destroy(&jwt);
+        vsc_str_mutable_release(&header_value);
+
+        return auth_header;
+
+    } else {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_AUTH_HEADER_FAILED);
+        vsc_str_buffer_destroy(&jwt);
+        return NULL;
+    }
+}
+
+//
 //  Send HTTP request to the a Virgil Messenger Backend.
 //
 //  Note, Authorization is added if "with auth" option is true.
@@ -2552,58 +2621,16 @@ vssq_messenger_auth_send_messenger_request(
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(http_request);
-    VSSQ_ASSERT_PTR(self->random);
 
     //
-    //  Set Messenger JWT first.
+    //  Set Messenger JWT first if requested.
     //
     if (with_auth) {
-        VSSQ_ASSERT_PTR(vssq_messenger_auth_has_creds(self));
-
-        vscf_signer_t *signer = vscf_signer_new();
-        vscf_signer_use_random(signer, self->random);
-        vscf_signer_take_hash(signer, vscf_sha512_impl(vscf_sha512_new()));
-        const size_t jwt_signature_len =
-                vscf_signer_signature_len(signer, vssq_messenger_creds_private_key(self->creds));
-
-        vsc_str_t card_id = vssq_messenger_creds_card_id(self->creds);
-
-        char timestamp_str[22] = {'\0'};
-        snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
-        vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
-
-        const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);
-        const size_t jwt_to_sign_len = card_id.len + 1 /* dot */ + timestamp.len;
-        const size_t jwt_len = jwt_to_sign_len + 1 /* dot */ + jwt_signature_str_len;
-
-        vsc_str_buffer_t *jwt = vsc_str_buffer_new_with_capacity(jwt_len);
-
-        vsc_str_buffer_write_str(jwt, card_id);
-        vsc_str_buffer_write_char(jwt, '.');
-        vsc_str_buffer_write_str(jwt, timestamp);
-
-        vsc_buffer_t *jwt_signature = vsc_buffer_new_with_capacity(jwt_signature_len);
-        vscf_signer_reset(signer);
-        vscf_signer_append_data(signer, vsc_str_as_data(vsc_str_buffer_str(jwt)));
-        const vscf_status_t sign_status =
-                vscf_signer_sign(signer, vssq_messenger_creds_private_key(self->creds), jwt_signature);
-
-        if (sign_status == vscf_status_SUCCESS) {
-            vsc_str_buffer_write_char(jwt, '.');
-            vscf_base64_encode(vsc_buffer_data(jwt_signature), &(jwt->buffer));
-        }
-
-        vscf_signer_destroy(&signer);
-        vsc_buffer_destroy(&jwt_signature);
-
-        if (sign_status == vscf_status_SUCCESS) {
-            vssc_http_request_set_auth_header_value_from_type_and_credentials(
-                    http_request, k_http_header_auth_type_bearer, vsc_str_buffer_str(jwt));
-            vsc_str_buffer_destroy(&jwt);
-
+        vssc_http_header_t *auth_header = vssq_messenger_auth_generate_messenger_auth_header(self, error);
+        if (auth_header) {
+            vssc_http_request_set_auth_header_value(http_request, vssc_http_header_value(auth_header));
+            vssc_http_header_destroy(&auth_header);
         } else {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_AUTH_HEADER_FAILED);
-            vsc_str_buffer_destroy(&jwt);
             return NULL;
         }
     }

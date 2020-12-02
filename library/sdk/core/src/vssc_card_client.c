@@ -418,10 +418,6 @@ vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
     vssc_json_object_destroy(&json);
-
-    vssc_http_request_add_header(
-            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
-
     vsc_str_mutable_release(&card_url);
 
     return http_request;
