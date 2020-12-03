@@ -53,11 +53,9 @@
 #include "vssq_messenger.h"
 #include "vssq_memory.h"
 #include "vssq_assert.h"
-#include "vssq_messenger_private.h"
 #include "vssq_messenger_defs.h"
 #include "vssq_messenger_group_private.h"
 #include "vssq_messenger_user_list_private.h"
-#include "vssq_messenger_auth.h"
 
 #include <virgil/crypto/common/private/vsc_str_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>

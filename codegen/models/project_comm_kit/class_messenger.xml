@@ -133,7 +133,7 @@
     </method>
 
 
-    <method name="auth" is_const="1" scope="private">
+    <method name="auth" is_const="1">
         Return authentication module.
 
         It should be used with great carefulness and responsibility.

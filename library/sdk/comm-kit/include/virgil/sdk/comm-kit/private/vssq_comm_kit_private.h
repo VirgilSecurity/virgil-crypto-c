@@ -58,7 +58,6 @@
 #include "vssq_messenger_creds_private.h"
 #include "vssq_messenger_group_epoch_list_private.h"
 #include "vssq_messenger_group_private.h"
-#include "vssq_messenger_private.h"
 #include "vssq_messenger_user_list_private.h"
 #include "vssq_messenger_user_private.h"
 
@@ -71,7 +70,6 @@
 #endif
 
 #if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
 #   include "vssq_messenger_auth_defs.h"
 #endif
 

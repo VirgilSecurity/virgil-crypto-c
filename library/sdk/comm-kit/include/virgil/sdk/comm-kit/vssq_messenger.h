@@ -59,6 +59,7 @@
 #include "vssq_messenger_creds.h"
 #include "vssq_messenger_user.h"
 #include "vssq_error.h"
+#include "vssq_messenger_auth.h"
 #include "vssq_messenger_user_list.h"
 #include "vssq_messenger_group.h"
 
@@ -284,6 +285,14 @@ vssq_messenger_authenticate_with_backup_creds(vssq_messenger_t *self, vsc_str_t 
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_remove_creds_backup(const vssq_messenger_t *self) VSSQ_NODISCARD;
+
+//
+//  Return authentication module.
+//
+//  It should be used with great carefulness and responsibility.
+//
+VSSQ_PUBLIC const vssq_messenger_auth_t *
+vssq_messenger_auth(const vssq_messenger_t *self);
 
 //
 //  Return founded user or error.

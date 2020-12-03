@@ -1,4 +1,4 @@
-<class name="messenger auth" scope="private">
+<class name="messenger auth">
     Provides access to the messenger authentication endpoints.
 
     <require header="stdio.h" is_system="1"/>
@@ -59,7 +59,7 @@
     </constant>
 
     <constant name="k url path ejabberd jwt" type="string" visibility="private">
-        <value value="/ejabberd-jwt"/>
+        <value value="/vhost-jwt"/>
     </constant>
 
     <constant name="k url path signup" type="string" visibility="private">
