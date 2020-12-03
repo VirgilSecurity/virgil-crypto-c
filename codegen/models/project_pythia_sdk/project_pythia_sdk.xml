@@ -3,7 +3,7 @@
         brief="Virgil Security Pythia SDK"
         package="sdk pythia"
         namespace="virgil sdk pythia"
-        framework="VSSP"
+        framework="VSSPyhia"
         prefix="vssp"
         wrappers=""
         >

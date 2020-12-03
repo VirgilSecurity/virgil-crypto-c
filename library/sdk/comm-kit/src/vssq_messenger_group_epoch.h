@@ -75,8 +75,8 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_json_array.h>
-#   include <VSSC/vssc_string_list.h>
+#   include <VSSCore/vssc_json_array.h>
+#   include <VSSCore/vssc_string_list.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK

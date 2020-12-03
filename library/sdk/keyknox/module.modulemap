@@ -1,4 +1,4 @@
-framework module VSSK {
+framework module VSSKeyknox {
     header "vssk_keyknox_sdk_public.h"
     export *
 }

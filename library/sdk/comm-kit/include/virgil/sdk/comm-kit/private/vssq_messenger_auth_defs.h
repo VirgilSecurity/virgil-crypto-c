@@ -69,7 +69,7 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_jwt.h>
+#   include <VSSCore/vssc_jwt.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK

@@ -73,8 +73,8 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_string_list.h>
-#   include <VSSC/vssc_string_map.h>
+#   include <VSSCore/vssc_string_list.h>
+#   include <VSSCore/vssc_string_map.h>
 #endif
 
 // clang-format on

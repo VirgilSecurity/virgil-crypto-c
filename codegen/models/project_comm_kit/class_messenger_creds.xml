@@ -2,7 +2,7 @@
     Contains user private key and credentials (JWT) to the messenger services.
 
     <require class="key provider" project="foundation"/>
-    <require class="json object" project="core sdk" scope="public"/>
+    <require class="json object" project="core sdk"/>
     <require class="json object" project="core sdk" api="private"/>
 
 

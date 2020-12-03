@@ -72,9 +72,9 @@
 #endif
 
 #if VSSK_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_http_response.h>
-#   include <VSSC/vssc_http_request.h>
-#   include <VSSC/vssc_string_list.h>
+#   include <VSSCore/vssc_http_response.h>
+#   include <VSSCore/vssc_http_request.h>
+#   include <VSSCore/vssc_string_list.h>
 #endif
 
 // clang-format on

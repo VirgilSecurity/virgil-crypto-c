@@ -83,10 +83,10 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
-#   include <VSSC/vssc_http_header.h>
-#   include <VSSC/vssc_jwt.h>
-#   include <VSSC/vssc_http_request.h>
-#   include <VSSC/vssc_http_response.h>
+#   include <VSSCore/vssc_http_header.h>
+#   include <VSSCore/vssc_jwt.h>
+#   include <VSSCore/vssc_http_request.h>
+#   include <VSSCore/vssc_http_response.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK

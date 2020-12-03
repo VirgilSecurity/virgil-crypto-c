@@ -3,7 +3,7 @@
         brief="Virgil Security Keyknox SDK"
         package="sdk keyknox"
         namespace="virgil sdk keyknox"
-        framework="VSSK"
+        framework="VSSKeyknox"
         prefix="vssk"
         wrappers=""
         >
