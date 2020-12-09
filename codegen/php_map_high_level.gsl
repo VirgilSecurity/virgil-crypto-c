@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -399,7 +399,7 @@ function php_map_high_level_method (in_method, in_php_module, in_type, out_php_m
     my._method_arguments = ""
     my._function_arguments = ""
 
-    for my.in_method.argument as argument0 where (defined(argument0.class) & !string_in(argument0.class, "error, buffer")) | !defined(argument0.class)
+    for my.in_method.argument as argument0 where (defined(argument0.class) & !string_in2(argument0.class, "error, buffer, str buffer")) | !defined(argument0.class)
         my._d = ""
         if ! last()
             my._d = ", "
@@ -491,7 +491,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
     endif
 
     for my.in_method.argument as argument0 where defined (argument0.class)
-        if argument0.class = "buffer"
+        if string_in2(argument0.class, "buffer, str buffer")
             my._argument_buffer_count = my._argument_buffer_count + 1
             my._return_data_list += "$(argument0.name:c)"
             if ! last()
@@ -526,7 +526,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
         my._r = ""
 
         if defined (return0.class)
-            if return0.class = "data"
+            if string_in(return0.class, "data, str")
                 my._return_type = "string"
                 my._return_data = ""
             else
@@ -547,7 +547,7 @@ function php_map_high_level_return (in_method, in_php_module, out_php_method)
             my._return_class_impl = "1"
         endif
 
-        if (defined (return0.class) & return0.class <> "data") | defined (return0.interface) | defined (return0.impl)
+        if (defined (return0.class) & ! string_in(return0.class, "data, str")) | defined (return0.interface) | defined (return0.impl)
             my._return_type = "$(my._r:Pascal)"
         endif
 
@@ -590,8 +590,8 @@ function php_map_high_level_argument (in_argument, in_php_module, out_php_argume
     my._namespace = ""
     my._is_enum = "0"
 
-    if defined (my.in_argument.class) & ! string_in (my.in_argument.class, "error, buffer")
-            if string_in(my.in_argument.class, "data") 
+    if defined (my.in_argument.class) & ! string_in2 (my.in_argument.class, "error, buffer, str buffer")
+            if string_in(my.in_argument.class, "data, str") 
                 my._type = "string"
             elsif my.in_argument.class = "ctx"
                 my._type = ""

@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2019 Virgil Security, Inc.
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -216,7 +216,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._zend_arg_type_info = ""
                     endif
 
-                    for [function].argument as argument0 where ! string_in (argument0.type0, "error, buffer")
+                    for [function].argument as argument0 where ! string_in2 (argument0.type0, "error, buffer, str buffer")
                         my._num_arguments = my._num_arguments + 1
                         #ZEND_ARG_TYPE_INFO(pass_by_ref, name, type_hint, allow_null)
                         my._zend_arg_type_info += format_left("ZEND_ARG_TYPE_INFO(0, in_$(argument0.name:), $(argument0.zend_type:), 0)", 0)
@@ -263,7 +263,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._h1 = ""
                     endif
 
-                    for [function].argument as argument0 where argument0.type <> "vsc_buffer_t"
+                    for [function].argument as argument0 where ! string_in(argument0.type, "vsc_buffer_t, vsc_str_buffer_t")
                         if argument0.type0 <> "error"
                             if argument0.zend_type = "IS_STRING"
                                 my._h1 += format_left("\
@@ -308,7 +308,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         my._h2 = format_left("Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)", 1)
                     endif
 
-                    for [function].argument as argument0 where ! string_in (argument0.type0, "buffer, error")
+                    for [function].argument as argument0 where ! string_in2 (argument0.type0, "buffer, error, str buffer")
                             if argument0.zend_type = "IS_STRING"
                                 my._h2 += format_left("Z_PARAM_STRING_EX(in_$(argument0.name:), in_$(argument0.name:)_len, 1 /*check_null*/, 0 /*separate*/)", 1)
                             elsif argument0.zend_type = "IS_LONG"
@@ -352,9 +352,11 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                         ", 0)
                 endif
 
-                for [function].argument as argument0 where ! string_in (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned, char")
+                for [function].argument as argument0 where ! string_in2 (argument0.type0, "buffer, integer, enum, byte, boolean, unsigned, char, str buffer")
                     if argument0.type = "vsc_data_t"
                         my._proxy_call += format_left("vsc_data_t $(argument0.name:) = vsc_data((const byte*)in_$(argument0.name:), in_$(argument0.name:)_len);", 0)
+                    elsif argument0.type = "vsc_str_t"
+                        my._proxy_call += format_left("vsc_str_t $(argument0.name:) = vsc_str_from_str(in_$(argument0.name:));", 0)
                     elsif string_in (argument0.type0, "interface, class, impl")
                         if string_in(argument0.type0, "class, interface")
 
@@ -458,7 +460,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             echo_fatal("Not implemented (AI1001)", my)
                         endif
 
-                        if return_argument0.type = "buffer"
+                        if string_in2(return_argument0.type, "buffer, str buffer")
                             my._c = php_format_extension_comment("Allocate output buffer for output '$(return_argument0.name:)'")
 
                             if return_argument0.length_type = "constant"
@@ -487,11 +489,19 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                                 echo_fatal("Not implemented (AP1001)")
                             endif
 
-                            my._h1 = format_left("\
-                                zend_string *out_$(return_argument0.name:) = zend_string_alloc($(my._l), 0);
-                                vsc_buffer_t *$(return_argument0.name:) = vsc_buffer_new();
-                                vsc_buffer_use($(return_argument0.name:), (byte *)ZSTR_VAL(out_$(return_argument0.name:)), ZSTR_LEN(out_$(return_argument0.name:)));
-                                ", 0)
+                            if string_equal(return_argument0.type, "str buffer")
+                                my._h1 = format_left("\
+                                    zend_string *out_$(return_argument0.name:) = zend_string_alloc($(my._l), 0);
+                                    vsc_str_buffer_t *$(return_argument0.name:) = vsc_str_buffer_new();
+                                    vsc_str_buffer_use($(return_argument0.name:), (byte *)ZSTR_VAL(out_$(return_argument0.name:)), ZSTR_LEN(out_$(return_argument0.name:)));
+                                    ", 0)
+                            else
+                                my._h1 = format_left("\
+                                    zend_string *out_$(return_argument0.name:) = zend_string_alloc($(my._l), 0);
+                                    vsc_buffer_t *$(return_argument0.name:) = vsc_buffer_new();
+                                    vsc_buffer_use($(return_argument0.name:), (byte *)ZSTR_VAL(out_$(return_argument0.name:)), ZSTR_LEN(out_$(return_argument0.name:)));
+                                    ", 0)
+                            endif
                             my._res += my._c + my._h1 + "\n" + my._n
                         endif
                 endfor
@@ -529,7 +539,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     my._rs = ""
 
-                    for [function].return_argument as return_argument0 where return_argument0.type <> "buffer"
+                    for [function].return_argument as return_argument0 where ! string_in2(return_argument0.type, "buffer, str buffer")
 
                         if defined (return_argument0.class_name0) & (return_argument0.class_name0 = my.in_module.name)
                             my._rs = "_rs"
@@ -563,7 +573,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                             my._return += format_left("\
                                 $(return_argument0.type_t:) $(my._pointer:)out_$(return_argument0.name:)_temp = 
                                 ", 0)
-                        elsif return_argument0.type = "vsc_buffer_t"
+                        elsif string_in(return_argument0.type, "vsc_buffer_t, vsc_str_buffer_t")
                             my._data_string_proxy = "1"
                             my._data_string_proxy_call = format_left("\
                                 vsc_data_t out_data_temp = vsc_buffer_data(out_$(return_argument0.name:)_temp);
@@ -664,6 +674,10 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     my._res += format_left("ZSTR_LEN(out_$(return_argument0.name:)) = vsc_buffer_len($(return_argument0.name:));",)
                 endfor
 
+                for [function].return_argument as return_argument0 where return_argument0.type = "str buffer"
+                    my._res += format_left("ZSTR_LEN(out_$(return_argument0.name:)) = vsc_str_buffer_len($(return_argument0.name:));",)
+                endfor
+
                 if my._res <> ""
                     my._c = php_format_extension_comment("Correct string length to the actual")
                     my._res = my._c + my._res
@@ -679,7 +693,7 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                 my._res = ""
             
-                for [function].return_argument as return_argument0 where return_argument0.type <> "buffer"
+                for [function].return_argument as return_argument0 where ! string_in2(return_argument0.type, "buffer, str buffer")
                     if return_argument0.type = "byte" & return_argument0.zend_type = "IS_LONG"
                         my._res += format_left("zend_long ret_res = (zend_long)res;", 0)
                     endif
@@ -710,6 +724,8 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
                     for [function].return_argument as return_argument0 where return_argument0.name <> "status" & return_argument0.type <> "enum"
                         if return_argument0.type = "buffer"
                             my._ret += format_left("add_next_index_str(return_value, out_$(return_argument0.name:));", 0)
+                        elsif return_argument0.type = "str buffer"
+                            my._ret += format_left("add_next_index_str(return_value, out_$(return_argument0.name:)); /*sb1*/", 0)
                         else 
                             echo_debug_item(return_argument0)
                             echo_fatal("Not implemented (AZ1201)", my)
@@ -767,9 +783,13 @@ function php_map_low_level (in_module, in_php_project, out_low_level, in_type)
 
                     #[function].return_zend_type: "IS_VOID, IS_LONG, _IS_BOOL, IS_STRING, IS_ARRAY, IS_RESOURCE
                     if  [function].return_zend_type = "IS_STRING" | [function].return_zend_type = "IS_ARRAY"
-                        for [function].return_argument where return_argument.type = "buffer"
+                        for [function].return_argument where string_in2(return_argument.type, "buffer, str buffer")
                             my._fail += format_left("zend_string_free(out_$(return_argument.name:));", 1)
-                            my._success += format_left("vsc_buffer_destroy(&$(return_argument.name:));", 0)
+                            if return_argument.type = "buffer"
+                                my._success += format_left("vsc_buffer_destroy(&$(return_argument.name:));", 0)
+                            else
+                                my._success += format_left("vsc_str_buffer_destroy(&$(return_argument.name:));", 0)
+                            endif
                         endfor
                     endif
 
@@ -964,9 +984,9 @@ function php_map_low_level_argument (in_argument, in_php_project, out_argument, 
     my._type_c = class_derive_c_instance_type(my.in_argument)
 
     if defined (my.in_argument.class)
-        if string_in(my.in_argument.class, "data, buffer") 
+        if string_in2(my.in_argument.class, "data, buffer, str, str buffer") 
             my._type0 = my.in_argument.class
-            my._type = "vsc_$(my.in_argument.class:)_t"
+            my._type = "vsc_$(my.in_argument.class:C)_t"
             my._zend_type = "IS_STRING"
         elsif my.in_argument.class = "error"
             my._type0 = "error"
@@ -1066,12 +1086,12 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
 
     my._argument_buffer_count = 0
 
-    for my.in_method.argument as argument0 where defined (argument0.class) & argument0.class = "buffer"
+    for my.in_method.argument as argument0 where string_in2(argument0.class, "buffer, str buffer")
         my._argument_buffer_count = my._argument_buffer_count + 1
         new return_argument to my.out_function
             .name = "$(argument0.name:c)"
-            .type = "buffer"
-            .type_t = 0.type
+            .type = argument0.class
+            .type_t = "$(0.type:c)"
 
             my._prefix = my.out_function.prefix0
             my._entity = my.out_function.entity0
@@ -1081,7 +1101,7 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
                 for argument0->length.proxy as proxy0
                     if defined (proxy0.argument)
                         my._proxy += "$(proxy0.argument:c)"
-                        if defined (proxy0.cast) & proxy0.cast = "data_length"
+                        if defined (proxy0.cast) & string_in(proxy0.cast, "data_length, str_length")
                             my._proxy += ".len"
                         endif
                     elsif defined (proxy0.constant)
@@ -1198,6 +1218,35 @@ function php_map_low_level_return (in_method, in_php_project, out_function)
             elsif return0.class = "buffer"
                 my._return_type0 = return0.class
                 my._return_type = "vsc_buffer_t"
+                my._return_zend_type = "IS_STRING"
+
+                new return_argument to my.out_function
+                    .name = return0.class
+                    .type0 = "buffer"
+                    .type = my._return_type
+                    .type_t = 0.type
+                    .zend_type = my._return_zend_type
+                    .is_reference = my._is_reference
+                    .access = return0.access
+                endnew
+
+            elsif return0.class = "str"
+                my._return_type0 = return0.class
+                my._return_type = "vsc_str_t"
+                my._return_zend_type = "IS_STRING"
+
+                new return_argument to my.out_function
+                    .name = return0.class
+                    .type0 = "str"
+                    .type = my._return_type
+                    .type_t = 0.type
+                    .zend_type = my._return_zend_type
+                    .is_reference = my._is_reference
+                endnew
+
+            elsif return0.class = "str buffer"
+                my._return_type0 = return0.class
+                my._return_type = "vsc_str_buffer_t"
                 my._return_zend_type = "IS_STRING"
 
                 new return_argument to my.out_function

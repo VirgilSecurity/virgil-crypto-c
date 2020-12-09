@@ -39,6 +39,7 @@
 #include <zend_list.h>
 #include "vscf_assert.h"
 #include "vscf_foundation_php.h"
+#include "vscf_binary.h"
 #include "vscf_oid.h"
 #include "vscf_base64.h"
 #include "vscf_pem.h"
@@ -142,6 +143,9 @@ vscf_handle_throw_exception(vscf_status_t status) {
         break;
     case vscf_status_ERROR_SMALL_BUFFER:
         zend_throw_exception_ex(vscf_exception_ce, -101, "Buffer capacity is not enough to hold result.");
+        break;
+    case vscf_status_HEX_TO_BYTES_FAILED:
+        zend_throw_exception_ex(vscf_exception_ce, -102, "Convertion from HEX string to the byte array failed.");
         break;
     case vscf_status_ERROR_UNSUPPORTED_ALGORITHM:
         zend_throw_exception_ex(vscf_exception_ce, -200, "Unsupported algorithm.");
@@ -671,6 +675,219 @@ PHP_FUNCTION(vscf_impl_tag_php) {
     // Write returned result
     //
     RETVAL_LONG(tag);
+}
+
+//
+// Wrap method: vscf_binary_to_hex_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_binary_to_hex_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_data_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_binary_to_hex_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_data_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t data_len = in_data_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_binary_to_hex_len(data_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_binary_to_hex
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_binary_to_hex_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_binary_to_hex_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
+
+    //
+    // Allocate output buffer for output 'hex_str'
+    //
+    zend_string *out_hex_str = zend_string_alloc(vscf_binary_to_hex_len(data.len), 0);
+    vsc_str_buffer_t *hex_str = vsc_str_buffer_new();
+    vsc_str_buffer_use(hex_str, (byte *)ZSTR_VAL(out_hex_str), ZSTR_LEN(out_hex_str));
+
+    //
+    // Call main function
+    //
+    vscf_binary_to_hex(data, hex_str);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_hex_str) = vsc_str_buffer_len(hex_str);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STR(out_hex_str);
+}
+
+//
+// Wrap method: vscf_binary_from_hex_len
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_binary_from_hex_len_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_hex_len, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_binary_from_hex_len_php) {
+
+    //
+    // Declare input argument
+    //
+    zend_long in_hex_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_LONG(in_hex_len)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    size_t hex_len = in_hex_len;
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_binary_from_hex_len(hex_len);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
+// Wrap method: vscf_binary_from_hex
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_binary_from_hex_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_hex_str, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_binary_from_hex_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_hex_str = NULL;
+    size_t in_hex_str_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_hex_str, in_hex_str_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_str_t hex_str = vsc_str_from_str(in_hex_str);
+
+    //
+    // Allocate output buffer for output 'data'
+    //
+    zend_string *out_data = zend_string_alloc(vscf_binary_from_hex_len(hex_str.len), 0);
+    vsc_buffer_t *data = vsc_buffer_new();
+    vsc_buffer_use(data, (byte *)ZSTR_VAL(out_data), ZSTR_LEN(out_data));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_binary_from_hex(hex_str, data);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_data) = vsc_buffer_len(data);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_data);
+        vsc_buffer_destroy(&data);
+    }
+    else {
+        zend_string_free(out_data);
+    }
 }
 
 //
@@ -7038,6 +7255,77 @@ PHP_FUNCTION(vscf_key_provider_export_private_key_php) {
     }
     else {
         zend_string_free(out_out);
+    }
+}
+
+//
+// Wrap method: vscf_key_provider_calculate_key_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_key_provider_calculate_key_id_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_key, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_key_provider_calculate_key_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    zval *in_key = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_RESOURCE_EX(in_key, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_key_provider_t *key_provider = zend_fetch_resource_ex(in_ctx, vscf_key_provider_t_php_res_name(), le_vscf_key_provider_t());
+    vscf_impl_t *key = zend_fetch_resource_ex(in_key, vscf_impl_t_php_res_name(), le_vscf_impl_t());
+
+    //
+    // Allocate output buffer for output 'key_id'
+    //
+    zend_string *out_key_id = zend_string_alloc(vscf_key_provider_KEY_ID_LEN, 0);
+    vsc_buffer_t *key_id = vsc_buffer_new();
+    vsc_buffer_use(key_id, (byte *)ZSTR_VAL(out_key_id), ZSTR_LEN(out_key_id));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_key_provider_calculate_key_id(key_provider, key, key_id);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_key_id) = vsc_buffer_len(key_id);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_key_id);
+        vsc_buffer_destroy(&key_id);
+    }
+    else {
+        zend_string_free(out_key_id);
     }
 }
 
@@ -41016,6 +41304,10 @@ PHP_FUNCTION(vscf_random_padding_use_random_php) {
 //
 static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_impl_tag_php, arginfo_vscf_impl_tag_php)
+    PHP_FE(vscf_binary_to_hex_len_php, arginfo_vscf_binary_to_hex_len_php)
+    PHP_FE(vscf_binary_to_hex_php, arginfo_vscf_binary_to_hex_php)
+    PHP_FE(vscf_binary_from_hex_len_php, arginfo_vscf_binary_from_hex_len_php)
+    PHP_FE(vscf_binary_from_hex_php, arginfo_vscf_binary_from_hex_php)
     PHP_FE(vscf_oid_from_alg_id_php, arginfo_vscf_oid_from_alg_id_php)
     PHP_FE(vscf_oid_to_alg_id_php, arginfo_vscf_oid_to_alg_id_php)
     PHP_FE(vscf_oid_from_id_php, arginfo_vscf_oid_from_id_php)
@@ -41152,6 +41444,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_key_provider_export_public_key_php, arginfo_vscf_key_provider_export_public_key_php)
     PHP_FE(vscf_key_provider_exported_private_key_len_php, arginfo_vscf_key_provider_exported_private_key_len_php)
     PHP_FE(vscf_key_provider_export_private_key_php, arginfo_vscf_key_provider_export_private_key_php)
+    PHP_FE(vscf_key_provider_calculate_key_id_php, arginfo_vscf_key_provider_calculate_key_id_php)
     PHP_FE(vscf_key_provider_use_random_php, arginfo_vscf_key_provider_use_random_php)
     PHP_FE(vscf_signer_new_php, arginfo_vscf_signer_new_php)
     PHP_FE(vscf_signer_delete_php, arginfo_vscf_signer_delete_php)

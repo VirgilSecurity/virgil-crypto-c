@@ -49,6 +49,8 @@ class KeyProvider
     */
     private $ctx;
 
+    const KEY_ID_LEN = 8;
+
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -258,6 +260,20 @@ class KeyProvider
     public function exportPrivateKey(PrivateKey $privateKey): string
     {
         return vscf_key_provider_export_private_key_php($this->ctx, $privateKey->getCtx());
+    }
+
+    /**
+    * Calculate identifier based on the given public key or private key.
+    *
+    * Note, that public key identifier equals to the private key identifier.
+    *
+    * @param Key $key
+    * @return string
+    * @throws \Exception
+    */
+    public function calculateKeyId(Key $key): string
+    {
+        return vscf_key_provider_calculate_key_id_php($this->ctx, $key->getCtx());
     }
 
     /**

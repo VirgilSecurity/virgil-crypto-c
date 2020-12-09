@@ -154,6 +154,33 @@ function string_in (str, list)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return true if given string is in the list.
+#   List is as a comma separated alphanumeric strings. Doesn't remove spaces.
+#   Don't use ^ char!!!
+#   i.e "public, private, my scope".
+#   Note, comparison is case insensitive.
+# ---------------------------------------------------------------------------
+function string_in2 (str, list)
+
+    if ! defined (my.str) | ! defined (my.list)
+        return 0
+    endif
+
+    if ! regexp.match ("\\w", my.list)
+        abort "$(name (my):): list is not defined or empty."
+    endif
+
+    #   Convert to regex pattern.
+    my.list = string.convch (my.list, ",", "^")
+    my.list = string.replace (my.list, "^ |^")
+    my.list = string.convch (my.list, "^", "|")
+    my.list_pattern = "^($(my.list:lower))$"
+
+    #   Compare.
+    return regexp.match (my.list_pattern, "$(my.str:lower)")
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true if given XML item name is equal to the given string.
 # ---------------------------------------------------------------------------
 function item_equal (item, str)
