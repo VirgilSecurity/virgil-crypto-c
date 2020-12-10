@@ -980,7 +980,7 @@ vssq_messenger_encrypted_message_len(
     VSSQ_ASSERT(vssq_messenger_is_authenticated(self));
     VSSQ_ASSERT_PTR(recipient);
 
-    return 512 + message_len + (vscf_padding_params_DEFAULT_FRAME - message_len % vscf_padding_params_DEFAULT_FRAME);
+    return 1024 + message_len + (vscf_padding_params_DEFAULT_FRAME - message_len % vscf_padding_params_DEFAULT_FRAME);
 }
 
 //
