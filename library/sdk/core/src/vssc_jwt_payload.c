@@ -441,8 +441,8 @@ vssc_jwt_payload_cleanup_ctx(vssc_jwt_payload_t *self) {
 //  Create fully defined JWT Payload.
 //
 static void
-vssc_jwt_payload_init_ctx_with_members(
-        vssc_jwt_payload_t *self, vsc_str_t app_id, vsc_str_t identity, size_t issued_at, size_t expires_at) {
+vssc_jwt_payload_init_ctx_with_members(vssc_jwt_payload_t *self, vsc_str_t app_id, vsc_str_t identity, size_t issued_at,
+        size_t expires_at) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid(app_id));
@@ -498,69 +498,69 @@ vssc_jwt_payload_parse(vsc_str_t payload_str, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid(payload_str));
 
-    //
-    //  Declare vars.
-    //
-    vssc_error_t inner_error;
-    vssc_error_reset(&inner_error);
+        //
+        //  Declare vars.
+        //
+        vssc_error_t inner_error;
+        vssc_error_reset(&inner_error);
 
-    const size_t payload_json_str_len = vssc_base64_url_decoded_len(payload_str.len);
-    vsc_buffer_t *payload_json_buff = vsc_buffer_new_with_capacity(payload_json_str_len);
+        const size_t payload_json_str_len = vssc_base64_url_decoded_len(payload_str.len);
+        vsc_buffer_t *payload_json_buff = vsc_buffer_new_with_capacity(payload_json_str_len);
 
-    vssc_json_object_t *json_obj = NULL;
+        vssc_json_object_t *json_obj = NULL;
 
-    inner_error.status = vssc_base64_url_decode(payload_str, payload_json_buff);
-    if (vssc_error_has_error(&inner_error)) {
-        goto fail;
-    }
+        inner_error.status = vssc_base64_url_decode(payload_str, payload_json_buff);
+        if (vssc_error_has_error(&inner_error)) {
+            goto fail;
+        }
 
-    json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(payload_json_buff)), &inner_error);
-    if (vssc_error_has_error(&inner_error)) {
-        goto fail;
-    }
+        json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(payload_json_buff)), &inner_error);
+        if (vssc_error_has_error(&inner_error)) {
+            goto fail;
+        }
 
-    //
-    //  Check fields.
-    //
-    vsc_str_t app_id = vssc_json_object_get_string_value(json_obj, k_json_key_app_id, &inner_error);
-    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(app_id)) {
-        goto fail;
-    }
-
-
-    vsc_str_t identity = vssc_json_object_get_string_value(json_obj, k_json_key_identity, &inner_error);
-    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(identity)) {
-        goto fail;
-    }
+        //
+        //  Check fields.
+        //
+        vsc_str_t app_id = vssc_json_object_get_string_value(json_obj, k_json_key_app_id, &inner_error);
+        if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(app_id)) {
+            goto fail;
+        }
 
 
-    const int issued_at = vssc_json_object_get_int_value(json_obj, k_json_key_issued_at, &inner_error);
-    if (vssc_error_has_error(&inner_error) || issued_at <= 0) {
-        goto fail;
-    }
+        vsc_str_t identity = vssc_json_object_get_string_value(json_obj, k_json_key_identity, &inner_error);
+        if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(identity)) {
+            goto fail;
+        }
 
 
-    const int expires_at = vssc_json_object_get_int_value(json_obj, k_json_key_expires_at, &inner_error);
-    if (vssc_error_has_error(&inner_error) || expires_at <= 0) {
-        goto fail;
-    }
+        const int issued_at = vssc_json_object_get_int_value(json_obj, k_json_key_issued_at, &inner_error);
+        if (vssc_error_has_error(&inner_error) || issued_at <= 0) {
+            goto fail;
+        }
 
-    goto succ;
 
-fail:
+        const int expires_at = vssc_json_object_get_int_value(json_obj, k_json_key_expires_at, &inner_error);
+        if (vssc_error_has_error(&inner_error) || expires_at <= 0) {
+            goto fail;
+        }
 
-    vssc_json_object_destroy(&json_obj);
+        goto succ;
 
-    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+    fail:
 
-succ:
-    vsc_buffer_destroy(&payload_json_buff);
+        vssc_json_object_destroy(&json_obj);
 
-    if (json_obj) {
-        return vssc_jwt_payload_new_with_json_object(&json_obj);
-    } else {
-        return NULL;
-    }
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+
+    succ:
+        vsc_buffer_destroy(&payload_json_buff);
+
+        if (json_obj) {
+            return vssc_jwt_payload_new_with_json_object(&json_obj);
+        } else {
+            return NULL;
+        }
 }
 
 //

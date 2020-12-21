@@ -119,6 +119,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_file_cipher.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_group.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -171,6 +176,8 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_creds.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_creds_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_creds_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_FILE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_file_cipher.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_FILE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_file_cipher_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_group.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_group_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_group_defs.h>"
@@ -209,6 +216,8 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_contacts_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_creds.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CREDS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_creds_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_FILE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_file_cipher.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_FILE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_file_cipher_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_GROUP_EPOCH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_group_epoch.c>"

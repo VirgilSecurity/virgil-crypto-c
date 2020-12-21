@@ -48,6 +48,9 @@
     <class name="messenger group epoch list"/>
     <class name="messenger group epoch keyknox storage"/>
 
+    <!-- Group Messenger -->
+    <class name="messenger file cipher"/>
+    
     <!-- Contact discovery -->
     <class name="contact utils"/>
 

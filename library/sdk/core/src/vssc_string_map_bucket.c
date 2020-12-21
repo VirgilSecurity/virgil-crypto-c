@@ -293,8 +293,8 @@ vssc_string_map_bucket_put(vssc_string_map_bucket_t *self, vsc_str_t key, vsc_st
 //  Add key-value pair to the bucket.
 //
 VSSC_PUBLIC void
-vssc_string_map_bucket_put_shallow_copy(
-        vssc_string_map_bucket_t *self, const vsc_str_buffer_t *key, const vsc_str_buffer_t *value) {
+vssc_string_map_bucket_put_shallow_copy(vssc_string_map_bucket_t *self, const vsc_str_buffer_t *key,
+        const vsc_str_buffer_t *value) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_buffer_is_valid(key));

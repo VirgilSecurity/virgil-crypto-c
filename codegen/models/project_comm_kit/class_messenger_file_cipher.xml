@@ -1,0 +1,47 @@
+<class name="messenger file cipher">
+
+    <require class="key provider" project="foundation"/>
+    <require class="recipient cipher" project="foundation"/>
+    <require interface="private key" project="foundation"/>
+    <require impl="ctr drbg" project="foundation"/>
+    <require class="str" project="common"/>
+    <require class="error"/>
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
+
+    <property name="key provider" class="key provider" project="foundation"/>
+    <property name="recipient cipher" class="recipient cipher" project="foundation"/>
+
+    <constant name="cipher recipient id" type="string" visibility="private">
+        <value value="file-cipher"/>
+    </constant>
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+        <return enum="status"/>
+    </method>
+
+
+    <method name="init encryption">
+	<argument name="key" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="start encryption">
+        <argument name="data_size" type="size"/>
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="process encryption">
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="finish encryption">
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+</class>

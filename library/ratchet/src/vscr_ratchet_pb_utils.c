@@ -308,8 +308,8 @@ vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_arra
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_pb_utils_deserialize_public_key(
-        vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **public_key_ref) {
+vscr_ratchet_pb_utils_deserialize_public_key(vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer,
+        vscf_impl_t **public_key_ref) {
 
     VSCR_ASSERT_PTR(round5);
     VSCR_ASSERT_PTR(pb_buffer);
@@ -345,8 +345,8 @@ vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_arr
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_pb_utils_deserialize_private_key(
-        vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **private_key_ref) {
+vscr_ratchet_pb_utils_deserialize_private_key(vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer,
+        vscf_impl_t **private_key_ref) {
 
     VSCR_ASSERT_PTR(round5);
     VSCR_ASSERT_PTR(pb_buffer);

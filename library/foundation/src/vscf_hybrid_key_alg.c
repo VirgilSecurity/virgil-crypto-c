@@ -140,51 +140,51 @@ vscf_hybrid_key_alg_make_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_
         const vscf_impl_t *second_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(first_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(first_key));
-    VSCF_ASSERT_PTR(second_key);
-    VSCF_ASSERT(vscf_private_key_is_implemented(second_key));
+        VSCF_ASSERT_PTR(first_key);
+        VSCF_ASSERT(vscf_private_key_is_implemented(first_key));
+        VSCF_ASSERT_PTR(second_key);
+        VSCF_ASSERT(vscf_private_key_is_implemented(second_key));
 
-    //
-    //  Check algorithms.
-    //
-    vscf_impl_t *key = NULL;
-    vscf_impl_t *alg_info = NULL;
-    vscf_impl_t *first_key_alg = NULL;
-    vscf_impl_t *second_key_alg = NULL;
-    bool is_kem_both_implemented = false;
-    bool is_key_signer_both_implemented = false;
+        //
+        //  Check algorithms.
+        //
+        vscf_impl_t *key = NULL;
+        vscf_impl_t *alg_info = NULL;
+        vscf_impl_t *first_key_alg = NULL;
+        vscf_impl_t *second_key_alg = NULL;
+        bool is_kem_both_implemented = false;
+        bool is_key_signer_both_implemented = false;
 
-    first_key_alg = vscf_key_alg_factory_create_from_key(first_key, NULL, error);
+        first_key_alg = vscf_key_alg_factory_create_from_key(first_key, NULL, error);
 
-    if (NULL == first_key_alg) {
-        goto cleanup;
-    }
+        if (NULL == first_key_alg) {
+            goto cleanup;
+        }
 
-    second_key_alg = vscf_key_alg_factory_create_from_key(second_key, NULL, error);
+        second_key_alg = vscf_key_alg_factory_create_from_key(second_key, NULL, error);
 
-    if (NULL == second_key_alg) {
-        goto cleanup;
-    }
+        if (NULL == second_key_alg) {
+            goto cleanup;
+        }
 
-    is_kem_both_implemented = vscf_kem_is_implemented(first_key_alg) && vscf_kem_is_implemented(second_key_alg);
+        is_kem_both_implemented = vscf_kem_is_implemented(first_key_alg) && vscf_kem_is_implemented(second_key_alg);
 
-    is_key_signer_both_implemented =
-            vscf_key_signer_is_implemented(first_key_alg) && vscf_key_signer_is_implemented(second_key_alg);
+        is_key_signer_both_implemented =
+                vscf_key_signer_is_implemented(first_key_alg) && vscf_key_signer_is_implemented(second_key_alg);
 
-    if (!is_kem_both_implemented && !is_key_signer_both_implemented) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        if (!is_kem_both_implemented && !is_key_signer_both_implemented) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    alg_info = vscf_hybrid_key_alg_info_impl(vscf_hybrid_key_alg_info_new_with_infos(
-            vscf_alg_id_HYBRID_KEY, vscf_key_alg_info(first_key), vscf_key_alg_info(second_key)));
-    key = vscf_hybrid_private_key_impl(vscf_hybrid_private_key_new_with_keys(&alg_info, first_key, second_key));
+        alg_info = vscf_hybrid_key_alg_info_impl(vscf_hybrid_key_alg_info_new_with_infos(
+                vscf_alg_id_HYBRID_KEY, vscf_key_alg_info(first_key), vscf_key_alg_info(second_key)));
+        key = vscf_hybrid_private_key_impl(vscf_hybrid_private_key_new_with_keys(&alg_info, first_key, second_key));
 
-cleanup:
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
-    return key;
+    cleanup:
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
+        return key;
 }
 
 //
@@ -238,76 +238,76 @@ vscf_hybrid_key_alg_config_cipher(vscf_impl_t *cipher, vscf_impl_t *hash, vsc_da
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_generate_ephemeral_key(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *key, vscf_error_t *error) {
+vscf_hybrid_key_alg_generate_ephemeral_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *key,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(key);
-    VSCF_ASSERT(vscf_key_is_implemented(key));
+        VSCF_ASSERT_PTR(self->random);
+        VSCF_ASSERT_PTR(key);
+        VSCF_ASSERT(vscf_key_is_implemented(key));
 
-    if (vscf_key_impl_tag(key) != self->info->impl_tag) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
-        return NULL;
-    }
+        if (vscf_key_impl_tag(key) != self->info->impl_tag) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+            return NULL;
+        }
 
-    //
-    //  Get underlying keys.
-    //
-    const vscf_impl_tag_t impl_tag = vscf_impl_tag(key);
-    const vscf_impl_t *first_key = NULL;
-    const vscf_impl_t *second_key = NULL;
-    if (impl_tag == vscf_impl_tag_HYBRID_PUBLIC_KEY) {
-        const vscf_hybrid_public_key_t *public_key = (const vscf_hybrid_public_key_t *)key;
-        first_key = vscf_hybrid_public_key_first_key(public_key);
-        second_key = vscf_hybrid_public_key_second_key(public_key);
+        //
+        //  Get underlying keys.
+        //
+        const vscf_impl_tag_t impl_tag = vscf_impl_tag(key);
+        const vscf_impl_t *first_key = NULL;
+        const vscf_impl_t *second_key = NULL;
+        if (impl_tag == vscf_impl_tag_HYBRID_PUBLIC_KEY) {
+            const vscf_hybrid_public_key_t *public_key = (const vscf_hybrid_public_key_t *)key;
+            first_key = vscf_hybrid_public_key_first_key(public_key);
+            second_key = vscf_hybrid_public_key_second_key(public_key);
 
-    } else if (impl_tag == vscf_impl_tag_HYBRID_PRIVATE_KEY) {
-        const vscf_hybrid_private_key_t *private_key = (const vscf_hybrid_private_key_t *)key;
-        first_key = vscf_hybrid_private_key_first_key(private_key);
-        second_key = vscf_hybrid_private_key_second_key(private_key);
+        } else if (impl_tag == vscf_impl_tag_HYBRID_PRIVATE_KEY) {
+            const vscf_hybrid_private_key_t *private_key = (const vscf_hybrid_private_key_t *)key;
+            first_key = vscf_hybrid_private_key_first_key(private_key);
+            second_key = vscf_hybrid_private_key_second_key(private_key);
 
-    } else {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
-        return NULL;
-    }
+        } else {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+            return NULL;
+        }
 
-    //
-    //  Generate ephemeral underlying keys.
-    //
-    vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, error);
-    vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, error);
+        //
+        //  Generate ephemeral underlying keys.
+        //
+        vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, error);
+        vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, error);
 
-    VSCF_ASSERT_PTR(first_key_alg);
-    VSCF_ASSERT_PTR(second_key_alg);
-    VSCF_ASSERT(vscf_kem_is_implemented(first_key_alg));
-    VSCF_ASSERT(vscf_kem_is_implemented(second_key_alg));
+        VSCF_ASSERT_PTR(first_key_alg);
+        VSCF_ASSERT_PTR(second_key_alg);
+        VSCF_ASSERT(vscf_kem_is_implemented(first_key_alg));
+        VSCF_ASSERT(vscf_kem_is_implemented(second_key_alg));
 
-    vscf_impl_t *ephemeral_key = NULL;
-    vscf_impl_t *first_key_ephemeral_cipher_key = NULL;
-    vscf_impl_t *second_key_ephemeral_cipher_key = NULL;
+        vscf_impl_t *ephemeral_key = NULL;
+        vscf_impl_t *first_key_ephemeral_cipher_key = NULL;
+        vscf_impl_t *second_key_ephemeral_cipher_key = NULL;
 
 
-    first_key_ephemeral_cipher_key = vscf_key_alg_generate_ephemeral_key(first_key_alg, first_key, error);
-    if (NULL == first_key_ephemeral_cipher_key) {
-        goto cleanup;
-    }
+        first_key_ephemeral_cipher_key = vscf_key_alg_generate_ephemeral_key(first_key_alg, first_key, error);
+        if (NULL == first_key_ephemeral_cipher_key) {
+            goto cleanup;
+        }
 
-    second_key_ephemeral_cipher_key = vscf_key_alg_generate_ephemeral_key(second_key_alg, second_key, error);
-    if (NULL == second_key_ephemeral_cipher_key) {
-        goto cleanup;
-    }
+        second_key_ephemeral_cipher_key = vscf_key_alg_generate_ephemeral_key(second_key_alg, second_key, error);
+        if (NULL == second_key_ephemeral_cipher_key) {
+            goto cleanup;
+        }
 
-    ephemeral_key =
-            vscf_hybrid_key_alg_make_key(self, first_key_ephemeral_cipher_key, second_key_ephemeral_cipher_key, error);
+        ephemeral_key =
+                vscf_hybrid_key_alg_make_key(self, first_key_ephemeral_cipher_key, second_key_ephemeral_cipher_key, error);
 
-cleanup:
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
-    vscf_impl_destroy(&first_key_ephemeral_cipher_key);
-    vscf_impl_destroy(&second_key_ephemeral_cipher_key);
+    cleanup:
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
+        vscf_impl_destroy(&first_key_ephemeral_cipher_key);
+        vscf_impl_destroy(&second_key_ephemeral_cipher_key);
 
-    return ephemeral_key;
+        return ephemeral_key;
 }
 
 //
@@ -321,8 +321,8 @@ cleanup:
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_public_key(
-        const vscf_hybrid_key_alg_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error) {
+vscf_hybrid_key_alg_import_public_key(const vscf_hybrid_key_alg_t *self, const vscf_raw_public_key_t *raw_key,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -336,126 +336,126 @@ vscf_hybrid_key_alg_import_public_key(
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_public_key_data(
-        const vscf_hybrid_key_alg_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+vscf_hybrid_key_alg_import_public_key_data(const vscf_hybrid_key_alg_t *self, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(key_data));
-    VSCF_ASSERT_PTR(key_alg_info);
+        VSCF_ASSERT(vsc_data_is_valid(key_data));
+        VSCF_ASSERT_PTR(key_alg_info);
 
-    //
-    //  Check if raw key is appropriate.
-    //
-    if (vscf_impl_tag(key_alg_info) != vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
-        return NULL;
-    }
-    VSCF_ASSERT(vscf_alg_info_alg_id(key_alg_info) == vscf_alg_id_HYBRID_KEY);
+        //
+        //  Check if raw key is appropriate.
+        //
+        if (vscf_impl_tag(key_alg_info) != vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM);
+            return NULL;
+        }
+        VSCF_ASSERT(vscf_alg_info_alg_id(key_alg_info) == vscf_alg_id_HYBRID_KEY);
 
-    //
-    // Write to the ASN.1 structure.
-    //
-    // HybridPublicKey ::= SEQUENCE {
-    //     firstKey OCTET STRING,
-    //     secondKey OCTET STRING
-    // }
-    //
-    vscf_asn1rd_t asn1rd;
-    vscf_asn1rd_init(&asn1rd);
-    vscf_asn1rd_reset(&asn1rd, key_data);
-    vscf_asn1rd_read_sequence(&asn1rd);
+        //
+        // Write to the ASN.1 structure.
+        //
+        // HybridPublicKey ::= SEQUENCE {
+        //     firstKey OCTET STRING,
+        //     secondKey OCTET STRING
+        // }
+        //
+        vscf_asn1rd_t asn1rd;
+        vscf_asn1rd_init(&asn1rd);
+        vscf_asn1rd_reset(&asn1rd, key_data);
+        vscf_asn1rd_read_sequence(&asn1rd);
 
-    vsc_data_t first_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
-    vsc_data_t second_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
+        vsc_data_t first_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
+        vsc_data_t second_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
 
-    const vscf_status_t asn1_status = vscf_asn1rd_status(&asn1rd);
-    vscf_asn1rd_cleanup(&asn1rd);
+        const vscf_status_t asn1_status = vscf_asn1rd_status(&asn1rd);
+        vscf_asn1rd_cleanup(&asn1rd);
 
-    if (asn1_status != vscf_status_SUCCESS) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_HYBRID_PUBLIC_KEY);
-        return NULL;
-    }
+        if (asn1_status != vscf_status_SUCCESS) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_HYBRID_PUBLIC_KEY);
+            return NULL;
+        }
 
-    //
-    //  Prepare keys to be imported.
-    //
-    const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)key_alg_info;
-    const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
-    const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
+        //
+        //  Prepare keys to be imported.
+        //
+        const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)key_alg_info;
+        const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
+        const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
 
-    vscf_impl_t *first_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(first_key_alg_info);
-    vscf_raw_public_key_t *raw_first_key = vscf_raw_public_key_new_with_data(first_key_data, &first_key_alg_info_copy);
+        vscf_impl_t *first_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(first_key_alg_info);
+        vscf_raw_public_key_t *raw_first_key = vscf_raw_public_key_new_with_data(first_key_data, &first_key_alg_info_copy);
 
-    vscf_impl_t *second_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(second_key_alg_info);
-    vscf_raw_public_key_t *raw_second_key =
-            vscf_raw_public_key_new_with_data(second_key_data, &second_key_alg_info_copy);
+        vscf_impl_t *second_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(second_key_alg_info);
+        vscf_raw_public_key_t *raw_second_key =
+                vscf_raw_public_key_new_with_data(second_key_data, &second_key_alg_info_copy);
 
-    //
-    //  Prepare result variables.
-    //
-    vscf_impl_t *first_key_alg = NULL;
-    vscf_impl_t *first_key = NULL;
-    vscf_impl_t *second_key_alg = NULL;
-    vscf_impl_t *second_key = NULL;
-    vscf_impl_t *public_key = NULL;
-    bool is_kem_both_implemented = false;
-    bool is_key_signer_both_implemented = false;
+        //
+        //  Prepare result variables.
+        //
+        vscf_impl_t *first_key_alg = NULL;
+        vscf_impl_t *first_key = NULL;
+        vscf_impl_t *second_key_alg = NULL;
+        vscf_impl_t *second_key = NULL;
+        vscf_impl_t *public_key = NULL;
+        bool is_kem_both_implemented = false;
+        bool is_key_signer_both_implemented = false;
 
-    //
-    //  Get correspond algs.
-    //
-    first_key_alg =
-            vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(first_key_alg_info), self->random, error);
+        //
+        //  Get correspond algs.
+        //
+        first_key_alg =
+                vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(first_key_alg_info), self->random, error);
 
-    if (NULL == first_key_alg) {
-        goto cleanup;
-    }
+        if (NULL == first_key_alg) {
+            goto cleanup;
+        }
 
-    second_key_alg =
-            vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(second_key_alg_info), self->random, error);
+        second_key_alg =
+                vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(second_key_alg_info), self->random, error);
 
-    if (NULL == second_key_alg) {
-        goto cleanup;
-    }
+        if (NULL == second_key_alg) {
+            goto cleanup;
+        }
 
-    is_kem_both_implemented = vscf_kem_is_implemented(first_key_alg) && vscf_kem_is_implemented(second_key_alg);
+        is_kem_both_implemented = vscf_kem_is_implemented(first_key_alg) && vscf_kem_is_implemented(second_key_alg);
 
-    is_key_signer_both_implemented =
-            vscf_key_signer_is_implemented(first_key_alg) && vscf_key_signer_is_implemented(second_key_alg);
+        is_key_signer_both_implemented =
+                vscf_key_signer_is_implemented(first_key_alg) && vscf_key_signer_is_implemented(second_key_alg);
 
-    if (!is_kem_both_implemented && !is_key_signer_both_implemented) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        if (!is_kem_both_implemented && !is_key_signer_both_implemented) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    //
-    //  Import keys.
-    //
-    first_key = vscf_key_alg_import_public_key(first_key_alg, raw_first_key, error);
-    if (NULL == first_key) {
-        goto cleanup;
-    }
+        //
+        //  Import keys.
+        //
+        first_key = vscf_key_alg_import_public_key(first_key_alg, raw_first_key, error);
+        if (NULL == first_key) {
+            goto cleanup;
+        }
 
-    second_key = vscf_key_alg_import_public_key(second_key_alg, raw_second_key, error);
-    if (NULL == second_key) {
-        goto cleanup;
-    }
+        second_key = vscf_key_alg_import_public_key(second_key_alg, raw_second_key, error);
+        if (NULL == second_key) {
+            goto cleanup;
+        }
 
-    //
-    //  Make hybrid key.
-    //
-    public_key = vscf_hybrid_public_key_impl(
-            vscf_hybrid_public_key_new_with_keys_disown(key_alg_info, &first_key, &second_key));
+        //
+        //  Make hybrid key.
+        //
+        public_key = vscf_hybrid_public_key_impl(
+                vscf_hybrid_public_key_new_with_keys_disown(key_alg_info, &first_key, &second_key));
 
-cleanup:
-    vscf_raw_public_key_destroy(&raw_first_key);
-    vscf_raw_public_key_destroy(&raw_second_key);
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&first_key);
-    vscf_impl_destroy(&second_key_alg);
-    vscf_impl_destroy(&second_key);
+    cleanup:
+        vscf_raw_public_key_destroy(&raw_first_key);
+        vscf_raw_public_key_destroy(&raw_second_key);
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&first_key);
+        vscf_impl_destroy(&second_key_alg);
+        vscf_impl_destroy(&second_key);
 
-    return public_key;
+        return public_key;
 }
 
 //
@@ -466,8 +466,8 @@ cleanup:
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_hybrid_key_alg_export_public_key(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, vscf_error_t *error) {
+vscf_hybrid_key_alg_export_public_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(public_key);
@@ -530,7 +530,7 @@ vscf_hybrid_key_alg_exported_public_key_data_len(const vscf_hybrid_key_alg_t *se
     const size_t first_data_key_len = vscf_key_alg_exported_public_key_data_len(first_key_alg, first_key);
     const size_t second_data_key_len = vscf_key_alg_exported_public_key_data_len(second_key_alg, second_key);
 
-    const size_t key_data_len = 1 + 4 +                      // HybridPublicKey ::= SEQUENCE {
+    const size_t key_data_len = 1 + 4 + // HybridPublicKey ::= SEQUENCE {
                                 1 + 4 + first_data_key_len + //     firstKey OCTET STRING,
                                 1 + 4 + second_data_key_len; //     secondKey OCTET STRING }
 
@@ -548,99 +548,99 @@ vscf_hybrid_key_alg_exported_public_key_data_len(const vscf_hybrid_key_alg_t *se
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_export_public_key_data(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) {
+vscf_hybrid_key_alg_export_public_key_data(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) {
 
     //
-    // Write to the ASN.1 structure.
-    //
-    //  HybridPublicKey ::= SEQUENCE {
-    //     firstKey OCTET STRING,
-    //     secondKey OCTET STRING
-    //  }
-    //
-    //
+        // Write to the ASN.1 structure.
+        //
+        //  HybridPublicKey ::= SEQUENCE {
+        //     firstKey OCTET STRING,
+        //     secondKey OCTET STRING
+        //  }
+        //
+        //
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_exported_public_key_data_len(self, public_key));
+        VSCF_ASSERT_PTR(self);
+        VSCF_ASSERT_PTR(public_key);
+        VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
+        VSCF_ASSERT_PTR(out);
+        VSCF_ASSERT(vsc_buffer_is_valid(out));
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_exported_public_key_data_len(self, public_key));
 
-    if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
-        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
-    }
+        if (vscf_key_impl_tag(public_key) != self->info->impl_tag) {
+            return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+        }
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
+        vscf_error_t error;
+        vscf_error_reset(&error);
 
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
-    const vscf_hybrid_public_key_t *hybrid_public_key = (const vscf_hybrid_public_key_t *)public_key;
+        VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
+        const vscf_hybrid_public_key_t *hybrid_public_key = (const vscf_hybrid_public_key_t *)public_key;
 
-    const vscf_impl_t *first_key = vscf_hybrid_public_key_first_key(hybrid_public_key);
-    const vscf_impl_t *second_key = vscf_hybrid_public_key_second_key(hybrid_public_key);
+        const vscf_impl_t *first_key = vscf_hybrid_public_key_first_key(hybrid_public_key);
+        const vscf_impl_t *second_key = vscf_hybrid_public_key_second_key(hybrid_public_key);
 
-    //
-    //  Get correspond key algorithms.
-    //
-    vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, &error);
-    VSCF_ASSERT_PTR(first_key_alg);
+        //
+        //  Get correspond key algorithms.
+        //
+        vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, &error);
+        VSCF_ASSERT_PTR(first_key_alg);
 
-    vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, &error);
-    VSCF_ASSERT_PTR(second_key_alg);
+        vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, &error);
+        VSCF_ASSERT_PTR(second_key_alg);
 
-    vscf_raw_public_key_t *raw_first_key = NULL;
-    vscf_raw_public_key_t *raw_second_key = NULL;
+        vscf_raw_public_key_t *raw_first_key = NULL;
+        vscf_raw_public_key_t *raw_second_key = NULL;
 
-    //
-    //  Check if keys are exportable.
-    //
-    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(first_key_alg))) {
-        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        //
+        //  Check if keys are exportable.
+        //
+        if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(first_key_alg))) {
+            vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(second_key_alg))) {
-        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        if (!vscf_key_alg_can_export_public_key(vscf_key_alg_api(second_key_alg))) {
+            vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    //  TODO: Optimize memcpy by writing directly to the out.
-    raw_first_key = vscf_key_alg_export_public_key(first_key_alg, first_key, &error);
-    if (vscf_error_has_error(&error)) {
-        goto cleanup;
-    }
+        //  TODO: Optimize memcpy by writing directly to the out.
+        raw_first_key = vscf_key_alg_export_public_key(first_key_alg, first_key, &error);
+        if (vscf_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    raw_second_key = vscf_key_alg_export_public_key(second_key_alg, second_key, &error);
-    if (NULL == raw_second_key) {
-        goto cleanup;
-    }
+        raw_second_key = vscf_key_alg_export_public_key(second_key_alg, second_key, &error);
+        if (NULL == raw_second_key) {
+            goto cleanup;
+        }
 
-    //
-    //  Write.
-    //
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-    size_t raw_key_len = 0;
-    raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(raw_second_key));
-    raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(raw_first_key));
-    raw_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_key_len);
+        //
+        //  Write.
+        //
+        vscf_asn1wr_t asn1wr;
+        vscf_asn1wr_init(&asn1wr);
+        vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+        size_t raw_key_len = 0;
+        raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(raw_second_key));
+        raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_public_key_data(raw_first_key));
+        raw_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_key_len);
 
-    VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
-    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
-    vscf_asn1wr_cleanup(&asn1wr);
+        VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+        vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
+        vscf_asn1wr_cleanup(&asn1wr);
 
-    vsc_buffer_inc_used(out, raw_key_len);
+        vsc_buffer_inc_used(out, raw_key_len);
 
-cleanup:
-    vscf_raw_public_key_destroy(&raw_first_key);
-    vscf_raw_public_key_destroy(&raw_second_key);
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
+    cleanup:
+        vscf_raw_public_key_destroy(&raw_first_key);
+        vscf_raw_public_key_destroy(&raw_second_key);
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
 
-    return vscf_error_status(&error);
+        return vscf_error_status(&error);
 }
 
 //
@@ -654,8 +654,8 @@ cleanup:
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_private_key(
-        const vscf_hybrid_key_alg_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
+vscf_hybrid_key_alg_import_private_key(const vscf_hybrid_key_alg_t *self, const vscf_raw_private_key_t *raw_key,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -669,127 +669,127 @@ vscf_hybrid_key_alg_import_private_key(
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_private_key_data(
-        const vscf_hybrid_key_alg_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
+vscf_hybrid_key_alg_import_private_key_data(const vscf_hybrid_key_alg_t *self, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT(vsc_data_is_valid(key_data));
-    VSCF_ASSERT_PTR(key_alg_info);
+        VSCF_ASSERT(vsc_data_is_valid(key_data));
+        VSCF_ASSERT_PTR(key_alg_info);
 
-    //
-    //  Check if raw key is appropriate.
-    //
-    if (vscf_impl_tag(key_alg_info) != vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
-        return NULL;
-    }
-    VSCF_ASSERT(vscf_alg_info_alg_id(key_alg_info) == vscf_alg_id_HYBRID_KEY);
+        //
+        //  Check if raw key is appropriate.
+        //
+        if (vscf_impl_tag(key_alg_info) != vscf_impl_tag_HYBRID_KEY_ALG_INFO) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM);
+            return NULL;
+        }
+        VSCF_ASSERT(vscf_alg_info_alg_id(key_alg_info) == vscf_alg_id_HYBRID_KEY);
 
-    //
-    // Write to the ASN.1 structure.
-    //
-    // HybridPrivateKey ::= SEQUENCE {
-    //     firstKey OCTET STRING,
-    //     secondKey OCTET STRING
-    // }
-    //
-    vscf_asn1rd_t asn1rd;
-    vscf_asn1rd_init(&asn1rd);
-    vscf_asn1rd_reset(&asn1rd, key_data);
-    vscf_asn1rd_read_sequence(&asn1rd);
+        //
+        // Write to the ASN.1 structure.
+        //
+        // HybridPrivateKey ::= SEQUENCE {
+        //     firstKey OCTET STRING,
+        //     secondKey OCTET STRING
+        // }
+        //
+        vscf_asn1rd_t asn1rd;
+        vscf_asn1rd_init(&asn1rd);
+        vscf_asn1rd_reset(&asn1rd, key_data);
+        vscf_asn1rd_read_sequence(&asn1rd);
 
-    vsc_data_t first_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
-    vsc_data_t second_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
+        vsc_data_t first_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
+        vsc_data_t second_key_data = vscf_asn1rd_read_octet_str(&asn1rd);
 
-    const vscf_status_t asn1_status = vscf_asn1rd_status(&asn1rd);
-    vscf_asn1rd_cleanup(&asn1rd);
+        const vscf_status_t asn1_status = vscf_asn1rd_status(&asn1rd);
+        vscf_asn1rd_cleanup(&asn1rd);
 
-    if (asn1_status != vscf_status_SUCCESS) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_HYBRID_PRIVATE_KEY);
-        return NULL;
-    }
+        if (asn1_status != vscf_status_SUCCESS) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_HYBRID_PRIVATE_KEY);
+            return NULL;
+        }
 
-    //
-    //  Prepare keys to be imported.
-    //
-    const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)key_alg_info;
-    const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
-    const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
+        //
+        //  Prepare keys to be imported.
+        //
+        const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)key_alg_info;
+        const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
+        const vscf_impl_t *second_key_alg_info = vscf_hybrid_key_alg_info_second_key_alg_info(hybrid_key_alg_info);
 
-    vscf_impl_t *first_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(first_key_alg_info);
-    vscf_raw_private_key_t *raw_first_key =
-            vscf_raw_private_key_new_with_data(first_key_data, &first_key_alg_info_copy);
+        vscf_impl_t *first_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(first_key_alg_info);
+        vscf_raw_private_key_t *raw_first_key =
+                vscf_raw_private_key_new_with_data(first_key_data, &first_key_alg_info_copy);
 
-    vscf_impl_t *second_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(second_key_alg_info);
-    vscf_raw_private_key_t *raw_second_key =
-            vscf_raw_private_key_new_with_data(second_key_data, &second_key_alg_info_copy);
+        vscf_impl_t *second_key_alg_info_copy = (vscf_impl_t *)vscf_impl_shallow_copy_const(second_key_alg_info);
+        vscf_raw_private_key_t *raw_second_key =
+                vscf_raw_private_key_new_with_data(second_key_data, &second_key_alg_info_copy);
 
-    //
-    //  Prepare result variables.
-    //
-    vscf_impl_t *first_key_alg = NULL;
-    vscf_impl_t *first_key = NULL;
-    vscf_impl_t *second_key_alg = NULL;
-    vscf_impl_t *second_key = NULL;
-    vscf_impl_t *private_key = NULL;
-    bool is_kem_both_implemented = false;
-    bool is_key_signer_both_implemented = false;
+        //
+        //  Prepare result variables.
+        //
+        vscf_impl_t *first_key_alg = NULL;
+        vscf_impl_t *first_key = NULL;
+        vscf_impl_t *second_key_alg = NULL;
+        vscf_impl_t *second_key = NULL;
+        vscf_impl_t *private_key = NULL;
+        bool is_kem_both_implemented = false;
+        bool is_key_signer_both_implemented = false;
 
-    //
-    //  Get correspond algs.
-    //
-    first_key_alg =
-            vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(first_key_alg_info), self->random, error);
+        //
+        //  Get correspond algs.
+        //
+        first_key_alg =
+                vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(first_key_alg_info), self->random, error);
 
-    if (NULL == first_key_alg) {
-        goto cleanup;
-    }
+        if (NULL == first_key_alg) {
+            goto cleanup;
+        }
 
-    second_key_alg =
-            vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(second_key_alg_info), self->random, error);
+        second_key_alg =
+                vscf_key_alg_factory_create_from_alg_id(vscf_alg_info_alg_id(second_key_alg_info), self->random, error);
 
-    if (NULL == second_key_alg) {
-        goto cleanup;
-    }
+        if (NULL == second_key_alg) {
+            goto cleanup;
+        }
 
-    is_kem_both_implemented = vscf_kem_is_implemented(first_key_alg) && vscf_kem_is_implemented(second_key_alg);
+        is_kem_both_implemented = vscf_kem_is_implemented(first_key_alg) && vscf_kem_is_implemented(second_key_alg);
 
-    is_key_signer_both_implemented =
-            vscf_key_signer_is_implemented(first_key_alg) && vscf_key_signer_is_implemented(second_key_alg);
+        is_key_signer_both_implemented =
+                vscf_key_signer_is_implemented(first_key_alg) && vscf_key_signer_is_implemented(second_key_alg);
 
-    if (!is_kem_both_implemented && !is_key_signer_both_implemented) {
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        if (!is_kem_both_implemented && !is_key_signer_both_implemented) {
+            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    //
-    //  Import keys.
-    //
-    first_key = vscf_key_alg_import_private_key(first_key_alg, raw_first_key, error);
-    if (NULL == first_key) {
-        goto cleanup;
-    }
+        //
+        //  Import keys.
+        //
+        first_key = vscf_key_alg_import_private_key(first_key_alg, raw_first_key, error);
+        if (NULL == first_key) {
+            goto cleanup;
+        }
 
-    second_key = vscf_key_alg_import_private_key(second_key_alg, raw_second_key, error);
-    if (NULL == second_key) {
-        goto cleanup;
-    }
+        second_key = vscf_key_alg_import_private_key(second_key_alg, raw_second_key, error);
+        if (NULL == second_key) {
+            goto cleanup;
+        }
 
-    //
-    //  Make hybrid key.
-    //
-    private_key = vscf_hybrid_private_key_impl(
-            vscf_hybrid_private_key_new_with_keys_disown(key_alg_info, &first_key, &second_key));
+        //
+        //  Make hybrid key.
+        //
+        private_key = vscf_hybrid_private_key_impl(
+                vscf_hybrid_private_key_new_with_keys_disown(key_alg_info, &first_key, &second_key));
 
-cleanup:
-    vscf_raw_private_key_destroy(&raw_first_key);
-    vscf_raw_private_key_destroy(&raw_second_key);
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&first_key);
-    vscf_impl_destroy(&second_key_alg);
-    vscf_impl_destroy(&second_key);
+    cleanup:
+        vscf_raw_private_key_destroy(&raw_first_key);
+        vscf_raw_private_key_destroy(&raw_second_key);
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&first_key);
+        vscf_impl_destroy(&second_key_alg);
+        vscf_impl_destroy(&second_key);
 
-    return private_key;
+        return private_key;
 }
 
 //
@@ -800,8 +800,8 @@ cleanup:
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_hybrid_key_alg_export_private_key(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, vscf_error_t *error) {
+vscf_hybrid_key_alg_export_private_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key,
+        vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(private_key);
@@ -859,7 +859,7 @@ vscf_hybrid_key_alg_exported_private_key_data_len(const vscf_hybrid_key_alg_t *s
     const size_t first_data_key_len = vscf_key_alg_exported_private_key_data_len(first_key_alg, first_key);
     const size_t second_data_key_len = vscf_key_alg_exported_private_key_data_len(second_key_alg, second_key);
 
-    const size_t key_data_len = 1 + 4 +                      // HybridPrivateKey ::= SEQUENCE {
+    const size_t key_data_len = 1 + 4 + // HybridPrivateKey ::= SEQUENCE {
                                 1 + 4 + first_data_key_len + //     firstKey OCTET STRING,
                                 1 + 4 + second_data_key_len; //     secondKey OCTET STRING }
 
@@ -877,98 +877,98 @@ vscf_hybrid_key_alg_exported_private_key_data_len(const vscf_hybrid_key_alg_t *s
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_export_private_key_data(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) {
+vscf_hybrid_key_alg_export_private_key_data(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) {
 
     //
-    // Write to the ASN.1 structure.
-    //
-    // HybridPrivateKey ::= SEQUENCE {
-    //     firstKey OCTET STRING,
-    //     signerKey OCTET STRING
-    // }
-    //
+        // Write to the ASN.1 structure.
+        //
+        // HybridPrivateKey ::= SEQUENCE {
+        //     firstKey OCTET STRING,
+        //     signerKey OCTET STRING
+        // }
+        //
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_exported_private_key_data_len(self, private_key));
+        VSCF_ASSERT_PTR(self);
+        VSCF_ASSERT_PTR(private_key);
+        VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
+        VSCF_ASSERT_PTR(out);
+        VSCF_ASSERT(vsc_buffer_is_valid(out));
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_exported_private_key_data_len(self, private_key));
 
-    if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
-        return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
-    }
+        if (vscf_key_impl_tag(private_key) != self->info->impl_tag) {
+            return vscf_status_ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+        }
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
+        vscf_error_t error;
+        vscf_error_reset(&error);
 
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
-    const vscf_hybrid_private_key_t *hybrid_private_key = (const vscf_hybrid_private_key_t *)private_key;
+        VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
+        const vscf_hybrid_private_key_t *hybrid_private_key = (const vscf_hybrid_private_key_t *)private_key;
 
-    const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key(hybrid_private_key);
-    const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key(hybrid_private_key);
+        const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key(hybrid_private_key);
+        const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key(hybrid_private_key);
 
-    //
-    //  Get correspond key algorithms.
-    //
-    vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, &error);
-    VSCF_ASSERT_PTR(first_key_alg);
+        //
+        //  Get correspond key algorithms.
+        //
+        vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, &error);
+        VSCF_ASSERT_PTR(first_key_alg);
 
-    vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, &error);
-    VSCF_ASSERT_PTR(second_key_alg);
+        vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, &error);
+        VSCF_ASSERT_PTR(second_key_alg);
 
-    vscf_raw_private_key_t *raw_first_key = NULL;
-    vscf_raw_private_key_t *raw_second_key = NULL;
+        vscf_raw_private_key_t *raw_first_key = NULL;
+        vscf_raw_private_key_t *raw_second_key = NULL;
 
-    //
-    //  Check if keys are exportable.
-    //
-    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(first_key_alg))) {
-        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        //
+        //  Check if keys are exportable.
+        //
+        if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(first_key_alg))) {
+            vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(second_key_alg))) {
-        vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        goto cleanup;
-    }
+        if (!vscf_key_alg_can_export_private_key(vscf_key_alg_api(second_key_alg))) {
+            vscf_error_update(&error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+            goto cleanup;
+        }
 
-    //  TODO: Optimize memcpy by writing directly to the out.
-    raw_first_key = vscf_key_alg_export_private_key(first_key_alg, first_key, &error);
-    if (vscf_error_has_error(&error)) {
-        goto cleanup;
-    }
+        //  TODO: Optimize memcpy by writing directly to the out.
+        raw_first_key = vscf_key_alg_export_private_key(first_key_alg, first_key, &error);
+        if (vscf_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    raw_second_key = vscf_key_alg_export_private_key(second_key_alg, second_key, &error);
-    if (NULL == raw_second_key) {
-        goto cleanup;
-    }
+        raw_second_key = vscf_key_alg_export_private_key(second_key_alg, second_key, &error);
+        if (NULL == raw_second_key) {
+            goto cleanup;
+        }
 
-    //
-    //  Write.
-    //
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
-    size_t raw_key_len = 0;
-    raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(raw_second_key));
-    raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(raw_first_key));
-    raw_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_key_len);
+        //
+        //  Write.
+        //
+        vscf_asn1wr_t asn1wr;
+        vscf_asn1wr_init(&asn1wr);
+        vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+        size_t raw_key_len = 0;
+        raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(raw_second_key));
+        raw_key_len += vscf_asn1wr_write_octet_str(&asn1wr, vscf_raw_private_key_data(raw_first_key));
+        raw_key_len += vscf_asn1wr_write_sequence(&asn1wr, raw_key_len);
 
-    VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
-    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
-    vscf_asn1wr_cleanup(&asn1wr);
+        VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+        vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(out));
+        vscf_asn1wr_cleanup(&asn1wr);
 
-    vsc_buffer_inc_used(out, raw_key_len);
+        vsc_buffer_inc_used(out, raw_key_len);
 
-cleanup:
-    vscf_raw_private_key_destroy(&raw_first_key);
-    vscf_raw_private_key_destroy(&raw_second_key);
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
+    cleanup:
+        vscf_raw_private_key_destroy(&raw_first_key);
+        vscf_raw_private_key_destroy(&raw_second_key);
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
 
-    return vscf_error_status(&error);
+        return vscf_error_status(&error);
 }
 
 //
@@ -1017,10 +1017,10 @@ vscf_hybrid_key_alg_encrypted_len(const vscf_hybrid_key_alg_t *self, const vscf_
     vscf_impl_destroy(&second_key_alg);
 
     const size_t hybrid_encrypted_content_info_len =
-            1 + 4 +                              //  HybridEncryptedContentInfo ::= SEQUENCE {
-            1 + 1 + 1 +                          //      version INTEGER { v0(0) },
-            1 + 1 + 16 +                         //      hash OBJECT IDENTIFIER,
-            1 + 1 + 16 +                         //      cipher OBJECT IDENTIFIER,
+            1 + 4 + //  HybridEncryptedContentInfo ::= SEQUENCE {
+            1 + 1 + 1 + //      version INTEGER { v0(0) },
+            1 + 1 + 16 + //      hash OBJECT IDENTIFIER,
+            1 + 1 + 16 + //      cipher OBJECT IDENTIFIER,
             1 + 3 + first_encapsulated_key_len + //      firstEncapsulatedKey OCTET STRING,
             1 + 3 + second_encapsulated_key_len; //      secondEncapsulatedKey OCTET STRING }
 
@@ -1033,122 +1033,122 @@ vscf_hybrid_key_alg_encrypted_len(const vscf_hybrid_key_alg_t *self, const vscf_
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_encrypt(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) {
+vscf_hybrid_key_alg_encrypt(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, vsc_data_t data,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(self->cipher);
-    VSCF_ASSERT_PTR(self->hash);
-    VSCF_ASSERT_PTR(public_key);
-    VSCF_ASSERT(vscf_hybrid_key_alg_can_encrypt(self, public_key, data.len));
-    VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_encrypted_len(self, public_key, data.len));
+        VSCF_ASSERT_PTR(self->random);
+        VSCF_ASSERT_PTR(self->cipher);
+        VSCF_ASSERT_PTR(self->hash);
+        VSCF_ASSERT_PTR(public_key);
+        VSCF_ASSERT(vscf_hybrid_key_alg_can_encrypt(self, public_key, data.len));
+        VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
+        VSCF_ASSERT(vsc_data_is_valid(data));
+        VSCF_ASSERT_PTR(out);
+        VSCF_ASSERT(vsc_buffer_is_valid(out));
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_encrypted_len(self, public_key, data.len));
 
-    const vscf_hybrid_public_key_t *hybrid_public_key = (const vscf_hybrid_public_key_t *)public_key;
-    const vscf_impl_t *first_key = vscf_hybrid_public_key_first_key(hybrid_public_key);
-    const vscf_impl_t *second_key = vscf_hybrid_public_key_second_key(hybrid_public_key);
+        const vscf_hybrid_public_key_t *hybrid_public_key = (const vscf_hybrid_public_key_t *)public_key;
+        const vscf_impl_t *first_key = vscf_hybrid_public_key_first_key(hybrid_public_key);
+        const vscf_impl_t *second_key = vscf_hybrid_public_key_second_key(hybrid_public_key);
 
-    //
-    //  Prepare algs.
-    //
-    vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, NULL);
-    VSCF_ASSERT_PTR(first_key_alg);
+        //
+        //  Prepare algs.
+        //
+        vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, NULL);
+        VSCF_ASSERT_PTR(first_key_alg);
 
-    vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, NULL);
-    VSCF_ASSERT_PTR(second_key_alg);
+        vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, NULL);
+        VSCF_ASSERT_PTR(second_key_alg);
 
-    //
-    //  Prepare vars.
-    //
-    const size_t first_shared_key_len = vscf_kem_kem_shared_key_len(first_key_alg, first_key);
-    vsc_buffer_t *first_shared_key = vsc_buffer_new_with_capacity(first_shared_key_len);
-    vsc_buffer_make_secure(first_shared_key);
+        //
+        //  Prepare vars.
+        //
+        const size_t first_shared_key_len = vscf_kem_kem_shared_key_len(first_key_alg, first_key);
+        vsc_buffer_t *first_shared_key = vsc_buffer_new_with_capacity(first_shared_key_len);
+        vsc_buffer_make_secure(first_shared_key);
 
-    const size_t first_encapsulated_key_len = vscf_kem_kem_encapsulated_key_len(first_key_alg, first_key);
-    vsc_buffer_t *first_encapsulated_key = vsc_buffer_new_with_capacity(first_encapsulated_key_len);
-    vsc_buffer_make_secure(first_encapsulated_key);
+        const size_t first_encapsulated_key_len = vscf_kem_kem_encapsulated_key_len(first_key_alg, first_key);
+        vsc_buffer_t *first_encapsulated_key = vsc_buffer_new_with_capacity(first_encapsulated_key_len);
+        vsc_buffer_make_secure(first_encapsulated_key);
 
-    const size_t second_shared_key_len = vscf_kem_kem_shared_key_len(second_key_alg, second_key);
-    vsc_buffer_t *second_shared_key = vsc_buffer_new_with_capacity(second_shared_key_len);
-    vsc_buffer_make_secure(second_shared_key);
+        const size_t second_shared_key_len = vscf_kem_kem_shared_key_len(second_key_alg, second_key);
+        vsc_buffer_t *second_shared_key = vsc_buffer_new_with_capacity(second_shared_key_len);
+        vsc_buffer_make_secure(second_shared_key);
 
-    const size_t second_encapsulated_key_len = vscf_kem_kem_encapsulated_key_len(second_key_alg, second_key);
-    vsc_buffer_t *second_encapsulated_key = vsc_buffer_new_with_capacity(second_encapsulated_key_len);
-    vsc_buffer_make_secure(second_encapsulated_key);
+        const size_t second_encapsulated_key_len = vscf_kem_kem_encapsulated_key_len(second_key_alg, second_key);
+        vsc_buffer_t *second_encapsulated_key = vsc_buffer_new_with_capacity(second_encapsulated_key_len);
+        vsc_buffer_make_secure(second_encapsulated_key);
 
 
-    vscf_error_t error;
-    vscf_error_reset(&error);
+        vscf_error_t error;
+        vscf_error_reset(&error);
 
-    //
-    //  Get shared keys via KEM and configure cipher.
-    //
-    error.status = vscf_kem_kem_encapsulate(first_key_alg, first_key, first_shared_key, first_encapsulated_key);
-    if (vscf_error_has_error(&error)) {
-        goto cleanup;
-    }
+        //
+        //  Get shared keys via KEM and configure cipher.
+        //
+        error.status = vscf_kem_kem_encapsulate(first_key_alg, first_key, first_shared_key, first_encapsulated_key);
+        if (vscf_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    error.status = vscf_kem_kem_encapsulate(second_key_alg, second_key, second_shared_key, second_encapsulated_key);
-    if (vscf_error_has_error(&error)) {
-        goto cleanup;
-    }
+        error.status = vscf_kem_kem_encapsulate(second_key_alg, second_key, second_shared_key, second_encapsulated_key);
+        if (vscf_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(first_shared_key_len + second_shared_key_len);
-    vsc_buffer_make_secure(shared_key);
-    vsc_buffer_write_data(shared_key, vsc_buffer_data(first_shared_key));
-    vsc_buffer_write_data(shared_key, vsc_buffer_data(second_shared_key));
+        vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(first_shared_key_len + second_shared_key_len);
+        vsc_buffer_make_secure(shared_key);
+        vsc_buffer_write_data(shared_key, vsc_buffer_data(first_shared_key));
+        vsc_buffer_write_data(shared_key, vsc_buffer_data(second_shared_key));
 
-    vscf_hybrid_key_alg_config_cipher(self->cipher, self->hash, vsc_buffer_data(shared_key));
+        vscf_hybrid_key_alg_config_cipher(self->cipher, self->hash, vsc_buffer_data(shared_key));
 
-    vsc_buffer_destroy(&shared_key);
+        vsc_buffer_destroy(&shared_key);
 
-    //
-    //  Write ciphertext content info.
-    //
-    //  HybridEncryptedContentInfo ::= SEQUENCE {
-    //      version INTEGER { v0(0) },
-    //      hash OBJECT IDENTIFIER,
-    //      cipher OBJECT IDENTIFIER,
-    //      firstEncapsulatedKey OCTET STRING,
-    //      secondEncapsulatedKey OCTET STRING
-    //  }
-    //
+        //
+        //  Write ciphertext content info.
+        //
+        //  HybridEncryptedContentInfo ::= SEQUENCE {
+        //      version INTEGER { v0(0) },
+        //      hash OBJECT IDENTIFIER,
+        //      cipher OBJECT IDENTIFIER,
+        //      firstEncapsulatedKey OCTET STRING,
+        //      secondEncapsulatedKey OCTET STRING
+        //  }
+        //
 
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+        vscf_asn1wr_t asn1wr;
+        vscf_asn1wr_init(&asn1wr);
+        vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
-    size_t written_alg_info_len = 0;
-    written_alg_info_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(second_encapsulated_key));
-    written_alg_info_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(first_encapsulated_key));
-    written_alg_info_len += vscf_asn1wr_write_oid(&asn1wr, vscf_oid_from_alg_id(vscf_alg_alg_id(self->cipher)));
-    written_alg_info_len += vscf_asn1wr_write_oid(&asn1wr, vscf_oid_from_alg_id(vscf_alg_alg_id(self->hash)));
-    written_alg_info_len += vscf_asn1wr_write_int(&asn1wr, 0);
-    written_alg_info_len += vscf_asn1wr_write_sequence(&asn1wr, written_alg_info_len);
+        size_t written_alg_info_len = 0;
+        written_alg_info_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(second_encapsulated_key));
+        written_alg_info_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(first_encapsulated_key));
+        written_alg_info_len += vscf_asn1wr_write_oid(&asn1wr, vscf_oid_from_alg_id(vscf_alg_alg_id(self->cipher)));
+        written_alg_info_len += vscf_asn1wr_write_oid(&asn1wr, vscf_oid_from_alg_id(vscf_alg_alg_id(self->hash)));
+        written_alg_info_len += vscf_asn1wr_write_int(&asn1wr, 0);
+        written_alg_info_len += vscf_asn1wr_write_sequence(&asn1wr, written_alg_info_len);
 
-    VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
-    vscf_asn1wr_finish(&asn1wr, false);
-    vscf_asn1wr_cleanup(&asn1wr);
-    vsc_buffer_inc_used(out, written_alg_info_len);
+        VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+        vscf_asn1wr_finish(&asn1wr, false);
+        vscf_asn1wr_cleanup(&asn1wr);
+        vsc_buffer_inc_used(out, written_alg_info_len);
 
-    //
-    //  Encrypt.
-    //
-    error.status = vscf_encrypt(self->cipher, data, out);
+        //
+        //  Encrypt.
+        //
+        error.status = vscf_encrypt(self->cipher, data, out);
 
-cleanup:
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
-    vsc_buffer_destroy(&first_shared_key);
-    vsc_buffer_destroy(&first_encapsulated_key);
-    vsc_buffer_destroy(&second_shared_key);
-    vsc_buffer_destroy(&second_encapsulated_key);
+    cleanup:
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
+        vsc_buffer_destroy(&first_shared_key);
+        vsc_buffer_destroy(&first_encapsulated_key);
+        vsc_buffer_destroy(&second_shared_key);
+        vsc_buffer_destroy(&second_encapsulated_key);
 
-    return vscf_error_status(&error);
+        return vscf_error_status(&error);
 }
 
 //
@@ -1190,133 +1190,133 @@ vscf_hybrid_key_alg_decrypted_len(const vscf_hybrid_key_alg_t *self, const vscf_
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_decrypt(
-        const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) {
+vscf_hybrid_key_alg_decrypt(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, vsc_data_t data,
+        vsc_buffer_t *out) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->random);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_hybrid_key_alg_can_decrypt(self, private_key, data.len));
-    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
-    VSCF_ASSERT(vsc_data_is_valid(data));
-    VSCF_ASSERT_PTR(out);
-    VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_decrypted_len(self, private_key, data.len));
+        VSCF_ASSERT_PTR(self->random);
+        VSCF_ASSERT_PTR(private_key);
+        VSCF_ASSERT(vscf_hybrid_key_alg_can_decrypt(self, private_key, data.len));
+        VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
+        VSCF_ASSERT(vsc_data_is_valid(data));
+        VSCF_ASSERT_PTR(out);
+        VSCF_ASSERT(vsc_buffer_is_valid(out));
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_hybrid_key_alg_decrypted_len(self, private_key, data.len));
 
-    //
-    //  Read ciphertext content info.
-    //
-    //  HybridEncryptedContentInfo ::= SEQUENCE {
-    //      version INTEGER { v0(0) },
-    //      hash OBJECT IDENTIFIER,
-    //      cipher OBJECT IDENTIFIER,
-    //      firstEncapsulatedKey OCTET STRING,
-    //      secondEncapsulatedKey OCTET STRING
-    //  }
-    //
-    vscf_asn1rd_t asn1rd;
-    vscf_asn1rd_init(&asn1rd);
-    vscf_asn1rd_reset(&asn1rd, data);
+        //
+        //  Read ciphertext content info.
+        //
+        //  HybridEncryptedContentInfo ::= SEQUENCE {
+        //      version INTEGER { v0(0) },
+        //      hash OBJECT IDENTIFIER,
+        //      cipher OBJECT IDENTIFIER,
+        //      firstEncapsulatedKey OCTET STRING,
+        //      secondEncapsulatedKey OCTET STRING
+        //  }
+        //
+        vscf_asn1rd_t asn1rd;
+        vscf_asn1rd_init(&asn1rd);
+        vscf_asn1rd_reset(&asn1rd, data);
 
-    const size_t content_info_len = vscf_asn1rd_get_data_len(&asn1rd);
-    if (vscf_asn1rd_has_error(&asn1rd) || (content_info_len > data.len)) {
+        const size_t content_info_len = vscf_asn1rd_get_data_len(&asn1rd);
+        if (vscf_asn1rd_has_error(&asn1rd) || (content_info_len > data.len)) {
+            vscf_asn1rd_cleanup(&asn1rd);
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
+
+        vsc_data_t content_info = vsc_data_slice_beg(data, 0, content_info_len);
+        vsc_data_t encrypted_content = vsc_data_slice_beg(data, content_info_len, data.len - content_info_len);
+
+        vscf_asn1rd_reset(&asn1rd, content_info);
+        vscf_asn1rd_read_sequence(&asn1rd);
+        const int version = vscf_asn1rd_read_int(&asn1rd);
+        vsc_data_t hash_oid = vscf_asn1rd_read_oid(&asn1rd);
+        vsc_data_t cipher_oid = vscf_asn1rd_read_oid(&asn1rd);
+        vsc_data_t first_encapsulated_key = vscf_asn1rd_read_octet_str(&asn1rd);
+        vsc_data_t second_encapsulated_key = vscf_asn1rd_read_octet_str(&asn1rd);
+
+        if (vscf_asn1rd_has_error(&asn1rd) || (version != 0) || (vscf_asn1rd_left_len(&asn1rd) > 0)) {
+            vscf_asn1rd_cleanup(&asn1rd);
+            return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
+        }
         vscf_asn1rd_cleanup(&asn1rd);
-        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
-    }
 
-    vsc_data_t content_info = vsc_data_slice_beg(data, 0, content_info_len);
-    vsc_data_t encrypted_content = vsc_data_slice_beg(data, content_info_len, data.len - content_info_len);
+        const vscf_alg_id_t hash_alg_id = vscf_oid_to_alg_id(hash_oid);
+        const vscf_alg_id_t cipher_alg_id = vscf_oid_to_alg_id(cipher_oid);
+        if ((hash_alg_id == vscf_alg_id_NONE) || (cipher_alg_id == vscf_alg_id_NONE)) {
+            return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+        }
 
-    vscf_asn1rd_reset(&asn1rd, content_info);
-    vscf_asn1rd_read_sequence(&asn1rd);
-    const int version = vscf_asn1rd_read_int(&asn1rd);
-    vsc_data_t hash_oid = vscf_asn1rd_read_oid(&asn1rd);
-    vsc_data_t cipher_oid = vscf_asn1rd_read_oid(&asn1rd);
-    vsc_data_t first_encapsulated_key = vscf_asn1rd_read_octet_str(&asn1rd);
-    vsc_data_t second_encapsulated_key = vscf_asn1rd_read_octet_str(&asn1rd);
+        vscf_impl_t *hash = vscf_alg_factory_create_hash_from_alg_id(hash_alg_id);
+        VSCF_ASSERT_PTR(hash);
 
-    if (vscf_asn1rd_has_error(&asn1rd) || (version != 0) || (vscf_asn1rd_left_len(&asn1rd) > 0)) {
+        vscf_impl_t *cipher = vscf_alg_factory_create_cipher_from_alg_id(cipher_alg_id);
+        VSCF_ASSERT_PTR(cipher);
+
+        const vscf_hybrid_private_key_t *hybrid_private_key = (const vscf_hybrid_private_key_t *)private_key;
+        const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key(hybrid_private_key);
+        const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key(hybrid_private_key);
+
+        //
+        //  Prepare algs.
+        //
+        vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, NULL);
+        VSCF_ASSERT_PTR(first_key_alg);
+
+        vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, NULL);
+        VSCF_ASSERT_PTR(second_key_alg);
+
+        //
+        //  Prepare vars.
+        //
+        const size_t first_shared_key_len = vscf_kem_kem_shared_key_len(first_key_alg, first_key);
+        vsc_buffer_t *first_shared_key = vsc_buffer_new_with_capacity(first_shared_key_len);
+        vsc_buffer_make_secure(first_shared_key);
+
+        const size_t second_shared_key_len = vscf_kem_kem_shared_key_len(second_key_alg, second_key);
+        vsc_buffer_t *second_shared_key = vsc_buffer_new_with_capacity(second_shared_key_len);
+        vsc_buffer_make_secure(second_shared_key);
+
+        vscf_error_t error;
+        vscf_error_reset(&error);
+
+        //
+        //  Get shared keys via KEM and configure cipher.
+        //
+        error.status = vscf_kem_kem_decapsulate(first_key_alg, first_encapsulated_key, first_key, first_shared_key);
+        if (vscf_error_has_error(&error)) {
+            goto cleanup;
+        }
+
+        error.status = vscf_kem_kem_decapsulate(second_key_alg, second_encapsulated_key, second_key, second_shared_key);
+        if (vscf_error_has_error(&error)) {
+            goto cleanup;
+        }
+
+        vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(first_shared_key_len + second_shared_key_len);
+        vsc_buffer_make_secure(shared_key);
+        vsc_buffer_write_data(shared_key, vsc_buffer_data(first_shared_key));
+        vsc_buffer_write_data(shared_key, vsc_buffer_data(second_shared_key));
+
+        vscf_hybrid_key_alg_config_cipher(cipher, hash, vsc_buffer_data(shared_key));
+
+        vsc_buffer_destroy(&shared_key);
+
+        //
+        //  Encrypt.
+        //
+        error.status = vscf_decrypt(cipher, encrypted_content, out);
+
+    cleanup:
+        vscf_impl_destroy(&hash);
+        vscf_impl_destroy(&cipher);
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
+        vsc_buffer_destroy(&first_shared_key);
+        vsc_buffer_destroy(&second_shared_key);
         vscf_asn1rd_cleanup(&asn1rd);
-        return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
-    }
-    vscf_asn1rd_cleanup(&asn1rd);
 
-    const vscf_alg_id_t hash_alg_id = vscf_oid_to_alg_id(hash_oid);
-    const vscf_alg_id_t cipher_alg_id = vscf_oid_to_alg_id(cipher_oid);
-    if ((hash_alg_id == vscf_alg_id_NONE) || (cipher_alg_id == vscf_alg_id_NONE)) {
-        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
-    }
-
-    vscf_impl_t *hash = vscf_alg_factory_create_hash_from_alg_id(hash_alg_id);
-    VSCF_ASSERT_PTR(hash);
-
-    vscf_impl_t *cipher = vscf_alg_factory_create_cipher_from_alg_id(cipher_alg_id);
-    VSCF_ASSERT_PTR(cipher);
-
-    const vscf_hybrid_private_key_t *hybrid_private_key = (const vscf_hybrid_private_key_t *)private_key;
-    const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key(hybrid_private_key);
-    const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key(hybrid_private_key);
-
-    //
-    //  Prepare algs.
-    //
-    vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, NULL);
-    VSCF_ASSERT_PTR(first_key_alg);
-
-    vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, NULL);
-    VSCF_ASSERT_PTR(second_key_alg);
-
-    //
-    //  Prepare vars.
-    //
-    const size_t first_shared_key_len = vscf_kem_kem_shared_key_len(first_key_alg, first_key);
-    vsc_buffer_t *first_shared_key = vsc_buffer_new_with_capacity(first_shared_key_len);
-    vsc_buffer_make_secure(first_shared_key);
-
-    const size_t second_shared_key_len = vscf_kem_kem_shared_key_len(second_key_alg, second_key);
-    vsc_buffer_t *second_shared_key = vsc_buffer_new_with_capacity(second_shared_key_len);
-    vsc_buffer_make_secure(second_shared_key);
-
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    //
-    //  Get shared keys via KEM and configure cipher.
-    //
-    error.status = vscf_kem_kem_decapsulate(first_key_alg, first_encapsulated_key, first_key, first_shared_key);
-    if (vscf_error_has_error(&error)) {
-        goto cleanup;
-    }
-
-    error.status = vscf_kem_kem_decapsulate(second_key_alg, second_encapsulated_key, second_key, second_shared_key);
-    if (vscf_error_has_error(&error)) {
-        goto cleanup;
-    }
-
-    vsc_buffer_t *shared_key = vsc_buffer_new_with_capacity(first_shared_key_len + second_shared_key_len);
-    vsc_buffer_make_secure(shared_key);
-    vsc_buffer_write_data(shared_key, vsc_buffer_data(first_shared_key));
-    vsc_buffer_write_data(shared_key, vsc_buffer_data(second_shared_key));
-
-    vscf_hybrid_key_alg_config_cipher(cipher, hash, vsc_buffer_data(shared_key));
-
-    vsc_buffer_destroy(&shared_key);
-
-    //
-    //  Encrypt.
-    //
-    error.status = vscf_decrypt(cipher, encrypted_content, out);
-
-cleanup:
-    vscf_impl_destroy(&hash);
-    vscf_impl_destroy(&cipher);
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
-    vsc_buffer_destroy(&first_shared_key);
-    vsc_buffer_destroy(&second_shared_key);
-    vscf_asn1rd_cleanup(&asn1rd);
-
-    return vscf_error_status(&error);
+        return vscf_error_status(&error);
 }
 
 //
@@ -1380,7 +1380,7 @@ vscf_hybrid_key_alg_signature_len(const vscf_hybrid_key_alg_t *self, const vscf_
         return 0;
     }
 
-    const size_t len = 1 + 4 +                           // HybridSignature ::= SEQUENCE {
+    const size_t len = 1 + 4 + // HybridSignature ::= SEQUENCE {
                        1 + 3 + first_key_signature_len + //     firstKeySignature OCTET STRING,
                        1 + 3 + second_key_signature_len; //     secondKeySignature OCTET STRING }
 
@@ -1396,63 +1396,63 @@ vscf_hybrid_key_alg_sign_hash(const vscf_hybrid_key_alg_t *self, const vscf_impl
         vsc_data_t digest, vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(private_key);
-    VSCF_ASSERT(vscf_hybrid_key_alg_can_sign(self, private_key));
-    VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
-    VSCF_ASSERT(vsc_data_is_valid(digest));
-    VSCF_ASSERT_PTR(signature);
-    VSCF_ASSERT(vsc_buffer_is_valid(signature));
-    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_hybrid_key_alg_signature_len(self, private_key));
+        VSCF_ASSERT_PTR(private_key);
+        VSCF_ASSERT(vscf_hybrid_key_alg_can_sign(self, private_key));
+        VSCF_ASSERT(hash_id != vscf_alg_id_NONE);
+        VSCF_ASSERT(vsc_data_is_valid(digest));
+        VSCF_ASSERT_PTR(signature);
+        VSCF_ASSERT(vsc_buffer_is_valid(signature));
+        VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_hybrid_key_alg_signature_len(self, private_key));
 
-    const vscf_hybrid_private_key_t *hybrid_private_key = (const vscf_hybrid_private_key_t *)private_key;
-    const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key(hybrid_private_key);
-    const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key(hybrid_private_key);
+        const vscf_hybrid_private_key_t *hybrid_private_key = (const vscf_hybrid_private_key_t *)private_key;
+        const vscf_impl_t *first_key = vscf_hybrid_private_key_first_key(hybrid_private_key);
+        const vscf_impl_t *second_key = vscf_hybrid_private_key_second_key(hybrid_private_key);
 
-    vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, NULL);
-    VSCF_ASSERT_PTR(first_key_alg);
+        vscf_impl_t *first_key_alg = vscf_key_alg_factory_create_from_key(first_key, self->random, NULL);
+        VSCF_ASSERT_PTR(first_key_alg);
 
-    vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, NULL);
-    VSCF_ASSERT_PTR(second_key_alg);
+        vscf_impl_t *second_key_alg = vscf_key_alg_factory_create_from_key(second_key, self->random, NULL);
+        VSCF_ASSERT_PTR(second_key_alg);
 
-    const size_t first_key_signature_len = vscf_key_signer_signature_len(first_key_alg, first_key);
-    vsc_buffer_t *first_key_signature = vsc_buffer_new_with_capacity(first_key_signature_len);
+        const size_t first_key_signature_len = vscf_key_signer_signature_len(first_key_alg, first_key);
+        vsc_buffer_t *first_key_signature = vsc_buffer_new_with_capacity(first_key_signature_len);
 
-    const size_t second_key_signature_len = vscf_key_signer_signature_len(second_key_alg, second_key);
-    vsc_buffer_t *second_key_signature = vsc_buffer_new_with_capacity(second_key_signature_len);
+        const size_t second_key_signature_len = vscf_key_signer_signature_len(second_key_alg, second_key);
+        vsc_buffer_t *second_key_signature = vsc_buffer_new_with_capacity(second_key_signature_len);
 
-    vscf_asn1wr_t asn1wr;
-    vscf_asn1wr_init(&asn1wr);
+        vscf_asn1wr_t asn1wr;
+        vscf_asn1wr_init(&asn1wr);
 
-    size_t signature_len = 0;
+        size_t signature_len = 0;
 
-    vscf_status_t status = vscf_key_signer_sign_hash(first_key_alg, first_key, hash_id, digest, first_key_signature);
-    if (vscf_status_SUCCESS != status) {
-        goto cleanup;
-    }
+        vscf_status_t status = vscf_key_signer_sign_hash(first_key_alg, first_key, hash_id, digest, first_key_signature);
+        if (vscf_status_SUCCESS != status) {
+            goto cleanup;
+        }
 
-    status = vscf_key_signer_sign_hash(second_key_alg, second_key, hash_id, digest, second_key_signature);
-    if (vscf_status_SUCCESS != status) {
-        goto cleanup;
-    }
+        status = vscf_key_signer_sign_hash(second_key_alg, second_key, hash_id, digest, second_key_signature);
+        if (vscf_status_SUCCESS != status) {
+            goto cleanup;
+        }
 
-    vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(signature), vsc_buffer_unused_len(signature));
+        vscf_asn1wr_reset(&asn1wr, vsc_buffer_unused_bytes(signature), vsc_buffer_unused_len(signature));
 
-    signature_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(second_key_signature));
-    signature_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(first_key_signature));
-    signature_len += vscf_asn1wr_write_sequence(&asn1wr, signature_len);
+        signature_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(second_key_signature));
+        signature_len += vscf_asn1wr_write_octet_str(&asn1wr, vsc_buffer_data(first_key_signature));
+        signature_len += vscf_asn1wr_write_sequence(&asn1wr, signature_len);
 
-    VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
-    vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(signature));
-    vsc_buffer_inc_used(signature, signature_len);
+        VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
+        vscf_asn1wr_finish(&asn1wr, vsc_buffer_is_reverse(signature));
+        vsc_buffer_inc_used(signature, signature_len);
 
-cleanup:
-    vscf_asn1wr_cleanup(&asn1wr);
-    vsc_buffer_destroy(&first_key_signature);
-    vsc_buffer_destroy(&second_key_signature);
-    vscf_impl_destroy(&first_key_alg);
-    vscf_impl_destroy(&second_key_alg);
+    cleanup:
+        vscf_asn1wr_cleanup(&asn1wr);
+        vsc_buffer_destroy(&first_key_signature);
+        vsc_buffer_destroy(&second_key_signature);
+        vscf_impl_destroy(&first_key_alg);
+        vscf_impl_destroy(&second_key_alg);
 
-    return status;
+        return status;
 }
 
 //

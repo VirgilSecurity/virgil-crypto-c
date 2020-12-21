@@ -263,8 +263,8 @@ vssq_messenger_group_epoch_list_cleanup_ctx(vssq_messenger_group_epoch_list_t *s
 //  Note, ownership is transfered.
 //
 VSSQ_PUBLIC void
-vssq_messenger_group_epoch_list_add(
-        vssq_messenger_group_epoch_list_t *self, vssq_messenger_group_epoch_t **messenger_group_epoch_ref) {
+vssq_messenger_group_epoch_list_add(vssq_messenger_group_epoch_list_t *self,
+        vssq_messenger_group_epoch_t **messenger_group_epoch_ref) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(messenger_group_epoch_ref);
@@ -405,8 +405,8 @@ vssq_messenger_group_epoch_list_latest_epoch(const vssq_messenger_group_epoch_li
 //  Find epoch by it's number.
 //
 VSSQ_PUBLIC const vssq_messenger_group_epoch_t *
-vssq_messenger_group_epoch_list_find(
-        const vssq_messenger_group_epoch_list_t *self, size_t epoch_num, vssq_error_t *error) {
+vssq_messenger_group_epoch_list_find(const vssq_messenger_group_epoch_list_t *self, size_t epoch_num,
+        vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
 

@@ -251,8 +251,8 @@ vscr_ratchet_skipped_messages_root_node_cleanup_ctx(vscr_ratchet_skipped_message
 }
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_messages_root_node_find_key(
-        const vscr_ratchet_skipped_messages_root_node_t *self, uint32_t counter) {
+vscr_ratchet_skipped_messages_root_node_find_key(const vscr_ratchet_skipped_messages_root_node_t *self,
+        uint32_t counter) {
 
     VSCR_ASSERT_PTR(self);
 
@@ -270,8 +270,8 @@ vscr_ratchet_skipped_messages_root_node_find_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_delete_key(
-        vscr_ratchet_skipped_messages_root_node_t *self, vscr_ratchet_message_key_t *message_key) {
+vscr_ratchet_skipped_messages_root_node_delete_key(vscr_ratchet_skipped_messages_root_node_t *self,
+        vscr_ratchet_message_key_t *message_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message_key);
@@ -314,8 +314,8 @@ vscr_ratchet_skipped_messages_root_node_delete_key(
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_add_key(
-        vscr_ratchet_skipped_messages_root_node_t *self, vscr_ratchet_message_key_t *message_key) {
+vscr_ratchet_skipped_messages_root_node_add_key(vscr_ratchet_skipped_messages_root_node_t *self,
+        vscr_ratchet_message_key_t *message_key) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(message_key);

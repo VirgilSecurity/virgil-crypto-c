@@ -535,8 +535,8 @@ vssc_http_request_set_auth_header_value(vssc_http_request_t *self, vsc_str_t aut
 //  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
 //
 VSSC_PUBLIC void
-vssc_http_request_set_auth_header_value_from_type_and_credentials(
-        vssc_http_request_t *self, vsc_str_t auth_type, vsc_str_t auth_credentials) {
+vssc_http_request_set_auth_header_value_from_type_and_credentials(vssc_http_request_t *self, vsc_str_t auth_type,
+        vsc_str_t auth_credentials) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_type));

@@ -346,8 +346,8 @@ vssq_ejabberd_jwt_cleanup_ctx(vssq_ejabberd_jwt_t *self) {
 //  Create fully defined object.
 //
 static void
-vssq_ejabberd_jwt_init_ctx_with_members(
-        vssq_ejabberd_jwt_t *self, vsc_str_t jwt_string, vsc_str_t jid, size_t expires_at) {
+vssq_ejabberd_jwt_init_ctx_with_members(vssq_ejabberd_jwt_t *self, vsc_str_t jwt_string, vsc_str_t jid,
+        size_t expires_at) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid(jwt_string));
@@ -369,112 +369,112 @@ vssq_ejabberd_jwt_parse(vsc_str_t str, vssq_error_t *error) {
 
     VSSQ_ASSERT(vsc_str_is_valid(str));
 
-    if (vsc_str_is_empty(str)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
-        return NULL;
-    }
-
-    vsc_str_t header_str = vsc_str_empty();
-    vsc_str_t payload_str = vsc_str_empty();
-    vsc_str_t signature_str = vsc_str_empty();
-
-    const char *curr = str.chars;
-    const char *end = str.chars + str.len;
-
-    //
-    //  Extract JWT Header as string.
-    //
-    for (size_t len = 0; curr + len < end; ++len) {
-        if (curr[len] == '.') {
-            header_str = vsc_str(curr, len);
-            curr += len + 1;
-            break;
+        if (vsc_str_is_empty(str)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
+            return NULL;
         }
-    }
 
-    if (vsc_str_is_empty(header_str)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
-        return NULL;
-    }
+        vsc_str_t header_str = vsc_str_empty();
+        vsc_str_t payload_str = vsc_str_empty();
+        vsc_str_t signature_str = vsc_str_empty();
 
-    //
-    //  Extract JWT Payload as string.
-    //
-    for (size_t len = 0; curr + len < end; ++len) {
-        if (curr[len] == '.') {
-            payload_str = vsc_str(curr, len);
-            curr += len + 1;
-            break;
+        const char *curr = str.chars;
+        const char *end = str.chars + str.len;
+
+        //
+        //  Extract JWT Header as string.
+        //
+        for (size_t len = 0; curr + len < end; ++len) {
+            if (curr[len] == '.') {
+                header_str = vsc_str(curr, len);
+                curr += len + 1;
+                break;
+            }
         }
-    }
 
-    if (vsc_str_is_empty(payload_str)) {
+        if (vsc_str_is_empty(header_str)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
+            return NULL;
+        }
+
+        //
+        //  Extract JWT Payload as string.
+        //
+        for (size_t len = 0; curr + len < end; ++len) {
+            if (curr[len] == '.') {
+                payload_str = vsc_str(curr, len);
+                curr += len + 1;
+                break;
+            }
+        }
+
+        if (vsc_str_is_empty(payload_str)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
+            return NULL;
+        }
+
+        //
+        //  Extract JWT Signature as string.
+        //
+        if (curr < end) {
+            signature_str = vsc_str(curr, (size_t)(end - curr));
+        }
+
+        if (vsc_str_is_empty(signature_str)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
+            return NULL;
+        }
+
+        //
+        //  Parse Payload.
+        //
+        vssc_error_t inner_error;
+        vssc_error_reset(&inner_error);
+
+        const size_t payload_json_str_len = vssc_base64_url_decoded_len(payload_str.len);
+        vsc_buffer_t *payload_json_buff = vsc_buffer_new_with_capacity(payload_json_str_len);
+
+        vssc_json_object_t *payload_json_obj = NULL;
+        vssq_ejabberd_jwt_t *ejabberd_jwt = NULL;
+
+        vsc_str_t jid = vsc_str_empty();
+        int expires_at = 0;
+
+        inner_error.status = vssc_base64_url_decode(payload_str, payload_json_buff);
+        if (vssc_error_has_error(&inner_error)) {
+            goto fail;
+        }
+
+        payload_json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(payload_json_buff)), &inner_error);
+        if (vssc_error_has_error(&inner_error)) {
+            goto fail;
+        }
+
+        //
+        //  Check fields.
+        //
+        jid = vssc_json_object_get_string_value(payload_json_obj, k_json_key_jid, &inner_error);
+        if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(jid)) {
+            goto fail;
+        }
+
+        expires_at = vssc_json_object_get_int_value(payload_json_obj, k_json_key_expires_at, &inner_error);
+        if (vssc_error_has_error(&inner_error) || expires_at <= 0) {
+            goto fail;
+        }
+
+        ejabberd_jwt = vssq_ejabberd_jwt_new_with_members(str, jid, (size_t)expires_at);
+
+        goto cleanup;
+
+    fail:
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
-        return NULL;
-    }
 
-    //
-    //  Extract JWT Signature as string.
-    //
-    if (curr < end) {
-        signature_str = vsc_str(curr, (size_t)(end - curr));
-    }
+    cleanup:
+        vssc_json_object_destroy(&payload_json_obj);
+        vsc_buffer_destroy(&payload_json_buff);
 
-    if (vsc_str_is_empty(signature_str)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
-        return NULL;
-    }
-
-    //
-    //  Parse Payload.
-    //
-    vssc_error_t inner_error;
-    vssc_error_reset(&inner_error);
-
-    const size_t payload_json_str_len = vssc_base64_url_decoded_len(payload_str.len);
-    vsc_buffer_t *payload_json_buff = vsc_buffer_new_with_capacity(payload_json_str_len);
-
-    vssc_json_object_t *payload_json_obj = NULL;
-    vssq_ejabberd_jwt_t *ejabberd_jwt = NULL;
-
-    vsc_str_t jid = vsc_str_empty();
-    int expires_at = 0;
-
-    inner_error.status = vssc_base64_url_decode(payload_str, payload_json_buff);
-    if (vssc_error_has_error(&inner_error)) {
-        goto fail;
-    }
-
-    payload_json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(payload_json_buff)), &inner_error);
-    if (vssc_error_has_error(&inner_error)) {
-        goto fail;
-    }
-
-    //
-    //  Check fields.
-    //
-    jid = vssc_json_object_get_string_value(payload_json_obj, k_json_key_jid, &inner_error);
-    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(jid)) {
-        goto fail;
-    }
-
-    expires_at = vssc_json_object_get_int_value(payload_json_obj, k_json_key_expires_at, &inner_error);
-    if (vssc_error_has_error(&inner_error) || expires_at <= 0) {
-        goto fail;
-    }
-
-    ejabberd_jwt = vssq_ejabberd_jwt_new_with_members(str, jid, (size_t)expires_at);
-
-    goto cleanup;
-
-fail:
-    VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_PARSE_EJABBERD_JWT_FAILED);
-
-cleanup:
-    vssc_json_object_destroy(&payload_json_obj);
-    vsc_buffer_destroy(&payload_json_buff);
-
-    return ejabberd_jwt;
+        return ejabberd_jwt;
 }
 
 //

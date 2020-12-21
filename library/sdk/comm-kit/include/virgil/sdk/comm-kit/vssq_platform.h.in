@@ -140,6 +140,10 @@ extern "C" {
 #cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
 #endif
 
+#ifndef VSSQ_MESSENGER_FILE_CIPHER
+#cmakedefine01 VSSQ_MESSENGER_FILE_CIPHER
+#endif
+
 #ifndef VSSQ_CONTACT_UTILS
 #cmakedefine01 VSSQ_CONTACT_UTILS
 #endif

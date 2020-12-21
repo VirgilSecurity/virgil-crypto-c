@@ -86,6 +86,10 @@
 #   include "vssq_messenger_creds_defs.h"
 #endif
 
+#if VSSQ_MESSENGER_FILE_CIPHER
+#   include "vssq_messenger_file_cipher_defs.h"
+#endif
+
 #if VSSQ_MESSENGER_GROUP
 #   include "vssq_messenger_group_defs.h"
 #endif

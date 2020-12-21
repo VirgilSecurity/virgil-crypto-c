@@ -373,8 +373,8 @@ vssc_jwt_generator_cleanup_ctx(vssc_jwt_generator_t *self) {
 //  Create JWT generator with an application credentials.
 //
 static void
-vssc_jwt_generator_init_ctx_with_credentials(
-        vssc_jwt_generator_t *self, vsc_str_t app_id, vsc_str_t app_key_id, const vscf_impl_t *app_key) {
+vssc_jwt_generator_init_ctx_with_credentials(vssc_jwt_generator_t *self, vsc_str_t app_id, vsc_str_t app_key_id,
+        const vscf_impl_t *app_key) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(app_key);

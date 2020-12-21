@@ -476,59 +476,59 @@ vssq_messenger_group_owner(const vssq_messenger_group_t *self) {
 //  Create a new group and register it in the cloud (Keyknox).
 //
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_group_create(
-        vssq_messenger_group_t *self, vsc_str_t group_id, const vssq_messenger_user_list_t *participants) {
+vssq_messenger_group_create(vssq_messenger_group_t *self, vsc_str_t group_id,
+        const vssq_messenger_user_list_t *participants) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(self->random);
-    VSSQ_ASSERT_PTR(self->auth);
-    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(group_id));
-    VSSQ_ASSERT_PTR(participants);
+        VSSQ_ASSERT_PTR(self->random);
+        VSSQ_ASSERT_PTR(self->auth);
+        VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(group_id));
+        VSSQ_ASSERT_PTR(participants);
 
-    vssq_error_t error;
-    vssq_error_reset(&error);
+        vssq_error_t error;
+        vssq_error_reset(&error);
 
-    //
-    //  Generate initial epoch for a group session.
-    //
-    vsc_buffer_t *session_id = vssq_messenger_group_calculate_session_id(group_id);
+        //
+        //  Generate initial epoch for a group session.
+        //
+        vsc_buffer_t *session_id = vssq_messenger_group_calculate_session_id(group_id);
 
-    vssq_messenger_group_epoch_t *initial_epoch =
-            vssq_messenger_group_generate_initial_epoch(self, vsc_buffer_data(session_id), participants, &error);
+        vssq_messenger_group_epoch_t *initial_epoch =
+                vssq_messenger_group_generate_initial_epoch(self, vsc_buffer_data(session_id), participants, &error);
 
-    if (vssq_error_has_error(&error)) {
-        goto cleanup;
-    }
+        if (vssq_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    //
-    //  Push the epoch to the cloud.
-    //
-    error.status = vssq_messenger_group_epoch_keyknox_storage_write(
-            self->epoch_keyknox_storage, vsc_buffer_data(session_id), initial_epoch, participants);
-    if (vssq_error_has_error(&error)) {
-        goto cleanup;
-    }
+        //
+        //  Push the epoch to the cloud.
+        //
+        error.status = vssq_messenger_group_epoch_keyknox_storage_write(
+                self->epoch_keyknox_storage, vsc_buffer_data(session_id), initial_epoch, participants);
+        if (vssq_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    //
-    //  Store state.
-    //
-    VSSQ_ASSERT_NULL(self->owner);
-    VSSQ_ASSERT_NULL(self->epochs);
-    VSSQ_ASSERT(!vsc_str_mutable_is_valid(self->group_id));
+        //
+        //  Store state.
+        //
+        VSSQ_ASSERT_NULL(self->owner);
+        VSSQ_ASSERT_NULL(self->epochs);
+        VSSQ_ASSERT(!vsc_str_mutable_is_valid(self->group_id));
 
-    self->group_id = vsc_str_mutable_from_str(group_id);
-    self->owner = vssq_messenger_user_shallow_copy_const(vssq_messenger_auth_user(self->auth));
-    const vscf_status_t foundation_status = vscf_group_session_add_epoch(
-            self->group_session, vssq_messenger_group_epoch_group_info_message(initial_epoch));
-    VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
-    self->epochs = vssq_messenger_group_epoch_list_new();
-    vssq_messenger_group_epoch_list_add(self->epochs, &initial_epoch);
+        self->group_id = vsc_str_mutable_from_str(group_id);
+        self->owner = vssq_messenger_user_shallow_copy_const(vssq_messenger_auth_user(self->auth));
+        const vscf_status_t foundation_status = vscf_group_session_add_epoch(
+                self->group_session, vssq_messenger_group_epoch_group_info_message(initial_epoch));
+        VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
+        self->epochs = vssq_messenger_group_epoch_list_new();
+        vssq_messenger_group_epoch_list_add(self->epochs, &initial_epoch);
 
-cleanup:
-    vsc_buffer_destroy(&session_id);
-    vssq_messenger_group_epoch_destroy(&initial_epoch);
+    cleanup:
+        vsc_buffer_destroy(&session_id);
+        vssq_messenger_group_epoch_destroy(&initial_epoch);
 
-    return vssq_error_status(&error);
+        return vssq_error_status(&error);
 }
 
 //
@@ -796,39 +796,39 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_group_load_epoch_if_needed(const vssq_messenger_group_t *self, size_t epoch_num) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(self->auth);
+        VSSQ_ASSERT_PTR(self->auth);
 
-    vssq_error_t error;
-    vssq_error_reset(&error);
+        vssq_error_t error;
+        vssq_error_reset(&error);
 
-    VSSQ_ATOMIC_CRITICAL_SECTION_DECLARE(load_epoch);
-    VSSQ_ATOMIC_CRITICAL_SECTION_BEGIN(load_epoch);
+        VSSQ_ATOMIC_CRITICAL_SECTION_DECLARE(load_epoch);
+        VSSQ_ATOMIC_CRITICAL_SECTION_BEGIN(load_epoch);
 
-    const vssq_messenger_group_epoch_t *epoch = vssq_messenger_group_epoch_list_find(self->epochs, epoch_num, &error);
-    if (epoch) {
-        // cache found
-        goto cleanup;
-    }
+        const vssq_messenger_group_epoch_t *epoch = vssq_messenger_group_epoch_list_find(self->epochs, epoch_num, &error);
+        if (epoch) {
+            // cache found
+            goto cleanup;
+        }
 
-    // pull from the cloud
-    vsc_data_t session_id = vscf_group_session_get_session_id(self->group_session);
-    vssq_messenger_group_epoch_t *group_epoch = vssq_messenger_group_epoch_keyknox_storage_read(
-            self->epoch_keyknox_storage, session_id, epoch_num, self->owner, &error);
+        // pull from the cloud
+        vsc_data_t session_id = vscf_group_session_get_session_id(self->group_session);
+        vssq_messenger_group_epoch_t *group_epoch = vssq_messenger_group_epoch_keyknox_storage_read(
+                self->epoch_keyknox_storage, session_id, epoch_num, self->owner, &error);
 
-    if (vssq_error_has_error(&error)) {
-        goto cleanup;
-    }
+        if (vssq_error_has_error(&error)) {
+            goto cleanup;
+        }
 
-    const vscf_status_t foundation_status = vscf_group_session_add_epoch(
-            self->group_session, vssq_messenger_group_epoch_group_info_message(group_epoch));
-    VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
+        const vscf_status_t foundation_status = vscf_group_session_add_epoch(
+                self->group_session, vssq_messenger_group_epoch_group_info_message(group_epoch));
+        VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
 
-    vssq_messenger_group_epoch_list_add(self->epochs, &group_epoch);
+        vssq_messenger_group_epoch_list_add(self->epochs, &group_epoch);
 
-cleanup:
-    VSSQ_ATOMIC_CRITICAL_SECTION_END(load_epoch);
+    cleanup:
+        VSSQ_ATOMIC_CRITICAL_SECTION_END(load_epoch);
 
-    return error.status;
+        return error.status;
 }
 
 //

@@ -486,70 +486,70 @@ vssc_jwt_header_parse(vsc_str_t header_str, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid(header_str));
 
-    //
-    //  Declare vars.
-    //
-    vssc_error_t inner_error;
-    vssc_error_reset(&inner_error);
+        //
+        //  Declare vars.
+        //
+        vssc_error_t inner_error;
+        vssc_error_reset(&inner_error);
 
-    const size_t header_json_str_len = vssc_base64_url_decoded_len(header_str.len);
-    vsc_buffer_t *header_json_buff = vsc_buffer_new_with_capacity(header_json_str_len);
+        const size_t header_json_str_len = vssc_base64_url_decoded_len(header_str.len);
+        vsc_buffer_t *header_json_buff = vsc_buffer_new_with_capacity(header_json_str_len);
 
-    vssc_json_object_t *json_obj = NULL;
+        vssc_json_object_t *json_obj = NULL;
 
-    inner_error.status = vssc_base64_url_decode(header_str, header_json_buff);
-    if (vssc_error_has_error(&inner_error)) {
-        goto fail;
-    }
+        inner_error.status = vssc_base64_url_decode(header_str, header_json_buff);
+        if (vssc_error_has_error(&inner_error)) {
+            goto fail;
+        }
 
-    json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(header_json_buff)), &inner_error);
-    if (vssc_error_has_error(&inner_error)) {
-        goto fail;
-    }
+        json_obj = vssc_json_object_parse(vsc_str_from_data(vsc_buffer_data(header_json_buff)), &inner_error);
+        if (vssc_error_has_error(&inner_error)) {
+            goto fail;
+        }
 
-    //
-    //  Check fields.
-    //
-    vsc_str_t app_key_id = vssc_json_object_get_string_value(json_obj, k_json_key_app_key_id, &inner_error);
-    if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(app_key_id)) {
-        goto fail;
-    }
-
-
-    vsc_str_t type = vssc_json_object_get_string_value(json_obj, k_json_key_type, &inner_error);
-    if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_type_default, type)) {
-        goto fail;
-    }
+        //
+        //  Check fields.
+        //
+        vsc_str_t app_key_id = vssc_json_object_get_string_value(json_obj, k_json_key_app_key_id, &inner_error);
+        if (vssc_error_has_error(&inner_error) || vsc_str_is_empty(app_key_id)) {
+            goto fail;
+        }
 
 
-    vsc_str_t content_type = vssc_json_object_get_string_value(json_obj, k_json_key_content_type, &inner_error);
-    if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_content_type_default, content_type)) {
-        goto fail;
-    }
+        vsc_str_t type = vssc_json_object_get_string_value(json_obj, k_json_key_type, &inner_error);
+        if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_type_default, type)) {
+            goto fail;
+        }
 
 
-    vsc_str_t signature_algorithm =
-            vssc_json_object_get_string_value(json_obj, k_json_key_signature_algorithm, &inner_error);
-    if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_signature_algorithm_default, signature_algorithm)) {
-        goto fail;
-    }
+        vsc_str_t content_type = vssc_json_object_get_string_value(json_obj, k_json_key_content_type, &inner_error);
+        if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_content_type_default, content_type)) {
+            goto fail;
+        }
 
-    goto succ;
 
-fail:
+        vsc_str_t signature_algorithm =
+                vssc_json_object_get_string_value(json_obj, k_json_key_signature_algorithm, &inner_error);
+        if (vssc_error_has_error(&inner_error) || !vsc_str_equal(k_signature_algorithm_default, signature_algorithm)) {
+            goto fail;
+        }
 
-    vssc_json_object_destroy(&json_obj);
+        goto succ;
 
-    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+    fail:
 
-succ:
-    vsc_buffer_destroy(&header_json_buff);
+        vssc_json_object_destroy(&json_obj);
 
-    if (json_obj) {
-        return vssc_jwt_header_new_with_json_object(&json_obj);
-    } else {
-        return NULL;
-    }
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+
+    succ:
+        vsc_buffer_destroy(&header_json_buff);
+
+        if (json_obj) {
+            return vssc_jwt_header_new_with_json_object(&json_obj);
+        } else {
+            return NULL;
+        }
 }
 
 //

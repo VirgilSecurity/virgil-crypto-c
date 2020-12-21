@@ -378,8 +378,8 @@ vssc_raw_card_signer_sign(const vssc_raw_card_signer_t *self, vssc_raw_card_t *r
 //  Adds self-signature to given "raw card".
 //
 VSSC_PUBLIC vssc_status_t
-vssc_raw_card_signer_self_sign(
-        const vssc_raw_card_signer_t *self, vssc_raw_card_t *raw_card, const vscf_impl_t *private_key) {
+vssc_raw_card_signer_self_sign(const vssc_raw_card_signer_t *self, vssc_raw_card_t *raw_card,
+        const vscf_impl_t *private_key) {
 
     return vssc_raw_card_signer_sign(self, raw_card, k_self_signer_id, private_key);
 }
@@ -388,8 +388,8 @@ vssc_raw_card_signer_self_sign(
 //  Adds Virgil Signature to given "raw card".
 //
 VSSC_PUBLIC vssc_status_t
-vssc_raw_card_signer_virgil_sign(
-        const vssc_raw_card_signer_t *self, vssc_raw_card_t *raw_card, const vscf_impl_t *private_key) {
+vssc_raw_card_signer_virgil_sign(const vssc_raw_card_signer_t *self, vssc_raw_card_t *raw_card,
+        const vscf_impl_t *private_key) {
 
     return vssc_raw_card_signer_sign(self, raw_card, k_virgil_signer_id, private_key);
 }

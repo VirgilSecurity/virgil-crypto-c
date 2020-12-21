@@ -509,58 +509,58 @@ VSSQ_PUBLIC vssq_messenger_group_epoch_t *
 vssq_messenger_group_epoch_from_json(const vssc_json_object_t *json_obj, vssq_error_t *error) {
 
     vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
+        vssc_error_reset(&core_sdk_error);
 
-    vscf_error_t foundation_error;
-    vscf_error_reset(&foundation_error);
+        vscf_error_t foundation_error;
+        vscf_error_reset(&foundation_error);
 
-    vsc_buffer_t *group_message_data = NULL;
-    vscf_group_session_message_t *group_info_message = NULL;
-    vssc_json_array_t *participants_json_arr = NULL;
-    vssc_string_list_t *participants = NULL;
+        vsc_buffer_t *group_message_data = NULL;
+        vscf_group_session_message_t *group_info_message = NULL;
+        vssc_json_array_t *participants_json_arr = NULL;
+        vssc_string_list_t *participants = NULL;
 
 
-    group_message_data = vssc_json_object_get_binary_value_new(json_obj, k_json_key_group_message, &core_sdk_error);
-    if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
-        goto error;
-    }
+        group_message_data = vssc_json_object_get_binary_value_new(json_obj, k_json_key_group_message, &core_sdk_error);
+        if (vssc_error_has_error(&core_sdk_error)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
+            goto error;
+        }
 
-    group_info_message = vscf_group_session_message_deserialize(vsc_buffer_data(group_message_data), &foundation_error);
-    if (vscf_error_has_error(&foundation_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
-        goto error;
-    }
+        group_info_message = vscf_group_session_message_deserialize(vsc_buffer_data(group_message_data), &foundation_error);
+        if (vscf_error_has_error(&foundation_error)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
+            goto error;
+        }
 
-    if (vscf_group_session_message_get_type(group_info_message) != vscf_group_msg_type_GROUP_INFO) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
-        goto error;
-    }
+        if (vscf_group_session_message_get_type(group_info_message) != vscf_group_msg_type_GROUP_INFO) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
+            goto error;
+        }
 
-    participants_json_arr = vssc_json_object_get_array_value(json_obj, k_json_key_participants, &core_sdk_error);
-    if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
-        goto error;
-    }
+        participants_json_arr = vssc_json_object_get_array_value(json_obj, k_json_key_participants, &core_sdk_error);
+        if (vssc_error_has_error(&core_sdk_error)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
+            goto error;
+        }
 
-    participants = vssc_json_array_get_string_values(participants_json_arr, &core_sdk_error);
-    if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
-        goto error;
-    }
+        participants = vssc_json_array_get_string_values(participants_json_arr, &core_sdk_error);
+        if (vssc_error_has_error(&core_sdk_error)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_GROUP_EPOCH_FAILED_PARSE_FAILED);
+            goto error;
+        }
 
-    vsc_buffer_destroy(&group_message_data);
-    vssc_json_array_destroy(&participants_json_arr);
+        vsc_buffer_destroy(&group_message_data);
+        vssc_json_array_destroy(&participants_json_arr);
 
-    return vssq_messenger_group_epoch_new_with_all_disown(&group_info_message, &participants);
+        return vssq_messenger_group_epoch_new_with_all_disown(&group_info_message, &participants);
 
-error:
-    vsc_buffer_destroy(&group_message_data);
-    vscf_group_session_message_destroy(&group_info_message);
-    vssc_json_array_destroy(&participants_json_arr);
-    vssc_string_list_destroy(&participants);
+    error:
+        vsc_buffer_destroy(&group_message_data);
+        vscf_group_session_message_destroy(&group_info_message);
+        vssc_json_array_destroy(&participants_json_arr);
+        vssc_string_list_destroy(&participants);
 
-    return NULL;
+        return NULL;
 }
 
 //
