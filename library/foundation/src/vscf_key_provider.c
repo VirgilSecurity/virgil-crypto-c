@@ -398,80 +398,80 @@ VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        vscf_impl_t *key = NULL;
+    vscf_impl_t *key = NULL;
 
-        switch (alg_id) {
-    #if VSCF_RSA
-        case vscf_alg_id_RSA: {
-            vscf_rsa_t *rsa = vscf_rsa_new();
-            vscf_rsa_use_random(rsa, self->random);
-            key = vscf_rsa_generate_key(rsa, self->rsa_bitlen, error);
-            vscf_rsa_destroy(&rsa);
-            break;
-        }
-    #endif // VSCF_RSA
+    switch (alg_id) {
+#if VSCF_RSA
+    case vscf_alg_id_RSA: {
+        vscf_rsa_t *rsa = vscf_rsa_new();
+        vscf_rsa_use_random(rsa, self->random);
+        key = vscf_rsa_generate_key(rsa, self->rsa_bitlen, error);
+        vscf_rsa_destroy(&rsa);
+        break;
+    }
+#endif // VSCF_RSA
 
-    #if VSCF_ED25519
-        case vscf_alg_id_ED25519: {
-            vscf_ed25519_t *ed25519 = vscf_ed25519_new();
-            vscf_ed25519_use_random(ed25519, self->random);
-            key = vscf_ed25519_generate_key(ed25519, error);
-            vscf_ed25519_destroy(&ed25519);
-            break;
-        }
-    #endif // VSCF_ED25519
+#if VSCF_ED25519
+    case vscf_alg_id_ED25519: {
+        vscf_ed25519_t *ed25519 = vscf_ed25519_new();
+        vscf_ed25519_use_random(ed25519, self->random);
+        key = vscf_ed25519_generate_key(ed25519, error);
+        vscf_ed25519_destroy(&ed25519);
+        break;
+    }
+#endif // VSCF_ED25519
 
-    #if VSCF_CURVE25519
-        case vscf_alg_id_CURVE25519: {
-            vscf_curve25519_t *curve25519 = vscf_curve25519_new();
-            vscf_curve25519_use_random(curve25519, self->random);
-            key = vscf_curve25519_generate_key(curve25519, error);
-            vscf_curve25519_destroy(&curve25519);
-            break;
-        }
-    #endif // VSCF_CURVE25519
+#if VSCF_CURVE25519
+    case vscf_alg_id_CURVE25519: {
+        vscf_curve25519_t *curve25519 = vscf_curve25519_new();
+        vscf_curve25519_use_random(curve25519, self->random);
+        key = vscf_curve25519_generate_key(curve25519, error);
+        vscf_curve25519_destroy(&curve25519);
+        break;
+    }
+#endif // VSCF_CURVE25519
 
-    #if VSCF_ECC
-        case vscf_alg_id_SECP256R1: {
-            vscf_ecc_t *ecc = vscf_ecc_new();
-            vscf_ecc_use_random(ecc, self->random);
-            key = vscf_ecc_generate_key(ecc, alg_id, error);
-            vscf_ecc_destroy(&ecc);
-            break;
-        }
-    #endif // VSCF_ECC
+#if VSCF_ECC
+    case vscf_alg_id_SECP256R1: {
+        vscf_ecc_t *ecc = vscf_ecc_new();
+        vscf_ecc_use_random(ecc, self->random);
+        key = vscf_ecc_generate_key(ecc, alg_id, error);
+        vscf_ecc_destroy(&ecc);
+        break;
+    }
+#endif // VSCF_ECC
 
-    #if VSCF_POST_QUANTUM
-    #if VSCF_FALCON
-        case vscf_alg_id_FALCON: {
-            vscf_falcon_t *falcon = vscf_falcon_new();
-            vscf_falcon_use_random(falcon, self->random);
-            key = vscf_falcon_generate_key(falcon, error);
-            vscf_falcon_destroy(&falcon);
-            break;
-        }
-    #endif // VSCF_FALCON
+#if VSCF_POST_QUANTUM
+#if VSCF_FALCON
+    case vscf_alg_id_FALCON: {
+        vscf_falcon_t *falcon = vscf_falcon_new();
+        vscf_falcon_use_random(falcon, self->random);
+        key = vscf_falcon_generate_key(falcon, error);
+        vscf_falcon_destroy(&falcon);
+        break;
+    }
+#endif // VSCF_FALCON
 
-    #if VSCF_ROUND5
-        case vscf_alg_id_ROUND5_ND_1CCA_5D: {
-            vscf_round5_t *round5 = vscf_round5_new();
-            vscf_round5_use_random(round5, self->random);
-            key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_1CCA_5D, error);
-            vscf_round5_destroy(&round5);
-            break;
-        }
-    #endif // VSCF_ROUND5
-    #endif // VSCF_POST_QUANTUM
+#if VSCF_ROUND5
+    case vscf_alg_id_ROUND5_ND_1CCA_5D: {
+        vscf_round5_t *round5 = vscf_round5_new();
+        vscf_round5_use_random(round5, self->random);
+        key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_1CCA_5D, error);
+        vscf_round5_destroy(&round5);
+        break;
+    }
+#endif // VSCF_ROUND5
+#endif // VSCF_POST_QUANTUM
 
-        default:
-            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-            return NULL;
-        }
+    default:
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
+    }
 
-        return key;
+    return key;
 }
 
 //
@@ -491,69 +491,69 @@ vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, v
 
     VSCF_ASSERT_PTR(self);
 
-    #if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
-        return vscf_key_provider_generate_compound_hybrid_private_key(self, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
-    #else
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    #endif // VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
+#if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
+    return vscf_key_provider_generate_compound_hybrid_private_key(self, vscf_alg_id_CURVE25519,
+            vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
 }
 
 //
 //  Generate new compound private key with given algorithms.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id,
-        vscf_alg_id_t signer_alg_id, vscf_error_t *error) {
+vscf_key_provider_generate_compound_private_key(
+        vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id, vscf_alg_id_t signer_alg_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT(cipher_alg_id != vscf_alg_id_NONE);
-        VSCF_ASSERT(signer_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(cipher_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(signer_alg_id != vscf_alg_id_NONE);
 
-    #if VSCF_COMPOUND_KEY_ALG
-        //
-        //  Configure a;gs.
-        //
-        vscf_compound_key_alg_t compound_key_alg;
-        vscf_compound_key_alg_init(&compound_key_alg);
-        vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
+#if VSCF_COMPOUND_KEY_ALG
+    //
+    //  Configure a;gs.
+    //
+    vscf_compound_key_alg_t compound_key_alg;
+    vscf_compound_key_alg_init(&compound_key_alg);
+    vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
 
-        const vscf_status_t status = vscf_compound_key_alg_setup_defaults(&compound_key_alg);
-        VSCF_ASSERT(status == vscf_status_SUCCESS);
+    const vscf_status_t status = vscf_compound_key_alg_setup_defaults(&compound_key_alg);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
 
-        //
-        //  Prepare result variables.
-        //
-        vscf_impl_t *compound_key = NULL;
-        vscf_impl_t *cipher_key = NULL;
-        vscf_impl_t *signer_key = NULL;
+    //
+    //  Prepare result variables.
+    //
+    vscf_impl_t *compound_key = NULL;
+    vscf_impl_t *cipher_key = NULL;
+    vscf_impl_t *signer_key = NULL;
 
-        //
-        //  Generate keys.
-        //
-        cipher_key = vscf_key_provider_generate_private_key(self, cipher_alg_id, error);
-        if (NULL == cipher_key) {
-            goto cleanup;
-        }
+    //
+    //  Generate keys.
+    //
+    cipher_key = vscf_key_provider_generate_private_key(self, cipher_alg_id, error);
+    if (NULL == cipher_key) {
+        goto cleanup;
+    }
 
-        signer_key = vscf_key_provider_generate_private_key(self, signer_alg_id, error);
-        if (NULL == signer_key) {
-            goto cleanup;
-        }
+    signer_key = vscf_key_provider_generate_private_key(self, signer_alg_id, error);
+    if (NULL == signer_key) {
+        goto cleanup;
+    }
 
-        compound_key = vscf_compound_key_alg_make_key(&compound_key_alg, cipher_key, signer_key, error);
+    compound_key = vscf_compound_key_alg_make_key(&compound_key_alg, cipher_key, signer_key, error);
 
-    cleanup:
-        vscf_impl_destroy(&cipher_key);
-        vscf_impl_destroy(&signer_key);
-        vscf_compound_key_alg_cleanup(&compound_key_alg);
-        return compound_key;
-    #else
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    #endif // VSCF_COMPOUND_KEY_ALG
+cleanup:
+    vscf_impl_destroy(&cipher_key);
+    vscf_impl_destroy(&signer_key);
+    vscf_compound_key_alg_cleanup(&compound_key_alg);
+    return compound_key;
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_COMPOUND_KEY_ALG
 }
 
 //
@@ -564,52 +564,52 @@ vscf_key_provider_generate_hybrid_private_key(vscf_key_provider_t *self, vscf_al
         vscf_alg_id_t second_key_alg_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT(first_key_alg_id != vscf_alg_id_NONE);
-        VSCF_ASSERT(second_key_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(first_key_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(second_key_alg_id != vscf_alg_id_NONE);
 
-    #if VSCF_HYBRID_KEY_ALG
-        //
-        //  Configure a;gs.
-        //
-        vscf_hybrid_key_alg_t hybrid_key_alg;
-        vscf_hybrid_key_alg_init(&hybrid_key_alg);
-        vscf_hybrid_key_alg_use_random(&hybrid_key_alg, self->random);
+#if VSCF_HYBRID_KEY_ALG
+    //
+    //  Configure a;gs.
+    //
+    vscf_hybrid_key_alg_t hybrid_key_alg;
+    vscf_hybrid_key_alg_init(&hybrid_key_alg);
+    vscf_hybrid_key_alg_use_random(&hybrid_key_alg, self->random);
 
-        const vscf_status_t status = vscf_hybrid_key_alg_setup_defaults(&hybrid_key_alg);
-        VSCF_ASSERT(status == vscf_status_SUCCESS);
+    const vscf_status_t status = vscf_hybrid_key_alg_setup_defaults(&hybrid_key_alg);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
 
-        //
-        //  Prepare result variables.
-        //
-        vscf_impl_t *hybrid_key = NULL;
-        vscf_impl_t *first_key = NULL;
-        vscf_impl_t *second_key = NULL;
+    //
+    //  Prepare result variables.
+    //
+    vscf_impl_t *hybrid_key = NULL;
+    vscf_impl_t *first_key = NULL;
+    vscf_impl_t *second_key = NULL;
 
-        //
-        //  Generate keys.
-        //
-        first_key = vscf_key_provider_generate_private_key(self, first_key_alg_id, error);
-        if (NULL == first_key) {
-            goto cleanup;
-        }
+    //
+    //  Generate keys.
+    //
+    first_key = vscf_key_provider_generate_private_key(self, first_key_alg_id, error);
+    if (NULL == first_key) {
+        goto cleanup;
+    }
 
-        second_key = vscf_key_provider_generate_private_key(self, second_key_alg_id, error);
-        if (NULL == second_key) {
-            goto cleanup;
-        }
+    second_key = vscf_key_provider_generate_private_key(self, second_key_alg_id, error);
+    if (NULL == second_key) {
+        goto cleanup;
+    }
 
-        hybrid_key = vscf_hybrid_key_alg_make_key(&hybrid_key_alg, first_key, second_key, error);
+    hybrid_key = vscf_hybrid_key_alg_make_key(&hybrid_key_alg, first_key, second_key, error);
 
-    cleanup:
-        vscf_impl_destroy(&first_key);
-        vscf_impl_destroy(&second_key);
-        vscf_hybrid_key_alg_cleanup(&hybrid_key_alg);
-        return hybrid_key;
-    #else
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    #endif // VSCF_HYBRID_KEY_ALG
+cleanup:
+    vscf_impl_destroy(&first_key);
+    vscf_impl_destroy(&second_key);
+    vscf_hybrid_key_alg_cleanup(&hybrid_key_alg);
+    return hybrid_key;
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_HYBRID_KEY_ALG
 }
 
 //
@@ -624,64 +624,64 @@ vscf_key_provider_generate_compound_hybrid_private_key(vscf_key_provider_t *self
         vscf_alg_id_t signer_second_key_alg_id, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT(cipher_first_key_alg_id != vscf_alg_id_NONE);
-        VSCF_ASSERT(signer_first_key_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(cipher_first_key_alg_id != vscf_alg_id_NONE);
+    VSCF_ASSERT(signer_first_key_alg_id != vscf_alg_id_NONE);
 
-    #if VSCF_COMPOUND_KEY_ALG && VSCF_HYBRID_KEY_ALG
-        //
-        //  Configure a;gs.
-        //
-        vscf_compound_key_alg_t compound_key_alg;
-        vscf_compound_key_alg_init(&compound_key_alg);
-        vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
+#if VSCF_COMPOUND_KEY_ALG && VSCF_HYBRID_KEY_ALG
+    //
+    //  Configure a;gs.
+    //
+    vscf_compound_key_alg_t compound_key_alg;
+    vscf_compound_key_alg_init(&compound_key_alg);
+    vscf_compound_key_alg_use_random(&compound_key_alg, self->random);
 
-        const vscf_status_t status = vscf_compound_key_alg_setup_defaults(&compound_key_alg);
-        VSCF_ASSERT(status == vscf_status_SUCCESS);
+    const vscf_status_t status = vscf_compound_key_alg_setup_defaults(&compound_key_alg);
+    VSCF_ASSERT(status == vscf_status_SUCCESS);
 
-        //
-        //  Prepare result variables.
-        //
-        vscf_impl_t *compound_key = NULL;
-        vscf_impl_t *cipher_key = NULL;
-        vscf_impl_t *signer_key = NULL;
+    //
+    //  Prepare result variables.
+    //
+    vscf_impl_t *compound_key = NULL;
+    vscf_impl_t *cipher_key = NULL;
+    vscf_impl_t *signer_key = NULL;
 
-        //
-        //  Generate keys.
-        //
-        if (cipher_second_key_alg_id != vscf_alg_id_NONE) {
-            cipher_key = vscf_key_provider_generate_hybrid_private_key(
-                    self, cipher_first_key_alg_id, cipher_second_key_alg_id, error);
-        } else {
-            cipher_key = vscf_key_provider_generate_private_key(self, cipher_first_key_alg_id, error);
-        }
+    //
+    //  Generate keys.
+    //
+    if (cipher_second_key_alg_id != vscf_alg_id_NONE) {
+        cipher_key = vscf_key_provider_generate_hybrid_private_key(
+                self, cipher_first_key_alg_id, cipher_second_key_alg_id, error);
+    } else {
+        cipher_key = vscf_key_provider_generate_private_key(self, cipher_first_key_alg_id, error);
+    }
 
-        if (NULL == cipher_key) {
-            goto cleanup;
-        }
+    if (NULL == cipher_key) {
+        goto cleanup;
+    }
 
-        if (signer_second_key_alg_id != vscf_alg_id_NONE) {
-            signer_key = vscf_key_provider_generate_hybrid_private_key(
-                    self, signer_first_key_alg_id, signer_second_key_alg_id, error);
-        } else {
-            signer_key = vscf_key_provider_generate_private_key(self, signer_first_key_alg_id, error);
-        }
+    if (signer_second_key_alg_id != vscf_alg_id_NONE) {
+        signer_key = vscf_key_provider_generate_hybrid_private_key(
+                self, signer_first_key_alg_id, signer_second_key_alg_id, error);
+    } else {
+        signer_key = vscf_key_provider_generate_private_key(self, signer_first_key_alg_id, error);
+    }
 
-        if (NULL == signer_key) {
-            goto cleanup;
-        }
+    if (NULL == signer_key) {
+        goto cleanup;
+    }
 
-        compound_key = vscf_compound_key_alg_make_key(&compound_key_alg, cipher_key, signer_key, error);
+    compound_key = vscf_compound_key_alg_make_key(&compound_key_alg, cipher_key, signer_key, error);
 
-    cleanup:
-        vscf_impl_destroy(&cipher_key);
-        vscf_impl_destroy(&signer_key);
-        vscf_compound_key_alg_cleanup(&compound_key_alg);
-        return compound_key;
-    #else
-        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
-        return NULL;
-    #endif // VSCF_COMPOUND_KEY_ALG && VSCF_HYBRID_KEY_ALG
+cleanup:
+    vscf_impl_destroy(&cipher_key);
+    vscf_impl_destroy(&signer_key);
+    vscf_compound_key_alg_cleanup(&compound_key_alg);
+    return compound_key;
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif // VSCF_COMPOUND_KEY_ALG && VSCF_HYBRID_KEY_ALG
 }
 
 //

@@ -438,8 +438,8 @@ vssq_messenger_user_list_clear(vssq_messenger_user_list_t *self) {
 //  Find user with a given name.
 //
 VSSQ_PUBLIC const vssq_messenger_user_t *
-vssq_messenger_user_list_find_with_identity(const vssq_messenger_user_list_t *self, vsc_str_t user_identity,
-        vssq_error_t *error) {
+vssq_messenger_user_list_find_with_identity(
+        const vssq_messenger_user_list_t *self, vsc_str_t user_identity, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(user_identity));
@@ -461,8 +461,8 @@ vssq_messenger_user_list_find_with_identity(const vssq_messenger_user_list_t *se
 //  Find user with a given name.
 //
 VSSQ_PUBLIC vssq_messenger_user_t *
-vssq_messenger_user_list_find_with_identity_modifiable(vssq_messenger_user_list_t *self, vsc_str_t user_identity,
-        vssq_error_t *error) {
+vssq_messenger_user_list_find_with_identity_modifiable(
+        vssq_messenger_user_list_t *self, vsc_str_t user_identity, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(user_identity));

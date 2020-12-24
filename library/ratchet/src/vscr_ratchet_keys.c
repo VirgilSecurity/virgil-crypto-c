@@ -405,44 +405,44 @@ vscr_ratchet_keys_create_chain_key_sender(vscr_ratchet_keys_t *self, const vscr_
         vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
-        VSCR_ASSERT_PTR(self->round5);
-        VSCR_ASSERT_PTR(chain_key);
+    VSCR_ASSERT_PTR(self->round5);
+    VSCR_ASSERT_PTR(chain_key);
 
-        vscr_status_t status = vscr_status_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
-        size_t buffer_len =
-                ED25519_DH_LEN + (public_key_second != NULL ? vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN : 0);
+    size_t buffer_len =
+            ED25519_DH_LEN + (public_key_second != NULL ? vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN : 0);
 
-        vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(buffer_len);
-        vsc_buffer_make_secure(shared_secret);
+    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(buffer_len);
+    vsc_buffer_make_secure(shared_secret);
 
-        int curve_status =
-                curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), public_key_first, private_key_first);
-        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-        if (curve_status != 0) {
-            status = vscr_status_ERROR_CURVE25519;
+    int curve_status =
+            curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), public_key_first, private_key_first);
+    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+    if (curve_status != 0) {
+        status = vscr_status_ERROR_CURVE25519;
+        goto err;
+    }
+
+    if (public_key_second != NULL) {
+        VSCR_ASSERT_PTR(encapsulated_key_ref);
+        *encapsulated_key_ref = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+
+        vscf_status_t f_status =
+                vscf_round5_kem_encapsulate(self->round5, public_key_second, shared_secret, *encapsulated_key_ref);
+
+        if (f_status != vscf_status_SUCCESS) {
+            status = vscr_status_ERROR_ROUND5;
             goto err;
         }
+    }
 
-        if (public_key_second != NULL) {
-            VSCR_ASSERT_PTR(encapsulated_key_ref);
-            *encapsulated_key_ref = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+    vscr_ratchet_keys_create_chain_key_finish(root_key, shared_secret, new_root_key, chain_key);
 
-            vscf_status_t f_status =
-                    vscf_round5_kem_encapsulate(self->round5, public_key_second, shared_secret, *encapsulated_key_ref);
+err:
+    vsc_buffer_destroy(&shared_secret);
 
-            if (f_status != vscf_status_SUCCESS) {
-                status = vscr_status_ERROR_ROUND5;
-                goto err;
-            }
-        }
-
-        vscr_ratchet_keys_create_chain_key_finish(root_key, shared_secret, new_root_key, chain_key);
-
-    err:
-        vsc_buffer_destroy(&shared_secret);
-
-        return status;
+    return status;
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -452,41 +452,41 @@ vscr_ratchet_keys_create_chain_key_receiver(vscr_ratchet_keys_t *self, const vsc
         vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
-        VSCR_ASSERT_PTR(self->round5);
-        VSCR_ASSERT_PTR(chain_key);
+    VSCR_ASSERT_PTR(self->round5);
+    VSCR_ASSERT_PTR(chain_key);
 
-        vscr_status_t status = vscr_status_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
-        size_t buffer_len =
-                ED25519_DH_LEN + (private_key_second != NULL ? vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN : 0);
+    size_t buffer_len =
+            ED25519_DH_LEN + (private_key_second != NULL ? vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN : 0);
 
-        vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(buffer_len);
-        vsc_buffer_make_secure(shared_secret);
+    vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(buffer_len);
+    vsc_buffer_make_secure(shared_secret);
 
-        int curve_status =
-                curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), public_key_first, private_key_first);
-        vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
-        if (curve_status != 0) {
-            status = vscr_status_ERROR_CURVE25519;
+    int curve_status =
+            curve25519_key_exchange(vsc_buffer_unused_bytes(shared_secret), public_key_first, private_key_first);
+    vsc_buffer_inc_used(shared_secret, ED25519_DH_LEN);
+    if (curve_status != 0) {
+        status = vscr_status_ERROR_CURVE25519;
+        goto err;
+    }
+
+    if (private_key_second != NULL) {
+        vscf_status_t f_status =
+                vscf_round5_kem_decapsulate(self->round5, encapsulated_key, private_key_second, shared_secret);
+
+        if (f_status != vscf_status_SUCCESS) {
+            status = vscr_status_ERROR_ROUND5;
             goto err;
         }
+    }
 
-        if (private_key_second != NULL) {
-            vscf_status_t f_status =
-                    vscf_round5_kem_decapsulate(self->round5, encapsulated_key, private_key_second, shared_secret);
+    vscr_ratchet_keys_create_chain_key_finish(root_key, shared_secret, new_root_key, chain_key);
 
-            if (f_status != vscf_status_SUCCESS) {
-                status = vscr_status_ERROR_ROUND5;
-                goto err;
-            }
-        }
+err:
+    vsc_buffer_destroy(&shared_secret);
 
-        vscr_ratchet_keys_create_chain_key_finish(root_key, shared_secret, new_root_key, chain_key);
-
-    err:
-        vsc_buffer_destroy(&shared_secret);
-
-        return status;
+    return status;
 }
 
 VSCR_PUBLIC void

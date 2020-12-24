@@ -652,8 +652,8 @@ vssq_contact_utils_hash_emails(const vssc_string_list_t *emails, vssq_error_t *e
 //  Final map : username | email | phone-number->identity
 //
 VSSQ_PUBLIC vssc_string_map_t *
-vssq_contact_utils_merge_contact_discovery_maps(const vssc_string_map_t *contact_request_map,
-        const vssc_string_map_t *contact_response_map) {
+vssq_contact_utils_merge_contact_discovery_maps(
+        const vssc_string_map_t *contact_request_map, const vssc_string_map_t *contact_response_map) {
 
     VSSQ_ASSERT_PTR(contact_request_map);
     VSSQ_ASSERT_PTR(contact_response_map);

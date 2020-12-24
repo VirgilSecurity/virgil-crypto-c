@@ -350,8 +350,8 @@ vssc_key_handler_cleanup_ctx(vssc_key_handler_t *self) {
 //  Constructor.
 //
 static void
-vssc_key_handler_init_ctx_with(vssc_key_handler_t *self, vsc_str_t identity, vsc_data_t key_id,
-        const vscf_impl_t *key) {
+vssc_key_handler_init_ctx_with(
+        vssc_key_handler_t *self, vsc_str_t identity, vsc_data_t key_id, const vscf_impl_t *key) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
@@ -367,8 +367,8 @@ vssc_key_handler_init_ctx_with(vssc_key_handler_t *self, vsc_str_t identity, vsc
 //  Constructor.
 //
 static void
-vssc_key_handler_init_ctx_with_disown(vssc_key_handler_t *self, vsc_str_t identity, vsc_buffer_t **key_id_ref,
-        vscf_impl_t **key_ref) {
+vssc_key_handler_init_ctx_with_disown(
+        vssc_key_handler_t *self, vsc_str_t identity, vsc_buffer_t **key_id_ref, vscf_impl_t **key_ref) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));

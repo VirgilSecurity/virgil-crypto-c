@@ -373,8 +373,8 @@ vssc_card_cleanup_ctx(vssc_card_t *self) {
 //  Create Virgil Card with mandatory properties.
 //
 static void
-vssc_card_init_ctx_with(vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_data_t public_key_id,
-        const vscf_impl_t *public_key) {
+vssc_card_init_ctx_with(
+        vssc_card_t *self, const vssc_raw_card_t *raw_card, vsc_data_t public_key_id, const vscf_impl_t *public_key) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(raw_card);

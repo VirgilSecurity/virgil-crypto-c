@@ -248,8 +248,8 @@ vscf_asn1wr_swap_elements_of_set(byte *to_start, size_t to_len, byte *from_start
 //  Return true if second element is lexicographical less then first.
 //
 static bool
-vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start,
-        size_t second_len) {
+vscf_asn1wr_second_element_of_set_is_less(
+        const byte *first_start, size_t first_len, const byte *second_start, size_t second_len) {
 
     VSCF_ASSERT_PTR(first_start);
     VSCF_ASSERT_PTR(first_len > 1);

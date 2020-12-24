@@ -255,8 +255,8 @@ vscr_ratchet_receiver_chain_cleanup_ctx(vscr_ratchet_receiver_chain_t *self) {
 }
 
 VSCR_PUBLIC void
-vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self,
-        vscr_ReceiverChain *receiver_chain_pb) {
+vscr_ratchet_receiver_chain_serialize(
+        const vscr_ratchet_receiver_chain_t *self, vscr_ReceiverChain *receiver_chain_pb) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(receiver_chain_pb);
@@ -275,24 +275,24 @@ vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain
         vscr_ratchet_receiver_chain_t *receiver_chain, vscf_round5_t *round5) {
 
     VSCR_ASSERT_PTR(round5);
-        VSCR_ASSERT_PTR(receiver_chain);
-        VSCR_ASSERT_PTR(receiver_chain_pb);
+    VSCR_ASSERT_PTR(receiver_chain);
+    VSCR_ASSERT_PTR(receiver_chain_pb);
 
-        vscr_status_t status = vscr_status_SUCCESS;
+    vscr_status_t status = vscr_status_SUCCESS;
 
-        memcpy(receiver_chain->public_key_id, receiver_chain_pb->public_key_id, sizeof(receiver_chain_pb->public_key_id));
-        memcpy(receiver_chain->public_key_first, receiver_chain_pb->public_key_first,
-                sizeof(receiver_chain_pb->public_key_first));
-        vscr_ratchet_chain_key_deserialize(&receiver_chain_pb->chain_key, &receiver_chain->chain_key);
+    memcpy(receiver_chain->public_key_id, receiver_chain_pb->public_key_id, sizeof(receiver_chain_pb->public_key_id));
+    memcpy(receiver_chain->public_key_first, receiver_chain_pb->public_key_first,
+            sizeof(receiver_chain_pb->public_key_first));
+    vscr_ratchet_chain_key_deserialize(&receiver_chain_pb->chain_key, &receiver_chain->chain_key);
 
-        if (receiver_chain_pb->public_key_second != NULL) {
-            status = vscr_ratchet_pb_utils_deserialize_public_key(
-                    round5, receiver_chain_pb->public_key_second, &receiver_chain->public_key_second);
-            if (status != vscr_status_SUCCESS) {
-                goto err;
-            }
+    if (receiver_chain_pb->public_key_second != NULL) {
+        status = vscr_ratchet_pb_utils_deserialize_public_key(
+                round5, receiver_chain_pb->public_key_second, &receiver_chain->public_key_second);
+        if (status != vscr_status_SUCCESS) {
+            goto err;
         }
+    }
 
-    err:
-        return status;
+err:
+    return status;
 }

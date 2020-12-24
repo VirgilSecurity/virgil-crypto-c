@@ -421,8 +421,8 @@ vssc_card_manager_configure_with_service_public_key(vssc_card_manager_t *self, v
 //  Generates self-signed "raw card".
 //
 VSSC_PUBLIC vssc_raw_card_t *
-vssc_card_manager_generate_raw_card(const vssc_card_manager_t *self, vsc_str_t identity, const vscf_impl_t *private_key,
-        vssc_error_t *error) {
+vssc_card_manager_generate_raw_card(
+        const vssc_card_manager_t *self, vsc_str_t identity, const vscf_impl_t *private_key, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid_and_non_empty(identity));
     VSSC_ASSERT_PTR(private_key);
@@ -513,72 +513,72 @@ vssc_card_manager_generate_raw_card_inner(const vssc_card_manager_t *self, vsc_s
 //  Note, only self signature and Virgil Cards Service signatures are verified.
 //
 VSSC_PUBLIC vssc_card_t *
-vssc_card_manager_import_raw_card(const vssc_card_manager_t *self, const vssc_raw_card_t *raw_card,
-        vssc_error_t *error) {
+vssc_card_manager_import_raw_card(
+        const vssc_card_manager_t *self, const vssc_raw_card_t *raw_card, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(self);
-        VSSC_ASSERT_PTR(self->random);
-        VSSC_ASSERT_PTR(self->virgil_public_key);
-        VSSC_ASSERT_PTR(raw_card);
+    VSSC_ASSERT_PTR(self->random);
+    VSSC_ASSERT_PTR(self->virgil_public_key);
+    VSSC_ASSERT_PTR(raw_card);
 
-        //
-        //  Import public key.
-        //
-        vscf_error_t foundation_error;
-        vscf_error_reset(&foundation_error);
+    //
+    //  Import public key.
+    //
+    vscf_error_t foundation_error;
+    vscf_error_reset(&foundation_error);
 
-        vscf_key_provider_t *key_provider = vscf_key_provider_new();
-        vscf_key_provider_use_random(key_provider, self->random);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, self->random);
 
-        vscf_impl_t *public_key =
-                vscf_key_provider_import_public_key(key_provider, vssc_raw_card_public_key(raw_card), &foundation_error);
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, vssc_raw_card_public_key(raw_card), &foundation_error);
 
-        vsc_buffer_t *public_key_id = NULL;
+    vsc_buffer_t *public_key_id = NULL;
 
-        if (vscf_error_has_error(&foundation_error)) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_IMPORT_PUBLIC_KEY_FAILED);
-            goto error;
-        }
+    if (vscf_error_has_error(&foundation_error)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_IMPORT_PUBLIC_KEY_FAILED);
+        goto error;
+    }
 
-        //
-        //  Validated Raw Card's self-signature and virgil-signature.
-        //
-        const bool self_signaure_is_verified = vssc_raw_card_verifier_verify_self(raw_card, public_key);
-        if (!self_signaure_is_verified) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED);
-            goto error;
-        }
+    //
+    //  Validated Raw Card's self-signature and virgil-signature.
+    //
+    const bool self_signaure_is_verified = vssc_raw_card_verifier_verify_self(raw_card, public_key);
+    if (!self_signaure_is_verified) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED);
+        goto error;
+    }
 
-        const bool virgil_signaure_is_verified = vssc_raw_card_verifier_verify_virgil(raw_card, self->virgil_public_key);
-        if (!virgil_signaure_is_verified) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED);
-            goto error;
-        }
+    const bool virgil_signaure_is_verified = vssc_raw_card_verifier_verify_virgil(raw_card, self->virgil_public_key);
+    if (!virgil_signaure_is_verified) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_SIGNATURE_VERIFICATION_FAILED);
+        goto error;
+    }
 
-        //
-        //  Create card without check of custom signatures.
-        //  They should be verified outside.
-        //
-        public_key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
+    //
+    //  Create card without check of custom signatures.
+    //  They should be verified outside.
+    //
+    public_key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
 
-        foundation_error.status = vscf_key_provider_calculate_key_id(key_provider, public_key, public_key_id);
+    foundation_error.status = vscf_key_provider_calculate_key_id(key_provider, public_key, public_key_id);
 
-        if (vscf_error_has_error(&foundation_error)) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PRODUCE_PUBLIC_KEY_ID_FAILED);
-            goto error;
-        }
+    if (vscf_error_has_error(&foundation_error)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PRODUCE_PUBLIC_KEY_ID_FAILED);
+        goto error;
+    }
 
-        vscf_key_provider_destroy(&key_provider);
+    vscf_key_provider_destroy(&key_provider);
 
-        return vssc_card_new_with_disown(raw_card, &public_key_id, &public_key);
+    return vssc_card_new_with_disown(raw_card, &public_key_id, &public_key);
 
-    error:
+error:
 
-        vscf_key_provider_destroy(&key_provider);
-        vscf_impl_destroy(&public_key);
-        vsc_buffer_destroy(&public_key_id);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_impl_destroy(&public_key);
+    vsc_buffer_destroy(&public_key_id);
 
-        return NULL;
+    return NULL;
 }
 
 //
@@ -587,8 +587,8 @@ vssc_card_manager_import_raw_card(const vssc_card_manager_t *self, const vssc_ra
 //  Note, only self signature and Virgil Cards Service signatures are verified.
 //
 VSSC_PUBLIC vssc_card_list_t *
-vssc_card_manager_import_raw_card_list(const vssc_card_manager_t *self, const vssc_raw_card_list_t *raw_card_list,
-        vssc_error_t *error) {
+vssc_card_manager_import_raw_card_list(
+        const vssc_card_manager_t *self, const vssc_raw_card_list_t *raw_card_list, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(raw_card_list);
@@ -621,8 +621,8 @@ vssc_card_manager_import_raw_card_list(const vssc_card_manager_t *self, const vs
 //  Note, only self signature and Virgil Cards Service signatures are verified.
 //
 VSSC_PUBLIC vssc_card_t *
-vssc_card_manager_import_raw_card_with_id(const vssc_card_manager_t *self, const vssc_raw_card_t *raw_card,
-        vsc_str_t card_id, vssc_error_t *error) {
+vssc_card_manager_import_raw_card_with_id(
+        const vssc_card_manager_t *self, const vssc_raw_card_t *raw_card, vsc_str_t card_id, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(raw_card);

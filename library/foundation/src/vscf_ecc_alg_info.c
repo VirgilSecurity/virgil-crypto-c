@@ -104,8 +104,8 @@ vscf_ecc_alg_info_cleanup_ctx(vscf_ecc_alg_info_t *self) {
 //  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
 VSCF_PUBLIC void
-vscf_ecc_alg_info_init_ctx_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
-        vscf_oid_id_t domain_id) {
+vscf_ecc_alg_info_init_ctx_with_members(
+        vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id) {
 
     VSCF_ASSERT_PTR(self);
 

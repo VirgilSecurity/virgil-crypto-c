@@ -175,30 +175,30 @@ vscf_alg_factory_create_hash_from_alg_id(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        switch (alg_id) {
-    #if VSCF_SHA224
-        case vscf_alg_id_SHA224:
-            return vscf_sha224_impl(vscf_sha224_new());
-    #endif // VSCF_SHA224
+    switch (alg_id) {
+#if VSCF_SHA224
+    case vscf_alg_id_SHA224:
+        return vscf_sha224_impl(vscf_sha224_new());
+#endif // VSCF_SHA224
 
-    #if VSCF_SHA256
-        case vscf_alg_id_SHA256:
-            return vscf_sha256_impl(vscf_sha256_new());
-    #endif // VSCF_SHA256
+#if VSCF_SHA256
+    case vscf_alg_id_SHA256:
+        return vscf_sha256_impl(vscf_sha256_new());
+#endif // VSCF_SHA256
 
-    #if VSCF_SHA384
-        case vscf_alg_id_SHA384:
-            return vscf_sha384_impl(vscf_sha384_new());
-    #endif // VSCF_SHA384
+#if VSCF_SHA384
+    case vscf_alg_id_SHA384:
+        return vscf_sha384_impl(vscf_sha384_new());
+#endif // VSCF_SHA384
 
-    #if VSCF_SHA512
-        case vscf_alg_id_SHA512:
-            return vscf_sha512_impl(vscf_sha512_new());
-    #endif // VSCF_SHA512
+#if VSCF_SHA512
+    case vscf_alg_id_SHA512:
+        return vscf_sha512_impl(vscf_sha512_new());
+#endif // VSCF_SHA512
 
-        default:
-            return NULL;
-        }
+    default:
+        return NULL;
+    }
 }
 
 //
@@ -220,15 +220,15 @@ vscf_alg_factory_create_mac_from_alg_id(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        switch (alg_id) {
-    #if VSCF_HMAC
-        case vscf_alg_id_HMAC:
-            return vscf_hmac_impl(vscf_hmac_new());
-    #endif // VSCF_HMAC
+    switch (alg_id) {
+#if VSCF_HMAC
+    case vscf_alg_id_HMAC:
+        return vscf_hmac_impl(vscf_hmac_new());
+#endif // VSCF_HMAC
 
-        default:
-            return NULL;
-        }
+    default:
+        return NULL;
+    }
 }
 
 //
@@ -252,24 +252,24 @@ vscf_alg_factory_create_kdf_from_alg_id(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        switch (alg_id) {
-    #if VSCF_KDF1
-        case vscf_alg_id_KDF1:
-            return vscf_kdf1_impl(vscf_kdf1_new());
-    #endif // VSCF_KDF1
+    switch (alg_id) {
+#if VSCF_KDF1
+    case vscf_alg_id_KDF1:
+        return vscf_kdf1_impl(vscf_kdf1_new());
+#endif // VSCF_KDF1
 
-    #if VSCF_KDF2
-        case vscf_alg_id_KDF2:
-            return vscf_kdf2_impl(vscf_kdf2_new());
-    #endif // VSCF_KDF2
+#if VSCF_KDF2
+    case vscf_alg_id_KDF2:
+        return vscf_kdf2_impl(vscf_kdf2_new());
+#endif // VSCF_KDF2
 
-        case vscf_alg_id_HKDF:
-        case vscf_alg_id_PKCS5_PBKDF2:
-            return vscf_alg_factory_create_salted_kdf_from_alg_id(alg_id);
+    case vscf_alg_id_HKDF:
+    case vscf_alg_id_PKCS5_PBKDF2:
+        return vscf_alg_factory_create_salted_kdf_from_alg_id(alg_id);
 
-        default:
-            return NULL;
-        }
+    default:
+        return NULL;
+    }
 }
 
 //
@@ -293,24 +293,24 @@ vscf_alg_factory_create_salted_kdf_from_alg_id(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        switch (alg_id) {
-    #if VSCF_HKDF
-        case vscf_alg_id_HKDF: {
-            return vscf_hkdf_impl(vscf_hkdf_new());
-        }
-    #endif // VSCF_HKDF
+    switch (alg_id) {
+#if VSCF_HKDF
+    case vscf_alg_id_HKDF: {
+        return vscf_hkdf_impl(vscf_hkdf_new());
+    }
+#endif // VSCF_HKDF
 
-    #if VSCF_PKCS5_PBKDF2
-        case vscf_alg_id_PKCS5_PBKDF2: {
-            vscf_pkcs5_pbkdf2_t *pbkdf2 = vscf_pkcs5_pbkdf2_new();
-            vscf_pkcs5_pbkdf2_setup_defaults(pbkdf2);
-            return vscf_pkcs5_pbkdf2_impl(pbkdf2);
-        }
-    #endif // VSCF_PKCS5_PBKDF2
+#if VSCF_PKCS5_PBKDF2
+    case vscf_alg_id_PKCS5_PBKDF2: {
+        vscf_pkcs5_pbkdf2_t *pbkdf2 = vscf_pkcs5_pbkdf2_new();
+        vscf_pkcs5_pbkdf2_setup_defaults(pbkdf2);
+        return vscf_pkcs5_pbkdf2_impl(pbkdf2);
+    }
+#endif // VSCF_PKCS5_PBKDF2
 
-        default:
-            return NULL;
-        }
+    default:
+        return NULL;
+    }
 }
 
 //
@@ -334,20 +334,20 @@ vscf_alg_factory_create_cipher_from_alg_id(vscf_alg_id_t alg_id) {
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        switch (alg_id) {
-    #if VSCF_AES256_GCM
-        case vscf_alg_id_AES256_GCM:
-            return vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
-    #endif // VSCF_AES256_GCM
+    switch (alg_id) {
+#if VSCF_AES256_GCM
+    case vscf_alg_id_AES256_GCM:
+        return vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
+#endif // VSCF_AES256_GCM
 
-    #if VSCF_AES256_CBC
-        case vscf_alg_id_AES256_CBC:
-            return vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
-    #endif // VSCF_AES256_CBC
+#if VSCF_AES256_CBC
+    case vscf_alg_id_AES256_CBC:
+        return vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
+#endif // VSCF_AES256_CBC
 
-        default:
-            return NULL;
-        }
+    default:
+        return NULL;
+    }
 }
 
 //
@@ -371,20 +371,20 @@ vscf_alg_factory_create_padding_from_alg_id(vscf_alg_id_t alg_id, const vscf_imp
 
     VSCF_ASSERT(alg_id != vscf_alg_id_NONE);
 
-        switch (alg_id) {
-    #if VSCF_RANDOM_PADDING
-        case vscf_alg_id_RANDOM_PADDING: {
-            vscf_random_padding_t *padding = vscf_random_padding_new();
-            if (random != NULL) {
-                vscf_random_padding_use_random(padding, (vscf_impl_t *)random);
-            }
-            return vscf_random_padding_impl(padding);
+    switch (alg_id) {
+#if VSCF_RANDOM_PADDING
+    case vscf_alg_id_RANDOM_PADDING: {
+        vscf_random_padding_t *padding = vscf_random_padding_new();
+        if (random != NULL) {
+            vscf_random_padding_use_random(padding, (vscf_impl_t *)random);
         }
-    #endif // VSCF_RANDOM_PADDING
+        return vscf_random_padding_impl(padding);
+    }
+#endif // VSCF_RANDOM_PADDING
 
-        default:
-            return NULL;
-        }
+    default:
+        return NULL;
+    }
 }
 
 //

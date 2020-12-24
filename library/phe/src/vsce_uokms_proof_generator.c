@@ -431,39 +431,39 @@ vsce_uokms_proof_generator_prove_success(vsce_uokms_proof_generator_t *self, mbe
 
     vsce_status_t status = vsce_status_SUCCESS;
 
-        mbedtls_ecp_point term1, term2;
-        mbedtls_ecp_point_init(&term1);
-        mbedtls_ecp_point_init(&term2);
+    mbedtls_ecp_point term1, term2;
+    mbedtls_ecp_point_init(&term1);
+    mbedtls_ecp_point_init(&term2);
 
-        mbedtls_mpi blind_x;
-        mbedtls_mpi_init(&blind_x);
+    mbedtls_mpi blind_x;
+    mbedtls_mpi_init(&blind_x);
 
-        status = vsce_proof_generator_prove_success(
-                self->proof_generator, op_group, priv, pub, u, v, NULL, NULL, &blind_x, &term1, &term2, NULL);
+    status = vsce_proof_generator_prove_success(
+            self->proof_generator, op_group, priv, pub, u, v, NULL, NULL, &blind_x, &term1, &term2, NULL);
 
-        if (status != vsce_status_SUCCESS) {
-            goto err;
-        }
-        size_t olen = 0;
-        int mbedtls_status = mbedtls_ecp_point_write_binary(
-                op_group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, success_proof->term1, sizeof(success_proof->term1));
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCE_ASSERT(olen == sizeof(success_proof->term1));
+    if (status != vsce_status_SUCCESS) {
+        goto err;
+    }
+    size_t olen = 0;
+    int mbedtls_status = mbedtls_ecp_point_write_binary(
+            op_group, &term1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, success_proof->term1, sizeof(success_proof->term1));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == sizeof(success_proof->term1));
 
-        olen = 0;
-        mbedtls_status = mbedtls_ecp_point_write_binary(
-                op_group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, success_proof->term2, sizeof(success_proof->term2));
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCE_ASSERT(olen == sizeof(success_proof->term2));
+    olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(
+            op_group, &term2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, success_proof->term2, sizeof(success_proof->term2));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == sizeof(success_proof->term2));
 
-        mbedtls_status = mbedtls_mpi_write_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    mbedtls_status = mbedtls_mpi_write_binary(&blind_x, success_proof->blind_x, sizeof(success_proof->blind_x));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-    err:
-        mbedtls_mpi_free(&blind_x);
+err:
+    mbedtls_mpi_free(&blind_x);
 
-        mbedtls_ecp_point_free(&term1);
-        mbedtls_ecp_point_free(&term2);
+    mbedtls_ecp_point_free(&term1);
+    mbedtls_ecp_point_free(&term2);
 
-        return status;
+    return status;
 }

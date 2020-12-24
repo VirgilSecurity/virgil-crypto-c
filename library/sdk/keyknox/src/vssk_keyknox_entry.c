@@ -642,8 +642,8 @@ vssk_keyknox_entry_init_ctx_with_owner_disown(vssk_keyknox_entry_t *self, vsc_st
 //  Create Keyknox entry that was reset.
 //
 static void
-vssk_keyknox_entry_init_ctx_with_reset_entry(vssk_keyknox_entry_t *self, vsc_str_t owner, vsc_str_t root,
-        vsc_str_t path, vsc_str_t key) {
+vssk_keyknox_entry_init_ctx_with_reset_entry(
+        vssk_keyknox_entry_t *self, vsc_str_t owner, vsc_str_t root, vsc_str_t path, vsc_str_t key) {
 
     VSSK_ASSERT_PTR(self);
 

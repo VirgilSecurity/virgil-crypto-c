@@ -139,8 +139,8 @@ vssc_virgil_http_client_send(const vssc_http_request_t *http_request, vssc_error
 //  Note, argument "ca bundle path" can be empty.
 //
 VSSC_PUBLIC vssc_http_response_t *
-vssc_virgil_http_client_send_with_ca(const vssc_http_request_t *http_request, vsc_str_t ca_bundle_path,
-        vssc_error_t *error) {
+vssc_virgil_http_client_send_with_ca(
+        const vssc_http_request_t *http_request, vsc_str_t ca_bundle_path, vssc_error_t *error) {
 
     VSSC_ASSERT_PTR(http_request);
     VSSC_ASSERT(vsc_str_is_valid(ca_bundle_path));
@@ -169,22 +169,22 @@ vssc_virgil_http_client_send_with_ca(const vssc_http_request_t *http_request, vs
 static vssc_impl_t *
 vssc_virgil_http_client_create_http_client_impl(vsc_str_t ca_bundle_path) {
 
-    #if VSSC_HTTP_CLIENT_X
-        VSSC_UNUSED(ca_bundle_path);
-        return vssc_http_client_x_impl(vssc_http_client_x_new());
-    #endif
+#if VSSC_HTTP_CLIENT_X
+    VSSC_UNUSED(ca_bundle_path);
+    return vssc_http_client_x_impl(vssc_http_client_x_new());
+#endif
 
-    #if VSSC_HTTP_CLIENT_CURL
-        if (vsc_str_is_valid_and_non_empty(ca_bundle_path)) {
-            return vssc_http_client_curl_impl(vssc_http_client_curl_new_with_ca(ca_bundle_path));
-        } else {
-            return vssc_http_client_curl_impl(vssc_http_client_curl_new());
-        }
-    #endif
+#if VSSC_HTTP_CLIENT_CURL
+    if (vsc_str_is_valid_and_non_empty(ca_bundle_path)) {
+        return vssc_http_client_curl_impl(vssc_http_client_curl_new_with_ca(ca_bundle_path));
+    } else {
+        return vssc_http_client_curl_impl(vssc_http_client_curl_new());
+    }
+#endif
 
-        VSSC_ASSERT(0 && "Default HTTP Client implementation is not defined.");
+    VSSC_ASSERT(0 && "Default HTTP Client implementation is not defined.");
 
-        return NULL;
+    return NULL;
 }
 
 //
@@ -194,32 +194,32 @@ vssc_virgil_http_client_create_http_client_impl(vsc_str_t ca_bundle_path) {
 static void
 vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_request) {
 
-    #if VSSC_VIRGIL_HTTP_CLIENT_DEBUG
-        printf("\n---------------------\n");
-        printf("Sending HTTP request:\n");
-        printf(" METHOD: %s\n", vssc_http_request_method(http_request).chars);
-        printf(" URL: %s\n", vssc_http_request_url(http_request).chars);
-        printf(" BODY: %s\n", vssc_http_request_body(http_request).chars);
+#if VSSC_VIRGIL_HTTP_CLIENT_DEBUG
+    printf("\n---------------------\n");
+    printf("Sending HTTP request:\n");
+    printf(" METHOD: %s\n", vssc_http_request_method(http_request).chars);
+    printf(" URL: %s\n", vssc_http_request_url(http_request).chars);
+    printf(" BODY: %s\n", vssc_http_request_body(http_request).chars);
 
 
-        vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
-        if (!vsc_str_is_empty(auth_header_value)) {
-            printf(" HEADER: Authorization: %s\n", auth_header_value.chars);
-        }
+    vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
+    if (!vsc_str_is_empty(auth_header_value)) {
+        printf(" HEADER: Authorization: %s\n", auth_header_value.chars);
+    }
 
-        for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
-                header_it != NULL && vssc_http_header_list_has_item(header_it);
-                header_it = vssc_http_header_list_next(header_it)) {
+    for (const vssc_http_header_list_t *header_it = vssc_http_request_headers(http_request);
+            header_it != NULL && vssc_http_header_list_has_item(header_it);
+            header_it = vssc_http_header_list_next(header_it)) {
 
-            const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
-            vsc_str_t header_name = vssc_http_header_name(header);
-            vsc_str_t header_value = vssc_http_header_value(header);
+        const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
+        vsc_str_t header_name = vssc_http_header_name(header);
+        vsc_str_t header_value = vssc_http_header_value(header);
 
-            printf(" HEADER: %s: %s\n", header_name.chars, header_value.chars);
-        }
-    #else
-        VSSC_UNUSED(http_request);
-    #endif // VSSC_VIRGIL_HTTP_CLIENT_DEBUG
+        printf(" HEADER: %s: %s\n", header_name.chars, header_value.chars);
+    }
+#else
+    VSSC_UNUSED(http_request);
+#endif // VSSC_VIRGIL_HTTP_CLIENT_DEBUG
 }
 
 //
@@ -229,27 +229,27 @@ vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_requ
 static void
 vssc_virgil_http_client_debug_print_response(const vssc_http_response_t *http_response) {
 
-    #if VSSC_VIRGIL_HTTP_CLIENT_DEBUG
-        if (NULL == http_response) {
-            return;
-        }
+#if VSSC_VIRGIL_HTTP_CLIENT_DEBUG
+    if (NULL == http_response) {
+        return;
+    }
 
-        printf("\n---------------------\n");
-        printf("Got HTTP response:\n");
-        printf(" STATUS: %zu\n", vssc_http_response_status_code(http_response));
-        printf(" BODY: %s\n", vssc_http_response_body(http_response).chars);
+    printf("\n---------------------\n");
+    printf("Got HTTP response:\n");
+    printf(" STATUS: %zu\n", vssc_http_response_status_code(http_response));
+    printf(" BODY: %s\n", vssc_http_response_body(http_response).chars);
 
-        for (const vssc_http_header_list_t *header_it = vssc_http_response_headers(http_response);
-                header_it != NULL && vssc_http_header_list_has_item(header_it);
-                header_it = vssc_http_header_list_next(header_it)) {
+    for (const vssc_http_header_list_t *header_it = vssc_http_response_headers(http_response);
+            header_it != NULL && vssc_http_header_list_has_item(header_it);
+            header_it = vssc_http_header_list_next(header_it)) {
 
-            const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
-            vsc_str_t header_name = vssc_http_header_name(header);
-            vsc_str_t header_value = vssc_http_header_value(header);
+        const vssc_http_header_t *header = vssc_http_header_list_item(header_it);
+        vsc_str_t header_name = vssc_http_header_name(header);
+        vsc_str_t header_value = vssc_http_header_value(header);
 
-            printf(" HEADER: %s: %s\n", header_name.chars, header_value.chars);
-        }
-    #else
-        VSSC_UNUSED(http_response);
-    #endif // VSSC_VIRGIL_HTTP_CLIENT_DEBUG
+        printf(" HEADER: %s: %s\n", header_name.chars, header_value.chars);
+    }
+#else
+    VSSC_UNUSED(http_response);
+#endif // VSSC_VIRGIL_HTTP_CLIENT_DEBUG
 }

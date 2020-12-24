@@ -342,107 +342,107 @@ vssc_jwt_parse(vsc_str_t str, vssc_error_t *error) {
 
     VSSC_ASSERT(vsc_str_is_valid(str));
 
-        if (vsc_str_is_empty(str)) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
-            return NULL;
-        }
-
-        vsc_str_t header_str = vsc_str_empty();
-        vsc_str_t payload_str = vsc_str_empty();
-        vsc_str_t signature_str = vsc_str_empty();
-
-        const char *curr = str.chars;
-        const char *end = str.chars + str.len;
-
-        //
-        //  Extract JWT Header as string.
-        //
-        for (size_t len = 0; curr + len < end; ++len) {
-            if (curr[len] == '.') {
-                header_str = vsc_str(curr, len);
-                curr += len + 1;
-                break;
-            }
-        }
-
-        if (vsc_str_is_empty(header_str)) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
-            return NULL;
-        }
-
-        //
-        //  Extract JWT Payload as string.
-        //
-        for (size_t len = 0; curr + len < end; ++len) {
-            if (curr[len] == '.') {
-                payload_str = vsc_str(curr, len);
-                curr += len + 1;
-                break;
-            }
-        }
-
-        if (vsc_str_is_empty(payload_str)) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
-            return NULL;
-        }
-
-        //
-        //  Extract JWT Signature as string.
-        //
-        if (curr < end) {
-            signature_str = vsc_str(curr, (size_t)(end - curr));
-        }
-
-        if (vsc_str_is_empty(signature_str)) {
-            VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
-            return NULL;
-        }
-
-        vssc_jwt_header_t *header = NULL;
-        vssc_jwt_payload_t *payload = NULL;
-        vsc_buffer_t *signature = NULL;
-        vsc_str_buffer_t *str_buf = NULL;
-
-        //
-        //  Parse JWT Header.
-        //
-        header = vssc_jwt_header_parse(header_str, NULL);
-        if (NULL == header) {
-            goto error;
-        }
-
-        //
-        //  Parse JWT Payload.
-        //
-        payload = vssc_jwt_payload_parse(payload_str, NULL);
-        if (NULL == payload) {
-            goto error;
-        }
-
-        //
-        //  Parse JWT Signature.
-        //
-        const size_t signature_buf_len = vssc_base64_url_decoded_len(signature_str.len);
-        signature = vsc_buffer_new_with_capacity(signature_buf_len);
-
-        const vssc_status_t signature_parse_status = vssc_base64_url_decode(signature_str, signature);
-        if (signature_parse_status != vssc_status_SUCCESS) {
-            goto error;
-        }
-
-        str_buf = vsc_str_buffer_new_with_str(str);
-
-        return vssc_jwt_new_with_members_disown(&header, &payload, &signature, &str_buf);
-
-
-    error:
-        vssc_jwt_header_destroy(&header);
-        vssc_jwt_payload_destroy(&payload);
-        vsc_buffer_destroy(&signature);
-
+    if (vsc_str_is_empty(str)) {
         VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
-
         return NULL;
+    }
+
+    vsc_str_t header_str = vsc_str_empty();
+    vsc_str_t payload_str = vsc_str_empty();
+    vsc_str_t signature_str = vsc_str_empty();
+
+    const char *curr = str.chars;
+    const char *end = str.chars + str.len;
+
+    //
+    //  Extract JWT Header as string.
+    //
+    for (size_t len = 0; curr + len < end; ++len) {
+        if (curr[len] == '.') {
+            header_str = vsc_str(curr, len);
+            curr += len + 1;
+            break;
+        }
+    }
+
+    if (vsc_str_is_empty(header_str)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    //
+    //  Extract JWT Payload as string.
+    //
+    for (size_t len = 0; curr + len < end; ++len) {
+        if (curr[len] == '.') {
+            payload_str = vsc_str(curr, len);
+            curr += len + 1;
+            break;
+        }
+    }
+
+    if (vsc_str_is_empty(payload_str)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    //
+    //  Extract JWT Signature as string.
+    //
+    if (curr < end) {
+        signature_str = vsc_str(curr, (size_t)(end - curr));
+    }
+
+    if (vsc_str_is_empty(signature_str)) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+        return NULL;
+    }
+
+    vssc_jwt_header_t *header = NULL;
+    vssc_jwt_payload_t *payload = NULL;
+    vsc_buffer_t *signature = NULL;
+    vsc_str_buffer_t *str_buf = NULL;
+
+    //
+    //  Parse JWT Header.
+    //
+    header = vssc_jwt_header_parse(header_str, NULL);
+    if (NULL == header) {
+        goto error;
+    }
+
+    //
+    //  Parse JWT Payload.
+    //
+    payload = vssc_jwt_payload_parse(payload_str, NULL);
+    if (NULL == payload) {
+        goto error;
+    }
+
+    //
+    //  Parse JWT Signature.
+    //
+    const size_t signature_buf_len = vssc_base64_url_decoded_len(signature_str.len);
+    signature = vsc_buffer_new_with_capacity(signature_buf_len);
+
+    const vssc_status_t signature_parse_status = vssc_base64_url_decode(signature_str, signature);
+    if (signature_parse_status != vssc_status_SUCCESS) {
+        goto error;
+    }
+
+    str_buf = vsc_str_buffer_new_with_str(str);
+
+    return vssc_jwt_new_with_members_disown(&header, &payload, &signature, &str_buf);
+
+
+error:
+    vssc_jwt_header_destroy(&header);
+    vssc_jwt_payload_destroy(&payload);
+    vsc_buffer_destroy(&signature);
+
+    VSSC_ERROR_SAFE_UPDATE(error, vssc_status_PARSE_JWT_FAILED);
+
+    return NULL;
 }
 
 //

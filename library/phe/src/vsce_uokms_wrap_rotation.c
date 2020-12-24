@@ -371,78 +371,78 @@ VSCE_PUBLIC vsce_status_t
 vsce_uokms_wrap_rotation_update_wrap(vsce_uokms_wrap_rotation_t *self, vsc_data_t wrap, vsc_buffer_t *new_wrap) {
 
     VSCE_ASSERT_PTR(self);
-        VSCE_ASSERT(vsc_data_is_valid(wrap));
-        VSCE_ASSERT(vsc_buffer_len(new_wrap) == 0);
-        VSCE_ASSERT(vsc_buffer_unused_len(new_wrap) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT(vsc_data_is_valid(wrap));
+    VSCE_ASSERT(vsc_buffer_len(new_wrap) == 0);
+    VSCE_ASSERT(vsc_buffer_unused_len(new_wrap) >= vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-        vsce_status_t status = vsce_status_SUCCESS;
+    vsce_status_t status = vsce_status_SUCCESS;
 
-        if (wrap.len != vsce_phe_common_PHE_PUBLIC_KEY_LENGTH) {
-            status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
-            goto err1;
-        }
+    if (wrap.len != vsce_phe_common_PHE_PUBLIC_KEY_LENGTH) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err1;
+    }
 
-        mbedtls_ecp_point W;
-        mbedtls_ecp_point_init(&W);
+    mbedtls_ecp_point W;
+    mbedtls_ecp_point_init(&W);
 
-        int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &W, wrap.bytes, wrap.len);
-        if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &W) != 0) {
-            status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
-            goto err;
-        }
+    int mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &W, wrap.bytes, wrap.len);
+    if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &W) != 0) {
+        status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+        goto err;
+    }
 
-        mbedtls_ecp_point new_W;
-        mbedtls_ecp_point_init(&new_W);
+    mbedtls_ecp_point new_W;
+    mbedtls_ecp_point_init(&new_W);
 
-        mbedtls_ecp_group *op_group = vsce_uokms_wrap_rotation_get_op_group(self);
+    mbedtls_ecp_group *op_group = vsce_uokms_wrap_rotation_get_op_group(self);
 
-        mbedtls_status =
-                mbedtls_ecp_mul(op_group, &new_W, &self->a, &W, vscf_mbedtls_bridge_random, self->operation_random);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    mbedtls_status =
+            mbedtls_ecp_mul(op_group, &new_W, &self->a, &W, vscf_mbedtls_bridge_random, self->operation_random);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
-        vsce_uokms_wrap_rotation_free_op_group(op_group);
+    vsce_uokms_wrap_rotation_free_op_group(op_group);
 
-        size_t olen = 0;
-        mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_W, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
-                vsc_buffer_unused_bytes(new_wrap), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-        vsc_buffer_inc_used(new_wrap, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-        VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    size_t olen = 0;
+    mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, &new_W, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            vsc_buffer_unused_bytes(new_wrap), vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    vsc_buffer_inc_used(new_wrap, vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+    VSCE_ASSERT(olen == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
 
-        mbedtls_ecp_point_free(&new_W);
+    mbedtls_ecp_point_free(&new_W);
 
-    err:
-        mbedtls_ecp_point_free(&W);
+err:
+    mbedtls_ecp_point_free(&W);
 
-    err1:
+err1:
 
-        return status;
+    return status;
 }
 
 static mbedtls_ecp_group *
 vsce_uokms_wrap_rotation_get_op_group(vsce_uokms_wrap_rotation_t *self) {
 
-    #if VSCE_MULTI_THREADING
-        VSCE_UNUSED(self);
+#if VSCE_MULTI_THREADING
+    VSCE_UNUSED(self);
 
-        mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vsce_alloc(sizeof(mbedtls_ecp_group));
-        mbedtls_ecp_group_init(new_group);
+    mbedtls_ecp_group *new_group = (mbedtls_ecp_group *)vsce_alloc(sizeof(mbedtls_ecp_group));
+    mbedtls_ecp_group_init(new_group);
 
-        VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_ecp_group_load(new_group, MBEDTLS_ECP_DP_SECP256R1));
+    VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_ecp_group_load(new_group, MBEDTLS_ECP_DP_SECP256R1));
 
-        return new_group;
-    #else
-        return &self->group;
-    #endif
+    return new_group;
+#else
+    return &self->group;
+#endif
 }
 
 static void
 vsce_uokms_wrap_rotation_free_op_group(mbedtls_ecp_group *op_group) {
 
-    #if VSCE_MULTI_THREADING
-        mbedtls_ecp_group_free(op_group);
-        vsce_dealloc(op_group);
-    #else
-        VSCE_UNUSED(op_group);
-    #endif
+#if VSCE_MULTI_THREADING
+    mbedtls_ecp_group_free(op_group);
+    vsce_dealloc(op_group);
+#else
+    VSCE_UNUSED(op_group);
+#endif
 }

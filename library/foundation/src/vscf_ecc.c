@@ -348,8 +348,8 @@ vscf_ecc_import_public_key(const vscf_ecc_t *self, const vscf_raw_public_key_t *
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_import_public_key_data(const vscf_ecc_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_ecc_import_public_key_data(
+        const vscf_ecc_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key_data));
@@ -495,8 +495,8 @@ vscf_ecc_import_private_key(const vscf_ecc_t *self, const vscf_raw_private_key_t
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_import_private_key_data(const vscf_ecc_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_ecc_import_private_key_data(
+        const vscf_ecc_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
@@ -814,53 +814,53 @@ vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_
         vsc_buffer_t *signature) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(private_key);
-        VSCF_ASSERT(vscf_ecc_can_sign(self, private_key));
-        VSCF_ASSERT_PTR(signature);
-        VSCF_ASSERT(vsc_buffer_is_valid(signature));
-        VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ecc_signature_len(self, private_key));
-        VSCF_ASSERT(vsc_data_is_valid(digest));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_ecc_can_sign(self, private_key));
+    VSCF_ASSERT_PTR(signature);
+    VSCF_ASSERT(vsc_buffer_is_valid(signature));
+    VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_ecc_signature_len(self, private_key));
+    VSCF_ASSERT(vsc_data_is_valid(digest));
 
-        VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
-        const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
+    VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_ECC_PRIVATE_KEY);
+    const vscf_ecc_private_key_t *ecc_private_key = (const vscf_ecc_private_key_t *)private_key;
 
 
-        mbedtls_ecp_group tmp_ecp_grp;
-        mbedtls_ecp_group_init(&tmp_ecp_grp);
-        int mbed_status = mbedtls_ecp_group_copy(&tmp_ecp_grp, &ecc_private_key->ecc_grp);
-        VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    mbedtls_ecp_group tmp_ecp_grp;
+    mbedtls_ecp_group_init(&tmp_ecp_grp);
+    int mbed_status = mbedtls_ecp_group_copy(&tmp_ecp_grp, &ecc_private_key->ecc_grp);
+    VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
 
-        mbedtls_mpi r, s;
-        mbedtls_mpi_init(&r);
-        mbedtls_mpi_init(&s);
+    mbedtls_mpi r, s;
+    mbedtls_mpi_init(&r);
+    mbedtls_mpi_init(&s);
 
-        if (self->random) {
-            mbed_status = mbedtls_ecdsa_sign(&tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len,
-                    vscf_mbedtls_bridge_random, (void *)self->random);
-        } else {
-            mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
-            mbed_status = mbedtls_ecdsa_sign_det(
-                    &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg);
-        }
+    if (self->random) {
+        mbed_status = mbedtls_ecdsa_sign(&tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len,
+                vscf_mbedtls_bridge_random, (void *)self->random);
+    } else {
+        mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
+        mbed_status = mbedtls_ecdsa_sign_det(
+                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg);
+    }
 
-        if (mbed_status != 0) {
-            goto cleanup;
-        }
+    if (mbed_status != 0) {
+        goto cleanup;
+    }
 
-        vscf_ecc_write_signature(&r, &s, signature);
+    vscf_ecc_write_signature(&r, &s, signature);
 
-    cleanup:
-        mbedtls_ecp_group_free(&tmp_ecp_grp);
-        mbedtls_mpi_free(&r);
-        mbedtls_mpi_free(&s);
+cleanup:
+    mbedtls_ecp_group_free(&tmp_ecp_grp);
+    mbedtls_mpi_free(&r);
+    mbedtls_mpi_free(&s);
 
-        if (MBEDTLS_ERR_ECP_RANDOM_FAILED == mbed_status) {
-            return vscf_status_ERROR_RANDOM_FAILED;
-        }
+    if (MBEDTLS_ERR_ECP_RANDOM_FAILED == mbed_status) {
+        return vscf_status_ERROR_RANDOM_FAILED;
+    }
 
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
-        return vscf_status_SUCCESS;
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -1049,76 +1049,76 @@ vscf_ecc_kem_encapsulate(const vscf_ecc_t *self, const vscf_impl_t *public_key, 
         vsc_buffer_t *encapsulated_key) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT_PTR(public_key);
-        VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-        VSCF_ASSERT_PTR(shared_key);
-        VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
-        VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ecc_kem_shared_key_len(self, public_key));
-        VSCF_ASSERT_PTR(encapsulated_key);
-        VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
-        VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_ecc_kem_encapsulated_key_len(self, public_key));
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(shared_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ecc_kem_shared_key_len(self, public_key));
+    VSCF_ASSERT_PTR(encapsulated_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_ecc_kem_encapsulated_key_len(self, public_key));
 
-        vscf_error_t error;
-        vscf_error_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-        vscf_impl_t *ephemeral_key = NULL;
-        vscf_impl_t *ephemeral_public_key = NULL;
+    vscf_impl_t *ephemeral_key = NULL;
+    vscf_impl_t *ephemeral_public_key = NULL;
 
-        ephemeral_key = vscf_ecc_generate_ephemeral_key(self, public_key, &error);
-        if (vscf_error_has_error(&error)) {
-            goto cleanup;
-        }
+    ephemeral_key = vscf_ecc_generate_ephemeral_key(self, public_key, &error);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
 
-        error.status = vscf_ecc_compute_shared_key(self, public_key, ephemeral_key, shared_key);
-        if (vscf_error_has_error(&error)) {
-            goto cleanup;
-        }
+    error.status = vscf_ecc_compute_shared_key(self, public_key, ephemeral_key, shared_key);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
 
-        ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
+    ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
 
-        error.status = vscf_ecc_export_public_key_data(self, ephemeral_public_key, encapsulated_key);
+    error.status = vscf_ecc_export_public_key_data(self, ephemeral_public_key, encapsulated_key);
 
-    cleanup:
-        vscf_impl_destroy(&ephemeral_key);
-        vscf_impl_destroy(&ephemeral_public_key);
+cleanup:
+    vscf_impl_destroy(&ephemeral_key);
+    vscf_impl_destroy(&ephemeral_public_key);
 
-        return vscf_error_status(&error);
+    return vscf_error_status(&error);
 }
 
 //
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_kem_decapsulate(const vscf_ecc_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key,
-        vsc_buffer_t *shared_key) {
+vscf_ecc_kem_decapsulate(
+        const vscf_ecc_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT(vsc_data_is_valid(encapsulated_key));
-        VSCF_ASSERT_PTR(private_key);
-        VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-        VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
-        VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ecc_kem_shared_key_len(self, private_key));
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(vsc_data_is_valid(encapsulated_key));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ecc_kem_shared_key_len(self, private_key));
 
-        vscf_error_t error;
-        vscf_error_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-        vscf_impl_t *ephemeral_public_key =
-                vscf_ecc_import_public_key_data(self, encapsulated_key, vscf_key_alg_info(private_key), &error);
+    vscf_impl_t *ephemeral_public_key =
+            vscf_ecc_import_public_key_data(self, encapsulated_key, vscf_key_alg_info(private_key), &error);
 
-        if (vscf_error_has_error(&error)) {
-            error.status = vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY;
-            goto cleanup;
-        }
+    if (vscf_error_has_error(&error)) {
+        error.status = vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY;
+        goto cleanup;
+    }
 
-        error.status = vscf_ecc_compute_shared_key(self, ephemeral_public_key, private_key, shared_key);
-        if (vscf_error_has_error(&error)) {
-            goto cleanup;
-        }
+    error.status = vscf_ecc_compute_shared_key(self, ephemeral_public_key, private_key, shared_key);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
 
-    cleanup:
-        vscf_impl_destroy(&ephemeral_public_key);
+cleanup:
+    vscf_impl_destroy(&ephemeral_public_key);
 
-        return vscf_error_status(&error);
+    return vscf_error_status(&error);
 }

@@ -230,8 +230,8 @@ vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_k
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_import_public_key_data(const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_round5_import_public_key_data(
+        const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key_data));
@@ -348,8 +348,8 @@ vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_import_private_key_data(const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_round5_import_private_key_data(
+        const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key_data));

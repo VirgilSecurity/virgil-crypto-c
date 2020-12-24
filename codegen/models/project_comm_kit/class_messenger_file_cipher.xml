@@ -21,16 +21,30 @@
         <return enum="status"/>
     </method>
 
+    <!-- Encrypt functions -->
+    <method name="init encryption out key len">
+        <return type="size"/>
+    </method>
 
     <method name="init encryption">
-	<argument name="key" class="buffer"/>
+        <argument name="owner private key" interface="public key" project="foundation"/>
+        <argument name="out key" class="buffer"/>
         <return enum="status"/>
     </method>
 
+    <method name="start encryption out len">
+        <return type="size"/>
+    </method>
+
     <method name="start encryption">
-        <argument name="data_size" type="size"/>
+        <argument name="data_len" type="size"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
+    </method>
+
+    <method name="process encryption out len">
+        <argument name="data_len" type="size"/>
+        <return type="size"/>
     </method>
 
     <method name="process encryption">
@@ -39,8 +53,43 @@
         <return enum="status"/>
     </method>
 
+    <method name="finish encryption out len">
+        <return type="size"/>
+    </method>
+
     <method name="finish encryption">
         <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <!-- Decrypt functions -->
+    <method name="start decryption">
+        <argument name="key" class="data"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="process decryption out len">
+        <argument name="data_len" type="size"/>
+        <return type="size"/>
+    </method>
+
+    <method name="process decryption">
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="finish decryption out len">
+        <return type="size"/>
+    </method>
+
+    <method name="finish decryption">
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="finish decryption check sign">
+        <argument name="owner public key" interface="public key" project="foundation"/>
         <return enum="status"/>
     </method>
 

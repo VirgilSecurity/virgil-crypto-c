@@ -263,8 +263,8 @@ vssc_raw_card_signature_list_cleanup_ctx(vssc_raw_card_signature_list_t *self) {
 //  Note, ownership is transfered.
 //
 VSSC_PRIVATE void
-vssc_raw_card_signature_list_add(vssc_raw_card_signature_list_t *self,
-        const vssc_raw_card_signature_t *raw_card_signature) {
+vssc_raw_card_signature_list_add(
+        vssc_raw_card_signature_list_t *self, const vssc_raw_card_signature_t *raw_card_signature) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(raw_card_signature);
@@ -285,8 +285,8 @@ vssc_raw_card_signature_list_add(vssc_raw_card_signature_list_t *self,
 //  Note, ownership is transfered.
 //
 VSSC_PRIVATE void
-vssc_raw_card_signature_list_add_disown(vssc_raw_card_signature_list_t *self,
-        vssc_raw_card_signature_t **raw_card_signature_ref) {
+vssc_raw_card_signature_list_add_disown(
+        vssc_raw_card_signature_list_t *self, vssc_raw_card_signature_t **raw_card_signature_ref) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(raw_card_signature_ref);

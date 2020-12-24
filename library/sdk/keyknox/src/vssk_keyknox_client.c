@@ -611,8 +611,8 @@ vssk_keyknox_client_process_response_push(const vssc_http_response_t *response, 
 //  Note, identity can be empty.
 //
 VSSK_PUBLIC vssc_http_request_t *
-vssk_keyknox_client_make_request_pull(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key,
-        vsc_str_t identity) {
+vssk_keyknox_client_make_request_pull(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
 
     VSSK_ASSERT_PTR(self);
     VSSK_ASSERT(vsc_str_is_valid_and_non_empty(root));
@@ -665,8 +665,8 @@ vssk_keyknox_client_process_response_pull(const vssc_http_response_t *response, 
 //  Note, if identity is given, only "key" parameter can be optional.
 //
 VSSK_PUBLIC vssc_http_request_t *
-vssk_keyknox_client_make_request_reset(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key,
-        vsc_str_t identity) {
+vssk_keyknox_client_make_request_reset(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
 
     VSSK_ASSERT(vsc_str_is_valid(identity));
     VSSK_ASSERT(vsc_str_is_valid(key));
@@ -773,8 +773,8 @@ vssk_keyknox_client_process_response_reset(const vssc_http_response_t *response,
 //  Note, all parameters can be empty.
 //
 VSSK_PUBLIC vssc_http_request_t *
-vssk_keyknox_client_make_request_get_keys(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path,
-        vsc_str_t identity) {
+vssk_keyknox_client_make_request_get_keys(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t identity) {
 
     VSSK_ASSERT_PTR(self);
     VSSK_ASSERT(vsc_str_is_valid(root));
@@ -864,108 +864,108 @@ vssk_keyknox_client_parse_keyknox_entry(const vssc_http_response_t *response, vs
 
     VSSK_ASSERT_PTR(response);
 
-        vssc_error_t core_error;
-        vssc_error_reset(&core_error);
+    vssc_error_t core_error;
+    vssc_error_reset(&core_error);
 
-        vssc_json_array_t *identities_json = NULL;
-        vssc_string_list_t *identities = NULL;
-        vsc_buffer_t *meta = NULL;
-        vsc_buffer_t *value = NULL;
-        vsc_buffer_t *hash = NULL;
-
-
-        if (!vssc_http_response_is_success(response)) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
-            goto fail;
-        }
-
-        // TODO: Check Content-Type to be equal application/json
-
-        if (!vssc_http_response_body_is_json_object(response)) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
-            goto fail;
-        }
-
-        const vssc_json_object_t *json = vssc_http_response_body_as_json_object(response);
-
-        vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner, &core_error);
-        if (vsc_str_is_empty(owner)) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        };
-
-        vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root, &core_error);
-        if (vsc_str_is_empty(root)) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        };
-
-        vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path, &core_error);
-        if (vsc_str_is_empty(path)) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        };
-
-        vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key, &core_error);
-        if (vsc_str_is_empty(key)) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        };
+    vssc_json_array_t *identities_json = NULL;
+    vssc_string_list_t *identities = NULL;
+    vsc_buffer_t *meta = NULL;
+    vsc_buffer_t *value = NULL;
+    vsc_buffer_t *hash = NULL;
 
 
-        identities_json = vssc_json_object_get_array_value(json, k_json_key_identities, &core_error);
-        if (NULL == identities_json) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        }
+    if (!vssc_http_response_is_success(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
+        goto fail;
+    }
 
-        identities = vssc_string_list_new();
-        for (size_t pos = 0; pos < vssc_json_array_count(identities_json); ++pos) {
-            vsc_str_t identity = vssc_json_array_get_string_value(identities_json, pos, &core_error);
+    // TODO: Check Content-Type to be equal application/json
 
-            if (vssc_error_has_error(&core_error)) {
-                VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-                goto fail;
-            }
+    if (!vssc_http_response_body_is_json_object(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
+        goto fail;
+    }
 
-            vssc_string_list_add(identities, identity);
-        }
+    const vssc_json_object_t *json = vssc_http_response_body_as_json_object(response);
 
-        meta = vssc_json_object_get_binary_value_new(json, k_json_key_meta, &core_error);
-        if (NULL == meta) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        }
+    vsc_str_t owner = vssc_json_object_get_string_value(json, k_json_key_owner, &core_error);
+    if (vsc_str_is_empty(owner)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    };
 
-        value = vssc_json_object_get_binary_value_new(json, k_json_key_value, &core_error);
-        if (NULL == value) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        }
+    vsc_str_t root = vssc_json_object_get_string_value(json, k_json_key_root, &core_error);
+    if (vsc_str_is_empty(root)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    };
 
-        vsc_str_t hash_str = vssc_http_response_find_header(response, k_header_name_virgil_keyknox_hash, &core_error);
+    vsc_str_t path = vssc_json_object_get_string_value(json, k_json_key_path, &core_error);
+    if (vsc_str_is_empty(path)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    };
+
+    vsc_str_t key = vssc_json_object_get_string_value(json, k_json_key_key, &core_error);
+    if (vsc_str_is_empty(key)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    };
+
+
+    identities_json = vssc_json_object_get_array_value(json, k_json_key_identities, &core_error);
+    if (NULL == identities_json) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
+
+    identities = vssc_string_list_new();
+    for (size_t pos = 0; pos < vssc_json_array_count(identities_json); ++pos) {
+        vsc_str_t identity = vssc_json_array_get_string_value(identities_json, pos, &core_error);
 
         if (vssc_error_has_error(&core_error)) {
             VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
             goto fail;
         }
 
-        hash = vscf_base64_decode_new(vsc_str_as_data(hash_str), NULL);
-        if (NULL == hash) {
-            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
-            goto fail;
-        }
+        vssc_string_list_add(identities, identity);
+    }
 
-        vssc_json_array_destroy(&identities_json);
+    meta = vssc_json_object_get_binary_value_new(json, k_json_key_meta, &core_error);
+    if (NULL == meta) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
 
-        return vssk_keyknox_entry_new_with_owner_disown(owner, root, path, key, &identities, &meta, &value, &hash);
+    value = vssc_json_object_get_binary_value_new(json, k_json_key_value, &core_error);
+    if (NULL == value) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
 
-    fail:
-        vssc_json_array_destroy(&identities_json);
-        vssc_string_list_destroy(&identities);
-        vsc_buffer_destroy(&meta);
-        vsc_buffer_destroy(&value);
-        vsc_buffer_destroy(&hash);
+    vsc_str_t hash_str = vssc_http_response_find_header(response, k_header_name_virgil_keyknox_hash, &core_error);
 
-        return NULL;
+    if (vssc_error_has_error(&core_error)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
+
+    hash = vscf_base64_decode_new(vsc_str_as_data(hash_str), NULL);
+    if (NULL == hash) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
+
+    vssc_json_array_destroy(&identities_json);
+
+    return vssk_keyknox_entry_new_with_owner_disown(owner, root, path, key, &identities, &meta, &value, &hash);
+
+fail:
+    vssc_json_array_destroy(&identities_json);
+    vssc_string_list_destroy(&identities);
+    vsc_buffer_destroy(&meta);
+    vsc_buffer_destroy(&value);
+    vsc_buffer_destroy(&hash);
+
+    return NULL;
 }

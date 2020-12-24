@@ -541,8 +541,8 @@ vssc_card_client_make_request_search_cards_with_identity(const vssc_card_client_
 //  Note, current amount of identities to search in a single request is limited to 50 items.
 //
 VSSC_PUBLIC vssc_http_request_t *
-vssc_card_client_make_request_search_cards_with_identities(const vssc_card_client_t *self,
-        const vssc_string_list_t *identities) {
+vssc_card_client_make_request_search_cards_with_identities(
+        const vssc_card_client_t *self, const vssc_string_list_t *identities) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(identities);

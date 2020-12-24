@@ -233,8 +233,8 @@ vscf_ed25519_import_public_key(const vscf_ed25519_t *self, const vscf_raw_public
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_import_public_key_data(const vscf_ed25519_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_ed25519_import_public_key_data(
+        const vscf_ed25519_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key_data));
@@ -344,8 +344,8 @@ vscf_ed25519_export_public_key_data(const vscf_ed25519_t *self, const vscf_impl_
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_import_private_key(const vscf_ed25519_t *self, const vscf_raw_private_key_t *raw_key,
-        vscf_error_t *error) {
+vscf_ed25519_import_private_key(
+        const vscf_ed25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(raw_key);
@@ -359,8 +359,8 @@ vscf_ed25519_import_private_key(const vscf_ed25519_t *self, const vscf_raw_priva
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ed25519_import_private_key_data(const vscf_ed25519_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_ed25519_import_private_key_data(
+        const vscf_ed25519_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(key_data));
@@ -778,41 +778,41 @@ vscf_ed25519_kem_encapsulate(const vscf_ed25519_t *self, const vscf_impl_t *publ
         vsc_buffer_t *encapsulated_key) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT_PTR(public_key);
-        VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
-        VSCF_ASSERT_PTR(shared_key);
-        VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
-        VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ed25519_kem_shared_key_len(self, public_key));
-        VSCF_ASSERT_PTR(encapsulated_key);
-        VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
-        VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_ed25519_kem_encapsulated_key_len(self, public_key));
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT_PTR(public_key);
+    VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
+    VSCF_ASSERT_PTR(shared_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ed25519_kem_shared_key_len(self, public_key));
+    VSCF_ASSERT_PTR(encapsulated_key);
+    VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_ed25519_kem_encapsulated_key_len(self, public_key));
 
-        vscf_error_t error;
-        vscf_error_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-        vscf_impl_t *ephemeral_key = NULL;
-        vscf_impl_t *ephemeral_public_key = NULL;
+    vscf_impl_t *ephemeral_key = NULL;
+    vscf_impl_t *ephemeral_public_key = NULL;
 
-        ephemeral_key = vscf_ed25519_generate_ephemeral_key(self, public_key, &error);
-        if (vscf_error_has_error(&error)) {
-            goto cleanup;
-        }
+    ephemeral_key = vscf_ed25519_generate_ephemeral_key(self, public_key, &error);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
 
-        error.status = vscf_ed25519_compute_shared_key(self, public_key, ephemeral_key, shared_key);
-        if (vscf_error_has_error(&error)) {
-            goto cleanup;
-        }
+    error.status = vscf_ed25519_compute_shared_key(self, public_key, ephemeral_key, shared_key);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
 
-        ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
+    ephemeral_public_key = vscf_private_key_extract_public_key(ephemeral_key);
 
-        error.status = vscf_ed25519_export_public_key_data(self, ephemeral_public_key, encapsulated_key);
+    error.status = vscf_ed25519_export_public_key_data(self, ephemeral_public_key, encapsulated_key);
 
-    cleanup:
-        vscf_impl_destroy(&ephemeral_key);
-        vscf_impl_destroy(&ephemeral_public_key);
+cleanup:
+    vscf_impl_destroy(&ephemeral_key);
+    vscf_impl_destroy(&ephemeral_public_key);
 
-        return vscf_error_status(&error);
+    return vscf_error_status(&error);
 }
 
 //
@@ -823,31 +823,31 @@ vscf_ed25519_kem_decapsulate(const vscf_ed25519_t *self, vsc_data_t encapsulated
         vsc_buffer_t *shared_key) {
 
     VSCF_ASSERT_PTR(self);
-        VSCF_ASSERT_PTR(self->random);
-        VSCF_ASSERT(vsc_data_is_valid(encapsulated_key));
-        VSCF_ASSERT_PTR(private_key);
-        VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
-        VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
-        VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ed25519_kem_shared_key_len(self, private_key));
+    VSCF_ASSERT_PTR(self->random);
+    VSCF_ASSERT(vsc_data_is_valid(encapsulated_key));
+    VSCF_ASSERT_PTR(private_key);
+    VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
+    VSCF_ASSERT(vsc_buffer_is_valid(shared_key));
+    VSCF_ASSERT(vsc_buffer_unused_len(shared_key) >= vscf_ed25519_kem_shared_key_len(self, private_key));
 
-        vscf_error_t error;
-        vscf_error_reset(&error);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
-        vscf_impl_t *ephemeral_public_key =
-                vscf_ed25519_import_public_key_data(self, encapsulated_key, vscf_key_alg_info(private_key), &error);
+    vscf_impl_t *ephemeral_public_key =
+            vscf_ed25519_import_public_key_data(self, encapsulated_key, vscf_key_alg_info(private_key), &error);
 
-        if (vscf_error_has_error(&error)) {
-            error.status = vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY;
-            goto cleanup;
-        }
+    if (vscf_error_has_error(&error)) {
+        error.status = vscf_status_ERROR_INVALID_KEM_ENCAPSULATED_KEY;
+        goto cleanup;
+    }
 
-        error.status = vscf_ed25519_compute_shared_key(self, ephemeral_public_key, private_key, shared_key);
-        if (vscf_error_has_error(&error)) {
-            goto cleanup;
-        }
+    error.status = vscf_ed25519_compute_shared_key(self, ephemeral_public_key, private_key, shared_key);
+    if (vscf_error_has_error(&error)) {
+        goto cleanup;
+    }
 
-    cleanup:
-        vscf_impl_destroy(&ephemeral_public_key);
+cleanup:
+    vscf_impl_destroy(&ephemeral_public_key);
 
-        return vscf_error_status(&error);
+    return vscf_error_status(&error);
 }

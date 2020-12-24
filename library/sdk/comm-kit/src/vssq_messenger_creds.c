@@ -386,8 +386,8 @@ vssq_messenger_creds_cleanup_ctx(vssq_messenger_creds_t *self) {
 //  Create fully defined object.
 //
 static void
-vssq_messenger_creds_init_ctx_with(vssq_messenger_creds_t *self, vsc_str_t card_id, vsc_str_t username,
-        const vscf_impl_t *private_key) {
+vssq_messenger_creds_init_ctx_with(
+        vssq_messenger_creds_t *self, vsc_str_t card_id, vsc_str_t username, const vscf_impl_t *private_key) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(username));
@@ -403,8 +403,8 @@ vssq_messenger_creds_init_ctx_with(vssq_messenger_creds_t *self, vsc_str_t card_
 //  Create fully defined object.
 //
 static void
-vssq_messenger_creds_init_ctx_with_disown(vssq_messenger_creds_t *self, vsc_str_t username, vsc_str_t card_id,
-        vscf_impl_t **private_key_ref) {
+vssq_messenger_creds_init_ctx_with_disown(
+        vssq_messenger_creds_t *self, vsc_str_t username, vsc_str_t card_id, vscf_impl_t **private_key_ref) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(username));
@@ -461,65 +461,65 @@ VSSQ_PUBLIC vssc_json_object_t *
 vssq_messenger_creds_to_json(const vssq_messenger_creds_t *self, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
-        VSSQ_ASSERT_PTR(self->private_key);
+    VSSQ_ASSERT_PTR(self->private_key);
 
-        //
-        //  Decalre vars.
-        //
-        vsc_buffer_t *exported_private_key = NULL;
-        vscf_key_provider_t *key_provider = NULL;
-        vssc_json_object_t *json_obj = NULL;
+    //
+    //  Decalre vars.
+    //
+    vsc_buffer_t *exported_private_key = NULL;
+    vscf_key_provider_t *key_provider = NULL;
+    vssc_json_object_t *json_obj = NULL;
 
-        vscf_status_t foundation_status = vscf_status_SUCCESS;
+    vscf_status_t foundation_status = vscf_status_SUCCESS;
 
-        //
-        //  Setup crypto and declare vars.
-        //
-        key_provider = vscf_key_provider_new();
+    //
+    //  Setup crypto and declare vars.
+    //
+    key_provider = vscf_key_provider_new();
 
-        foundation_status = vscf_key_provider_setup_defaults(key_provider);
+    foundation_status = vscf_key_provider_setup_defaults(key_provider);
 
-        if (foundation_status != vscf_status_SUCCESS) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_EXPORT_CREDS_FAILED_INIT_CRYPTO_FAILED);
-            goto cleanup;
-        }
+    if (foundation_status != vscf_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_EXPORT_CREDS_FAILED_INIT_CRYPTO_FAILED);
+        goto cleanup;
+    }
 
-        //
-        //  Export private key.
-        //
-        const size_t exported_private_key_len = vscf_key_provider_exported_private_key_len(key_provider, self->private_key);
+    //
+    //  Export private key.
+    //
+    const size_t exported_private_key_len = vscf_key_provider_exported_private_key_len(key_provider, self->private_key);
 
-        exported_private_key = vsc_buffer_new_with_capacity(exported_private_key_len);
+    exported_private_key = vsc_buffer_new_with_capacity(exported_private_key_len);
 
-        foundation_status = vscf_key_provider_export_private_key(key_provider, self->private_key, exported_private_key);
+    foundation_status = vscf_key_provider_export_private_key(key_provider, self->private_key, exported_private_key);
 
-        if (foundation_status != vscf_status_SUCCESS) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_EXPORT_CREDS_FAILED_EXPORT_PRIVATE_KEY_FAILED);
-            goto cleanup;
-        }
+    if (foundation_status != vscf_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_EXPORT_CREDS_FAILED_EXPORT_PRIVATE_KEY_FAILED);
+        goto cleanup;
+    }
 
-        //
-        //  Build json:
-        //
-        //  {
-        //      "version" : "v1",
-        //      "username" : "STRING",
-        //      "card_id" : "HEX_STRING",
-        //      "private_key" : "BASE64_STRING"
-        //  }
-        //
-        json_obj = vssc_json_object_new();
+    //
+    //  Build json:
+    //
+    //  {
+    //      "version" : "v1",
+    //      "username" : "STRING",
+    //      "card_id" : "HEX_STRING",
+    //      "private_key" : "BASE64_STRING"
+    //  }
+    //
+    json_obj = vssc_json_object_new();
 
-        vssc_json_object_add_string_value(json_obj, k_json_key_version, k_version_v1);
-        vssc_json_object_add_string_value(json_obj, k_json_key_username, vssq_messenger_creds_username(self));
-        vssc_json_object_add_string_value(json_obj, k_json_key_card_id, vssq_messenger_creds_card_id(self));
-        vssc_json_object_add_binary_value(json_obj, k_json_key_private_key, vsc_buffer_data(exported_private_key));
+    vssc_json_object_add_string_value(json_obj, k_json_key_version, k_version_v1);
+    vssc_json_object_add_string_value(json_obj, k_json_key_username, vssq_messenger_creds_username(self));
+    vssc_json_object_add_string_value(json_obj, k_json_key_card_id, vssq_messenger_creds_card_id(self));
+    vssc_json_object_add_binary_value(json_obj, k_json_key_private_key, vsc_buffer_data(exported_private_key));
 
-    cleanup:
-        vscf_key_provider_destroy(&key_provider);
-        vsc_buffer_destroy(&exported_private_key);
+cleanup:
+    vscf_key_provider_destroy(&key_provider);
+    vsc_buffer_destroy(&exported_private_key);
 
-        return json_obj;
+    return json_obj;
 }
 
 //
@@ -530,80 +530,80 @@ vssq_messenger_creds_from_json(const vssc_json_object_t *json_obj, vssq_error_t 
 
     VSSQ_ASSERT_PTR(json_obj);
 
-        //
-        //  Parse json:
-        //
-        //  {
-        //      "version" : "v1",
-        //      "username" : "STRING",
-        //      "card_id" : "HEX_STRING",
-        //      "private_key" : "BASE64_STRING"
-        //  }
-        //
-        vssc_error_t core_sdk_error;
-        vssc_error_reset(&core_sdk_error);
+    //
+    //  Parse json:
+    //
+    //  {
+    //      "version" : "v1",
+    //      "username" : "STRING",
+    //      "card_id" : "HEX_STRING",
+    //      "private_key" : "BASE64_STRING"
+    //  }
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
 
-        vsc_str_t version = vssc_json_object_get_string_value(json_obj, k_json_key_version, &core_sdk_error);
+    vsc_str_t version = vssc_json_object_get_string_value(json_obj, k_json_key_version, &core_sdk_error);
 
-        if (vssc_error_has_error(&core_sdk_error) || !vsc_str_equal(k_version_v1, version)) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
-            return NULL;
-        }
+    if (vssc_error_has_error(&core_sdk_error) || !vsc_str_equal(k_version_v1, version)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
+        return NULL;
+    }
 
-        vsc_str_t username = vssc_json_object_get_string_value(json_obj, k_json_key_username, &core_sdk_error);
+    vsc_str_t username = vssc_json_object_get_string_value(json_obj, k_json_key_username, &core_sdk_error);
 
-        if (vssc_error_has_error(&core_sdk_error) || vsc_str_is_empty(username)) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
-            return NULL;
-        }
+    if (vssc_error_has_error(&core_sdk_error) || vsc_str_is_empty(username)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
+        return NULL;
+    }
 
-        vsc_str_t card_id = vssc_json_object_get_string_value(json_obj, k_json_key_card_id, &core_sdk_error);
+    vsc_str_t card_id = vssc_json_object_get_string_value(json_obj, k_json_key_card_id, &core_sdk_error);
 
-        if (vssc_error_has_error(&core_sdk_error) || vsc_str_is_empty(card_id)) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
-            return NULL;
-        }
+    if (vssc_error_has_error(&core_sdk_error) || vsc_str_is_empty(card_id)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
+        return NULL;
+    }
 
-        vsc_buffer_t *private_key_buf =
-                vssc_json_object_get_binary_value_new(json_obj, k_json_key_private_key, &core_sdk_error);
+    vsc_buffer_t *private_key_buf =
+            vssc_json_object_get_binary_value_new(json_obj, k_json_key_private_key, &core_sdk_error);
 
-        if (vssc_error_has_error(&core_sdk_error)) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
-            return NULL;
-        }
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
+        return NULL;
+    }
 
-        //
-        //  Setup crypto and declare vars.
-        //
-        vssq_messenger_creds_t *self = NULL;
-        vscf_impl_t *private_key = NULL;
+    //
+    //  Setup crypto and declare vars.
+    //
+    vssq_messenger_creds_t *self = NULL;
+    vscf_impl_t *private_key = NULL;
 
-        vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
 
-        vscf_status_t foundation_status = vscf_key_provider_setup_defaults(key_provider);
+    vscf_status_t foundation_status = vscf_key_provider_setup_defaults(key_provider);
 
-        if (foundation_status != vscf_status_SUCCESS) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_INIT_CRYPTO_FAILED);
-            goto cleanup;
-        }
+    if (foundation_status != vscf_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_INIT_CRYPTO_FAILED);
+        goto cleanup;
+    }
 
-        //
-        //  Import private key.
-        //
-        private_key = vscf_key_provider_import_private_key(key_provider, vsc_buffer_data(private_key_buf), NULL);
+    //
+    //  Import private key.
+    //
+    private_key = vscf_key_provider_import_private_key(key_provider, vsc_buffer_data(private_key_buf), NULL);
 
-        if (NULL == private_key) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED);
-            goto cleanup;
-        }
+    if (NULL == private_key) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED);
+        goto cleanup;
+    }
 
-        self = vssq_messenger_creds_new_with_disown(username, card_id, &private_key);
+    self = vssq_messenger_creds_new_with_disown(username, card_id, &private_key);
 
-    cleanup:
-        vsc_buffer_destroy(&private_key_buf);
-        vscf_key_provider_destroy(&key_provider);
+cleanup:
+    vsc_buffer_destroy(&private_key_buf);
+    vscf_key_provider_destroy(&key_provider);
 
-        return self;
+    return self;
 }
 
 //
