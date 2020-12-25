@@ -1094,12 +1094,16 @@ cleanup:
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_decrypted_message_len(const vssq_messenger_t *self, size_t encrypted_message_len) {
-
     VSSQ_ASSERT_PTR(self);
 
-    // TODO: Optimize the calculation
+    vscf_recipient_cipher_t *cipher = vscf_recipient_cipher_new();
 
-    return encrypted_message_len;
+    const size_t decrypted_message_len = vscf_recipient_cipher_decryption_out_len(cipher, encrypted_message_len) +
+                                         vscf_recipient_cipher_decryption_out_len(cipher, 0);
+
+    vscf_recipient_cipher_destroy(&cipher);
+
+    return decrypted_message_len;
 }
 
 //
@@ -1113,6 +1117,7 @@ vssq_messenger_decrypt_text(const vssq_messenger_t *self, vsc_data_t encrypted_t
     VSSQ_ASSERT(vsc_data_is_valid(encrypted_text));
     VSSQ_ASSERT_PTR(sender);
     VSSQ_ASSERT(vsc_str_buffer_is_valid(out));
+    VSSQ_ASSERT(vsc_str_buffer_unused_len(out) >= vssq_messenger_decrypted_message_len(self, encrypted_text.len));
 
     return vssq_messenger_decrypt_data(self, encrypted_text, sender, &out->buffer);
 }
@@ -1130,6 +1135,7 @@ vssq_messenger_decrypt_data(const vssq_messenger_t *self, vsc_data_t encrypted_d
     VSSQ_ASSERT(vsc_data_is_valid(encrypted_data));
     VSSQ_ASSERT_PTR(sender);
     VSSQ_ASSERT(vsc_buffer_is_valid(out));
+    VSSQ_ASSERT(vsc_buffer_unused_len(out) >= vssq_messenger_decrypted_message_len(self, encrypted_data.len));
 
     //
     // Get Recipient's info.
