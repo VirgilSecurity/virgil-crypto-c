@@ -210,11 +210,8 @@ VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_t *self);
 
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_file_cipher_finish_decryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) VSSQ_NODISCARD;
-
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_file_cipher_finish_decryption_check_sign(vssq_messenger_file_cipher_t *self,
-        const vscf_impl_t *owner_public_key) VSSQ_NODISCARD;
+vssq_messenger_file_cipher_finish_decryption(vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_public_key,
+        vsc_buffer_t *out) VSSQ_NODISCARD;
 
 
 // --------------------------------------------------------------------------

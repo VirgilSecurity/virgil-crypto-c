@@ -84,13 +84,8 @@
     </method>
 
     <method name="finish decryption">
+        <argument name="owner public key" interface="public key" project="foundation"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>
-
-    <method name="finish decryption check sign">
-        <argument name="owner public key" interface="public key" project="foundation"/>
-        <return enum="status"/>
-    </method>
-
 </class>

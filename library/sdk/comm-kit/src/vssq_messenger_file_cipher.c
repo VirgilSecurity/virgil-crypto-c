@@ -97,8 +97,8 @@ vssq_messenger_file_cipher_did_release_random(vssq_messenger_file_cipher_t *self
 static const char cipher_recipient_id_chars[] = "file-cipher";
 
 static const vsc_str_t cipher_recipient_id = {
-        cipher_recipient_id_chars,
-        sizeof(cipher_recipient_id_chars) - 1
+    cipher_recipient_id_chars,
+    sizeof(cipher_recipient_id_chars) - 1
 };
 
 //
@@ -148,8 +148,7 @@ vssq_messenger_file_cipher_cleanup(vssq_messenger_file_cipher_t *self) {
 VSSQ_PUBLIC vssq_messenger_file_cipher_t *
 vssq_messenger_file_cipher_new(void) {
 
-    vssq_messenger_file_cipher_t *self = (vssq_messenger_file_cipher_t *) vssq_alloc(
-            sizeof(vssq_messenger_file_cipher_t));
+    vssq_messenger_file_cipher_t *self = (vssq_messenger_file_cipher_t *) vssq_alloc(sizeof (vssq_messenger_file_cipher_t));
     VSSQ_ASSERT_ALLOC(self);
 
     vssq_messenger_file_cipher_init(self);
@@ -166,7 +165,7 @@ vssq_messenger_file_cipher_new(void) {
 VSSQ_PUBLIC void
 vssq_messenger_file_cipher_delete(const vssq_messenger_file_cipher_t *self) {
 
-    vssq_messenger_file_cipher_t *local_self = (vssq_messenger_file_cipher_t *) self;
+    vssq_messenger_file_cipher_t *local_self = (vssq_messenger_file_cipher_t *)self;
 
     if (local_self == NULL) {
         return;
@@ -176,16 +175,16 @@ vssq_messenger_file_cipher_delete(const vssq_messenger_file_cipher_t *self) {
     VSSQ_ASSERT(old_counter != 0);
     size_t new_counter = old_counter - 1;
 
-#if defined(VSSQ_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    #if defined(VSSQ_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
     while (!VSSQ_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
         old_counter = local_self->refcnt;
         VSSQ_ASSERT(old_counter != 0);
         new_counter = old_counter - 1;
     }
-#else
+    #else
     local_self->refcnt = new_counter;
-#endif
+    #endif
 
     if (new_counter > 0) {
         return;
@@ -223,7 +222,7 @@ vssq_messenger_file_cipher_shallow_copy(vssq_messenger_file_cipher_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
-#if defined(VSSQ_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    #if defined(VSSQ_ATOMIC_COMPARE_EXCHANGE_WEAK)
     //  CAS loop
     size_t old_counter;
     size_t new_counter;
@@ -231,9 +230,9 @@ vssq_messenger_file_cipher_shallow_copy(vssq_messenger_file_cipher_t *self) {
         old_counter = self->refcnt;
         new_counter = old_counter + 1;
     } while (!VSSQ_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
-#else
+    #else
     ++self->refcnt;
-#endif
+    #endif
 
     return self;
 }
@@ -245,7 +244,7 @@ vssq_messenger_file_cipher_shallow_copy(vssq_messenger_file_cipher_t *self) {
 VSSQ_PUBLIC const vssq_messenger_file_cipher_t *
 vssq_messenger_file_cipher_shallow_copy_const(const vssq_messenger_file_cipher_t *self) {
 
-    return vssq_messenger_file_cipher_shallow_copy((vssq_messenger_file_cipher_t *) self);
+    return vssq_messenger_file_cipher_shallow_copy((vssq_messenger_file_cipher_t *)self);
 }
 
 //
@@ -410,22 +409,18 @@ vssq_messenger_file_cipher_init_encryption(
     file_public_key = vscf_private_key_extract_public_key(file_private_key);
     vscf_recipient_cipher_add_key_recipient(
             self->recipient_cipher, vsc_str_as_data(cipher_recipient_id), file_public_key);
-    if (foundation_error.status != vscf_status_SUCCESS) {
-        status.status = vssq_status_EXPORT_PRIVATE_KEY_FAILED;
-        goto cleanup;
-    }
 
     public_key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
     foundation_error.status = vscf_key_provider_calculate_key_id(self->key_provider, owner_private_key, public_key_id);
     if (vscf_error_has_error(&foundation_error)) {
-        status.status = vssq_status_EXPORT_PRIVATE_KEY_FAILED;
+        status.status = vssq_status_CALCULATE_KEY_ID_FAILED;
         goto cleanup;
     }
 
     foundation_error.status =
             vscf_recipient_cipher_add_signer(self->recipient_cipher, vsc_buffer_data(public_key_id), owner_private_key);
     if (foundation_error.status != vscf_status_SUCCESS) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_PACK_ENTRY_FAILED_ENCRYPT_FAILED;
         goto cleanup;
     }
 
@@ -461,7 +456,7 @@ vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, 
 
     foundation_error.status = vscf_recipient_cipher_start_signed_encryption(self->recipient_cipher, data_len);
     if (foundation_error.status != vscf_status_SUCCESS) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_PACK_ENTRY_FAILED_ENCRYPT_FAILED;
         goto cleanup;
     }
     vscf_recipient_cipher_pack_message_info(self->recipient_cipher, out);
@@ -495,7 +490,7 @@ vssq_messenger_file_cipher_process_encryption(vssq_messenger_file_cipher_t *self
 
     foundation_error.status = vscf_recipient_cipher_process_encryption(self->recipient_cipher, data, out);
     if (foundation_error.status != vscf_status_SUCCESS) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_PACK_ENTRY_FAILED_ENCRYPT_FAILED;
         goto cleanup;
     }
 
@@ -527,13 +522,13 @@ vssq_messenger_file_cipher_finish_encryption(vssq_messenger_file_cipher_t *self,
 
     foundation_error.status = vscf_recipient_cipher_finish_encryption(self->recipient_cipher, out);
     if (vscf_error_has_error(&foundation_error)) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_PACK_ENTRY_FAILED_ENCRYPT_FAILED;
         goto cleanup;
     }
 
     foundation_error.status = vscf_recipient_cipher_pack_message_info_footer(self->recipient_cipher, out);
     if (foundation_error.status != vscf_status_SUCCESS) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_PACK_ENTRY_FAILED_ENCRYPT_FAILED;
         goto cleanup;
     }
 
@@ -560,7 +555,7 @@ vssq_messenger_file_cipher_start_decryption(vssq_messenger_file_cipher_t *self, 
     foundation_error.status = vscf_recipient_cipher_start_decryption_with_key(
             self->recipient_cipher, vsc_str_as_data(cipher_recipient_id), private_key, vsc_data_empty());
     if (vscf_error_has_error(&foundation_error)) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_DECRYPT_FAILED;
         goto cleanup;
     }
 
@@ -593,7 +588,7 @@ vssq_messenger_file_cipher_process_decryption(vssq_messenger_file_cipher_t *self
 
     foundation_error.status = vscf_recipient_cipher_process_decryption(self->recipient_cipher, data, out);
     if (vscf_error_has_error(&foundation_error)) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_DECRYPT_FAILED;
         goto cleanup;
     }
     status.status = vssq_status_SUCCESS;
@@ -610,35 +605,12 @@ vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_
 }
 
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_file_cipher_finish_decryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
+vssq_messenger_file_cipher_finish_decryption(
+        vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_public_key, vsc_buffer_t *out) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_buffer_is_valid(out));
     VSSQ_ASSERT(vsc_buffer_unused_len(out) >= vssq_messenger_file_cipher_finish_decryption_out_len(self));
-
-    vscf_error_t foundation_error;
-    vscf_error_reset(&foundation_error);
-    vssq_error_t status;
-    vssq_error_reset(&status);
-
-    foundation_error.status = vscf_recipient_cipher_finish_decryption(self->recipient_cipher, out);
-    if (vscf_error_has_error(&foundation_error)) {
-        status.status = vssq_status_ENCRYPT_REGULAR_MESSAGE_FAILED_CRYPTO_FAILED;
-        goto cleanup;
-    }
-
-    status.status = vssq_status_SUCCESS;
-
-cleanup:
-
-    return status.status;
-}
-
-VSSQ_PUBLIC vssq_status_t
-vssq_messenger_file_cipher_finish_decryption_check_sign(
-        vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_public_key) {
-
-    VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(owner_public_key);
 
     vsc_buffer_t *public_key_id = NULL;
@@ -647,15 +619,22 @@ vssq_messenger_file_cipher_finish_decryption_check_sign(
     vssq_error_t status;
     vssq_error_reset(&status);
 
+    foundation_error.status = vscf_recipient_cipher_finish_decryption(self->recipient_cipher, out);
+    if (vscf_error_has_error(&foundation_error)) {
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_DECRYPT_FAILED;
+        goto cleanup;
+    }
+
+    // Check sign
     if (!vscf_recipient_cipher_is_data_signed(self->recipient_cipher)) {
-        status.status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED;
         goto cleanup;
     }
 
     const vscf_signer_info_list_t *signer_infos = vscf_recipient_cipher_signer_infos(self->recipient_cipher);
 
     if (!vscf_signer_info_list_has_item(signer_infos)) {
-        status.status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED;
         goto cleanup;
     }
 
@@ -665,19 +644,19 @@ vssq_messenger_file_cipher_finish_decryption_check_sign(
     public_key_id = vsc_buffer_new_with_capacity(vscf_key_provider_KEY_ID_LEN);
     foundation_error.status = vscf_key_provider_calculate_key_id(self->key_provider, owner_public_key, public_key_id);
     if (vscf_error_has_error(&foundation_error)) {
-        status.status = vssq_status_EXPORT_PRIVATE_KEY_FAILED;
+        status.status = vssq_status_CALCULATE_KEY_ID_FAILED;
         goto cleanup;
     }
 
     if (!vsc_data_equal(signer_id, vsc_buffer_data(public_key_id))) {
-        status.status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED;
         goto cleanup;
     }
 
     const bool verified =
             vscf_recipient_cipher_verify_signer_info(self->recipient_cipher, signer_info, owner_public_key);
     if (!verified) {
-        status.status = vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_VERIFY_SIGNATURE;
+        status.status = vssq_status_KEYKNOX_UNPACK_ENTRY_FAILED_VERIFY_SIGNATURE_FAILED;
         goto cleanup;
     }
 
