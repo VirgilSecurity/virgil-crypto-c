@@ -174,14 +174,13 @@ vssq_messenger_file_cipher_init_encryption_out_key_len(vssq_messenger_file_ciphe
 
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_init_encryption(vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_private_key,
-        vsc_buffer_t *out_key) VSSQ_NODISCARD;
+        size_t data_len, vsc_buffer_t *out_key) VSSQ_NODISCARD;
 
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_start_encryption_out_len(vssq_messenger_file_cipher_t *self);
 
 VSSQ_PUBLIC vssq_status_t
-vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, size_t data_len,
-        vsc_buffer_t *out) VSSQ_NODISCARD;
+vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) VSSQ_NODISCARD;
 
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_encryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len);
@@ -195,6 +194,13 @@ vssq_messenger_file_cipher_finish_encryption_out_len(vssq_messenger_file_cipher_
 
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) VSSQ_NODISCARD;
+
+VSSQ_PUBLIC size_t
+vssq_messenger_file_cipher_finish_encryption_footer_out_len(vssq_messenger_file_cipher_t *self);
+
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_file_cipher_finish_encryption_footer(vssq_messenger_file_cipher_t *self,
+        vsc_buffer_t *out) VSSQ_NODISCARD;
 
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t key) VSSQ_NODISCARD;

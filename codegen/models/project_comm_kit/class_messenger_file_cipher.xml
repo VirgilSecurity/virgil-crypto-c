@@ -28,6 +28,7 @@
 
     <method name="init encryption">
         <argument name="owner private key" interface="public key" project="foundation"/>
+        <argument name="data_len" type="size"/>
         <argument name="out key" class="buffer"/>
         <return enum="status"/>
     </method>
@@ -37,7 +38,6 @@
     </method>
 
     <method name="start encryption">
-        <argument name="data_len" type="size"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>
@@ -58,6 +58,15 @@
     </method>
 
     <method name="finish encryption">
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="finish encryption footer out len">
+        <return type="size"/>
+    </method>
+
+    <method name="finish encryption footer">
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>

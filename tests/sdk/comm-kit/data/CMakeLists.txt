@@ -34,51 +34,20 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto_c_tests VERSION ${virgil_crypto_VERSION} LANGUAGES C)
+project(test_data_comm_kit_sdk VERSION ${virgil_crypto_c_comm_kit_sdk_tests_VERSION} LANGUAGES C)
 
-if (VIRGIL_C_MT_TESTING)
-    find_package(Threads)
-endif()
+add_library(test_data_comm_kit_sdk "")
+target_sources(test_data_comm_kit_sdk
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_comm_kit.h"
 
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/unity")
-add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test_utils")
+        PRIVATE
+            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_comm_kit.c"
 
-if(TARGET vsc::common)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/common")
-endif()
+        )
 
-if(TARGET vsc::foundation)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/foundation")
-endif()
+target_include_directories(test_data_comm_kit_sdk
+        PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
+        )
 
-if(TARGET vsc::pythia)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/pythia")
-endif()
-
-if(TARGET vsc::ratchet)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/ratchet")
-endif()
-
-if(TARGET vsc::phe)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/phe")
-endif()
-
-if(TARGET vsc::core_sdk)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/core")
-endif()
-
-if(TARGET vsc::pythia_sdk)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/pythia")
-endif()
-
-if(TARGET vsc::comm_kit)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/comm-kit")
-endif()
-
-if(ENABLE_FUZZY_TESTING)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/fuzzy")
-endif()
-
-if(ENABLE_INTEGRATION_TESTS)
-    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/integration")
-endif()
+target_link_libraries(test_data_comm_kit_sdk PUBLIC vsc::common)
