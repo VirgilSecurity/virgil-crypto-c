@@ -47,63 +47,25 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Class 'messenger file cipher' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
-#define VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
+#ifndef VSSQ_MESSENGER_FILE_CIPHER_DEFS_H_INCLUDED
+#define VSSQ_MESSENGER_FILE_CIPHER_DEFS_H_INCLUDED
 
-#include "vssq_platform.h"
+#include "vssq_library.h"
 #include "vssq_atomic.h"
-#include "vssq_messenger_creds_private.h"
-#include "vssq_messenger_group_epoch_list_private.h"
-#include "vssq_messenger_group_private.h"
-#include "vssq_messenger_user_list_private.h"
-#include "vssq_messenger_user_private.h"
 
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt_defs.h"
+#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/vscf_recipient_cipher.h>
+#   include <virgil/crypto/foundation/vscf_key_provider.h>
 #endif
 
-#if VSSQ_MESSENGER
-#   include "vssq_messenger_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CONTACTS
-#   include "vssq_messenger_contacts_defs.h"
-#   include "vssq_messenger_contacts.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_FILE_CIPHER
-#   include "vssq_messenger_file_cipher_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_GROUP
-#   include "vssq_messenger_group_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_GROUP_EPOCH_LIST
-#   include "vssq_messenger_group_epoch_list_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_USER_LIST
-#   include "vssq_messenger_user_list_defs.h"
+#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_key_provider.h>
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_recipient_cipher.h>
 #endif
 
 // clang-format on
@@ -121,6 +83,28 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'messenger file cipher' context.
+//
+struct vssq_messenger_file_cipher_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssq_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSQ_ATOMIC size_t refcnt;
+    //
+    //  Dependency to the interface 'random'.
+    //
+    vscf_impl_t *random;
+
+    vscf_key_provider_t *key_provider;
+
+    vscf_recipient_cipher_t *recipient_cipher;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -135,5 +119,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
+#endif // VSSQ_MESSENGER_FILE_CIPHER_DEFS_H_INCLUDED
 //  @end

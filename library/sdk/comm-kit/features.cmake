@@ -61,6 +61,7 @@ option(VSSQ_MESSENGER_GROUP "Enable class 'messenger group'." ON)
 option(VSSQ_MESSENGER_GROUP_EPOCH "Enable class 'messenger group epoch'." ON)
 option(VSSQ_MESSENGER_GROUP_EPOCH_LIST "Enable class 'messenger group epoch list'." ON)
 option(VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE "Enable class 'messenger group epoch keyknox storage'." ON)
+option(VSSQ_MESSENGER_FILE_CIPHER "Enable class 'messenger file cipher'." ON)
 option(VSSQ_CONTACT_UTILS "Enable class 'contact utils'." ON)
 mark_as_advanced(
         VSSQ_LIBRARY
@@ -79,6 +80,7 @@ mark_as_advanced(
         VSSQ_MESSENGER_GROUP_EPOCH
         VSSQ_MESSENGER_GROUP_EPOCH_LIST
         VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
+        VSSQ_MESSENGER_FILE_CIPHER
         VSSQ_CONTACT_UTILS
         )
 
@@ -888,6 +890,60 @@ if(VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE AND NOT VSSK_KEYKNOX_CLIENT)
     message("--")
     message("Feature VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE depends on the feature:")
     message("     VSSK_KEYKNOX_CLIENT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSCF_KEY_PROVIDER)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
+    message("     VSCF_KEY_PROVIDER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSCF_RECIPIENT_CIPHER)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
+    message("     VSCF_RECIPIENT_CIPHER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSCF_PRIVATE_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
+    message("     VSCF_PRIVATE_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSCF_CTR_DRBG)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
+    message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSC_STR)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
+    message("     VSC_STR - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSSQ_ERROR)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
+    message("     VSSQ_ERROR - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
