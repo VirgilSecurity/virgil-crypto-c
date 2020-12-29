@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Segment file encryption and decryption
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -372,6 +378,9 @@ vssq_messenger_file_cipher_setup_defaults(vssq_messenger_file_cipher_t *self) {
     return vssq_status_SUCCESS;
 }
 
+//
+//  Return key length for encrypt file
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_init_encryption_out_key_len(vssq_messenger_file_cipher_t *self) {
 
@@ -379,6 +388,9 @@ vssq_messenger_file_cipher_init_encryption_out_key_len(vssq_messenger_file_ciphe
     return 128;
 }
 
+//
+//  Encryption initialization
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_init_encryption(vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_private_key,
         size_t data_len, vsc_buffer_t *out_key) {
@@ -449,6 +461,9 @@ cleanup:
     return vssq_error_status(&status);
 }
 
+//
+//  Return encryption header length
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_start_encryption_out_len(vssq_messenger_file_cipher_t *self) {
 
@@ -456,6 +471,9 @@ vssq_messenger_file_cipher_start_encryption_out_len(vssq_messenger_file_cipher_t
     return vscf_recipient_cipher_message_info_len(self->recipient_cipher);
 }
 
+//
+//  Start encryption and return header
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
 
@@ -469,6 +487,9 @@ vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, 
     return vssq_status_SUCCESS;
 }
 
+//
+//  Return encryption process output buffer length
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_encryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len) {
 
@@ -476,6 +497,9 @@ vssq_messenger_file_cipher_process_encryption_out_len(vssq_messenger_file_cipher
     return vscf_recipient_cipher_encryption_out_len(self->recipient_cipher, data_len);
 }
 
+//
+//  Encrypt data and return encrypted buffer
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_process_encryption(vssq_messenger_file_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
@@ -502,6 +526,9 @@ cleanup:
     return status.status;
 }
 
+//
+//  Return finish encryption data length
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_encryption_out_len(vssq_messenger_file_cipher_t *self) {
 
@@ -509,6 +536,9 @@ vssq_messenger_file_cipher_finish_encryption_out_len(vssq_messenger_file_cipher_
     return vssq_messenger_file_cipher_process_encryption_out_len(self, 0);
 }
 
+//
+//  Finish encryption and return last part of data
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
 
@@ -534,6 +564,9 @@ cleanup:
     return status.status;
 }
 
+//
+//  Return encryption footer length
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_encryption_footer_out_len(vssq_messenger_file_cipher_t *self) {
 
@@ -541,6 +574,9 @@ vssq_messenger_file_cipher_finish_encryption_footer_out_len(vssq_messenger_file_
     return vscf_recipient_cipher_message_info_footer_len(self->recipient_cipher);
 }
 
+//
+//  Finish encryption and return footer data
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption_footer(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
 
@@ -566,6 +602,9 @@ cleanup:
     return status.status;
 }
 
+//
+//  Start decryption (Input - file encryption key)
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t key) {
 
@@ -599,6 +638,9 @@ cleanup:
     return status.status;
 }
 
+//
+//  Return decryption data length
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_decryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len) {
 
@@ -606,6 +648,9 @@ vssq_messenger_file_cipher_process_decryption_out_len(vssq_messenger_file_cipher
     return vscf_recipient_cipher_decryption_out_len(self->recipient_cipher, data_len);
 }
 
+//
+//  Decryption process
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_process_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
@@ -630,6 +675,9 @@ cleanup:
     return status.status;
 }
 
+//
+//  Return finish data part length
+//
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_t *self) {
 
@@ -637,6 +685,9 @@ vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_
     return vscf_recipient_cipher_decryption_out_len(self->recipient_cipher, 0);
 }
 
+//
+//  Finish decryption and check sign
+//
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_decryption(
         vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_public_key, vsc_buffer_t *out) {
