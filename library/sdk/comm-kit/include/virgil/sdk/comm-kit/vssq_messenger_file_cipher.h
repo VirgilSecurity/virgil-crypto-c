@@ -214,7 +214,7 @@ vssq_messenger_file_cipher_process_encryption(vssq_messenger_file_cipher_t *self
         vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
-//  Return finish encryption data length
+//  Return finish encryption data length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_encryption_out_len(vssq_messenger_file_cipher_t *self);

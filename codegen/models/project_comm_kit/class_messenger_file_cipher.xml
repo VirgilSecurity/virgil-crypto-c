@@ -68,7 +68,8 @@
     </method>
 
     <method name="finish encryption out len">
-        Return finish encryption data length
+        Return finish encryption data length.
+
         <return type="size"/>
     </method>
 
