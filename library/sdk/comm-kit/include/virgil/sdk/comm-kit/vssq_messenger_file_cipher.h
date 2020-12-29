@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Segment file encryption and decryption
+//  Segment file encryption and decryption.
 // --------------------------------------------------------------------------
 
 #ifndef VSSQ_MESSENGER_FILE_CIPHER_H_INCLUDED
@@ -176,38 +176,38 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_setup_defaults(vssq_messenger_file_cipher_t *self) VSSQ_NODISCARD;
 
 //
-//  Return key length for encrypt file
+//  Return key length for encrypt file.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_init_encryption_out_key_len(vssq_messenger_file_cipher_t *self);
 
 //
-//  Encryption initialization
+//  Encryption initialization.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_init_encryption(vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_private_key,
         size_t data_len, vsc_buffer_t *out_key) VSSQ_NODISCARD;
 
 //
-//  Return encryption header length
+//  Return encryption header length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_start_encryption_out_len(vssq_messenger_file_cipher_t *self);
 
 //
-//  Start encryption and return header
+//  Start encryption and return header.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
-//  Return encryption process output buffer length
+//  Return encryption process output buffer length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_encryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len);
 
 //
-//  Encrypt data and return encrypted buffer
+//  Encrypt data and return encrypted buffer.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_process_encryption(vssq_messenger_file_cipher_t *self, vsc_data_t data,
@@ -220,51 +220,51 @@ VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_encryption_out_len(vssq_messenger_file_cipher_t *self);
 
 //
-//  Finish encryption and return last part of data
+//  Finish encryption and return last part of data.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
-//  Return encryption footer length
+//  Return encryption footer length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_encryption_footer_out_len(vssq_messenger_file_cipher_t *self);
 
 //
-//  Finish encryption and return footer data
+//  Finish encryption and return footer data.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption_footer(vssq_messenger_file_cipher_t *self,
         vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
-//  Start decryption (Input - file encryption key)
+//  Start decryption (Input - file encryption key).
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t key) VSSQ_NODISCARD;
 
 //
-//  Return decryption data length
+//  Return decryption data length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_decryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len);
 
 //
-//  Decryption process
+//  Decryption process.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_process_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t data,
         vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
-//  Return finish data part length
+//  Return finish data part length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_t *self);
 
 //
-//  Finish decryption and check sign
+//  Finish decryption and check sign.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_decryption(vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_public_key,

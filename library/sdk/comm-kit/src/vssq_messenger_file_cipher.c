@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Segment file encryption and decryption
+//  Segment file encryption and decryption.
 // --------------------------------------------------------------------------
 
 
@@ -379,7 +379,7 @@ vssq_messenger_file_cipher_setup_defaults(vssq_messenger_file_cipher_t *self) {
 }
 
 //
-//  Return key length for encrypt file
+//  Return key length for encrypt file.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_init_encryption_out_key_len(vssq_messenger_file_cipher_t *self) {
@@ -389,7 +389,7 @@ vssq_messenger_file_cipher_init_encryption_out_key_len(vssq_messenger_file_ciphe
 }
 
 //
-//  Encryption initialization
+//  Encryption initialization.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_init_encryption(vssq_messenger_file_cipher_t *self, const vscf_impl_t *owner_private_key,
@@ -462,7 +462,7 @@ cleanup:
 }
 
 //
-//  Return encryption header length
+//  Return encryption header length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_start_encryption_out_len(vssq_messenger_file_cipher_t *self) {
@@ -472,7 +472,7 @@ vssq_messenger_file_cipher_start_encryption_out_len(vssq_messenger_file_cipher_t
 }
 
 //
-//  Start encryption and return header
+//  Start encryption and return header.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
@@ -488,7 +488,7 @@ vssq_messenger_file_cipher_start_encryption(vssq_messenger_file_cipher_t *self, 
 }
 
 //
-//  Return encryption process output buffer length
+//  Return encryption process output buffer length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_encryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len) {
@@ -498,7 +498,7 @@ vssq_messenger_file_cipher_process_encryption_out_len(vssq_messenger_file_cipher
 }
 
 //
-//  Encrypt data and return encrypted buffer
+//  Encrypt data and return encrypted buffer.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_process_encryption(vssq_messenger_file_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
@@ -537,7 +537,7 @@ vssq_messenger_file_cipher_finish_encryption_out_len(vssq_messenger_file_cipher_
 }
 
 //
-//  Finish encryption and return last part of data
+//  Finish encryption and return last part of data.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
@@ -565,7 +565,7 @@ cleanup:
 }
 
 //
-//  Return encryption footer length
+//  Return encryption footer length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_encryption_footer_out_len(vssq_messenger_file_cipher_t *self) {
@@ -575,7 +575,7 @@ vssq_messenger_file_cipher_finish_encryption_footer_out_len(vssq_messenger_file_
 }
 
 //
-//  Finish encryption and return footer data
+//  Finish encryption and return footer data.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_encryption_footer(vssq_messenger_file_cipher_t *self, vsc_buffer_t *out) {
@@ -603,7 +603,7 @@ cleanup:
 }
 
 //
-//  Start decryption (Input - file encryption key)
+//  Start decryption (Input - file encryption key).
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_start_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t key) {
@@ -639,7 +639,7 @@ cleanup:
 }
 
 //
-//  Return decryption data length
+//  Return decryption data length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_process_decryption_out_len(vssq_messenger_file_cipher_t *self, size_t data_len) {
@@ -649,7 +649,7 @@ vssq_messenger_file_cipher_process_decryption_out_len(vssq_messenger_file_cipher
 }
 
 //
-//  Decryption process
+//  Decryption process.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_process_decryption(vssq_messenger_file_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) {
@@ -676,7 +676,7 @@ cleanup:
 }
 
 //
-//  Return finish data part length
+//  Return finish data part length.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_t *self) {
@@ -686,7 +686,7 @@ vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_
 }
 
 //
-//  Finish decryption and check sign
+//  Finish decryption and check sign.
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_file_cipher_finish_decryption(

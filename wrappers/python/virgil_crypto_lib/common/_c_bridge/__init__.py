@@ -39,9 +39,3 @@ from ._data import Data
 from ._vsc_buffer import vsc_buffer_t
 from ._vsc_buffer import VscBuffer
 from ._buffer import Buffer
-from ._vsc_str import vsc_str_t
-from ._vsc_str import VscStr
-from ._vsc_str_buffer import vsc_str_buffer_t
-from ._vsc_str_buffer import VscStrBuffer
-from ._vsc_str_mutable import vsc_str_mutable_t
-from ._vsc_str_mutable import VscStrMutable

@@ -1,5 +1,5 @@
 <class name="messenger file cipher">
-    Segment file encryption and decryption
+    Segment file encryption and decryption.
 
     <require class="key provider" project="foundation"/>
     <require class="recipient cipher" project="foundation"/>
@@ -19,17 +19,20 @@
 
     <method name="setup defaults">
         Setup predefined values to the uninitialized class dependencies.
+
         <return enum="status"/>
     </method>
 
     <!-- Encrypt functions -->
     <method name="init encryption out key len">
-        Return key length for encrypt file
+        Return key length for encrypt file.
+
         <return type="size"/>
     </method>
 
     <method name="init encryption">
-        Encryption initialization
+        Encryption initialization.
+
         <argument name="owner private key" interface="public key" project="foundation"/>
         <argument name="data_len" type="size"/>
         <argument name="out key" class="buffer"/>
@@ -37,24 +40,28 @@
     </method>
 
     <method name="start encryption out len">
-        Return encryption header length
+        Return encryption header length.
+
         <return type="size"/>
     </method>
 
     <method name="start encryption">
-        Start encryption and return header
+        Start encryption and return header.
+
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>
 
     <method name="process encryption out len">
-        Return encryption process output buffer length
+        Return encryption process output buffer length.
+
         <argument name="data_len" type="size"/>
         <return type="size"/>
     </method>
 
     <method name="process encryption">
-        Encrypt data and return encrypted buffer
+        Encrypt data and return encrypted buffer.
+
         <argument name="data" class="data"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
@@ -66,49 +73,57 @@
     </method>
 
     <method name="finish encryption">
-        Finish encryption and return last part of data
+        Finish encryption and return last part of data.
+
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>
 
     <method name="finish encryption footer out len">
-        Return encryption footer length
+        Return encryption footer length.
+
         <return type="size"/>
     </method>
 
     <method name="finish encryption footer">
-        Finish encryption and return footer data
+        Finish encryption and return footer data.
+
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>
 
     <!-- Decrypt functions -->
     <method name="start decryption">
-        Start decryption (Input - file encryption key)
+        Start decryption (Input - file encryption key).
+
         <argument name="key" class="data"/>
         <return enum="status"/>
     </method>
 
     <method name="process decryption out len">
-        Return decryption data length
+        Return decryption data length.
+
         <argument name="data_len" type="size"/>
         <return type="size"/>
     </method>
 
     <method name="process decryption">
-        Decryption process
+        Decryption process.
+
         <argument name="data" class="data"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>
 
     <method name="finish decryption out len">
-        Return finish data part length
+        Return finish data part length.
+
         <return type="size"/>
     </method>
 
     <method name="finish decryption">
-        Finish decryption and check sign
+        Finish decryption and check sign.
+
         <argument name="owner public key" interface="public key" project="foundation"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
