@@ -401,6 +401,7 @@ endfunction
 # ---------------------------------------------------------------------------
 #   Collapse spaces between words to 1 space in the code.
 #   Note, do not collapse spaces in macro formatting.
+#   Note, do not collapse spaces in string literals.
 #   Note, work for both single line and multiline strings.
 # ---------------------------------------------------------------------------
 function code_collapse_spaces (str)
@@ -408,7 +409,7 @@ function code_collapse_spaces (str)
         return my.str ?
     endif
 
-    while regexp.match ("([^\\s#\\/][ ]{2,}\\S+)", my.str, my.char_spaces_char)
+    while regexp.match ('([^\\s#\\/"][ ]{2,}\\S+)', my.str, my.char_spaces_char)
         #   Replace 2 or more spaces with one space.
         regexp.match ("([ ]{2,})", my.char_spaces_char, my.spaces)
         my.replacement = string.search_replace (my.char_spaces_char, my.spaces, " ")

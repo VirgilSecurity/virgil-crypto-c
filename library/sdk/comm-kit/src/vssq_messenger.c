@@ -1094,6 +1094,7 @@ cleanup:
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_decrypted_message_len(const vssq_messenger_t *self, size_t encrypted_message_len) {
+
     VSSQ_ASSERT_PTR(self);
 
     vscf_recipient_cipher_t *cipher = vscf_recipient_cipher_new();
