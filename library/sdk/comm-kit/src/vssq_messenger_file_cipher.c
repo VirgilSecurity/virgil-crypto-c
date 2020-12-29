@@ -633,6 +633,7 @@ cleanup:
 VSSQ_PUBLIC size_t
 vssq_messenger_file_cipher_finish_decryption_out_len(vssq_messenger_file_cipher_t *self) {
 
+    VSSQ_ASSERT_PTR(self);
     return vscf_recipient_cipher_decryption_out_len(self->recipient_cipher, 0);
 }
 

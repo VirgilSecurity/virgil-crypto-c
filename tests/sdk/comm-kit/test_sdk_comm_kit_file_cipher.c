@@ -32,24 +32,18 @@
 //
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
-
 #define UNITY_BEGIN() UnityBegin(__FILENAME__)
 
 #include "unity.h"
 #include "test_utils.h"
 
-
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
     (VSSQ_MESSENGER_FILE_CIPHER && VSCF_RECIPIENT_CIPHER && VSCF_ALG_FACTORY && VSCF_KEY_PROVIDER && VSCF_ED25519)
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_recipient_cipher.h"
 #include "vscf_key_provider.h"
 #include "vscf_fake_random.h"
-#include "vscf_aes256_gcm.h"
-#include "vscf_random_padding.h"
 #include "vssq_messenger_file_cipher.h"
-
 #include "test_data_comm_kit.h"
 
 // --------------------------------------------------------------------------
@@ -57,13 +51,13 @@
 // --------------------------------------------------------------------------
 static void
 test__encrypt_decrypt__file_cipher__success(void) {
-    //
-    //  Prepare recipients.
-    //
+
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    // Prepare keys
+    //
+    //  Prepare recipients.
+    //
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
@@ -75,7 +69,9 @@ test__encrypt_decrypt__file_cipher__success(void) {
             vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
 
+    //
     // Encrypt and sign
+    //
     vssq_messenger_file_cipher_t *file_cipher = vssq_messenger_file_cipher_new();
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vssq_messenger_file_cipher_setup_defaults(file_cipher));
 
@@ -103,31 +99,27 @@ test__encrypt_decrypt__file_cipher__success(void) {
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vssq_messenger_file_cipher_finish_encryption_footer(file_cipher, footer_buf));
 
+    //
     // Decrypt
-    // TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vssq_messenger_file_cipher_setup_defaults(file_cipher));
-
+    //
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vssq_messenger_file_cipher_start_decryption(file_cipher, vsc_buffer_data(file_key)));
 
-    // Decrypt header
     vsc_buffer_t *buff_out = vsc_buffer_new_with_capacity(
             vssq_messenger_file_cipher_process_decryption_out_len(file_cipher, vsc_buffer_data(header_buf).len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vssq_messenger_file_cipher_process_decryption(file_cipher, vsc_buffer_data(header_buf), buff_out));
 
-    // Decrypt data
     vsc_buffer_reserve_unused(buff_out,
             vssq_messenger_file_cipher_process_decryption_out_len(file_cipher, vsc_buffer_data(data_buf).len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vssq_messenger_file_cipher_process_decryption(file_cipher, vsc_buffer_data(data_buf), buff_out));
 
-    // Decrypt finich
     vsc_buffer_reserve_unused(buff_out,
             vssq_messenger_file_cipher_process_decryption_out_len(file_cipher, vsc_buffer_data(finish_buf).len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vssq_messenger_file_cipher_process_decryption(file_cipher, vsc_buffer_data(finish_buf), buff_out));
 
-    // Decrypt footer
     vsc_buffer_reserve_unused(buff_out,
             vssq_messenger_file_cipher_process_decryption_out_len(file_cipher, vsc_buffer_data(footer_buf).len));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
