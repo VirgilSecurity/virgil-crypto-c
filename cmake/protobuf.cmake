@@ -42,7 +42,22 @@
 #
 function(target_protobuf_sources target)
 
-    if(NOT ARGN)
+    set(oneValueArgs PREFIX_DIR)
+    set(multiValueArgs SOURCES)
+
+    cmake_parse_arguments(PROTOBUF_SOURCES "" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
+
+    if(PROTOBUF_SOURCES_PREFIX_DIR AND NOT PROTOBUF_SOURCES_SOURCES)
+        message(FATAL_ERROR "Signature target_protobuf_sources(PREFIX_DIR <dir> SOURCES <names>) require SOURCES")
+    endif()
+
+    if(PROTOBUF_SOURCES_SOURCES)
+        set(sources "${PROTOBUF_SOURCES_SOURCES}")
+    else()
+        set(sources "${ARGN}")
+    endif()
+
+    if(NOT sources)
         message(FATAL_ERROR "At least one source must be defined")
     endif()
 
@@ -83,15 +98,31 @@ function(target_protobuf_sources target)
     #
     # Create generation command per proto file
     #
-    foreach(proto_file ${ARGN})
-        if(NOT EXISTS "${proto_file}")
-            message(FATAL_ERROR "Protobuf model file is not found: ${proto_file}")
+    foreach(proto_file ${sources})
+        if (PROTOBUF_SOURCES_PREFIX_DIR)
+            set(proto_file_path "${PROTOBUF_SOURCES_PREFIX_DIR}/${proto_file}")
+
+            get_filename_component(proto_file_out_subdir "${proto_file}" DIRECTORY)
+            if (proto_file_out_subdir)
+                set(proto_file_out_dir "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_out_subdir}")
+            else()
+                set(proto_file_out_dir "${CMAKE_CURRENT_BINARY_DIR}")
+            endif()
+        else()
+            set(proto_file_path "${proto_file}")
+
+            set(proto_file_out_dir "${CMAKE_CURRENT_BINARY_DIR}")
         endif()
 
-        get_filename_component(proto_file_path "${proto_file}" DIRECTORY)
-        get_filename_component(proto_file_name "${proto_file}" NAME_WE)
+        if(NOT EXISTS "${proto_file_path}")
+            message(FATAL_ERROR "Protobuf model file is not found: ${proto_file_path}")
+        endif()
 
-        if(EXISTS "${proto_file_path}/${proto_file_name}.options")
+        get_filename_component(proto_file_dir "${proto_file_path}" DIRECTORY)
+        get_filename_component(proto_file_name "${proto_file_path}" NAME_WE)
+
+
+        if(EXISTS "${proto_file_dir}/${proto_file_name}.options")
             set(proto_options_file "${proto_file_name}.options")
             set(proto_options "-f${proto_options_file}")
         else()
@@ -101,22 +132,24 @@ function(target_protobuf_sources target)
 
         add_custom_command(
                 OUTPUT
-                    "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.h"
-                    "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.c"
+                    "${proto_file_out_dir}/${proto_file_name}.pb.h"
+                    "${proto_file_out_dir}/${proto_file_name}.pb.c"
+                COMMAND
+                    "${CMAKE_COMMAND}" -E make_directory "${proto_file_out_dir}"
                 COMMAND
                     "${PROTOC_EXE}" --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
-                                    --nanopb_out=${proto_options}:"${CMAKE_CURRENT_BINARY_DIR}"
+                                    --nanopb_out=${proto_options}:"${proto_file_out_dir}"
                                     --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
-                    "${proto_file}" "${proto_options_file}"
-                COMMENT "Processing protobuf model: ${proto_file}"
-                WORKING_DIRECTORY "${proto_file_path}"
+                    "${proto_file_path}" "${proto_options_file}"
+                COMMENT "Processing protobuf model: ${proto_file_path}"
+                WORKING_DIRECTORY "${proto_file_dir}"
                 )
 
         target_sources(${target}
                 PRIVATE
-                    "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.h"
-                    "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.c"
+                    "${proto_file_out_dir}/${proto_file_name}.pb.h"
+                    "${proto_file_out_dir}/${proto_file_name}.pb.c"
                 )
     endforeach()
 endfunction()
