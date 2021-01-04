@@ -1,18 +1,73 @@
-CreateFileResp.upload_link max_length:512
+#
+#  Limits:
+#    - file|folder id: 32
+#
 
-GetFileLinkReq.id max_length:64
 
-GetFileLinkResp.link max_length:512
+# CreateFileReq
+vssq_pb.CreateFileReq.file_private_key type:FT_POINTER
 
-UpdateFileResp.link max_length:512
+# CreateFileResp
+vssq_pb.CreateFileResp.upload_link max_length:2048
 
-DeleteFileReq.id max_length:512
+# GetFileLinkReq
+vssq_pb.GetFileLinkReq.id max_length:32 fixed_length:true
 
-ListFolderReq.folder_id max_length:64
+# GetFileLinkResp
+vssq_pb.GetFileLinkResp.link max_length:2048
+vssq_pb.GetFileLinkResp.file_private_key type:FT_POINTER
 
-ListFolderResp.file max_count:1024
 
-File.name max_length:512
-File.type max_length:512
+# UpdateFileResp
+vssq_pb.UpdateFileResp.link max_length:2048
 
-Meta.folder_id max_length:64
+# DeleteFileReq
+vssq_pb.DeleteFileReq.id max_length:32 fixed_length:true
+
+# CreateFolderReq
+vssq_pb.CreateFolderReq.name max_length:1024
+vssq_pb.CreateFolderReq.parent_folder_id max_length:32 fixed_length:true
+vssq_pb.CreateFolderReq.folder_public_key type:FT_POINTER
+vssq_pb.CreateFolderReq.folder_private_key type:FT_POINTER
+vssq_pb.CreateFolderReq.users type:FT_POINTER
+
+# CreateFolderResp
+vssq_pb.CreateFolderResp.id max_length:32 fixed_length:true
+vssq_pb.CreateFolderResp.name max_length:1024
+
+# UpdateFolderReq
+vssq_pb.UpdateFolderReq.id max_length:32 fixed_length:true
+vssq_pb.UpdateFolderReq.name max_length:1024
+
+# ListFolderReq
+vssq_pb.ListFolderReq.folder_id max_length:32 fixed_length:true
+
+# ListFolderResp
+vssq_pb.ListFolderResp.file type:FT_POINTER
+vssq_pb.ListFolderResp.folder type:FT_POINTER
+vssq_pb.ListFolderResp.folder_private_key type:FT_POINTER
+vssq_pb.ListFolderResp.folder_public_key type:FT_POINTER
+
+# DeleteFolderReq
+vssq_pb.DeleteFolderReq.id max_length:32 fixed_length:true
+
+# ShareFolderReq
+vssq_pb.ShareFolderReq.folder_id max_length:32 fixed_length:true
+
+# UnshareFolderReq
+vssq_pb.UnshareFolderReq.folder_id max_length:32 fixed_length:true
+
+# File
+vssq_pb.File.name max_length:1024
+vssq_pb.File.type max_length:100
+vssq_pb.File.id max_length:32 fixed_length:true
+
+# Folder
+vssq_pb.Folder.name max_length:1024
+vssq_pb.Folder.id max_length:32 fixed_length:true
+
+# Meta
+vssq_pb.Meta.folder_id max_length:32 fixed_length:true
+
+# User
+vssq_pb.User.identity max_length:512;

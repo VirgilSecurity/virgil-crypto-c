@@ -72,8 +72,11 @@ set_target_properties(comm_kit_pb PROPERTIES
         )
 
 target_protobuf_sources(comm_kit_pb
-        "${CMAKE_CURRENT_SOURCE_DIR}/timestamp.proto"
-        "${CMAKE_CURRENT_SOURCE_DIR}/vssq_CloudFileSystem.proto"
+        PREFIX_DIR
+            "${CMAKE_CURRENT_SOURCE_DIR}"
+        SOURCES
+            "google/protobuf/timestamp.proto"
+            "vssq_CloudFileSystem.proto"
         )
 
 target_link_libraries(comm_kit_pb nanopb::protobuf-nanopb)

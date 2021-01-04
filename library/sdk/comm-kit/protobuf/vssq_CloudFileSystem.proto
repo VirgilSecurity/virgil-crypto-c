@@ -1,12 +1,13 @@
 syntax = "proto3";
-
 package vssq_pb;
+option go_package = ".;protobuf";
 
-import "timestamp.proto";
+import "google/protobuf/timestamp.proto";
 
 message CreateFileReq {
     File file = 1;
     Meta meta = 2;
+    bytes file_private_key = 3;
 }
 
 message CreateFileResp {
@@ -19,6 +20,7 @@ message GetFileLinkReq {
 
 message GetFileLinkResp {
     string link = 1;
+    bytes file_private_key = 2;
 }
 
 message UpdateFileReq {
@@ -34,21 +36,66 @@ message DeleteFileReq {
     string id = 1;
 }
 
-message DeleteFileResp {}
+message CreateFolderReq {
+    string name = 1;
+    string parent_folder_id = 2;
+    bytes folder_private_key = 3;
+    bytes folder_public_key = 4;
+    repeated User users = 5;
+}
+
+message CreateFolderResp {
+    string id = 1;
+    string name = 2;
+}
+
+message UpdateFolderReq {
+    string id = 1;
+    string name = 2;
+}
 
 message ListFolderReq {
-   string folder_id = 1;
-   Pagination pagination = 2;
+    string folder_id = 1;
+    Pagination pagination = 2;
 }
 
 message ListFolderResp {
-    uint64 count = 1;
-    repeated File file = 2;
+    uint64 total_file_count = 1;
+    uint64 total_folder_count = 2;
+    repeated File file = 3;
+    repeated Folder folder = 4;
+    bytes folder_private_key = 5;
+    bytes folder_public_key = 6;
 }
+
+message DeleteFolderReq {
+    string id = 1;
+}
+
+message ShareFolderReq {
+    User user = 1;
+    string folder_id = 2;
+}
+
+message ShareFolderResp {}
+
+message UnshareFolderReq {
+    User user = 1;
+    string folder_id = 2;
+}
+
+message UnshareFolderResp {}
+
 
 message File {
     string name = 1;
     string type = 2;
+    string id = 3;
+}
+
+message Folder {
+    string name = 1;
+    string id = 2;
 }
 
 message Meta {
@@ -56,9 +103,20 @@ message Meta {
     google.protobuf.Timestamp updated_at = 2;
     uint64 size = 3;
     string folder_id = 4;
+
 }
 
 message Pagination {
     uint64 limit = 1;
     uint64 offset = 2;
+}
+
+message User {
+    string identity = 1;
+    Permission permission = 2;
+}
+
+enum Permission {
+    PERMISSION_ADMIN = 0;
+    PERMISSION_USER = 1;
 }
