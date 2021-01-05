@@ -1,8 +1,6 @@
 <class name="messenger file cipher">
     Segment file encryption and decryption.
 
-    <require class="key provider" project="foundation"/>
-    <require class="recipient cipher" project="foundation"/>
     <require interface="private key" project="foundation"/>
     <require impl="ctr drbg" project="foundation"/>
     <require class="str" project="common"/>
@@ -12,6 +10,8 @@
 
     <property name="key provider" class="key provider" project="foundation"/>
     <property name="recipient cipher" class="recipient cipher" project="foundation"/>
+    <property name="signer" class="signer" project="foundation"/>
+    <property name="verifier" class="verifier" project="foundation"/>
 
     <constant name="cipher recipient id" type="string" visibility="private">
         <value value="file-cipher"/>
@@ -33,8 +33,6 @@
     <method name="init encryption">
         Encryption initialization.
 
-        <argument name="owner private key" interface="public key" project="foundation"/>
-        <argument name="data_len" type="size"/>
         <argument name="out key" class="buffer"/>
         <return enum="status"/>
     </method>
@@ -73,31 +71,31 @@
         <return type="size"/>
     </method>
 
-    <method name="finish encryption">
-        Finish encryption and return last part of data.
+    <method name="finish encryption signature len">
+        Return finish encryption data length.
 
-        <argument name="out" class="buffer"/>
-        <return enum="status"/>
-    </method>
-
-    <method name="finish encryption footer out len">
-        Return encryption footer length.
+        <argument name="signer private key" interface="private key" project="foundation"/>
 
         <return type="size"/>
     </method>
 
-    <method name="finish encryption footer">
-        Finish encryption and return footer data.
+    <method name="finish encryption">
+        Finish encryption and return last part of data.
+        Also signature is returned.
 
+        <argument name="signer private key" interface="private key" project="foundation"/>
         <argument name="out" class="buffer"/>
+        <argument name="signature" class="buffer"/>
         <return enum="status"/>
     </method>
 
+
     <!-- Decrypt functions -->
     <method name="start decryption">
-        Start decryption (Input - file encryption key).
+        Start decryption with a key generated during encryption and signature.
 
         <argument name="key" class="data"/>
+        <argument name="signature" class="data"/>
         <return enum="status"/>
     </method>
 
@@ -123,9 +121,9 @@
     </method>
 
     <method name="finish decryption">
-        Finish decryption and check sign.
+        Finish decryption and check signature.
 
-        <argument name="owner public key" interface="public key" project="foundation"/>
+        <argument name="signer public key" interface="public key" project="foundation"/>
         <argument name="out" class="buffer"/>
         <return enum="status"/>
     </method>

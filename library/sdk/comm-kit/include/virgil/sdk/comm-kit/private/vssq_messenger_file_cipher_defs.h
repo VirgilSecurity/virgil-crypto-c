@@ -58,14 +58,18 @@
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_recipient_cipher.h>
+#   include <virgil/crypto/foundation/vscf_verifier.h>
 #   include <virgil/crypto/foundation/vscf_key_provider.h>
+#   include <virgil/crypto/foundation/vscf_signer.h>
+#   include <virgil/crypto/foundation/vscf_recipient_cipher.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_key_provider.h>
-#   include <VSCFoundation/vscf_impl.h>
 #   include <VSCFoundation/vscf_recipient_cipher.h>
+#   include <VSCFoundation/vscf_key_provider.h>
+#   include <VSCFoundation/vscf_signer.h>
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_verifier.h>
 #endif
 
 // clang-format on
@@ -103,6 +107,10 @@ struct vssq_messenger_file_cipher_t {
     vscf_key_provider_t *key_provider;
 
     vscf_recipient_cipher_t *recipient_cipher;
+
+    vscf_signer_t *signer;
+
+    vscf_verifier_t *verifier;
 };
 
 

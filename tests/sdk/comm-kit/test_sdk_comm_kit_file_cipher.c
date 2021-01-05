@@ -77,8 +77,7 @@ test__encrypt_decrypt__file_cipher__success(void) {
 
     vsc_buffer_t *file_key =
             vsc_buffer_new_with_capacity(vssq_messenger_file_cipher_init_encryption_out_key_len(file_cipher));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vssq_messenger_file_cipher_init_encryption(file_cipher, owner_private_key,
-                                                   test_data_recipient_cipher_MESSAGE.len, file_key));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vssq_messenger_file_cipher_init_encryption(file_cipher, file_key));
 
     vsc_buffer_t *header_buf =
             vsc_buffer_new_with_capacity(vssq_messenger_file_cipher_start_encryption_out_len(file_cipher));
@@ -92,18 +91,18 @@ test__encrypt_decrypt__file_cipher__success(void) {
 
     vsc_buffer_t *finish_buf =
             vsc_buffer_new_with_capacity(vssq_messenger_file_cipher_finish_encryption_out_len(file_cipher));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vssq_messenger_file_cipher_finish_encryption(file_cipher, finish_buf));
 
-    vsc_buffer_t *footer_buf =
-            vsc_buffer_new_with_capacity(vssq_messenger_file_cipher_finish_encryption_footer_out_len(file_cipher));
-    TEST_ASSERT_EQUAL(
-            vscf_status_SUCCESS, vssq_messenger_file_cipher_finish_encryption_footer(file_cipher, footer_buf));
+    vsc_buffer_t *signature_buf = vsc_buffer_new_with_capacity(
+            vssq_messenger_file_cipher_finish_encryption_signature_len(file_cipher, owner_private_key));
+
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
+            vssq_messenger_file_cipher_finish_encryption(file_cipher, owner_private_key, finish_buf, signature_buf));
 
     //
     // Decrypt
     //
-    TEST_ASSERT_EQUAL(
-            vscf_status_SUCCESS, vssq_messenger_file_cipher_start_decryption(file_cipher, vsc_buffer_data(file_key)));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vssq_messenger_file_cipher_start_decryption(file_cipher,
+                                                   vsc_buffer_data(file_key), vsc_buffer_data(signature_buf)));
 
     vsc_buffer_t *buff_out = vsc_buffer_new_with_capacity(
             vssq_messenger_file_cipher_process_decryption_out_len(file_cipher, vsc_buffer_data(header_buf).len));
@@ -120,11 +119,6 @@ test__encrypt_decrypt__file_cipher__success(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
             vssq_messenger_file_cipher_process_decryption(file_cipher, vsc_buffer_data(finish_buf), buff_out));
 
-    vsc_buffer_reserve_unused(buff_out,
-            vssq_messenger_file_cipher_process_decryption_out_len(file_cipher, vsc_buffer_data(footer_buf).len));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vssq_messenger_file_cipher_process_decryption(file_cipher, vsc_buffer_data(footer_buf), buff_out));
-
     vsc_buffer_reserve_unused(buff_out, vssq_messenger_file_cipher_finish_decryption_out_len(file_cipher));
     TEST_ASSERT_EQUAL(
             vscf_status_SUCCESS, vssq_messenger_file_cipher_finish_decryption(file_cipher, owner_public_key, buff_out));
@@ -138,10 +132,11 @@ test__encrypt_decrypt__file_cipher__success(void) {
     vsc_buffer_destroy(&header_buf);
     vsc_buffer_destroy(&data_buf);
     vsc_buffer_destroy(&finish_buf);
-    vsc_buffer_destroy(&footer_buf);
     vsc_buffer_destroy(&buff_out);
+    vsc_buffer_destroy(&signature_buf);
 
     vssq_messenger_file_cipher_destroy(&file_cipher);
+    vscf_impl_destroy(&owner_private_key);
     vscf_impl_destroy(&owner_public_key);
     vscf_key_provider_destroy(&key_provider);
 }
