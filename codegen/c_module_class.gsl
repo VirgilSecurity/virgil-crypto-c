@@ -314,6 +314,15 @@ function _X13_add_method_init_ctx (class, destination, meta)
 
 
         _X13_add_argument_ctx (my.class, method, my.meta)
+
+        new code to method
+            .type = "stub"
+            . = "\
+                .(c_class_assert_macros_ptr)($(my.names.c_class_argument_ctx));
+
+                //   TODO: Perform initialization.
+            "
+        endnew
     endnew
 endfunction
 
@@ -475,6 +484,8 @@ function _X13_add_method_custom_init_ctx (class, constructor, destination, meta)
         new code to method
             .type = "stub"
             . = "\
+                .(c_class_assert_macros_ptr)($(my.names.c_class_argument_ctx));
+
                 //   TODO: Perform initialization.
             "
         endnew
