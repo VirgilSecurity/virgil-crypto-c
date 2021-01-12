@@ -109,6 +109,46 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_created_file.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_file_download_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_file_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_file_info_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_folder.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_folder_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_folder_info_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_config.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -149,6 +189,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_permission.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_comm_kit_public.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -169,6 +214,26 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_auth.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_auth_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_created_file.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_created_file_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_created_file_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_file_download_info.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_file_download_info_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_file_info.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_file_info_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_file_info_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_file_info_list_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_file_info_list_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_folder.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_folder_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_folder_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_folder_info.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_folder_info_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_folder_info_list.h>"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_folder_info_list_private.h"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_folder_info_list_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_config.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_config_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_contacts.h>"
@@ -195,6 +260,7 @@ target_sources(comm_kit
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_user_list_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_user_list_defs.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_permission.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_comm_kit_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_comm_kit_private.h"
 
@@ -210,6 +276,22 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_auth.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_auth_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_created_file.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_created_file_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_download_info.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_download_info_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_info.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_info_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_info_list.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_info_list_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_folder.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_folder_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_folder_info.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_folder_info_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_folder_info_list.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_folder_info_list_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_config.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONFIG}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_config_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CONTACTS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_contacts.c>"
@@ -231,6 +313,7 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_user_list.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_USER_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_user_list_defs.c>"
             "${CMAKE_CURRENT_LIST_DIR}/src/vssq_status.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_permission.c"
         )
 
 target_include_directories(comm_kit

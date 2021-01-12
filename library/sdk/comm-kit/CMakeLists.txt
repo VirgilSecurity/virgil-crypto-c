@@ -110,7 +110,7 @@ target_include_directories(comm_kit
 #
 # Link to dependencies
 #
-target_link_libraries(comm_kit PUBLIC vsc::core_sdk vsc::pythia_sdk vsc::keyknox_sdk)
+target_link_libraries(comm_kit PUBLIC vsc::core_sdk vsc::pythia_sdk vsc::keyknox_sdk vsc::comm_kit_pb)
 
 #
 # Define specific compilation and linkage flags.

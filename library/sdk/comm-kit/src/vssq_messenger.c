@@ -364,7 +364,10 @@ vssq_messenger_init_ctx(vssq_messenger_t *self) {
     self->config = vssq_messenger_config_new();
     self->auth = vssq_messenger_auth_new_with_config(self->config);
     self->contacts = vssq_messenger_contacts_new();
+    self->cloud_fs = vssq_messenger_cloud_fs_new();
+
     vssq_messenger_contacts_use_auth(self->contacts, self->auth);
+    vssq_messenger_cloud_fs_use_auth(self->cloud_fs, self->auth);
 }
 
 //
@@ -381,6 +384,7 @@ vssq_messenger_cleanup_ctx(vssq_messenger_t *self) {
     vssq_messenger_config_delete(self->config);
     vssq_messenger_auth_delete(self->auth);
     vssq_messenger_contacts_delete(self->contacts);
+    vssq_messenger_cloud_fs_delete(self->cloud_fs);
 }
 
 //
@@ -395,7 +399,10 @@ vssq_messenger_init_ctx_with_config(vssq_messenger_t *self, const vssq_messenger
     self->config = vssq_messenger_config_shallow_copy_const(config);
     self->auth = vssq_messenger_auth_new_with_config(self->config);
     self->contacts = vssq_messenger_contacts_new();
+    self->cloud_fs = vssq_messenger_cloud_fs_new();
+
     vssq_messenger_contacts_use_auth(self->contacts, self->auth);
+    vssq_messenger_cloud_fs_use_auth(self->cloud_fs, self->auth);
 }
 
 //
@@ -1282,6 +1289,18 @@ vssq_messenger_load_group(
     }
 
     return group;
+}
+
+//
+//  Returns module for working with the CLoud FS.
+//
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_t *
+vssq_messenger_cloud_fs(const vssq_messenger_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->cloud_fs);
+
+    return self->cloud_fs;
 }
 
 //

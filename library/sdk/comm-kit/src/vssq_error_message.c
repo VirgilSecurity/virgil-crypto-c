@@ -624,6 +624,34 @@ static const vsc_str_t k_message_contacts_failed_parse_response_failed = {
     sizeof(k_message_contacts_failed_parse_response_failed_chars) - 1
 };
 
+static const char k_message_cloud_fs_failed_send_request_failed_chars[] = "Communicate with Cloud FS failed because send request failed.";
+
+static const vsc_str_t k_message_cloud_fs_failed_send_request_failed = {
+    k_message_cloud_fs_failed_send_request_failed_chars,
+    sizeof(k_message_cloud_fs_failed_send_request_failed_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_response_with_error_chars[] = "Communicate with Cloud FS failed because response with error was returned.";
+
+static const vsc_str_t k_message_cloud_fs_failed_response_with_error = {
+    k_message_cloud_fs_failed_response_with_error_chars,
+    sizeof(k_message_cloud_fs_failed_response_with_error_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_unexpected_content_type_chars[] = "Communicate with Cloud FS failed because met unexpected content type.";
+
+static const vsc_str_t k_message_cloud_fs_failed_unexpected_content_type = {
+    k_message_cloud_fs_failed_unexpected_content_type_chars,
+    sizeof(k_message_cloud_fs_failed_unexpected_content_type_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_parse_response_failed_chars[] = "Communicate with Cloud FS failed because failed to parse response body.";
+
+static const vsc_str_t k_message_cloud_fs_failed_parse_response_failed = {
+    k_message_cloud_fs_failed_parse_response_failed_chars,
+    sizeof(k_message_cloud_fs_failed_parse_response_failed_chars) - 1
+};
+
 //
 //  Return a message string from the given status.
 //
@@ -789,6 +817,14 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_contacts_failed_response_with_error;
         case vssq_status_CONTACTS_FAILED_PARSE_RESPONSE_FAILED:
             return k_message_contacts_failed_parse_response_failed;
+        case vssq_status_CLOUD_FS_FAILED_SEND_REQUEST_FAILED:
+            return k_message_cloud_fs_failed_send_request_failed;
+        case vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR:
+            return k_message_cloud_fs_failed_response_with_error;
+        case vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE:
+            return k_message_cloud_fs_failed_unexpected_content_type;
+        case vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED:
+            return k_message_cloud_fs_failed_parse_response_failed;
         default:
             return k_message_unknown_error;
     }

@@ -1,0 +1,46 @@
+<class name="messenger cloud fs folder info">
+    Value object that handles public available folder info.
+
+    <property name="id" class="str mutable"/>
+    <property name="name" class="str mutable"/>
+    <property name="created at" type="size"/>
+    <property name="updated at" type="size"/>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="id" class="str"/>
+        <argument name="name" class="str"/>
+        <argument name="created at" type="size"/>
+        <argument name="updated at" type="size"/>
+    </constructor>
+
+
+    <method name="id" is_const="1">
+        Return folder id.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="name" is_const="1">
+        Return folder name.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="created at" is_const="1">
+        Return folder "created at" timestamp.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="updated at" is_const="1">
+        Return folder "updated at" timestamp.
+
+        <return type="size"/>
+    </method>
+</class>

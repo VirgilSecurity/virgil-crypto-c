@@ -387,7 +387,23 @@ enum vssq_status_t {
     //
     //  Failed to perform contacts operation because response parsing failed.
     //
-    vssq_status_CONTACTS_FAILED_PARSE_RESPONSE_FAILED = -1403
+    vssq_status_CONTACTS_FAILED_PARSE_RESPONSE_FAILED = -1403,
+    //
+    //  Communicate with Cloud FS failed because send request failed.
+    //
+    vssq_status_CLOUD_FS_FAILED_SEND_REQUEST_FAILED = -1500,
+    //
+    //  Communicate with Cloud FS failed because response with error was returned.
+    //
+    vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR = -1501,
+    //
+    //  Communicate with Cloud FS failed because met unexpected content type.
+    //
+    vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE = -1502,
+    //
+    //  Communicate with Cloud FS failed because failed to parse response body.
+    //
+    vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED = -1503
 };
 #ifndef VSSQ_STATUS_T_DEFINED
 #define VSSQ_STATUS_T_DEFINED

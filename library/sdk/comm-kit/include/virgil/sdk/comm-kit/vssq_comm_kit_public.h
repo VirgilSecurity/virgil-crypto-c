@@ -57,6 +57,7 @@
 #include "vssq_assert.h"
 #include "vssq_library.h"
 #include "vssq_memory.h"
+#include "vssq_messenger_cloud_fs_permission.h"
 #include "vssq_status.h"
 
 #if VSSQ_CONTACT_UTILS
@@ -81,6 +82,38 @@
 
 #if VSSQ_MESSENGER_AUTH
 #   include "vssq_messenger_auth.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS
+#   include "vssq_messenger_cloud_fs.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
+#   include "vssq_messenger_cloud_fs_created_file.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
+#   include "vssq_messenger_cloud_fs_file_download_info.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_FILE_INFO
+#   include "vssq_messenger_cloud_fs_file_info.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
+#   include "vssq_messenger_cloud_fs_file_info_list.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_FOLDER
+#   include "vssq_messenger_cloud_fs_folder.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO
+#   include "vssq_messenger_cloud_fs_folder_info.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
+#   include "vssq_messenger_cloud_fs_folder_info_list.h"
 #endif
 
 #if VSSQ_MESSENGER_CONFIG

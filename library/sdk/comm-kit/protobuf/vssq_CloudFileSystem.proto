@@ -5,13 +5,16 @@ option go_package = ".;protobuf";
 import "google/protobuf/timestamp.proto";
 
 message CreateFileReq {
-    File file = 1;
-    Meta meta = 2;
-    bytes file_private_key = 3;
+    string name = 1;
+    string type = 2;
+    uint64 size = 3;
+    string folder_id = 4;
+    bytes file_encrypted_key = 5;
 }
 
 message CreateFileResp {
-    string upload_link = 1;
+    File file = 1;
+    string upload_link = 2;
 }
 
 message GetFileLinkReq {
@@ -19,17 +22,8 @@ message GetFileLinkReq {
 }
 
 message GetFileLinkResp {
-    string link = 1;
-    bytes file_private_key = 2;
-}
-
-message UpdateFileReq {
-    File file = 1;
-    Meta meta = 2;
-}
-
-message UpdateFileResp {
-    string link = 1;
+    string download_link = 1;
+    bytes file_encrypted_key = 2;
 }
 
 message DeleteFileReq {
@@ -39,19 +33,13 @@ message DeleteFileReq {
 message CreateFolderReq {
     string name = 1;
     string parent_folder_id = 2;
-    bytes folder_private_key = 3;
+    bytes folder_encrypted_key = 3;
     bytes folder_public_key = 4;
     repeated User users = 5;
 }
 
 message CreateFolderResp {
-    string id = 1;
-    string name = 2;
-}
-
-message UpdateFolderReq {
-    string id = 1;
-    string name = 2;
+    Folder folder = 1;
 }
 
 message ListFolderReq {
@@ -62,10 +50,11 @@ message ListFolderReq {
 message ListFolderResp {
     uint64 total_file_count = 1;
     uint64 total_folder_count = 2;
-    repeated File file = 3;
-    repeated Folder folder = 4;
-    bytes folder_private_key = 5;
+    repeated File files = 3;
+    repeated Folder folders = 4;
+    bytes folder_encrypted_key = 5;
     bytes folder_public_key = 6;
+    Folder current_folder = 7;
 }
 
 message DeleteFolderReq {
@@ -77,33 +66,25 @@ message ShareFolderReq {
     string folder_id = 2;
 }
 
-message ShareFolderResp {}
-
 message UnshareFolderReq {
     User user = 1;
     string folder_id = 2;
 }
 
-message UnshareFolderResp {}
-
-
 message File {
-    string name = 1;
-    string type = 2;
-    string id = 3;
+    string id = 1;
+    string name = 2;
+    string type = 3;
+    uint64 size = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
 }
 
 message Folder {
-    string name = 1;
-    string id = 2;
-}
-
-message Meta {
-    google.protobuf.Timestamp created_at = 1;
-    google.protobuf.Timestamp updated_at = 2;
-    uint64 size = 3;
-    string folder_id = 4;
-
+    string id = 1;
+    string name = 2;
+    google.protobuf.Timestamp created_at = 3;
+    google.protobuf.Timestamp updated_at = 4;
 }
 
 message Pagination {

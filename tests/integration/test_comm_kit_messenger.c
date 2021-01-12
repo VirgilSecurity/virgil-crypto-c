@@ -43,6 +43,8 @@
 #if TEST_DEPENDENCIES_AVAILABLE
 
 
+#include "test_comm_kit_utils.h"
+
 #include "vssq_messenger.h"
 #include "vssq_contact_utils.h"
 #include "vssq_error_message.h"
@@ -50,69 +52,6 @@
 #include <virgil/crypto/foundation/vscf_ctr_drbg.h>
 #include <virgil/crypto/foundation/vscf_binary.h>
 
-
-static vsc_str_buffer_t *
-generate_random_username(void) {
-    vscf_ctr_drbg_t *ctr_drbg = vscf_ctr_drbg_new();
-
-    if (vscf_ctr_drbg_setup_defaults(ctr_drbg) != vscf_status_SUCCESS) {
-        TEST_FAIL_MESSAGE("Can not initialize RNG.");
-    }
-
-    const vsc_str_t username_prefix = vsc_str_from_str("test_");
-
-    const size_t random_bytes_len = (vssq_contact_utils_USERNAME_LEN_MAX - username_prefix.len) >> 1;
-    vsc_buffer_t *random_bytes = vsc_buffer_new_with_capacity(random_bytes_len);
-
-    if (vscf_ctr_drbg_random(ctr_drbg, random_bytes_len, random_bytes) != vscf_status_SUCCESS) {
-        TEST_FAIL_MESSAGE("Random failed.");
-    }
-
-    vsc_str_buffer_t *username = vsc_str_buffer_new_with_capacity(vssq_contact_utils_USERNAME_LEN_MAX);
-    vsc_str_buffer_write_str(username, username_prefix);
-
-    vscf_binary_to_hex(vsc_buffer_data(random_bytes), username);
-
-    vsc_buffer_destroy(&random_bytes);
-    vscf_ctr_drbg_destroy(&ctr_drbg);
-
-    return username;
-}
-
-
-static vssq_messenger_t *
-create_messenger(void) {
-    //
-    //  Configure.
-    //
-    vsc_str_t base_url = vsc_str_from_str("https://messenger-dev.virgilsecurity.com");
-    vsc_str_t contact_discovery_url = vsc_str_from_str("https://disco-dev-va.virgilsecurity.com");
-    vsc_str_t ejabberd_url = vsc_str_from_str("xmpp-dev.virgilsecurity.com");
-
-    vssq_messenger_config_t *config = vssq_messenger_config_new_with(base_url, contact_discovery_url, ejabberd_url);
-
-    vssq_messenger_t *messenger = vssq_messenger_new_with_config(config);
-    const vssq_status_t status = vssq_messenger_setup_defaults(messenger);
-    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, status, vssq_error_message_from_status(status).chars);
-
-    vssq_messenger_config_destroy(&config);
-
-    return messenger;
-}
-
-static vssq_messenger_t *
-create_messenger_and_register_user(void) {
-
-    vssq_messenger_t *messenger = create_messenger();
-    vsc_str_buffer_t *username = generate_random_username();
-
-    const vssq_status_t status = vssq_messenger_register(messenger, vsc_str_buffer_str(username));
-    TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, status, vssq_error_message_from_status(status).chars);
-
-    vsc_str_buffer_destroy(&username);
-
-    return messenger;
-}
 
 void
 test__messenger_register__random_user__success(void) {

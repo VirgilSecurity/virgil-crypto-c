@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger cloud fs folder' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,37 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'messenger' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSSQ_MESSENGER_DEFS_H_INCLUDED
-#define VSSQ_MESSENGER_DEFS_H_INCLUDED
-
-#include "vssq_library.h"
-#include "vssq_atomic.h"
-#include "vssq_messenger_config.h"
-#include "vssq_messenger_auth.h"
-#include "vssq_messenger_contacts.h"
-#include "vssq_messenger_cloud_fs.h"
-
-#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
+#include "vssq_messenger_cloud_fs_folder_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -83,45 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'messenger' context.
-//
-struct vssq_messenger_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssq_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSQ_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-
-    const vssq_messenger_config_t *config;
-
-    vssq_messenger_auth_t *auth;
-
-    vssq_messenger_contacts_t *contacts;
-
-    vssq_messenger_cloud_fs_t *cloud_fs;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSQ_MESSENGER_DEFS_H_INCLUDED
 //  @end

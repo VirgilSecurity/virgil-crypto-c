@@ -14,6 +14,7 @@
     <property name="config" class="messenger config" access="readonly"/>
     <property name="auth" class="messenger auth"/>
     <property name="contacts" class="messenger contacts"/>
+    <property name="cloud fs" class="messenger cloud fs"/>
 
     <dependency name="random" interface="random" project="foundation" has_observers="1"/>
 
@@ -366,6 +367,14 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="messenger group" access="disown"/>
+    </method>
+
+
+    <!-- Working with Cloud FS -->
+    <method name="cloud fs" is_const="1">
+        Returns module for working with the CLoud FS.
+
+        <return class="messenger cloud fs"/>
     </method>
 
     <!-- Helpers -->

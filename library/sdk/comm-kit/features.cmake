@@ -62,6 +62,14 @@ option(VSSQ_MESSENGER_GROUP_EPOCH "Enable class 'messenger group epoch'." ON)
 option(VSSQ_MESSENGER_GROUP_EPOCH_LIST "Enable class 'messenger group epoch list'." ON)
 option(VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE "Enable class 'messenger group epoch keyknox storage'." ON)
 option(VSSQ_MESSENGER_FILE_CIPHER "Enable class 'messenger file cipher'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS "Enable class 'messenger cloud fs'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE "Enable class 'messenger cloud fs created file'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_FOLDER "Enable class 'messenger cloud fs folder'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO "Enable class 'messenger cloud fs folder info'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST "Enable class 'messenger cloud fs folder info list'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_FILE_INFO "Enable class 'messenger cloud fs file info'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST "Enable class 'messenger cloud fs file info list'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO "Enable class 'messenger cloud fs file download info'." ON)
 option(VSSQ_CONTACT_UTILS "Enable class 'contact utils'." ON)
 mark_as_advanced(
         VSSQ_LIBRARY
@@ -81,6 +89,14 @@ mark_as_advanced(
         VSSQ_MESSENGER_GROUP_EPOCH_LIST
         VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
         VSSQ_MESSENGER_FILE_CIPHER
+        VSSQ_MESSENGER_CLOUD_FS
+        VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
+        VSSQ_MESSENGER_CLOUD_FS_FOLDER
+        VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO
+        VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
+        VSSQ_MESSENGER_CLOUD_FS_FILE_INFO
+        VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
+        VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
         VSSQ_CONTACT_UTILS
         )
 
@@ -926,6 +942,69 @@ if(VSSQ_MESSENGER_FILE_CIPHER AND NOT VSSQ_ERROR)
     message("--")
     message("Feature VSSQ_MESSENGER_FILE_CIPHER depends on the feature:")
     message("     VSSQ_ERROR - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSC_STR_MUTABLE)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSC_STR_MUTABLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSC_UNIX_TIME)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSC_UNIX_TIME - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSC_VIRGIL_HTTP_CLIENT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSC_VIRGIL_HTTP_CLIENT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_MESSENGER_CLOUD_FS_FOLDER)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSQ_MESSENGER_CLOUD_FS_FOLDER - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

@@ -316,4 +316,20 @@
     <constant name="contacts failed parse response failed" value="-1403">
         Failed to perform contacts operation because response parsing failed.
     </constant>
+
+    <constant name="cloud fs failed send request failed" value="-1500">
+        Communicate with Cloud FS failed because send request failed.
+    </constant>
+
+    <constant name="cloud fs failed response with error" value="-1501">
+        Communicate with Cloud FS failed because response with error was returned.
+    </constant>
+
+    <constant name="cloud fs failed unexpected content type" value="-1502">
+        Communicate with Cloud FS failed because met unexpected content type.
+    </constant>
+
+    <constant name="cloud fs failed parse response failed" value="-1503">
+        Communicate with Cloud FS failed because failed to parse response body.
+    </constant>
 </enum>

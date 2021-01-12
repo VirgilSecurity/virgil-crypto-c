@@ -1,0 +1,159 @@
+<class name="messenger cloud fs">
+    This class provides access to the messenger Cloud File System,
+    that is used to store attachments and share them among users and chats.
+
+    <require header="vssq_CloudFileSystem.pb.h"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
+
+    <require class="str mutable" project="common"/>
+    <require class="unix time" project="core sdk"/>
+    <require class="virgil http client" project="core sdk"/>
+    <require class="messenger cloud fs created file" api="private"/>
+    <require class="messenger cloud fs file info list" api="private"/>
+    <require class="messenger cloud fs folder info list" api="private"/>
+    <require class="messenger cloud fs folder" api="private"/>
+
+    <dependency name="auth" class="messenger auth"/>
+
+    <!-- HTTP header values -->
+    <constant name="k header value content type protobuf" type="string" visibility="private">
+        <value value="application/protobuf"/>
+    </constant>
+
+    <!-- URL paths -->
+    <constant name="k url path file create" type="string" visibility="private">
+        <value value="/file/create"/>
+    </constant>
+
+    <constant name="k url path file get download link" type="string" visibility="private">
+        <value value="/file/get-download-link"/>
+    </constant>
+
+    <constant name="k url path file delete" type="string" visibility="private">
+        <value value="/file/delete"/>
+    </constant>
+
+    <constant name="k url path folder create" type="string" visibility="private">
+        <value value="/folder/create"/>
+    </constant>
+
+    <constant name="k url path folder list" type="string" visibility="private">
+        <value value="/folder/list"/>
+    </constant>
+
+    <constant name="k url path folder delete" type="string" visibility="private">
+        <value value="/folder/delete"/>
+    </constant>
+
+
+    <!-- Endpoints -->
+    <method name="create file" is_const="1">
+        Create a new file within the Cloud FS.
+        Note, if folder id is empty then file created in a root folder.
+
+        <argument name="name" class="str"/>
+        <argument name="type" class="str"/>
+        <argument name="size" type="size"/>
+        <argument name="folder id" class="str"/>
+        <argument name="file encrypted key" class="data"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs created file" access="disown"/>
+    </method>
+
+
+    <method name="get download link" is_const="1">
+        Get a file download link.
+
+        <argument name="id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs file download info" access="disown"/>
+    </method>
+
+
+    <method name="delete file" is_const="1">
+        Delete existing file.
+
+        <argument name="id" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="create folder" is_const="1">
+        Create a new folder within the Cloud FS.
+        Note, if parent folder id is empty then folder created in a root folder.
+
+        <argument name="name" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="parent folder id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
+    <method name="list folder" is_const="1">
+        List content of requested folder.
+        Note, if folder id is empty then a root folder will be listed.
+
+        <argument name="id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder" access="disown"/>
+    </method>
+
+
+    <method name="delete folder" is_const="1">
+        Delete existing folder.
+
+        <argument name="id" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <!-- Helpers -->
+    <method name="create request" is_const="1" declaration="private">
+        Return request based on the given endpoint and body.
+
+        <argument name="endpoint" class="str"/>
+        <argument name="body" class="data"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="check response" is_static="1" declaration="private">
+        Check given response for errors and return true if success.
+        If error then convert error and return false.
+
+        <argument name="http response" class="http response" project="core sdk"/>
+        <argument name="error" class="error"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="parse file info" is_static="1" declaration="private">
+        Parse protobuf structure "vssq_pb.File"
+
+        <argument name="pb file" class="vssq_pb_File" library="comm_kit_pb"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs file info" access="disown"/>
+    </method>
+
+
+    <method name="parse folder info" is_static="1" declaration="private">
+        Parse protobuf structure "vssq_pb.Folder"
+
+        <argument name="pb folder" class="vssq_pb_Folder" library="comm_kit_pb"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+</class>

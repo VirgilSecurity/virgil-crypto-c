@@ -47,100 +47,11 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This is an umbrella header that includes library private headers.
+//  Set of file/folder permissions within the Cloud FS.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
-#define VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
-
-#include "vssq_platform.h"
-#include "vssq_atomic.h"
-#include "vssq_messenger_cloud_fs_created_file_private.h"
-#include "vssq_messenger_cloud_fs_file_info_list_private.h"
-#include "vssq_messenger_cloud_fs_folder_info_list_private.h"
-#include "vssq_messenger_cloud_fs_folder_private.h"
-#include "vssq_messenger_creds_private.h"
-#include "vssq_messenger_group_epoch_list_private.h"
-#include "vssq_messenger_group_private.h"
-#include "vssq_messenger_user_list_private.h"
-#include "vssq_messenger_user_private.h"
-
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt_defs.h"
-#endif
-
-#if VSSQ_MESSENGER
-#   include "vssq_messenger_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS
-#   include "vssq_messenger_cloud_fs_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
-#   include "vssq_messenger_cloud_fs_created_file_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
-#   include "vssq_messenger_cloud_fs_file_download_info_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FILE_INFO
-#   include "vssq_messenger_cloud_fs_file_info_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
-#   include "vssq_messenger_cloud_fs_file_info_list_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FOLDER
-#   include "vssq_messenger_cloud_fs_folder_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO
-#   include "vssq_messenger_cloud_fs_folder_info_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
-#   include "vssq_messenger_cloud_fs_folder_info_list_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_CONTACTS
-#   include "vssq_messenger_contacts_defs.h"
-#   include "vssq_messenger_contacts.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_FILE_CIPHER
-#   include "vssq_messenger_file_cipher_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_GROUP
-#   include "vssq_messenger_group_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_GROUP_EPOCH_LIST
-#   include "vssq_messenger_group_epoch_list_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user_defs.h"
-#endif
-
-#if VSSQ_MESSENGER_USER_LIST
-#   include "vssq_messenger_user_list_defs.h"
-#endif
+#ifndef VSSQ_MESSENGER_CLOUD_FS_PERMISSION_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_PERMISSION_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -157,6 +68,28 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Set of file/folder permissions within the Cloud FS.
+//
+enum vssq_messenger_cloud_fs_permission_t {
+    //
+    //  Users with this permission can perform next operations:
+    //      - folder: create, delete, read, update, share.
+    //      - file: create, delete, read, update, share.
+    //
+    vssq_messenger_cloud_fs_permission_ADMIN = 1,
+    //
+    //  Users with this permission can perform next operations:
+    //      - folder: ??.
+    //      - file: ??.
+    //
+    vssq_messenger_cloud_fs_permission_USER = 2
+};
+#ifndef VSSQ_MESSENGER_CLOUD_FS_PERMISSION_T_DEFINED
+#define VSSQ_MESSENGER_CLOUD_FS_PERMISSION_T_DEFINED
+    typedef enum vssq_messenger_cloud_fs_permission_t vssq_messenger_cloud_fs_permission_t;
+#endif // VSSQ_MESSENGER_CLOUD_FS_PERMISSION_T_DEFINED
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -171,5 +104,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PRIVATE_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_PERMISSION_H_INCLUDED
 //  @end

@@ -62,6 +62,7 @@
 #include "vssq_messenger_auth.h"
 #include "vssq_messenger_user_list.h"
 #include "vssq_messenger_group.h"
+#include "vssq_messenger_cloud_fs.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 
@@ -429,6 +430,12 @@ vssq_messenger_create_group(const vssq_messenger_t *self, vsc_str_t group_id,
 VSSQ_PUBLIC vssq_messenger_group_t *
 vssq_messenger_load_group(const vssq_messenger_t *self, vsc_str_t group_id, const vssq_messenger_user_t *owner,
         vssq_error_t *error);
+
+//
+//  Returns module for working with the CLoud FS.
+//
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_t *
+vssq_messenger_cloud_fs(const vssq_messenger_t *self);
 
 
 // --------------------------------------------------------------------------
