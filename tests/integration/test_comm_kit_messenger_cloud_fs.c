@@ -99,10 +99,10 @@ test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
     TEST_ASSERT_EQUAL(file_size, created_file_size);
 
     size_t created_file_created_at = vssq_messenger_cloud_fs_file_info_created_at(file_info);
-    TEST_ASSERT_GREATER_THAN(now, created_file_created_at);
+    TEST_ASSERT_GREATER_OR_EQUAL(now, created_file_created_at);
 
     size_t created_file_updated_at = vssq_messenger_cloud_fs_file_info_updated_at(file_info);
-    TEST_ASSERT_GREATER_THAN(now, created_file_updated_at);
+    TEST_ASSERT_GREATER_OR_EQUAL(now, created_file_updated_at);
 
     //
     //  Delete file.
@@ -219,10 +219,10 @@ test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_u
     TEST_ASSERT_EQUAL_STR(folder_name, created_folder_name);
 
     size_t created_folder_created_at = vssq_messenger_cloud_fs_folder_info_created_at(folder_info);
-    TEST_ASSERT_GREATER_THAN(now, created_folder_created_at);
+    TEST_ASSERT_GREATER_OR_EQUAL(now, created_folder_created_at);
 
     size_t created_folder_updated_at = vssq_messenger_cloud_fs_folder_info_updated_at(folder_info);
-    TEST_ASSERT_GREATER_THAN(now, created_folder_updated_at);
+    TEST_ASSERT_GREATER_OR_EQUAL(now, created_folder_updated_at);
 
     //
     //  Delete folder.
