@@ -81,6 +81,10 @@
 #   include "vssq_messenger_cloud_fs_defs.h"
 #endif
 
+#if VSSQ_MESSENGER_CLOUD_FS_CIPHER
+#   include "vssq_messenger_cloud_fs_cipher_defs.h"
+#endif
+
 #if VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
 #   include "vssq_messenger_cloud_fs_created_file_defs.h"
 #endif

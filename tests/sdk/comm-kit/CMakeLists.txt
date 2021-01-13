@@ -57,4 +57,5 @@ macro(_add_test test)
     endif()
 endmacro()
 
-_add_test(test_sdk_comm_kit_file_cipher)
+_add_test(test_sdk_comm_kit_messenger_file_cipher)
+_add_test(test_sdk_comm_kit_messenger_cloud_fs_cipher)

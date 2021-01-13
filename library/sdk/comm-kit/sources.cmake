@@ -114,6 +114,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_cipher.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_created_file.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -216,6 +221,8 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_auth_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_defs.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_cipher.h>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_cipher_defs.h>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/vssq_messenger_cloud_fs_created_file.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_created_file_private.h"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/comm-kit/private/vssq_messenger_cloud_fs_created_file_defs.h>"
@@ -278,6 +285,8 @@ target_sources(comm_kit
             "$<$<BOOL:${VSSQ_MESSENGER_AUTH}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_auth_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_defs.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_cipher.c>"
+            "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_cipher_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_created_file.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_created_file_defs.c>"
             "$<$<BOOL:${VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vssq_messenger_cloud_fs_file_download_info.c>"

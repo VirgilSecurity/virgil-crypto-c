@@ -60,6 +60,7 @@
     <class name="messenger cloud fs file info"/>
     <class name="messenger cloud fs file info list"/>
     <class name="messenger cloud fs file download info"/>
+    <class name="messenger cloud fs cipher"/>
     <enum name="messenger cloud fs permission"/>
 
     <!-- Contact discovery -->
