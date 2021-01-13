@@ -118,6 +118,71 @@ test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
 }
 
 void
+test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create file.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+    vsc_str_t file_name = vsc_str_from_str("hello.txt");
+    vsc_str_t file_type = vsc_str_from_str("text/plain");
+    size_t file_size = 1024;
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
+
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
+            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+    TEST_ASSERT_NOT_NULL(created_file);
+
+    const vssq_messenger_cloud_fs_file_info_t *file_info = vssq_messenger_cloud_fs_created_file_info(created_file);
+    TEST_ASSERT_NOT_NULL(file_info);
+
+    vsc_str_t created_file_id = vssq_messenger_cloud_fs_file_info_id(file_info);
+
+    //
+    //  Get download link.
+    //
+    vssq_messenger_cloud_fs_file_download_info_t *download_info =
+            vssq_messenger_cloud_fs_get_download_link(cloud_fs, created_file_id, &error);
+
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+    TEST_ASSERT_NOT_NULL(download_info);
+
+    //
+    //  Check.
+    //
+
+    vsc_str_t download_link = vssq_messenger_cloud_fs_file_download_info_link(download_info);
+    TEST_ASSERT_GREATER_THAN(0, download_link.len);
+
+    vsc_data_t file_encrypted_key = vssq_messenger_cloud_fs_file_download_info_file_encrypted_key(download_info);
+    TEST_ASSERT_EQUAL_DATA(file_encrypted_key, fake_encrypted_key);
+
+    //
+    //  Delete file.
+    //
+    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+    vssq_messenger_cloud_fs_created_file_destroy(&created_file);
+    vssq_messenger_cloud_fs_file_download_info_destroy(&download_info);
+}
+
+void
 test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_upload_link(void) {
     //
     //  Create messenger with random user.
@@ -183,6 +248,7 @@ main(void) {
 
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link);
+    RUN_TEST(test__messenger_cloud_fs_get_download_link__of_created_file__success);
     RUN_TEST(test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
 
 #else
