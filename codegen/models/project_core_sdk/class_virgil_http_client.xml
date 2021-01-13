@@ -9,6 +9,7 @@
     <require impl="http client x" is_optional="1"/>
 
     <require header="stdio.h" is_system="1" if_feature="virgil http client debug"/>
+    <require header="ctype.h" is_system="1" if_feature="virgil http client debug"/>
 
     <feature name="debug" default="off"/>
 

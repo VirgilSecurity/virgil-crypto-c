@@ -183,9 +183,9 @@ vssc_http_client_x_send(vssc_http_client_x_t *self, const vssc_http_request_t *h
         [request setValue:header_value_objc forHTTPHeaderField:header_name_objc];
     }
 
-    vsc_str_t body = vssc_http_request_body(http_request);
-    if (!vsc_str_is_empty(body)) {
-        [request setHTTPBody:[NSData dataWithBytes:body.chars length:body.len]];
+    vsc_data_t body = vssc_http_request_body(http_request);
+    if (!vsc_data_is_empty(body)) {
+        [request setHTTPBody:[NSData dataWithBytes:body.bytes length:body.len]];
     }
 
     //
@@ -227,8 +227,7 @@ vssc_http_client_x_send(vssc_http_client_x_t *self, const vssc_http_request_t *h
     if (nil == data || 0 == data.length) {
         http_response = vssc_http_response_new_with_status((size_t)status_code);
     } else {
-        // TODO: Check if body is a string.
-        vsc_str_t response_body = vsc_str((const char *)data.bytes, (size_t)data.length);
+        vsc_data_t response_body = vsc_data((const byte *)data.bytes, (size_t)data.length);
         http_response = vssc_http_response_new_with_body((size_t)status_code, response_body);
     }
 

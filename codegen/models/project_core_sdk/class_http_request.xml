@@ -3,7 +3,7 @@
 
     <property name="method" class="str mutable"/>
     <property name="url" class="str mutable"/>
-    <property name="body" class="str mutable"/>
+    <property name="body" class="buffer"/>
     <property name="auth header value" class="str mutable"/>
     <property name="headers" class="http header list"/>
 
@@ -49,7 +49,7 @@
 
         <argument name="method" class="str"/>
         <argument name="url" class="str"/>
-        <argument name="body" class="str"/>
+        <argument name="body" class="data"/>
     </constructor>
 
 
@@ -85,7 +85,7 @@
     <method name="body" is_const="1">
         Return HTTP body.
 
-        <return class="str"/>
+        <return class="data"/>
     </method>
 
 

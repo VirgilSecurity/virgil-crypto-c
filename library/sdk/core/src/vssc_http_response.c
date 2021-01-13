@@ -58,7 +58,7 @@
 #include "vssc_http_response_defs.h"
 #include "vssc_json_object.h"
 
-#include <virgil/crypto/common/vsc_str_buffer.h>
+#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end
@@ -96,7 +96,7 @@ vssc_http_response_init_ctx_with_status(vssc_http_response_t *self, size_t statu
 //  Create response with a status and body.
 //
 static void
-vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body);
+vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body);
 
 static const char k_json_key_service_error_code_chars[] = "code";
 
@@ -205,7 +205,7 @@ vssc_http_response_new_with_status(size_t status_code) {
 //  Create response with a status and body.
 //
 VSSC_PUBLIC void
-vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body) {
+vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -221,7 +221,7 @@ vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code
 //  Create response with a status and body.
 //
 VSSC_PUBLIC vssc_http_response_t *
-vssc_http_response_new_with_body(size_t status_code, vsc_str_t body) {
+vssc_http_response_new_with_body(size_t status_code, vsc_data_t body) {
 
     vssc_http_response_t *self = (vssc_http_response_t *) vssc_alloc(sizeof (vssc_http_response_t));
     VSSC_ASSERT_ALLOC(self);
@@ -353,7 +353,7 @@ vssc_http_response_cleanup_ctx(vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_buffer_destroy(&self->body);
+    vsc_buffer_destroy(&self->body);
     vssc_json_object_destroy(&self->body_json_object);
     vssc_json_array_destroy(&self->body_json_array);
     vssc_http_header_list_destroy(&self->headers);
@@ -376,7 +376,7 @@ vssc_http_response_init_ctx_with_status(vssc_http_response_t *self, size_t statu
 //  Create response with a status and body.
 //
 static void
-vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body) {
+vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -400,12 +400,12 @@ vssc_http_response_set_status(vssc_http_response_t *self, size_t status_code) {
 //  Set HTTP body.
 //
 VSSC_PUBLIC void
-vssc_http_response_set_body(vssc_http_response_t *self, vsc_str_t body) {
+vssc_http_response_set_body(vssc_http_response_t *self, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(body));
+    VSSC_ASSERT(vsc_data_is_valid_and_non_empty(body));
 
-    vsc_str_buffer_t *body_buffer = vsc_str_buffer_new_with_str(body);
+    vsc_buffer_t *body_buffer = vsc_buffer_new_with_data(body);
     vssc_http_response_set_body_disown(self, &body_buffer);
 }
 
@@ -413,16 +413,16 @@ vssc_http_response_set_body(vssc_http_response_t *self, vsc_str_t body) {
 //  Set HTTP body.
 //
 VSSC_PUBLIC void
-vssc_http_response_set_body_disown(vssc_http_response_t *self, vsc_str_buffer_t **body_ref) {
+vssc_http_response_set_body_disown(vssc_http_response_t *self, vsc_buffer_t **body_ref) {
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_REF(body_ref);
-    VSSC_ASSERT(vsc_str_buffer_is_valid(*body_ref));
+    VSSC_ASSERT(vsc_buffer_is_valid(*body_ref));
 
     self->body = *body_ref;
     *body_ref = NULL;
 
-    vsc_str_t body = vsc_str_buffer_str(self->body);
+    vsc_str_t body = vsc_str_from_data(vsc_buffer_data(self->body));
 
     if (!vsc_str_is_empty(body)) {
         self->body_json_object = vssc_json_object_parse(body, NULL);
@@ -472,15 +472,15 @@ vssc_http_response_status_code(const vssc_http_response_t *self) {
 //
 //  Return HTTP body.
 //
-VSSC_PUBLIC vsc_str_t
+VSSC_PUBLIC vsc_data_t
 vssc_http_response_body(const vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
     if (NULL == self->body) {
-        return vsc_str_empty();
+        return vsc_data_empty();
     } else {
-        return vsc_str_buffer_str(self->body);
+        return vsc_buffer_data(self->body);
     }
 }
 

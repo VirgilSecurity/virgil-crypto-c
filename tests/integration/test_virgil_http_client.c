@@ -59,7 +59,7 @@ test__send__with_stale_jwt__returns_response_with_service_error(void) {
     TEST_ASSERT_NOT_NULL(jwt);
 
     vssc_http_request_t *request = vssc_http_request_new_with_body(vssc_http_request_method_post,
-            test_data_virgil_http_client_HTTP_URL, test_data_virgil_http_client_HTTP_BODY);
+            test_data_virgil_http_client_HTTP_URL, vsc_str_as_data(test_data_virgil_http_client_HTTP_BODY));
 
     vssc_http_request_add_header(request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 

@@ -575,7 +575,7 @@ vssq_messenger_contacts_add_phone_number(const vssq_messenger_contacts_t *self, 
     request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_phone_add);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 
@@ -663,7 +663,7 @@ vssq_messenger_contacts_confirm_phone_number(
     request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_phone_confirm);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 
@@ -736,7 +736,7 @@ vssq_messenger_contacts_delete_phone_number(const vssq_messenger_contacts_t *sel
     request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_phone_delete);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 
@@ -856,7 +856,7 @@ vssq_messenger_contacts_add_email(const vssq_messenger_contacts_t *self, vsc_str
     request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_email_add);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 
@@ -942,7 +942,7 @@ vssq_messenger_contacts_confirm_email(
     request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_email_confirm);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 
@@ -1013,7 +1013,7 @@ vssq_messenger_contacts_delete_email(const vssq_messenger_contacts_t *self, vsc_
     request_url = vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), k_url_path_email_delete);
 
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 
@@ -1130,7 +1130,7 @@ vssq_messenger_contacts_generic_discover(const vssq_messenger_contacts_t *self,
     request_url =
             vsc_str_mutable_concat(vssq_messenger_config_contact_discovery_url(config), contacts_discovery_url_path);
     http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(http_request_json));
+            vsc_str_as_data(vssc_json_object_as_str(http_request_json)));
 
     vsc_str_mutable_release(&request_url);
 

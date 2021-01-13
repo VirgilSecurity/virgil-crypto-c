@@ -60,10 +60,12 @@
 #include "vssc_json_array.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_str.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_str.h>
 #endif
 
@@ -133,14 +135,14 @@ vssc_http_response_new_with_status(size_t status_code);
 //  Create response with a status and body.
 //
 VSSC_PUBLIC void
-vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body);
+vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create response with a status and body.
 //
 VSSC_PUBLIC vssc_http_response_t *
-vssc_http_response_new_with_body(size_t status_code, vsc_str_t body);
+vssc_http_response_new_with_body(size_t status_code, vsc_data_t body);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -179,7 +181,7 @@ vssc_http_response_set_status(vssc_http_response_t *self, size_t status_code);
 //  Set HTTP body.
 //
 VSSC_PUBLIC void
-vssc_http_response_set_body(vssc_http_response_t *self, vsc_str_t body);
+vssc_http_response_set_body(vssc_http_response_t *self, vsc_data_t body);
 
 //
 //  Add HTTP header.
@@ -202,7 +204,7 @@ vssc_http_response_status_code(const vssc_http_response_t *self);
 //
 //  Return HTTP body.
 //
-VSSC_PUBLIC vsc_str_t
+VSSC_PUBLIC vsc_data_t
 vssc_http_response_body(const vssc_http_response_t *self);
 
 //

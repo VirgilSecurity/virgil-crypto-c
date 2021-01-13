@@ -409,7 +409,7 @@ vssp_pythia_client_make_request_generate_seed_with_id(
         vssc_json_object_add_string_value(json_obj, k_json_key_brainkey_id, brain_key_id);
     }
 
-    vsc_str_t body = vssc_json_object_as_str(json_obj);
+    vsc_data_t body = vsc_str_as_data(vssc_json_object_as_str(json_obj));
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
             vssc_http_request_method_post, vsc_str_mutable_as_str(self->brain_key_url), body);

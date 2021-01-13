@@ -806,8 +806,9 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
 
     request_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), k_url_path_signup);
 
-    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(request_url),
-            vssc_json_object_as_str(register_raw_card_json));
+    vsc_str_t http_request_body = vssc_json_object_as_str(register_raw_card_json);
+    http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post, vsc_str_mutable_as_str(request_url), vsc_str_as_data(http_request_body));
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
@@ -1473,7 +1474,7 @@ vssq_messenger_auth_refresh_virgil_jwt_with_password(
     //
     //  Get token.
     //
-    token_json = vssc_json_object_parse(vssc_http_response_body(http_response), &core_sdk_error);
+    token_json = vssc_json_object_parse(vsc_str_from_data(vssc_http_response_body(http_response)), &core_sdk_error);
 
     if (vssc_error_has_error(&core_sdk_error)) {
         vssq_error_update(&error, vssq_status_REFRESH_JWT_FAILED_PARSE_RESPONSE_FAILED);
@@ -1748,8 +1749,8 @@ vssq_messenger_auth_reset_sign_in_password(const vssq_messenger_auth_t *self, vs
     vssc_json_object_add_binary_value(body_json, k_json_key_password, pwd);
 
     auth_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), k_url_path_set_password);
-    http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url), vssc_json_object_as_str(body_json));
+    http_request = vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url),
+            vsc_str_as_data(vssc_json_object_as_str(body_json)));
 
     vssc_json_object_destroy(&body_json);
 

@@ -474,7 +474,7 @@ vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_s
     //
     //  Parse response.
     //
-    vsc_data_t body = vsc_str_as_data(vssc_http_response_body(response));
+    vsc_data_t body = vssc_http_response_body(response);
     if (vsc_data_is_empty(body)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
@@ -569,7 +569,7 @@ vssq_messenger_cloud_fs_get_download_link(const vssq_messenger_cloud_fs_t *self,
     //
     //  Parse response.
     //
-    vsc_data_t body = vsc_str_as_data(vssc_http_response_body(response));
+    vsc_data_t body = vssc_http_response_body(response);
     if (vsc_data_is_empty(body)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
@@ -753,7 +753,7 @@ vssq_messenger_cloud_fs_create_folder(const vssq_messenger_cloud_fs_t *self, vsc
     //
     //  Parse response.
     //
-    vsc_data_t body = vsc_str_as_data(vssc_http_response_body(response));
+    vsc_data_t body = vssc_http_response_body(response);
     if (vsc_data_is_empty(body)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
@@ -845,7 +845,7 @@ vssq_messenger_cloud_fs_list_folder(const vssq_messenger_cloud_fs_t *self, vsc_s
     //
     //  Parse response.
     //
-    vsc_data_t body = vsc_str_as_data(vssc_http_response_body(response));
+    vsc_data_t body = vssc_http_response_body(response);
     if (vsc_data_is_empty(body)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
         goto cleanup;
@@ -1004,8 +1004,8 @@ vssq_messenger_cloud_fs_create_request(const vssq_messenger_cloud_fs_t *self, vs
     vsc_str_t base_url = vssq_messenger_config_messenger_url(vssq_messenger_auth_config(self->auth));
     vsc_str_mutable_t url = vsc_str_mutable_concat(base_url, endpoint);
 
-    vssc_http_request_t *request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(url), vsc_str_from_data(body));
+    vssc_http_request_t *request =
+            vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(url), body);
 
     vssc_http_request_add_header(request, vssc_http_header_name_content_type, k_header_value_content_type_protobuf);
 
@@ -1031,7 +1031,7 @@ vssq_messenger_cloud_fs_check_response(const vssc_http_response_t *http_response
         return false;
     }
 
-    vsc_data_t body = vsc_str_as_data(vssc_http_response_body(http_response));
+    vsc_data_t body = vssc_http_response_body(http_response);
 
     if (!vsc_data_is_empty(body)) {
         const vsc_str_t content_type =

@@ -58,10 +58,12 @@
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str.h>
+#   include <VSCCommon/vsc_data.h>
 #endif
 
 // clang-format on
@@ -170,14 +172,14 @@ vssc_http_request_new_with_url(vsc_str_t method, vsc_str_t url);
 //  Create HTTP request with URL and body.
 //
 VSSC_PUBLIC void
-vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body);
+vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create HTTP request with URL and body.
 //
 VSSC_PUBLIC vssc_http_request_t *
-vssc_http_request_new_with_body(vsc_str_t method, vsc_str_t url, vsc_str_t body);
+vssc_http_request_new_with_body(vsc_str_t method, vsc_str_t url, vsc_data_t body);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -227,7 +229,7 @@ vssc_http_request_url(const vssc_http_request_t *self);
 //
 //  Return HTTP body.
 //
-VSSC_PUBLIC vsc_str_t
+VSSC_PUBLIC vsc_data_t
 vssc_http_request_body(const vssc_http_request_t *self);
 
 //

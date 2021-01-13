@@ -86,7 +86,7 @@ vssc_http_client_curl_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buf
 //  Callback for CURL body writing function.
 //
 static size_t
-vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vsc_str_buffer_t *body_buffer);
+vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vsc_buffer_t *body_buffer);
 
 //
 //  Callback for CURL header writing function.
@@ -174,16 +174,16 @@ vssc_http_client_curl_format_header(vsc_str_t name, vsc_str_t value, vsc_str_buf
 //  Callback for CURL body writing function.
 //
 static size_t
-vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vsc_str_buffer_t *body_buffer) {
+vssc_http_client_curl_write_recevied_data(void *ptr, size_t size, size_t nmemb, vsc_buffer_t *body_buffer) {
 
     VSSC_ASSERT_PTR(ptr);
     VSSC_ASSERT_PTR(body_buffer);
 
     const size_t total_len = size * nmemb;
 
-    vsc_str_t str = vsc_str((const char *)ptr, total_len);
+    vsc_data_t str = vsc_data((const byte *)ptr, total_len);
 
-    vsc_str_buffer_append_str(body_buffer, str);
+    vsc_buffer_append_data(body_buffer, str);
 
     return total_len;
 }
@@ -345,15 +345,16 @@ vssc_http_client_curl_send(
     //
     //  Set body.
     //
-    vsc_str_t body = vssc_http_request_body(http_request);
-    if (!vsc_str_is_empty(body)) {
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.chars);
+    vsc_data_t body = vssc_http_request_body(http_request);
+    if (!vsc_data_is_empty(body)) {
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.bytes);
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.len);
     }
     //
     //  Set callbacks to build response.
     //
     vssc_http_response_t *response = vssc_http_response_new();
-    vsc_str_buffer_t *body_buffer = vsc_str_buffer_new();
+    vsc_buffer_t *body_buffer = vsc_buffer_new();
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, vssc_http_client_curl_write_recevied_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, body_buffer);
@@ -377,10 +378,10 @@ vssc_http_client_curl_send(
 
     vssc_http_response_set_status(response, response_code);
 
-    if (vsc_str_buffer_is_valid(body_buffer)) {
+    if (vsc_buffer_is_valid(body_buffer)) {
         vssc_http_response_set_body_disown(response, &body_buffer);
     } else {
-        vsc_str_buffer_destroy(&body_buffer);
+        vsc_buffer_destroy(&body_buffer);
     }
 
     goto maybe_succ;
@@ -388,7 +389,7 @@ vssc_http_client_curl_send(
 send_fail:
     VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_SEND_REQUEST_FAILED);
     vssc_http_response_destroy(&response);
-    vsc_str_buffer_destroy(&body_buffer);
+    vsc_buffer_destroy(&body_buffer);
 
 maybe_succ:
     curl_easy_cleanup(curl);

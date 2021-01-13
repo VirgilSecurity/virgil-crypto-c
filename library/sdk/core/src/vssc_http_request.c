@@ -93,7 +93,7 @@ vssc_http_request_init_ctx_with_url(vssc_http_request_t *self, vsc_str_t method,
 //  Create HTTP request with URL and body.
 //
 static void
-vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body);
+vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body);
 
 //
 //  HTTP method: GET
@@ -240,7 +240,7 @@ vssc_http_request_new_with_url(vsc_str_t method, vsc_str_t url) {
 //  Create HTTP request with URL and body.
 //
 VSSC_PUBLIC void
-vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body) {
+vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -256,7 +256,7 @@ vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vs
 //  Create HTTP request with URL and body.
 //
 VSSC_PUBLIC vssc_http_request_t *
-vssc_http_request_new_with_body(vsc_str_t method, vsc_str_t url, vsc_str_t body) {
+vssc_http_request_new_with_body(vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     vssc_http_request_t *self = (vssc_http_request_t *) vssc_alloc(sizeof (vssc_http_request_t));
     VSSC_ASSERT_ALLOC(self);
@@ -389,7 +389,7 @@ vssc_http_request_cleanup_ctx(vssc_http_request_t *self) {
 
     vsc_str_mutable_release(&self->method);
     vsc_str_mutable_release(&self->url);
-    vsc_str_mutable_release(&self->body);
+    vsc_buffer_destroy(&self->body);
     vsc_str_mutable_release(&self->auth_header_value);
 
     vssc_http_header_list_destroy(&self->headers);
@@ -416,15 +416,14 @@ vssc_http_request_init_ctx_with_url(vssc_http_request_t *self, vsc_str_t method,
 //  Create HTTP request with URL and body.
 //
 static void
-vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body) {
+vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid(body));
-    VSSC_ASSERT(!vsc_str_is_empty(body));
+    VSSC_ASSERT(vsc_data_is_valid_and_non_empty(body));
 
     vssc_http_request_init_ctx_with_url(self, method, url);
 
-    self->body = vsc_str_mutable_from_str(body);
+    self->body = vsc_buffer_new_with_data(body);
 }
 
 //
@@ -480,16 +479,16 @@ vssc_http_request_url(const vssc_http_request_t *self) {
 //
 //  Return HTTP body.
 //
-VSSC_PUBLIC vsc_str_t
+VSSC_PUBLIC vsc_data_t
 vssc_http_request_body(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    if (vsc_str_mutable_is_valid(self->body)) {
-        return vsc_str_mutable_as_str(self->body);
+    if (vsc_buffer_is_valid(self->body)) {
+        return vsc_buffer_data(self->body);
     }
 
-    return vsc_str_empty();
+    return vsc_data_empty();
 }
 
 //

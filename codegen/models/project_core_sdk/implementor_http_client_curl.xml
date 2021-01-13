@@ -49,7 +49,7 @@
             <argument name="ptr" class="any" access="readwrite"/>
             <argument name="size" type="size"/>
             <argument name="nmemb" type="size"/>
-            <argument name="body buffer" class="str buffer" access="readwrite"/>
+            <argument name="body buffer" class="buffer" access="readwrite"/>
 
             <return type="size"/>
         </method>

@@ -407,7 +407,7 @@ vssc_card_client_make_request_publish_card(const vssc_card_client_t *self, const
     VSSC_ASSERT_PTR(raw_card);
 
     vssc_json_object_t *json = vssc_raw_card_export_as_json(raw_card);
-    vsc_str_t json_body = vssc_json_object_as_str(json);
+    vsc_data_t json_body = vsc_str_as_data(vssc_json_object_as_str(json));
 
     vsc_str_mutable_t card_url = vsc_str_mutable_concat(vsc_str_mutable_as_str(self->base_url), k_url_path_card);
 
@@ -559,7 +559,7 @@ vssc_card_client_make_request_search_cards_with_identities(
     vsc_str_t json_body_str = vssc_json_object_as_str(json_body);
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(search_url), json_body_str);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(search_url), vsc_str_as_data(json_body_str));
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
@@ -641,7 +641,7 @@ vssc_card_client_make_request_revoke_card_with_id(const vssc_card_client_t *self
     vsc_str_buffer_make_null_terminated(revoke_url);
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_buffer_str(revoke_url), vsc_str_empty());
+            vssc_http_request_method_post, vsc_str_buffer_str(revoke_url), vsc_data_empty());
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);

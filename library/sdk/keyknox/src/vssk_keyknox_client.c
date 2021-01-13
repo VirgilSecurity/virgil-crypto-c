@@ -572,7 +572,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(self->push_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->push_url), vsc_str_as_data(json_body));
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
@@ -637,7 +637,7 @@ vssk_keyknox_client_make_request_pull(
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(self->pull_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->pull_url), vsc_str_as_data(json_body));
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
@@ -705,7 +705,7 @@ vssk_keyknox_client_make_request_reset(
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(self->reset_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->reset_url), vsc_str_as_data(json_body));
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
@@ -803,7 +803,7 @@ vssk_keyknox_client_make_request_get_keys(
     //
     vsc_str_t json_body = vssc_json_object_as_str(json);
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
-            vssc_http_request_method_post, vsc_str_mutable_as_str(self->keys_url), json_body);
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->keys_url), vsc_str_as_data(json_body));
 
     vssc_http_request_add_header(
             http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);

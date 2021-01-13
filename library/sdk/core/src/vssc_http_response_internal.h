@@ -50,11 +50,11 @@
 #include "vssc_http_response.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -76,7 +76,7 @@ extern "C" {
 //  Set HTTP body.
 //
 VSSC_PUBLIC void
-vssc_http_response_set_body_disown(vssc_http_response_t *self, vsc_str_buffer_t **body_ref);
+vssc_http_response_set_body_disown(vssc_http_response_t *self, vsc_buffer_t **body_ref);
 
 
 // --------------------------------------------------------------------------

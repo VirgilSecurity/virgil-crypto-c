@@ -5,7 +5,7 @@
     <require class="json object"/>
 
     <property name="headers" class="http header list"/>
-    <property name="body" class="str buffer"/>
+    <property name="body" class="buffer"/>
     <property name="body json object" class="json object"/>
     <property name="body json array" class="json array"/>
     <property name="status code" type="size"/>
@@ -32,7 +32,7 @@
         Create response with a status and body.
 
         <argument name="status code" type="size"/>
-        <argument name="body" class="str"/>
+        <argument name="body" class="data"/>
     </constructor>
 
 
@@ -46,14 +46,14 @@
     <method name="set body">
         Set HTTP body.
 
-        <argument name="body" class="str"/>
+        <argument name="body" class="data"/>
     </method>
 
 
     <method name="set body disown" scope="internal">
         Set HTTP body.
 
-        <argument name="body" class="str buffer" access="disown"/>
+        <argument name="body" class="buffer" access="disown"/>
     </method>
 
 
@@ -82,7 +82,7 @@
     <method name="body" is_const="1">
         Return HTTP body.
 
-        <return class="str"/>
+        <return class="data"/>
     </method>
 
 
