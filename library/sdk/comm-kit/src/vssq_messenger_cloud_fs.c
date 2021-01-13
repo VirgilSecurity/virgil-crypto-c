@@ -1031,12 +1031,16 @@ vssq_messenger_cloud_fs_check_response(const vssc_http_response_t *http_response
         return false;
     }
 
-    const vsc_str_t content_type =
-            vssc_http_response_find_header(http_response, vssc_http_header_name_content_type, NULL);
+    vsc_data_t body = vsc_str_as_data(vssc_http_response_body(http_response));
 
-    if (!vsc_str_equal(content_type, k_header_value_content_type_protobuf)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE);
-        return false;
+    if (!vsc_data_is_empty(body)) {
+        const vsc_str_t content_type =
+                vssc_http_response_find_header(http_response, vssc_http_header_name_content_type, NULL);
+
+        if (!vsc_str_equal(content_type, k_header_value_content_type_protobuf)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE);
+            return false;
+        }
     }
 
     return true;
