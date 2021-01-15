@@ -23,6 +23,17 @@
     </constructor>
 
 
+    <constructor name="root with">
+        Create fully defined object.
+
+        <argument name="total folder count" type="size"/>
+        <argument name="total file count" type="size"/>
+        <argument name="folders" class="messenger cloud fs folder info list"/>
+        <argument name="files" class="messenger cloud fs file info list"/>
+        <argument name="info" class="messenger cloud fs folder info"/>
+    </constructor>
+
+
     <constructor name="with disown" scope="private">
         Create fully defined object.
 
@@ -34,6 +45,24 @@
         <argument name="files" class="messenger cloud fs file info list" access="disown"/>
         <argument name="info" class="messenger cloud fs folder info" access="disown"/>
     </constructor>
+
+
+    <constructor name="root with disown" scope="private">
+        Create fully defined object.
+
+        <argument name="total folder count" type="size"/>
+        <argument name="total file count" type="size"/>
+        <argument name="folders" class="messenger cloud fs folder info list" access="disown"/>
+        <argument name="files" class="messenger cloud fs file info list" access="disown"/>
+        <argument name="info" class="messenger cloud fs folder info" access="disown"/>
+    </constructor>
+
+
+    <method name="is root" is_const="1">
+        Return true if folder is a root folder.
+
+        <return type="boolean"/>
+    </method>
 
 
     <method name="total entry count" is_const="1">

@@ -134,6 +134,24 @@ vssq_messenger_cloud_fs_folder_new_with(size_t total_folder_count, size_t total_
         const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_folder_init_root_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
+        size_t total_file_count, const vssq_messenger_cloud_fs_folder_info_list_t *folders,
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
+vssq_messenger_cloud_fs_folder_new_root_with(size_t total_folder_count, size_t total_file_count,
+        const vssq_messenger_cloud_fs_folder_info_list_t *folders,
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info);
+
+//
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
@@ -159,6 +177,12 @@ vssq_messenger_cloud_fs_folder_shallow_copy(vssq_messenger_cloud_fs_folder_t *se
 //
 VSSQ_PUBLIC const vssq_messenger_cloud_fs_folder_t *
 vssq_messenger_cloud_fs_folder_shallow_copy_const(const vssq_messenger_cloud_fs_folder_t *self);
+
+//
+//  Return true if folder is a root folder.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_cloud_fs_folder_is_root(const vssq_messenger_cloud_fs_folder_t *self);
 
 //
 //  Return total = folder + file count.

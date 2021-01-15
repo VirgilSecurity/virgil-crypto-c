@@ -95,10 +95,26 @@ vssq_messenger_cloud_fs_folder_init_ctx_with(vssq_messenger_cloud_fs_folder_t *s
 //  Create fully defined object.
 //
 static void
+vssq_messenger_cloud_fs_folder_init_ctx_root_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
+        size_t total_file_count, const vssq_messenger_cloud_fs_folder_info_list_t *folders,
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info);
+
+//
+//  Create fully defined object.
+//
+static void
 vssq_messenger_cloud_fs_folder_init_ctx_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
         vssq_messenger_cloud_fs_folder_info_t **info_ref);
+
+//
+//  Create fully defined object.
+//
+static void
+vssq_messenger_cloud_fs_folder_init_ctx_root_with_disown(vssq_messenger_cloud_fs_folder_t *self,
+        size_t total_folder_count, size_t total_file_count, vssq_messenger_cloud_fs_folder_info_list_t **folders_ref,
+        vssq_messenger_cloud_fs_file_info_list_t **files_ref, vssq_messenger_cloud_fs_folder_info_t **info_ref);
 
 //
 //  Return size of 'vssq_messenger_cloud_fs_folder_t'.
@@ -199,6 +215,43 @@ vssq_messenger_cloud_fs_folder_new_with(size_t total_folder_count, size_t total_
 //  Create fully defined object.
 //
 VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_folder_init_root_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
+        size_t total_file_count, const vssq_messenger_cloud_fs_folder_info_list_t *folders,
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    vssq_zeroize(self, sizeof(vssq_messenger_cloud_fs_folder_t));
+
+    self->refcnt = 1;
+
+    vssq_messenger_cloud_fs_folder_init_ctx_root_with(self, total_folder_count, total_file_count, folders, files, info);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
+vssq_messenger_cloud_fs_folder_new_root_with(size_t total_folder_count, size_t total_file_count,
+        const vssq_messenger_cloud_fs_folder_info_list_t *folders,
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info) {
+
+    vssq_messenger_cloud_fs_folder_t *self = (vssq_messenger_cloud_fs_folder_t *) vssq_alloc(sizeof (vssq_messenger_cloud_fs_folder_t));
+    VSSQ_ASSERT_ALLOC(self);
+
+    vssq_messenger_cloud_fs_folder_init_root_with(self, total_folder_count, total_file_count, folders, files, info);
+
+    self->self_dealloc_cb = vssq_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_init_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
@@ -227,6 +280,43 @@ vssq_messenger_cloud_fs_folder_new_with_disown(size_t total_folder_count, size_t
     VSSQ_ASSERT_ALLOC(self);
 
     vssq_messenger_cloud_fs_folder_init_with_disown(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders_ref, files_ref, info_ref);
+
+    self->self_dealloc_cb = vssq_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_folder_init_root_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
+        size_t total_file_count, vssq_messenger_cloud_fs_folder_info_list_t **folders_ref,
+        vssq_messenger_cloud_fs_file_info_list_t **files_ref, vssq_messenger_cloud_fs_folder_info_t **info_ref) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    vssq_zeroize(self, sizeof(vssq_messenger_cloud_fs_folder_t));
+
+    self->refcnt = 1;
+
+    vssq_messenger_cloud_fs_folder_init_ctx_root_with_disown(self, total_folder_count, total_file_count, folders_ref, files_ref, info_ref);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
+vssq_messenger_cloud_fs_folder_new_root_with_disown(size_t total_folder_count, size_t total_file_count,
+        vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
+        vssq_messenger_cloud_fs_folder_info_t **info_ref) {
+
+    vssq_messenger_cloud_fs_folder_t *self = (vssq_messenger_cloud_fs_folder_t *) vssq_alloc(sizeof (vssq_messenger_cloud_fs_folder_t));
+    VSSQ_ASSERT_ALLOC(self);
+
+    vssq_messenger_cloud_fs_folder_init_root_with_disown(self, total_folder_count, total_file_count, folders_ref, files_ref, info_ref);
 
     self->self_dealloc_cb = vssq_dealloc;
 
@@ -390,6 +480,26 @@ vssq_messenger_cloud_fs_folder_init_ctx_with(vssq_messenger_cloud_fs_folder_t *s
 //  Create fully defined object.
 //
 static void
+vssq_messenger_cloud_fs_folder_init_ctx_root_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
+        size_t total_file_count, const vssq_messenger_cloud_fs_folder_info_list_t *folders,
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(folders);
+    VSSQ_ASSERT_PTR(files);
+    VSSQ_ASSERT_PTR(info);
+
+    self->total_folder_count = total_folder_count;
+    self->total_file_count = total_file_count;
+    self->folders = vssq_messenger_cloud_fs_folder_info_list_shallow_copy_const(folders);
+    self->files = vssq_messenger_cloud_fs_file_info_list_shallow_copy_const(files);
+    self->info = vssq_messenger_cloud_fs_folder_info_shallow_copy_const(info);
+}
+
+//
+//  Create fully defined object.
+//
+static void
 vssq_messenger_cloud_fs_folder_init_ctx_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
@@ -413,6 +523,39 @@ vssq_messenger_cloud_fs_folder_init_ctx_with_disown(vssq_messenger_cloud_fs_fold
     *folders_ref = NULL;
     *files_ref = NULL;
     *info_ref = NULL;
+}
+
+//
+//  Create fully defined object.
+//
+static void
+vssq_messenger_cloud_fs_folder_init_ctx_root_with_disown(vssq_messenger_cloud_fs_folder_t *self,
+        size_t total_folder_count, size_t total_file_count, vssq_messenger_cloud_fs_folder_info_list_t **folders_ref,
+        vssq_messenger_cloud_fs_file_info_list_t **files_ref, vssq_messenger_cloud_fs_folder_info_t **info_ref) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_REF(folders_ref);
+    VSSQ_ASSERT_REF(files_ref);
+    VSSQ_ASSERT_REF(info_ref);
+
+    self->total_folder_count = total_folder_count;
+    self->total_file_count = total_file_count;
+    self->folders = *folders_ref;
+    self->files = *files_ref;
+    self->info = *info_ref;
+
+    *folders_ref = NULL;
+    *files_ref = NULL;
+    *info_ref = NULL;
+}
+
+//
+//  Return true if folder is a root folder.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_cloud_fs_folder_is_root(const vssq_messenger_cloud_fs_folder_t *self) {
+
+    return (NULL == self->folder_encrypted_key) || (NULL == self->folder_public_key);
 }
 
 //
@@ -487,7 +630,11 @@ vssq_messenger_cloud_fs_folder_folder_encrypted_key(const vssq_messenger_cloud_f
 
     VSSQ_ASSERT_PTR(self);
 
-    return vsc_buffer_data(self->folder_encrypted_key);
+    if (self->folder_encrypted_key) {
+        return vsc_buffer_data(self->folder_encrypted_key);
+    } else {
+        return vsc_data_empty();
+    }
 }
 
 //
@@ -498,5 +645,9 @@ vssq_messenger_cloud_fs_folder_folder_public_key(const vssq_messenger_cloud_fs_f
 
     VSSQ_ASSERT_PTR(self);
 
-    return vsc_buffer_data(self->folder_public_key);
+    if (self->folder_public_key) {
+        return vsc_buffer_data(self->folder_public_key);
+    } else {
+        return vsc_data_empty();
+    }
 }

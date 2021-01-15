@@ -156,4 +156,16 @@
 
         <return class="messenger cloud fs folder info" access="disown"/>
     </method>
+
+
+    <method name="parse bytes optional" is_static="1" declaration="private">
+        Parse optional protobuf structure "pb_bytes_array_t".
+        If given array is NULL or empty and it is not optional then empty data will be returned and error will be set.
+
+        <argument name="pb array" class="pb_bytes_array_t" library="protobuf"/>
+        <argument name="is optional" type="boolean"/>
+        <argument name="error" class="error"/>
+
+        <return class="data"/>
+    </method>
 </class>

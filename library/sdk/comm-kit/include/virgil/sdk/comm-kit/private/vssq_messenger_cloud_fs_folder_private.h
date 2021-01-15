@@ -95,6 +95,24 @@ vssq_messenger_cloud_fs_folder_new_with_disown(size_t total_folder_count, size_t
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
         vssq_messenger_cloud_fs_folder_info_t **info_ref);
 
+//
+//  Perform initialization of pre-allocated context.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_folder_init_root_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
+        size_t total_file_count, vssq_messenger_cloud_fs_folder_info_list_t **folders_ref,
+        vssq_messenger_cloud_fs_file_info_list_t **files_ref, vssq_messenger_cloud_fs_folder_info_t **info_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
+vssq_messenger_cloud_fs_folder_new_root_with_disown(size_t total_folder_count, size_t total_file_count,
+        vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
+        vssq_messenger_cloud_fs_folder_info_t **info_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

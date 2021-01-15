@@ -121,6 +121,13 @@ vssq_messenger_cloud_fs_parse_file_info(const vssq_pb_File *pb_file, vssq_error_
 static vssq_messenger_cloud_fs_folder_info_t *
 vssq_messenger_cloud_fs_parse_folder_info(const vssq_pb_Folder *pb_folder, vssq_error_t *error);
 
+//
+//  Parse optional protobuf structure "pb_bytes_array_t".
+//  If given array is NULL or empty and it is not optional then empty data will be returned and error will be set.
+//
+static vsc_data_t
+vssq_messenger_cloud_fs_parse_bytes_optional(const pb_bytes_array_t *pb_array, bool is_optional, vssq_error_t *error);
+
 static const char k_header_value_content_type_protobuf_chars[] = "application/protobuf";
 
 static const vsc_str_t k_header_value_content_type_protobuf = {
@@ -791,7 +798,7 @@ vssq_messenger_cloud_fs_list_folder(const vssq_messenger_cloud_fs_t *self, vsc_s
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->auth);
-    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
+    VSSQ_ASSERT(vsc_str_is_valid(id));
 
     //
     //  Declare vars.
@@ -898,22 +905,19 @@ vssq_messenger_cloud_fs_list_folder(const vssq_messenger_cloud_fs_t *self, vsc_s
     //
     //  Parse keys.
     //
-    vsc_data_t folder_encrypted_key =
-            vsc_data(response_body.folder_encrypted_key->bytes, response_body.folder_encrypted_key->size);
-    if (vsc_data_is_empty(folder_encrypted_key)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
-        goto cleanup;
-    }
+    vsc_data_t folder_encrypted_key = vssq_messenger_cloud_fs_parse_bytes_optional(
+            response_body.folder_encrypted_key, vsc_str_is_empty(id), error);
 
     vsc_data_t folder_public_key =
-            vsc_data(response_body.folder_public_key->bytes, response_body.folder_public_key->size);
-    if (vsc_data_is_empty(folder_public_key)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
-        goto cleanup;
-    }
+            vssq_messenger_cloud_fs_parse_bytes_optional(response_body.folder_public_key, vsc_str_is_empty(id), error);
 
-    folder = vssq_messenger_cloud_fs_folder_new_with_disown(response_body.total_folder_count,
-            response_body.total_file_count, folder_encrypted_key, folder_public_key, &folders, &files, &info);
+    if (vsc_str_is_empty(id)) {
+        folder = vssq_messenger_cloud_fs_folder_new_root_with_disown(
+                response_body.total_folder_count, response_body.total_file_count, &folders, &files, &info);
+    } else {
+        folder = vssq_messenger_cloud_fs_folder_new_with_disown(response_body.total_folder_count,
+                response_body.total_file_count, folder_encrypted_key, folder_public_key, &folders, &files, &info);
+    }
 
 cleanup:
     vsc_buffer_destroy(&request_body_buffer);
@@ -999,7 +1003,7 @@ vssq_messenger_cloud_fs_create_request(const vssq_messenger_cloud_fs_t *self, vs
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(endpoint));
-    VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(body));
+    VSSQ_ASSERT(vsc_data_is_valid(body));
 
     vsc_str_t base_url = vssq_messenger_config_messenger_url(vssq_messenger_auth_config(self->auth));
     vsc_str_mutable_t url = vsc_str_mutable_concat(base_url, endpoint);
@@ -1007,7 +1011,9 @@ vssq_messenger_cloud_fs_create_request(const vssq_messenger_cloud_fs_t *self, vs
     vssc_http_request_t *request =
             vssc_http_request_new_with_body(vssc_http_request_method_post, vsc_str_mutable_as_str(url), body);
 
-    vssc_http_request_add_header(request, vssc_http_header_name_content_type, k_header_value_content_type_protobuf);
+    if (!vsc_data_is_empty(body)) {
+        vssc_http_request_add_header(request, vssc_http_header_name_content_type, k_header_value_content_type_protobuf);
+    }
 
     vsc_str_mutable_release(&url);
 
@@ -1057,14 +1063,15 @@ vssq_messenger_cloud_fs_parse_file_info(const vssq_pb_File *pb_file, vssq_error_
     vsc_str_t id = vsc_str_from_str(pb_file->id);
     vsc_str_t name = vsc_str_from_str(pb_file->name);
     vsc_str_t type = vsc_str_from_str(pb_file->type);
+    vsc_str_t updated_by = vsc_str_from_str(pb_file->updated_by);
 
-    if (vsc_str_is_empty(id) || vsc_str_is_empty(name) || vsc_str_is_empty(type)) {
+    if (vsc_str_is_empty(id) || vsc_str_is_empty(name) || vsc_str_is_empty(type) || vsc_str_is_empty(updated_by)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
         return NULL;
     }
 
     return vssq_messenger_cloud_fs_file_info_new_with(
-            id, name, type, pb_file->size, pb_file->created_at.seconds, pb_file->updated_at.seconds);
+            id, name, type, pb_file->size, pb_file->created_at.seconds, pb_file->updated_at.seconds, updated_by);
 }
 
 //
@@ -1085,4 +1092,22 @@ vssq_messenger_cloud_fs_parse_folder_info(const vssq_pb_Folder *pb_folder, vssq_
 
     return vssq_messenger_cloud_fs_folder_info_new_with(
             id, name, pb_folder->created_at.seconds, pb_folder->updated_at.seconds);
+}
+
+//
+//  Parse optional protobuf structure "pb_bytes_array_t".
+//  If given array is NULL or empty and it is not optional then empty data will be returned and error will be set.
+//
+static vsc_data_t
+vssq_messenger_cloud_fs_parse_bytes_optional(const pb_bytes_array_t *pb_array, bool is_optional, vssq_error_t *error) {
+
+    if (pb_array != NULL && pb_array->size > 0) {
+        return vsc_data(pb_array->bytes, pb_array->size);
+    }
+
+    if (!is_optional) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
+    }
+
+    return vsc_data_empty();
 }

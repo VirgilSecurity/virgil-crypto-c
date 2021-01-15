@@ -86,7 +86,7 @@ vssq_messenger_cloud_fs_file_info_cleanup_ctx(vssq_messenger_cloud_fs_file_info_
 //
 static void
 vssq_messenger_cloud_fs_file_info_init_ctx_with(vssq_messenger_cloud_fs_file_info_t *self, vsc_str_t id, vsc_str_t name,
-        vsc_str_t type, size_t size, size_t created_at, size_t updated_at);
+        vsc_str_t type, size_t size, size_t created_at, size_t updated_at, vsc_str_t updated_by);
 
 //
 //  Return size of 'vssq_messenger_cloud_fs_file_info_t'.
@@ -149,7 +149,7 @@ vssq_messenger_cloud_fs_file_info_new(void) {
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_file_info_init_with(vssq_messenger_cloud_fs_file_info_t *self, vsc_str_t id, vsc_str_t name,
-        vsc_str_t type, size_t size, size_t created_at, size_t updated_at) {
+        vsc_str_t type, size_t size, size_t created_at, size_t updated_at, vsc_str_t updated_by) {
 
     VSSQ_ASSERT_PTR(self);
 
@@ -157,7 +157,7 @@ vssq_messenger_cloud_fs_file_info_init_with(vssq_messenger_cloud_fs_file_info_t 
 
     self->refcnt = 1;
 
-    vssq_messenger_cloud_fs_file_info_init_ctx_with(self, id, name, type, size, created_at, updated_at);
+    vssq_messenger_cloud_fs_file_info_init_ctx_with(self, id, name, type, size, created_at, updated_at, updated_by);
 }
 
 //
@@ -166,12 +166,12 @@ vssq_messenger_cloud_fs_file_info_init_with(vssq_messenger_cloud_fs_file_info_t 
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_file_info_t *
 vssq_messenger_cloud_fs_file_info_new_with(vsc_str_t id, vsc_str_t name, vsc_str_t type, size_t size, size_t created_at,
-        size_t updated_at) {
+        size_t updated_at, vsc_str_t updated_by) {
 
     vssq_messenger_cloud_fs_file_info_t *self = (vssq_messenger_cloud_fs_file_info_t *) vssq_alloc(sizeof (vssq_messenger_cloud_fs_file_info_t));
     VSSQ_ASSERT_ALLOC(self);
 
-    vssq_messenger_cloud_fs_file_info_init_with(self, id, name, type, size, created_at, updated_at);
+    vssq_messenger_cloud_fs_file_info_init_with(self, id, name, type, size, created_at, updated_at, updated_by);
 
     self->self_dealloc_cb = vssq_dealloc;
 
@@ -301,6 +301,7 @@ vssq_messenger_cloud_fs_file_info_cleanup_ctx(vssq_messenger_cloud_fs_file_info_
     vsc_str_mutable_release(&self->id);
     vsc_str_mutable_release(&self->name);
     vsc_str_mutable_release(&self->type);
+    vsc_str_mutable_release(&self->updated_by);
 }
 
 //
@@ -308,7 +309,7 @@ vssq_messenger_cloud_fs_file_info_cleanup_ctx(vssq_messenger_cloud_fs_file_info_
 //
 static void
 vssq_messenger_cloud_fs_file_info_init_ctx_with(vssq_messenger_cloud_fs_file_info_t *self, vsc_str_t id, vsc_str_t name,
-        vsc_str_t type, size_t size, size_t created_at, size_t updated_at) {
+        vsc_str_t type, size_t size, size_t created_at, size_t updated_at, vsc_str_t updated_by) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
@@ -317,6 +318,7 @@ vssq_messenger_cloud_fs_file_info_init_ctx_with(vssq_messenger_cloud_fs_file_inf
     VSSQ_ASSERT(size > 0);
     VSSQ_ASSERT(created_at > 0);
     VSSQ_ASSERT(updated_at > 0);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(updated_by));
 
     self->id = vsc_str_mutable_from_str(id);
     self->name = vsc_str_mutable_from_str(name);
@@ -324,10 +326,11 @@ vssq_messenger_cloud_fs_file_info_init_ctx_with(vssq_messenger_cloud_fs_file_inf
     self->size = size;
     self->created_at = created_at;
     self->updated_at = updated_at;
+    self->updated_by = vsc_str_mutable_from_str(updated_by);
 }
 
 //
-//  Return folder id.
+//  Return file id.
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_cloud_fs_file_info_id(const vssq_messenger_cloud_fs_file_info_t *self) {
@@ -338,7 +341,7 @@ vssq_messenger_cloud_fs_file_info_id(const vssq_messenger_cloud_fs_file_info_t *
 }
 
 //
-//  Return folder name.
+//  Return file name.
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_cloud_fs_file_info_name(const vssq_messenger_cloud_fs_file_info_t *self) {
@@ -349,7 +352,7 @@ vssq_messenger_cloud_fs_file_info_name(const vssq_messenger_cloud_fs_file_info_t
 }
 
 //
-//  Return folder type, aka "text/plain".
+//  Return file type, aka "text/plain".
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_cloud_fs_file_info_type(const vssq_messenger_cloud_fs_file_info_t *self) {
@@ -360,7 +363,7 @@ vssq_messenger_cloud_fs_file_info_type(const vssq_messenger_cloud_fs_file_info_t
 }
 
 //
-//  Return folder "size" timestamp.
+//  Return file size.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_file_info_size(const vssq_messenger_cloud_fs_file_info_t *self) {
@@ -371,7 +374,7 @@ vssq_messenger_cloud_fs_file_info_size(const vssq_messenger_cloud_fs_file_info_t
 }
 
 //
-//  Return folder "created at" timestamp.
+//  Return file "created at" timestamp.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_file_info_created_at(const vssq_messenger_cloud_fs_file_info_t *self) {
@@ -382,7 +385,7 @@ vssq_messenger_cloud_fs_file_info_created_at(const vssq_messenger_cloud_fs_file_
 }
 
 //
-//  Return folder "updated at" timestamp.
+//  Return file "updated at" timestamp.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_file_info_updated_at(const vssq_messenger_cloud_fs_file_info_t *self) {
@@ -390,4 +393,15 @@ vssq_messenger_cloud_fs_file_info_updated_at(const vssq_messenger_cloud_fs_file_
     VSSQ_ASSERT_PTR(self);
 
     return self->updated_at;
+}
+
+//
+//  Return file "updated by" - user identity that updated a file.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_cloud_fs_file_info_updated_by(const vssq_messenger_cloud_fs_file_info_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vsc_str_mutable_as_str(self->updated_by);
 }

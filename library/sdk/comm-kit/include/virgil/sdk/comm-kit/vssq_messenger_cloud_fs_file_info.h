@@ -116,7 +116,7 @@ vssq_messenger_cloud_fs_file_info_new(void);
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_file_info_init_with(vssq_messenger_cloud_fs_file_info_t *self, vsc_str_t id, vsc_str_t name,
-        vsc_str_t type, size_t size, size_t created_at, size_t updated_at);
+        vsc_str_t type, size_t size, size_t created_at, size_t updated_at, vsc_str_t updated_by);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -124,7 +124,7 @@ vssq_messenger_cloud_fs_file_info_init_with(vssq_messenger_cloud_fs_file_info_t 
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_file_info_t *
 vssq_messenger_cloud_fs_file_info_new_with(vsc_str_t id, vsc_str_t name, vsc_str_t type, size_t size, size_t created_at,
-        size_t updated_at);
+        size_t updated_at, vsc_str_t updated_by);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -154,40 +154,46 @@ VSSQ_PUBLIC const vssq_messenger_cloud_fs_file_info_t *
 vssq_messenger_cloud_fs_file_info_shallow_copy_const(const vssq_messenger_cloud_fs_file_info_t *self);
 
 //
-//  Return folder id.
+//  Return file id.
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_cloud_fs_file_info_id(const vssq_messenger_cloud_fs_file_info_t *self);
 
 //
-//  Return folder name.
+//  Return file name.
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_cloud_fs_file_info_name(const vssq_messenger_cloud_fs_file_info_t *self);
 
 //
-//  Return folder type, aka "text/plain".
+//  Return file type, aka "text/plain".
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_cloud_fs_file_info_type(const vssq_messenger_cloud_fs_file_info_t *self);
 
 //
-//  Return folder "size" timestamp.
+//  Return file size.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_file_info_size(const vssq_messenger_cloud_fs_file_info_t *self);
 
 //
-//  Return folder "created at" timestamp.
+//  Return file "created at" timestamp.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_file_info_created_at(const vssq_messenger_cloud_fs_file_info_t *self);
 
 //
-//  Return folder "updated at" timestamp.
+//  Return file "updated at" timestamp.
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_file_info_updated_at(const vssq_messenger_cloud_fs_file_info_t *self);
+
+//
+//  Return file "updated by" - user identity that updated a file.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_cloud_fs_file_info_updated_by(const vssq_messenger_cloud_fs_file_info_t *self);
 
 
 // --------------------------------------------------------------------------
