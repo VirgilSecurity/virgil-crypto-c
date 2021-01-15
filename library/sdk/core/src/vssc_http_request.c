@@ -402,10 +402,8 @@ static void
 vssc_http_request_init_ctx_with_url(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid(method));
-    VSSC_ASSERT(!vsc_str_is_empty(method));
-    VSSC_ASSERT(vsc_str_is_valid(url));
-    VSSC_ASSERT(!vsc_str_is_empty(url));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(method));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(url));
 
     self->method = vsc_str_mutable_from_str(method);
     self->url = vsc_str_mutable_from_str(url);
@@ -419,7 +417,7 @@ static void
 vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_data_is_valid_and_non_empty(body));
+    VSSC_ASSERT(vsc_data_is_valid(body));
 
     vssc_http_request_init_ctx_with_url(self, method, url);
 
