@@ -86,6 +86,7 @@ message Folder {
     string name = 2;
     google.protobuf.Timestamp created_at = 3;
     google.protobuf.Timestamp updated_at = 4;
+    string updated_by = 5;
 }
 
 message Pagination {

@@ -1084,14 +1084,15 @@ vssq_messenger_cloud_fs_parse_folder_info(const vssq_pb_Folder *pb_folder, vssq_
 
     vsc_str_t id = vsc_str_from_str(pb_folder->id);
     vsc_str_t name = vsc_str_from_str(pb_folder->name);
+    vsc_str_t updated_by = vsc_str_from_str(pb_folder->updated_by);
 
-    if (vsc_str_is_empty(id) || vsc_str_is_empty(name)) {
+    if (vsc_str_is_empty(id) || vsc_str_is_empty(name) || vsc_str_is_empty(updated_by)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
         return NULL;
     }
 
     return vssq_messenger_cloud_fs_folder_info_new_with(
-            id, name, pb_folder->created_at.seconds, pb_folder->updated_at.seconds);
+            id, name, pb_folder->created_at.seconds, pb_folder->updated_at.seconds, updated_by);
 }
 
 //

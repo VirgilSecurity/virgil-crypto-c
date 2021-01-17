@@ -116,14 +116,15 @@ vssq_messenger_cloud_fs_folder_info_new(void);
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_info_init_with(vssq_messenger_cloud_fs_folder_info_t *self, vsc_str_t id, vsc_str_t name,
-        size_t created_at, size_t updated_at);
+        size_t created_at, size_t updated_at, vsc_str_t updated_by);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create fully defined object.
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
-vssq_messenger_cloud_fs_folder_info_new_with(vsc_str_t id, vsc_str_t name, size_t created_at, size_t updated_at);
+vssq_messenger_cloud_fs_folder_info_new_with(vsc_str_t id, vsc_str_t name, size_t created_at, size_t updated_at,
+        vsc_str_t updated_by);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -175,6 +176,12 @@ vssq_messenger_cloud_fs_folder_info_created_at(const vssq_messenger_cloud_fs_fol
 //
 VSSQ_PUBLIC size_t
 vssq_messenger_cloud_fs_folder_info_updated_at(const vssq_messenger_cloud_fs_folder_info_t *self);
+
+//
+//  Return folder "updated by" - user identity that updated a folder.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_cloud_fs_folder_info_updated_by(const vssq_messenger_cloud_fs_folder_info_t *self);
 
 
 // --------------------------------------------------------------------------

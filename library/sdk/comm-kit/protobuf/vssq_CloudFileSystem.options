@@ -66,6 +66,7 @@ vssq_pb.File.updated_by max_length:256 fixed_length:true
 # Folder
 vssq_pb.Folder.name max_length:1024
 vssq_pb.Folder.id max_length:32 fixed_length:true
+vssq_pb.Folder.updated_by max_length:256 fixed_length:true
 
 # Meta
 vssq_pb.Meta.folder_id max_length:32 fixed_length:true

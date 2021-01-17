@@ -96,6 +96,8 @@ struct vssq_messenger_cloud_fs_folder_info_t {
 
     vsc_str_mutable_t name;
 
+    vsc_str_mutable_t updated_by;
+
     size_t created_at;
 
     size_t updated_at;

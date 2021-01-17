@@ -3,6 +3,7 @@
 
     <property name="id" class="str mutable"/>
     <property name="name" class="str mutable"/>
+    <property name="updated by" class="str mutable"/>
     <property name="created at" type="size"/>
     <property name="updated at" type="size"/>
 
@@ -14,6 +15,7 @@
         <argument name="name" class="str"/>
         <argument name="created at" type="size"/>
         <argument name="updated at" type="size"/>
+        <argument name="updated by" class="str"/>
     </constructor>
 
 
@@ -42,5 +44,12 @@
         Return folder "updated at" timestamp.
 
         <return type="size"/>
+    </method>
+
+
+    <method name="updated by" is_const="1">
+        Return folder "updated by" - user identity that updated a folder.
+
+        <return class="str"/>
     </method>
 </class>
