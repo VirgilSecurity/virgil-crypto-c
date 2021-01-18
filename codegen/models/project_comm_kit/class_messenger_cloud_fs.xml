@@ -116,6 +116,32 @@
     </method>
 
 
+    <!-- Infos -->
+    <method name="is authenticated" is_const="1">
+        Return true if a user is authenticated.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="user" is_const="1">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="user private key" is_const="1">
+        Return a private key of current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return interface="private key" project="foundation"/>
+    </method>
+
+
     <!-- Helpers -->
     <method name="create request" is_const="1" declaration="private">
         Return request based on the given endpoint and body.

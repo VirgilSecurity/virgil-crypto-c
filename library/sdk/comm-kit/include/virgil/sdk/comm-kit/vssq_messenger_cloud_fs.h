@@ -62,15 +62,24 @@
 #include "vssq_status.h"
 #include "vssq_messenger_cloud_fs_folder_info.h"
 #include "vssq_messenger_cloud_fs_folder.h"
+#include "vssq_messenger_user.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
 #   include <virgil/crypto/common/vsc_data.h>
 #endif
 
+#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#endif
+
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str.h>
 #   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_str.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
 #endif
 
 // clang-format on
@@ -207,6 +216,28 @@ vssq_messenger_cloud_fs_list_folder(const vssq_messenger_cloud_fs_t *self, vsc_s
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_cloud_fs_delete_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t id) VSSQ_NODISCARD;
+
+//
+//  Return true if a user is authenticated.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_cloud_fs_is_authenticated(const vssq_messenger_cloud_fs_t *self);
+
+//
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_cloud_fs_user(const vssq_messenger_cloud_fs_t *self);
+
+//
+//  Return a private key of current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_cloud_fs_user_private_key(const vssq_messenger_cloud_fs_t *self);
 
 
 // --------------------------------------------------------------------------

@@ -996,6 +996,46 @@ cleanup:
 }
 
 //
+//  Return true if a user is authenticated.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_cloud_fs_is_authenticated(const vssq_messenger_cloud_fs_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->auth);
+
+    return vssq_messenger_auth_is_authenticated(self->auth);
+}
+
+//
+//  Return information about current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vssq_messenger_user_t *
+vssq_messenger_cloud_fs_user(const vssq_messenger_cloud_fs_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_cloud_fs_is_authenticated(self));
+
+    return vssq_messenger_auth_user(self->auth);
+}
+
+//
+//  Return a private key of current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_cloud_fs_user_private_key(const vssq_messenger_cloud_fs_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_cloud_fs_is_authenticated(self));
+
+    return vssq_messenger_creds_private_key(vssq_messenger_auth_creds(self->auth));
+}
+
+//
 //  Return request based on the given endpoint and body.
 //
 static vssc_http_request_t *
