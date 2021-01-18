@@ -71,6 +71,9 @@
     <module name="memory" from="shared"/>
     <module name="atomic" from="shared"/>
 
+    <class name="error" from="shared"/>
+    <class name="error message" from="shared"/>
+
     <module name="group session typedefs"/>
 
     <enum name="status"/>
@@ -118,7 +121,6 @@
     <interface name="padding"/>
     <interface name="kem"/>
 
-    <class name="error"/>
     <class name="binary"/>
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>

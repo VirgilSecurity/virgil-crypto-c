@@ -37,15 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Error context.
-//  Can be used for sequential operations, i.e. parsers, to accumulate error.
-//  In this way operation is successful if all steps are successful, otherwise
-//  last occurred error code can be obtained.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -53,12 +44,34 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+
+//  @description
+// --------------------------------------------------------------------------
+//  Provide error and status messages.
+// --------------------------------------------------------------------------
+
+#ifndef VSCF_ERROR_MESSAGE_H_INCLUDED
+#define VSCF_ERROR_MESSAGE_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_status.h"
 #include "vscf_error.h"
-#include "vscf_memory.h"
-#include "vscf_assert.h"
+
+#if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
+#endif
+
+#if VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -68,61 +81,30 @@
 // --------------------------------------------------------------------------
 
 //
-//  Return size of 'vscf_error_t'.
+//  Return a message string from the given status.
 //
-VSCF_PUBLIC size_t
-vscf_error_ctx_size(void) {
-
-    return sizeof(vscf_error_t);
-}
+VSCF_PUBLIC vsc_str_t
+vscf_error_message_from_status(vscf_status_t status);
 
 //
-//  Reset context to the "no error" state.
+//  Return a message string from the given status.
 //
-VSCF_PUBLIC void
-vscf_error_reset(vscf_error_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    self->status = vscf_status_SUCCESS;
-}
-
-//
-//  Update context with given status.
-//  If status is "success" then do nothing.
-//
-VSCF_PRIVATE void
-vscf_error_update(vscf_error_t *self, vscf_status_t status) {
-
-    VSCF_ASSERT_PTR(self);
-
-    if (status != vscf_status_SUCCESS) {
-        self->status = status;
-    }
-}
-
-//
-//  Return true if status is not "success".
-//
-VSCF_PUBLIC bool
-vscf_error_has_error(const vscf_error_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->status != vscf_status_SUCCESS;
-}
-
-//
-//  Return error code.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_error_status(const vscf_error_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return self->status;
-}
+VSCF_PUBLIC vsc_str_t
+vscf_error_message_from_error(const vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSCF_ERROR_MESSAGE_H_INCLUDED
 //  @end

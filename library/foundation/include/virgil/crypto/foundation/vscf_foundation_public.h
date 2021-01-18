@@ -234,6 +234,10 @@
 #   include "vscf_error.h"
 #endif
 
+#if VSCF_ERROR_MESSAGE
+#   include "vscf_error_message.h"
+#endif
+
 #if VSCF_FAKE_RANDOM
 #   include "vscf_fake_random.h"
 #endif

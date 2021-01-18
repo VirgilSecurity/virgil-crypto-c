@@ -554,6 +554,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_message.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_footer_info.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -961,6 +966,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ecies_defs.h>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.h>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error.h>"
+            "$<$<BOOL:${VSCF_ERROR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_error_message.h>"
             "$<$<BOOL:${VSCF_FOOTER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_footer_info.h>"
             "$<$<BOOL:${VSCF_FOOTER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_footer_info_defs.h>"
             "$<$<BOOL:${VSCF_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_group_session.h>"
@@ -1289,6 +1295,7 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_defs.c>"
             "$<$<BOOL:${VSCF_ECIES_ENVELOPE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies_envelope.c>"
             "$<$<BOOL:${VSCF_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error.c>"
+            "$<$<BOOL:${VSCF_ERROR_MESSAGE}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_error_message.c>"
             "$<$<BOOL:${VSCF_FOOTER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_footer_info.c>"
             "$<$<BOOL:${VSCF_FOOTER_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_footer_info_defs.c>"
             "$<$<BOOL:${VSCF_GROUP_SESSION}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_group_session.c>"
