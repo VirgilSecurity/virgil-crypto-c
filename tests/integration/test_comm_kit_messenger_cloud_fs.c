@@ -349,10 +349,10 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
 
     TEST_ASSERT_TRUE(vssq_messenger_cloud_fs_folder_is_root(root_folder));
 
-    vsc_data_t folder_encrypted_key = vssq_messenger_cloud_fs_folder_folder_encrypted_key(root_folder);
+    vsc_data_t folder_encrypted_key = vssq_messenger_cloud_fs_folder_encrypted_key(root_folder);
     TEST_ASSERT_EQUAL(0, folder_encrypted_key.len);
 
-    vsc_data_t folder_public_key = vssq_messenger_cloud_fs_folder_folder_public_key(root_folder);
+    vsc_data_t folder_public_key = vssq_messenger_cloud_fs_folder_public_key(root_folder);
     TEST_ASSERT_EQUAL(0, folder_public_key.len);
 
     //

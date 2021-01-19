@@ -224,13 +224,13 @@ vssq_messenger_cloud_fs_folder_info(const vssq_messenger_cloud_fs_folder_t *self
 //  Return encrypted folder private key.
 //
 VSSQ_PUBLIC vsc_data_t
-vssq_messenger_cloud_fs_folder_folder_encrypted_key(const vssq_messenger_cloud_fs_folder_t *self);
+vssq_messenger_cloud_fs_folder_encrypted_key(const vssq_messenger_cloud_fs_folder_t *self);
 
 //
 //  Return folder public key.
 //
 VSSQ_PUBLIC vsc_data_t
-vssq_messenger_cloud_fs_folder_folder_public_key(const vssq_messenger_cloud_fs_folder_t *self);
+vssq_messenger_cloud_fs_folder_public_key(const vssq_messenger_cloud_fs_folder_t *self);
 
 
 // --------------------------------------------------------------------------

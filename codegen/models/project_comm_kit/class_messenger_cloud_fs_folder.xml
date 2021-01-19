@@ -107,14 +107,14 @@
     </method>
 
 
-    <method name="folder encrypted key" is_const="1">
+    <method name="encrypted key" is_const="1">
         Return encrypted folder private key.
 
         <return class="data"/>
     </method>
 
 
-    <method name="folder public key" is_const="1">
+    <method name="public key" is_const="1">
         Return folder public key.
 
         <return class="data"/>
