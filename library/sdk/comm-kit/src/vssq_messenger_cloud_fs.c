@@ -689,6 +689,7 @@ vssq_messenger_cloud_fs_create_folder(const vssq_messenger_cloud_fs_t *self, vsc
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(name));
     VSSQ_ASSERT(vsc_str_is_valid(parent_folder_id));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(folder_encrypted_key));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(folder_public_key));
