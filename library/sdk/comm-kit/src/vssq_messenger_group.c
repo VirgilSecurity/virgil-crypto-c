@@ -622,12 +622,23 @@ vssq_messenger_group_encrypted_message_len(const vssq_messenger_group_t *self, s
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_group_encrypt_message(const vssq_messenger_group_t *self, vsc_str_t plaintext, vsc_buffer_t *out) {
 
+    VSSQ_ASSERT(vsc_str_is_valid(plaintext));
+
+    return vssq_messenger_group_encrypt_binary_message(self, vsc_str_as_data(plaintext), out);
+}
+
+//
+//  Encrypt a group message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_encrypt_binary_message(const vssq_messenger_group_t *self, vsc_data_t data, vsc_buffer_t *out) {
+
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->auth);
     VSSQ_ASSERT_PTR(self->group_session);
-    VSSQ_ASSERT(vsc_str_is_valid(plaintext));
+    VSSQ_ASSERT(vsc_data_is_valid(data));
     VSSQ_ASSERT(vsc_buffer_is_valid(out));
-    VSSQ_ASSERT(vsc_buffer_unused_len(out) >= vssq_messenger_group_encrypted_message_len(self, plaintext.len));
+    VSSQ_ASSERT(vsc_buffer_unused_len(out) >= vssq_messenger_group_encrypted_message_len(self, data.len));
 
     const vssq_messenger_creds_t *self_creds = vssq_messenger_auth_creds(self->auth);
     const vscf_impl_t *self_private_key = vssq_messenger_creds_private_key(self_creds);
@@ -635,8 +646,8 @@ vssq_messenger_group_encrypt_message(const vssq_messenger_group_t *self, vsc_str
     vscf_error_t foundation_error;
     vscf_error_reset(&foundation_error);
 
-    vscf_group_session_message_t *session_message = vscf_group_session_encrypt(
-            self->group_session, vsc_str_as_data(plaintext), self_private_key, &foundation_error);
+    vscf_group_session_message_t *session_message =
+            vscf_group_session_encrypt(self->group_session, data, self_private_key, &foundation_error);
 
     if (vscf_error_has_error(&foundation_error)) {
         const vssq_status_t status = vssq_messenger_group_map_foundation_status(vscf_error_status(&foundation_error));
@@ -669,16 +680,27 @@ VSSQ_PUBLIC vssq_status_t
 vssq_messenger_group_decrypt_message(const vssq_messenger_group_t *self, vsc_data_t encrypted_message,
         const vssq_messenger_user_t *from_user, vsc_str_buffer_t *out) {
 
+    VSSQ_ASSERT(vsc_str_buffer_is_valid(out));
+
+    return vssq_messenger_group_decrypt_binary_message(self, encrypted_message, from_user, &out->buffer);
+}
+
+//
+//  Decrypt a group message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_decrypt_binary_message(const vssq_messenger_group_t *self, vsc_data_t encrypted_message,
+        const vssq_messenger_user_t *from_user, vsc_buffer_t *out) {
+
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->auth);
     VSSQ_ASSERT_PTR(from_user);
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(encrypted_message));
-    VSSQ_ASSERT(vsc_str_buffer_is_valid(out));
-    VSSQ_ASSERT(
-            vsc_str_buffer_unused_len(out) >= vssq_messenger_group_decrypted_message_len(self, encrypted_message.len));
+    VSSQ_ASSERT(vsc_buffer_is_valid(out));
+    VSSQ_ASSERT(vsc_buffer_unused_len(out) >= vssq_messenger_group_decrypted_message_len(self, encrypted_message.len));
 
     //
-    //  Deserialize messege.
+    //  Deserialize message.
     //
     vscf_error_t foundation_error;
     vscf_error_reset(&foundation_error);
@@ -702,13 +724,12 @@ vssq_messenger_group_decrypt_message(const vssq_messenger_group_t *self, vsc_dat
     }
 
     //
-    //  Decrypt messege.
+    //  Decrypt message.
     //
     const vssc_card_t *sender_card = vssq_messenger_user_card(from_user);
     const vscf_impl_t *sender_public_key = vssc_card_public_key(sender_card);
 
-    foundation_error.status =
-            vscf_group_session_decrypt(self->group_session, group_message, sender_public_key, &out->buffer);
+    foundation_error.status = vscf_group_session_decrypt(self->group_session, group_message, sender_public_key, out);
 
     vscf_group_session_message_destroy(&group_message);
 

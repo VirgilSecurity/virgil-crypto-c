@@ -227,6 +227,13 @@ vssq_messenger_group_encrypt_message(const vssq_messenger_group_t *self, vsc_str
         vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
+//  Encrypt a group message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_encrypt_binary_message(const vssq_messenger_group_t *self, vsc_data_t data,
+        vsc_buffer_t *out) VSSQ_NODISCARD;
+
+//
 //  Return a buffer length enough to hold a decrypted message.
 //
 VSSQ_PUBLIC size_t
@@ -238,6 +245,13 @@ vssq_messenger_group_decrypted_message_len(const vssq_messenger_group_t *self, s
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_group_decrypt_message(const vssq_messenger_group_t *self, vsc_data_t encrypted_message,
         const vssq_messenger_user_t *from_user, vsc_str_buffer_t *out) VSSQ_NODISCARD;
+
+//
+//  Decrypt a group message.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_decrypt_binary_message(const vssq_messenger_group_t *self, vsc_data_t encrypted_message,
+        const vssq_messenger_user_t *from_user, vsc_buffer_t *out) VSSQ_NODISCARD;
 
 //
 //  Check if current user can modify a group.

@@ -80,6 +80,21 @@
     </method>
 
 
+    <method name="encrypt binary message" is_const="1">
+        Encrypt a group message.
+
+        <argument name="data" class="data"/>
+
+        <argument name="out" class="buffer">
+            <length method="encrypted message len">
+                <proxy argument="data" to="plaintext len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
     <method name="decrypted message len" is_const="1">
         Return a buffer length enough to hold a decrypted message.
 
@@ -97,6 +112,23 @@
         <argument name="from user" class="messenger user"/>
 
         <argument name="out" class="str buffer">
+            <length method="decrypted message len">
+                <proxy argument="encrypted message" to="encrypted len" cast="data_length"/>
+            </length>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="decrypt binary message" is_const="1">
+        Decrypt a group message.
+
+        <argument name="encrypted message" class="data"/>
+
+        <argument name="from user" class="messenger user"/>
+
+        <argument name="out" class="buffer">
             <length method="decrypted message len">
                 <proxy argument="encrypted message" to="encrypted len" cast="data_length"/>
             </length>
