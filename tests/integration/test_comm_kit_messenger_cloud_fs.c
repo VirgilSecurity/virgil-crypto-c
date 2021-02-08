@@ -50,6 +50,65 @@
 #include <virgil/sdk/core/vssc_unix_time.h>
 
 
+// clang-format off
+static const byte k256_russian_symbols_utf8_encoded_as_512_bytes[] = {
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+    0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91, 0xd1, 0x91,
+};
+
+
+static const byte k257_symbols[] = {
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61, 0x61,
+    0x61,
+};
+// clang-format on
+
+
 void
 compare_file_infos(
         const vssq_messenger_cloud_fs_file_info_t *expected, const vssq_messenger_cloud_fs_file_info_t *actual) {
@@ -402,6 +461,291 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
     vssq_messenger_cloud_fs_created_file_destroy(&created_file2);
     vssq_messenger_cloud_fs_folder_destroy(&root_folder);
 }
+
+
+void
+test__messenger_cloud_fs_create_file__with_duplicated_names__got_error(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create file.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+    vsc_str_t file_name = vsc_str_from_str("hello.txt");
+    vsc_str_t file_type = vsc_str_from_str("text/plain");
+    size_t file_size = 1024;
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
+
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
+            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    vssq_messenger_cloud_fs_created_file_t *no_file = vssq_messenger_cloud_fs_create_file(
+            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_NOT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_NULL(no_file);
+
+    //
+    //  Delete file.
+    //
+    const vssq_messenger_cloud_fs_file_info_t *file_info = vssq_messenger_cloud_fs_created_file_info(created_file);
+    vsc_str_t created_file_id = vssq_messenger_cloud_fs_file_info_id(file_info);
+    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+    vssq_messenger_cloud_fs_created_file_destroy(&created_file);
+}
+
+
+void
+test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create folder.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+    vsc_str_t folder_name = vsc_str_from_str("temp");
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
+    vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
+
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_create_folder(
+            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    vssq_messenger_cloud_fs_folder_info_t *no_folder_info = vssq_messenger_cloud_fs_create_folder(
+            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_NOT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_NULL(no_folder_info);
+
+    //
+    //  Delete folder.
+    //
+    vsc_str_t created_folder_id = vssq_messenger_cloud_fs_folder_info_id(folder_info);
+    error.status = vssq_messenger_cloud_fs_delete_folder(cloud_fs, created_folder_id);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+    vssq_messenger_cloud_fs_folder_info_destroy(&folder_info);
+}
+
+
+void
+test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_and_names_matches(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create file.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+
+    vsc_str_t file_name = vsc_str_from_data(vsc_data(
+            k256_russian_symbols_utf8_encoded_as_512_bytes, sizeof(k256_russian_symbols_utf8_encoded_as_512_bytes)));
+    vsc_str_t file_type = vsc_str_from_str("text/plain");
+    size_t file_size = 1024;
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
+
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
+            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+    TEST_ASSERT_NOT_NULL(created_file);
+
+    const vssq_messenger_cloud_fs_file_info_t *file_info = vssq_messenger_cloud_fs_created_file_info(created_file);
+
+    vsc_str_t created_file_id = vssq_messenger_cloud_fs_file_info_id(file_info);
+    TEST_ASSERT_EQUAL(32, vsc_str_len(created_file_id));
+
+    vsc_str_t created_file_name = vssq_messenger_cloud_fs_file_info_name(file_info);
+    TEST_ASSERT_EQUAL_STR(file_name, created_file_name);
+
+    vsc_str_t my_identity = vssq_messenger_user_identity(vssq_messenger_user(messenger));
+    vsc_str_t created_file_updated_by = vssq_messenger_cloud_fs_file_info_updated_by(file_info);
+    TEST_ASSERT_EQUAL_STR(my_identity, created_file_updated_by);
+
+    //
+    //  Delete file.
+    //
+    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+    vssq_messenger_cloud_fs_created_file_destroy(&created_file);
+}
+
+
+void
+test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__success_and_names_matches(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create folder.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+    vsc_str_t folder_name = vsc_str_from_data(vsc_data(
+            k256_russian_symbols_utf8_encoded_as_512_bytes, sizeof(k256_russian_symbols_utf8_encoded_as_512_bytes)));
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
+    vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
+
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_create_folder(
+            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+    TEST_ASSERT_NOT_NULL(folder_info);
+
+    vsc_str_t created_folder_id = vssq_messenger_cloud_fs_folder_info_id(folder_info);
+    TEST_ASSERT_EQUAL(32, vsc_str_len(created_folder_id));
+
+    vsc_str_t created_folder_name = vssq_messenger_cloud_fs_folder_info_name(folder_info);
+    TEST_ASSERT_EQUAL_STR(folder_name, created_folder_name);
+
+    //
+    //  Delete folder.
+    //
+    error.status = vssq_messenger_cloud_fs_delete_folder(cloud_fs, created_folder_id);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+    vssq_messenger_cloud_fs_folder_info_destroy(&folder_info);
+}
+
+
+void
+test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create file.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+
+    vsc_str_t file_name = vsc_str_from_data(vsc_data(k257_symbols, sizeof(k257_symbols)));
+
+    vsc_str_t file_type = vsc_str_from_str("text/plain");
+    size_t file_size = 1024;
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
+
+    vssq_messenger_cloud_fs_created_file_t *no_file = vssq_messenger_cloud_fs_create_file(
+            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_NOT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_NULL(no_file);
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+}
+
+
+void
+test__messenger_cloud_fs_create_folder__with_257_symbols_in_name__expect_error(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *messenger = create_messenger_and_register_user();
+
+    //
+    //  Create folder.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+
+    vsc_str_t folder_name = vsc_str_from_data(vsc_data(k257_symbols, sizeof(k257_symbols)));
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
+    vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
+
+    vssq_messenger_cloud_fs_folder_info_t *no_folder_info = vssq_messenger_cloud_fs_create_folder(
+            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+
+    //
+    //  Check.
+    //
+    TEST_ASSERT_NOT_EQUAL(vssq_status_SUCCESS, vssq_error_status(&error));
+    TEST_ASSERT_NULL(no_folder_info);
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&messenger);
+}
+
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -413,10 +757,16 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    RUN_TEST(test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link);
-    RUN_TEST(test__messenger_cloud_fs_get_download_link__of_created_file__success);
-    RUN_TEST(test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
-    RUN_TEST(test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files_listed);
+    // RUN_TEST(test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link);
+    // RUN_TEST(test__messenger_cloud_fs_get_download_link__of_created_file__success);
+    // RUN_TEST(test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
+    // RUN_TEST(test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files_listed);
+    // RUN_TEST(test__messenger_cloud_fs_create_file__with_duplicated_names__got_error);
+    // RUN_TEST(test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error);
+    // RUN_TEST(test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_and_names_matches);
+    // RUN_TEST(test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__success_and_names_matches);
+    RUN_TEST(test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error);
+    RUN_TEST(test__messenger_cloud_fs_create_folder__with_257_symbols_in_name__expect_error);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
