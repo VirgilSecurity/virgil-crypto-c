@@ -54,6 +54,7 @@
 #include "vscf_memory.h"
 #include "vscf_assert.h"
 #include "vscf_group_session_defs.h"
+#include "vscf_message_cipher.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_ed25519.h"
 #include "vscf_private_key.h"
@@ -62,10 +63,10 @@
 #include "vscf_group_session_message_internal.h"
 #include "vscf_group_session_ticket_internal.h"
 
-#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <vscf_GroupMessage.pb.h>
 #include <pb_decode.h>
 #include <pb_encode.h>
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -252,9 +253,7 @@ vscf_group_session_shallow_copy_const(const vscf_group_session_t *self) {
 }
 
 //
-//  Random
-//
-//  Note, ownership is shared.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
@@ -271,9 +270,7 @@ vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng) {
 }
 
 //
-//  Random
-//
-//  Note, ownership is transfered.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -321,7 +318,6 @@ vscf_group_session_init_ctx(vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    self->cipher = vscf_message_cipher_new();
     self->padding = vscf_message_padding_new();
 }
 
@@ -335,7 +331,6 @@ vscf_group_session_cleanup_ctx(vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_message_cipher_destroy(&self->cipher);
     vscf_message_padding_destroy(&self->padding);
     vscf_group_session_epoch_node_destroy(&self->last_epoch);
 }
@@ -348,9 +343,8 @@ vscf_group_session_did_setup_rng(vscf_group_session_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->rng) {
-        vscf_message_padding_use_rng(self->padding, self->rng);
-    }
+    vscf_message_padding_release_rng(self->padding);
+    vscf_message_padding_use_rng(self->padding, self->rng);
 }
 
 //
@@ -359,7 +353,9 @@ vscf_group_session_did_setup_rng(vscf_group_session_t *self) {
 static void
 vscf_group_session_did_release_rng(vscf_group_session_t *self) {
 
-    VSCF_UNUSED(self);
+    VSCF_ASSERT_PTR(self);
+
+    vscf_message_padding_release_rng(self->padding);
 }
 
 //
@@ -540,7 +536,7 @@ vscf_group_session_encrypt(
 
     msg->message_pb.regular_message.header.size = header_stream.bytes_written;
 
-    size_t len = vscf_message_cipher_encrypt_len(self->cipher, vscf_message_padding_padded_len(plain_text.len));
+    size_t len = vscf_message_cipher_encrypt_len(vscf_message_padding_padded_len(plain_text.len));
 
     msg->message_pb.regular_message.cipher_text = vscf_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(len));
 
@@ -548,7 +544,7 @@ vscf_group_session_encrypt(
     vsc_buffer_init(&cipher_text);
     vsc_buffer_use(&cipher_text, msg->message_pb.regular_message.cipher_text->bytes, len);
 
-    status = vscf_message_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, self->last_epoch->value->key,
+    status = vscf_message_cipher_pad_then_encrypt(self->padding, plain_text, self->last_epoch->value->key,
             vsc_buffer_bytes(salt),
             vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
             &cipher_text);
@@ -604,7 +600,7 @@ vscf_group_session_decrypt_len(const vscf_group_session_t *self, const vscf_grou
     VSCF_ASSERT(message->message_pb.has_regular_message);
     VSCF_ASSERT_PTR(message->header_pb);
 
-    return vscf_message_cipher_decrypt_len(self->cipher, message->message_pb.regular_message.cipher_text->size);
+    return vscf_message_cipher_decrypt_len(message->message_pb.regular_message.cipher_text->size);
 }
 
 //
@@ -659,7 +655,7 @@ vscf_group_session_decrypt(const vscf_group_session_t *self, const vscf_group_se
         goto err;
     }
 
-    status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
+    status = vscf_message_cipher_decrypt_then_remove_pad(
             vsc_data(message->message_pb.regular_message.cipher_text->bytes,
                     message->message_pb.regular_message.cipher_text->size),
             epoch->value->key, message->header_pb->salt,

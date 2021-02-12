@@ -47,9 +47,9 @@
 #include "vscf_message_cipher.h"
 #include "vscf_memory.h"
 #include "vscf_assert.h"
-#include "vscf_message_cipher_defs.h"
 #include "vscf_sha512.h"
 #include "vscf_hkdf.h"
+#include "vscf_aes256_gcm.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
@@ -78,178 +78,19 @@ static const byte group_session_kdf_cipher_info[] = {
 // --------------------------------------------------------------------------
 
 //
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_message_cipher_init() is called.
-//  Note, that context is already zeroed.
+//  Configure given symmetric cipher.
 //
 static void
-vscf_message_cipher_init_ctx(vscf_message_cipher_t *self);
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscf_message_cipher_cleanup_ctx(vscf_message_cipher_t *self);
-
-static void
-vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
+vscf_message_cipher_configure_cipher(vscf_aes256_gcm_t *cipher, const vscf_group_session_symmetric_key_t key,
         const vscf_group_session_salt_t salt);
 
 static vscf_status_t
-vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
+vscf_message_cipher_encrypt(const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt,
+        vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
-
-//
-//  Return size of 'vscf_message_cipher_t'.
-//
-VSCF_PUBLIC size_t
-vscf_message_cipher_ctx_size(void) {
-
-    return sizeof(vscf_message_cipher_t);
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_init(vscf_message_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_message_cipher_t));
-
-    self->refcnt = 1;
-
-    vscf_message_cipher_init_ctx(self);
-}
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_cleanup(vscf_message_cipher_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    vscf_message_cipher_cleanup_ctx(self);
-
-    vscf_zeroize(self, sizeof(vscf_message_cipher_t));
-}
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_message_cipher_t *
-vscf_message_cipher_new(void) {
-
-    vscf_message_cipher_t *self = (vscf_message_cipher_t *) vscf_alloc(sizeof (vscf_message_cipher_t));
-    VSCF_ASSERT_ALLOC(self);
-
-    vscf_message_cipher_init(self);
-
-    self->self_dealloc_cb = vscf_dealloc;
-
-    return self;
-}
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_delete(const vscf_message_cipher_t *self) {
-
-    vscf_message_cipher_t *local_self = (vscf_message_cipher_t *)self;
-
-    if (local_self == NULL) {
-        return;
-    }
-
-    size_t old_counter = local_self->refcnt;
-    VSCF_ASSERT(old_counter != 0);
-    size_t new_counter = old_counter - 1;
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&local_self->refcnt, &old_counter, new_counter)) {
-        old_counter = local_self->refcnt;
-        VSCF_ASSERT(old_counter != 0);
-        new_counter = old_counter - 1;
-    }
-    #else
-    local_self->refcnt = new_counter;
-    #endif
-
-    if (new_counter > 0) {
-        return;
-    }
-
-    vscf_dealloc_fn self_dealloc_cb = local_self->self_dealloc_cb;
-
-    vscf_message_cipher_cleanup(local_self);
-
-    if (self_dealloc_cb != NULL) {
-        self_dealloc_cb(local_self);
-    }
-}
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_message_cipher_new ()'.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_destroy(vscf_message_cipher_t **self_ref) {
-
-    VSCF_ASSERT_PTR(self_ref);
-
-    vscf_message_cipher_t *self = *self_ref;
-    *self_ref = NULL;
-
-    vscf_message_cipher_delete(self);
-}
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_message_cipher_t *
-vscf_message_cipher_shallow_copy(vscf_message_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    size_t old_counter;
-    size_t new_counter;
-    do {
-        old_counter = self->refcnt;
-        new_counter = old_counter + 1;
-    } while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
-    #else
-    ++self->refcnt;
-    #endif
-
-    return self;
-}
-
-//
-//  Copy given class context by increasing reference counter.
-//  Reference counter is internally synchronized, so constness is presumed.
-//
-VSCF_PUBLIC const vscf_message_cipher_t *
-vscf_message_cipher_shallow_copy_const(const vscf_message_cipher_t *self) {
-
-    return vscf_message_cipher_shallow_copy((vscf_message_cipher_t *)self);
-}
+vscf_message_cipher_decrypt(const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt,
+        vsc_data_t cipher_text, vsc_data_t additional_data, vsc_buffer_t *buffer) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------
@@ -259,56 +100,32 @@ vscf_message_cipher_shallow_copy_const(const vscf_message_cipher_t *self) {
 //  @end
 
 
-//
-//  Perform context specific initialization.
-//  Note, this method is called automatically when method vscf_message_cipher_init() is called.
-//  Note, that context is already zeroed.
-//
-static void
-vscf_message_cipher_init_ctx(vscf_message_cipher_t *self) {
+VSCF_PUBLIC size_t
+vscf_message_cipher_encrypt_len(size_t plain_text_len) {
 
-    VSCF_ASSERT_PTR(self);
-
-    self->aes256_gcm = vscf_aes256_gcm_new();
-}
-
-//
-//  Release all inner resources.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-static void
-vscf_message_cipher_cleanup_ctx(vscf_message_cipher_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_aes256_gcm_destroy(&self->aes256_gcm);
+    //
+    //  In-lined vscf_aes256_gcm_encrypted_len()
+    //
+    return plain_text_len + vscf_aes256_gcm_BLOCK_LEN + vscf_aes256_gcm_AUTH_TAG_LEN;
 }
 
 VSCF_PUBLIC size_t
-vscf_message_cipher_encrypt_len(vscf_message_cipher_t *self, size_t plain_text_len) {
+vscf_message_cipher_decrypt_len(size_t cipher_text_len) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
-
-    return vscf_aes256_gcm_encrypted_len(self->aes256_gcm, plain_text_len);
+    //
+    //  In-lined vscf_aes256_gcm_auth_decrypted_len()
+    //
+    return cipher_text_len + vscf_aes256_gcm_BLOCK_LEN;
 }
 
-VSCF_PUBLIC size_t
-vscf_message_cipher_decrypt_len(vscf_message_cipher_t *self, size_t cipher_text_len) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
-
-    return vscf_aes256_gcm_auth_decrypted_len(self->aes256_gcm, cipher_text_len);
-}
-
+//
+//  Configure given symmetric cipher.
+//
 static void
-vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt) {
+vscf_message_cipher_configure_cipher(
+        vscf_aes256_gcm_t *cipher, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
+    VSCF_ASSERT_PTR(cipher);
 
     vscf_hkdf_t *hkdf = vscf_hkdf_new();
     vscf_hkdf_take_hash(hkdf, vscf_sha512_impl(vscf_sha512_new()));
@@ -325,54 +142,52 @@ vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_s
 
     vscf_hkdf_destroy(&hkdf);
 
-    vscf_aes256_gcm_set_key(self->aes256_gcm, vsc_data(derived_secret, vscf_aes256_gcm_KEY_LEN));
-    vscf_aes256_gcm_set_nonce(
-            self->aes256_gcm, vsc_data(derived_secret + vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
+    vscf_aes256_gcm_set_key(cipher, vsc_data(derived_secret, vscf_aes256_gcm_KEY_LEN));
+    vscf_aes256_gcm_set_nonce(cipher, vsc_data(derived_secret + vscf_aes256_gcm_KEY_LEN, vscf_aes256_gcm_NONCE_LEN));
 
     vsc_buffer_delete(&buffer);
     vscf_zeroize(derived_secret, sizeof(derived_secret));
 }
 
 static vscf_status_t
-vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer) {
+vscf_message_cipher_encrypt(const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt,
+        vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
+    VSCF_ASSERT(vsc_buffer_unused_len(buffer) >= vscf_message_cipher_encrypt_len(plain_text.len));
 
-    VSCF_ASSERT(vsc_buffer_unused_len(buffer) >= vscf_message_cipher_encrypt_len(self, plain_text.len));
+    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
 
-    vscf_message_cipher_setup_cipher(self, salt, key);
+    vscf_message_cipher_configure_cipher(cipher, salt, key);
 
-    vscf_status_t result = vscf_aes256_gcm_auth_encrypt(self->aes256_gcm, plain_text, additional_data, buffer, NULL);
+    vscf_status_t result = vscf_aes256_gcm_auth_encrypt(cipher, plain_text, additional_data, buffer, NULL);
+
+    vscf_aes256_gcm_destroy(&cipher);
 
     return result;
 }
 
 static vscf_status_t
-vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) {
+vscf_message_cipher_decrypt(const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt,
+        vsc_data_t cipher_text, vsc_data_t additional_data, vsc_buffer_t *buffer) {
 
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(self->aes256_gcm);
+    VSCF_ASSERT(vsc_buffer_unused_len(buffer) >= vscf_message_cipher_decrypt_len(cipher_text.len));
 
-    VSCF_ASSERT(vsc_buffer_unused_len(buffer) >= vscf_message_cipher_decrypt_len(self, cipher_text.len));
+    vscf_aes256_gcm_t *cipher = vscf_aes256_gcm_new();
 
-    vscf_message_cipher_setup_cipher(self, salt, key);
+    vscf_message_cipher_configure_cipher(cipher, salt, key);
 
-    vscf_status_t result =
-            vscf_aes256_gcm_auth_decrypt(self->aes256_gcm, cipher_text, additional_data, vsc_data_empty(), buffer);
+    vscf_status_t result = vscf_aes256_gcm_auth_decrypt(cipher, cipher_text, additional_data, vsc_data_empty(), buffer);
+
+    vscf_aes256_gcm_destroy(&cipher);
 
     return result;
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_message_cipher_pad_then_encrypt(vscf_message_cipher_t *self, vscf_message_padding_t *padding, vsc_data_t data,
+vscf_message_cipher_pad_then_encrypt(vscf_message_padding_t *padding, vsc_data_t data,
         const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t ad,
         vsc_buffer_t *cipher_text) {
 
-    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(padding);
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT_PTR(cipher_text);
@@ -389,7 +204,7 @@ vscf_message_cipher_pad_then_encrypt(vscf_message_cipher_t *self, vscf_message_p
         goto err;
     }
 
-    result = vscf_message_cipher_encrypt(self, salt, key, vsc_buffer_data(temp), ad, cipher_text);
+    result = vscf_message_cipher_encrypt(salt, key, vsc_buffer_data(temp), ad, cipher_text);
 
 err:
     vsc_buffer_destroy(&temp);
@@ -398,19 +213,17 @@ err:
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_message_cipher_decrypt_then_remove_pad(vscf_message_cipher_t *self, vsc_data_t data,
-        const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t ad,
-        vsc_buffer_t *plain_text) {
+vscf_message_cipher_decrypt_then_remove_pad(vsc_data_t data, const vscf_group_session_symmetric_key_t key,
+        const vscf_group_session_salt_t salt, vsc_data_t ad, vsc_buffer_t *plain_text) {
 
-    VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(key);
     VSCF_ASSERT_PTR(plain_text);
 
-    size_t size = vscf_message_cipher_decrypt_len(self, data.len);
+    size_t size = vscf_message_cipher_decrypt_len(data.len);
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
     vsc_buffer_make_secure(temp);
 
-    vscf_status_t result = vscf_message_cipher_decrypt(self, salt, key, data, ad, temp);
+    vscf_status_t result = vscf_message_cipher_decrypt(salt, key, data, ad, temp);
 
     if (result != vscf_status_SUCCESS) {
         goto err;

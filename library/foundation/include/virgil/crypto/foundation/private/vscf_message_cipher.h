@@ -77,80 +77,20 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'message cipher' context.
-//
-#ifndef VSCF_MESSAGE_CIPHER_T_DEFINED
-#define VSCF_MESSAGE_CIPHER_T_DEFINED
-    typedef struct vscf_message_cipher_t vscf_message_cipher_t;
-#endif // VSCF_MESSAGE_CIPHER_T_DEFINED
-
-//
-//  Return size of 'vscf_message_cipher_t'.
-//
 VSCF_PUBLIC size_t
-vscf_message_cipher_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_init(vscf_message_cipher_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_cleanup(vscf_message_cipher_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_message_cipher_t *
-vscf_message_cipher_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_delete(const vscf_message_cipher_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_message_cipher_new ()'.
-//
-VSCF_PUBLIC void
-vscf_message_cipher_destroy(vscf_message_cipher_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_message_cipher_t *
-vscf_message_cipher_shallow_copy(vscf_message_cipher_t *self);
-
-//
-//  Copy given class context by increasing reference counter.
-//  Reference counter is internally synchronized, so constness is presumed.
-//
-VSCF_PUBLIC const vscf_message_cipher_t *
-vscf_message_cipher_shallow_copy_const(const vscf_message_cipher_t *self);
+vscf_message_cipher_encrypt_len(size_t plain_text_len);
 
 VSCF_PUBLIC size_t
-vscf_message_cipher_encrypt_len(vscf_message_cipher_t *self, size_t plain_text_len);
-
-VSCF_PUBLIC size_t
-vscf_message_cipher_decrypt_len(vscf_message_cipher_t *self, size_t cipher_text_len);
+vscf_message_cipher_decrypt_len(size_t cipher_text_len);
 
 VSCF_PUBLIC vscf_status_t
-vscf_message_cipher_pad_then_encrypt(vscf_message_cipher_t *self, vscf_message_padding_t *padding, vsc_data_t data,
+vscf_message_cipher_pad_then_encrypt(vscf_message_padding_t *padding, vsc_data_t data,
         const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t ad,
         vsc_buffer_t *cipher_text) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_message_cipher_decrypt_then_remove_pad(vscf_message_cipher_t *self, vsc_data_t data,
-        const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t ad,
-        vsc_buffer_t *plain_text) VSCF_NODISCARD;
+vscf_message_cipher_decrypt_then_remove_pad(vsc_data_t data, const vscf_group_session_symmetric_key_t key,
+        const vscf_group_session_salt_t salt, vsc_data_t ad, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

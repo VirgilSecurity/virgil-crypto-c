@@ -168,17 +168,13 @@ VSCF_PUBLIC const vscf_group_session_t *
 vscf_group_session_shallow_copy_const(const vscf_group_session_t *self);
 
 //
-//  Random
-//
-//  Note, ownership is shared.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng);
 
 //
-//  Random
-//
-//  Note, ownership is transfered.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
