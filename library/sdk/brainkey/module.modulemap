@@ -1,0 +1,4 @@
+framework module VSSBrainkey {
+    header "vssb_brainkey_sdk_public.h"
+    export *
+}

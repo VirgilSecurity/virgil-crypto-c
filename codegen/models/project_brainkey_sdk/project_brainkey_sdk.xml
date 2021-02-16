@@ -1,0 +1,48 @@
+<project
+        name="brainkey sdk"
+        brief="Virgil Security Brainkey SDK"
+        package="sdk brainkey"
+        namespace="virgil sdk brainkey"
+        framework="VSSBrainkey"
+        prefix="vssb"
+        wrappers=""
+        >
+
+    <version major="0" minor="16" patch="0"/>
+
+    Virgil Security provides an SDK which allows you to communicate with Virgil Brainkey Service
+    and implement Brainkey protocol in order to generate user's Brainkey.
+    Brainkey is a user's Private Key that is generated from a user's password.
+    Brainkey can be easily restored and is resistant to online and offline attacks.
+
+    <require project="common" feature="library"/>
+    <require project="foundation" feature="library"/>
+    <require project="core sdk" feature="library"/>
+
+
+    <feature name="multi threading" default="on">
+        Enable multi-threading safety for Brainkey SDK.
+    </feature>
+
+    <module name="assert" from="shared"/>
+    <module name="library" from="shared"/>
+    <module name="memory" from="shared"/>
+    <module name="atomic" from="shared"/>
+
+    <enum name="status"/>
+
+    <!-- Common modules -->
+    <class name="error" from="shared"/>
+    <class name="error message" from="shared"/>
+
+    <!-- Brainkey modules -->
+    <class name="brainkey client"/>
+    <class name="brainkey password"/>
+
+    <error_message_getter success="0">
+        <require enum="status"/>
+
+        char error_message[48] = {0x00};
+        snprintf(error_message, sizeof(error_message), "Unhandled vsc::brainkey_sdk error -0x%04x", error);
+    </error_message_getter>
+</project>

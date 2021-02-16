@@ -58,6 +58,12 @@ macro(_add_test test)
         target_link_libraries(${test} vsc::keyknox_sdk)
     endif()
 
+
+    if(TARGET vsc::brainkey_sdk)
+        target_link_libraries(${test} vsc::brainkey_sdk)
+    endif()
+
+
     if(TARGET vsc::comm_kit)
         target_link_libraries(${test} vsc::comm_kit)
         target_sources(${test} PRIVATE
@@ -82,6 +88,11 @@ endif()
 
 if(TARGET vsc::keyknox_sdk)
     _add_test(test_keyknox_service)
+endif()
+
+
+if(TARGET vsc::brainkey_sdk)
+    _add_test(test_brainkey_service)
 endif()
 
 
