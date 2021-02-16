@@ -203,15 +203,6 @@ extern "C" {
 #endif
 
 //
-//  Defines namespace include prefix for project 'pythia'.
-//
-#if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_PYTHIA_FROM_FRAMEWORK
-#else
-#define VSSQ_IMPORT_PROJECT_PYTHIA_FROM_FRAMEWORK 0
-#endif
-
-//
 //  Defines namespace include prefix for project 'core sdk'.
 //
 #if !defined(VSSQ_INTERNAL_BUILD)
@@ -221,12 +212,12 @@ extern "C" {
 #endif
 
 //
-//  Defines namespace include prefix for project 'pythia sdk'.
+//  Defines namespace include prefix for project 'brainkey sdk'.
 //
 #if !defined(VSSQ_INTERNAL_BUILD)
-#cmakedefine01 VSSQ_IMPORT_PROJECT_PYTHIA_SDK_FROM_FRAMEWORK
+#cmakedefine01 VSSQ_IMPORT_PROJECT_BRAINKEY_SDK_FROM_FRAMEWORK
 #else
-#define VSSQ_IMPORT_PROJECT_PYTHIA_SDK_FROM_FRAMEWORK 0
+#define VSSQ_IMPORT_PROJECT_BRAINKEY_SDK_FROM_FRAMEWORK 0
 #endif
 
 //

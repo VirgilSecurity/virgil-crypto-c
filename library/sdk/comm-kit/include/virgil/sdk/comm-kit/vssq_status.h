@@ -165,17 +165,17 @@ enum vssq_status_t {
     //
     vssq_status_GENERATE_BRAINKEY_FAILED_DEBLIND_FAILED = -504,
     //
-    //  Failed to generate brain key because requesting seed from the service failed.
+    //  Failed to generate brain key because requesting hardened point from the service failed.
     //
-    vssq_status_GENERATE_BRAINKEY_FAILED_SEED_REQUEST_FAILED = -505,
+    vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_REQUEST_FAILED = -505,
     //
-    //  Failed to generate brain key because seed response was returned with error.
+    //  Failed to generate brain key because hardened point response was returned with error.
     //
-    vssq_status_GENERATE_BRAINKEY_FAILED_SEED_RESPONSE_WITH_ERROR = -506,
+    vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_RESPONSE_WITH_ERROR = -506,
     //
-    //  Failed to generate brain key because parsing seed response failed.
+    //  Failed to generate brain key because parsing hardened point response failed.
     //
-    vssq_status_GENERATE_BRAINKEY_FAILED_SEED_PARSE_FAILED = -507,
+    vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_PARSE_FAILED = -507,
     //
     //  Failed to process Keyknox entry because send operation failed.
     //

@@ -174,26 +174,6 @@ extern "C" {
     } while (0)
 
 //
-//  This macros can be used as project 'pythia' error handlind post-condition.
-//
-#define VSSQ_ASSERT_PROJECT_PYTHIA_UNHANDLED_ERROR(error)                                                      \
-    do {                                                                                                       \
-        VSSQ_ASSERT((error) != 0);                                                                             \
-        vssq_assert_trigger_unhandled_error_of_project_pythia((int)(error), VSSQ_FILE_PATH_OR_NAME, __LINE__); \
-    } while (0)
-
-//
-//  This macros can be used to ensure that project 'pythia' operation
-//  returns success status code.
-//
-#define VSSQ_ASSERT_PROJECT_PYTHIA_SUCCESS(status)              \
-    do {                                                        \
-        if ((status) != 0) {                                    \
-            VSSQ_ASSERT_PROJECT_PYTHIA_UNHANDLED_ERROR(status); \
-        }                                                       \
-    } while (0)
-
-//
 //  This macros can be used as project 'core sdk' error handlind post-condition.
 //
 #define VSSQ_ASSERT_PROJECT_CORE_SDK_UNHANDLED_ERROR(error)                                                      \
@@ -214,23 +194,23 @@ extern "C" {
     } while (0)
 
 //
-//  This macros can be used as project 'pythia sdk' error handlind post-condition.
+//  This macros can be used as project 'brainkey sdk' error handlind post-condition.
 //
-#define VSSQ_ASSERT_PROJECT_PYTHIA_SDK_UNHANDLED_ERROR(error)                                                      \
-    do {                                                                                                           \
-        VSSQ_ASSERT((error) != 0);                                                                                 \
-        vssq_assert_trigger_unhandled_error_of_project_pythia_sdk((int)(error), VSSQ_FILE_PATH_OR_NAME, __LINE__); \
+#define VSSQ_ASSERT_PROJECT_BRAINKEY_SDK_UNHANDLED_ERROR(error)                                                      \
+    do {                                                                                                             \
+        VSSQ_ASSERT((error) != 0);                                                                                   \
+        vssq_assert_trigger_unhandled_error_of_project_brainkey_sdk((int)(error), VSSQ_FILE_PATH_OR_NAME, __LINE__); \
     } while (0)
 
 //
-//  This macros can be used to ensure that project 'pythia sdk' operation
+//  This macros can be used to ensure that project 'brainkey sdk' operation
 //  returns success status code.
 //
-#define VSSQ_ASSERT_PROJECT_PYTHIA_SDK_SUCCESS(status)              \
-    do {                                                            \
-        if ((status) != 0) {                                        \
-            VSSQ_ASSERT_PROJECT_PYTHIA_SDK_UNHANDLED_ERROR(status); \
-        }                                                           \
+#define VSSQ_ASSERT_PROJECT_BRAINKEY_SDK_SUCCESS(status)              \
+    do {                                                              \
+        if ((status) != 0) {                                          \
+            VSSQ_ASSERT_PROJECT_BRAINKEY_SDK_UNHANDLED_ERROR(status); \
+        }                                                             \
     } while (0)
 
 //
@@ -284,22 +264,16 @@ VSSQ_PUBLIC void
 vssq_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line);
 
 //
-//  Tell assertion handler that error of project 'pythia' is not handled.
-//
-VSSQ_PUBLIC void
-vssq_assert_trigger_unhandled_error_of_project_pythia(int error, const char *file, int line);
-
-//
 //  Tell assertion handler that error of project 'core sdk' is not handled.
 //
 VSSQ_PUBLIC void
 vssq_assert_trigger_unhandled_error_of_project_core_sdk(int error, const char *file, int line);
 
 //
-//  Tell assertion handler that error of project 'pythia sdk' is not handled.
+//  Tell assertion handler that error of project 'brainkey sdk' is not handled.
 //
 VSSQ_PUBLIC void
-vssq_assert_trigger_unhandled_error_of_project_pythia_sdk(int error, const char *file, int line);
+vssq_assert_trigger_unhandled_error_of_project_brainkey_sdk(int error, const char *file, int line);
 
 //
 //  Tell assertion handler that error of project 'keyknox sdk' is not handled.

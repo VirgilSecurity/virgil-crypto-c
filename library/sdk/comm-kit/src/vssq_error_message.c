@@ -232,25 +232,25 @@ static const vsc_str_t k_message_generate_brainkey_failed_deblind_failed = {
     sizeof(k_message_generate_brainkey_failed_deblind_failed_chars) - 1
 };
 
-static const char k_message_generate_brainkey_failed_seed_request_failed_chars[] = "Failed to generate brain key because requesting seed from the service failed.";
+static const char k_message_generate_brainkey_failed_hardened_point_request_failed_chars[] = "Failed to generate brain key because requesting hardened point from the service failed.";
 
-static const vsc_str_t k_message_generate_brainkey_failed_seed_request_failed = {
-    k_message_generate_brainkey_failed_seed_request_failed_chars,
-    sizeof(k_message_generate_brainkey_failed_seed_request_failed_chars) - 1
+static const vsc_str_t k_message_generate_brainkey_failed_hardened_point_request_failed = {
+    k_message_generate_brainkey_failed_hardened_point_request_failed_chars,
+    sizeof(k_message_generate_brainkey_failed_hardened_point_request_failed_chars) - 1
 };
 
-static const char k_message_generate_brainkey_failed_seed_response_with_error_chars[] = "Failed to generate brain key because seed response was returned with error.";
+static const char k_message_generate_brainkey_failed_hardened_point_response_with_error_chars[] = "Failed to generate brain key because hardened point response was returned with error.";
 
-static const vsc_str_t k_message_generate_brainkey_failed_seed_response_with_error = {
-    k_message_generate_brainkey_failed_seed_response_with_error_chars,
-    sizeof(k_message_generate_brainkey_failed_seed_response_with_error_chars) - 1
+static const vsc_str_t k_message_generate_brainkey_failed_hardened_point_response_with_error = {
+    k_message_generate_brainkey_failed_hardened_point_response_with_error_chars,
+    sizeof(k_message_generate_brainkey_failed_hardened_point_response_with_error_chars) - 1
 };
 
-static const char k_message_generate_brainkey_failed_seed_parse_failed_chars[] = "Failed to generate brain key because parsing seed response failed.";
+static const char k_message_generate_brainkey_failed_hardened_point_parse_failed_chars[] = "Failed to generate brain key because parsing hardened point response failed.";
 
-static const vsc_str_t k_message_generate_brainkey_failed_seed_parse_failed = {
-    k_message_generate_brainkey_failed_seed_parse_failed_chars,
-    sizeof(k_message_generate_brainkey_failed_seed_parse_failed_chars) - 1
+static const vsc_str_t k_message_generate_brainkey_failed_hardened_point_parse_failed = {
+    k_message_generate_brainkey_failed_hardened_point_parse_failed_chars,
+    sizeof(k_message_generate_brainkey_failed_hardened_point_parse_failed_chars) - 1
 };
 
 static const char k_message_keyknox_failed_request_failed_chars[] = "Failed to process Keyknox entry because send operation failed.";
@@ -705,12 +705,12 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_generate_brainkey_failed_blind_failed;
         case vssq_status_GENERATE_BRAINKEY_FAILED_DEBLIND_FAILED:
             return k_message_generate_brainkey_failed_deblind_failed;
-        case vssq_status_GENERATE_BRAINKEY_FAILED_SEED_REQUEST_FAILED:
-            return k_message_generate_brainkey_failed_seed_request_failed;
-        case vssq_status_GENERATE_BRAINKEY_FAILED_SEED_RESPONSE_WITH_ERROR:
-            return k_message_generate_brainkey_failed_seed_response_with_error;
-        case vssq_status_GENERATE_BRAINKEY_FAILED_SEED_PARSE_FAILED:
-            return k_message_generate_brainkey_failed_seed_parse_failed;
+        case vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_REQUEST_FAILED:
+            return k_message_generate_brainkey_failed_hardened_point_request_failed;
+        case vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_RESPONSE_WITH_ERROR:
+            return k_message_generate_brainkey_failed_hardened_point_response_with_error;
+        case vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_PARSE_FAILED:
+            return k_message_generate_brainkey_failed_hardened_point_parse_failed;
         case vssq_status_KEYKNOX_FAILED_REQUEST_FAILED:
             return k_message_keyknox_failed_request_failed;
         case vssq_status_KEYKNOX_FAILED_RESPONSE_WITH_ERROR:

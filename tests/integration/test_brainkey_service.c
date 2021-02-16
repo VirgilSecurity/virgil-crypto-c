@@ -61,7 +61,7 @@
 
 
 void
-test__harden___with_blinded_password__expects_seed_len_32_after_deblind(void) {
+test__harden__with_blinded_password__expects_seed_len_32_after_deblind(void) {
     const test_env_t *env = test_env_get();
 
     //
@@ -141,6 +141,7 @@ test__harden___with_blinded_password__expects_seed_len_32_after_deblind(void) {
     vssb_brainkey_client_destroy(&brainkey_client);
     vssc_http_request_destroy(&request);
     vssc_http_response_destroy(&response);
+    vssb_brainkey_hardened_point_destroy(&hardened_point);
     vsc_buffer_destroy(&deblind_factor);
     vsc_buffer_destroy(&blinded_point);
     vsc_buffer_destroy(&seed);
@@ -163,7 +164,7 @@ main(void) {
         return -1;
     }
 
-    RUN_TEST(test__harden___with_blinded_password__expects_seed_len_32_after_deblind);
+    RUN_TEST(test__harden__with_blinded_password__expects_seed_len_32_after_deblind);
 
     test_env_release();
 #else

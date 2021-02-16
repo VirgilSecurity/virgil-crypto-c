@@ -93,16 +93,16 @@
         Failed to generate brain key because of deblind fail.
     </constant>
 
-    <constant name="generate brainkey failed seed request failed" value="-505">
-        Failed to generate brain key because requesting seed from the service failed.
+    <constant name="generate brainkey failed hardened point request failed" value="-505">
+        Failed to generate brain key because requesting hardened point from the service failed.
     </constant>
 
-    <constant name="generate brainkey failed seed response with error" value="-506">
-        Failed to generate brain key because seed response was returned with error.
+    <constant name="generate brainkey failed hardened point response with error" value="-506">
+        Failed to generate brain key because hardened point response was returned with error.
     </constant>
 
-    <constant name="generate brainkey failed seed parse failed" value="-507">
-        Failed to generate brain key because parsing seed response failed.
+    <constant name="generate brainkey failed hardened point parse failed" value="-507">
+        Failed to generate brain key because parsing hardened point response failed.
     </constant>
 
     <constant name="keyknox failed request failed" value="-601">

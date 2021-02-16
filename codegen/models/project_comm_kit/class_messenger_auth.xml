@@ -18,7 +18,7 @@
     <require class="base64" project="foundation"/>
     <require class="base64" project="foundation" api="private"/>
     <require class="binary" project="foundation"/>
-    <require class="pythia" project="pythia"/>
+    <require class="brainkey client" project="foundation"/>
     <require class="unix time" project="core sdk"/>
     <require class="virgil http client" project="core sdk"/>
     <require class="card client" project="core sdk"/>
@@ -27,7 +27,7 @@
     <require class="json object" project="core sdk"/>
     <require class="json object" project="core sdk" api="private"/>
     <require class="keyknox client" project="keyknox sdk"/>
-    <require class="pythia client" project="pythia sdk"/>
+    <require class="brainkey client" project="brainkey sdk"/>
     <require class="messenger creds" api="private"/>
     <require class="messenger user" api="private"/>
     <require class="contact utils"/>
