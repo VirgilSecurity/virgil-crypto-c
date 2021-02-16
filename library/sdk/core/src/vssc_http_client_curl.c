@@ -62,6 +62,7 @@
 #include <virgil/crypto/common/private/vsc_str_buffer_defs.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
 #include <virgil/crypto/common/vsc_str_buffer.h>
+#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end

@@ -71,6 +71,7 @@
 
     <!-- Common modules -->
     <class name="error" from="shared"/>
+    <class name="error message" from="shared"/>
     <class name="json object"/>
     <class name="json array"/>
     <class name="unix time"/>

@@ -104,6 +104,10 @@ extern "C" {
 #cmakedefine01 VSSC_ERROR
 #endif
 
+#ifndef VSSC_ERROR_MESSAGE
+#cmakedefine01 VSSC_ERROR_MESSAGE
+#endif
+
 #ifndef VSSC_JSON_OBJECT
 #cmakedefine01 VSSC_JSON_OBJECT
 #endif

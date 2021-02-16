@@ -52,6 +52,7 @@ option(VSSC_HTTP_CLIENT "Enable interface 'http client'." ON)
 option(VSSC_HTTP_CLIENT_CURL "Enable class 'http client curl'." ON)
 option(VSSC_HTTP_CLIENT_X "Enable class 'http client x'." OFF)
 option(VSSC_ERROR "Enable class 'error'." ON)
+option(VSSC_ERROR_MESSAGE "Enable class 'error message'." ON)
 option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_JSON_ARRAY "Enable class 'json array'." ON)
 option(VSSC_UNIX_TIME "Enable class 'unix time'." ON)
@@ -90,6 +91,7 @@ mark_as_advanced(
         VSSC_HTTP_CLIENT_CURL
         VSSC_HTTP_CLIENT_X
         VSSC_ERROR
+        VSSC_ERROR_MESSAGE
         VSSC_JSON_OBJECT
         VSSC_JSON_ARRAY
         VSSC_UNIX_TIME

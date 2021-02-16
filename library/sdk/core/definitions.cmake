@@ -60,6 +60,7 @@ target_compile_definitions(core_sdk
             "VSSC_HTTP_CLIENT_CURL=$<BOOL:${VSSC_HTTP_CLIENT_CURL}>"
             "VSSC_HTTP_CLIENT_X=$<BOOL:${VSSC_HTTP_CLIENT_X}>"
             "VSSC_ERROR=$<BOOL:${VSSC_ERROR}>"
+            "VSSC_ERROR_MESSAGE=$<BOOL:${VSSC_ERROR_MESSAGE}>"
             "VSSC_JSON_OBJECT=$<BOOL:${VSSC_JSON_OBJECT}>"
             "VSSC_JSON_ARRAY=$<BOOL:${VSSC_JSON_ARRAY}>"
             "VSSC_UNIX_TIME=$<BOOL:${VSSC_UNIX_TIME}>"
