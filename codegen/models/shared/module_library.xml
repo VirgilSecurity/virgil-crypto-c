@@ -144,4 +144,13 @@
 
         <argument name="mem" class="any" access="writeonly" />
     </callback>
+
+
+    <macroses>
+        <code lang="c">
+            #if defined(__MINGW32__) &amp;&amp; !defined(snprintf)
+            #   define snprintf __mingw_snprintf
+            #endif
+        </code>
+    </macroses>
 </module>

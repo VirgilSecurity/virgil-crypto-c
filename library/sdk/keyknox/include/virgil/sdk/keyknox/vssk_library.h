@@ -115,6 +115,10 @@ extern "C" {
 #   endif
 #endif
 
+#if defined(__MINGW32__) && !defined(snprintf)
+#   define snprintf __mingw_snprintf
+#endif
+
 #define VSSK_VERSION_MAJOR 0
 
 #define VSSK_VERSION_MINOR 16
