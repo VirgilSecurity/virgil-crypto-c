@@ -126,6 +126,12 @@ vssq_memory_secure_equal(const void *a, const void *b, size_t len);
 VSSQ_PUBLIC char *
 vssq_strnstr(const char *s, const char *find, size_t slen);
 
+//
+//  Fixed version of the snprintf().
+//
+VSSQ_PUBLIC int
+vssq_snprintf(char *s, size_t n, const char *format, ...);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
