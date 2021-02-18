@@ -115,10 +115,6 @@ extern "C" {
 #   endif
 #endif
 
-#if defined(__MINGW32__) && !defined(snprintf)
-#   define snprintf __mingw_snprintf
-#endif
-
 #define VSCP_VERSION_MAJOR 0
 
 #define VSCP_VERSION_MINOR 16
