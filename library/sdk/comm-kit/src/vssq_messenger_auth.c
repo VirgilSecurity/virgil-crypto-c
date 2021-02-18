@@ -58,7 +58,6 @@
 #include "vssq_messenger_user_private.h"
 #include "vssq_contact_utils.h"
 
-#include <stdio.h>
 #include <virgil/crypto/common/vsc_data.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
@@ -2570,7 +2569,7 @@ vssq_messenger_auth_generate_messenger_auth_header(const vssq_messenger_auth_t *
     vsc_str_t card_id = vssq_messenger_creds_card_id(self->creds);
 
     char timestamp_str[22] = {'\0'};
-    snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
+    vssq_snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
     vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
 
     const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);
