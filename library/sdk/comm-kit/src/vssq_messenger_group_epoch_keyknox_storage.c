@@ -668,7 +668,7 @@ vssq_messenger_group_epoch_keyknox_storage_stringify_epoch_num(size_t num) {
             vsc_str_buffer_new_with_capacity(vssq_messenger_group_epoch_keyknox_storage_NUM_STR_LEN_MAX);
 
     const int len =
-            snprintf(vsc_str_buffer_unused_chars(num_str_buf), vsc_str_buffer_unused_len(num_str_buf), "%zu", num);
+            vssq_snprintf(vsc_str_buffer_unused_chars(num_str_buf), vsc_str_buffer_unused_len(num_str_buf), "%zu", num);
 
     VSSQ_ASSERT(len > 0 && (size_t)len < (size_t)vssq_messenger_group_epoch_keyknox_storage_NUM_STR_LEN_MAX);
     vsc_str_buffer_inc_used(num_str_buf, (size_t)len);

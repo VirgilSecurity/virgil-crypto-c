@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vssk_assert.h"
+#include "vssk_memory.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <virgil/sdk/core/vssc_status.h>
@@ -145,7 +146,7 @@ VSSK_PUBLIC void
 vssk_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    vssk_snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
 
     vssk_assert_trigger(error_message, file, line);
 }
@@ -157,7 +158,7 @@ VSSK_PUBLIC void
 vssk_assert_trigger_unhandled_error_of_project_core_sdk(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
+    vssk_snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
 
     vssk_assert_trigger(error_message, file, line);
 }

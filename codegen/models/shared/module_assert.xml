@@ -5,6 +5,7 @@
         - allows to choose which assertion leave in production build.
 
     <require module="library" definition="public" />
+    <require module="memory" definition="private" />
 
     <c_include file="stdio.h" definition="private" is_system="1" />
     <c_include file="assert.h" definition="private" is_system="1" if=".(c_global_macros_have_assert_h)" />
