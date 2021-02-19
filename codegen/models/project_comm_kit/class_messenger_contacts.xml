@@ -1,7 +1,6 @@
 <class name="messenger contacts" scope="private">
     Provides access to the messenger contacts endpoints.
 
-    <require header="stdio.h" is_system="1"/>
     <require class="data" project="common"/>
     <require class="buffer" project="common"/>
     <require class="str mutable" project="common"/>

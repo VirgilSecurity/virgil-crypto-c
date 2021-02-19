@@ -58,7 +58,6 @@
 #include "vssq_messenger_user_private.h"
 #include "vssq_contact_utils.h"
 
-#include <stdio.h>
 #include <virgil/crypto/common/vsc_data.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>

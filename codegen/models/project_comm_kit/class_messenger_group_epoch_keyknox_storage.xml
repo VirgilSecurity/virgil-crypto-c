@@ -23,8 +23,6 @@
     <require class="virgil http client" project="core sdk"/>
     <require class="keyknox client" project="keyknox sdk"/>
 
-    <require header="stdio.h" is_system="1"/>
-
 
     <dependency name="random" interface="random" project="foundation"/>
     <dependency name="auth" class="messenger auth"/>

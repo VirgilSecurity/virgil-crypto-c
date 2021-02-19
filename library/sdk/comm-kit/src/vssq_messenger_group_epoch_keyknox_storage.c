@@ -76,7 +76,6 @@
 #include <virgil/sdk/core/vssc_json_object.h>
 #include <virgil/sdk/core/vssc_virgil_http_client.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_client.h>
-#include <stdio.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_entry.h>
 #include <virgil/crypto/common/vsc_str.h>
 
@@ -799,7 +798,7 @@ vssq_messenger_group_epoch_keyknox_storage_keyknox_pack_group_epoch(
     const size_t epoch_num = vssq_messenger_group_epoch_num(group_epoch);
     VSSQ_ASSERT(epoch_num < 1000);
 
-    snprintf(epoch_num_chars, sizeof(epoch_num_chars) - 1, "%zu", epoch_num);
+    vssq_snprintf(epoch_num_chars, sizeof(epoch_num_chars) - 1, "%zu", epoch_num);
     vsc_str_t epoch_num_str = vsc_str_from_str(epoch_num_chars);
 
     const vssc_string_list_t *keyknox_identites = vssq_messenger_group_epoch_participant_identities(group_epoch);
