@@ -12,9 +12,8 @@
 
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
-    <require project="pythia" feature="library"/>
     <require project="core sdk" feature="library"/>
-    <require project="pythia sdk" feature="library"/>
+    <require project="brainkey sdk" feature="library"/>
     <require project="keyknox sdk" feature="library"/>
 
     <feature name="multi threading" default="on">
@@ -70,6 +69,6 @@
         <require enum="status"/>
 
         char error_message[48] = {0x00};
-        snprintf(error_message, sizeof(error_message), "Unhandled vsc::comm_kit error -0x%04x", error);
+        .(c_global_method_snprintf)(error_message, sizeof(error_message), "Unhandled vsc::comm_kit error -0x%04x", error);
     </error_message_getter>
 </project>

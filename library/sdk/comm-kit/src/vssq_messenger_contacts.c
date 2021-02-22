@@ -58,7 +58,6 @@
 #include "vssq_messenger_user_private.h"
 #include "vssq_contact_utils.h"
 
-#include <stdio.h>
 #include <virgil/crypto/common/vsc_data.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
@@ -75,7 +74,6 @@
 #include <virgil/crypto/foundation/vscf_base64.h>
 #include <virgil/crypto/foundation/private/vscf_base64_private.h>
 #include <virgil/crypto/foundation/vscf_binary.h>
-#include <virgil/crypto/pythia/vscp_pythia.h>
 #include <virgil/sdk/core/vssc_unix_time.h>
 #include <virgil/sdk/core/vssc_virgil_http_client.h>
 #include <virgil/sdk/core/vssc_card_client.h>
@@ -84,7 +82,6 @@
 #include <virgil/sdk/core/vssc_json_object.h>
 #include <virgil/sdk/core/private/vssc_json_object_private.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_client.h>
-#include <virgil/sdk/pythia/vssp_pythia_client.h>
 
 // clang-format on
 //  @end

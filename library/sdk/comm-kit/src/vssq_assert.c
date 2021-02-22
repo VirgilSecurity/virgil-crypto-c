@@ -54,11 +54,11 @@
 // --------------------------------------------------------------------------
 
 #include "vssq_assert.h"
+#include "vssq_memory.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
-#include <virgil/crypto/pythia/vscp_status.h>
 #include <virgil/sdk/core/vssc_status.h>
-#include <virgil/sdk/pythia/vssp_status.h>
+#include <virgil/sdk/brainkey/vssb_status.h>
 #include <virgil/sdk/keyknox/vssk_status.h>
 #include <stdio.h>
 
@@ -148,19 +148,7 @@ VSSQ_PUBLIC void
 vssq_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
-
-    vssq_assert_trigger(error_message, file, line);
-}
-
-//
-//  Tell assertion handler that error of project 'pythia' is not handled.
-//
-VSSQ_PUBLIC void
-vssq_assert_trigger_unhandled_error_of_project_pythia(int error, const char *file, int line) {
-
-    char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
+    vssq_snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
 
     vssq_assert_trigger(error_message, file, line);
 }
@@ -172,19 +160,19 @@ VSSQ_PUBLIC void
 vssq_assert_trigger_unhandled_error_of_project_core_sdk(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
+    vssq_snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
 
     vssq_assert_trigger(error_message, file, line);
 }
 
 //
-//  Tell assertion handler that error of project 'pythia sdk' is not handled.
+//  Tell assertion handler that error of project 'brainkey sdk' is not handled.
 //
 VSSQ_PUBLIC void
-vssq_assert_trigger_unhandled_error_of_project_pythia_sdk(int error, const char *file, int line) {
+vssq_assert_trigger_unhandled_error_of_project_brainkey_sdk(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia_sdk error -0x%04x", error);
+    vssq_snprintf(error_message, sizeof(error_message), "Unhandled vsc::brainkey_sdk error -0x%04x", error);
 
     vssq_assert_trigger(error_message, file, line);
 }
@@ -196,7 +184,7 @@ VSSQ_PUBLIC void
 vssq_assert_trigger_unhandled_error_of_project_keyknox_sdk(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::keyknox_sdk error -0x%04x", error);
+    vssq_snprintf(error_message, sizeof(error_message), "Unhandled vsc::keyknox_sdk error -0x%04x", error);
 
     vssq_assert_trigger(error_message, file, line);
 }

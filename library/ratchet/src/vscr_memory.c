@@ -53,6 +53,9 @@
 #include "vscr_memory.h"
 #include "vscr_assert.h"
 
+#include <stdio.h>
+#include <stdarg.h>
+
 // clang-format on
 //  @end
 
@@ -277,6 +280,26 @@ vscr_strnstr(const char *s, const char *find, size_t slen) {
         s--;
     }
     return ((char *)s);
+}
+
+//
+//  Fixed version of the snprintf().
+//
+VSCR_PUBLIC int
+vscr_snprintf(char *s, size_t n, const char *format, ...) {
+
+    va_list args;
+    int ret;
+    va_start(args, format);
+
+    #if defined(__MINGW32__)
+        ret = __mingw_vsnprintf(s, n, format, args);
+    #else
+        ret = vsnprintf(s, n, format, args);
+    #endif
+
+    va_end(args);
+    return ret;
 }
 
 

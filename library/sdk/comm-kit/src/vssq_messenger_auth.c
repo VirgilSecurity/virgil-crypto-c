@@ -58,7 +58,6 @@
 #include "vssq_messenger_user_private.h"
 #include "vssq_contact_utils.h"
 
-#include <stdio.h>
 #include <virgil/crypto/common/vsc_data.h>
 #include <virgil/crypto/common/vsc_buffer.h>
 #include <virgil/crypto/common/vsc_str_mutable.h>
@@ -75,7 +74,7 @@
 #include <virgil/crypto/foundation/vscf_base64.h>
 #include <virgil/crypto/foundation/private/vscf_base64_private.h>
 #include <virgil/crypto/foundation/vscf_binary.h>
-#include <virgil/crypto/pythia/vscp_pythia.h>
+#include <virgil/crypto/foundation/vscf_brainkey_client.h>
 #include <virgil/sdk/core/vssc_unix_time.h>
 #include <virgil/sdk/core/vssc_virgil_http_client.h>
 #include <virgil/sdk/core/vssc_card_client.h>
@@ -84,7 +83,7 @@
 #include <virgil/sdk/core/vssc_json_object.h>
 #include <virgil/sdk/core/private/vssc_json_object_private.h>
 #include <virgil/sdk/keyknox/vssk_keyknox_client.h>
-#include <virgil/sdk/pythia/vssp_pythia_client.h>
+#include <virgil/sdk/brainkey/vssb_brainkey_client.h>
 #include <virgil/crypto/common/vsc_str_buffer.h>
 #include <virgil/sdk/core/vssc_card.h>
 
@@ -671,8 +670,6 @@ vssq_messenger_auth_cleanup_ctx(vssq_messenger_auth_t *self) {
     vssc_jwt_destroy(&self->virgil_jwt);
     vssc_jwt_destroy(&self->contact_discovery_jwt);
     vssq_ejabberd_jwt_destroy(&self->ejabberd_jwt);
-
-    vscp_pythia_cleanup();
 }
 
 //
@@ -685,9 +682,6 @@ vssq_messenger_auth_init_ctx_with_config(vssq_messenger_auth_t *self, const vssq
     VSSQ_ASSERT_PTR(config);
 
     self->config = vssq_messenger_config_shallow_copy_const(config);
-
-    const vscp_status_t pythia_config_status = vscp_pythia_configure();
-    VSSQ_ASSERT_PROJECT_PYTHIA_SUCCESS(pythia_config_status);
 }
 
 //
@@ -1788,6 +1782,7 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->config);
+    VSSQ_ASSERT_PTR(self->random);
     VSSQ_ASSERT_PTR(self->virgil_jwt);
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(pwd));
     VSSQ_ASSERT(pwd.len == 32);
@@ -1798,46 +1793,50 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    vssp_error_t pythia_sdk_error;
-    vssp_error_reset(&pythia_sdk_error);
+    vssb_error_t brainkey_sdk_error;
+    vssb_error_reset(&brainkey_sdk_error);
 
     vscf_key_material_rng_t *key_material_rng = NULL;
     vscf_key_provider_t *key_provider = NULL;
 
-    vscp_status_t pythia_status = vscp_status_SUCCESS;
-    vssp_pythia_client_t *pythia_client = NULL;
-    vssp_brain_key_seed_t *seed = NULL;
+    vscf_status_t foundation_status = vscf_status_SUCCESS;
+    vscf_brainkey_client_t *brainkey = NULL;
+    vssb_brainkey_client_t *brainkey_client = NULL;
+    vssb_brainkey_hardened_point_t *hardened_point = NULL;
 
     vssc_http_request_t *http_request = NULL;
     vssc_http_response_t *http_response = NULL;
 
-    vsc_buffer_t *blinded_password = NULL;
-    vsc_buffer_t *blinding_secret = NULL;
-    vsc_buffer_t *deblinded_password = NULL;
+    vsc_buffer_t *deblind_factor = NULL;
+    vsc_buffer_t *blinded_point = NULL;
+    vsc_buffer_t *seed = NULL;
 
     vscf_impl_t *private_key = NULL;
 
     //
     //  Blind.
     //
-    blinded_password = vsc_buffer_new_with_capacity(vscp_pythia_blinded_password_buf_len());
+    deblind_factor = vsc_buffer_new_with_capacity(vscf_brainkey_client_MPI_LEN);
+    blinded_point = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
 
-    blinding_secret = vsc_buffer_new_with_capacity(vscp_pythia_blinding_secret_buf_len());
+    brainkey = vscf_brainkey_client_new();
+    vscf_brainkey_client_use_random(brainkey, self->random);
+    vscf_brainkey_client_use_operation_random(brainkey, self->random);
 
-    pythia_status = vscp_pythia_blind(pwd, blinded_password, blinding_secret);
-    if (pythia_status != vscp_status_SUCCESS) {
+    foundation_status = vscf_brainkey_client_blind(brainkey, pwd, deblind_factor, blinded_point);
+    if (foundation_status != vscf_status_SUCCESS) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_BLIND_FAILED);
         goto cleanup;
     }
 
     //
-    //  Get seed.
+    //  Get hardened point.
     //
-    pythia_client = vssp_pythia_client_new();
+    brainkey_client = vssb_brainkey_client_new();
 
-    http_request = vssp_pythia_client_make_request_generate_seed(pythia_client, vsc_buffer_data(blinded_password));
+    http_request = vssb_brainkey_client_make_request_harden_point(brainkey_client, vsc_buffer_data(blinded_point));
 
-    vsc_buffer_destroy(&blinded_password);
+    vsc_buffer_destroy(&blinded_point);
 
     http_response = vssq_messenger_auth_send_virgil_request(self, http_request, error);
 
@@ -1846,39 +1845,43 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
     }
 
     if (!vssc_http_response_is_success(http_response)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_SEED_RESPONSE_WITH_ERROR);
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_RESPONSE_WITH_ERROR);
         goto cleanup;
     }
 
-    seed = vssp_pythia_client_process_response_generate_seed(http_response, &pythia_sdk_error);
-    if (vssp_error_has_error(&pythia_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_SEED_PARSE_FAILED);
+    hardened_point = vssb_brainkey_client_process_response_harden_point(http_response, &brainkey_sdk_error);
+
+    if (vssb_error_has_error(&brainkey_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_HARDENED_POINT_PARSE_FAILED);
         goto cleanup;
     }
 
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
 
-    deblinded_password = vsc_buffer_new_with_capacity(vscp_pythia_deblinded_password_buf_len());
+    //
+    //  De-blind the hardened point and get a seed.
+    //
+    seed = vsc_buffer_new_with_capacity(vscf_brainkey_client_SEED_LEN);
 
-    pythia_status =
-            vscp_pythia_deblind(vssp_brain_key_seed_get(seed), vsc_buffer_data(blinding_secret), deblinded_password);
+    foundation_status = vscf_brainkey_client_deblind(brainkey, pwd, vssb_brainkey_hardened_point_value(hardened_point),
+            vsc_buffer_data(deblind_factor), vsc_data_empty(), seed);
 
-    if (pythia_status != vscp_status_SUCCESS) {
+    if (foundation_status != vscf_status_SUCCESS) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_GENERATE_BRAINKEY_FAILED_DEBLIND_FAILED);
         goto cleanup;
     }
 
-    vsc_buffer_destroy(&blinding_secret);
+    vsc_buffer_destroy(&deblind_factor);
 
     //
     // Generate key.
     //
     key_material_rng = vscf_key_material_rng_new();
 
-    vscf_key_material_rng_reset_key_material(key_material_rng, vsc_buffer_data(deblinded_password));
+    vscf_key_material_rng_reset_key_material(key_material_rng, vsc_buffer_data(seed));
 
-    vsc_buffer_destroy(&deblinded_password);
+    vsc_buffer_destroy(&seed);
 
     key_provider = vscf_key_provider_new();
 
@@ -1894,13 +1897,14 @@ vssq_messenger_auth_generate_brain_key(const vssq_messenger_auth_t *self, vsc_da
 cleanup:
     vscf_key_material_rng_destroy(&key_material_rng);
     vscf_key_provider_destroy(&key_provider);
-    vssp_pythia_client_destroy(&pythia_client);
-    vssp_brain_key_seed_destroy(&seed);
+    vscf_brainkey_client_destroy(&brainkey);
+    vssb_brainkey_client_destroy(&brainkey_client);
+    vssb_brainkey_hardened_point_destroy(&hardened_point);
     vssc_http_request_destroy(&http_request);
     vssc_http_response_destroy(&http_response);
-    vsc_buffer_destroy(&blinded_password);
-    vsc_buffer_destroy(&blinding_secret);
-    vsc_buffer_destroy(&deblinded_password);
+    vsc_buffer_destroy(&deblind_factor);
+    vsc_buffer_destroy(&blinded_point);
+    vsc_buffer_destroy(&seed);
 
     return private_key;
 }
@@ -2565,7 +2569,7 @@ vssq_messenger_auth_generate_messenger_auth_header(const vssq_messenger_auth_t *
     vsc_str_t card_id = vssq_messenger_creds_card_id(self->creds);
 
     char timestamp_str[22] = {'\0'};
-    snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
+    vssq_snprintf(timestamp_str, sizeof(timestamp_str) - 1, "%zu", vssc_unix_time_now());
     vsc_str_t timestamp = vsc_str_from_str(timestamp_str);
 
     const size_t jwt_signature_str_len = vscf_base64_encoded_len(jwt_signature_len);

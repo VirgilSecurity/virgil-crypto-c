@@ -53,6 +53,9 @@
 #include "vssq_memory.h"
 #include "vssq_assert.h"
 
+#include <stdio.h>
+#include <stdarg.h>
+
 // clang-format on
 //  @end
 
@@ -277,6 +280,26 @@ vssq_strnstr(const char *s, const char *find, size_t slen) {
         s--;
     }
     return ((char *)s);
+}
+
+//
+//  Fixed version of the snprintf().
+//
+VSSQ_PUBLIC int
+vssq_snprintf(char *s, size_t n, const char *format, ...) {
+
+    va_list args;
+    int ret;
+    va_start(args, format);
+
+    #if defined(__MINGW32__)
+        ret = __mingw_vsnprintf(s, n, format, args);
+    #else
+        ret = vsnprintf(s, n, format, args);
+    #endif
+
+    va_end(args);
+    return ret;
 }
 
 
