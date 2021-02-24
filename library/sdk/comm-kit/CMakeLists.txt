@@ -174,9 +174,9 @@ endif()
 # ---------------------------------------------------------------------------
 if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(comm_kit
-            NAME VSSKeyKnox
+            NAME VSSCommKit
             VERSION "A"
-            IDENTIFIER com.virgilsecurity.VSSKeyKnox
+            IDENTIFIER com.virgilsecurity.VSSCommKit
             )
 endif()
 
