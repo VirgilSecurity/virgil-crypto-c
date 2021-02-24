@@ -54,6 +54,7 @@
     <project name="pythia sdk" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="keyknox sdk" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="brainkey sdk" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
+    <project name="comm kit" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
 
     <wrapper lang="swift"/>
     <wrapper lang="java"/>
