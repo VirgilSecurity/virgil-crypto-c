@@ -1,0 +1,140 @@
+<class name="cloud file system pb" scope="internal">
+
+    Helper to cleanup protobuf structures.
+
+    <require header="vssq_CloudFileSystem.pb.h" definition="public" is_system="0"/>
+    <require header="pb.h"/>
+
+
+    <method name="cleanup pb create file req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_CreateFileReq.
+
+        <argument name="pb obj" class="vssq_pb_CreateFileReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb create folder req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_CreateFolderReq.
+
+        <argument name="pb obj" class="vssq_pb_CreateFolderReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb delete file req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_DeleteFileReq.
+
+        <argument name="pb obj" class="vssq_pb_DeleteFileReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb delete folder req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_DeleteFolderReq.
+
+        <argument name="pb obj" class="vssq_pb_DeleteFolderReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb file" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_File.
+
+        <argument name="pb obj" class="vssq_pb_File" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb folder" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_Folder.
+
+        <argument name="pb obj" class="vssq_pb_Folder" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb get file link req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_GetFileLinkReq.
+
+        <argument name="pb obj" class="vssq_pb_GetFileLinkReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb get file link resp" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_GetFileLinkResp.
+
+        <argument name="pb obj" class="vssq_pb_GetFileLinkResp" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb pagination" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_Pagination.
+
+        <argument name="pb obj" class="vssq_pb_Pagination" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb share folder req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_ShareFolderReq.
+
+        <argument name="pb obj" class="vssq_pb_ShareFolderReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb unshare folder req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_UnshareFolderReq.
+
+        <argument name="pb obj" class="vssq_pb_UnshareFolderReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb user" is_static="1" visibility="private">
+        Cleanup memory for the typvssq_pb_Usere .
+
+        <argument name="pb obj" class="vssq_pb_User" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb create file resp" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_CreateFileResp.
+
+        <argument name="pb obj" class="vssq_pb_CreateFileResp" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb create folder resp" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_CreateFolderResp.
+
+        <argument name="pb obj" class="vssq_pb_CreateFolderResp" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb list folder req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_ListFolderReq.
+
+        <argument name="pb obj" class="vssq_pb_ListFolderReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb list folder resp" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_ListFolderResp.
+
+        <argument name="pb obj" class="vssq_pb_ListFolderResp" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb shared group" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_SharedGroup.
+
+        <argument name="pb obj" class="vssq_pb_SharedGroup" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb get shared group req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_GetSharedGroupReq.
+
+        <argument name="pb obj" class="vssq_pb_GetSharedGroupReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb get shared group resp" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_GetSharedGroupResp.
+
+        <argument name="pb obj" class="vssq_pb_GetSharedGroupResp" access="writeonly" library="comm_kit_pb"/>
+    </method>
+</class>

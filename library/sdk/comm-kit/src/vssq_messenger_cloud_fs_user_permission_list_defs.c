@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger cloud fs user permission list' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,33 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'messenger cloud fs folder info' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_DEFS_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_DEFS_H_INCLUDED
-
-#include "vssq_library.h"
-#include "vssq_atomic.h"
-
-#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_mutable.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_mutable.h>
-#endif
+#include "vssq_messenger_cloud_fs_user_permission_list_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -79,45 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Handle 'messenger cloud fs folder info' context.
-//
-struct vssq_messenger_cloud_fs_folder_info_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssq_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSQ_ATOMIC size_t refcnt;
-
-    vsc_str_mutable_t id;
-
-    vsc_str_mutable_t name;
-
-    vsc_str_mutable_t updated_by;
-
-    size_t created_at;
-
-    size_t updated_at;
-
-    vsc_str_mutable_t shared_group_id;
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_DEFS_H_INCLUDED
 //  @end

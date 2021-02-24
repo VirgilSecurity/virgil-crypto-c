@@ -13,6 +13,8 @@
     <require class="messenger cloud fs file info list" api="private"/>
     <require class="messenger cloud fs folder info list" api="private"/>
     <require class="messenger cloud fs folder" api="private"/>
+    <require class="messenger cloud fs user permission list" api="private"/>
+    <require class="cloud file system pb"/>
 
     <dependency name="auth" class="messenger auth"/>
 
@@ -44,6 +46,18 @@
 
     <constant name="k url path folder delete" type="string" visibility="private">
         <value value="/folder/delete"/>
+    </constant>
+
+    <constant name="k url path folder share" type="string" visibility="private">
+        <value value="/folder/share"/>
+    </constant>
+
+    <constant name="k url path folder unshare" type="string" visibility="private">
+        <value value="/folder/unshare"/>
+    </constant>
+
+    <constant name="k url path get shared group" type="string" visibility="private">
+        <value value="/group/get"/>
     </constant>
 
 
@@ -96,6 +110,21 @@
     </method>
 
 
+    <method name="create shared folder" is_const="1">
+        Create a new folder within the Cloud FS that is shared with other users.
+        Note, if parent folder id is empty then folder created in a root folder.
+
+        <argument name="name" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="parent folder id" class="str"/>
+        <argument name="users" class="messenger cloud fs user permission list"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
     <method name="list folder" is_const="1">
         List content of requested folder.
         Note, if folder id is empty then a root folder will be listed.
@@ -113,6 +142,38 @@
         <argument name="id" class="str"/>
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="share folder" is_const="1">
+        Share existing folder with other users.
+
+        <argument name="id" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="users" class="messenger cloud fs user permission list"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="unshare folder" is_const="1">
+        Remove shared access from the given users of existing folder.
+
+        <argument name="id" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="users" class="messenger cloud fs user permission list"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="get shared group users" is_const="1">
+        Get shared group of users.
+
+        <argument name="id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs user permission list" access="disown"/>
     </method>
 
 
@@ -143,6 +204,22 @@
 
 
     <!-- Helpers -->
+    <method name="create folder internal" is_const="1" declaration="private">
+        Create a new folder within the Cloud FS.
+        Note, if parent folder id is empty then folder created in a root folder.
+        Note, if users are given then the folder will be shared for them.
+
+        <argument name="name" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="parent folder id" class="str"/>
+        <argument name="users" class="messenger cloud fs user permission list"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
     <method name="create request" is_const="1" declaration="private">
         Return request based on the given endpoint and body.
 
@@ -193,5 +270,43 @@
         <argument name="error" class="error"/>
 
         <return class="data"/>
+    </method>
+
+
+    <method name="write users to pb" is_static="1" declaration="private">
+        Write users to a PB structure fields.
+
+        <argument name="users" class="messenger cloud fs user permission list"/>
+        <argument name="pb users" class="vssq_pb_User" access="disown" library="comm_kit_pb"/>
+        <argument name="pb users count" class="pb_size_t" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="read users from pb" is_static="1" declaration="private">
+        Read users from a PB structure fields.
+
+        <argument name="pb users" class="vssq_pb_User" library="comm_kit_pb"/>
+        <argument name="pb users count" class="pb_size_t" is_reference="0" library="comm_kit_pb"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs user permission list" access="disown"/>
+    </method>
+
+
+    <method name="to pb permission" is_static="1" declaration="private">
+        Converts this library permission to the vssq_pb_Permission.
+
+        <argument name="permission" enum="messenger cloud fs permission"/>
+
+        <return enum="vssq_pb_Permission" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="from pb permission" is_static="1" declaration="private">
+        Converts vssq_pb_Permission to this library permission.
+
+        <argument name="pb permission" enum="vssq_pb_Permission" library="comm_kit_pb"/>
+
+        <return enum="messenger cloud fs permission"/>
     </method>
 </class>

@@ -59,6 +59,7 @@
 #include "vssq_messenger_cloud_fs_file_info_list_private.h"
 #include "vssq_messenger_cloud_fs_folder_info_list_private.h"
 #include "vssq_messenger_cloud_fs_folder_private.h"
+#include "vssq_messenger_cloud_fs_user_permission_list_private.h"
 #include "vssq_messenger_creds_private.h"
 #include "vssq_messenger_group_epoch_list_private.h"
 #include "vssq_messenger_group_private.h"
@@ -111,6 +112,14 @@
 
 #if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
 #   include "vssq_messenger_cloud_fs_folder_info_list_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION
+#   include "vssq_messenger_cloud_fs_user_permission_defs.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST
+#   include "vssq_messenger_cloud_fs_user_permission_list_defs.h"
 #endif
 
 #if VSSQ_MESSENGER_CONFIG

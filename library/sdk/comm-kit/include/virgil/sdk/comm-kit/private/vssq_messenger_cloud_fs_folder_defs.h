@@ -58,6 +58,7 @@
 #include "vssq_messenger_cloud_fs_folder_info_list.h"
 #include "vssq_messenger_cloud_fs_file_info_list.h"
 #include "vssq_messenger_cloud_fs_folder_info.h"
+#include "vssq_messenger_cloud_fs_user_permission_list.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -108,6 +109,8 @@ struct vssq_messenger_cloud_fs_folder_t {
     vsc_buffer_t *folder_encrypted_key;
 
     vsc_buffer_t *folder_public_key;
+
+    const vssq_messenger_cloud_fs_user_permission_list_t *users_permission;
 };
 
 

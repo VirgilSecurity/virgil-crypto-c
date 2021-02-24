@@ -89,7 +89,8 @@ static void
 vssq_messenger_cloud_fs_folder_init_ctx_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         const vssq_messenger_cloud_fs_folder_info_list_t *folders,
-        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info);
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users_permission);
 
 //
 //  Create fully defined object.
@@ -106,7 +107,8 @@ static void
 vssq_messenger_cloud_fs_folder_init_ctx_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
-        vssq_messenger_cloud_fs_folder_info_t **info_ref);
+        vssq_messenger_cloud_fs_folder_info_t **info_ref,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
 
 //
 //  Create fully defined object.
@@ -179,7 +181,8 @@ VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_init_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         const vssq_messenger_cloud_fs_folder_info_list_t *folders,
-        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info) {
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users_permission) {
 
     VSSQ_ASSERT_PTR(self);
 
@@ -187,7 +190,7 @@ vssq_messenger_cloud_fs_folder_init_with(vssq_messenger_cloud_fs_folder_t *self,
 
     self->refcnt = 1;
 
-    vssq_messenger_cloud_fs_folder_init_ctx_with(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders, files, info);
+    vssq_messenger_cloud_fs_folder_init_ctx_with(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders, files, info, users_permission);
 }
 
 //
@@ -198,12 +201,13 @@ VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
 vssq_messenger_cloud_fs_folder_new_with(size_t total_folder_count, size_t total_file_count,
         vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         const vssq_messenger_cloud_fs_folder_info_list_t *folders,
-        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info) {
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users_permission) {
 
     vssq_messenger_cloud_fs_folder_t *self = (vssq_messenger_cloud_fs_folder_t *) vssq_alloc(sizeof (vssq_messenger_cloud_fs_folder_t));
     VSSQ_ASSERT_ALLOC(self);
 
-    vssq_messenger_cloud_fs_folder_init_with(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders, files, info);
+    vssq_messenger_cloud_fs_folder_init_with(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders, files, info, users_permission);
 
     self->self_dealloc_cb = vssq_dealloc;
 
@@ -255,7 +259,8 @@ VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_init_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
-        vssq_messenger_cloud_fs_folder_info_t **info_ref) {
+        vssq_messenger_cloud_fs_folder_info_t **info_ref,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref) {
 
     VSSQ_ASSERT_PTR(self);
 
@@ -263,7 +268,7 @@ vssq_messenger_cloud_fs_folder_init_with_disown(vssq_messenger_cloud_fs_folder_t
 
     self->refcnt = 1;
 
-    vssq_messenger_cloud_fs_folder_init_ctx_with_disown(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders_ref, files_ref, info_ref);
+    vssq_messenger_cloud_fs_folder_init_ctx_with_disown(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders_ref, files_ref, info_ref, users_permission_ref);
 }
 
 //
@@ -274,12 +279,13 @@ VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
 vssq_messenger_cloud_fs_folder_new_with_disown(size_t total_folder_count, size_t total_file_count,
         vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
-        vssq_messenger_cloud_fs_folder_info_t **info_ref) {
+        vssq_messenger_cloud_fs_folder_info_t **info_ref,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref) {
 
     vssq_messenger_cloud_fs_folder_t *self = (vssq_messenger_cloud_fs_folder_t *) vssq_alloc(sizeof (vssq_messenger_cloud_fs_folder_t));
     VSSQ_ASSERT_ALLOC(self);
 
-    vssq_messenger_cloud_fs_folder_init_with_disown(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders_ref, files_ref, info_ref);
+    vssq_messenger_cloud_fs_folder_init_with_disown(self, total_folder_count, total_file_count, folder_encrypted_key, folder_public_key, folders_ref, files_ref, info_ref, users_permission_ref);
 
     self->self_dealloc_cb = vssq_dealloc;
 
@@ -458,7 +464,8 @@ static void
 vssq_messenger_cloud_fs_folder_init_ctx_with(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         const vssq_messenger_cloud_fs_folder_info_list_t *folders,
-        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info) {
+        const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users_permission) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(folders);
@@ -474,6 +481,10 @@ vssq_messenger_cloud_fs_folder_init_ctx_with(vssq_messenger_cloud_fs_folder_t *s
     self->folders = vssq_messenger_cloud_fs_folder_info_list_shallow_copy_const(folders);
     self->files = vssq_messenger_cloud_fs_file_info_list_shallow_copy_const(files);
     self->info = vssq_messenger_cloud_fs_folder_info_shallow_copy_const(info);
+
+    if (users_permission) {
+        self->users_permission = vssq_messenger_cloud_fs_user_permission_list_shallow_copy_const(users_permission);
+    }
 }
 
 //
@@ -503,7 +514,8 @@ static void
 vssq_messenger_cloud_fs_folder_init_ctx_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
-        vssq_messenger_cloud_fs_folder_info_t **info_ref) {
+        vssq_messenger_cloud_fs_folder_info_t **info_ref,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_REF(folders_ref);
@@ -519,6 +531,11 @@ vssq_messenger_cloud_fs_folder_init_ctx_with_disown(vssq_messenger_cloud_fs_fold
     self->folders = *folders_ref;
     self->files = *files_ref;
     self->info = *info_ref;
+
+    if (users_permission_ref) {
+        self->users_permission = *users_permission_ref;
+        *users_permission_ref = NULL;
+    }
 
     *folders_ref = NULL;
     *files_ref = NULL;
@@ -650,4 +667,26 @@ vssq_messenger_cloud_fs_folder_public_key(const vssq_messenger_cloud_fs_folder_t
     } else {
         return vsc_data_empty();
     }
+}
+
+//
+//  Return true if folder has shared users.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_cloud_fs_folder_has_shared_users_permission(const vssq_messenger_cloud_fs_folder_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return self->users_permission != NULL;
+}
+
+//
+//  Return users that have permissions to this folder.
+//
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_list_t *
+vssq_messenger_cloud_fs_folder_shared_users_permission(const vssq_messenger_cloud_fs_folder_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return self->users_permission;
 }

@@ -43,10 +43,21 @@ vssq_pb.ListFolderResp.folder_public_key type:FT_POINTER
 vssq_pb.DeleteFolderReq.id max_length:32 fixed_length:true
 
 # ShareFolderReq
-vssq_pb.ShareFolderReq.folder_id max_length:32 fixed_length:true
+vssq_pb.ShareFolderReq.id max_length:32 fixed_length:true
+vssq_pb.ShareFolderReq.folder_encrypted_key type:FT_POINTER
+vssq_pb.ShareFolderReq.users type:FT_POINTER
 
 # UnshareFolderReq
-vssq_pb.UnshareFolderReq.folder_id max_length:32 fixed_length:true
+vssq_pb.UnshareFolderReq.id max_length:32 fixed_length:true
+vssq_pb.UnshareFolderReq.folder_encrypted_key type:FT_POINTER
+vssq_pb.UnshareFolderReq.users type:FT_POINTER
+
+# GetSharedGroupReq
+vssq_pb.GetSharedGroupReq.id max_length:32 fixed_length:true
+
+# SharedGroup
+vssq_pb.SharedGroup.id max_length:32 fixed_length:true
+vssq_pb.SharedGroup.users type:FT_POINTER
 
 # File
 vssq_pb.File.id max_length:32 fixed_length:true
@@ -58,6 +69,7 @@ vssq_pb.File.updated_by max_length:256 fixed_length:true
 vssq_pb.Folder.name max_length:1024
 vssq_pb.Folder.id max_length:32 fixed_length:true
 vssq_pb.Folder.updated_by max_length:256 fixed_length:true
+vssq_pb.Folder.shared_group_id max_length:32 fixed_length:true
 
 # User
 vssq_pb.User.identity max_length:512;

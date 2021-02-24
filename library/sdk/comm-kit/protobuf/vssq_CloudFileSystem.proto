@@ -62,13 +62,23 @@ message DeleteFolderReq {
 }
 
 message ShareFolderReq {
-    User user = 1;
-    string folder_id = 2;
+    string id = 1;
+    bytes folder_encrypted_key = 2;
+    repeated User users = 3;
 }
 
 message UnshareFolderReq {
-    User user = 1;
-    string folder_id = 2;
+    string id = 1;
+    bytes folder_encrypted_key = 2;
+    repeated User users = 3;
+}
+
+message GetSharedGroupReq {
+    string id = 1;
+}
+
+message GetSharedGroupResp {
+    SharedGroup shared_group = 1;
 }
 
 message File {
@@ -87,6 +97,7 @@ message Folder {
     google.protobuf.Timestamp created_at = 3;
     google.protobuf.Timestamp updated_at = 4;
     string updated_by = 5;
+    string shared_group_id = 6;
 }
 
 message Pagination {
@@ -102,4 +113,9 @@ message User {
 enum Permission {
     PERMISSION_ADMIN = 0;
     PERMISSION_USER = 1;
+}
+
+message SharedGroup {
+    string id = 1;
+    repeated User users = 2;
 }

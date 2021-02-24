@@ -61,6 +61,7 @@
 #include "vssq_messenger_cloud_fs_file_download_info.h"
 #include "vssq_status.h"
 #include "vssq_messenger_cloud_fs_folder_info.h"
+#include "vssq_messenger_cloud_fs_user_permission_list.h"
 #include "vssq_messenger_cloud_fs_folder.h"
 #include "vssq_messenger_user.h"
 
@@ -205,6 +206,15 @@ vssq_messenger_cloud_fs_create_folder(const vssq_messenger_cloud_fs_t *self, vsc
         vssq_error_t *error);
 
 //
+//  Create a new folder within the Cloud FS that is shared with other users.
+//  Note, if parent folder id is empty then folder created in a root folder.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
+vssq_messenger_cloud_fs_create_shared_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t name,
+        vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key, vsc_str_t parent_folder_id,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users, vssq_error_t *error);
+
+//
 //  List content of requested folder.
 //  Note, if folder id is empty then a root folder will be listed.
 //
@@ -216,6 +226,27 @@ vssq_messenger_cloud_fs_list_folder(const vssq_messenger_cloud_fs_t *self, vsc_s
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_cloud_fs_delete_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t id) VSSQ_NODISCARD;
+
+//
+//  Share existing folder with other users.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_cloud_fs_share_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
+        vsc_data_t folder_encrypted_key, const vssq_messenger_cloud_fs_user_permission_list_t *users) VSSQ_NODISCARD;
+
+//
+//  Remove shared access from the given users of existing folder.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_cloud_fs_unshare_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
+        vsc_data_t folder_encrypted_key, const vssq_messenger_cloud_fs_user_permission_list_t *users) VSSQ_NODISCARD;
+
+//
+//  Get shared group of users.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_list_t *
+vssq_messenger_cloud_fs_get_shared_group_users(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
+        vssq_error_t *error);
 
 //
 //  Return true if a user is authenticated.

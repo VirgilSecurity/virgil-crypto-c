@@ -1,0 +1,101 @@
+<class name="messenger cloud fs user permission list">
+    Handles a list of "messenger cloud fs user permission" class objects.
+
+    <property name="item" class="messenger cloud fs user permission" access="readonly"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
+
+
+    <method name="count" is_const="1">
+        Return items count in a list.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="add user" >
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="identity" class="str"/>
+        <argument name="permission" enum="messenger cloud fs permission"/>
+    </method>
+
+
+    <method name="add" >
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="user permission" class="messenger cloud fs user permission"/>
+    </method>
+
+
+    <method name="add disown" scope="private">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="user permission" class="messenger cloud fs user permission" access="disown"/>
+    </method>
+
+
+    <method name="remove self" visibility="private">
+        Remove current node.
+    </method>
+
+
+    <method name="has item" is_const="1">
+        Return true if given list has item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="item" is_const="1">
+        Return list item.
+
+        <return class="messenger cloud fs user permission" access="readonly"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readonly"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self" access="readonly"/>
+    </method>
+
+
+    <method name="clear">
+        Remove all items.
+    </method>
+
+
+    <method name="find with identity" is_const="1">
+        Find user with a given identity.
+
+        <argument name="user identity" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger cloud fs user permission"/>
+    </method>
+</class>

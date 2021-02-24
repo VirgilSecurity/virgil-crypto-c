@@ -59,7 +59,10 @@
 #include "vssq_messenger_cloud_fs_file_info_list_private.h"
 #include "vssq_messenger_cloud_fs_folder_info_list_private.h"
 #include "vssq_messenger_cloud_fs_folder_private.h"
+#include "vssq_messenger_cloud_fs_user_permission_list_private.h"
+#include "vssq_cloud_file_system_pb.h"
 #include "vssq_messenger_cloud_fs_file_info.h"
+#include "vssq_messenger_cloud_fs_permission.h"
 
 #include <vssq_CloudFileSystem.pb.h>
 #include <pb_decode.h>
@@ -97,6 +100,16 @@ static void
 vssq_messenger_cloud_fs_cleanup_ctx(vssq_messenger_cloud_fs_t *self);
 
 //
+//  Create a new folder within the Cloud FS.
+//  Note, if parent folder id is empty then folder created in a root folder.
+//  Note, if users are given then the folder will be shared for them.
+//
+static vssq_messenger_cloud_fs_folder_info_t *
+vssq_messenger_cloud_fs_create_folder_internal(const vssq_messenger_cloud_fs_t *self, vsc_str_t name,
+        vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key, vsc_str_t parent_folder_id,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users, vssq_error_t *error);
+
+//
 //  Return request based on the given endpoint and body.
 //
 static vssc_http_request_t *
@@ -127,6 +140,31 @@ vssq_messenger_cloud_fs_parse_folder_info(const vssq_pb_Folder *pb_folder, vssq_
 //
 static vsc_data_t
 vssq_messenger_cloud_fs_parse_bytes_optional(const pb_bytes_array_t *pb_array, bool is_optional, vssq_error_t *error);
+
+//
+//  Write users to a PB structure fields.
+//
+static void
+vssq_messenger_cloud_fs_write_users_to_pb(const vssq_messenger_cloud_fs_user_permission_list_t *users,
+        vssq_pb_User **pb_users_ref, pb_size_t *pb_users_count);
+
+//
+//  Read users from a PB structure fields.
+//
+static vssq_messenger_cloud_fs_user_permission_list_t *
+vssq_messenger_cloud_fs_read_users_from_pb(const vssq_pb_User *pb_users, pb_size_t pb_users_count, vssq_error_t *error);
+
+//
+//  Converts this library permission to the vssq_pb_Permission.
+//
+static vssq_pb_Permission
+vssq_messenger_cloud_fs_to_pb_permission(vssq_messenger_cloud_fs_permission_t permission);
+
+//
+//  Converts vssq_pb_Permission to this library permission.
+//
+static vssq_messenger_cloud_fs_permission_t
+vssq_messenger_cloud_fs_from_pb_permission(vssq_pb_Permission pb_permission);
 
 static const char k_header_value_content_type_protobuf_chars[] = "application/protobuf";
 
@@ -175,6 +213,27 @@ static const char k_url_path_folder_delete_chars[] = "/folder/delete";
 static const vsc_str_t k_url_path_folder_delete = {
     k_url_path_folder_delete_chars,
     sizeof(k_url_path_folder_delete_chars) - 1
+};
+
+static const char k_url_path_folder_share_chars[] = "/folder/share";
+
+static const vsc_str_t k_url_path_folder_share = {
+    k_url_path_folder_share_chars,
+    sizeof(k_url_path_folder_share_chars) - 1
+};
+
+static const char k_url_path_folder_unshare_chars[] = "/folder/unshare";
+
+static const vsc_str_t k_url_path_folder_unshare = {
+    k_url_path_folder_unshare_chars,
+    sizeof(k_url_path_folder_unshare_chars) - 1
+};
+
+static const char k_url_path_get_shared_group_chars[] = "/group/get";
+
+static const vsc_str_t k_url_path_get_shared_group = {
+    k_url_path_get_shared_group_chars,
+    sizeof(k_url_path_get_shared_group_chars) - 1
 };
 
 //
@@ -444,7 +503,7 @@ vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_s
     //
     //  Fulfill Decryption info.
     //
-    request_body.file_encrypted_key = vssq_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(file_encrypted_key.len));
+    request_body.file_encrypted_key = pb_realloc(NULL, PB_BYTES_ARRAY_T_ALLOCSIZE(file_encrypted_key.len));
     request_body.file_encrypted_key->size = file_encrypted_key.len;
     memcpy(request_body.file_encrypted_key->bytes, file_encrypted_key.bytes, file_encrypted_key.len);
 
@@ -509,10 +568,11 @@ vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_s
     created_file = vssq_messenger_cloud_fs_created_file_new_with_disown(upload_link_str, &file_info);
 
 cleanup:
-    vssq_dealloc(request_body.file_encrypted_key);
     vsc_buffer_destroy(&request_body_buffer);
     vssc_http_request_destroy(&request);
     vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_create_file_req(&request_body);
+    vssq_cloud_file_system_pb_cleanup_pb_create_file_resp(&response_body);
 
     return created_file;
 }
@@ -609,6 +669,9 @@ cleanup:
     vsc_buffer_destroy(&request_body_buffer);
     vssc_http_request_destroy(&request);
     vssc_http_response_destroy(&response);
+    pb_free(response_body.file_encrypted_key);
+    vssq_cloud_file_system_pb_cleanup_pb_get_file_link_req(&request_body);
+    vssq_cloud_file_system_pb_cleanup_pb_get_file_link_resp(&response_body);
 
     return download_info;
 }
@@ -674,6 +737,7 @@ cleanup:
     vsc_buffer_destroy(&request_body_buffer);
     vssc_http_request_destroy(&request);
     vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_delete_file_req(&request_body);
 
     return vssq_error_status(&error);
 }
@@ -687,107 +751,23 @@ vssq_messenger_cloud_fs_create_folder(const vssq_messenger_cloud_fs_t *self, vsc
         vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key, vsc_str_t parent_folder_id,
         vssq_error_t *error) {
 
-    VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT_PTR(self->auth);
-    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(name));
-    VSSQ_ASSERT(vsc_str_is_valid(parent_folder_id));
-    VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(folder_encrypted_key));
-    VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(folder_public_key));
+    return vssq_messenger_cloud_fs_create_folder_internal(
+            self, name, folder_encrypted_key, folder_public_key, parent_folder_id, NULL, error);
+}
 
-    //
-    //  Declare vars.
-    //
-    vssq_pb_CreateFolderReq request_body = vssq_pb_CreateFolderReq_init_zero;
-    vssq_pb_CreateFolderResp response_body = vssq_pb_CreateFolderResp_init_zero;
-    vsc_buffer_t *request_body_buffer = NULL;
-    vssc_http_request_t *request = NULL;
-    vssc_http_response_t *response = NULL;
-    vssq_messenger_cloud_fs_folder_info_t *folder_info = NULL;
+//
+//  Create a new folder within the Cloud FS that is shared with other users.
+//  Note, if parent folder id is empty then folder created in a root folder.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
+vssq_messenger_cloud_fs_create_shared_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t name,
+        vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key, vsc_str_t parent_folder_id,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users, vssq_error_t *error) {
 
-    //
-    //  Create request body.
-    //
+    VSSQ_ASSERT_PTR(vssq_messenger_cloud_fs_user_permission_list_has_item(users));
 
-    //
-    //  Fulfill generic info.
-    //
-    VSSQ_ASSERT(name.len < sizeof(request_body.name));
-    memcpy(request_body.name, name.chars, name.len);
-
-    VSSQ_ASSERT(parent_folder_id.len < sizeof(request_body.parent_folder_id));
-    memcpy(request_body.parent_folder_id, parent_folder_id.chars, parent_folder_id.len);
-
-    //
-    //  Fulfill decryption info.
-    //
-    request_body.folder_encrypted_key = vssq_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(folder_encrypted_key.len));
-    request_body.folder_encrypted_key->size = folder_encrypted_key.len;
-    memcpy(request_body.folder_encrypted_key->bytes, folder_encrypted_key.bytes, folder_encrypted_key.len);
-
-    request_body.folder_public_key = vssq_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(folder_public_key.len));
-    request_body.folder_public_key->size = folder_public_key.len;
-    memcpy(request_body.folder_public_key->bytes, folder_public_key.bytes, folder_public_key.len);
-
-    //
-    //  Serialize request body
-    //
-    size_t request_body_buffer_len = 0;
-    bool is_pb_success = pb_get_encoded_size(&request_body_buffer_len, vssq_pb_CreateFolderReq_fields, &request_body);
-    VSSQ_ASSERT(is_pb_success);
-
-    request_body_buffer = vsc_buffer_new_with_capacity(request_body_buffer_len);
-
-    pb_ostream_t ostream = pb_ostream_from_buffer(
-            vsc_buffer_unused_bytes(request_body_buffer), vsc_buffer_unused_len(request_body_buffer));
-
-    is_pb_success = pb_encode(&ostream, vssq_pb_CreateFolderReq_fields, &request_body);
-    VSSQ_ASSERT(is_pb_success);
-    vsc_buffer_inc_used(request_body_buffer, ostream.bytes_written);
-
-    //
-    //  Create request.
-    //
-    request = vssq_messenger_cloud_fs_create_request(
-            self, k_url_path_folder_create, vsc_buffer_data(request_body_buffer));
-    //
-    //  Send request.
-    //
-    response = vssq_messenger_auth_send_messenger_request(self->auth, request, true, NULL);
-
-    if (!vssq_messenger_cloud_fs_check_response(response, error)) {
-        goto cleanup;
-    }
-
-    //
-    //  Parse response.
-    //
-    vsc_data_t body = vssc_http_response_body(response);
-    if (vsc_data_is_empty(body)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
-        goto cleanup;
-    }
-
-    pb_istream_t istream = pb_istream_from_buffer(body.bytes, body.len);
-
-    is_pb_success = pb_decode(&istream, vssq_pb_CreateFolderResp_fields, &response_body);
-    if (!is_pb_success) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
-        goto cleanup;
-    }
-
-    folder_info = vssq_messenger_cloud_fs_parse_folder_info(&response_body.folder, error);
-    if (NULL == folder_info) {
-        goto cleanup;
-    }
-
-cleanup:
-    vssq_dealloc(request_body.folder_encrypted_key);
-    vssq_dealloc(request_body.folder_public_key);
-    vsc_buffer_destroy(&request_body_buffer);
-    vssc_http_request_destroy(&request);
-    vssc_http_response_destroy(&response);
-
-    return folder_info;
+    return vssq_messenger_cloud_fs_create_folder_internal(
+            self, name, folder_encrypted_key, folder_public_key, parent_folder_id, users, error);
 }
 
 //
@@ -917,7 +897,7 @@ vssq_messenger_cloud_fs_list_folder(const vssq_messenger_cloud_fs_t *self, vsc_s
                 response_body.total_folder_count, response_body.total_file_count, &folders, &files, &info);
     } else {
         folder = vssq_messenger_cloud_fs_folder_new_with_disown(response_body.total_folder_count,
-                response_body.total_file_count, folder_encrypted_key, folder_public_key, &folders, &files, &info);
+                response_body.total_file_count, folder_encrypted_key, folder_public_key, &folders, &files, &info, NULL);
     }
 
 cleanup:
@@ -927,6 +907,8 @@ cleanup:
     vssq_messenger_cloud_fs_folder_info_list_destroy(&folders);
     vssq_messenger_cloud_fs_file_info_list_destroy(&files);
     vssq_messenger_cloud_fs_folder_info_destroy(&info);
+    vssq_cloud_file_system_pb_cleanup_pb_list_folder_req(&request_body);
+    vssq_cloud_file_system_pb_cleanup_pb_list_folder_resp(&response_body);
 
     return folder;
 }
@@ -992,8 +974,247 @@ cleanup:
     vsc_buffer_destroy(&request_body_buffer);
     vssc_http_request_destroy(&request);
     vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_delete_folder_req(&request_body);
 
     return vssq_error_status(&error);
+}
+
+//
+//  Share existing folder with other users.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_cloud_fs_share_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
+        vsc_data_t folder_encrypted_key, const vssq_messenger_cloud_fs_user_permission_list_t *users) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
+    VSSQ_ASSERT_PTR(users);
+    VSSQ_ASSERT(vssq_messenger_cloud_fs_user_permission_list_has_item(users));
+
+    //
+    //  Declare vars.
+    //
+    vssq_pb_ShareFolderReq request_body = vssq_pb_ShareFolderReq_init_zero;
+    vsc_buffer_t *request_body_buffer = NULL;
+    vssc_http_request_t *request = NULL;
+    vssc_http_response_t *response = NULL;
+
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    //
+    //  Create request body.
+    //
+    VSSQ_ASSERT(id.len < sizeof(request_body.id));
+    memcpy(request_body.id, id.chars, id.len);
+
+    request_body.folder_encrypted_key = pb_realloc(NULL, PB_BYTES_ARRAY_T_ALLOCSIZE(folder_encrypted_key.len));
+    request_body.folder_encrypted_key->size = folder_encrypted_key.len;
+    memcpy(request_body.folder_encrypted_key->bytes, folder_encrypted_key.bytes, folder_encrypted_key.len);
+
+    vssq_messenger_cloud_fs_write_users_to_pb(users, &request_body.users, &request_body.users_count);
+
+    //
+    //  Serialize request body
+    //
+    size_t request_body_buffer_len = 0;
+    bool is_pb_success = pb_get_encoded_size(&request_body_buffer_len, vssq_pb_ShareFolderReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+
+    request_body_buffer = vsc_buffer_new_with_capacity(request_body_buffer_len);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(request_body_buffer), vsc_buffer_unused_len(request_body_buffer));
+
+    is_pb_success = pb_encode(&ostream, vssq_pb_ShareFolderReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+    vsc_buffer_inc_used(request_body_buffer, ostream.bytes_written);
+
+    //
+    //  Create request.
+    //
+    request =
+            vssq_messenger_cloud_fs_create_request(self, k_url_path_folder_share, vsc_buffer_data(request_body_buffer));
+
+    //
+    //  Send request.
+    //
+    response = vssq_messenger_auth_send_messenger_request(self->auth, request, true, NULL);
+
+    if (!vssq_messenger_cloud_fs_check_response(response, &error)) {
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_buffer_destroy(&request_body_buffer);
+    vssc_http_request_destroy(&request);
+    vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_share_folder_req(&request_body);
+
+    return vssq_error_status(&error);
+}
+
+//
+//  Remove shared access from the given users of existing folder.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_cloud_fs_unshare_folder(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
+        vsc_data_t folder_encrypted_key, const vssq_messenger_cloud_fs_user_permission_list_t *users) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
+    VSSQ_ASSERT_PTR(users);
+    VSSQ_ASSERT(vssq_messenger_cloud_fs_user_permission_list_has_item(users));
+
+    //
+    //  Declare vars.
+    //
+    vssq_pb_UnshareFolderReq request_body = vssq_pb_UnshareFolderReq_init_zero;
+    vsc_buffer_t *request_body_buffer = NULL;
+    vssc_http_request_t *request = NULL;
+    vssc_http_response_t *response = NULL;
+
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    //
+    //  Create request body.
+    //
+    VSSQ_ASSERT(id.len < sizeof(request_body.id));
+    memcpy(request_body.id, id.chars, id.len);
+
+    request_body.folder_encrypted_key = pb_realloc(NULL, PB_BYTES_ARRAY_T_ALLOCSIZE(folder_encrypted_key.len));
+    request_body.folder_encrypted_key->size = folder_encrypted_key.len;
+    memcpy(request_body.folder_encrypted_key->bytes, folder_encrypted_key.bytes, folder_encrypted_key.len);
+
+    vssq_messenger_cloud_fs_write_users_to_pb(users, &request_body.users, &request_body.users_count);
+
+    //
+    //  Serialize request body
+    //
+    size_t request_body_buffer_len = 0;
+    bool is_pb_success = pb_get_encoded_size(&request_body_buffer_len, vssq_pb_UnshareFolderReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+
+    request_body_buffer = vsc_buffer_new_with_capacity(request_body_buffer_len);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(request_body_buffer), vsc_buffer_unused_len(request_body_buffer));
+
+    is_pb_success = pb_encode(&ostream, vssq_pb_UnshareFolderReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+    vsc_buffer_inc_used(request_body_buffer, ostream.bytes_written);
+
+    //
+    //  Create request.
+    //
+    request = vssq_messenger_cloud_fs_create_request(
+            self, k_url_path_folder_unshare, vsc_buffer_data(request_body_buffer));
+    //
+    //  Send request.
+    //
+    response = vssq_messenger_auth_send_messenger_request(self->auth, request, true, NULL);
+
+    if (!vssq_messenger_cloud_fs_check_response(response, &error)) {
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_buffer_destroy(&request_body_buffer);
+    vssc_http_request_destroy(&request);
+    vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_unshare_folder_req(&request_body);
+
+    return vssq_error_status(&error);
+}
+
+//
+//  Get shared group of users.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_list_t *
+vssq_messenger_cloud_fs_get_shared_group_users(
+        const vssq_messenger_cloud_fs_t *self, vsc_str_t id, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
+
+    //
+    //  Declare vars.
+    //
+    vssq_pb_GetSharedGroupReq request_body = vssq_pb_GetSharedGroupReq_init_zero;
+    vssq_pb_GetSharedGroupResp response_body = vssq_pb_GetSharedGroupResp_init_zero;
+    vsc_buffer_t *request_body_buffer = NULL;
+    vssc_http_request_t *request = NULL;
+    vssc_http_response_t *response = NULL;
+    vssq_messenger_cloud_fs_user_permission_list_t *users_permission = NULL;
+
+    //
+    //  Create request body.
+    //
+    VSSQ_ASSERT(id.len < sizeof(request_body.id));
+    memcpy(request_body.id, id.chars, id.len);
+
+    //
+    //  Serialize request body
+    //
+    size_t request_body_buffer_len = 0;
+    bool is_pb_success = pb_get_encoded_size(&request_body_buffer_len, vssq_pb_GetSharedGroupReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+
+    request_body_buffer = vsc_buffer_new_with_capacity(request_body_buffer_len);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(request_body_buffer), vsc_buffer_unused_len(request_body_buffer));
+
+    is_pb_success = pb_encode(&ostream, vssq_pb_GetSharedGroupReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+    vsc_buffer_inc_used(request_body_buffer, ostream.bytes_written);
+
+    //
+    //  Create request.
+    //
+    request = vssq_messenger_cloud_fs_create_request(
+            self, k_url_path_get_shared_group, vsc_buffer_data(request_body_buffer));
+    //
+    //  Send request.
+    //
+    response = vssq_messenger_auth_send_messenger_request(self->auth, request, true, NULL);
+
+    if (!vssq_messenger_cloud_fs_check_response(response, error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Parse response.
+    //
+    vsc_data_t body = vssc_http_response_body(response);
+    if (vsc_data_is_empty(body)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
+        goto cleanup;
+    }
+
+    pb_istream_t istream = pb_istream_from_buffer(body.bytes, body.len);
+
+    is_pb_success = pb_decode(&istream, vssq_pb_GetSharedGroupResp_fields, &response_body);
+    if (!is_pb_success) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
+        goto cleanup;
+    }
+
+    users_permission = vssq_messenger_cloud_fs_read_users_from_pb(
+            response_body.shared_group.users, response_body.shared_group.users_count, error);
+
+cleanup:
+    vsc_buffer_destroy(&request_body_buffer);
+    vssc_http_request_destroy(&request);
+    vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_get_shared_group_req(&request_body);
+    vssq_cloud_file_system_pb_cleanup_pb_get_shared_group_resp(&response_body);
+
+    return users_permission;
 }
 
 //
@@ -1037,6 +1258,117 @@ vssq_messenger_cloud_fs_user_private_key(const vssq_messenger_cloud_fs_t *self) 
 }
 
 //
+//  Create a new folder within the Cloud FS.
+//  Note, if parent folder id is empty then folder created in a root folder.
+//  Note, if users are given then the folder will be shared for them.
+//
+static vssq_messenger_cloud_fs_folder_info_t *
+vssq_messenger_cloud_fs_create_folder_internal(const vssq_messenger_cloud_fs_t *self, vsc_str_t name,
+        vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key, vsc_str_t parent_folder_id,
+        const vssq_messenger_cloud_fs_user_permission_list_t *users, vssq_error_t *error) {
+
+    //
+    //  Declare vars.
+    //
+    vssq_pb_CreateFolderReq request_body = vssq_pb_CreateFolderReq_init_zero;
+    vssq_pb_CreateFolderResp response_body = vssq_pb_CreateFolderResp_init_zero;
+    vsc_buffer_t *request_body_buffer = NULL;
+    vssc_http_request_t *request = NULL;
+    vssc_http_response_t *response = NULL;
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = NULL;
+
+    //
+    //  Create request body.
+    //
+
+    //
+    //  Fulfill generic info.
+    //
+    VSSQ_ASSERT(name.len < sizeof(request_body.name));
+    memcpy(request_body.name, name.chars, name.len);
+
+    VSSQ_ASSERT(parent_folder_id.len < sizeof(request_body.parent_folder_id));
+    memcpy(request_body.parent_folder_id, parent_folder_id.chars, parent_folder_id.len);
+
+    //
+    //  Fulfill decryption info.
+    //
+    request_body.folder_encrypted_key = pb_realloc(NULL, PB_BYTES_ARRAY_T_ALLOCSIZE(folder_encrypted_key.len));
+    request_body.folder_encrypted_key->size = folder_encrypted_key.len;
+    memcpy(request_body.folder_encrypted_key->bytes, folder_encrypted_key.bytes, folder_encrypted_key.len);
+
+    request_body.folder_public_key = pb_realloc(NULL, PB_BYTES_ARRAY_T_ALLOCSIZE(folder_public_key.len));
+    request_body.folder_public_key->size = folder_public_key.len;
+    memcpy(request_body.folder_public_key->bytes, folder_public_key.bytes, folder_public_key.len);
+
+    //
+    //  Fulfill shared users info.
+    //
+    vssq_messenger_cloud_fs_write_users_to_pb(users, &request_body.users, &request_body.users_count);
+
+    //
+    //  Serialize request body
+    //
+    size_t request_body_buffer_len = 0;
+    bool is_pb_success = pb_get_encoded_size(&request_body_buffer_len, vssq_pb_CreateFolderReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+
+    request_body_buffer = vsc_buffer_new_with_capacity(request_body_buffer_len);
+
+    pb_ostream_t ostream = pb_ostream_from_buffer(
+            vsc_buffer_unused_bytes(request_body_buffer), vsc_buffer_unused_len(request_body_buffer));
+
+    is_pb_success = pb_encode(&ostream, vssq_pb_CreateFolderReq_fields, &request_body);
+    VSSQ_ASSERT(is_pb_success);
+    vsc_buffer_inc_used(request_body_buffer, ostream.bytes_written);
+
+    //
+    //  Create request.
+    //
+    request = vssq_messenger_cloud_fs_create_request(
+            self, k_url_path_folder_create, vsc_buffer_data(request_body_buffer));
+    //
+    //  Send request.
+    //
+    response = vssq_messenger_auth_send_messenger_request(self->auth, request, true, NULL);
+
+    if (!vssq_messenger_cloud_fs_check_response(response, error)) {
+        goto cleanup;
+    }
+
+    //
+    //  Parse response.
+    //
+    vsc_data_t body = vssc_http_response_body(response);
+    if (vsc_data_is_empty(body)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
+        goto cleanup;
+    }
+
+    pb_istream_t istream = pb_istream_from_buffer(body.bytes, body.len);
+
+    is_pb_success = pb_decode(&istream, vssq_pb_CreateFolderResp_fields, &response_body);
+    if (!is_pb_success) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
+        goto cleanup;
+    }
+
+    folder_info = vssq_messenger_cloud_fs_parse_folder_info(&response_body.folder, error);
+    if (NULL == folder_info) {
+        goto cleanup;
+    }
+
+cleanup:
+    vsc_buffer_destroy(&request_body_buffer);
+    vssc_http_request_destroy(&request);
+    vssc_http_response_destroy(&response);
+    vssq_cloud_file_system_pb_cleanup_pb_create_folder_req(&request_body);
+    vssq_cloud_file_system_pb_cleanup_pb_create_folder_resp(&response_body);
+
+    return folder_info;
+}
+
+//
 //  Return request based on the given endpoint and body.
 //
 static vssc_http_request_t *
@@ -1074,7 +1406,15 @@ vssq_messenger_cloud_fs_check_response(const vssc_http_response_t *http_response
     }
 
     if (!vssc_http_response_is_success(http_response)) {
-        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR);
+        //
+        //  TODO: Map the service errors more precisely.
+        //
+        if (vssc_http_response_status_code(http_response) == 404) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND);
+        } else {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR);
+        }
+
         return false;
     }
 
@@ -1126,6 +1466,7 @@ vssq_messenger_cloud_fs_parse_folder_info(const vssq_pb_Folder *pb_folder, vssq_
     vsc_str_t id = vsc_str_from_str(pb_folder->id);
     vsc_str_t name = vsc_str_from_str(pb_folder->name);
     vsc_str_t updated_by = vsc_str_from_str(pb_folder->updated_by);
+    vsc_str_t shared_group_id = vsc_str_from_str(pb_folder->shared_group_id);
 
     if (vsc_str_is_empty(id) || vsc_str_is_empty(name) || vsc_str_is_empty(updated_by)) {
         VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
@@ -1133,7 +1474,7 @@ vssq_messenger_cloud_fs_parse_folder_info(const vssq_pb_Folder *pb_folder, vssq_
     }
 
     return vssq_messenger_cloud_fs_folder_info_new_with(
-            id, name, pb_folder->created_at.seconds, pb_folder->updated_at.seconds, updated_by);
+            id, name, pb_folder->created_at.seconds, pb_folder->updated_at.seconds, updated_by, shared_group_id);
 }
 
 //
@@ -1152,4 +1493,103 @@ vssq_messenger_cloud_fs_parse_bytes_optional(const pb_bytes_array_t *pb_array, b
     }
 
     return vsc_data_empty();
+}
+
+//
+//  Write users to a PB structure fields.
+//
+static void
+vssq_messenger_cloud_fs_write_users_to_pb(const vssq_messenger_cloud_fs_user_permission_list_t *users,
+        vssq_pb_User **pb_users_ref, pb_size_t *pb_users_count) {
+
+    VSSQ_ASSERT_PTR(pb_users_ref);
+
+
+    *pb_users_count = vssq_messenger_cloud_fs_user_permission_list_count(users);
+    if (*pb_users_count > 0) {
+        *pb_users_ref = pb_realloc(NULL, *pb_users_count * sizeof(vssq_pb_User));
+    }
+
+    vssq_pb_User *pb_users = *pb_users_ref;
+
+    size_t users_added = 0;
+    for (const vssq_messenger_cloud_fs_user_permission_list_t *user_it = users;
+            (user_it != NULL) && vssq_messenger_cloud_fs_user_permission_list_has_item(user_it);
+            user_it = vssq_messenger_cloud_fs_user_permission_list_next(user_it), ++users_added) {
+
+        const vssq_messenger_cloud_fs_user_permission_t *user_permission =
+                vssq_messenger_cloud_fs_user_permission_list_item(user_it);
+
+        vsc_str_t identity = vssq_messenger_cloud_fs_user_permission_identity(user_permission);
+
+        vssq_messenger_cloud_fs_permission_t permission =
+                vssq_messenger_cloud_fs_user_permission_permission(user_permission);
+
+        VSSQ_ASSERT(identity.len <= 512);
+        memcpy(pb_users[users_added].identity, identity.chars, identity.len);
+        pb_users[users_added].permission = vssq_messenger_cloud_fs_to_pb_permission(permission);
+    }
+
+    VSSQ_ASSERT(users_added == *pb_users_count);
+}
+
+//
+//  Read users from a PB structure fields.
+//
+static vssq_messenger_cloud_fs_user_permission_list_t *
+vssq_messenger_cloud_fs_read_users_from_pb(
+        const vssq_pb_User *pb_users, pb_size_t pb_users_count, vssq_error_t *error) {
+
+    vssq_messenger_cloud_fs_user_permission_list_t *users = vssq_messenger_cloud_fs_user_permission_list_new();
+    for (size_t pos = 0; pos < pb_users_count; ++pos) {
+        vsc_str_t identity = vsc_str_from_str(pb_users[pos].identity);
+        vssq_messenger_cloud_fs_permission_t permission =
+                vssq_messenger_cloud_fs_from_pb_permission(pb_users[pos].permission);
+
+        if (vsc_str_is_empty(identity)) {
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED);
+            vssq_messenger_cloud_fs_user_permission_list_destroy(&users);
+            return NULL;
+        }
+
+        vssq_messenger_cloud_fs_user_permission_t *user_permission =
+                vssq_messenger_cloud_fs_user_permission_new_with(identity, permission);
+        vssq_messenger_cloud_fs_user_permission_list_add_disown(users, &user_permission);
+    }
+
+    return users;
+}
+
+//
+//  Converts this library permission to the vssq_pb_Permission.
+//
+static vssq_pb_Permission
+vssq_messenger_cloud_fs_to_pb_permission(vssq_messenger_cloud_fs_permission_t permission) {
+
+    switch (permission) {
+    case vssq_messenger_cloud_fs_permission_ADMIN:
+        return vssq_pb_Permission_PERMISSION_ADMIN;
+
+    case vssq_messenger_cloud_fs_permission_USER:
+        return vssq_pb_Permission_PERMISSION_USER;
+    }
+
+    VSSQ_ASSERT(0 && "Got unexpected Cloud FS user permission");
+}
+
+//
+//  Converts vssq_pb_Permission to this library permission.
+//
+static vssq_messenger_cloud_fs_permission_t
+vssq_messenger_cloud_fs_from_pb_permission(vssq_pb_Permission pb_permission) {
+
+    switch (pb_permission) {
+    case vssq_pb_Permission_PERMISSION_ADMIN:
+        return vssq_messenger_cloud_fs_permission_ADMIN;
+
+    case vssq_pb_Permission_PERMISSION_USER:
+        return vssq_messenger_cloud_fs_permission_USER;
+    }
+
+    VSSQ_ASSERT(0 && "Got unexpected Cloud FS user permission");
 }

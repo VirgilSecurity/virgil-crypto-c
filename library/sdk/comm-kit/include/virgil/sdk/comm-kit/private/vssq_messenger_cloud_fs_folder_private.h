@@ -51,6 +51,7 @@
 #include "vssq_messenger_cloud_fs_folder_info_list.h"
 #include "vssq_messenger_cloud_fs_file_info_list.h"
 #include "vssq_messenger_cloud_fs_folder_info.h"
+#include "vssq_messenger_cloud_fs_user_permission_list.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -83,7 +84,8 @@ VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_init_with_disown(vssq_messenger_cloud_fs_folder_t *self, size_t total_folder_count,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
-        vssq_messenger_cloud_fs_folder_info_t **info_ref);
+        vssq_messenger_cloud_fs_folder_info_t **info_ref,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -93,7 +95,8 @@ VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_t *
 vssq_messenger_cloud_fs_folder_new_with_disown(size_t total_folder_count, size_t total_file_count,
         vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         vssq_messenger_cloud_fs_folder_info_list_t **folders_ref, vssq_messenger_cloud_fs_file_info_list_t **files_ref,
-        vssq_messenger_cloud_fs_folder_info_t **info_ref);
+        vssq_messenger_cloud_fs_folder_info_t **info_ref,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
 
 //
 //  Perform initialization of pre-allocated context.

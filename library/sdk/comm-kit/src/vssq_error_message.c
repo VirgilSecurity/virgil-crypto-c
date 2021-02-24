@@ -652,6 +652,13 @@ static const vsc_str_t k_message_cloud_fs_failed_parse_response_failed = {
     sizeof(k_message_cloud_fs_failed_parse_response_failed_chars) - 1
 };
 
+static const char k_message_cloud_fs_failed_entry_not_found_chars[] = "Communicate with Cloud FS failed requested entry was not found.";
+
+static const vsc_str_t k_message_cloud_fs_failed_entry_not_found = {
+    k_message_cloud_fs_failed_entry_not_found_chars,
+    sizeof(k_message_cloud_fs_failed_entry_not_found_chars) - 1
+};
+
 //
 //  Return a message string from the given status.
 //
@@ -825,6 +832,8 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_cloud_fs_failed_unexpected_content_type;
         case vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED:
             return k_message_cloud_fs_failed_parse_response_failed;
+        case vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND:
+            return k_message_cloud_fs_failed_entry_not_found;
         default:
             return k_message_unknown_error;
     }

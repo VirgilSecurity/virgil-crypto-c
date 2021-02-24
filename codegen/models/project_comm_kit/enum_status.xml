@@ -332,4 +332,8 @@
     <constant name="cloud fs failed parse response failed" value="-1503">
         Communicate with Cloud FS failed because failed to parse response body.
     </constant>
+
+    <constant name="cloud fs failed entry not found" value="-1504">
+        Communicate with Cloud FS failed requested entry was not found.
+    </constant>
 </enum>

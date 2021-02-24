@@ -47,13 +47,14 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Value object that handles public available folder info.
+//  Handles information about CloudFS user's permission to file or folder.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_H_INCLUDED
+#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_H_INCLUDED
 
 #include "vssq_library.h"
+#include "vssq_messenger_cloud_fs_permission.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -79,121 +80,90 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger cloud fs folder info' context.
+//  Handle 'messenger cloud fs user permission' context.
 //
-#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_T_DEFINED
-#define VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_T_DEFINED
-    typedef struct vssq_messenger_cloud_fs_folder_info_t vssq_messenger_cloud_fs_folder_info_t;
-#endif // VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_T_DEFINED
+#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_T_DEFINED
+#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_T_DEFINED
+    typedef struct vssq_messenger_cloud_fs_user_permission_t vssq_messenger_cloud_fs_user_permission_t;
+#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_T_DEFINED
 
 //
-//  Return size of 'vssq_messenger_cloud_fs_folder_info_t'.
+//  Return size of 'vssq_messenger_cloud_fs_user_permission_t'.
 //
 VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_folder_info_ctx_size(void);
+vssq_messenger_cloud_fs_user_permission_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_folder_info_init(vssq_messenger_cloud_fs_folder_info_t *self);
+vssq_messenger_cloud_fs_user_permission_init(vssq_messenger_cloud_fs_user_permission_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_folder_info_cleanup(vssq_messenger_cloud_fs_folder_info_t *self);
+vssq_messenger_cloud_fs_user_permission_cleanup(vssq_messenger_cloud_fs_user_permission_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
-vssq_messenger_cloud_fs_folder_info_new(void);
+VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_t *
+vssq_messenger_cloud_fs_user_permission_new(void);
 
 //
 //  Perform initialization of pre-allocated context.
-//  Create fully defined object.
+//  Create an object with required fields.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_folder_info_init_with(vssq_messenger_cloud_fs_folder_info_t *self, vsc_str_t id, vsc_str_t name,
-        size_t created_at, size_t updated_at, vsc_str_t updated_by, vsc_str_t shared_group_id);
+vssq_messenger_cloud_fs_user_permission_init_with(vssq_messenger_cloud_fs_user_permission_t *self, vsc_str_t identity,
+        vssq_messenger_cloud_fs_permission_t permission);
 
 //
 //  Allocate class context and perform it's initialization.
-//  Create fully defined object.
+//  Create an object with required fields.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
-vssq_messenger_cloud_fs_folder_info_new_with(vsc_str_t id, vsc_str_t name, size_t created_at, size_t updated_at,
-        vsc_str_t updated_by, vsc_str_t shared_group_id);
+VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_t *
+vssq_messenger_cloud_fs_user_permission_new_with(vsc_str_t identity, vssq_messenger_cloud_fs_permission_t permission);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_folder_info_delete(const vssq_messenger_cloud_fs_folder_info_t *self);
+vssq_messenger_cloud_fs_user_permission_delete(const vssq_messenger_cloud_fs_user_permission_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssq_messenger_cloud_fs_folder_info_new ()'.
+//  This is a reverse action of the function 'vssq_messenger_cloud_fs_user_permission_new ()'.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_folder_info_destroy(vssq_messenger_cloud_fs_folder_info_t **self_ref);
+vssq_messenger_cloud_fs_user_permission_destroy(vssq_messenger_cloud_fs_user_permission_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
-vssq_messenger_cloud_fs_folder_info_shallow_copy(vssq_messenger_cloud_fs_folder_info_t *self);
+VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_t *
+vssq_messenger_cloud_fs_user_permission_shallow_copy(vssq_messenger_cloud_fs_user_permission_t *self);
 
 //
 //  Copy given class context by increasing reference counter.
 //  Reference counter is internally synchronized, so constness is presumed.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_folder_info_t *
-vssq_messenger_cloud_fs_folder_info_shallow_copy_const(const vssq_messenger_cloud_fs_folder_info_t *self);
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_t *
+vssq_messenger_cloud_fs_user_permission_shallow_copy_const(const vssq_messenger_cloud_fs_user_permission_t *self);
 
 //
-//  Return folder id.
+//  Return user's identity.
 //
 VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_folder_info_id(const vssq_messenger_cloud_fs_folder_info_t *self);
+vssq_messenger_cloud_fs_user_permission_identity(const vssq_messenger_cloud_fs_user_permission_t *self);
 
 //
-//  Return folder name.
+//  Return user's permission.
 //
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_folder_info_name(const vssq_messenger_cloud_fs_folder_info_t *self);
-
-//
-//  Return folder "created at" timestamp.
-//
-VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_folder_info_created_at(const vssq_messenger_cloud_fs_folder_info_t *self);
-
-//
-//  Return folder "updated at" timestamp.
-//
-VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_folder_info_updated_at(const vssq_messenger_cloud_fs_folder_info_t *self);
-
-//
-//  Return folder "updated by" - user identity that updated a folder.
-//
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_folder_info_updated_by(const vssq_messenger_cloud_fs_folder_info_t *self);
-
-//
-//  Return true if folder is shared.
-//
-VSSQ_PUBLIC bool
-vssq_messenger_cloud_fs_folder_info_is_shared(vssq_messenger_cloud_fs_folder_info_t *self);
-
-//
-//  Return shared group identifier if folder is shared or empty string - otherwise.
-//
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_folder_info_shared_group_id(const vssq_messenger_cloud_fs_folder_info_t *self);
+VSSQ_PUBLIC vssq_messenger_cloud_fs_permission_t
+vssq_messenger_cloud_fs_user_permission_permission(const vssq_messenger_cloud_fs_user_permission_t *self);
 
 
 // --------------------------------------------------------------------------
@@ -209,5 +179,5 @@ vssq_messenger_cloud_fs_folder_info_shared_group_id(const vssq_messenger_cloud_f
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_H_INCLUDED
 //  @end

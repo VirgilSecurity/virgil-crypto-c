@@ -1,0 +1,28 @@
+<class name="messenger cloud fs user permission">
+    Handles information about CloudFS user's permission to file or folder.
+
+    <property name="identity" class="str mutable"/>
+    <property name="permission" enum="messenger cloud fs permission"/>
+
+
+    <constructor name="with">
+        Create an object with required fields.
+
+        <argument name="identity" class="str"/>
+        <argument name="permission" enum="messenger cloud fs permission"/>
+    </constructor>
+
+
+    <method name="identity" is_const="1">
+        Return user's identity.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="permission" is_const="1">
+        Return user's permission.
+
+        <return enum="messenger cloud fs permission"/>
+    </method>
+</class>

@@ -86,7 +86,7 @@ vssq_messenger_cloud_fs_folder_info_cleanup_ctx(vssq_messenger_cloud_fs_folder_i
 //
 static void
 vssq_messenger_cloud_fs_folder_info_init_ctx_with(vssq_messenger_cloud_fs_folder_info_t *self, vsc_str_t id,
-        vsc_str_t name, size_t created_at, size_t updated_at, vsc_str_t updated_by);
+        vsc_str_t name, size_t created_at, size_t updated_at, vsc_str_t updated_by, vsc_str_t shared_group_id);
 
 //
 //  Return size of 'vssq_messenger_cloud_fs_folder_info_t'.
@@ -149,7 +149,7 @@ vssq_messenger_cloud_fs_folder_info_new(void) {
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_info_init_with(vssq_messenger_cloud_fs_folder_info_t *self, vsc_str_t id, vsc_str_t name,
-        size_t created_at, size_t updated_at, vsc_str_t updated_by) {
+        size_t created_at, size_t updated_at, vsc_str_t updated_by, vsc_str_t shared_group_id) {
 
     VSSQ_ASSERT_PTR(self);
 
@@ -157,7 +157,7 @@ vssq_messenger_cloud_fs_folder_info_init_with(vssq_messenger_cloud_fs_folder_inf
 
     self->refcnt = 1;
 
-    vssq_messenger_cloud_fs_folder_info_init_ctx_with(self, id, name, created_at, updated_at, updated_by);
+    vssq_messenger_cloud_fs_folder_info_init_ctx_with(self, id, name, created_at, updated_at, updated_by, shared_group_id);
 }
 
 //
@@ -166,12 +166,12 @@ vssq_messenger_cloud_fs_folder_info_init_with(vssq_messenger_cloud_fs_folder_inf
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
 vssq_messenger_cloud_fs_folder_info_new_with(vsc_str_t id, vsc_str_t name, size_t created_at, size_t updated_at,
-        vsc_str_t updated_by) {
+        vsc_str_t updated_by, vsc_str_t shared_group_id) {
 
     vssq_messenger_cloud_fs_folder_info_t *self = (vssq_messenger_cloud_fs_folder_info_t *) vssq_alloc(sizeof (vssq_messenger_cloud_fs_folder_info_t));
     VSSQ_ASSERT_ALLOC(self);
 
-    vssq_messenger_cloud_fs_folder_info_init_with(self, id, name, created_at, updated_at, updated_by);
+    vssq_messenger_cloud_fs_folder_info_init_with(self, id, name, created_at, updated_at, updated_by, shared_group_id);
 
     self->self_dealloc_cb = vssq_dealloc;
 
@@ -300,6 +300,7 @@ vssq_messenger_cloud_fs_folder_info_cleanup_ctx(vssq_messenger_cloud_fs_folder_i
 
     vsc_str_mutable_release(&self->id);
     vsc_str_mutable_release(&self->name);
+    vsc_str_mutable_release(&self->shared_group_id);
 }
 
 //
@@ -307,7 +308,7 @@ vssq_messenger_cloud_fs_folder_info_cleanup_ctx(vssq_messenger_cloud_fs_folder_i
 //
 static void
 vssq_messenger_cloud_fs_folder_info_init_ctx_with(vssq_messenger_cloud_fs_folder_info_t *self, vsc_str_t id,
-        vsc_str_t name, size_t created_at, size_t updated_at, vsc_str_t updated_by) {
+        vsc_str_t name, size_t created_at, size_t updated_at, vsc_str_t updated_by, vsc_str_t shared_group_id) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
@@ -315,12 +316,14 @@ vssq_messenger_cloud_fs_folder_info_init_ctx_with(vssq_messenger_cloud_fs_folder
     VSSQ_ASSERT(created_at > 0);
     VSSQ_ASSERT(updated_at > 0);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(updated_by));
+    VSSQ_ASSERT(vsc_str_is_valid(shared_group_id));
 
     self->id = vsc_str_mutable_from_str(id);
     self->name = vsc_str_mutable_from_str(name);
     self->created_at = created_at;
     self->updated_at = updated_at;
     self->updated_by = vsc_str_mutable_from_str(updated_by);
+    self->shared_group_id = vsc_str_mutable_from_str(shared_group_id);
 }
 
 //
@@ -376,4 +379,26 @@ vssq_messenger_cloud_fs_folder_info_updated_by(const vssq_messenger_cloud_fs_fol
     VSSQ_ASSERT_PTR(self);
 
     return vsc_str_mutable_as_str(self->updated_by);
+}
+
+//
+//  Return true if folder is shared.
+//
+VSSQ_PUBLIC bool
+vssq_messenger_cloud_fs_folder_info_is_shared(vssq_messenger_cloud_fs_folder_info_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vsc_str_is_empty(vsc_str_mutable_as_str(self->shared_group_id));
+}
+
+//
+//  Return shared group identifier if folder is shared or empty string - otherwise.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_cloud_fs_folder_info_shared_group_id(const vssq_messenger_cloud_fs_folder_info_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    return vsc_str_mutable_as_str(self->shared_group_id);
 }

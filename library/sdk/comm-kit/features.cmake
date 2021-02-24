@@ -71,6 +71,9 @@ option(VSSQ_MESSENGER_CLOUD_FS_FILE_INFO "Enable class 'messenger cloud fs file 
 option(VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST "Enable class 'messenger cloud fs file info list'." ON)
 option(VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO "Enable class 'messenger cloud fs file download info'." ON)
 option(VSSQ_MESSENGER_CLOUD_FS_CIPHER "Enable class 'messenger cloud fs cipher'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION "Enable class 'messenger cloud fs user permission'." ON)
+option(VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST "Enable class 'messenger cloud fs user permission list'." ON)
+option(VSSQ_CLOUD_FILE_SYSTEM_PB "Enable class 'cloud file system pb'." ON)
 option(VSSQ_CONTACT_UTILS "Enable class 'contact utils'." ON)
 mark_as_advanced(
         VSSQ_LIBRARY
@@ -99,6 +102,9 @@ mark_as_advanced(
         VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
         VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
         VSSQ_MESSENGER_CLOUD_FS_CIPHER
+        VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION
+        VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST
+        VSSQ_CLOUD_FILE_SYSTEM_PB
         VSSQ_CONTACT_UTILS
         )
 
@@ -989,6 +995,24 @@ if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_MESSENGER_CLOUD_FS_FOLDER)
     message("--")
     message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
     message("     VSSQ_MESSENGER_CLOUD_FS_FOLDER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSQ_MESSENGER_CLOUD_FS AND NOT VSSQ_CLOUD_FILE_SYSTEM_PB)
+    message("-- error --")
+    message("--")
+    message("Feature VSSQ_MESSENGER_CLOUD_FS depends on the feature:")
+    message("     VSSQ_CLOUD_FILE_SYSTEM_PB - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

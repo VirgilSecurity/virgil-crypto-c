@@ -44,116 +44,18 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_PRIVATE_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  This ia an umbrella header that includes library public headers.
-// --------------------------------------------------------------------------
+#include "vssq_messenger_cloud_fs_folder_info.h"
+#include "vssq_messenger_cloud_fs_user_permission_list.h"
 
-#ifndef VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-#define VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
-
-#include "vssq_platform.h"
-#include "vssq_assert.h"
-#include "vssq_library.h"
-#include "vssq_memory.h"
-#include "vssq_messenger_cloud_fs_permission.h"
-#include "vssq_status.h"
-
-#if VSSQ_CONTACT_UTILS
-#   include "vssq_contact_utils.h"
+#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str.h>
 #endif
 
-#if VSSQ_EJABBERD_JWT
-#   include "vssq_ejabberd_jwt.h"
-#endif
-
-#if VSSQ_ERROR
-#   include "vssq_error.h"
-#endif
-
-#if VSSQ_ERROR_MESSAGE
-#   include "vssq_error_message.h"
-#endif
-
-#if VSSQ_MESSENGER
-#   include "vssq_messenger.h"
-#endif
-
-#if VSSQ_MESSENGER_AUTH
-#   include "vssq_messenger_auth.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS
-#   include "vssq_messenger_cloud_fs.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_CIPHER
-#   include "vssq_messenger_cloud_fs_cipher.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
-#   include "vssq_messenger_cloud_fs_created_file.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
-#   include "vssq_messenger_cloud_fs_file_download_info.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FILE_INFO
-#   include "vssq_messenger_cloud_fs_file_info.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
-#   include "vssq_messenger_cloud_fs_file_info_list.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FOLDER
-#   include "vssq_messenger_cloud_fs_folder.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO
-#   include "vssq_messenger_cloud_fs_folder_info.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
-#   include "vssq_messenger_cloud_fs_folder_info_list.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION
-#   include "vssq_messenger_cloud_fs_user_permission.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST
-#   include "vssq_messenger_cloud_fs_user_permission_list.h"
-#endif
-
-#if VSSQ_MESSENGER_CONFIG
-#   include "vssq_messenger_config.h"
-#endif
-
-#if VSSQ_MESSENGER_CREDS
-#   include "vssq_messenger_creds.h"
-#endif
-
-#if VSSQ_MESSENGER_FILE_CIPHER
-#   include "vssq_messenger_file_cipher.h"
-#endif
-
-#if VSSQ_MESSENGER_GROUP
-#   include "vssq_messenger_group.h"
-#endif
-
-#if VSSQ_MESSENGER_GROUP_EPOCH_LIST
-#   include "vssq_messenger_group_epoch_list.h"
-#endif
-
-#if VSSQ_MESSENGER_USER
-#   include "vssq_messenger_user.h"
-#endif
-
-#if VSSQ_MESSENGER_USER_LIST
-#   include "vssq_messenger_user_list.h"
+#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str.h>
 #endif
 
 // clang-format on
@@ -171,6 +73,24 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Perform initialization of pre-allocated context.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_folder_info_init_with_shared_users_permission(vssq_messenger_cloud_fs_folder_info_t *self,
+        vsc_str_t id, vsc_str_t name, size_t created_at, size_t updated_at, vsc_str_t updated_by,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create fully defined object.
+//
+VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
+vssq_messenger_cloud_fs_folder_info_new_with_shared_users_permission(vsc_str_t id, vsc_str_t name, size_t created_at,
+        size_t updated_at, vsc_str_t updated_by,
+        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -185,5 +105,5 @@ extern "C" {
 
 
 //  @footer
-#endif // VSSQ_COMM_KIT_PUBLIC_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_PRIVATE_H_INCLUDED
 //  @end

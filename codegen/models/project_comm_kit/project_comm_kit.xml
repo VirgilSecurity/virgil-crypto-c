@@ -51,6 +51,7 @@
     <class name="messenger file cipher"/>
 
     <!-- Cloud File System -->
+    <enum name="messenger cloud fs permission"/>
     <class name="messenger cloud fs"/>
     <class name="messenger cloud fs created file"/>
     <class name="messenger cloud fs folder"/>
@@ -60,7 +61,9 @@
     <class name="messenger cloud fs file info list"/>
     <class name="messenger cloud fs file download info"/>
     <class name="messenger cloud fs cipher"/>
-    <enum name="messenger cloud fs permission"/>
+    <class name="messenger cloud fs user permission"/>
+    <class name="messenger cloud fs user permission list"/>
+    <class name="cloud file system pb"/> <!-- internal helper -->
 
     <!-- Contact discovery -->
     <class name="contact utils"/>

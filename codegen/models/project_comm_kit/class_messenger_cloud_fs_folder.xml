@@ -8,6 +8,7 @@
     <property name="info" class="messenger cloud fs folder info" access="readonly"/>
     <property name="folder encrypted key" class="buffer"/>
     <property name="folder public key" class="buffer"/>
+    <property name="users permission" class="messenger cloud fs user permission list" access="readonly"/>
 
 
     <constructor name="with">
@@ -20,6 +21,7 @@
         <argument name="folders" class="messenger cloud fs folder info list"/>
         <argument name="files" class="messenger cloud fs file info list"/>
         <argument name="info" class="messenger cloud fs folder info"/>
+        <argument name="users permission" class="messenger cloud fs user permission list"/>
     </constructor>
 
 
@@ -44,6 +46,7 @@
         <argument name="folders" class="messenger cloud fs folder info list" access="disown"/>
         <argument name="files" class="messenger cloud fs file info list" access="disown"/>
         <argument name="info" class="messenger cloud fs folder info" access="disown"/>
+        <argument name="users permission" class="messenger cloud fs user permission list" access="disown"/>
     </constructor>
 
 
@@ -120,4 +123,17 @@
         <return class="data"/>
     </method>
 
+
+    <method name="has shared users permission" is_const="1">
+        Return true if folder has shared users.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="shared users permission" is_const="1">
+        Return users that have permissions to this folder.
+
+        <return class="messenger cloud fs user permission list"/>
+    </method>
 </class>

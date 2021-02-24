@@ -403,7 +403,11 @@ enum vssq_status_t {
     //
     //  Communicate with Cloud FS failed because failed to parse response body.
     //
-    vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED = -1503
+    vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED = -1503,
+    //
+    //  Communicate with Cloud FS failed requested entry was not found.
+    //
+    vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND = -1504
 };
 #ifndef VSSQ_STATUS_T_DEFINED
 #define VSSQ_STATUS_T_DEFINED
