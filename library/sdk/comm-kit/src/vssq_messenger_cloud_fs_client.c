@@ -1497,6 +1497,7 @@ vssq_messenger_cloud_fs_client_to_pb_permission(vssq_messenger_cloud_fs_permissi
     }
 
     VSSQ_ASSERT(0 && "Got unexpected Cloud FS user permission");
+    return vssq_pb_Permission_PERMISSION_USER; // Silence error: control reaches end of non-void function
 }
 
 //
@@ -1514,4 +1515,5 @@ vssq_messenger_cloud_fs_client_from_pb_permission(vssq_pb_Permission pb_permissi
     }
 
     VSSQ_ASSERT(0 && "Got unexpected Cloud FS user permission");
+    return vssq_messenger_cloud_fs_permission_USER; // Silence error: control reaches end of non-void function
 }
