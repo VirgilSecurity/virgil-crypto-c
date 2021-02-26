@@ -203,15 +203,39 @@ vssc_virgil_http_client_debug_print_request(const vssc_http_request_t *http_requ
     printf("      BODY: ");
 
     vsc_data_t body = vssc_http_request_body(http_request);
+    bool is_printable = true;
     for (size_t pos = 0; pos < body.len; ++pos) {
         const int ch = body.bytes[pos];
         if (isprint(ch)) {
             fputc(ch, stdout);
         } else {
             fputc('?', stdout);
+            is_printable = false;
         }
     }
     printf("\n");
+
+    if (!is_printable) {
+        printf("BODY (HEX): ");
+        for (size_t pos = 0; pos < body.len; ++pos) {
+            const uint8_t h = body.bytes[pos] / 16;
+            const uint8_t l = body.bytes[pos] % 16;
+
+            if (h < 10) {
+                fputc('0' + h, stdout);
+            } else {
+                fputc('a' + h - 10, stdout);
+            }
+
+            if (l < 10) {
+                fputc('0' + l, stdout);
+            } else {
+                fputc('a' + l - 10, stdout);
+            }
+        }
+        printf("\n");
+    }
+
 
     vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
     if (!vsc_str_is_empty(auth_header_value)) {
@@ -251,15 +275,39 @@ vssc_virgil_http_client_debug_print_response(const vssc_http_response_t *http_re
     printf("      BODY: ");
 
     vsc_data_t body = vssc_http_response_body(http_response);
+    bool is_printable = true;
     for (size_t pos = 0; pos < body.len; ++pos) {
         const int ch = body.bytes[pos];
         if (isprint(ch)) {
             fputc(ch, stdout);
         } else {
             fputc('?', stdout);
+            is_printable = false;
         }
     }
     printf("\n");
+
+    if (!is_printable) {
+        printf("BODY (HEX): ");
+        for (size_t pos = 0; pos < body.len; ++pos) {
+            const uint8_t h = body.bytes[pos] / 16;
+            const uint8_t l = body.bytes[pos] % 16;
+
+            if (h < 10) {
+                fputc('0' + h, stdout);
+            } else {
+                fputc('a' + h - 10, stdout);
+            }
+
+            if (l < 10) {
+                fputc('0' + l, stdout);
+            } else {
+                fputc('a' + l - 10, stdout);
+            }
+        }
+        printf("\n");
+    }
+
 
     for (const vssc_http_header_list_t *header_it = vssc_http_response_headers(http_response);
             header_it != NULL && vssc_http_header_list_has_item(header_it);

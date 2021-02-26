@@ -44,28 +44,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_PRIVATE_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_PRIVATE_H_INCLUDED
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'messenger cloud fs' types definition.
-// --------------------------------------------------------------------------
-
-#ifndef VSSQ_MESSENGER_CLOUD_FS_DEFS_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_DEFS_H_INCLUDED
-
-#include "vssq_library.h"
-#include "vssq_atomic.h"
-#include "vssq_messenger_cloud_fs_client.h"
-
-#if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_key_provider.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_key_provider.h>
-#endif
+#include "vssq_messenger_cloud_fs_access_list.h"
+#include "vssq_messenger_cloud_fs_access.h"
 
 // clang-format on
 //  @end
@@ -83,28 +66,12 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger cloud fs' context.
+//  Add new item to the list.
+//  Note, ownership is transfered.
 //
-struct vssq_messenger_cloud_fs_t {
-    //
-    //  Function do deallocate self context.
-    //
-    vssq_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
-    VSSQ_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the class 'messenger cloud fs client'.
-    //
-    vssq_messenger_cloud_fs_client_t *client;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-
-    vscf_key_provider_t *key_provider;
-};
+VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_access_list_add_disown(vssq_messenger_cloud_fs_access_list_t *self,
+        vssq_messenger_cloud_fs_access_t **access_ref);
 
 
 // --------------------------------------------------------------------------
@@ -120,5 +87,5 @@ struct vssq_messenger_cloud_fs_t {
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_DEFS_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_PRIVATE_H_INCLUDED
 //  @end

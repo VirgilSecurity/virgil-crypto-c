@@ -61,24 +61,18 @@ message DeleteFolderReq {
     string id = 1;
 }
 
-message ShareFolderReq {
-    string id = 1;
-    bytes folder_encrypted_key = 2;
-    repeated User users = 3;
-}
-
-message UnshareFolderReq {
-    string id = 1;
-    bytes folder_encrypted_key = 2;
-    repeated User users = 3;
-}
-
 message GetSharedGroupReq {
     string id = 1;
 }
 
 message GetSharedGroupResp {
     SharedGroup shared_group = 1;
+}
+
+message SetSharedGroupReq {
+    string id = 1;
+    bytes entry_encrypted_key = 2;
+    repeated User users = 3;
 }
 
 message File {

@@ -222,6 +222,16 @@ vscf_message_info_editor_packed_len(const vscf_message_info_editor_t *self);
 VSCF_PUBLIC void
 vscf_message_info_editor_pack(vscf_message_info_editor_t *self, vsc_buffer_t *message_info);
 
+//
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_editor_read_prefix(vsc_data_t data);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

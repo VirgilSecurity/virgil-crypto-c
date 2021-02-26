@@ -37,6 +37,12 @@
 // clang-format off
 
 
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger cloud fs access' types definition.
+// --------------------------------------------------------------------------
+
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -44,19 +50,10 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_PRIVATE_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_PRIVATE_H_INCLUDED
-
-#include "vssq_messenger_cloud_fs_user_permission_list.h"
-#include "vssq_messenger_cloud_fs_user_permission.h"
+#include "vssq_messenger_cloud_fs_access_defs.h"
 
 // clang-format on
 //  @end
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 
 //  @generated
@@ -65,27 +62,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Add new item to the list.
-//  Note, ownership is transfered.
-//
-VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_add_disown(vssq_messenger_cloud_fs_user_permission_list_t *self,
-        vssq_messenger_cloud_fs_user_permission_t **user_permission_ref);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-
-#ifdef __cplusplus
-}
-#endif
-
-
-//  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_PRIVATE_H_INCLUDED
 //  @end

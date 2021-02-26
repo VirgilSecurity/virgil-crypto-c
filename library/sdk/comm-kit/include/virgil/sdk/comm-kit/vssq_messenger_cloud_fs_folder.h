@@ -57,7 +57,7 @@
 #include "vssq_messenger_cloud_fs_folder_info_list.h"
 #include "vssq_messenger_cloud_fs_file_info_list.h"
 #include "vssq_messenger_cloud_fs_folder_info.h"
-#include "vssq_messenger_cloud_fs_user_permission_list.h"
+#include "vssq_messenger_cloud_fs_access_list.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -123,7 +123,7 @@ vssq_messenger_cloud_fs_folder_init_with(vssq_messenger_cloud_fs_folder_t *self,
         size_t total_file_count, vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         const vssq_messenger_cloud_fs_folder_info_list_t *folders,
         const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info,
-        const vssq_messenger_cloud_fs_user_permission_list_t *users_permission);
+        const vssq_messenger_cloud_fs_access_list_t *users_permission);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -134,7 +134,7 @@ vssq_messenger_cloud_fs_folder_new_with(size_t total_folder_count, size_t total_
         vsc_data_t folder_encrypted_key, vsc_data_t folder_public_key,
         const vssq_messenger_cloud_fs_folder_info_list_t *folders,
         const vssq_messenger_cloud_fs_file_info_list_t *files, const vssq_messenger_cloud_fs_folder_info_t *info,
-        const vssq_messenger_cloud_fs_user_permission_list_t *users_permission);
+        const vssq_messenger_cloud_fs_access_list_t *users_permission);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -244,7 +244,7 @@ vssq_messenger_cloud_fs_folder_has_shared_users_permission(const vssq_messenger_
 //
 //  Return users that have permissions to this folder.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_list_t *
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_access_list_t *
 vssq_messenger_cloud_fs_folder_shared_users_permission(const vssq_messenger_cloud_fs_folder_t *self);
 
 

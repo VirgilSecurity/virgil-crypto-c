@@ -42,18 +42,13 @@ vssq_pb.ListFolderResp.folder_public_key type:FT_POINTER
 # DeleteFolderReq
 vssq_pb.DeleteFolderReq.id max_length:32 fixed_length:true
 
-# ShareFolderReq
-vssq_pb.ShareFolderReq.id max_length:32 fixed_length:true
-vssq_pb.ShareFolderReq.folder_encrypted_key type:FT_POINTER
-vssq_pb.ShareFolderReq.users type:FT_POINTER
-
-# UnshareFolderReq
-vssq_pb.UnshareFolderReq.id max_length:32 fixed_length:true
-vssq_pb.UnshareFolderReq.folder_encrypted_key type:FT_POINTER
-vssq_pb.UnshareFolderReq.users type:FT_POINTER
-
 # GetSharedGroupReq
 vssq_pb.GetSharedGroupReq.id max_length:32 fixed_length:true
+
+# SetSharedGroupReq
+vssq_pb.SetSharedGroupReq.id max_length:32 fixed_length:true
+vssq_pb.SetSharedGroupReq.entry_encrypted_key type:FT_POINTER
+vssq_pb.SetSharedGroupReq.users type:FT_POINTER
 
 # SharedGroup
 vssq_pb.SharedGroup.id max_length:32 fixed_length:true

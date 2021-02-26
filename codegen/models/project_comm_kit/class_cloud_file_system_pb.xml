@@ -69,20 +69,6 @@
     </method>
 
 
-    <method name="cleanup pb share folder req" is_static="1" visibility="private">
-        Cleanup memory for the type vssq_pb_ShareFolderReq.
-
-        <argument name="pb obj" class="vssq_pb_ShareFolderReq" access="writeonly" library="comm_kit_pb"/>
-    </method>
-
-
-    <method name="cleanup pb unshare folder req" is_static="1" visibility="private">
-        Cleanup memory for the type vssq_pb_UnshareFolderReq.
-
-        <argument name="pb obj" class="vssq_pb_UnshareFolderReq" access="writeonly" library="comm_kit_pb"/>
-    </method>
-
-
     <method name="cleanup pb user" is_static="1" visibility="private">
         Cleanup memory for the typvssq_pb_Usere .
 
@@ -129,6 +115,13 @@
         Cleanup memory for the type vssq_pb_GetSharedGroupReq.
 
         <argument name="pb obj" class="vssq_pb_GetSharedGroupReq" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="cleanup pb set shared group req" is_static="1" visibility="private">
+        Cleanup memory for the type vssq_pb_SetSharedGroupReq.
+
+        <argument name="pb obj" class="vssq_pb_SetSharedGroupReq" access="writeonly" library="comm_kit_pb"/>
     </method>
 
 

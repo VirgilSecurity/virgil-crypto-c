@@ -48,7 +48,7 @@
 #define VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_PRIVATE_H_INCLUDED
 
 #include "vssq_messenger_cloud_fs_folder_info.h"
-#include "vssq_messenger_cloud_fs_user_permission_list.h"
+#include "vssq_messenger_cloud_fs_access_list.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -80,7 +80,7 @@ extern "C" {
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_folder_info_init_with_shared_users_permission(vssq_messenger_cloud_fs_folder_info_t *self,
         vsc_str_t id, vsc_str_t name, size_t created_at, size_t updated_at, vsc_str_t updated_by,
-        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
+        vssq_messenger_cloud_fs_access_list_t **users_permission_ref);
 
 //
 //  Allocate class context and perform it's initialization.
@@ -89,7 +89,7 @@ vssq_messenger_cloud_fs_folder_info_init_with_shared_users_permission(vssq_messe
 VSSQ_PUBLIC vssq_messenger_cloud_fs_folder_info_t *
 vssq_messenger_cloud_fs_folder_info_new_with_shared_users_permission(vsc_str_t id, vsc_str_t name, size_t created_at,
         size_t updated_at, vsc_str_t updated_by,
-        vssq_messenger_cloud_fs_user_permission_list_t **users_permission_ref);
+        vssq_messenger_cloud_fs_access_list_t **users_permission_ref);
 
 
 // --------------------------------------------------------------------------

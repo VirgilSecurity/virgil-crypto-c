@@ -137,7 +137,7 @@ compare_file_infos(
 
 
 void
-test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
+test__messenger_cloud_fs_client_create_file__then_delete_it__got_upload_link(void) {
     //
     //  Create messenger with random user.
     //
@@ -150,6 +150,7 @@ test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t file_name = vsc_str_from_str("hello.txt");
     vsc_str_t file_type = vsc_str_from_str("text/plain");
@@ -158,8 +159,8 @@ test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
     size_t now = vssc_unix_time_now();
 
-    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     //
     //  Check.
@@ -199,7 +200,7 @@ test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
     //
     //  Delete file.
     //
-    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_file(cloud_fs_client, created_file_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -210,7 +211,7 @@ test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link(void) {
 }
 
 void
-test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
+test__messenger_cloud_fs_client_get_download_link__of_created_file__success(void) {
     //
     //  Create messenger with random user.
     //
@@ -223,6 +224,7 @@ test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t file_name = vsc_str_from_str("hello.txt");
     vsc_str_t file_type = vsc_str_from_str("text/plain");
@@ -230,8 +232,8 @@ test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
     vsc_str_t root_folder_id = vsc_str_empty();
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
 
-    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
     TEST_ASSERT_NOT_NULL(created_file);
@@ -245,7 +247,7 @@ test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
     //  Get download link.
     //
     vssq_messenger_cloud_fs_file_download_info_t *download_info =
-            vssq_messenger_cloud_fs_get_download_link(cloud_fs, created_file_id, &error);
+            vssq_messenger_cloud_fs_client_get_download_link(cloud_fs_client, created_file_id, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
     TEST_ASSERT_NOT_NULL(download_info);
@@ -263,7 +265,7 @@ test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
     //
     //  Delete file.
     //
-    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_file(cloud_fs_client, created_file_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -275,7 +277,7 @@ test__messenger_cloud_fs_get_download_link__of_created_file__success(void) {
 }
 
 void
-test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_upload_link(void) {
+test__messenger_cloud_fs_client_create_folder__in_the_root_folder_then_delete_it__got_upload_link(void) {
     //
     //  Create messenger with random user.
     //
@@ -288,6 +290,7 @@ test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_u
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t folder_name = vsc_str_from_str("temp");
     vsc_str_t root_folder_id = vsc_str_empty();
@@ -295,8 +298,8 @@ test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_u
     vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
     size_t now = vssc_unix_time_now();
 
-    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_create_folder(
-            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_client_create_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
 
     //
     //  Check.
@@ -319,7 +322,7 @@ test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_u
     //
     //  Delete folder.
     //
-    error.status = vssq_messenger_cloud_fs_delete_folder(cloud_fs, created_folder_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_folder(cloud_fs_client, created_folder_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -330,7 +333,7 @@ test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_u
 }
 
 void
-test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files_listed(void) {
+test__messenger_cloud_fs_client_list_folder__before_create_2_files_within_root__2_files_listed(void) {
     //
     //  Create messenger with random user.
     //
@@ -343,6 +346,7 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t file_name1 = vsc_str_from_str("hello1.txt");
     vsc_str_t file_name2 = vsc_str_from_str("hello2.txt");
@@ -354,8 +358,8 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
     //
     //  Create first file.
     //
-    vssq_messenger_cloud_fs_created_file_t *created_file1 = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name1, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *created_file1 = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name1, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
     TEST_ASSERT_NOT_NULL(created_file1);
@@ -366,8 +370,8 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
     //
     //  Create second file.
     //
-    vssq_messenger_cloud_fs_created_file_t *created_file2 = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name2, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *created_file2 = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name2, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
     TEST_ASSERT_NOT_NULL(created_file2);
@@ -380,7 +384,7 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
     //  List files from the root folder.
     //
     vssq_messenger_cloud_fs_folder_t *root_folder =
-            vssq_messenger_cloud_fs_list_folder(cloud_fs, root_folder_id, &error);
+            vssq_messenger_cloud_fs_client_list_folder(cloud_fs_client, root_folder_id, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
     TEST_ASSERT_NOT_NULL(root_folder);
@@ -447,10 +451,10 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
     //
     //  Delete files.
     //
-    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file1_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_file(cloud_fs_client, created_file1_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
-    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file2_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_file(cloud_fs_client, created_file2_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -464,7 +468,7 @@ test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files
 
 
 void
-test__messenger_cloud_fs_create_file__with_duplicated_names__got_error(void) {
+test__messenger_cloud_fs_client_create_file__with_duplicated_names__got_error(void) {
     //
     //  Create messenger with random user.
     //
@@ -477,6 +481,7 @@ test__messenger_cloud_fs_create_file__with_duplicated_names__got_error(void) {
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t file_name = vsc_str_from_str("hello.txt");
     vsc_str_t file_type = vsc_str_from_str("text/plain");
@@ -484,13 +489,13 @@ test__messenger_cloud_fs_create_file__with_duplicated_names__got_error(void) {
     vsc_str_t root_folder_id = vsc_str_empty();
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
 
-    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
-    vssq_messenger_cloud_fs_created_file_t *no_file = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *no_file = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     //
     //  Check.
@@ -503,7 +508,7 @@ test__messenger_cloud_fs_create_file__with_duplicated_names__got_error(void) {
     //
     const vssq_messenger_cloud_fs_file_info_t *file_info = vssq_messenger_cloud_fs_created_file_info(created_file);
     vsc_str_t created_file_id = vssq_messenger_cloud_fs_file_info_id(file_info);
-    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_file(cloud_fs_client, created_file_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -515,7 +520,7 @@ test__messenger_cloud_fs_create_file__with_duplicated_names__got_error(void) {
 
 
 void
-test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error(void) {
+test__messenger_cloud_fs_client_create_folder__with_duplicated_names__got_error(void) {
     //
     //  Create messenger with random user.
     //
@@ -528,19 +533,20 @@ test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error(void) {
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t folder_name = vsc_str_from_str("temp");
     vsc_str_t root_folder_id = vsc_str_empty();
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
     vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
 
-    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_create_folder(
-            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_client_create_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
 
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
-    vssq_messenger_cloud_fs_folder_info_t *no_folder_info = vssq_messenger_cloud_fs_create_folder(
-            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+    vssq_messenger_cloud_fs_folder_info_t *no_folder_info = vssq_messenger_cloud_fs_client_create_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
 
     //
     //  Check.
@@ -552,7 +558,7 @@ test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error(void) {
     //  Delete folder.
     //
     vsc_str_t created_folder_id = vssq_messenger_cloud_fs_folder_info_id(folder_info);
-    error.status = vssq_messenger_cloud_fs_delete_folder(cloud_fs, created_folder_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_folder(cloud_fs_client, created_folder_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -564,7 +570,7 @@ test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error(void) {
 
 
 void
-test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_and_names_matches(void) {
+test__messenger_cloud_fs_client_create_file__with_256_russian_symbols_in_name__success_and_names_matches(void) {
     //
     //  Create messenger with random user.
     //
@@ -577,6 +583,7 @@ test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
 
     vsc_str_t file_name = vsc_str_from_data(vsc_data(
@@ -586,8 +593,8 @@ test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_
     vsc_str_t root_folder_id = vsc_str_empty();
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
 
-    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *created_file = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     //
     //  Check.
@@ -610,7 +617,7 @@ test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_
     //
     //  Delete file.
     //
-    error.status = vssq_messenger_cloud_fs_delete_file(cloud_fs, created_file_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_file(cloud_fs_client, created_file_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -622,7 +629,7 @@ test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_
 
 
 void
-test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__success_and_names_matches(void) {
+test__messenger_cloud_fs_client_create_folder__with_256_russian_symbols_in_name__success_and_names_matches(void) {
     //
     //  Create messenger with random user.
     //
@@ -635,6 +642,7 @@ test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__succes
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t folder_name = vsc_str_from_data(vsc_data(
             k256_russian_symbols_utf8_encoded_as_512_bytes, sizeof(k256_russian_symbols_utf8_encoded_as_512_bytes)));
@@ -642,8 +650,8 @@ test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__succes
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
     vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
 
-    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_create_folder(
-            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_client_create_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
 
     //
     //  Check.
@@ -660,7 +668,7 @@ test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__succes
     //
     //  Delete folder.
     //
-    error.status = vssq_messenger_cloud_fs_delete_folder(cloud_fs, created_folder_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_folder(cloud_fs_client, created_folder_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -672,7 +680,7 @@ test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__succes
 
 
 void
-test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error(void) {
+test__messenger_cloud_fs_client_create_file__with_257_symbols_in_name__expect_error(void) {
     //
     //  Create messenger with random user.
     //
@@ -685,6 +693,7 @@ test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error(voi
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
 
     vsc_str_t file_name = vsc_str_from_data(vsc_data(k257_symbols, sizeof(k257_symbols)));
@@ -694,8 +703,8 @@ test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error(voi
     vsc_str_t root_folder_id = vsc_str_empty();
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-file-encrypted-private-key"));
 
-    vssq_messenger_cloud_fs_created_file_t *no_file = vssq_messenger_cloud_fs_create_file(
-            cloud_fs, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
+    vssq_messenger_cloud_fs_created_file_t *no_file = vssq_messenger_cloud_fs_client_create_file(
+            cloud_fs_client, file_name, file_type, file_size, root_folder_id, fake_encrypted_key, &error);
 
     //
     //  Check.
@@ -711,7 +720,7 @@ test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error(voi
 
 
 void
-test__messenger_cloud_fs_create_folder__with_257_symbols_in_name__expect_error(void) {
+test__messenger_cloud_fs_client_create_folder__with_257_symbols_in_name__expect_error(void) {
     //
     //  Create messenger with random user.
     //
@@ -724,14 +733,15 @@ test__messenger_cloud_fs_create_folder__with_257_symbols_in_name__expect_error(v
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t folder_name = vsc_str_from_data(vsc_data(k257_symbols, sizeof(k257_symbols)));
     vsc_str_t root_folder_id = vsc_str_empty();
     vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
     vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
 
-    vssq_messenger_cloud_fs_folder_info_t *no_folder_info = vssq_messenger_cloud_fs_create_folder(
-            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
+    vssq_messenger_cloud_fs_folder_info_t *no_folder_info = vssq_messenger_cloud_fs_client_create_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, &error);
 
     //
     //  Check.
@@ -747,7 +757,7 @@ test__messenger_cloud_fs_create_folder__with_257_symbols_in_name__expect_error(v
 
 
 void
-test__messenger_cloud_fs_create_shared_folder__with_owner_and_one_member_user__got_folder_with_both_users(void) {
+test__messenger_cloud_fs_client_create_shared_folder__with_owner_and_one_member_user__got_folder_with_both_users(void) {
     //
     //  Create messenger with random user.
     //
@@ -761,6 +771,7 @@ test__messenger_cloud_fs_create_shared_folder__with_owner_and_one_member_user__g
     vssq_error_reset(&error);
 
     const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(owner_messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
 
     vsc_str_t folder_name = vsc_str_from_str("temp");
     vsc_str_t root_folder_id = vsc_str_empty();
@@ -771,13 +782,13 @@ test__messenger_cloud_fs_create_shared_folder__with_owner_and_one_member_user__g
     vsc_str_t owner_identity = vssq_messenger_user_identity(vssq_messenger_user(owner_messenger));
     vsc_str_t member_identity = vssq_messenger_user_identity(vssq_messenger_user(member_messenger));
 
-    vssq_messenger_cloud_fs_user_permission_list_t *shared_users = vssq_messenger_cloud_fs_user_permission_list_new();
-    vssq_messenger_cloud_fs_user_permission_list_add_user(
+    vssq_messenger_cloud_fs_access_list_t *shared_users = vssq_messenger_cloud_fs_access_list_new();
+    vssq_messenger_cloud_fs_access_list_add_user_with_identity(
             shared_users, member_identity, vssq_messenger_cloud_fs_permission_USER);
 
 
-    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_create_shared_folder(
-            cloud_fs, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, shared_users, &error);
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_client_create_shared_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, shared_users, &error);
 
     //
     //  Check folder creation.
@@ -804,30 +815,30 @@ test__messenger_cloud_fs_create_shared_folder__with_owner_and_one_member_user__g
     //
     //  Get folder shared group.
     //
-    vssq_messenger_cloud_fs_user_permission_list_t *users_permission =
-            vssq_messenger_cloud_fs_get_shared_group_users(cloud_fs, shared_group_id, &error);
+    vssq_messenger_cloud_fs_access_list_t *users_permission =
+            vssq_messenger_cloud_fs_client_get_shared_group_users(cloud_fs_client, shared_group_id, &error);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
     TEST_ASSERT_NOT_NULL(folder_info);
 
     //
     //  Check users.
     //
-    const vssq_messenger_cloud_fs_user_permission_t *owner_permission =
-            vssq_messenger_cloud_fs_user_permission_list_find_with_identity(users_permission, owner_identity, NULL);
+    const vssq_messenger_cloud_fs_access_t *owner_permission =
+            vssq_messenger_cloud_fs_access_list_find_with_identity(users_permission, owner_identity, NULL);
     TEST_ASSERT_NOT_NULL(owner_permission);
-    TEST_ASSERT_EQUAL(vssq_messenger_cloud_fs_permission_ADMIN,
-            vssq_messenger_cloud_fs_user_permission_permission(owner_permission));
+    TEST_ASSERT_EQUAL(
+            vssq_messenger_cloud_fs_permission_ADMIN, vssq_messenger_cloud_fs_access_permission(owner_permission));
 
-    const vssq_messenger_cloud_fs_user_permission_t *member_permission =
-            vssq_messenger_cloud_fs_user_permission_list_find_with_identity(users_permission, member_identity, NULL);
+    const vssq_messenger_cloud_fs_access_t *member_permission =
+            vssq_messenger_cloud_fs_access_list_find_with_identity(users_permission, member_identity, NULL);
     TEST_ASSERT_NOT_NULL(member_permission);
-    TEST_ASSERT_EQUAL(vssq_messenger_cloud_fs_permission_USER,
-            vssq_messenger_cloud_fs_user_permission_permission(member_permission));
+    TEST_ASSERT_EQUAL(
+            vssq_messenger_cloud_fs_permission_USER, vssq_messenger_cloud_fs_access_permission(member_permission));
 
     //
     //  Delete folder.
     //
-    error.status = vssq_messenger_cloud_fs_delete_folder(cloud_fs, created_folder_id);
+    error.status = vssq_messenger_cloud_fs_client_delete_folder(cloud_fs_client, created_folder_id);
     TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
 
     //
@@ -836,8 +847,8 @@ test__messenger_cloud_fs_create_shared_folder__with_owner_and_one_member_user__g
     vssq_messenger_destroy(&owner_messenger);
     vssq_messenger_destroy(&member_messenger);
     vssq_messenger_cloud_fs_folder_info_destroy(&folder_info);
-    vssq_messenger_cloud_fs_user_permission_list_destroy(&shared_users);
-    vssq_messenger_cloud_fs_user_permission_list_destroy(&users_permission);
+    vssq_messenger_cloud_fs_access_list_destroy(&shared_users);
+    vssq_messenger_cloud_fs_access_list_destroy(&users_permission);
 }
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
@@ -850,17 +861,18 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    // RUN_TEST(test__messenger_cloud_fs_create_file__then_delete_it__got_upload_link);
-    // RUN_TEST(test__messenger_cloud_fs_get_download_link__of_created_file__success);
-    // RUN_TEST(test__messenger_cloud_fs_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
-    // RUN_TEST(test__messenger_cloud_fs_list_folder__before_create_2_files_within_root__2_files_listed);
-    // RUN_TEST(test__messenger_cloud_fs_create_file__with_duplicated_names__got_error);
-    // RUN_TEST(test__messenger_cloud_fs_create_folder__with_duplicated_names__got_error);
-    // RUN_TEST(test__messenger_cloud_fs_create_file__with_256_russian_symbols_in_name__success_and_names_matches);
-    // RUN_TEST(test__messenger_cloud_fs_create_folder__with_256_russian_symbols_in_name__success_and_names_matches);
-    // RUN_TEST(test__messenger_cloud_fs_create_file__with_257_symbols_in_name__expect_error);
-    // RUN_TEST(test__messenger_cloud_fs_create_folder__with_257_symbols_in_name__expect_error);
-    RUN_TEST(test__messenger_cloud_fs_create_shared_folder__with_owner_and_one_member_user__got_folder_with_both_users);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_file__then_delete_it__got_upload_link);
+    // RUN_TEST(test__messenger_cloud_fs_client_get_download_link__of_created_file__success);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
+    // RUN_TEST(test__messenger_cloud_fs_client_list_folder__before_create_2_files_within_root__2_files_listed);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_file__with_duplicated_names__got_error);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_duplicated_names__got_error);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_file__with_256_russian_symbols_in_name__success_and_names_matches);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_256_russian_symbols_in_name__success_and_names_matches);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_file__with_257_symbols_in_name__expect_error);
+    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_257_symbols_in_name__expect_error);
+    RUN_TEST(
+            test__messenger_cloud_fs_client_create_shared_folder__with_owner_and_one_member_user__got_folder_with_both_users);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

@@ -37,12 +37,6 @@
 // clang-format off
 
 
-//  @description
-// --------------------------------------------------------------------------
-//  Class 'messenger cloud fs user permission' types definition.
-// --------------------------------------------------------------------------
-
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,10 +44,35 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vssq_messenger_cloud_fs_user_permission_defs.h"
+
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger cloud fs access' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS_DEFS_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_ACCESS_DEFS_H_INCLUDED
+
+#include "vssq_library.h"
+#include "vssq_atomic.h"
+#include "vssq_messenger_user.h"
+#include "vssq_messenger_cloud_fs_permission.h"
+
+#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <virgil/crypto/common/vsc_str_mutable.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_str_mutable.h>
+#endif
 
 // clang-format on
 //  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 //  @generated
@@ -62,9 +81,39 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'messenger cloud fs access' context.
+//
+struct vssq_messenger_cloud_fs_access_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssq_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSQ_ATOMIC size_t refcnt;
+
+    const vssq_messenger_user_t *user;
+
+    vsc_str_mutable_t user_identity;
+
+    vssq_messenger_cloud_fs_permission_t permission;
+};
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSSQ_MESSENGER_CLOUD_FS_ACCESS_DEFS_H_INCLUDED
 //  @end

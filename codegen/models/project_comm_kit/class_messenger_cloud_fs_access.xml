@@ -1,0 +1,51 @@
+<class name="messenger cloud fs access">
+    Handles access info to a specific CloudFS entry.
+
+    <property name="user" class="messenger user" access="readonly"/>
+    <property name="user identity" class="str mutable"/>
+    <property name="permission" enum="messenger cloud fs permission"/>
+
+
+    <constructor name="with identity">
+        Create an object with required fields.
+
+        <argument name="identity" class="str"/>
+        <argument name="permission" enum="messenger cloud fs permission"/>
+    </constructor>
+
+
+    <constructor name="with user">
+        Create an object with required fields.
+
+        <argument name="user" class="messenger user"/>
+        <argument name="permission" enum="messenger cloud fs permission"/>
+    </constructor>
+
+
+    <method name="has user" is_const="1">
+        Return true if user that has access to a CloudFS entry was defined.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="user" is_const="1">
+        Return a user that has access to a CloudFS entry.
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="identity" is_const="1">
+        Return a user's identity.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="permission" is_const="1">
+        Return a user's permission to a CloudFS entry.
+
+        <return enum="messenger cloud fs permission"/>
+    </method>
+</class>

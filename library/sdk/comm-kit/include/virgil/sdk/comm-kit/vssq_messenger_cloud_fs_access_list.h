@@ -47,15 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles a list of "messenger cloud fs user permission" class objects.
+//  Handles a list of "messenger cloud fs access" class objects.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_H_INCLUDED
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_H_INCLUDED
 
 #include "vssq_library.h"
+#include "vssq_messenger_user.h"
 #include "vssq_messenger_cloud_fs_permission.h"
-#include "vssq_messenger_cloud_fs_user_permission.h"
+#include "vssq_messenger_cloud_fs_access.h"
 #include "vssq_error.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -82,77 +83,84 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger cloud fs user permission list' context.
+//  Handle 'messenger cloud fs access list' context.
 //
-#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_T_DEFINED
-#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_T_DEFINED
-    typedef struct vssq_messenger_cloud_fs_user_permission_list_t vssq_messenger_cloud_fs_user_permission_list_t;
-#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_T_DEFINED
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_T_DEFINED
+#define VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_T_DEFINED
+    typedef struct vssq_messenger_cloud_fs_access_list_t vssq_messenger_cloud_fs_access_list_t;
+#endif // VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_T_DEFINED
 
 //
-//  Return size of 'vssq_messenger_cloud_fs_user_permission_list_t'.
+//  Return size of 'vssq_messenger_cloud_fs_access_list_t'.
 //
 VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_user_permission_list_ctx_size(void);
+vssq_messenger_cloud_fs_access_list_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_init(vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_init(vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_cleanup(vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_cleanup(vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_list_t *
-vssq_messenger_cloud_fs_user_permission_list_new(void);
+VSSQ_PUBLIC vssq_messenger_cloud_fs_access_list_t *
+vssq_messenger_cloud_fs_access_list_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_delete(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_delete(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssq_messenger_cloud_fs_user_permission_list_new ()'.
+//  This is a reverse action of the function 'vssq_messenger_cloud_fs_access_list_new ()'.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_destroy(vssq_messenger_cloud_fs_user_permission_list_t **self_ref);
+vssq_messenger_cloud_fs_access_list_destroy(vssq_messenger_cloud_fs_access_list_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_user_permission_list_t *
-vssq_messenger_cloud_fs_user_permission_list_shallow_copy(vssq_messenger_cloud_fs_user_permission_list_t *self);
+VSSQ_PUBLIC vssq_messenger_cloud_fs_access_list_t *
+vssq_messenger_cloud_fs_access_list_shallow_copy(vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Copy given class context by increasing reference counter.
 //  Reference counter is internally synchronized, so constness is presumed.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_list_t *
-vssq_messenger_cloud_fs_user_permission_list_shallow_copy_const(
-        const vssq_messenger_cloud_fs_user_permission_list_t *self);
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_access_list_t *
+vssq_messenger_cloud_fs_access_list_shallow_copy_const(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return items count in a list.
 //
 VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_user_permission_list_count(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_count(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_add_user(vssq_messenger_cloud_fs_user_permission_list_t *self,
+vssq_messenger_cloud_fs_access_list_add_user(vssq_messenger_cloud_fs_access_list_t *self,
+        const vssq_messenger_user_t *user, vssq_messenger_cloud_fs_permission_t permission);
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSSQ_PUBLIC void
+vssq_messenger_cloud_fs_access_list_add_user_with_identity(vssq_messenger_cloud_fs_access_list_t *self,
         vsc_str_t identity, vssq_messenger_cloud_fs_permission_t permission);
 
 //
@@ -160,63 +168,63 @@ vssq_messenger_cloud_fs_user_permission_list_add_user(vssq_messenger_cloud_fs_us
 //  Note, ownership is transfered.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_add(vssq_messenger_cloud_fs_user_permission_list_t *self,
-        const vssq_messenger_cloud_fs_user_permission_t *user_permission);
+vssq_messenger_cloud_fs_access_list_add(vssq_messenger_cloud_fs_access_list_t *self,
+        const vssq_messenger_cloud_fs_access_t *access);
 
 //
 //  Remove current node.
 //
 VSSQ_PRIVATE void
-vssq_messenger_cloud_fs_user_permission_list_remove_self(vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_remove_self(vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return true if given list has item.
 //
 VSSQ_PUBLIC bool
-vssq_messenger_cloud_fs_user_permission_list_has_item(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_has_item(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return list item.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_t *
-vssq_messenger_cloud_fs_user_permission_list_item(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_access_t *
+vssq_messenger_cloud_fs_access_list_item(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return true if list has next item.
 //
 VSSQ_PUBLIC bool
-vssq_messenger_cloud_fs_user_permission_list_has_next(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_has_next(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_list_t *
-vssq_messenger_cloud_fs_user_permission_list_next(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_access_list_t *
+vssq_messenger_cloud_fs_access_list_next(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return true if list has previous item.
 //
 VSSQ_PUBLIC bool
-vssq_messenger_cloud_fs_user_permission_list_has_prev(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_has_prev(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_list_t *
-vssq_messenger_cloud_fs_user_permission_list_prev(const vssq_messenger_cloud_fs_user_permission_list_t *self);
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_access_list_t *
+vssq_messenger_cloud_fs_access_list_prev(const vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Remove all items.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_user_permission_list_clear(vssq_messenger_cloud_fs_user_permission_list_t *self);
+vssq_messenger_cloud_fs_access_list_clear(vssq_messenger_cloud_fs_access_list_t *self);
 
 //
 //  Find user with a given identity.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_user_permission_t *
-vssq_messenger_cloud_fs_user_permission_list_find_with_identity(
-        const vssq_messenger_cloud_fs_user_permission_list_t *self, vsc_str_t user_identity, vssq_error_t *error);
+VSSQ_PUBLIC const vssq_messenger_cloud_fs_access_t *
+vssq_messenger_cloud_fs_access_list_find_with_identity(const vssq_messenger_cloud_fs_access_list_t *self,
+        vsc_str_t user_identity, vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -232,5 +240,5 @@ vssq_messenger_cloud_fs_user_permission_list_find_with_identity(
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_H_INCLUDED
 //  @end

@@ -47,16 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'messenger cloud fs user permission list' types definition.
+//  Class 'messenger cloud fs client' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_DEFS_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_DEFS_H_INCLUDED
+#ifndef VSSQ_MESSENGER_CLOUD_FS_CLIENT_DEFS_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_CLIENT_DEFS_H_INCLUDED
 
 #include "vssq_library.h"
 #include "vssq_atomic.h"
-#include "vssq_messenger_cloud_fs_user_permission.h"
-#include "vssq_messenger_cloud_fs_user_permission_list.h"
+#include "vssq_messenger_auth.h"
 
 // clang-format on
 //  @end
@@ -74,9 +73,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger cloud fs user permission list' context.
+//  Handle 'messenger cloud fs client' context.
 //
-struct vssq_messenger_cloud_fs_user_permission_list_t {
+struct vssq_messenger_cloud_fs_client_t {
     //
     //  Function do deallocate self context.
     //
@@ -85,16 +84,10 @@ struct vssq_messenger_cloud_fs_user_permission_list_t {
     //  Reference counter.
     //
     VSSQ_ATOMIC size_t refcnt;
-
-    const vssq_messenger_cloud_fs_user_permission_t *item;
     //
-    //  Class specific context.
+    //  Dependency to the class 'messenger auth'.
     //
-    vssq_messenger_cloud_fs_user_permission_list_t *next;
-    //
-    //  Class specific context.
-    //
-    vssq_messenger_cloud_fs_user_permission_list_t *prev;
+    vssq_messenger_auth_t *auth;
 };
 
 
@@ -111,5 +104,5 @@ struct vssq_messenger_cloud_fs_user_permission_list_t {
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST_DEFS_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_CLIENT_DEFS_H_INCLUDED
 //  @end

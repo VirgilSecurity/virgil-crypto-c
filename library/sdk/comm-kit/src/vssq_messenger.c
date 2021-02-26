@@ -367,7 +367,10 @@ vssq_messenger_init_ctx(vssq_messenger_t *self) {
     self->cloud_fs = vssq_messenger_cloud_fs_new();
 
     vssq_messenger_contacts_use_auth(self->contacts, self->auth);
-    vssq_messenger_cloud_fs_use_auth(self->cloud_fs, self->auth);
+
+    vssq_messenger_cloud_fs_client_t *fs_client = vssq_messenger_cloud_fs_client_new();
+    vssq_messenger_cloud_fs_client_use_auth(fs_client, self->auth);
+    vssq_messenger_cloud_fs_take_client(self->cloud_fs, fs_client);
 }
 
 //
@@ -402,7 +405,10 @@ vssq_messenger_init_ctx_with_config(vssq_messenger_t *self, const vssq_messenger
     self->cloud_fs = vssq_messenger_cloud_fs_new();
 
     vssq_messenger_contacts_use_auth(self->contacts, self->auth);
-    vssq_messenger_cloud_fs_use_auth(self->cloud_fs, self->auth);
+
+    vssq_messenger_cloud_fs_client_t *fs_client = vssq_messenger_cloud_fs_client_new();
+    vssq_messenger_cloud_fs_client_use_auth(fs_client, self->auth);
+    vssq_messenger_cloud_fs_take_client(self->cloud_fs, fs_client);
 }
 
 //
@@ -415,6 +421,9 @@ vssq_messenger_did_setup_random(vssq_messenger_t *self) {
 
     vssq_messenger_auth_release_random(self->auth);
     vssq_messenger_auth_use_random(self->auth, self->random);
+
+    vssq_messenger_cloud_fs_release_random(self->cloud_fs);
+    vssq_messenger_cloud_fs_use_random(self->cloud_fs, self->random);
 }
 
 //
@@ -424,6 +433,7 @@ static void
 vssq_messenger_did_release_random(vssq_messenger_t *self) {
 
     vssq_messenger_auth_release_random(self->auth);
+    vssq_messenger_cloud_fs_release_random(self->cloud_fs);
 }
 
 //

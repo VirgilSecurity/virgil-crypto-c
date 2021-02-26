@@ -652,11 +652,67 @@ static const vsc_str_t k_message_cloud_fs_failed_parse_response_failed = {
     sizeof(k_message_cloud_fs_failed_parse_response_failed_chars) - 1
 };
 
-static const char k_message_cloud_fs_failed_entry_not_found_chars[] = "Communicate with Cloud FS failed requested entry was not found.";
+static const char k_message_cloud_fs_failed_entry_not_found_chars[] = "Communicate with Cloud FS failed because requested entry was not found.";
 
 static const vsc_str_t k_message_cloud_fs_failed_entry_not_found = {
     k_message_cloud_fs_failed_entry_not_found_chars,
     sizeof(k_message_cloud_fs_failed_entry_not_found_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_generate_key_failed_chars[] = "Cloud FS operation failed because key generation failed.";
+
+static const vsc_str_t k_message_cloud_fs_failed_generate_key_failed = {
+    k_message_cloud_fs_failed_generate_key_failed_chars,
+    sizeof(k_message_cloud_fs_failed_generate_key_failed_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_encrypt_key_failed_chars[] = "Cloud FS operation failed because something went wrong during key encryption.";
+
+static const vsc_str_t k_message_cloud_fs_failed_encrypt_key_failed = {
+    k_message_cloud_fs_failed_encrypt_key_failed_chars,
+    sizeof(k_message_cloud_fs_failed_encrypt_key_failed_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_import_key_failed_chars[] = "Cloud FS operation failed because import key failed.";
+
+static const vsc_str_t k_message_cloud_fs_failed_import_key_failed = {
+    k_message_cloud_fs_failed_import_key_failed_chars,
+    sizeof(k_message_cloud_fs_failed_import_key_failed_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_export_key_failed_chars[] = "Cloud FS operation failed because export key failed.";
+
+static const vsc_str_t k_message_cloud_fs_failed_export_key_failed = {
+    k_message_cloud_fs_failed_export_key_failed_chars,
+    sizeof(k_message_cloud_fs_failed_export_key_failed_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_decrypt_key_failed_invalid_format_chars[] = "Cloud FS operation failed because encrypted key has invalid format.";
+
+static const vsc_str_t k_message_cloud_fs_failed_decrypt_key_failed_invalid_format = {
+    k_message_cloud_fs_failed_decrypt_key_failed_invalid_format_chars,
+    sizeof(k_message_cloud_fs_failed_decrypt_key_failed_invalid_format_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_decrypt_key_wrong_key_chars[] = "Cloud FS operation failed because encrypted key can not be decrypted with a given key.";
+
+static const vsc_str_t k_message_cloud_fs_failed_decrypt_key_wrong_key = {
+    k_message_cloud_fs_failed_decrypt_key_wrong_key_chars,
+    sizeof(k_message_cloud_fs_failed_decrypt_key_wrong_key_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_decrypt_key_signer_mismatch_chars[] = "Cloud FS operation failed because encrypted key can not be decrypted due to signer mismatch.";
+
+static const vsc_str_t k_message_cloud_fs_failed_decrypt_key_signer_mismatch = {
+    k_message_cloud_fs_failed_decrypt_key_signer_mismatch_chars,
+    sizeof(k_message_cloud_fs_failed_decrypt_key_signer_mismatch_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_decrypt_key_invalid_signature_chars[] = "Cloud FS operation failed because encrypted key can not be decrypted due to invalid signature.";
+
+static const vsc_str_t k_message_cloud_fs_failed_decrypt_key_invalid_signature = {
+    k_message_cloud_fs_failed_decrypt_key_invalid_signature_chars,
+    sizeof(k_message_cloud_fs_failed_decrypt_key_invalid_signature_chars) - 1
 };
 
 //
@@ -834,6 +890,22 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_cloud_fs_failed_parse_response_failed;
         case vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND:
             return k_message_cloud_fs_failed_entry_not_found;
+        case vssq_status_CLOUD_FS_FAILED_GENERATE_KEY_FAILED:
+            return k_message_cloud_fs_failed_generate_key_failed;
+        case vssq_status_CLOUD_FS_FAILED_ENCRYPT_KEY_FAILED:
+            return k_message_cloud_fs_failed_encrypt_key_failed;
+        case vssq_status_CLOUD_FS_FAILED_IMPORT_KEY_FAILED:
+            return k_message_cloud_fs_failed_import_key_failed;
+        case vssq_status_CLOUD_FS_FAILED_EXPORT_KEY_FAILED:
+            return k_message_cloud_fs_failed_export_key_failed;
+        case vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_FAILED_INVALID_FORMAT:
+            return k_message_cloud_fs_failed_decrypt_key_failed_invalid_format;
+        case vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_WRONG_KEY:
+            return k_message_cloud_fs_failed_decrypt_key_wrong_key;
+        case vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_SIGNER_MISMATCH:
+            return k_message_cloud_fs_failed_decrypt_key_signer_mismatch;
+        case vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_INVALID_SIGNATURE:
+            return k_message_cloud_fs_failed_decrypt_key_invalid_signature;
         default:
             return k_message_unknown_error;
     }

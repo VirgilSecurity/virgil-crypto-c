@@ -127,18 +127,6 @@ VSSQ_PRIVATE void
 vssq_cloud_file_system_pb_cleanup_pb_pagination(vssq_pb_Pagination *pb_obj);
 
 //
-//  Cleanup memory for the type vssq_pb_ShareFolderReq.
-//
-VSSQ_PRIVATE void
-vssq_cloud_file_system_pb_cleanup_pb_share_folder_req(vssq_pb_ShareFolderReq *pb_obj);
-
-//
-//  Cleanup memory for the type vssq_pb_UnshareFolderReq.
-//
-VSSQ_PRIVATE void
-vssq_cloud_file_system_pb_cleanup_pb_unshare_folder_req(vssq_pb_UnshareFolderReq *pb_obj);
-
-//
 //  Cleanup memory for the typvssq_pb_Usere .
 //
 VSSQ_PRIVATE void
@@ -179,6 +167,12 @@ vssq_cloud_file_system_pb_cleanup_pb_shared_group(vssq_pb_SharedGroup *pb_obj);
 //
 VSSQ_PRIVATE void
 vssq_cloud_file_system_pb_cleanup_pb_get_shared_group_req(vssq_pb_GetSharedGroupReq *pb_obj);
+
+//
+//  Cleanup memory for the type vssq_pb_SetSharedGroupReq.
+//
+VSSQ_PRIVATE void
+vssq_cloud_file_system_pb_cleanup_pb_set_shared_group_req(vssq_pb_SetSharedGroupReq *pb_obj);
 
 //
 //  Cleanup memory for the type vssq_pb_GetSharedGroupResp.

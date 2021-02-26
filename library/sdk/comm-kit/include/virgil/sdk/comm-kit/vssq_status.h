@@ -405,9 +405,41 @@ enum vssq_status_t {
     //
     vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED = -1503,
     //
-    //  Communicate with Cloud FS failed requested entry was not found.
+    //  Communicate with Cloud FS failed because requested entry was not found.
     //
-    vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND = -1504
+    vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND = -1504,
+    //
+    //  Cloud FS operation failed because key generation failed.
+    //
+    vssq_status_CLOUD_FS_FAILED_GENERATE_KEY_FAILED = -1505,
+    //
+    //  Cloud FS operation failed because something went wrong during key encryption.
+    //
+    vssq_status_CLOUD_FS_FAILED_ENCRYPT_KEY_FAILED = -1506,
+    //
+    //  Cloud FS operation failed because import key failed.
+    //
+    vssq_status_CLOUD_FS_FAILED_IMPORT_KEY_FAILED = -1507,
+    //
+    //  Cloud FS operation failed because export key failed.
+    //
+    vssq_status_CLOUD_FS_FAILED_EXPORT_KEY_FAILED = -1508,
+    //
+    //  Cloud FS operation failed because encrypted key has invalid format.
+    //
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_FAILED_INVALID_FORMAT = -1509,
+    //
+    //  Cloud FS operation failed because encrypted key can not be decrypted with a given key.
+    //
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_WRONG_KEY = -1510,
+    //
+    //  Cloud FS operation failed because encrypted key can not be decrypted due to signer mismatch.
+    //
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_SIGNER_MISMATCH = -1511,
+    //
+    //  Cloud FS operation failed because encrypted key can not be decrypted due to invalid signature.
+    //
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_INVALID_SIGNATURE = -1512
 };
 #ifndef VSSQ_STATUS_T_DEFINED
 #define VSSQ_STATUS_T_DEFINED

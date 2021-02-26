@@ -47,23 +47,16 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'messenger cloud fs user permission' types definition.
+//  Class 'messenger cloud fs access list' types definition.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_DEFS_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_DEFS_H_INCLUDED
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_DEFS_H_INCLUDED
+#define VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_DEFS_H_INCLUDED
 
 #include "vssq_library.h"
 #include "vssq_atomic.h"
-#include "vssq_messenger_cloud_fs_permission.h"
-
-#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_mutable.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_mutable.h>
-#endif
+#include "vssq_messenger_cloud_fs_access.h"
+#include "vssq_messenger_cloud_fs_access_list.h"
 
 // clang-format on
 //  @end
@@ -81,9 +74,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger cloud fs user permission' context.
+//  Handle 'messenger cloud fs access list' context.
 //
-struct vssq_messenger_cloud_fs_user_permission_t {
+struct vssq_messenger_cloud_fs_access_list_t {
     //
     //  Function do deallocate self context.
     //
@@ -93,9 +86,15 @@ struct vssq_messenger_cloud_fs_user_permission_t {
     //
     VSSQ_ATOMIC size_t refcnt;
 
-    vsc_str_mutable_t identity;
-
-    vssq_messenger_cloud_fs_permission_t permission;
+    const vssq_messenger_cloud_fs_access_t *item;
+    //
+    //  Class specific context.
+    //
+    vssq_messenger_cloud_fs_access_list_t *next;
+    //
+    //  Class specific context.
+    //
+    vssq_messenger_cloud_fs_access_list_t *prev;
 };
 
 
@@ -112,5 +111,5 @@ struct vssq_messenger_cloud_fs_user_permission_t {
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_DEFS_H_INCLUDED
+#endif // VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST_DEFS_H_INCLUDED
 //  @end

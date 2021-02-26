@@ -1,7 +1,7 @@
-<class name="messenger cloud fs user permission list">
-    Handles a list of "messenger cloud fs user permission" class objects.
+<class name="messenger cloud fs access list">
+    Handles a list of "messenger cloud fs access" class objects.
 
-    <property name="item" class="messenger cloud fs user permission" access="readonly"/>
+    <property name="item" class="messenger cloud fs access" access="readonly"/>
     <property name="next" class="self"/>
     <property name="prev" class="self"/>
 
@@ -17,6 +17,15 @@
         Add new item to the list.
         Note, ownership is transfered.
 
+        <argument name="user" class="messenger user"/>
+        <argument name="permission" enum="messenger cloud fs permission"/>
+    </method>
+
+
+    <method name="add user with identity" >
+        Add new item to the list.
+        Note, ownership is transfered.
+
         <argument name="identity" class="str"/>
         <argument name="permission" enum="messenger cloud fs permission"/>
     </method>
@@ -26,7 +35,7 @@
         Add new item to the list.
         Note, ownership is transfered.
 
-        <argument name="user permission" class="messenger cloud fs user permission"/>
+        <argument name="access" class="messenger cloud fs access"/>
     </method>
 
 
@@ -34,7 +43,7 @@
         Add new item to the list.
         Note, ownership is transfered.
 
-        <argument name="user permission" class="messenger cloud fs user permission" access="disown"/>
+        <argument name="access" class="messenger cloud fs access" access="disown"/>
     </method>
 
 
@@ -53,7 +62,7 @@
     <method name="item" is_const="1">
         Return list item.
 
-        <return class="messenger cloud fs user permission" access="readonly"/>
+        <return class="messenger cloud fs access" access="readonly"/>
     </method>
 
 
@@ -96,6 +105,6 @@
         <argument name="user identity" class="str"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return class="messenger cloud fs user permission"/>
+        <return class="messenger cloud fs access"/>
     </method>
 </class>

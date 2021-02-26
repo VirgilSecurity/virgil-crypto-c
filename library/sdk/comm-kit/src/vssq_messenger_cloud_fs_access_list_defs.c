@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Class 'messenger cloud fs user permission list' types definition.
+//  Class 'messenger cloud fs access list' types definition.
 // --------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#include "vssq_messenger_cloud_fs_user_permission_list_defs.h"
+#include "vssq_messenger_cloud_fs_access_list_defs.h"
 
 // clang-format on
 //  @end

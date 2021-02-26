@@ -88,8 +88,20 @@
 #   include "vssq_messenger_cloud_fs.h"
 #endif
 
+#if VSSQ_MESSENGER_CLOUD_FS_ACCESS
+#   include "vssq_messenger_cloud_fs_access.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST
+#   include "vssq_messenger_cloud_fs_access_list.h"
+#endif
+
 #if VSSQ_MESSENGER_CLOUD_FS_CIPHER
 #   include "vssq_messenger_cloud_fs_cipher.h"
+#endif
+
+#if VSSQ_MESSENGER_CLOUD_FS_CLIENT
+#   include "vssq_messenger_cloud_fs_client.h"
 #endif
 
 #if VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
@@ -118,14 +130,6 @@
 
 #if VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
 #   include "vssq_messenger_cloud_fs_folder_info_list.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION
-#   include "vssq_messenger_cloud_fs_user_permission.h"
-#endif
-
-#if VSSQ_MESSENGER_CLOUD_FS_USER_PERMISSION_LIST
-#   include "vssq_messenger_cloud_fs_user_permission_list.h"
 #endif
 
 #if VSSQ_MESSENGER_CONFIG
