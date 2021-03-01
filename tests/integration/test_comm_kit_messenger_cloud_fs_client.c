@@ -850,6 +850,122 @@ test__messenger_cloud_fs_client_create_shared_folder__1_admin_and_1_member__got_
     vssq_messenger_cloud_fs_access_list_destroy(&shared_users);
     vssq_messenger_cloud_fs_access_list_destroy(&users_permission);
 }
+
+
+void
+test__messenger_cloud_fs_client_set_shared_group__add_1_member_after_creation__got_3_users_after_request(void) {
+    //
+    //  Create messenger with random user.
+    //
+    vssq_messenger_t *owner_messenger = create_messenger_and_register_user();
+    vssq_messenger_t *alice_messenger = create_messenger_and_register_user();
+
+    //
+    //  Create and share folder.
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    const vssq_messenger_cloud_fs_t *cloud_fs = vssq_messenger_cloud_fs(owner_messenger);
+    const vssq_messenger_cloud_fs_client_t *cloud_fs_client = vssq_messenger_cloud_fs_client(cloud_fs);
+
+    vsc_str_t folder_name = vsc_str_from_str("temp");
+    vsc_str_t root_folder_id = vsc_str_empty();
+    vsc_data_t fake_encrypted_key = vsc_str_as_data(vsc_str_from_str("fake-folder-encrypted-private-key"));
+    vsc_data_t fake_public_key = vsc_str_as_data(vsc_str_from_str("fake-folder-public-key"));
+    size_t now = vssc_unix_time_now();
+
+    vsc_str_t owner_identity = vssq_messenger_user_identity(vssq_messenger_user(owner_messenger));
+    vsc_str_t alice_identity = vssq_messenger_user_identity(vssq_messenger_user(alice_messenger));
+
+    vssq_messenger_cloud_fs_access_list_t *shared_users = vssq_messenger_cloud_fs_access_list_new();
+    vssq_messenger_cloud_fs_access_list_add_user_with_identity(
+            shared_users, alice_identity, vssq_messenger_cloud_fs_permission_USER);
+
+
+    vssq_messenger_cloud_fs_folder_info_t *folder_info = vssq_messenger_cloud_fs_client_create_shared_folder(
+            cloud_fs_client, folder_name, fake_encrypted_key, fake_public_key, root_folder_id, shared_users, &error);
+
+    //
+    //  Check folder creation.
+    //
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+    TEST_ASSERT_NOT_NULL(folder_info);
+
+    vsc_str_t created_folder_id = vssq_messenger_cloud_fs_folder_info_id(folder_info);
+    TEST_ASSERT_EQUAL(32, vsc_str_len(created_folder_id));
+
+    vsc_str_t created_folder_name = vssq_messenger_cloud_fs_folder_info_name(folder_info);
+    TEST_ASSERT_EQUAL_STR(folder_name, created_folder_name);
+
+    size_t created_folder_created_at = vssq_messenger_cloud_fs_folder_info_created_at(folder_info);
+    TEST_ASSERT_GREATER_OR_EQUAL(now, created_folder_created_at);
+
+    size_t created_folder_updated_at = vssq_messenger_cloud_fs_folder_info_updated_at(folder_info);
+    TEST_ASSERT_GREATER_OR_EQUAL(now, created_folder_updated_at);
+
+    vsc_str_t shared_group_id = vssq_messenger_cloud_fs_folder_info_shared_group_id(folder_info);
+    TEST_ASSERT_EQUAL(32, vsc_str_len(shared_group_id));
+    print_str(shared_group_id);
+
+    //
+    //  Get folder shared group.
+    //
+    vssq_messenger_cloud_fs_access_list_t *users_permission =
+            vssq_messenger_cloud_fs_client_get_shared_group_users(cloud_fs_client, shared_group_id, &error);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+    TEST_ASSERT_NOT_NULL(folder_info);
+
+    //
+    //  Add new member (Bob).
+    //
+    vssq_messenger_t *bob_messenger = create_messenger_and_register_user();
+    vsc_str_t bob_identity = vssq_messenger_user_identity(vssq_messenger_user(bob_messenger));
+    vssq_messenger_cloud_fs_access_list_add_user_with_identity(
+            shared_users, bob_identity, vssq_messenger_cloud_fs_permission_USER);
+
+    error.status = vssq_messenger_cloud_fs_client_set_shared_group_users(
+            cloud_fs_client, shared_group_id, fake_encrypted_key, shared_users);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Check users.
+    //
+    const vssq_messenger_cloud_fs_access_t *owner_permission =
+            vssq_messenger_cloud_fs_access_list_find_with_identity(users_permission, owner_identity, NULL);
+    TEST_ASSERT_NOT_NULL(owner_permission);
+    TEST_ASSERT_EQUAL(
+            vssq_messenger_cloud_fs_permission_ADMIN, vssq_messenger_cloud_fs_access_permission(owner_permission));
+
+    const vssq_messenger_cloud_fs_access_t *alice_permission =
+            vssq_messenger_cloud_fs_access_list_find_with_identity(users_permission, alice_identity, NULL);
+    TEST_ASSERT_NOT_NULL(alice_permission);
+    TEST_ASSERT_EQUAL(
+            vssq_messenger_cloud_fs_permission_USER, vssq_messenger_cloud_fs_access_permission(alice_permission));
+
+    const vssq_messenger_cloud_fs_access_t *bob_permission =
+            vssq_messenger_cloud_fs_access_list_find_with_identity(users_permission, bob_identity, NULL);
+    TEST_ASSERT_NOT_NULL(bob_permission);
+    TEST_ASSERT_EQUAL(
+            vssq_messenger_cloud_fs_permission_USER, vssq_messenger_cloud_fs_access_permission(bob_permission));
+
+    //
+    //  Delete folder.
+    //
+    error.status = vssq_messenger_cloud_fs_client_delete_folder(cloud_fs_client, created_folder_id);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(vssq_error_status(&error));
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&owner_messenger);
+    vssq_messenger_destroy(&alice_messenger);
+    vssq_messenger_destroy(&bob_messenger);
+    vssq_messenger_cloud_fs_folder_info_destroy(&folder_info);
+    vssq_messenger_cloud_fs_access_list_destroy(&shared_users);
+    vssq_messenger_cloud_fs_access_list_destroy(&users_permission);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -873,6 +989,7 @@ main(void) {
     RUN_TEST(test__messenger_cloud_fs_client_create_file__with_257_symbols_in_name__expect_error);
     RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_257_symbols_in_name__expect_error);
     RUN_TEST(test__messenger_cloud_fs_client_create_shared_folder__1_admin_and_1_member__got_folder_with_both_users);
+    RUN_TEST(test__messenger_cloud_fs_client_set_shared_group__add_1_member_after_creation__got_3_users_after_request);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
