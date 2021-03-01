@@ -293,4 +293,13 @@
 
         <return enum="messenger cloud fs permission"/>
     </method>
+
+
+    <method name="map service status" is_static="1" declaration="private">
+        Map the service response status to the SDK status.
+
+        <argument name="response" class="http response" project="core sdk"/>
+
+        <return enum="status"/>
+    </method>
 </class>

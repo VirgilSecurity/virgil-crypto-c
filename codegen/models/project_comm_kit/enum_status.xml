@@ -321,51 +321,127 @@
         Communicate with Cloud FS failed because send request failed.
     </constant>
 
-    <constant name="cloud fs failed response with error" value="-1501">
-        Communicate with Cloud FS failed because response with error was returned.
+    <constant name="cloud fs service error internal server error" value="-1501">
+        Cloud FS got a service error - internal server error (10000) - status 500.
     </constant>
 
-    <constant name="cloud fs failed unexpected content type" value="-1502">
-        Communicate with Cloud FS failed because met unexpected content type.
+    <constant name="cloud fs failed entry not found" value="-1502">
+        Cloud FS got a service error - entry not found - status 404.
     </constant>
 
-    <constant name="cloud fs failed parse response failed" value="-1503">
+    <constant name="cloud fs service error identity is invalid" value="-1503">
+        Cloud FS got a service error - identity is invalid (40001) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error user not found" value="-1504">
+        Cloud FS got a service error - user not found (40002) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error folder not found" value="-1505">
+        Cloud FS got a service error - folder not found (40003) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error invalid filename" value="-1506">
+        Cloud FS got a service error - invalid filename (40004) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid file id" value="-1507">
+        Cloud FS got a service error - invalid file id (40005) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid file size" value="-1508">
+        Cloud FS got a service error - invalid file size (40006) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid file type" value="-1509">
+        Cloud FS got a service error - invalid file type (40007) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid folder id" value="-1510">
+        Cloud FS got a service error - invalid folder id (40008) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid folder name" value="-1511">
+        Cloud FS got a service error - invalid folder name (40009) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid user permission" value="-1512">
+        Cloud FS got a service error - invalid user permission (40010) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error group folder has limited depth" value="-1513">
+        Cloud FS got a service error - group folder has limited depth (40011) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error permission denied" value="-1514">
+        Cloud FS got a service error - permission denied (40012) - status 403.
+    </constant>
+
+    <constant name="cloud fs service error key is not specified" value="-1515">
+        Cloud FS got a service error - key is not specified (40013) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error file with such name already exists" value="-1516">
+        Cloud FS got a service error - file with such name already exists (40014) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error file not found" value="-1517">
+        Cloud FS got a service error - file not found (40015) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error folder with such name already exists" value="-1518">
+        Cloud FS got a service error - folder with such name already exists (40016) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid group id" value="-1519">
+        Cloud FS got a service error - invalid group id (40017) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error group not found" value="-1520">
+        Cloud FS got a service error - group not found (40018) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error undefined" value="-1529">
+        Cloud FS got a service error - undefined error - status 4xx.
+    </constant>
+
+    <constant name="cloud fs failed response unexpected content type" value="-1530">
+        Communicate with Cloud FS failed because met unexpected HTTP content type, expected application/protobuf.
+    </constant>
+
+    <constant name="cloud fs failed parse response failed" value="-1531">
         Communicate with Cloud FS failed because failed to parse response body.
     </constant>
 
-    <constant name="cloud fs failed entry not found" value="-1504">
-        Communicate with Cloud FS failed because requested entry was not found.
-    </constant>
-
-    <constant name="cloud fs failed generate key failed" value="-1505">
+    <constant name="cloud fs failed generate key failed" value="-1532">
         Cloud FS operation failed because key generation failed.
     </constant>
 
-    <constant name="cloud fs failed encrypt key failed" value="-1506">
+    <constant name="cloud fs failed encrypt key failed" value="-1533">
         Cloud FS operation failed because something went wrong during key encryption.
     </constant>
 
-    <constant name="cloud fs failed import key failed" value="-1507">
+    <constant name="cloud fs failed import key failed" value="-1534">
         Cloud FS operation failed because import key failed.
     </constant>
 
-    <constant name="cloud fs failed export key failed" value="-1508">
+    <constant name="cloud fs failed export key failed" value="-1535">
         Cloud FS operation failed because export key failed.
     </constant>
 
-    <constant name="cloud fs failed decrypt key failed invalid format" value="-1509">
+    <constant name="cloud fs failed decrypt key failed invalid format" value="-1536">
         Cloud FS operation failed because encrypted key has invalid format.
     </constant>
 
-    <constant name="cloud fs failed decrypt key wrong key" value="-1510">
+    <constant name="cloud fs failed decrypt key wrong key" value="-1537">
         Cloud FS operation failed because encrypted key can not be decrypted with a given key.
     </constant>
 
-    <constant name="cloud fs failed decrypt key signer mismatch" value="-1511">
+    <constant name="cloud fs failed decrypt key signer mismatch" value="-1538">
         Cloud FS operation failed because encrypted key can not be decrypted due to signer mismatch.
     </constant>
 
-    <constant name="cloud fs failed decrypt key invalid signature" value="-1512">
+    <constant name="cloud fs failed decrypt key invalid signature" value="-1539">
         Cloud FS operation failed because encrypted key can not be decrypted due to invalid signature.
     </constant>
 </enum>

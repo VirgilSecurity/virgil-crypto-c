@@ -393,53 +393,129 @@ enum vssq_status_t {
     //
     vssq_status_CLOUD_FS_FAILED_SEND_REQUEST_FAILED = -1500,
     //
-    //  Communicate with Cloud FS failed because response with error was returned.
+    //  Cloud FS got a service error - internal server error (10000) - status 500.
     //
-    vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR = -1501,
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INTERNAL_SERVER_ERROR = -1501,
     //
-    //  Communicate with Cloud FS failed because met unexpected content type.
+    //  Cloud FS got a service error - entry not found - status 404.
     //
-    vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE = -1502,
+    vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND = -1502,
+    //
+    //  Cloud FS got a service error - identity is invalid (40001) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_IDENTITY_IS_INVALID = -1503,
+    //
+    //  Cloud FS got a service error - user not found (40002) - status 404.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_USER_NOT_FOUND = -1504,
+    //
+    //  Cloud FS got a service error - folder not found (40003) - status 404.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_FOLDER_NOT_FOUND = -1505,
+    //
+    //  Cloud FS got a service error - invalid filename (40004) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILENAME = -1506,
+    //
+    //  Cloud FS got a service error - invalid file id (40005) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_ID = -1507,
+    //
+    //  Cloud FS got a service error - invalid file size (40006) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_SIZE = -1508,
+    //
+    //  Cloud FS got a service error - invalid file type (40007) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_TYPE = -1509,
+    //
+    //  Cloud FS got a service error - invalid folder id (40008) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FOLDER_ID = -1510,
+    //
+    //  Cloud FS got a service error - invalid folder name (40009) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FOLDER_NAME = -1511,
+    //
+    //  Cloud FS got a service error - invalid user permission (40010) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_USER_PERMISSION = -1512,
+    //
+    //  Cloud FS got a service error - group folder has limited depth (40011) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_GROUP_FOLDER_HAS_LIMITED_DEPTH = -1513,
+    //
+    //  Cloud FS got a service error - permission denied (40012) - status 403.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_PERMISSION_DENIED = -1514,
+    //
+    //  Cloud FS got a service error - key is not specified (40013) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_KEY_IS_NOT_SPECIFIED = -1515,
+    //
+    //  Cloud FS got a service error - file with such name already exists (40014) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_FILE_WITH_SUCH_NAME_ALREADY_EXISTS = -1516,
+    //
+    //  Cloud FS got a service error - file not found (40015) - status 404.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_FILE_NOT_FOUND = -1517,
+    //
+    //  Cloud FS got a service error - folder with such name already exists (40016) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_FOLDER_WITH_SUCH_NAME_ALREADY_EXISTS = -1518,
+    //
+    //  Cloud FS got a service error - invalid group id (40017) - status 400.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_GROUP_ID = -1519,
+    //
+    //  Cloud FS got a service error - group not found (40018) - status 404.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_GROUP_NOT_FOUND = -1520,
+    //
+    //  Cloud FS got a service error - undefined error - status 4xx.
+    //
+    vssq_status_CLOUD_FS_SERVICE_ERROR_UNDEFINED = -1529,
+    //
+    //  Communicate with Cloud FS failed because met unexpected HTTP content type, expected application/protobuf.
+    //
+    vssq_status_CLOUD_FS_FAILED_RESPONSE_UNEXPECTED_CONTENT_TYPE = -1530,
     //
     //  Communicate with Cloud FS failed because failed to parse response body.
     //
-    vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED = -1503,
-    //
-    //  Communicate with Cloud FS failed because requested entry was not found.
-    //
-    vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND = -1504,
+    vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED = -1531,
     //
     //  Cloud FS operation failed because key generation failed.
     //
-    vssq_status_CLOUD_FS_FAILED_GENERATE_KEY_FAILED = -1505,
+    vssq_status_CLOUD_FS_FAILED_GENERATE_KEY_FAILED = -1532,
     //
     //  Cloud FS operation failed because something went wrong during key encryption.
     //
-    vssq_status_CLOUD_FS_FAILED_ENCRYPT_KEY_FAILED = -1506,
+    vssq_status_CLOUD_FS_FAILED_ENCRYPT_KEY_FAILED = -1533,
     //
     //  Cloud FS operation failed because import key failed.
     //
-    vssq_status_CLOUD_FS_FAILED_IMPORT_KEY_FAILED = -1507,
+    vssq_status_CLOUD_FS_FAILED_IMPORT_KEY_FAILED = -1534,
     //
     //  Cloud FS operation failed because export key failed.
     //
-    vssq_status_CLOUD_FS_FAILED_EXPORT_KEY_FAILED = -1508,
+    vssq_status_CLOUD_FS_FAILED_EXPORT_KEY_FAILED = -1535,
     //
     //  Cloud FS operation failed because encrypted key has invalid format.
     //
-    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_FAILED_INVALID_FORMAT = -1509,
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_FAILED_INVALID_FORMAT = -1536,
     //
     //  Cloud FS operation failed because encrypted key can not be decrypted with a given key.
     //
-    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_WRONG_KEY = -1510,
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_WRONG_KEY = -1537,
     //
     //  Cloud FS operation failed because encrypted key can not be decrypted due to signer mismatch.
     //
-    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_SIGNER_MISMATCH = -1511,
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_SIGNER_MISMATCH = -1538,
     //
     //  Cloud FS operation failed because encrypted key can not be decrypted due to invalid signature.
     //
-    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_INVALID_SIGNATURE = -1512
+    vssq_status_CLOUD_FS_FAILED_DECRYPT_KEY_INVALID_SIGNATURE = -1539
 };
 #ifndef VSSQ_STATUS_T_DEFINED
 #define VSSQ_STATUS_T_DEFINED

@@ -631,18 +631,158 @@ static const vsc_str_t k_message_cloud_fs_failed_send_request_failed = {
     sizeof(k_message_cloud_fs_failed_send_request_failed_chars) - 1
 };
 
-static const char k_message_cloud_fs_failed_response_with_error_chars[] = "Communicate with Cloud FS failed because response with error was returned.";
+static const char k_message_cloud_fs_service_error_internal_server_error_chars[] = "Cloud FS got a service error - internal server error (10000) - status 500.";
 
-static const vsc_str_t k_message_cloud_fs_failed_response_with_error = {
-    k_message_cloud_fs_failed_response_with_error_chars,
-    sizeof(k_message_cloud_fs_failed_response_with_error_chars) - 1
+static const vsc_str_t k_message_cloud_fs_service_error_internal_server_error = {
+    k_message_cloud_fs_service_error_internal_server_error_chars,
+    sizeof(k_message_cloud_fs_service_error_internal_server_error_chars) - 1
 };
 
-static const char k_message_cloud_fs_failed_unexpected_content_type_chars[] = "Communicate with Cloud FS failed because met unexpected content type.";
+static const char k_message_cloud_fs_failed_entry_not_found_chars[] = "Cloud FS got a service error - entry not found - status 404.";
 
-static const vsc_str_t k_message_cloud_fs_failed_unexpected_content_type = {
-    k_message_cloud_fs_failed_unexpected_content_type_chars,
-    sizeof(k_message_cloud_fs_failed_unexpected_content_type_chars) - 1
+static const vsc_str_t k_message_cloud_fs_failed_entry_not_found = {
+    k_message_cloud_fs_failed_entry_not_found_chars,
+    sizeof(k_message_cloud_fs_failed_entry_not_found_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_identity_is_invalid_chars[] = "Cloud FS got a service error - identity is invalid (40001) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_identity_is_invalid = {
+    k_message_cloud_fs_service_error_identity_is_invalid_chars,
+    sizeof(k_message_cloud_fs_service_error_identity_is_invalid_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_user_not_found_chars[] = "Cloud FS got a service error - user not found (40002) - status 404.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_user_not_found = {
+    k_message_cloud_fs_service_error_user_not_found_chars,
+    sizeof(k_message_cloud_fs_service_error_user_not_found_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_folder_not_found_chars[] = "Cloud FS got a service error - folder not found (40003) - status 404.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_folder_not_found = {
+    k_message_cloud_fs_service_error_folder_not_found_chars,
+    sizeof(k_message_cloud_fs_service_error_folder_not_found_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_filename_chars[] = "Cloud FS got a service error - invalid filename (40004) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_filename = {
+    k_message_cloud_fs_service_error_invalid_filename_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_filename_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_file_id_chars[] = "Cloud FS got a service error - invalid file id (40005) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_file_id = {
+    k_message_cloud_fs_service_error_invalid_file_id_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_file_id_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_file_size_chars[] = "Cloud FS got a service error - invalid file size (40006) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_file_size = {
+    k_message_cloud_fs_service_error_invalid_file_size_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_file_size_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_file_type_chars[] = "Cloud FS got a service error - invalid file type (40007) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_file_type = {
+    k_message_cloud_fs_service_error_invalid_file_type_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_file_type_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_folder_id_chars[] = "Cloud FS got a service error - invalid folder id (40008) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_folder_id = {
+    k_message_cloud_fs_service_error_invalid_folder_id_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_folder_id_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_folder_name_chars[] = "Cloud FS got a service error - invalid folder name (40009) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_folder_name = {
+    k_message_cloud_fs_service_error_invalid_folder_name_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_folder_name_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_user_permission_chars[] = "Cloud FS got a service error - invalid user permission (40010) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_user_permission = {
+    k_message_cloud_fs_service_error_invalid_user_permission_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_user_permission_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_group_folder_has_limited_depth_chars[] = "Cloud FS got a service error - group folder has limited depth (40011) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_group_folder_has_limited_depth = {
+    k_message_cloud_fs_service_error_group_folder_has_limited_depth_chars,
+    sizeof(k_message_cloud_fs_service_error_group_folder_has_limited_depth_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_permission_denied_chars[] = "Cloud FS got a service error - permission denied (40012) - status 403.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_permission_denied = {
+    k_message_cloud_fs_service_error_permission_denied_chars,
+    sizeof(k_message_cloud_fs_service_error_permission_denied_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_key_is_not_specified_chars[] = "Cloud FS got a service error - key is not specified (40013) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_key_is_not_specified = {
+    k_message_cloud_fs_service_error_key_is_not_specified_chars,
+    sizeof(k_message_cloud_fs_service_error_key_is_not_specified_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_file_with_such_name_already_exists_chars[] = "Cloud FS got a service error - file with such name already exists (40014) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_file_with_such_name_already_exists = {
+    k_message_cloud_fs_service_error_file_with_such_name_already_exists_chars,
+    sizeof(k_message_cloud_fs_service_error_file_with_such_name_already_exists_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_file_not_found_chars[] = "Cloud FS got a service error - file not found (40015) - status 404.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_file_not_found = {
+    k_message_cloud_fs_service_error_file_not_found_chars,
+    sizeof(k_message_cloud_fs_service_error_file_not_found_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_folder_with_such_name_already_exists_chars[] = "Cloud FS got a service error - folder with such name already exists (40016) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_folder_with_such_name_already_exists = {
+    k_message_cloud_fs_service_error_folder_with_such_name_already_exists_chars,
+    sizeof(k_message_cloud_fs_service_error_folder_with_such_name_already_exists_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_invalid_group_id_chars[] = "Cloud FS got a service error - invalid group id (40017) - status 400.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_invalid_group_id = {
+    k_message_cloud_fs_service_error_invalid_group_id_chars,
+    sizeof(k_message_cloud_fs_service_error_invalid_group_id_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_group_not_found_chars[] = "Cloud FS got a service error - group not found (40018) - status 404.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_group_not_found = {
+    k_message_cloud_fs_service_error_group_not_found_chars,
+    sizeof(k_message_cloud_fs_service_error_group_not_found_chars) - 1
+};
+
+static const char k_message_cloud_fs_service_error_undefined_chars[] = "Cloud FS got a service error - undefined error - status 4xx.";
+
+static const vsc_str_t k_message_cloud_fs_service_error_undefined = {
+    k_message_cloud_fs_service_error_undefined_chars,
+    sizeof(k_message_cloud_fs_service_error_undefined_chars) - 1
+};
+
+static const char k_message_cloud_fs_failed_response_unexpected_content_type_chars[] = "Communicate with Cloud FS failed because met unexpected HTTP content type, expected application/protobuf.";
+
+static const vsc_str_t k_message_cloud_fs_failed_response_unexpected_content_type = {
+    k_message_cloud_fs_failed_response_unexpected_content_type_chars,
+    sizeof(k_message_cloud_fs_failed_response_unexpected_content_type_chars) - 1
 };
 
 static const char k_message_cloud_fs_failed_parse_response_failed_chars[] = "Communicate with Cloud FS failed because failed to parse response body.";
@@ -650,13 +790,6 @@ static const char k_message_cloud_fs_failed_parse_response_failed_chars[] = "Com
 static const vsc_str_t k_message_cloud_fs_failed_parse_response_failed = {
     k_message_cloud_fs_failed_parse_response_failed_chars,
     sizeof(k_message_cloud_fs_failed_parse_response_failed_chars) - 1
-};
-
-static const char k_message_cloud_fs_failed_entry_not_found_chars[] = "Communicate with Cloud FS failed because requested entry was not found.";
-
-static const vsc_str_t k_message_cloud_fs_failed_entry_not_found = {
-    k_message_cloud_fs_failed_entry_not_found_chars,
-    sizeof(k_message_cloud_fs_failed_entry_not_found_chars) - 1
 };
 
 static const char k_message_cloud_fs_failed_generate_key_failed_chars[] = "Cloud FS operation failed because key generation failed.";
@@ -882,14 +1015,52 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_contacts_failed_parse_response_failed;
         case vssq_status_CLOUD_FS_FAILED_SEND_REQUEST_FAILED:
             return k_message_cloud_fs_failed_send_request_failed;
-        case vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR:
-            return k_message_cloud_fs_failed_response_with_error;
-        case vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE:
-            return k_message_cloud_fs_failed_unexpected_content_type;
-        case vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED:
-            return k_message_cloud_fs_failed_parse_response_failed;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INTERNAL_SERVER_ERROR:
+            return k_message_cloud_fs_service_error_internal_server_error;
         case vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND:
             return k_message_cloud_fs_failed_entry_not_found;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_IDENTITY_IS_INVALID:
+            return k_message_cloud_fs_service_error_identity_is_invalid;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_USER_NOT_FOUND:
+            return k_message_cloud_fs_service_error_user_not_found;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_FOLDER_NOT_FOUND:
+            return k_message_cloud_fs_service_error_folder_not_found;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILENAME:
+            return k_message_cloud_fs_service_error_invalid_filename;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_ID:
+            return k_message_cloud_fs_service_error_invalid_file_id;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_SIZE:
+            return k_message_cloud_fs_service_error_invalid_file_size;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_TYPE:
+            return k_message_cloud_fs_service_error_invalid_file_type;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FOLDER_ID:
+            return k_message_cloud_fs_service_error_invalid_folder_id;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FOLDER_NAME:
+            return k_message_cloud_fs_service_error_invalid_folder_name;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_USER_PERMISSION:
+            return k_message_cloud_fs_service_error_invalid_user_permission;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_GROUP_FOLDER_HAS_LIMITED_DEPTH:
+            return k_message_cloud_fs_service_error_group_folder_has_limited_depth;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_PERMISSION_DENIED:
+            return k_message_cloud_fs_service_error_permission_denied;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_KEY_IS_NOT_SPECIFIED:
+            return k_message_cloud_fs_service_error_key_is_not_specified;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_FILE_WITH_SUCH_NAME_ALREADY_EXISTS:
+            return k_message_cloud_fs_service_error_file_with_such_name_already_exists;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_FILE_NOT_FOUND:
+            return k_message_cloud_fs_service_error_file_not_found;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_FOLDER_WITH_SUCH_NAME_ALREADY_EXISTS:
+            return k_message_cloud_fs_service_error_folder_with_such_name_already_exists;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_GROUP_ID:
+            return k_message_cloud_fs_service_error_invalid_group_id;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_GROUP_NOT_FOUND:
+            return k_message_cloud_fs_service_error_group_not_found;
+        case vssq_status_CLOUD_FS_SERVICE_ERROR_UNDEFINED:
+            return k_message_cloud_fs_service_error_undefined;
+        case vssq_status_CLOUD_FS_FAILED_RESPONSE_UNEXPECTED_CONTENT_TYPE:
+            return k_message_cloud_fs_failed_response_unexpected_content_type;
+        case vssq_status_CLOUD_FS_FAILED_PARSE_RESPONSE_FAILED:
+            return k_message_cloud_fs_failed_parse_response_failed;
         case vssq_status_CLOUD_FS_FAILED_GENERATE_KEY_FAILED:
             return k_message_cloud_fs_failed_generate_key_failed;
         case vssq_status_CLOUD_FS_FAILED_ENCRYPT_KEY_FAILED:

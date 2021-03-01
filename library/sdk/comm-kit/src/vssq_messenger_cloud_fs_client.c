@@ -168,6 +168,12 @@ vssq_messenger_cloud_fs_client_to_pb_permission(vssq_messenger_cloud_fs_permissi
 static vssq_messenger_cloud_fs_permission_t
 vssq_messenger_cloud_fs_client_from_pb_permission(vssq_pb_Permission pb_permission);
 
+//
+//  Map the service response status to the SDK status.
+//
+static vssq_status_t
+vssq_messenger_cloud_fs_client_map_service_status(const vssc_http_response_t *response) VSSQ_NODISCARD;
+
 static const char k_header_value_content_type_protobuf_chars[] = "application/protobuf";
 
 static const vsc_str_t k_header_value_content_type_protobuf = {
@@ -665,7 +671,6 @@ cleanup:
     vsc_buffer_destroy(&request_body_buffer);
     vssc_http_request_destroy(&request);
     vssc_http_response_destroy(&response);
-    pb_free(response_body.file_encrypted_key);
     vssq_cloud_file_system_pb_cleanup_pb_get_file_link_req(&request_body);
     vssq_cloud_file_system_pb_cleanup_pb_get_file_link_resp(&response_body);
 
@@ -1329,15 +1334,7 @@ vssq_messenger_cloud_fs_client_check_response(const vssc_http_response_t *http_r
     }
 
     if (!vssc_http_response_is_success(http_response)) {
-        //
-        //  TODO: Map the service errors more precisely.
-        //
-        if (vssc_http_response_status_code(http_response) == 404) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND);
-        } else {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_RESPONSE_WITH_ERROR);
-        }
-
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_messenger_cloud_fs_client_map_service_status(http_response));
         return false;
     }
 
@@ -1348,7 +1345,7 @@ vssq_messenger_cloud_fs_client_check_response(const vssc_http_response_t *http_r
                 vssc_http_response_find_header(http_response, vssc_http_header_name_content_type, NULL);
 
         if (!vsc_str_equal(content_type, k_header_value_content_type_protobuf)) {
-            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_UNEXPECTED_CONTENT_TYPE);
+            VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_CLOUD_FS_FAILED_RESPONSE_UNEXPECTED_CONTENT_TYPE);
             return false;
         }
     }
@@ -1517,4 +1514,89 @@ vssq_messenger_cloud_fs_client_from_pb_permission(vssq_pb_Permission pb_permissi
 
     VSSQ_ASSERT(0 && "Got unexpected Cloud FS user permission");
     return vssq_messenger_cloud_fs_permission_USER; // Silence error: control reaches end of non-void function
+}
+
+//
+//  Map the service response status to the SDK status.
+//
+static vssq_status_t
+vssq_messenger_cloud_fs_client_map_service_status(const vssc_http_response_t *response) {
+
+    VSSQ_ASSERT_PTR(response);
+
+    if (vssc_http_response_is_success(response)) {
+        return vssq_status_SUCCESS;
+    }
+
+    if (vssc_http_response_has_service_error(response)) {
+        const size_t service_error_code = vssc_http_response_service_error_code(response);
+        switch (service_error_code) {
+
+        case 10000:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INTERNAL_SERVER_ERROR;
+
+        case 40001:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_IDENTITY_IS_INVALID;
+
+        case 40002:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_USER_NOT_FOUND;
+
+        case 40003:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_FOLDER_NOT_FOUND;
+
+        case 40004:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILENAME;
+
+        case 40005:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_ID;
+
+        case 40006:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_SIZE;
+
+        case 40007:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FILE_TYPE;
+
+        case 40008:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FOLDER_ID;
+
+        case 40009:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_FOLDER_NAME;
+
+        case 40010:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_USER_PERMISSION;
+
+        case 40011:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_GROUP_FOLDER_HAS_LIMITED_DEPTH;
+
+        case 40012:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_PERMISSION_DENIED;
+
+        case 40013:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_KEY_IS_NOT_SPECIFIED;
+
+        case 40014:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_FILE_WITH_SUCH_NAME_ALREADY_EXISTS;
+
+        case 40015:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_FILE_NOT_FOUND;
+
+        case 40016:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_FOLDER_WITH_SUCH_NAME_ALREADY_EXISTS;
+
+        case 40017:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_INVALID_GROUP_ID;
+
+        case 40018:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_GROUP_NOT_FOUND;
+
+        default:
+            return vssq_status_CLOUD_FS_SERVICE_ERROR_UNDEFINED;
+        };
+    }
+
+    if (vssc_http_response_status_code(response) == 404) {
+        return vssq_status_CLOUD_FS_FAILED_ENTRY_NOT_FOUND;
+    } else {
+        return vssq_status_CLOUD_FS_SERVICE_ERROR_INTERNAL_SERVER_ERROR;
+    }
 }
