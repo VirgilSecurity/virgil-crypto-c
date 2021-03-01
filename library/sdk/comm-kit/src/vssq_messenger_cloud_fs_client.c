@@ -1449,6 +1449,7 @@ vssq_messenger_cloud_fs_client_write_users_to_pb(
 
         VSSQ_ASSERT(identity.len <= 512);
         memcpy(pb_users[users_added].identity, identity.chars, identity.len);
+        pb_users[users_added].identity[identity.len] = '\0';
         pb_users[users_added].permission = vssq_messenger_cloud_fs_client_to_pb_permission(permission);
     }
 
