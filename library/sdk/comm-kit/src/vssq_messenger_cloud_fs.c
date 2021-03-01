@@ -672,12 +672,7 @@ vssq_messenger_cloud_fs_encrypt_key(const vssq_messenger_cloud_fs_t *self, vsc_d
     const vscf_impl_t *current_user_public_key = vssq_messenger_user_public_key(current_user);
     const vscf_impl_t *current_user_private_key = vssq_messenger_cloud_fs_client_user_private_key(self->client);
 
-    if ((NULL == shared_users) || (NULL == vssq_messenger_cloud_fs_access_list_find_with_identity(
-                                                   shared_users, current_user_identity, NULL))) {
-
-        vscf_recipient_cipher_add_key_recipient(
-                cipher, vsc_str_as_data(current_user_identity), current_user_public_key);
-    }
+    vscf_recipient_cipher_add_key_recipient(cipher, vsc_str_as_data(current_user_identity), current_user_public_key);
 
     //
     //  Encrypt key for a parent folder.
