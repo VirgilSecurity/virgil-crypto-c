@@ -141,6 +141,15 @@
     </method>
 
 
+    <method name="user private key" is_const="1">
+        Return a private key of current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return interface="private key" project="foundation"/>
+    </method>
+
+
     <method name="encrypt key" is_const="1" declaration="private">
         Encrypt file/folder key for:
             - myself;

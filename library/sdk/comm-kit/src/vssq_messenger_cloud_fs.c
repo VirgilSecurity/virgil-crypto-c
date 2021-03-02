@@ -632,6 +632,20 @@ vssq_messenger_cloud_fs_user(const vssq_messenger_cloud_fs_t *self) {
 }
 
 //
+//  Return a private key of current user.
+//
+//  Prerequisites: user should be authenticated.
+//
+VSSQ_PUBLIC const vscf_impl_t *
+vssq_messenger_cloud_fs_user_private_key(const vssq_messenger_cloud_fs_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vssq_messenger_cloud_fs_is_authenticated(self));
+
+    return vssq_messenger_cloud_fs_client_user_private_key(self->client);
+}
+
+//
 //  Encrypt file/folder key for:
 //      - myself;
 //      - parent folder key if given;
