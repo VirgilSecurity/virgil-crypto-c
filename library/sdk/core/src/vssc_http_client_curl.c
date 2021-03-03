@@ -391,6 +391,7 @@ send_fail:
     VSSC_ERROR_SAFE_UPDATE(error, vssc_status_HTTP_SEND_REQUEST_FAILED);
     vssc_http_response_destroy(&response);
     vsc_buffer_destroy(&body_buffer);
+    printf("%s", curl_easy_strerror(send_status));
 
 maybe_succ:
     curl_easy_cleanup(curl);
