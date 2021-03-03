@@ -1,0 +1,150 @@
+<class name="messenger group epoch keyknox storage" scope="internal">
+    Provides read/write operations of the Group Epochs to/from remote
+    secure storage (Keyknox).
+
+    Note, a group credentials are unique to the epoch.
+    Note, a group credentials are encrypted for all group participants.
+
+    Keyknox internal structure:
+        {
+            "root" : "group-sessions",
+            "path" : "&lt;session-id&gt;",
+            "key"  : "&lt;epoch&gt;"
+        }
+
+        * &lt;session-id&gt; - HEX(sha512(session-id):0..32)
+        * &lt;epoch&gt;      - integer counter, incrementing epoch means group key rotatation
+
+    <require class="messenger group epoch list" api="private"/>
+    <require class="binary" project="foundation"/>
+    <require class="key provider" project="foundation"/>
+    <require class="recipient cipher" project="foundation"/>
+    <require class="json object" project="core sdk"/>
+    <require class="virgil http client" project="core sdk"/>
+    <require class="keyknox client" project="keyknox sdk"/>
+
+
+    <dependency name="random" interface="random" project="foundation"/>
+    <dependency name="auth" class="messenger auth"/>
+
+
+    <constant name="num str len max" value="21">
+        Maximum length for an unsigned number string representation including a null-termination symbol.
+        Note,  NUM_CHARS(2^64) = NUM_CHARS(18446744073709551616) = 20
+    </constant>
+
+
+    <constant name="k keyknox root id group sessions" type="string" visibility="private">
+        Keyknox root: group-sessions
+
+        <value value="group-sessions"/>
+    </constant>
+
+
+    <method name="write" is_const="1">
+        Encrypt given group epoch for all participants and for self and push it to the Keyknox.
+
+        <argument name="session id" class="data"/>
+        <argument name="group epoch" class="messenger group epoch"/>
+        <argument name="participants" class="messenger user list"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="read" is_const="1">
+        Pull requested epoch from the Keyknox, decrypt it and verify owner's signature.
+
+        <argument name="session id" class="data"/>
+        <argument name="group epoch num" type="size"/>
+        <argument name="owner" class="messenger user"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger group epoch" access="disown"/>
+    </method>
+
+
+    <method name="read all" is_const="1">
+        Pull all epochs from the Keyknox, decrypt it and verify owner's signature.
+
+        <argument name="session id" class="data"/>
+        <argument name="owner" class="messenger user"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger group epoch list" access="disown"/>
+    </method>
+
+
+    <method name="remove all" is_const="1">
+        Remove all epochs from the Keyknox.
+
+        <argument name="session id" class="data"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="read epoch nums" is_const="1">
+        Pull available epoch serial numbers.
+
+        <argument name="session id" class="data"/>
+        <argument name="owner" class="messenger user"/>
+        <argument name="error" class="error"/>
+
+        <return class="number list" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="stringify epoch num" is_static="1">
+        Return string representation of the given number.
+
+        <argument name="num" type="size"/>
+
+        <return class="str buffer" access="disown"/>
+    </method>
+
+
+    <method name="keyknox pack group epoch" is_const="1" declaration="private">
+        Encrypt a group epoch and put it to the Keyknox entry.
+
+        <argument name="session id" class="data"/>
+        <argument name="group epoch" class="messenger group epoch"/>
+        <argument name="participants" class="messenger user list"/>
+        <argument name="error" class="error"/>
+
+        <return class="keyknox entry" project="keyknox sdk" access="disown"/>
+    </method>
+
+
+    <method name="keyknox unpack group epoch" is_const="1" declaration="private">
+        Extract a group epoch from the Keyknox entry and decrypt it.
+
+        <argument name="keyknox entry" class="keyknox entry" project="keyknox sdk"/>
+        <argument name="owner" class="messenger user"/>
+        <argument name="error" class="error"/>
+
+        <return name="group epoch" class="messenger group epoch" access="disown"/>
+
+    </method>
+
+
+    <method name="keyknox push entry" is_const="1" declaration="private">
+        Push an encrypted group epoch to the Keyknox.
+
+        <argument name="keyknox entry" class="keyknox entry" project="keyknox sdk"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="keyknox pull entry" is_const="1" declaration="private">
+        Pull an encrypted group epoch from the Keyknox.
+
+        <argument name="session id" class="str"/>
+        <argument name="group epoch num" class="str"/>
+        <argument name="owner identity" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="keyknox entry" project="keyknox sdk" access="disown"/>
+    </method>
+</class>

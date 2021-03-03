@@ -224,7 +224,7 @@
 
 
     <method name="replace char">
-        Replace all occurences of one character to another character.
+        Replace all occurrences of one character to another character.
 
         <argument name="char old" type="char"/>
         <argument name="char new" type="char"/>
@@ -232,7 +232,7 @@
 
 
     <method name="rtrim">
-        Remove all occurences of given character from the string end.
+        Remove all occurrences of given character from the string end.
 
         <argument name="char to trim" type="char"/>
     </method>

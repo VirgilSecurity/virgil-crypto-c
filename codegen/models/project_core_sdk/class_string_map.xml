@@ -1,0 +1,118 @@
+<class name="string map">
+    Handles a map: key=string, value=string.
+
+    <require class="string list" api="private"/>
+    <require class="string map bucket" api="defs"/>
+
+
+    <property name="buckets" class="string map bucket">
+        <array length="given"/>
+    </property>
+
+
+    <property name="capacity" type="size"/>
+
+
+    <constant name="capacity max" value="1024 * 1024"/>
+    <constant name="capacity default" value="50" definition="private"/>
+
+
+    <constructor name="with capacity">
+        Create an optimal map.
+
+        <argument name="capacity" type="size"/>
+    </constructor>
+
+
+    <method name="capacity" is_const="1">
+        Return map's capacity.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="put">
+        Put a new pair to the map.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="str"/>
+    </method>
+
+
+    <method name="put shallow copy" scope="private">
+        Put a new pair to the map.
+
+        Note, given buffers are shallow copied.
+
+        <argument name="key" class="str buffer" access="readonly"/>
+        <argument name="value" class="str buffer" access="readonly"/>
+    </method>
+
+
+    <method name="get" is_const="1">
+        Return a value of the given key, or error.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="get inner" is_const="1">
+        Return a value of the given key, or error.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="str buffer" access="readonly"/>
+    </method>
+
+
+    <method name="contains" is_const="1">
+        Return true if value of the given key exists.
+
+        <argument name="key" class="str"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="keys" is_const="1">
+        Return map keys.
+
+        <return class="string list" access="disown"/>
+    </method>
+
+
+    <method name="values" is_const="1">
+        Return map values.
+
+        <return class="string list" access="disown"/>
+    </method>
+
+
+    <method name="swap key values" is_const="1">
+        Return a new map with all keys and it values being swapped.
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="calculate bucket index" is_const="1" declaration="private">
+        Calculates bucket index based on a given key.
+
+        <argument name="key" class="str"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="hash code" is_static="1" declaration="private">
+        Calculates a hash code for a given key.
+
+        <argument name="key" class="str"/>
+
+        <return type="size"/>
+    </method>
+</class>

@@ -55,7 +55,7 @@ test__request_generate_seed__http_request_equals_expected(void) {
     vssc_http_request_t *http_request =
             vssp_pythia_client_make_request_generate_seed(pythia_client, test_data_sdk_pythia_client_BLINDED_PASSWORD);
 
-    vsc_str_t http_body = vssc_http_request_body(http_request);
+    vsc_str_t http_body = vsc_str_from_data(vssc_http_request_body(http_request));
 
     TEST_ASSERT_EQUAL_STR(test_data_sdk_pythia_client_GENERATE_SEED_REQUEST, http_body);
 
@@ -71,7 +71,7 @@ test__request_generate_seed_with_id__with_brain_key_id_1__http_request_equals_ex
     vssc_http_request_t *http_request = vssp_pythia_client_make_request_generate_seed_with_id(
             pythia_client, test_data_sdk_pythia_client_BLINDED_PASSWORD, test_data_sdk_pythia_client_BRAIN_KEY_ID_1);
 
-    vsc_str_t http_body = vssc_http_request_body(http_request);
+    vsc_str_t http_body = vsc_str_from_data(vssc_http_request_body(http_request));
 
     TEST_ASSERT_EQUAL_STR(test_data_sdk_pythia_client_GENERATE_SEED_REQUEST_WITH_BRAIN_KEY_ID_1, http_body);
 
@@ -83,24 +83,16 @@ test__request_generate_seed_with_id__with_brain_key_id_1__http_request_equals_ex
 void
 test__process_response_from_generate_seed__response_is_success__seed_equals_expected(void) {
 
-    vssc_http_response_t *http_response =
-            vssc_http_response_new_with_body(200, test_data_sdk_pythia_client_GENERATE_SEED_RESPONSE_BODY);
+    vssc_http_response_t *http_response = vssc_http_response_new_with_body(
+            200, vsc_str_as_data(test_data_sdk_pythia_client_GENERATE_SEED_RESPONSE_BODY));
 
-
-    vssc_error_t core_sdk_error;
-    vssc_error_reset(&core_sdk_error);
-
-    vssc_virgil_http_response_t *virgil_http_response =
-            vssc_virgil_http_response_create_from_http_response(http_response, &core_sdk_error);
-
-    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&core_sdk_error));
-    TEST_ASSERT_NOT_NULL(virgil_http_response);
+    TEST_ASSERT_TRUE(vssc_http_response_is_success(http_response));
+    TEST_ASSERT_TRUE(vssc_http_response_body_is_json_object(http_response));
 
     vssp_error_t pythia_sdk_error;
     vssp_error_reset(&pythia_sdk_error);
 
-    vssp_brain_key_seed_t *seed =
-            vssp_pythia_client_process_response_generate_seed(virgil_http_response, &pythia_sdk_error);
+    vssp_brain_key_seed_t *seed = vssp_pythia_client_process_response_generate_seed(http_response, &pythia_sdk_error);
 
     TEST_ASSERT_EQUAL(vssp_status_SUCCESS, vssp_error_status(&pythia_sdk_error));
     TEST_ASSERT_NOT_NULL(seed);
@@ -110,7 +102,6 @@ test__process_response_from_generate_seed__response_is_success__seed_equals_expe
     TEST_ASSERT_EQUAL_DATA(test_data_sdk_pythia_client_GENERATED_SEED, seed_data);
 
     vssc_http_response_destroy(&http_response);
-    vssc_virgil_http_response_destroy(&virgil_http_response);
     vssp_brain_key_seed_destroy(&seed);
 }
 

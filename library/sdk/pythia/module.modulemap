@@ -1,4 +1,4 @@
-framework module VSSP {
+framework module VSSPyhia {
     header "vssp_pythia_sdk_public.h"
     export *
 }

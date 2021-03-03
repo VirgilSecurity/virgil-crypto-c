@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vssp_assert.h"
+#include "vssp_memory.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <virgil/crypto/pythia/vscp_status.h>
@@ -146,7 +147,7 @@ VSSP_PUBLIC void
 vssp_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    vssp_snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
 
     vssp_assert_trigger(error_message, file, line);
 }
@@ -158,7 +159,7 @@ VSSP_PUBLIC void
 vssp_assert_trigger_unhandled_error_of_project_pythia(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
+    vssp_snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia error -0x%04x", error);
 
     vssp_assert_trigger(error_message, file, line);
 }
@@ -170,7 +171,7 @@ VSSP_PUBLIC void
 vssp_assert_trigger_unhandled_error_of_project_core_sdk(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
+    vssp_snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
 
     vssp_assert_trigger(error_message, file, line);
 }

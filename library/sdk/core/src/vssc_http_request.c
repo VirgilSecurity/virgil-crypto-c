@@ -53,7 +53,9 @@
 #include "vssc_http_request.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_http_request_private.h"
 #include "vssc_http_request_defs.h"
+#include "vssc_http_header.h"
 
 // clang-format on
 //  @end
@@ -91,7 +93,7 @@ vssc_http_request_init_ctx_with_url(vssc_http_request_t *self, vsc_str_t method,
 //  Create HTTP request with URL and body.
 //
 static void
-vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body);
+vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body);
 
 //
 //  HTTP method: GET
@@ -238,7 +240,7 @@ vssc_http_request_new_with_url(vsc_str_t method, vsc_str_t url) {
 //  Create HTTP request with URL and body.
 //
 VSSC_PUBLIC void
-vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body) {
+vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -254,7 +256,7 @@ vssc_http_request_init_with_body(vssc_http_request_t *self, vsc_str_t method, vs
 //  Create HTTP request with URL and body.
 //
 VSSC_PUBLIC vssc_http_request_t *
-vssc_http_request_new_with_body(vsc_str_t method, vsc_str_t url, vsc_str_t body) {
+vssc_http_request_new_with_body(vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     vssc_http_request_t *self = (vssc_http_request_t *) vssc_alloc(sizeof (vssc_http_request_t));
     VSSC_ASSERT_ALLOC(self);
@@ -387,7 +389,8 @@ vssc_http_request_cleanup_ctx(vssc_http_request_t *self) {
 
     vsc_str_mutable_release(&self->method);
     vsc_str_mutable_release(&self->url);
-    vsc_str_mutable_release(&self->body);
+    vsc_buffer_destroy(&self->body);
+    vsc_str_mutable_release(&self->auth_header_value);
 
     vssc_http_header_list_destroy(&self->headers);
 }
@@ -399,10 +402,8 @@ static void
 vssc_http_request_init_ctx_with_url(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid(method));
-    VSSC_ASSERT(!vsc_str_is_empty(method));
-    VSSC_ASSERT(vsc_str_is_valid(url));
-    VSSC_ASSERT(!vsc_str_is_empty(url));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(method));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(url));
 
     self->method = vsc_str_mutable_from_str(method);
     self->url = vsc_str_mutable_from_str(url);
@@ -413,15 +414,14 @@ vssc_http_request_init_ctx_with_url(vssc_http_request_t *self, vsc_str_t method,
 //  Create HTTP request with URL and body.
 //
 static void
-vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_str_t body) {
+vssc_http_request_init_ctx_with_body(vssc_http_request_t *self, vsc_str_t method, vsc_str_t url, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid(body));
-    VSSC_ASSERT(!vsc_str_is_empty(body));
+    VSSC_ASSERT(vsc_data_is_valid(body));
 
     vssc_http_request_init_ctx_with_url(self, method, url);
 
-    self->body = vsc_str_mutable_from_str(body);
+    self->body = vsc_buffer_new_with_data(body);
 }
 
 //
@@ -439,6 +439,18 @@ vssc_http_request_add_header(vssc_http_request_t *self, vsc_str_t name, vsc_str_
 }
 
 //
+//  Add HTTP header.
+//
+VSSC_PUBLIC void
+vssc_http_request_add_header_disown(vssc_http_request_t *self, vssc_http_header_t **header_ref) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_REF(header_ref);
+
+    vssc_http_header_list_add(self->headers, header_ref);
+}
+
+//
 //  Return HTTP method.
 //
 VSSC_PUBLIC vsc_str_t
@@ -451,7 +463,7 @@ vssc_http_request_method(const vssc_http_request_t *self) {
 }
 
 //
-//  Return HTTP url.
+//  Return HTTP URL.
 //
 VSSC_PUBLIC vsc_str_t
 vssc_http_request_url(const vssc_http_request_t *self) {
@@ -465,16 +477,16 @@ vssc_http_request_url(const vssc_http_request_t *self) {
 //
 //  Return HTTP body.
 //
-VSSC_PUBLIC vsc_str_t
+VSSC_PUBLIC vsc_data_t
 vssc_http_request_body(const vssc_http_request_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    if (vsc_str_mutable_is_valid(self->body)) {
-        return vsc_str_mutable_as_str(self->body);
+    if (vsc_buffer_is_valid(self->body)) {
+        return vsc_buffer_data(self->body);
     }
 
-    return vsc_str_empty();
+    return vsc_data_empty();
 }
 
 //
@@ -487,4 +499,61 @@ vssc_http_request_headers(const vssc_http_request_t *self) {
     VSSC_ASSERT_PTR(self->headers);
 
     return self->headers;
+}
+
+//
+//  Setup HTTP authorization header value: "<type> <credentials>".
+//
+//  Note, it is not added automatically to headers.
+//
+//  Motivation: some HTTP implementations require setting authorization header explicitly,
+//  and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+//
+//  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+//
+VSSC_PUBLIC void
+vssc_http_request_set_auth_header_value(vssc_http_request_t *self, vsc_str_t auth_header_value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_header_value));
+
+    vsc_str_mutable_release(&self->auth_header_value);
+    self->auth_header_value = vsc_str_mutable_from_str(auth_header_value);
+}
+
+//
+//  Setup HTTP authorization header value: "<type> <credentials>".
+//
+//  Note, it is not added automatically to headers.
+//
+//  Motivation: some HTTP implementations require setting authorization header explicitly,
+//  and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+//
+//  See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+//
+VSSC_PUBLIC void
+vssc_http_request_set_auth_header_value_from_type_and_credentials(
+        vssc_http_request_t *self, vsc_str_t auth_type, vsc_str_t auth_credentials) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_type));
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_credentials));
+
+    vsc_str_mutable_release(&self->auth_header_value);
+    self->auth_header_value = vsc_str_mutable_concat_with_space_sep(auth_type, auth_credentials);
+}
+
+//
+//  Return HTTP authorization header value: "<type> <credentials>".
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_request_auth_header_value(const vssc_http_request_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    if (vsc_str_mutable_is_valid(self->auth_header_value)) {
+        return vsc_str_mutable_as_str(self->auth_header_value);
+    }
+
+    return vsc_str_empty();
 }

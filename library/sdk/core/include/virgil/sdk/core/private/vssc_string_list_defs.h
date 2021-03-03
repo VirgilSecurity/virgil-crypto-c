@@ -58,11 +58,11 @@
 #include "vssc_string_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_mutable.h>
+#   include <virgil/crypto/common/vsc_str_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_mutable.h>
+#   include <VSCCommon/vsc_str_buffer.h>
 #endif
 
 // clang-format on
@@ -93,7 +93,7 @@ struct vssc_string_list_t {
     //
     VSSC_ATOMIC size_t refcnt;
 
-    vsc_str_mutable_t item;
+    const vsc_str_buffer_t *item;
     //
     //  Class specific context.
     //

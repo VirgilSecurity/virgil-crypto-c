@@ -1,6 +1,8 @@
 <module name="memory" of_class="global">
     Provides configurable memory management model.
 
+    <require header="stdio.h" is_system="1"/>
+    <require header="stdarg.h" is_system="1"/>
     <require module="library" definition="public"/>
     <require module="assert"/>
 
@@ -269,5 +271,32 @@
             }
             return ((char *)s);
         </code>
+    </method>
+
+
+    <method name="snprintf">
+      Fixed version of the snprintf().
+
+      <argument name="s" type="string" access="readwrite"/>
+      <argument name="n" type="size"/>
+      <argument name="format" type="string"/>
+      <argument name="args" type="varargs"/>
+
+      <return type="integer"/>
+
+      <code>
+          va_list args;
+          int ret;
+          va_start(args, format);
+
+          #if defined(__MINGW32__)
+              ret = __mingw_vsnprintf(s, n, format, args);
+          #else
+              ret = vsnprintf(s, n, format, args);
+          #endif
+
+          va_end(args);
+          return ret;
+      </code>
     </method>
 </module>

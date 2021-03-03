@@ -3,7 +3,8 @@
 
     <property name="method" class="str mutable"/>
     <property name="url" class="str mutable"/>
-    <property name="body" class="str mutable"/>
+    <property name="body" class="buffer"/>
+    <property name="auth header value" class="str mutable"/>
     <property name="headers" class="http header list"/>
 
 
@@ -48,7 +49,7 @@
 
         <argument name="method" class="str"/>
         <argument name="url" class="str"/>
-        <argument name="body" class="str"/>
+        <argument name="body" class="data"/>
     </constructor>
 
 
@@ -60,6 +61,13 @@
     </method>
 
 
+    <method name="add header disown" scope="private">
+        Add HTTP header.
+
+        <argument name="header" class="http header" access="disown"/>
+    </method>
+
+
     <method name="method" is_const="1">
         Return HTTP method.
 
@@ -68,7 +76,7 @@
 
 
     <method name="url" is_const="1">
-        Return HTTP url.
+        Return HTTP URL.
 
         <return class="str"/>
     </method>
@@ -77,7 +85,7 @@
     <method name="body" is_const="1">
         Return HTTP body.
 
-        <return class="str"/>
+        <return class="data"/>
     </method>
 
 
@@ -85,5 +93,41 @@
         Return HTTP headers.
 
         <return class="http header list"/>
+    </method>
+
+
+    <method name="set auth header value">
+        Setup HTTP authorization header value: "&lt;type&gt; &lt;credentials&gt;".
+
+        Note, it is not added automatically to headers.
+
+        Motivation: some HTTP implementations require setting authorization header explicitly,
+        and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+
+        See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+
+        <argument name="auth header value" class="str"/>
+    </method>
+
+
+    <method name="set auth header value from type and credentials">
+        Setup HTTP authorization header value: "&lt;type&gt; &lt;credentials&gt;".
+
+        Note, it is not added automatically to headers.
+
+        Motivation: some HTTP implementations require setting authorization header explicitly,
+        and forbid adding it directly to the HTTP headers (i.e. iOS NSURLRequest).
+
+        See, https://developer.apple.com/documentation/foundation/nsurlrequest#1776617
+
+        <argument name="auth type" class="str"/>
+        <argument name="auth credentials" class="str"/>
+    </method>
+
+
+    <method name="auth header value" is_const="1">
+        Return HTTP authorization header value: "&lt;type&gt; &lt;credentials&gt;".
+
+        <return class="str"/>
     </method>
 </class>

@@ -154,7 +154,7 @@
     </method>
 
 
-    <method name="add array value disown" visibility="private">
+    <method name="add array value disown" scope="private">
         Add array value with a given key.
 
         <argument name="key" class="str"/>
@@ -177,6 +177,16 @@
         Return JSON body as string.
 
         <return class="str"/>
+    </method>
+
+
+    <method name="as string map" is_const="1">
+        Return JSON object as string map key->value.
+        Return error, if at least one value is not a string.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" access="disown"/>
     </method>
 
 

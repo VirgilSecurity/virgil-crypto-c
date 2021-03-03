@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscp_assert.h"
+#include "vscp_memory.h"
 
 #include <mbedtls/config.h>
 #include <mbedtls/error.h>
@@ -152,7 +153,7 @@ vscp_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *fi
         if (error < 0) {
             error = -error;
         }
-        snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
+        vscp_snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
     #endif
 
     vscp_assert_trigger(error_message, file, line);

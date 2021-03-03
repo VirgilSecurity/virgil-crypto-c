@@ -1,12 +1,11 @@
-<class name="message cipher" context="internal" scope="private" visibility="private">
+<class name="message cipher" scope="private" visibility="private">
 
     <require impl="sha512"/>
     <require impl="hkdf"/>
-    <require module="buffer defs" project="common"/>
+    <require class="buffer" api="defs" project="common"/>
 
     <require module="group session typedefs" definition="public"/>
 
-    <property name="aes256 gcm" impl="aes256 gcm"/>
 
     <method name="encrypt len">
         <argument name="plain text len" type="size"/>
@@ -14,15 +13,18 @@
         <return type="size"/>
     </method>
 
-    <method name="decrypt len">
+    <method name="decrypt len" is_const="1">
         <argument name="cipher text len" type="size"/>
 
         <return type="size"/>
     </method>
 
-    <method name="setup cipher" declaration="private">
-        <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>
-        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal" access="readonly"/>
+    <method name="configure cipher" declaration="private" is_static="1">
+        Configure given symmetric cipher.
+
+        <argument name="cipher" impl="aes256 gcm" access="readwrite"/>
+        <argument name="key" class="const vscf_group_session_symmetric_key_t" is_reference="0" library="internal"/>
+        <argument name="salt" class="const vscf_group_session_salt_t" is_reference="0" library="internal"/>
     </method>
 
     <method name="encrypt" declaration="private">

@@ -135,7 +135,7 @@
     <method name="process response push" is_static="1">
         Map response to the correspond model.
 
-        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="response" class="http response" project="core sdk"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="keyknox entry" access="disown"/>
@@ -158,7 +158,7 @@
     <method name="process response pull" is_static="1">
         Map response to the correspond model.
 
-        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="response" class="http response" project="core sdk"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="keyknox entry" access="disown"/>
@@ -183,7 +183,7 @@
     <method name="process response reset" is_static="1">
         Map response to the correspond model.
 
-        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="response" class="http response" project="core sdk"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="keyknox entry" access="disown"/>
@@ -206,7 +206,7 @@
     <method name="process response get keys" is_static="1">
         Map response to the correspond model.
 
-        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="response" class="http response" project="core sdk"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="string list" access="disown" project="core sdk"/>
@@ -216,7 +216,7 @@
     <method name="parse keyknox entry" is_static="1" declaration="private">
         Parse keyknox entry from json object.
 
-        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="response" class="http response" project="core sdk"/>
         <argument name="error" class="error"/>
 
         <return class="keyknox entry" access="disown"/>

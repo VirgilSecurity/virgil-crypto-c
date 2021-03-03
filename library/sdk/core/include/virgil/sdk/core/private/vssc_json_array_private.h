@@ -72,6 +72,12 @@ extern "C" {
 VSSC_PUBLIC vssc_json_array_t *
 vssc_json_array_create_with_json_obj(json_object **json_obj_ref);
 
+//
+//  Add object value .
+//
+VSSC_PUBLIC void
+vssc_json_array_add_object_value_disown(vssc_json_array_t *self, vssc_json_object_t **value_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

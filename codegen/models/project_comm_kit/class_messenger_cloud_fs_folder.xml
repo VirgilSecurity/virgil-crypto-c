@@ -1,0 +1,139 @@
+<class name="messenger cloud fs folder">
+    Handles a list of folder entries
+
+    <property name="total folder count" type="size"/>
+    <property name="total file count" type="size"/>
+    <property name="folders" class="messenger cloud fs folder info list" access="readonly"/>
+    <property name="files" class="messenger cloud fs file info list" access="readonly"/>
+    <property name="info" class="messenger cloud fs folder info" access="readonly"/>
+    <property name="folder encrypted key" class="buffer"/>
+    <property name="folder public key" class="buffer"/>
+    <property name="users permission" class="messenger cloud fs access list" access="readonly"/>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="total folder count" type="size"/>
+        <argument name="total file count" type="size"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="folders" class="messenger cloud fs folder info list"/>
+        <argument name="files" class="messenger cloud fs file info list"/>
+        <argument name="info" class="messenger cloud fs folder info"/>
+        <argument name="users permission" class="messenger cloud fs access list"/>
+    </constructor>
+
+
+    <constructor name="root with">
+        Create fully defined object.
+
+        <argument name="total folder count" type="size"/>
+        <argument name="total file count" type="size"/>
+        <argument name="folders" class="messenger cloud fs folder info list"/>
+        <argument name="files" class="messenger cloud fs file info list"/>
+        <argument name="info" class="messenger cloud fs folder info"/>
+    </constructor>
+
+
+    <constructor name="with disown" scope="private">
+        Create fully defined object.
+
+        <argument name="total folder count" type="size"/>
+        <argument name="total file count" type="size"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="folders" class="messenger cloud fs folder info list" access="disown"/>
+        <argument name="files" class="messenger cloud fs file info list" access="disown"/>
+        <argument name="info" class="messenger cloud fs folder info" access="disown"/>
+        <argument name="users permission" class="messenger cloud fs access list" access="disown"/>
+    </constructor>
+
+
+    <constructor name="root with disown" scope="private">
+        Create fully defined object.
+
+        <argument name="total folder count" type="size"/>
+        <argument name="total file count" type="size"/>
+        <argument name="folders" class="messenger cloud fs folder info list" access="disown"/>
+        <argument name="files" class="messenger cloud fs file info list" access="disown"/>
+        <argument name="info" class="messenger cloud fs folder info" access="disown"/>
+    </constructor>
+
+
+    <method name="is root" is_const="1">
+        Return true if folder is a root folder.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="total entry count" is_const="1">
+        Return total = folder + file count.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="total folder count" is_const="1">
+        Return total folder count.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="total file count" is_const="1">
+        Return total file count.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="folders" is_const="1">
+        Return folders.
+
+        <return class="messenger cloud fs folder info list"/>
+    </method>
+
+
+    <method name="files" is_const="1">
+        Return files.
+
+        <return class="messenger cloud fs file info list"/>
+    </method>
+
+
+    <method name="info" is_const="1">
+        Return current folder info.
+
+        <return class="messenger cloud fs folder info"/>
+    </method>
+
+
+    <method name="encrypted key" is_const="1">
+        Return encrypted folder private key.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="public key" is_const="1">
+        Return folder public key.
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="has shared users permission" is_const="1">
+        Return true if folder has shared users.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="shared users permission" is_const="1">
+        Return users that have permissions to this folder.
+
+        <return class="messenger cloud fs access list"/>
+    </method>
+</class>

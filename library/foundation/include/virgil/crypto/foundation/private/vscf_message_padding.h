@@ -167,7 +167,7 @@ VSCF_PUBLIC size_t
 vscf_message_padding_padded_len(size_t plain_text_len);
 
 VSCF_PUBLIC vscf_status_t
-vscf_message_padding_add_padding(vscf_message_padding_t *self, vsc_buffer_t *plain_text) VSCF_NODISCARD;
+vscf_message_padding_add_padding(const vscf_message_padding_t *self, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
 vscf_message_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) VSCF_NODISCARD;

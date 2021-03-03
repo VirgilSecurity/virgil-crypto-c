@@ -146,6 +146,27 @@ vsc_str_mutable_concat(vsc_str_t lhs, vsc_str_t rhs) {
 }
 
 //
+//  Create a mutable string by concatenating 2 strings separated with a space.
+//
+VSC_PUBLIC vsc_str_mutable_t
+vsc_str_mutable_concat_with_space_sep(vsc_str_t lhs, vsc_str_t rhs) {
+
+    VSC_ASSERT(vsc_str_is_valid(lhs));
+    VSC_ASSERT(vsc_str_is_valid(rhs));
+
+    const size_t chars_len = lhs.len + 1 /* space */ + rhs.len;
+    char *chars_copy = vsc_alloc(chars_len + 1);
+    VSC_ASSERT_ALLOC(chars_copy);
+
+    memcpy(chars_copy, lhs.chars, lhs.len);
+    chars_copy[lhs.len] = ' ';
+    memcpy(chars_copy + lhs.len + 1, rhs.chars, rhs.len);
+    chars_copy[chars_len] = '\0';
+
+    return (vsc_str_mutable_t){chars_copy, chars_len};
+}
+
+//
 //  Returns true if underlying string is defined.
 //
 VSC_PUBLIC bool

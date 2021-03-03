@@ -1,0 +1,28 @@
+<class name="string map node" scope="private">
+    Handles key-value pair of a string map.
+
+    <property name="key" class="str mutable"/>
+    <property name="value" class="str mutable"/>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="str"/>
+    </constructor>
+
+
+    <method name="key" is_const="1">
+        Return map's key.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="value" is_const="1">
+        Return map's value.
+
+        <return class="str"/>
+    </method>
+</class>

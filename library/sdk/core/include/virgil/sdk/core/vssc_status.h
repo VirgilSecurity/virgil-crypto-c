@@ -81,31 +81,31 @@ enum vssc_status_t {
     //
     vssc_status_INTERNAL_ERROR = -1,
     //
-    //  Requested list item is not found.
+    //  Generic error for any find operation.
     //
-    vssc_status_LIST_ITEM_NOT_FOUND = -2,
+    vssc_status_NOT_FOUND = -100,
     //
-    //  Faled to decode Base64URL string.
+    //  Failed to decode Base64URL string.
     //
     vssc_status_DECODE_BASE64_URL_FAILED = -101,
     //
-    //  Faled to initialize random module.
+    //  Failed to initialize random module.
     //
     vssc_status_INIT_RANDOM_FAILED = -102,
     //
-    //  Faled to export public key, underlying crypto returned an error.
+    //  Failed to export public key, underlying crypto returned an error.
     //
     vssc_status_EXPORT_PUBLIC_KEY_FAILED = -103,
     //
-    //  Faled to import public key, underlying crypto returned an error.
+    //  Failed to import public key, underlying crypto returned an error.
     //
     vssc_status_IMPORT_PUBLIC_KEY_FAILED = -104,
     //
-    //  Faled to produce signature, underlying crypto returned an error.
+    //  Failed to produce signature, underlying crypto returned an error.
     //
     vssc_status_PRODUCE_SIGNATURE_FAILED = -105,
     //
-    //  Faled to produce public key id.
+    //  Failed to produce public key id.
     //
     vssc_status_PRODUCE_PUBLIC_KEY_ID_FAILED = -106,
     //

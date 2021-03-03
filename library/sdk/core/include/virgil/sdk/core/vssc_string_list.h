@@ -139,7 +139,6 @@ vssc_string_list_shallow_copy_const(const vssc_string_list_t *self);
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
 //
 VSSC_PUBLIC void
 vssc_string_list_add(vssc_string_list_t *self, vsc_str_t str);
@@ -191,6 +190,12 @@ vssc_string_list_prev(const vssc_string_list_t *self);
 //
 VSSC_PUBLIC void
 vssc_string_list_clear(vssc_string_list_t *self);
+
+//
+//  Return number of items within list.
+//
+VSSC_PUBLIC size_t
+vssc_string_list_count(const vssc_string_list_t *self);
 
 //
 //  Return true if list contains a given value.

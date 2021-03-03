@@ -1,0 +1,35 @@
+<enum name="status" definition="public">
+    Defines the library status codes.
+
+    <constant name="success" value="0">
+        No errors was occurred.
+    </constant>
+
+    <constant name="internal error" value="-1">
+        Met internal inconsistency.
+    </constant>
+
+    <constant name="http response parse failed" value="-401">
+        Given HTTP response body can not be parsed in an expected way.
+    </constant>
+
+    <constant name="http response error" value="-402">
+        Given HTTP response handles unexpected status code.
+    </constant>
+
+    <constant name="http service error server internal error" value="1000">
+        Got HTTP response with a service error - internal server error - status code 500.
+    </constant>
+
+    <constant name="http service error bad blinded point data" value="1001">
+        Got HTTP response with a service error - bad blinded point data - status code 400.
+    </constant>
+
+    <constant name="http service error invalid json" value="1002">
+        Got HTTP response with a service error - invalid json - status code 400.
+    </constant>
+
+    <constant name="http service error undefined" value="1999">
+        Got HTTP response with a service error - undefined error - status code 400.
+    </constant>
+</enum>

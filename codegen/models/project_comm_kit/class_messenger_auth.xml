@@ -1,7 +1,6 @@
 <class name="messenger auth">
     Provides access to the messenger authentication endpoints.
 
-    <require header="stdio.h" is_system="1"/>
     <require class="data" project="common"/>
     <require class="buffer" project="common"/>
     <require class="str mutable" project="common"/>
@@ -9,7 +8,6 @@
     <require class="buffer" project="common" api="defs"/>
     <require impl="sha256" project="foundation"/>
     <require impl="sha512" project="foundation"/>
-    <require impl="ctr drbg" project="foundation"/>
     <require impl="key material rng" project="foundation"/>
     <require interface="random" project="foundation"/>
     <require interface="private key" project="foundation"/>
@@ -19,7 +17,7 @@
     <require class="base64" project="foundation"/>
     <require class="base64" project="foundation" api="private"/>
     <require class="binary" project="foundation"/>
-    <require class="pythia" project="pythia"/>
+    <require class="brainkey client" project="foundation"/>
     <require class="unix time" project="core sdk"/>
     <require class="virgil http client" project="core sdk"/>
     <require class="card client" project="core sdk"/>
@@ -28,21 +26,24 @@
     <require class="json object" project="core sdk"/>
     <require class="json object" project="core sdk" api="private"/>
     <require class="keyknox client" project="keyknox sdk"/>
-    <require class="pythia client" project="pythia sdk"/>
+    <require class="brainkey client" project="brainkey sdk"/>
     <require class="messenger creds" api="private"/>
+    <require class="messenger user" api="private"/>
     <require class="contact utils"/>
 
     <property name="config" class="messenger config" access="readonly"/>
     <property name="creds" class="messenger creds" access="readonly"/>
-    <property name="card" class="card" project="core sdk"/>
-    <property name="base jwt" class="jwt" project="core sdk"/> <!-- cache -->
+    <property name="user" class="messenger user"/>
+    <property name="virgil jwt" class="jwt" project="core sdk"/> <!-- cache -->
+    <property name="contact discovery jwt" class="jwt" project="core sdk"/> <!-- cache -->
     <property name="ejabberd jwt" class="ejabberd jwt"/> <!-- cache -->
 
     <dependency name="random" interface="random" project="foundation"/>
 
     <constant name="card identity len" value="16" definition="private"/>
     <constant name="card identity len hex" value="32" definition="private"/>
-    <constant name="base jwt len max" value="512" definition="private"/>
+    <constant name="virgil jwt len max" value="512" definition="private"/>
+    <constant name="contact discovery jwt len max" value="512" definition="private"/>
     <constant name="ejabberd jwt len max" value="256" definition="private"/>
     <constant name="auth header len max" value="256" definition="private"/>
     <constant name="username digest len" value="64" definition="private"/>
@@ -52,8 +53,12 @@
         <value value="/virgil-jwt"/>
     </constant>
 
+    <constant name="k url path contact discovery jwt" type="string" visibility="private">
+        <value value="/contact-discovery-jwt"/>
+    </constant>
+
     <constant name="k url path ejabberd jwt" type="string" visibility="private">
-        <value value="/ejabberd-jwt"/>
+        <value value="/vhost-jwt"/>
     </constant>
 
     <constant name="k url path signup" type="string" visibility="private">
@@ -69,12 +74,20 @@
     </constant>
 
     <!-- HTTP Header names and values -->
-    <constant name="k http header value prefix bearer" type="string" visibility="private">
-        <value value="Bearer "/>
+    <constant name="k http header auth type virgil" type="string" visibility="private">
+        <value value="Virgil"/>
     </constant>
 
-    <constant name="k http header value prefix virgil msg pwd" type="string" visibility="private">
-        <value value="VirgilMsgPwd "/>
+    <constant name="k http header auth type virgil msg pwd" type="string" visibility="private">
+        <value value="VirgilMsgPwd"/>
+    </constant>
+
+    <constant name="k http header auth type virgil contact discovery" type="string" visibility="private">
+        <value value="VirgilContDisc"/>
+    </constant>
+
+    <constant name="k http header auth type bearer" type="string" visibility="private">
+        <value value="Bearer"/>
     </constant>
 
     <!-- Auth JSON keys -->
@@ -134,21 +147,21 @@
 
     <!-- Methods  -->
     <constructor name="with config">
-        Initialze messenger with a custom config.
+        Initialize with a custom configuration.
 
         <argument name="config" class="messenger config"/>
     </constructor>
 
 
-    <method name="setup defaults">
-        Setup predefined values to the uninitialized class dependencies.
+    <method name="config" is_const="1">
+        Return configuration.
 
-        <return enum="status"/>
+        <return class="messenger config"/>
     </method>
 
 
     <method name="register">
-        Register a new user with a give name.
+        Register a new user with a given name.
 
         <argument name="username" class="str"/>
 
@@ -157,11 +170,36 @@
 
 
     <method name="authenticate">
-        Register a new user with a give name.
+        Authenticate existing user with a given credentials.
 
         <argument name="creds" class="messenger creds" access="readonly"/>
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="is authenticated" is_const="1">
+        Return true if a user is authenticated.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="user" is_const="1">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="user modifiable">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user" access="readwrite"/>
     </method>
 
 
@@ -179,10 +217,19 @@
     </method>
 
 
+    <method name="private key" is_const="1">
+        Return user's private key from credentials.
+
+        Prerequisites: credentials are defined.
+
+        <return interface="private key" project="foundation"/>
+    </method>
+
+
     <method name="has backup creds" is_const="1">
         Check whether current credentials were backed up.
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="error" class="error" access="readwrite"/>
 
@@ -193,7 +240,7 @@
     <method name="backup creds" is_const="1">
         Encrypt the user credentials and push them to the secure cloud storage (Keyknox).
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         <argument name="pwd" class="str"/>
 
@@ -202,7 +249,13 @@
 
 
     <method name="restore creds">
-        Pull an encrypted user credentials from the Keyknox and decrypt it.
+        Restore credentials from the backup and authenticate user.
+
+        Perform next steps:
+          1. Get base JWT using part of pwd.
+          2. Pull encrypted credentials from the Keyknox.
+          3. Decrypt credentials using another part of pwd.
+          4. Use credentials to authenticate within XMPP server (Ejabberd).
 
         <argument name="username" class="str"/>
         <argument name="pwd" class="str"/>
@@ -211,49 +264,53 @@
     </method>
 
 
-    <method name="base token len" is_const="1">
-        Return JWT length if it exists and not expired, or max - otherwise.
+    <method name="remove creds backup" is_const="1">
+        Remove credentials backup from the secure cloud storage (Keyknox).
 
-        <return type="size"/>
-    </method>
-
-
-    <method name="base token" is_const="1">
-        Get JWT to use with Messenger Backend based on the credentials.
-
-        Prerequisites: credentials must be set.
-
-        Note, the cached token is returned if it is exist and not expired.
-
-        <argument name="token" class="str buffer">
-            <length method="base token len"/>
-        </argument>
+        Prerequisites: user should be authenticated.
 
         <return enum="status"/>
     </method>
 
 
-    <method name="ejabberd token len" is_const="1">
-        Return Ejabberd token length if token exists and not expired, or max - otherwise.
+    <method name="virgil jwt" is_const="1">
+        Get JWT to use with Virgil services based on the credentials.
 
-        <return type="size"/>
+        Prerequisites: user should be authenticated.
+
+        Note, the cached token is returned if it is exist and not expired.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="jwt" project="core sdk"/>
     </method>
 
 
-    <method name="ejabberd token" is_const="1">
-        Return JWT to aceess ejabberd server.
+    <method name="contact discovery jwt" is_const="1">
+        Get JWT to use with Virgil Contact Discovery service based on the credentials.
+
+        Prerequisites: user should be authenticated.
+
+        Note, the cached token is returned if it is exist and not expired.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="jwt" project="core sdk"/>
+    </method>
+
+
+    <method name="ejabberd jwt" is_const="1">
+        Return JWT to access ejabberd server.
 
         Format: https://docs.ejabberd.im/admin/configuration/authentication/#jwt-authentication
 
-        Prerequisites: credentials must be set.
+        Prerequisites: user should be authenticated.
 
         Note, the cached token is returned if it is exist and not expired.
 
-        <argument name="token" class="str buffer">
-            <length method="ejabberd token len"/>
-        </argument>
+        <argument name="error" class="error" access="readwrite"/>
 
-        <return enum="status"/>
+        <return class="ejabberd jwt"/>
     </method>
 
 
@@ -264,31 +321,8 @@
     </method>
 
 
-
-    <method name="auth header len" is_const="1" scope="private">
-        Return buffer length enough to handle HTTP authorization header value.
-
-        <return type="size"/>
-    </method>
-
-
-    <method name="generate auth header" is_const="1" scope="private">
-        Generate HTTP autoization header value.
-
-        Format: "Bearer cardId.unixTimestamp.signature(cardId.unixTimestamp)"
-
-        Prerequisites: credentials must be set.
-
-        <argument name="auth header" class="str buffer">
-            <length method="auth header len"/>
-        </argument>
-
-        <return enum="status"/>
-    </method>
-
-
-    <method name="refresh base token with password" is_const="1" declaration="private">
-        Get JWT to use with Messenger Backend based on the password.
+    <method name="refresh virgil jwt with password" is_const="1" declaration="private">
+        Get JWT to use with Virgil Services based on the password.
 
         Note, cache is not used.
 
@@ -300,7 +334,7 @@
 
 
     <method name="request token" is_const="1" declaration="private">
-        Request base JWt or Ejabberd JWT depends on the given endpoint.
+        Request Virgil JWt, Ejabberd JWT, or Virgil Contact Discovery JWT depends on the given endpoint.
 
         <argument name="endpoint" class="str"/>
         <argument name="jwt str" class="str buffer"/>
@@ -309,7 +343,14 @@
     </method>
 
 
-    <method name="refresh base token" is_const="1" declaration="private">
+    <method name="refresh virgil jwt" is_const="1" declaration="private">
+        Refresh Virgil Contact Discovery JWT if it absent or expired.
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="refresh contact discovery jwt" is_const="1" declaration="private">
         Refresh Virgil JWT if it absent or expired.
 
         <return enum="status"/>
@@ -324,7 +365,7 @@
 
 
     <method name="reset sign in password" is_const="1" declaration="private">
-        Set a new password to the messenger backend to get base token when try to restore key.
+        Set a new password to the messenger backend to get Virgil JWT when try to restore the key.
 
         Note, password must be 32 bytes.
 
@@ -335,7 +376,7 @@
 
 
     <method name="generate brain key" is_const="1" declaration="private">
-        Set a new password to the messenger backend to get base token when try to restore key.
+        Use Pythia Service to generate private key that can decrypt the restored key.
 
         Note, password must be 32 bytes.
 
@@ -374,7 +415,7 @@
 
     <method name="keyknox push creds" is_const="1" declaration="private">
 
-        Push Keyknox entries with crdentials to the service.
+        Push Keyknox entries with credentials to the service.
 
         <argument name="keyknox meta" class="data"/>
         <argument name="keyknox value" class="data"/>
@@ -385,7 +426,7 @@
 
     <method name="keyknox pull creds" is_const="1" declaration="private">
 
-        Pull Keyknox entries with crdentials from the service.
+        Pull Keyknox entries with credentials from the service.
 
         <argument name="keyknox meta" class="buffer"/>
         <argument name="keyknox value" class="buffer"/>
@@ -394,25 +435,93 @@
     </method>
 
 
-    <method name="reset base jwt" is_const="1" declaration="private">
-        Methhod is thread-safe.
+    <method name="reset virgil jwt" is_const="1" declaration="private">
+        Method is thread-safe.
 
-        <argument name="base jwt" class="jwt" project="core sdk" access="disown"/>
+        <argument name="virgil jwt" class="jwt" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="reset contact discovery jwt" is_const="1" declaration="private">
+        Method is thread-safe.
+
+        <argument name="contact discovery jwt" class="jwt" project="core sdk" access="disown"/>
     </method>
 
 
     <method name="reset ejabberd jwt" is_const="1" declaration="private">
-        Methhod is thread-safe.
+        Method is thread-safe.
 
         <argument name="ejabberd jwt" class="ejabberd jwt" access="disown"/>
     </method>
 
+
     <method name="fetch self card" declaration="private">
         Fetch and store self card or error.
 
-        Prerequisites: credentials must be set.
-        Prerequisites: base token should be set and not expired.
+        Prerequisites: user should be authenticated.
+        Prerequisites: Virgil JWT should be set and not expired.
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="update user" declaration="private">
+        Create a new user based on the given card and credentials.
+
+        Prerequisites: user should be authenticated.
+
+        <argument name="card" class="card" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="generate messenger auth header" is_const="1">
+        Generate authorization header for a Virgil Messenger Backend.
+
+        Header-Name : Authorization
+        Header-Value: Bearer JWT
+
+        Prerequisites: credentials are defined.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http header" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="send messenger request" is_const="1">
+        Send HTTP request to the a Virgil Messenger Backend.
+
+        Note, Authorization is added if "with auth" option is true.
+
+        <argument name="http request" class="http request" project="core sdk" access="readwrite"/>
+        <argument name="with auth" type="boolean"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="send virgil request" is_const="1">
+        Send HTTP request to the a Virgil Service, aka Cards, Keyknox etc.
+
+        Note, Virgil JWT is updated automatically.
+
+        <argument name="http request" class="http request" project="core sdk" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="send contact discovery request" is_const="1">
+        Send HTTP request to the a Virgil Contact Discovery Service.
+
+        Note, Contact Discovery JWT is updated automatically.
+
+        <argument name="http request" class="http request" project="core sdk" access="readwrite"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="http response" project="core sdk" access="disown"/>
     </method>
 </class>

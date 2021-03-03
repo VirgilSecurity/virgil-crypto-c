@@ -53,7 +53,10 @@
 #include "vssc_string_list.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_string_list_private.h"
 #include "vssc_string_list_defs.h"
+
+#include <virgil/crypto/common/vsc_str_buffer.h>
 
 // clang-format on
 //  @end
@@ -254,13 +257,12 @@ vssc_string_list_cleanup_ctx(vssc_string_list_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_mutable_release(&self->item);
+    vsc_str_buffer_delete(self->item);
     vssc_string_list_destroy(&self->next);
 }
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
 //
 VSSC_PUBLIC void
 vssc_string_list_add(vssc_string_list_t *self, vsc_str_t str) {
@@ -268,14 +270,51 @@ vssc_string_list_add(vssc_string_list_t *self, vsc_str_t str) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid(str));
 
-    if (!vsc_str_mutable_is_valid(self->item)) {
-        self->item = vsc_str_mutable_from_str(str);
+    vsc_str_buffer_t *str_buffer = vsc_str_buffer_new_with_str(str);
+    vssc_string_list_add_disown(self, &str_buffer);
+}
+
+//
+//  Add new item to the list.
+//  Note, string buffer is copied.
+//
+VSSC_PUBLIC void
+vssc_string_list_add_copy(vssc_string_list_t *self, const vsc_str_buffer_t *str_buffer) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_str_buffer_is_valid(str_buffer));
+
+    if (NULL == self->item) {
+        self->item = vsc_str_buffer_shallow_copy_const(str_buffer);
     } else {
         if (NULL == self->next) {
             self->next = vssc_string_list_new();
             self->next->prev = self;
         }
-        vssc_string_list_add(self->next, str);
+        vssc_string_list_add_copy(self->next, str_buffer);
+    }
+}
+
+//
+//  Add new item to the list.
+//  Note, ownership is transfered.
+//
+VSSC_PUBLIC void
+vssc_string_list_add_disown(vssc_string_list_t *self, vsc_str_buffer_t **str_buffer_ref) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_REF(str_buffer_ref);
+    VSSC_ASSERT(vsc_str_buffer_is_valid(*str_buffer_ref));
+
+    if (NULL == self->item) {
+        self->item = *str_buffer_ref;
+        *str_buffer_ref = NULL;
+    } else {
+        if (NULL == self->next) {
+            self->next = vssc_string_list_new();
+            self->next->prev = self;
+        }
+        vssc_string_list_add_disown(self->next, str_buffer_ref);
     }
 }
 
@@ -287,14 +326,13 @@ vssc_string_list_remove_self(vssc_string_list_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_mutable_release(&self->item);
+    vsc_str_buffer_delete(self->item);
     if (self->next) {
         vssc_string_list_t *next = self->next;
         self->item = next->item;
         self->next = next->next;
         next->next = NULL; //  prevent chain destruction
-        next->item.chars = NULL;
-        next->item.len = 0;
+        next->item = NULL;
         next->prev = NULL;
         vssc_string_list_destroy(&next);
     }
@@ -308,7 +346,7 @@ vssc_string_list_has_item(const vssc_string_list_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    return vsc_str_mutable_is_valid(self->item);
+    return vsc_str_buffer_is_valid(self->item);
 }
 
 //
@@ -319,7 +357,7 @@ vssc_string_list_item(const vssc_string_list_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    return vsc_str_mutable_as_str(self->item);
+    return vsc_str_buffer_str(self->item);
 }
 
 //
@@ -374,8 +412,24 @@ vssc_string_list_clear(vssc_string_list_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_mutable_release(&self->item);
+    vsc_str_buffer_delete(self->item);
+    self->item = NULL;
     vssc_string_list_destroy(&self->next);
+}
+
+//
+//  Return number of items within list.
+//
+VSSC_PUBLIC size_t
+vssc_string_list_count(const vssc_string_list_t *self) {
+
+    size_t count = 0;
+
+    for (const vssc_string_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
+        ++count;
+    }
+
+    return count;
 }
 
 //
@@ -387,9 +441,9 @@ vssc_string_list_contains(const vssc_string_list_t *self, vsc_str_t str) {
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT(vsc_str_is_valid(str));
 
-    for (const vssc_string_list_t *it = self; (it != NULL) && (it->item.chars != NULL); it = it->next) {
+    for (const vssc_string_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
 
-        if (vsc_str_equal(vsc_str_mutable_as_str(it->item), str)) {
+        if (vsc_str_equal(vsc_str_buffer_str(it->item), str)) {
             return true;
         }
     }

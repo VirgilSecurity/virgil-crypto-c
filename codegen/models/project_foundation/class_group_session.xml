@@ -18,28 +18,25 @@
         Salt size
     </constant>
 
-    <require module="buffer defs" project="common"/>
-
-    <require module="group session typedefs" scope="context"/>
-
-    <require impl="ctr drbg"/>
-    <require impl="ed25519"/>
-    <require interface="private key"/>
-    <require interface="public key"/>
-
     <require header="vscf_GroupMessage.pb.h"/>
     <require header="pb_decode.h"/>
     <require header="pb_encode.h"/>
 
-    <require module="group session message defs"/>
-    <require module="group session message internal"/>
-    <require module="group session ticket internal"/>
+    <require class="buffer" api="defs" project="common"/>
 
-    <dependency name="rng" interface="random" has_observers="1">
-        Random
-    </dependency>
+    <require module="group session typedefs" scope="context"/>
+    <require class="message cipher"/>
+    <require impl="ctr drbg"/>
+    <require impl="ed25519"/>
+    <require interface="private key"/>
+    <require interface="public key"/>
+    <require class="group session message" api="defs"/>
+    <require class="group session message" api="internal"/>
+    <require class="group session ticket" api="internal"/>
 
-    <property name="cipher" class="message cipher" access="readwrite"/>
+
+    <dependency name="rng" interface="random" has_observers="1"/>
+
     <property name="padding" class="message padding" access="readwrite"/>
     <property name="session id" class="vscf_group_session_id_t" is_reference="0" library="internal" access="readwrite"/>
     <property name="last epoch" class="group session epoch node" access="readwrite"/>
@@ -84,7 +81,7 @@
         </return>
     </method>
 
-    <method name="encrypt">
+    <method name="encrypt" is_const="1">
         Encrypts data
 
         <argument name="plain text" class="data">
@@ -105,7 +102,7 @@
         </return>
     </method>
 
-    <method name="decrypt len">
+    <method name="decrypt len" is_const="1">
         Calculates size of buffer sufficient to store decrypted message
 
         <argument name="message" class="group session message">
@@ -117,7 +114,7 @@
         </return>
     </method>
 
-    <method name="decrypt">
+    <method name="decrypt" is_const="1">
         Decrypts message
 
         <argument name="message" class="group session message">

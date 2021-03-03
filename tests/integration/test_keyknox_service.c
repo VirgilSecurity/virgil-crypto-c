@@ -145,8 +145,11 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     vssc_http_request_t *push_keyknox_entry_request = vssk_keyknox_client_make_request_push(keyknox_client, new_entry);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, core_sdk_error.status);
 
-    vssc_virgil_http_response_t *push_keyknox_entry_response =
-            vssc_virgil_http_client_send(push_keyknox_entry_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            push_keyknox_entry_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *push_keyknox_entry_response =
+            vssc_virgil_http_client_send(push_keyknox_entry_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(push_keyknox_entry_response);
@@ -177,7 +180,7 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     vssk_keyknox_entry_destroy(&new_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&push_keyknox_entry_request);
-    vssc_virgil_http_response_destroy(&push_keyknox_entry_response);
+    vssc_http_response_destroy(&push_keyknox_entry_response);
     vsc_str_buffer_destroy(&key_buf);
 
     return pushed_keyknox_entry;
@@ -226,8 +229,11 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
     vssc_http_request_t *pull_keyknox_entry_request =
             vssk_keyknox_client_make_request_pull(keyknox_client, test_data_ROOT, test_data_PATH2, key, identity);
 
-    vssc_virgil_http_response_t *pull_keyknox_entry_response =
-            vssc_virgil_http_client_send(pull_keyknox_entry_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            pull_keyknox_entry_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *pull_keyknox_entry_response =
+            vssc_virgil_http_client_send(pull_keyknox_entry_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(pull_keyknox_entry_response);
@@ -258,7 +264,7 @@ test__pull__pushed_entry__returns_expected_keyknox_entry(void) {
     vssk_keyknox_entry_destroy(&pulled_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&pull_keyknox_entry_request);
-    vssc_virgil_http_response_destroy(&pull_keyknox_entry_response);
+    vssc_http_response_destroy(&pull_keyknox_entry_response);
     vsc_str_buffer_destroy(&key_buf);
 }
 
@@ -295,8 +301,11 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     vssc_http_request_t *reset_keyknox_entry_request = vssk_keyknox_client_make_request_reset(
             keyknox_client, test_data_ROOT, test_data_PATH3, empty_key, empty_identity);
 
-    vssc_virgil_http_response_t *reset_keyknox_entry_response =
-            vssc_virgil_http_client_send(reset_keyknox_entry_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            reset_keyknox_entry_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *reset_keyknox_entry_response =
+            vssc_virgil_http_client_send(reset_keyknox_entry_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(reset_keyknox_entry_response);
@@ -324,7 +333,7 @@ test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_e
     vssk_keyknox_entry_destroy(&reset_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&reset_keyknox_entry_request);
-    vssc_virgil_http_response_destroy(&reset_keyknox_entry_response);
+    vssc_http_response_destroy(&reset_keyknox_entry_response);
     vsc_str_buffer_destroy(&key_buf);
 }
 
@@ -360,8 +369,10 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
     vssc_http_request_t *get_keys_request =
             vssk_keyknox_client_make_request_get_keys(keyknox_client, test_data_ROOT, test_data_PATH4, empty_identity);
 
-    vssc_virgil_http_response_t *get_keys_response =
-            vssc_virgil_http_client_send(get_keys_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            get_keys_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *get_keys_response = vssc_virgil_http_client_send(get_keys_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(get_keys_response);
@@ -379,7 +390,7 @@ test__get_keys__pushed_1_entry__returns_list_with_1_key(void) {
     vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&get_keys_request);
-    vssc_virgil_http_response_destroy(&get_keys_response);
+    vssc_http_response_destroy(&get_keys_response);
     vsc_str_buffer_destroy(&key_buf);
 }
 
@@ -408,8 +419,10 @@ test__reset__all_entries__success(void) {
     vssc_http_request_t *reset_request =
             vssk_keyknox_client_make_request_reset(keyknox_client, empty_root, empty_path, empty_key, empty_identity);
 
-    vssc_virgil_http_response_t *reset_response =
-            vssc_virgil_http_client_send(reset_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            reset_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *reset_response = vssc_virgil_http_client_send(reset_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     vssk_keyknox_entry_t *reset_keyknox_entry =
@@ -422,7 +435,7 @@ test__reset__all_entries__success(void) {
     //
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&reset_request);
-    vssc_virgil_http_response_destroy(&reset_response);
+    vssc_http_response_destroy(&reset_response);
     vssk_keyknox_entry_destroy(&reset_keyknox_entry);
 }
 

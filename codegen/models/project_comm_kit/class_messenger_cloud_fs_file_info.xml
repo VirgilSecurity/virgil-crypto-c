@@ -1,0 +1,73 @@
+<class name="messenger cloud fs file info">
+    Value object that handles public available file info.
+
+    <property name="id" class="str mutable"/>
+    <property name="name" class="str mutable"/>
+    <property name="type" class="str mutable"/>
+    <property name="updated by" class="str mutable"/>
+    <property name="size" type="size"/>
+    <property name="created at" type="size"/>
+    <property name="updated at" type="size"/>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="id" class="str"/>
+        <argument name="name" class="str"/>
+        <argument name="type" class="str"/>
+        <argument name="size" type="size"/>
+        <argument name="created at" type="size"/>
+        <argument name="updated at" type="size"/>
+        <argument name="updated by" class="str"/>
+    </constructor>
+
+
+    <method name="id" is_const="1">
+        Return file id.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="name" is_const="1">
+        Return file name.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="type" is_const="1">
+        Return file type, aka "text/plain".
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="size" is_const="1">
+        Return file size.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="created at" is_const="1">
+        Return file "created at" timestamp.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="updated at" is_const="1">
+        Return file "updated at" timestamp.
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="updated by" is_const="1">
+        Return file "updated by" - user identity that updated a file.
+
+        <return class="str"/>
+    </method>
+</class>

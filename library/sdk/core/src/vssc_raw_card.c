@@ -55,6 +55,8 @@
 #include "vssc_assert.h"
 #include "vssc_raw_card_defs.h"
 #include "vssc_json_object.h"
+#include "vssc_json_object_private.h"
+#include "vssc_json_array_private.h"
 
 // clang-format on
 //  @end

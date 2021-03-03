@@ -94,7 +94,7 @@
             if (error &lt; 0) {
                 error = -error;
             }
-            snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
+            .(c_global_method_snprintf)(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
         #endif
     </error_message_getter>
 </library>

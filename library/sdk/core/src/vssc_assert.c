@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vssc_assert.h"
+#include "vssc_memory.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <stdio.h>
@@ -144,7 +145,7 @@ VSSC_PUBLIC void
 vssc_assert_trigger_unhandled_error_of_library_json_c(int error, const char *file, int line) {
 
     char error_message[32] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled JSON-C error %4d", error);
+    vssc_snprintf(error_message, sizeof(error_message), "Unhandled JSON-C error %4d", error);
 
     vssc_assert_trigger(error_message, file, line);
 }
@@ -156,7 +157,7 @@ VSSC_PUBLIC void
 vssc_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    vssc_snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
 
     vssc_assert_trigger(error_message, file, line);
 }

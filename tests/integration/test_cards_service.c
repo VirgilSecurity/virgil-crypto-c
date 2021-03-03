@@ -105,8 +105,10 @@ test__publish_card__with_new_jwt_and_new_keypair__returned_card_is_valid(void) {
     vssc_http_request_t *publish_card_request =
             vssc_card_client_make_request_publish_card(card_client, initial_raw_card);
 
-    vssc_virgil_http_response_t *publish_card_response =
-            vssc_virgil_http_client_send(publish_card_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            publish_card_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *publish_card_response = vssc_virgil_http_client_send(publish_card_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(publish_card_response);
@@ -132,7 +134,7 @@ test__publish_card__with_new_jwt_and_new_keypair__returned_card_is_valid(void) {
     vssc_card_manager_destroy(&card_manager);
     vssc_card_client_destroy(&card_client);
     vssc_http_request_destroy(&publish_card_request);
-    vssc_virgil_http_response_destroy(&publish_card_response);
+    vssc_http_response_destroy(&publish_card_response);
     vscf_impl_destroy(&private_key);
     vssc_raw_card_destroy(&initial_raw_card);
     vssc_raw_card_destroy(&published_raw_card);
@@ -190,8 +192,10 @@ test__publish_new_card_and_then_get_it_and_search_it__expects_equals_identifiers
     vssc_http_request_t *publish_card_request =
             vssc_card_client_make_request_publish_card(card_client, initial_raw_card);
 
-    vssc_virgil_http_response_t *publish_card_response =
-            vssc_virgil_http_client_send(publish_card_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            publish_card_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *publish_card_response = vssc_virgil_http_client_send(publish_card_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(publish_card_response);
@@ -210,8 +214,10 @@ test__publish_new_card_and_then_get_it_and_search_it__expects_equals_identifiers
     vssc_http_request_t *retreive_card_request =
             vssc_card_client_make_request_get_card(card_client, vssc_card_identifier(published_card));
 
-    vssc_virgil_http_response_t *retreive_card_response =
-            vssc_virgil_http_client_send(retreive_card_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            retreive_card_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *retreive_card_response = vssc_virgil_http_client_send(retreive_card_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(retreive_card_response);
@@ -231,8 +237,10 @@ test__publish_new_card_and_then_get_it_and_search_it__expects_equals_identifiers
     vssc_http_request_t *search_card_request =
             vssc_card_client_make_request_search_cards_with_identity(card_client, identity);
 
-    vssc_virgil_http_response_t *search_card_response =
-            vssc_virgil_http_client_send(search_card_request, env->jwt, &core_sdk_error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            search_card_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *search_card_response = vssc_virgil_http_client_send(search_card_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
     TEST_ASSERT_VIRGIL_HTTP_RESPONSE(retreive_card_response);
@@ -262,9 +270,9 @@ test__publish_new_card_and_then_get_it_and_search_it__expects_equals_identifiers
     vssc_http_request_destroy(&publish_card_request);
     vssc_http_request_destroy(&retreive_card_request);
     vssc_http_request_destroy(&search_card_request);
-    vssc_virgil_http_response_destroy(&publish_card_response);
-    vssc_virgil_http_response_destroy(&retreive_card_response);
-    vssc_virgil_http_response_destroy(&search_card_response);
+    vssc_http_response_destroy(&publish_card_response);
+    vssc_http_response_destroy(&retreive_card_response);
+    vssc_http_response_destroy(&search_card_response);
     vssc_raw_card_destroy(&initial_raw_card);
     vssc_raw_card_destroy(&published_raw_card);
     vssc_raw_card_destroy(&retreived_raw_card);

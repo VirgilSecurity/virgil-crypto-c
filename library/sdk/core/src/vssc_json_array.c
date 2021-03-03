@@ -60,6 +60,8 @@
 #include "vssc_json_object_defs.h"
 #include "vssc_json_object_private.h"
 
+#include <errno.h>
+
 // clang-format on
 //  @end
 
@@ -371,7 +373,7 @@ vssc_json_array_add_object_value(vssc_json_array_t *self, const vssc_json_object
 //
 //  Add object value .
 //
-VSSC_PRIVATE void
+VSSC_PUBLIC void
 vssc_json_array_add_object_value_disown(vssc_json_array_t *self, vssc_json_object_t **value_ref) {
 
     VSSC_ASSERT_PTR(self);
@@ -447,6 +449,145 @@ vssc_json_array_get_string_value(const vssc_json_array_t *self, size_t index, vs
     }
 
     return vsc_str(json_object_get_string(str_obj), json_object_get_string_len(str_obj));
+}
+
+//
+//  Add string values from the given list.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_string_values(vssc_json_array_t *self, const vssc_string_list_t *string_values) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT_PTR(string_values);
+
+    for (const vssc_string_list_t *str_it = string_values; (str_it != NULL) && vssc_string_list_has_item(str_it);
+            str_it = vssc_string_list_next(str_it)) {
+
+        vsc_str_t str_value = vssc_string_list_item(str_it);
+        vssc_json_array_add_string_value(self, str_value);
+    }
+}
+
+//
+//  Return string values as list.
+//
+VSSC_PUBLIC vssc_string_list_t *
+vssc_json_array_get_string_values(const vssc_json_array_t *self, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    vssc_error_t internal_error;
+    vssc_error_reset(&internal_error);
+
+    vssc_string_list_t *string_values = vssc_string_list_new();
+
+    for (size_t idx = 0; idx < vssc_json_array_count(self); ++idx) {
+        vsc_str_t str_value = vssc_json_array_get_string_value(self, idx, &internal_error);
+
+        if (vssc_error_has_error(&internal_error)) {
+            vssc_string_list_destroy(&string_values);
+            VSSC_ERROR_SAFE_UPDATE(error, vssc_error_status(&internal_error));
+            return NULL;
+        } else {
+            vssc_string_list_add(string_values, str_value);
+        }
+    }
+
+    return string_values;
+}
+
+//
+//  Add number value.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_number_value(vssc_json_array_t *self, size_t value) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    json_object *number_obj = json_object_new_uint64(value);
+    VSSC_ASSERT_ALLOC(number_obj);
+
+    const int add_result = json_object_array_add(self->json_obj, number_obj);
+
+    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(add_result);
+}
+
+//
+//  Return a number value for a given index.
+//  Check array length before call this method.
+//
+VSSC_PUBLIC size_t
+vssc_json_array_get_number_value(const vssc_json_array_t *self, size_t index, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    json_object *number_obj = json_object_array_get_idx(self->json_obj, index);
+
+    if (NULL == number_obj) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_NOT_FOUND);
+        return 0;
+    }
+
+    errno = 0;
+    const uint64_t number = json_object_get_uint64(number_obj);
+    const int errnum = errno;
+    if (errnum == EINVAL || number > SIZE_MAX) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_JSON_VALUE_TYPE_MISMATCH);
+        return 0;
+    }
+
+    return (size_t)number;
+}
+
+//
+//  Add number values from the given list.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_number_values(vssc_json_array_t *self, const vssc_number_list_t *number_values) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT_PTR(number_values);
+
+    for (const vssc_number_list_t *number_it = number_values;
+            (number_it != NULL) && vssc_number_list_has_item(number_it); number_it = vssc_number_list_next(number_it)) {
+
+        const size_t number_value = vssc_number_list_item(number_it);
+        vssc_json_array_add_number_value(self, number_value);
+    }
+}
+
+//
+//  Return number values as list.
+//
+VSSC_PUBLIC vssc_number_list_t *
+vssc_json_array_get_number_values(const vssc_json_array_t *self, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+
+    vssc_error_t internal_error;
+    vssc_error_reset(&internal_error);
+
+    vssc_number_list_t *number_values = vssc_number_list_new();
+
+    for (size_t idx = 0; idx < vssc_json_array_count(self); ++idx) {
+        const size_t number_value = vssc_json_array_get_number_value(self, idx, &internal_error);
+
+        if (vssc_error_has_error(&internal_error)) {
+            vssc_number_list_destroy(&number_values);
+            VSSC_ERROR_SAFE_UPDATE(error, vssc_error_status(&internal_error));
+            return NULL;
+        } else {
+            vssc_number_list_add(number_values, number_value);
+        }
+    }
+
+    return number_values;
 }
 
 //

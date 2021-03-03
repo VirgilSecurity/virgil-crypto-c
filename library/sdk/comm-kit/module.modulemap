@@ -1,4 +1,4 @@
-framework module VSSQ {
+framework module VSSCommKit {
     header "vssq_comm_kit_public.h"
     export *
 }

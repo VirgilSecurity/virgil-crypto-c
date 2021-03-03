@@ -85,20 +85,28 @@ vssq_messenger_config_cleanup_ctx(vssq_messenger_config_t *self);
 //  Create object with required fields.
 //
 static void
-vssq_messenger_config_init_ctx_with(vssq_messenger_config_t *self, vsc_str_t base_url, vsc_str_t ejabberd_url);
+vssq_messenger_config_init_ctx_with(vssq_messenger_config_t *self, vsc_str_t messenger_url,
+        vsc_str_t contact_discovery_url, vsc_str_t ejabberd_url);
 
-VSSQ_PUBLIC const char vssq_messenger_config_k_base_url_virgil_chars[] = "https://messenger.virgilsecurity.com";
+VSSQ_PUBLIC const char vssq_messenger_config_k_url_messenger_chars[] = "https://messenger.virgilsecurity.com";
 
-VSSQ_PUBLIC const vsc_str_t vssq_messenger_config_k_base_url_virgil = {
-    vssq_messenger_config_k_base_url_virgil_chars,
-    sizeof(vssq_messenger_config_k_base_url_virgil_chars) - 1
+VSSQ_PUBLIC const vsc_str_t vssq_messenger_config_k_url_messenger = {
+    vssq_messenger_config_k_url_messenger_chars,
+    sizeof(vssq_messenger_config_k_url_messenger_chars) - 1
 };
 
-VSSQ_PUBLIC const char vssq_messenger_config_k_ejabberd_url_virgil_chars[] = "xmpp.virgilsecurity.com";
+VSSQ_PUBLIC const char vssq_messenger_config_k_url_contact_discovery_chars[] = "https://disco.virgilsecurity.com";
 
-VSSQ_PUBLIC const vsc_str_t vssq_messenger_config_k_ejabberd_url_virgil = {
-    vssq_messenger_config_k_ejabberd_url_virgil_chars,
-    sizeof(vssq_messenger_config_k_ejabberd_url_virgil_chars) - 1
+VSSQ_PUBLIC const vsc_str_t vssq_messenger_config_k_url_contact_discovery = {
+    vssq_messenger_config_k_url_contact_discovery_chars,
+    sizeof(vssq_messenger_config_k_url_contact_discovery_chars) - 1
+};
+
+VSSQ_PUBLIC const char vssq_messenger_config_k_url_ejabberd_chars[] = "xmpp.virgilsecurity.com";
+
+VSSQ_PUBLIC const vsc_str_t vssq_messenger_config_k_url_ejabberd = {
+    vssq_messenger_config_k_url_ejabberd_chars,
+    sizeof(vssq_messenger_config_k_url_ejabberd_chars) - 1
 };
 
 //
@@ -161,7 +169,8 @@ vssq_messenger_config_new(void) {
 //  Create object with required fields.
 //
 VSSQ_PUBLIC void
-vssq_messenger_config_init_with(vssq_messenger_config_t *self, vsc_str_t base_url, vsc_str_t ejabberd_url) {
+vssq_messenger_config_init_with(vssq_messenger_config_t *self, vsc_str_t messenger_url, vsc_str_t contact_discovery_url,
+        vsc_str_t ejabberd_url) {
 
     VSSQ_ASSERT_PTR(self);
 
@@ -169,7 +178,7 @@ vssq_messenger_config_init_with(vssq_messenger_config_t *self, vsc_str_t base_ur
 
     self->refcnt = 1;
 
-    vssq_messenger_config_init_ctx_with(self, base_url, ejabberd_url);
+    vssq_messenger_config_init_ctx_with(self, messenger_url, contact_discovery_url, ejabberd_url);
 }
 
 //
@@ -177,12 +186,12 @@ vssq_messenger_config_init_with(vssq_messenger_config_t *self, vsc_str_t base_ur
 //  Create object with required fields.
 //
 VSSQ_PUBLIC vssq_messenger_config_t *
-vssq_messenger_config_new_with(vsc_str_t base_url, vsc_str_t ejabberd_url) {
+vssq_messenger_config_new_with(vsc_str_t messenger_url, vsc_str_t contact_discovery_url, vsc_str_t ejabberd_url) {
 
     vssq_messenger_config_t *self = (vssq_messenger_config_t *) vssq_alloc(sizeof (vssq_messenger_config_t));
     VSSQ_ASSERT_ALLOC(self);
 
-    vssq_messenger_config_init_with(self, base_url, ejabberd_url);
+    vssq_messenger_config_init_with(self, messenger_url, contact_discovery_url, ejabberd_url);
 
     self->self_dealloc_cb = vssq_dealloc;
 
@@ -307,7 +316,8 @@ vssq_messenger_config_cleanup_ctx(vssq_messenger_config_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
-    vsc_str_mutable_release(&self->base_url);
+    vsc_str_mutable_release(&self->messenger_url);
+    vsc_str_mutable_release(&self->contact_discovery_url);
     vsc_str_mutable_release(&self->ejabberd_url);
     vsc_str_mutable_release(&self->ca_bundle);
 }
@@ -316,13 +326,16 @@ vssq_messenger_config_cleanup_ctx(vssq_messenger_config_t *self) {
 //  Create object with required fields.
 //
 static void
-vssq_messenger_config_init_ctx_with(vssq_messenger_config_t *self, vsc_str_t base_url, vsc_str_t ejabberd_url) {
+vssq_messenger_config_init_ctx_with(vssq_messenger_config_t *self, vsc_str_t messenger_url,
+        vsc_str_t contact_discovery_url, vsc_str_t ejabberd_url) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(base_url));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(messenger_url));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(contact_discovery_url));
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(ejabberd_url));
 
-    self->base_url = vsc_str_mutable_from_str(base_url);
+    self->messenger_url = vsc_str_mutable_from_str(messenger_url);
+    self->contact_discovery_url = vsc_str_mutable_from_str(contact_discovery_url);
     self->ejabberd_url = vsc_str_mutable_from_str(ejabberd_url);
 }
 
@@ -340,18 +353,39 @@ vssq_messenger_config_set_ca_bundle(vssq_messenger_config_t *self, vsc_str_t ca_
     self->ca_bundle = vsc_str_mutable_from_str(ca_bundle);
 }
 
+//
+//  Return URL of the Messenger backend (main service).
+//
 VSSQ_PUBLIC vsc_str_t
-vssq_messenger_config_base_url(const vssq_messenger_config_t *self) {
+vssq_messenger_config_messenger_url(const vssq_messenger_config_t *self) {
 
     VSSQ_ASSERT_PTR(self);
 
-    if (vsc_str_mutable_is_valid(self->base_url)) {
-        return vsc_str_mutable_as_str(self->base_url);
+    if (vsc_str_mutable_is_valid(self->messenger_url)) {
+        return vsc_str_mutable_as_str(self->messenger_url);
     } else {
-        return vssq_messenger_config_k_base_url_virgil;
+        return vssq_messenger_config_k_url_messenger;
     }
 }
 
+//
+//  Return URL of the Messenger Contact Discovery service.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_config_contact_discovery_url(const vssq_messenger_config_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    if (vsc_str_mutable_is_valid(self->contact_discovery_url)) {
+        return vsc_str_mutable_as_str(self->contact_discovery_url);
+    } else {
+        return vssq_messenger_config_k_url_contact_discovery;
+    }
+}
+
+//
+//  Return URL of the Messenger Ejabberd service.
+//
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_config_ejabberd_url(const vssq_messenger_config_t *self) {
 
@@ -360,10 +394,13 @@ vssq_messenger_config_ejabberd_url(const vssq_messenger_config_t *self) {
     if (vsc_str_mutable_is_valid(self->ejabberd_url)) {
         return vsc_str_mutable_as_str(self->ejabberd_url);
     } else {
-        return vssq_messenger_config_k_ejabberd_url_virgil;
+        return vssq_messenger_config_k_url_ejabberd;
     }
 }
 
+//
+//  Return path to the custom CA bundle.
+//
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_config_ca_bundle(const vssq_messenger_config_t *self) {
 

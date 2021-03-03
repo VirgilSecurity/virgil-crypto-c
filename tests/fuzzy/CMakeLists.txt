@@ -36,3 +36,7 @@ cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
 add_subdirectory(helpers)
 add_subdirectory(foundation)
+
+if(TARGET vsc::comm_kit)
+    add_subdirectory(comm_kit)
+endif()

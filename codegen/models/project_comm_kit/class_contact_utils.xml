@@ -7,6 +7,9 @@
     <require class="sha256" project="foundation"/>
     <require class="sha256" project="foundation" api="defs"/>
     <require class="binary" project="foundation"/>
+    <require class="string map" project="core sdk" api="defs"/>
+    <require class="string map" project="core sdk" api="private"/>
+    <require class="string map bucket" project="core sdk" api="defs"/>
 
 
     <constant name="digest hex len" value="64"/>
@@ -16,14 +19,14 @@
     <method name="normalize username">
         Validate and normalize username.
 
-        Valudation rules:
+        Validation rules:
             1. Length in the range: [1..20]
             2. Do not start or end with an underscore
             3. Do not start with a number
             4. Match regex: ^[a-zA-Z0-9_]+$
 
         Normalization rules:
-            1. All characters lowercase
+            1. To lowercase
 
         <argument name="username" class="str"/>
 
@@ -45,5 +48,128 @@
         </argument>
 
         <return enum="status"/>
+    </method>
+
+
+    <method name="hash usernames">
+        Validate, normalize, and hash each username.
+
+        Return a map "username->hash".
+
+        Note, usernames in the returned map equals to the given.
+
+        <argument name="usernames" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="validate phone number">
+        Validate phone number.
+
+        Validation rules:
+            1. Start with plus (+) sign.
+            2. Contains only digits after plus sign.
+            3. Phone number max 15 digits.
+
+        <argument name="phone number" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="hash phone number">
+        Validate, and hash phone number.
+
+        Validation rules:
+            1. Start with plus (+) sign.
+            2. Contains only digits after plus sign.
+            3. Phone number max 15 digits.
+
+        Note, for now given phone number is not formatted.
+
+        <argument name="phone number" class="str"/>
+
+        <argument name="digest hex" class="str buffer">
+            <length constant="digest len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="hash phone numbers">
+        Validate, and hash each phone number.
+
+        Return a map "phone-number->hash".
+
+        Note, phone numbers in the returned map equals to the given.
+
+        <argument name="phone numbers" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="validate email">
+        Validate email.
+
+        Validation rules:
+            1. Check email regex: "(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)".
+
+        <argument name="email" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="hash email">
+        Validate, normalize and hash email.
+
+        Validation rules:
+            1. Check email regex: "(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)".
+
+        Normalization rules:
+            1. To lowercase
+            2. Remove dots.
+            3. Remove suffix that starts with a plus sign.
+
+        <argument name="email" class="str"/>
+
+        <argument name="digest hex" class="str buffer">
+            <length constant="digest len"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="hash emails">
+        Validate, normalize, and hash each email.
+
+        Return a map "email->hash".
+
+        Note, emails in the returned map equals to the given.
+
+        <argument name="emails" class="string list" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="merge contact discovery maps">
+        Merge "contact request map" with "contact response map".
+
+        Contact request map : username | email | phone-number -> hash
+        Contact response map: hash                            -> identity
+        Final map           : username | email | phone-number -> identity
+
+        <argument name="contact request map" class="string map" project="core sdk"/>
+        <argument name="contact response map" class="string map" project="core sdk"/>
+
+        <return class="string map" project="core sdk" access="disown"/>
     </method>
 </class>

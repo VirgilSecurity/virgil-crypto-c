@@ -3,7 +3,7 @@
         brief="Virgil Security Core SDK"
         package="sdk core"
         namespace="virgil sdk core"
-        framework="VSSC"
+        framework="VSSCore"
         prefix="vssc"
         wrappers=""
         >
@@ -71,10 +71,14 @@
 
     <!-- Common modules -->
     <class name="error" from="shared"/>
+    <class name="error message" from="shared"/>
     <class name="json object"/>
     <class name="json array"/>
     <class name="unix time"/>
     <class name="string list"/>
+    <class name="number list"/>
+    <class name="string map"/>
+    <class name="string map bucket"/>
 
     <!-- JWT modules -->
     <class name="base64 url"/>
@@ -92,10 +96,7 @@
     <interface name="http client"/>
     <implementor name="http client curl"/>
     <implementor name="http client x"/>
-
-    <!-- Common client modules -->
     <class name="virgil http client"/>
-    <class name="virgil http response"/>
 
     <!-- Key Handlers -->
     <class name="key handler"/>
@@ -117,6 +118,6 @@
         <require enum="status"/>
 
         char error_message[48] = {0x00};
-        snprintf(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
+        .(c_global_method_snprintf)(error_message, sizeof(error_message), "Unhandled vsc::core_sdk error -0x%04x", error);
     </error_message_getter>
 </project>

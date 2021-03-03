@@ -91,6 +91,12 @@ vssc_json_object_create_with_json_obj(json_object **json_obj_ref);
 VSSC_PUBLIC vsc_buffer_t *
 vssc_json_object_get_binary_value_new(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
 
+//
+//  Add array value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_array_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_array_t **value_ref);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

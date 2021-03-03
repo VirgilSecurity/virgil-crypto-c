@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_assert.h"
+#include "vscr_memory.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <stdio.h>
@@ -144,7 +145,7 @@ VSCR_PUBLIC void
 vscr_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    vscr_snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
 
     vscr_assert_trigger(error_message, file, line);
 }

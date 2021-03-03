@@ -4,6 +4,7 @@
 
     <require class="str buffer" project="common"/>
     <require class="json object"/>
+    <require class="json object" api="private"/>
     <require class="json array"/>
     <require class="raw card list" api="private"/>
 
@@ -18,24 +19,31 @@
     </constant>
 
 
-    <constant name="k card url path" type="string" visibility="private" >
+    <constant name="k url path card" type="string" visibility="private" >
         POST|GET /card.
 
         <value value="/card/v5"/>
     </constant>
 
 
-    <constant name="k search url path" type="string" visibility="private" >
+    <constant name="k url path search" type="string" visibility="private" >
         POST /actions/search.
 
         <value value="/card/v5/actions/search"/>
     </constant>
 
 
-    <constant name="k json key identity" type="string" visibility="private" >
-        Json KEY: identity.
+    <constant name="k url path revoke" type="string" visibility="private" >
+        POST /actions/revoke.
 
-        <value value="identity"/>
+        <value value="/card/v5/actions/revoke"/>
+    </constant>
+
+
+    <constant name="k json key identities" type="string" visibility="private" >
+        JSON KEY: identities.
+
+        <value value="identities"/>
     </constant>
 
 
@@ -69,7 +77,7 @@
         Map response to the correspond model.
         Return "raw card" of published Card.
 
-        <argument name="response" class="virgil http response"/>
+        <argument name="response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card" access="disown"/>
@@ -89,7 +97,7 @@
         Map response to the correspond model.
         Return "raw card" if Card was found.
 
-        <argument name="response" class="virgil http response"/>
+        <argument name="response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card" access="disown"/>
@@ -105,13 +113,35 @@
     </method>
 
 
+    <method name="make request search cards with identities" is_const="1">
+        Create request that returns cards list from the Virgil Cards Service for given identities.
+
+        Note, current amount of identities to search in a single request is limited to 50 items.
+
+        <argument name="identities" class="string list"/>
+
+        <return class="http request" access="disown"/>
+    </method>
+
+
     <method name="process response search cards" is_static="1">
         Map response to the correspond model.
         Return "raw card list" if founded Cards.
 
-        <argument name="response" class="virgil http response"/>
+        <argument name="response" class="http response"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="raw card list" access="disown"/>
+    </method>
+
+
+    <method name="make request revoke card with id" is_const="1">
+        Revoke an active Virgil Card using its ID only.
+
+        Note, only HTTP status might be checked within a correspond response.
+
+        <argument name="card id" class="str"/>
+
+        <return class="http request" access="disown"/>
     </method>
 </class>

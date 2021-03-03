@@ -1,0 +1,263 @@
+//  @license
+// --------------------------------------------------------------------------
+//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//
+//  All rights reserved.
+//
+//  Redistribution and use in source and binary forms, with or without
+//  modification, are permitted provided that the following conditions are
+//  met:
+//
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
+//
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
+//
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
+//
+//  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+//  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+//  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+//  DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+//  INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+//  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+//  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+//  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+//  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+//  POSSIBILITY OF SUCH DAMAGE.
+//
+//  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// --------------------------------------------------------------------------
+// clang-format off
+
+
+//  @warning
+// --------------------------------------------------------------------------
+//  This file is partially generated.
+//  Generated blocks are enclosed between tags [@<tag>, @end].
+//  User's code can be added between tags [@end, @<tag>].
+// --------------------------------------------------------------------------
+
+
+//  @description
+// --------------------------------------------------------------------------
+//  This file contains platform specific information that is known during compilation.
+// --------------------------------------------------------------------------
+
+#ifndef VSSQ_PLATFORM_H_INCLUDED
+#define VSSQ_PLATFORM_H_INCLUDED
+
+// clang-format on
+//  @end
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+#ifndef VSSQ_HAVE_ASSERT_H
+#cmakedefine01 VSSQ_HAVE_ASSERT_H
+#endif
+
+#ifndef VSSQ_HAVE_STDATOMIC_H
+#cmakedefine01 VSSQ_HAVE_STDATOMIC_H
+#endif
+
+#ifndef VSSQ_SHARED_LIBRARY
+#cmakedefine01 VSSQ_SHARED_LIBRARY
+#endif
+
+#ifndef VSSQ_MULTI_THREADING
+#cmakedefine01 VSSQ_MULTI_THREADING
+#endif
+
+#ifndef VSSQ_ERROR
+#cmakedefine01 VSSQ_ERROR
+#endif
+
+#ifndef VSSQ_ERROR_MESSAGE
+#cmakedefine01 VSSQ_ERROR_MESSAGE
+#endif
+
+#ifndef VSSQ_EJABBERD_JWT
+#cmakedefine01 VSSQ_EJABBERD_JWT
+#endif
+
+#ifndef VSSQ_MESSENGER
+#cmakedefine01 VSSQ_MESSENGER
+#endif
+
+#ifndef VSSQ_MESSENGER_AUTH
+#cmakedefine01 VSSQ_MESSENGER_AUTH
+#endif
+
+#ifndef VSSQ_MESSENGER_CREDS
+#cmakedefine01 VSSQ_MESSENGER_CREDS
+#endif
+
+#ifndef VSSQ_MESSENGER_CONFIG
+#cmakedefine01 VSSQ_MESSENGER_CONFIG
+#endif
+
+#ifndef VSSQ_MESSENGER_CONTACTS
+#cmakedefine01 VSSQ_MESSENGER_CONTACTS
+#endif
+
+#ifndef VSSQ_MESSENGER_USER
+#cmakedefine01 VSSQ_MESSENGER_USER
+#endif
+
+#ifndef VSSQ_MESSENGER_USER_LIST
+#cmakedefine01 VSSQ_MESSENGER_USER_LIST
+#endif
+
+#ifndef VSSQ_MESSENGER_GROUP
+#cmakedefine01 VSSQ_MESSENGER_GROUP
+#endif
+
+#ifndef VSSQ_MESSENGER_GROUP_EPOCH
+#cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH
+#endif
+
+#ifndef VSSQ_MESSENGER_GROUP_EPOCH_LIST
+#cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH_LIST
+#endif
+
+#ifndef VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
+#cmakedefine01 VSSQ_MESSENGER_GROUP_EPOCH_KEYKNOX_STORAGE
+#endif
+
+#ifndef VSSQ_MESSENGER_FILE_CIPHER
+#cmakedefine01 VSSQ_MESSENGER_FILE_CIPHER
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_CLIENT
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_CLIENT
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_CREATED_FILE
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_FOLDER
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_FOLDER_INFO_LIST
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FILE_INFO
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_FILE_INFO
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_LIST
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_FILE_DOWNLOAD_INFO
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_CIPHER
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_CIPHER
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_ACCESS
+#endif
+
+#ifndef VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST
+#cmakedefine01 VSSQ_MESSENGER_CLOUD_FS_ACCESS_LIST
+#endif
+
+#ifndef VSSQ_CLOUD_FILE_SYSTEM_PB
+#cmakedefine01 VSSQ_CLOUD_FILE_SYSTEM_PB
+#endif
+
+#ifndef VSSQ_CONTACT_UTILS
+#cmakedefine01 VSSQ_CONTACT_UTILS
+#endif
+
+//
+//  Defines namespace include prefix for project 'common'.
+//
+#if !defined(VSSQ_INTERNAL_BUILD)
+#cmakedefine01 VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#else
+#define VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK 0
+#endif
+
+//
+//  Defines namespace include prefix for project 'foundation'.
+//
+#if !defined(VSSQ_INTERNAL_BUILD)
+#cmakedefine01 VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#else
+#define VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK 0
+#endif
+
+//
+//  Defines namespace include prefix for project 'core sdk'.
+//
+#if !defined(VSSQ_INTERNAL_BUILD)
+#cmakedefine01 VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#else
+#define VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK 0
+#endif
+
+//
+//  Defines namespace include prefix for project 'brainkey sdk'.
+//
+#if !defined(VSSQ_INTERNAL_BUILD)
+#cmakedefine01 VSSQ_IMPORT_PROJECT_BRAINKEY_SDK_FROM_FRAMEWORK
+#else
+#define VSSQ_IMPORT_PROJECT_BRAINKEY_SDK_FROM_FRAMEWORK 0
+#endif
+
+//
+//  Defines namespace include prefix for project 'keyknox sdk'.
+//
+#if !defined(VSSQ_INTERNAL_BUILD)
+#cmakedefine01 VSSQ_IMPORT_PROJECT_KEYKNOX_SDK_FROM_FRAMEWORK
+#else
+#define VSSQ_IMPORT_PROJECT_KEYKNOX_SDK_FROM_FRAMEWORK 0
+#endif
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+//  @footer
+#endif // VSSQ_PLATFORM_H_INCLUDED
+//  @end

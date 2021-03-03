@@ -56,6 +56,8 @@
 
 #include "vssc_library.h"
 #include "vssc_error.h"
+#include "vssc_string_list.h"
+#include "vssc_number_list.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str.h>
@@ -160,12 +162,6 @@ VSSC_PUBLIC void
 vssc_json_array_add_object_value(vssc_json_array_t *self, const vssc_json_object_t *value);
 
 //
-//  Add object value .
-//
-VSSC_PRIVATE void
-vssc_json_array_add_object_value_disown(vssc_json_array_t *self, vssc_json_object_t **value_ref);
-
-//
 //  Return a object value for a given index.
 //  Check array length before call this method.
 //
@@ -184,6 +180,43 @@ vssc_json_array_add_string_value(vssc_json_array_t *self, vsc_str_t value);
 //
 VSSC_PUBLIC vsc_str_t
 vssc_json_array_get_string_value(const vssc_json_array_t *self, size_t index, vssc_error_t *error);
+
+//
+//  Add string values from the given list.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_string_values(vssc_json_array_t *self, const vssc_string_list_t *string_values);
+
+//
+//  Return string values as list.
+//
+VSSC_PUBLIC vssc_string_list_t *
+vssc_json_array_get_string_values(const vssc_json_array_t *self, vssc_error_t *error);
+
+//
+//  Add number value.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_number_value(vssc_json_array_t *self, size_t value);
+
+//
+//  Return a number value for a given index.
+//  Check array length before call this method.
+//
+VSSC_PUBLIC size_t
+vssc_json_array_get_number_value(const vssc_json_array_t *self, size_t index, vssc_error_t *error);
+
+//
+//  Add number values from the given list.
+//
+VSSC_PUBLIC void
+vssc_json_array_add_number_values(vssc_json_array_t *self, const vssc_number_list_t *number_values);
+
+//
+//  Return number values as list.
+//
+VSSC_PUBLIC vssc_number_list_t *
+vssc_json_array_get_number_values(const vssc_json_array_t *self, vssc_error_t *error);
 
 //
 //  Return JSON body as string.

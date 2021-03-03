@@ -436,6 +436,10 @@ extern "C" {
 #cmakedefine01 VSCF_ERROR
 #endif
 
+#ifndef VSCF_ERROR_MESSAGE
+#cmakedefine01 VSCF_ERROR_MESSAGE
+#endif
+
 #ifndef VSCF_BINARY
 #cmakedefine01 VSCF_BINARY
 #endif

@@ -1,0 +1,130 @@
+<class name="messenger file cipher">
+    Segment file encryption and decryption.
+
+    <require interface="private key" project="foundation"/>
+    <require impl="ctr drbg" project="foundation"/>
+    <require class="str" project="common"/>
+    <require class="error"/>
+
+    <dependency name="random" interface="random" project="foundation" has_observers="1"/>
+
+    <property name="key provider" class="key provider" project="foundation"/>
+    <property name="recipient cipher" class="recipient cipher" project="foundation"/>
+    <property name="signer" class="signer" project="foundation"/>
+    <property name="verifier" class="verifier" project="foundation"/>
+
+    <constant name="cipher recipient id" type="string" visibility="private">
+        <value value="file-cipher"/>
+    </constant>
+
+    <method name="setup defaults">
+        Setup predefined values to the uninitialized class dependencies.
+
+        <return enum="status"/>
+    </method>
+
+    <!-- Encrypt functions -->
+    <method name="init encryption out key len">
+        Return key length for encrypt file.
+
+        <return type="size"/>
+    </method>
+
+    <method name="init encryption">
+        Encryption initialization.
+
+        <argument name="out key" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="start encryption out len">
+        Return encryption header length.
+
+        <return type="size"/>
+    </method>
+
+    <method name="start encryption">
+        Start encryption and return header.
+
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="process encryption out len">
+        Return encryption process output buffer length.
+
+        <argument name="data_len" type="size"/>
+        <return type="size"/>
+    </method>
+
+    <method name="process encryption">
+        Encrypt data and return encrypted buffer.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="finish encryption out len">
+        Return finish encryption data length.
+
+        <return type="size"/>
+    </method>
+
+    <method name="finish encryption signature len">
+        Return finish encryption data length.
+
+        <argument name="signer private key" interface="private key" project="foundation"/>
+
+        <return type="size"/>
+    </method>
+
+    <method name="finish encryption">
+        Finish encryption and return last part of data.
+        Also signature is returned.
+
+        <argument name="signer private key" interface="private key" project="foundation"/>
+        <argument name="out" class="buffer"/>
+        <argument name="signature" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+
+    <!-- Decrypt functions -->
+    <method name="start decryption">
+        Start decryption with a key generated during encryption and signature.
+
+        <argument name="key" class="data"/>
+        <argument name="signature" class="data"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="process decryption out len">
+        Return decryption data length.
+
+        <argument name="data_len" type="size"/>
+        <return type="size"/>
+    </method>
+
+    <method name="process decryption">
+        Decryption process.
+
+        <argument name="data" class="data"/>
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+
+    <method name="finish decryption out len">
+        Return finish data part length.
+
+        <return type="size"/>
+    </method>
+
+    <method name="finish decryption">
+        Finish decryption and check signature.
+
+        <argument name="signer public key" interface="public key" project="foundation"/>
+        <argument name="out" class="buffer"/>
+        <return enum="status"/>
+    </method>
+</class>

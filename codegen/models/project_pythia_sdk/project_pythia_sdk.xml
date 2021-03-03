@@ -3,7 +3,7 @@
         brief="Virgil Security Pythia SDK"
         package="sdk pythia"
         namespace="virgil sdk pythia"
-        framework="VSSP"
+        framework="VSSPyhia"
         prefix="vssp"
         wrappers=""
         >
@@ -45,6 +45,6 @@
         <require enum="status"/>
 
         char error_message[48] = {0x00};
-        snprintf(error_message, sizeof(error_message), "Unhandled vsc::pythia_sdk error -0x%04x", error);
+        .(c_global_method_snprintf)(error_message, sizeof(error_message), "Unhandled vsc::pythia_sdk error -0x%04x", error);
     </error_message_getter>
 </project>

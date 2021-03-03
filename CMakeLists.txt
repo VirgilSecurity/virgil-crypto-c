@@ -101,6 +101,7 @@ option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
 option(VIRGIL_SDK_CORE "Build 'core' SDK" ON)
 option(VIRGIL_SDK_PYTHIA "Build 'pythia' SDK" ON)
 option(VIRGIL_SDK_KEYKNOX "Build 'keyknox' SDK" ON)
+option(VIRGIL_SDK_BRAINKEY "Build 'brainkey' SDK" ON)
 option(VIRGIL_SDK_COMM_KIT "Build 'comm-kit' SDK" ON)
 
 #
@@ -124,7 +125,7 @@ option(VIRGIL_WRAP_WASM "Build 'WebAssembly' wrapper" OFF)
 
 
 # ---------------------------------------------------------------------------
-#   Platfrom specific.
+#   Platform specific.
 # ---------------------------------------------------------------------------
 set(VIRGIL_PLATFORM_HDR "" CACHE STRING "Name or path to the header file that contains platform specific definitions.")
 set(VIRGIL_PLATFORM_INC_DIR "" CACHE STRING "Path to the platform specific include directory.")
@@ -290,6 +291,10 @@ endif()
 
 if(VIRGIL_SDK_KEYKNOX)
     add_subdirectory("library/sdk/keyknox")
+endif()
+
+if(VIRGIL_SDK_KEYKNOX)
+    add_subdirectory("library/sdk/brainkey")
 endif()
 
 if(VIRGIL_SDK_COMM_KIT)

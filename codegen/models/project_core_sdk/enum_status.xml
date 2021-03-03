@@ -9,32 +9,32 @@
         Met internal inconsistency.
     </constant>
 
-    <constant name="list item not found" value="-2">
-        Requested list item is not found.
+    <constant name="not found" value="-100">
+        Generic error for any find operation.
     </constant>
 
     <constant name="decode base64 url failed" value="-101">
-        Faled to decode Base64URL string.
+        Failed to decode Base64URL string.
     </constant>
 
     <constant name="init random failed" value="-102">
-        Faled to initialize random module.
+        Failed to initialize random module.
     </constant>
 
     <constant name="export public key failed" value="-103">
-        Faled to export public key, underlying crypto returned an error.
+        Failed to export public key, underlying crypto returned an error.
     </constant>
 
     <constant name="import public key failed" value="-104">
-        Faled to import public key, underlying crypto returned an error.
+        Failed to import public key, underlying crypto returned an error.
     </constant>
 
     <constant name="produce signature failed" value="-105">
-        Faled to produce signature, underlying crypto returned an error.
+        Failed to produce signature, underlying crypto returned an error.
     </constant>
 
     <constant name="produce public key id failed" value="-106">
-        Faled to produce public key id.
+        Failed to produce public key id.
     </constant>
 
     <constant name="parse jwt failed" value="-201">

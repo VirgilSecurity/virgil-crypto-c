@@ -89,11 +89,7 @@ static const vssc_http_client_api_t http_client_api = {
     //
     //  Send given request over HTTP.
     //
-    (vssc_http_client_api_send_fn)vssc_http_client_curl_send,
-    //
-    //  Send given request over HTTP.
-    //
-    (vssc_http_client_api_auth_send_fn)vssc_http_client_curl_auth_send
+    (vssc_http_client_api_send_fn)vssc_http_client_curl_send
 };
 
 //

@@ -126,6 +126,12 @@ vsce_memory_secure_equal(const void *a, const void *b, size_t len);
 VSCE_PUBLIC char *
 vsce_strnstr(const char *s, const char *find, size_t slen);
 
+//
+//  Fixed version of the snprintf().
+//
+VSCE_PUBLIC int
+vsce_snprintf(char *s, size_t n, const char *format, ...);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

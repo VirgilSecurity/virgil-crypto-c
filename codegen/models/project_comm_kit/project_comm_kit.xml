@@ -2,8 +2,8 @@
         name="comm kit"
         brief="Virgil Security Communications Platform (CommKit)"
         package="sdk comm-kit"
-        namespace="virgil commkit"
-        framework="VSSQ"
+        namespace="virgil sdk comm-kit"
+        framework="VSSCommKit"
         prefix="vssq"
         wrappers=""
         >
@@ -13,13 +13,14 @@
     <require project="common" feature="library"/>
     <require project="foundation" feature="library"/>
     <require project="core sdk" feature="library"/>
-    <require project="pythia sdk" feature="library"/>
+    <require project="brainkey sdk" feature="library"/>
     <require project="keyknox sdk" feature="library"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for CommKit.
     </feature>
 
+    <!-- Common modules -->
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
@@ -27,16 +28,43 @@
 
     <enum name="status"/>
 
-    <!-- Common modules -->
     <class name="error" from="shared"/>
+    <class name="error message" from="shared"/>
 
     <!-- Messenger -->
     <class name="ejabberd jwt"/>
     <class name="messenger"/>
     <class name="messenger auth"/>
-    <class name="messenger config"/>
     <class name="messenger creds"/>
+    <class name="messenger config"/>
+    <class name="messenger contacts"/>
     <class name="messenger user"/>
+    <class name="messenger user list"/>
+
+    <!-- Group Messenger -->
+    <class name="messenger group"/>
+    <class name="messenger group epoch"/>
+    <class name="messenger group epoch list"/>
+    <class name="messenger group epoch keyknox storage"/>
+
+    <!-- File cipher -->
+    <class name="messenger file cipher"/>
+
+    <!-- Cloud File System -->
+    <enum name="messenger cloud fs permission"/>
+    <class name="messenger cloud fs"/>
+    <class name="messenger cloud fs client"/>
+    <class name="messenger cloud fs created file"/>
+    <class name="messenger cloud fs folder"/>
+    <class name="messenger cloud fs folder info"/>
+    <class name="messenger cloud fs folder info list"/>
+    <class name="messenger cloud fs file info"/>
+    <class name="messenger cloud fs file info list"/>
+    <class name="messenger cloud fs file download info"/>
+    <class name="messenger cloud fs cipher"/>
+    <class name="messenger cloud fs access"/>
+    <class name="messenger cloud fs access list"/>
+    <class name="cloud file system pb"/> <!-- internal helper -->
 
     <!-- Contact discovery -->
     <class name="contact utils"/>
@@ -45,6 +73,6 @@
         <require enum="status"/>
 
         char error_message[48] = {0x00};
-        snprintf(error_message, sizeof(error_message), "Unhandled vsc::comm_kit error -0x%04x", error);
+        .(c_global_method_snprintf)(error_message, sizeof(error_message), "Unhandled vsc::comm_kit error -0x%04x", error);
     </error_message_getter>
 </project>

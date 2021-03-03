@@ -85,6 +85,10 @@
 #   include "vssc_error.h"
 #endif
 
+#if VSSC_ERROR_MESSAGE
+#   include "vssc_error_message.h"
+#endif
+
 #if VSSC_HTTP_CLIENT
 #   include "vssc_http_client.h"
 #endif
@@ -137,6 +141,10 @@
 #   include "vssc_key_handler_list.h"
 #endif
 
+#if VSSC_NUMBER_LIST
+#   include "vssc_number_list.h"
+#endif
+
 #if VSSC_RAW_CARD
 #   include "vssc_raw_card.h"
 #endif
@@ -165,16 +173,16 @@
 #   include "vssc_string_list.h"
 #endif
 
+#if VSSC_STRING_MAP
+#   include "vssc_string_map.h"
+#endif
+
 #if VSSC_UNIX_TIME
 #   include "vssc_unix_time.h"
 #endif
 
 #if VSSC_VIRGIL_HTTP_CLIENT
 #   include "vssc_virgil_http_client.h"
-#endif
-
-#if VSSC_VIRGIL_HTTP_RESPONSE
-#   include "vssc_virgil_http_response.h"
 #endif
 
 // clang-format on

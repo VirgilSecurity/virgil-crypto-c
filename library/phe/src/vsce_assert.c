@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vsce_assert.h"
+#include "vsce_memory.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <mbedtls/config.h>
@@ -146,7 +147,7 @@ VSCE_PUBLIC void
 vsce_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line) {
 
     char error_message[48] = {0x00};
-    snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
+    vsce_snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
 
     vsce_assert_trigger(error_message, file, line);
 }
@@ -165,7 +166,7 @@ vsce_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *fi
         if (error < 0) {
             error = -error;
         }
-        snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
+        vsce_snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
     #endif
 
     vsce_assert_trigger(error_message, file, line);

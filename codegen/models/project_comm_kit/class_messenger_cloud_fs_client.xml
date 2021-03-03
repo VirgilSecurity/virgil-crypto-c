@@ -1,0 +1,305 @@
+<class name="messenger cloud fs client">
+    This class provides access to the messenger Cloud File System service.
+
+    <require header="vssq_CloudFileSystem.pb.h"/>
+    <require header="pb_decode.h"/>
+    <require header="pb_encode.h"/>
+
+    <require class="str mutable" project="common"/>
+    <require class="unix time" project="core sdk"/>
+    <require class="virgil http client" project="core sdk"/>
+    <require class="messenger cloud fs created file" api="private"/>
+    <require class="messenger cloud fs file info list" api="private"/>
+    <require class="messenger cloud fs folder info list" api="private"/>
+    <require class="messenger cloud fs folder" api="private"/>
+    <require class="messenger cloud fs access list" api="private"/>
+    <require class="cloud file system pb"/>
+
+    <dependency name="auth" class="messenger auth"/>
+
+    <!-- HTTP header values -->
+    <constant name="k header value content type protobuf" type="string" visibility="private">
+        <value value="application/protobuf"/>
+    </constant>
+
+    <!-- URL paths -->
+    <constant name="k url path file create" type="string" visibility="private">
+        <value value="/file/create"/>
+    </constant>
+
+    <constant name="k url path file get download link" type="string" visibility="private">
+        <value value="/file/get-download-link"/>
+    </constant>
+
+    <constant name="k url path file delete" type="string" visibility="private">
+        <value value="/file/delete"/>
+    </constant>
+
+    <constant name="k url path folder create" type="string" visibility="private">
+        <value value="/folder/create"/>
+    </constant>
+
+    <constant name="k url path folder list" type="string" visibility="private">
+        <value value="/folder/list"/>
+    </constant>
+
+    <constant name="k url path folder delete" type="string" visibility="private">
+        <value value="/folder/delete"/>
+    </constant>
+
+    <constant name="k url path get shared group" type="string" visibility="private">
+        <value value="/group/get"/>
+    </constant>
+
+    <constant name="k url path set shared group" type="string" visibility="private">
+        <value value="/group/set"/>
+    </constant>
+
+
+    <!-- Endpoints -->
+    <method name="create file" is_const="1">
+        Create a new file within the Cloud FS.
+        Note, if folder id is empty then file created in a root folder.
+
+        <argument name="name" class="str"/>
+        <argument name="type" class="str"/>
+        <argument name="size" type="size"/>
+        <argument name="folder id" class="str"/>
+        <argument name="file encrypted key" class="data"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs created file" access="disown"/>
+    </method>
+
+
+    <method name="get download link" is_const="1">
+        Get a file download link.
+
+        <argument name="id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs file download info" access="disown"/>
+    </method>
+
+
+    <method name="delete file" is_const="1">
+        Delete existing file.
+
+        <argument name="id" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="create folder" is_const="1">
+        Create a new folder within the Cloud FS.
+        Note, if parent folder id is empty then folder created in a root folder.
+
+        <argument name="name" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="parent folder id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
+    <method name="create shared folder" is_const="1">
+        Create a new folder within the Cloud FS that is shared with other users.
+        Note, if parent folder id is empty then folder created in a root folder.
+
+        <argument name="name" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="parent folder id" class="str"/>
+        <argument name="users" class="messenger cloud fs access list"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
+    <method name="list folder" is_const="1">
+        List content of requested folder.
+        Note, if folder id is empty then a root folder will be listed.
+
+        <argument name="id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder" access="disown"/>
+    </method>
+
+
+    <method name="delete folder" is_const="1">
+        Delete existing folder.
+
+        <argument name="id" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="get shared group users" is_const="1">
+        Get shared group of users.
+
+        <argument name="id" class="str"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs access list" access="disown"/>
+    </method>
+
+
+    <method name="set shared group users" is_const="1">
+        Set shared group of users.
+
+        <argument name="id" class="str"/>
+        <argument name="entry encrypted key" class="data"/>
+        <argument name="users" class="messenger cloud fs access list"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <!-- Infos -->
+    <method name="is authenticated" is_const="1">
+        Return true if a user is authenticated.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="user" is_const="1">
+        Return information about current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="user private key" is_const="1">
+        Return a private key of current user.
+
+        Prerequisites: user should be authenticated.
+
+        <return interface="private key" project="foundation"/>
+    </method>
+
+
+    <!-- Helpers -->
+    <method name="create folder internal" is_const="1" declaration="private">
+        Create a new folder within the Cloud FS.
+        Note, if parent folder id is empty then folder created in a root folder.
+        Note, if users are given then the folder will be shared for them.
+
+        <argument name="name" class="str"/>
+        <argument name="folder encrypted key" class="data"/>
+        <argument name="folder public key" class="data"/>
+        <argument name="parent folder id" class="str"/>
+        <argument name="users" class="messenger cloud fs access list"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
+    <method name="create request" is_const="1" declaration="private">
+        Return request based on the given endpoint and body.
+
+        <argument name="endpoint" class="str"/>
+        <argument name="body" class="data"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="check response" is_static="1" declaration="private">
+        Check given response for errors and return true if success.
+        If error then convert error and return false.
+
+        <argument name="http response" class="http response" project="core sdk"/>
+        <argument name="error" class="error"/>
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="parse file info" is_static="1" declaration="private">
+        Parse protobuf structure "vssq_pb.File"
+
+        <argument name="pb file" class="vssq_pb_File" library="comm_kit_pb"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs file info" access="disown"/>
+    </method>
+
+
+    <method name="parse folder info" is_static="1" declaration="private">
+        Parse protobuf structure "vssq_pb.Folder"
+
+        <argument name="pb folder" class="vssq_pb_Folder" library="comm_kit_pb"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs folder info" access="disown"/>
+    </method>
+
+
+    <method name="parse bytes optional" is_static="1" declaration="private">
+        Parse optional protobuf structure "pb_bytes_array_t".
+        If given array is NULL or empty and it is not optional then empty data will be returned and error will be set.
+
+        <argument name="pb array" class="pb_bytes_array_t" library="protobuf"/>
+        <argument name="is optional" type="boolean"/>
+        <argument name="error" class="error"/>
+
+        <return class="data"/>
+    </method>
+
+
+    <method name="write users to pb" is_static="1" declaration="private">
+        Write users to a PB structure fields.
+
+        <argument name="users" class="messenger cloud fs access list"/>
+        <argument name="pb users" class="vssq_pb_User" access="disown" library="comm_kit_pb"/>
+        <argument name="pb users count" class="pb_size_t" access="writeonly" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="read users from pb" is_static="1" declaration="private">
+        Read users from a PB structure fields.
+
+        <argument name="pb users" class="vssq_pb_User" library="comm_kit_pb"/>
+        <argument name="pb users count" class="pb_size_t" is_reference="0" library="comm_kit_pb"/>
+        <argument name="error" class="error"/>
+
+        <return class="messenger cloud fs access list" access="disown"/>
+    </method>
+
+
+    <method name="to pb permission" is_static="1" declaration="private">
+        Converts this library permission to the vssq_pb_Permission.
+
+        <argument name="permission" enum="messenger cloud fs permission"/>
+
+        <return enum="vssq_pb_Permission" library="comm_kit_pb"/>
+    </method>
+
+
+    <method name="from pb permission" is_static="1" declaration="private">
+        Converts vssq_pb_Permission to this library permission.
+
+        <argument name="pb permission" enum="vssq_pb_Permission" library="comm_kit_pb"/>
+
+        <return enum="messenger cloud fs permission"/>
+    </method>
+
+
+    <method name="map service status" is_static="1" declaration="private">
+        Map the service response status to the SDK status.
+
+        <argument name="response" class="http response" project="core sdk"/>
+
+        <return enum="status"/>
+    </method>
+</class>

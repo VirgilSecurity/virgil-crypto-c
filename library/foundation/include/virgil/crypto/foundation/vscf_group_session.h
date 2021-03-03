@@ -168,17 +168,13 @@ VSCF_PUBLIC const vscf_group_session_t *
 vscf_group_session_shallow_copy_const(const vscf_group_session_t *self);
 
 //
-//  Random
-//
-//  Note, ownership is shared.
+//  Setup dependency to the interface 'random' with shared ownership.
 //
 VSCF_PUBLIC void
 vscf_group_session_use_rng(vscf_group_session_t *self, vscf_impl_t *rng);
 
 //
-//  Random
-//
-//  Note, ownership is transfered.
+//  Setup dependency to the interface 'random' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -220,20 +216,20 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 //  Encrypts data
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
+vscf_group_session_encrypt(const vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
         vscf_error_t *error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
 //
 VSCF_PUBLIC size_t
-vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_session_message_t *message);
+vscf_group_session_decrypt_len(const vscf_group_session_t *self, const vscf_group_session_message_t *message);
 
 //
 //  Decrypts message
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
+vscf_group_session_decrypt(const vscf_group_session_t *self, const vscf_group_session_message_t *message,
         const vscf_impl_t *public_key, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 //

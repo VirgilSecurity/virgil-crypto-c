@@ -1,0 +1,115 @@
+<class name="messenger user list">
+    Handles a list of "messenger user" class objects.
+
+    <property name="item" class="messenger user"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
+
+    <method name="add" >
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="messenger user" class="messenger user" access="readwrite"/>
+    </method>
+
+
+    <method name="add disown" scope="private">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="messenger user" class="messenger user" access="disown"/>
+    </method>
+
+
+    <method name="remove self" visibility="private">
+        Remove current node.
+    </method>
+
+
+    <method name="has item" is_const="1">
+        Return true if given list has item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="item" is_const="1">
+        Return list item.
+
+        <return class="messenger user" access="readonly"/>
+    </method>
+
+
+    <method name="item modifiable">
+        Return list item.
+
+        <return class="messenger user" access="readwrite"/>
+    </method>
+
+
+    <method name="has next" is_const="1">
+        Return true if list has next item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="next" is_const="1">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readonly"/>
+    </method>
+
+
+    <method name="next modifiable">
+        Return next list node if exists, or NULL otherwise.
+
+        <return class="self" access="readwrite"/>
+    </method>
+
+
+    <method name="has prev" is_const="1">
+        Return true if list has previous item.
+
+        <return type="boolean"/>
+    </method>
+
+
+    <method name="prev" is_const="1">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self" access="readonly"/>
+    </method>
+
+
+    <method name="prev modifiable">
+        Return previous list node if exists, or NULL otherwise.
+
+        <return class="self" access="readwrite"/>
+    </method>
+
+
+    <method name="clear">
+        Remove all items.
+    </method>
+
+
+    <method name="find with identity" is_const="1">
+        Find user with a given name.
+
+        <argument name="user identity" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user"/>
+    </method>
+
+
+    <method name="find with identity modifiable">
+        Find user with a given name.
+
+        <argument name="user identity" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger user" access="readwrite"/>
+    </method>
+</class>

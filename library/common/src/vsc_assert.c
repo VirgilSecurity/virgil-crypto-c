@@ -54,6 +54,7 @@
 // --------------------------------------------------------------------------
 
 #include "vsc_assert.h"
+#include "vsc_memory.h"
 
 #include <stdio.h>
 

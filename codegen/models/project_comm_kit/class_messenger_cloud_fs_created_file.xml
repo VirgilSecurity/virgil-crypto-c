@@ -1,0 +1,36 @@
+<class name="messenger cloud fs created file">
+    Value object that handles created file info.
+
+    <property name="upload link" class="str mutable"/>
+    <property name="file info" class="messenger cloud fs file info" access="readonly"/>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="upload link" class="str"/>
+        <argument name="file info" class="messenger cloud fs file info"/>
+    </constructor>
+
+
+    <constructor name="with disown" scope="private">
+        Create fully defined object.
+
+        <argument name="upload link" class="str"/>
+        <argument name="file info" class="messenger cloud fs file info" access="disown"/>
+    </constructor>
+
+
+    <method name="upload link" is_const="1">
+        Return file upload link.
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="info" is_const="1">
+        Return file info.
+
+        <return class="messenger cloud fs file info"/>
+    </method>
+</class>

@@ -71,6 +71,10 @@ if(TARGET vsc::pythia_sdk)
     add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/pythia")
 endif()
 
+if(TARGET vsc::comm_kit)
+    add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/sdk/comm-kit")
+endif()
+
 if(ENABLE_FUZZY_TESTING)
     add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/fuzzy")
 endif()

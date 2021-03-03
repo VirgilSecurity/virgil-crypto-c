@@ -39,7 +39,8 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Handles HTTP request in a most generic way.
+//  This class contains HTTP response information alongside with information
+//  that is specific for the Virgil services.
 // --------------------------------------------------------------------------
 
 
@@ -53,7 +54,11 @@
 #include "vssc_http_response.h"
 #include "vssc_memory.h"
 #include "vssc_assert.h"
+#include "vssc_http_response_internal.h"
 #include "vssc_http_response_defs.h"
+#include "vssc_json_object.h"
+
+#include <virgil/crypto/common/vsc_buffer.h>
 
 // clang-format on
 //  @end
@@ -91,7 +96,21 @@ vssc_http_response_init_ctx_with_status(vssc_http_response_t *self, size_t statu
 //  Create response with a status and body.
 //
 static void
-vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body);
+vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body);
+
+static const char k_json_key_service_error_code_chars[] = "code";
+
+static const vsc_str_t k_json_key_service_error_code = {
+    k_json_key_service_error_code_chars,
+    sizeof(k_json_key_service_error_code_chars) - 1
+};
+
+static const char k_json_key_service_error_message_chars[] = "message";
+
+static const vsc_str_t k_json_key_service_error_message = {
+    k_json_key_service_error_message_chars,
+    sizeof(k_json_key_service_error_message_chars) - 1
+};
 
 //
 //  Return size of 'vssc_http_response_t'.
@@ -186,7 +205,7 @@ vssc_http_response_new_with_status(size_t status_code) {
 //  Create response with a status and body.
 //
 VSSC_PUBLIC void
-vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body) {
+vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
 
@@ -202,7 +221,7 @@ vssc_http_response_init_with_body(vssc_http_response_t *self, size_t status_code
 //  Create response with a status and body.
 //
 VSSC_PUBLIC vssc_http_response_t *
-vssc_http_response_new_with_body(size_t status_code, vsc_str_t body) {
+vssc_http_response_new_with_body(size_t status_code, vsc_data_t body) {
 
     vssc_http_response_t *self = (vssc_http_response_t *) vssc_alloc(sizeof (vssc_http_response_t));
     VSSC_ASSERT_ALLOC(self);
@@ -334,7 +353,9 @@ vssc_http_response_cleanup_ctx(vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
-    vsc_str_buffer_destroy(&self->body);
+    vsc_buffer_destroy(&self->body);
+    vssc_json_object_destroy(&self->body_json_object);
+    vssc_json_array_destroy(&self->body_json_array);
     vssc_http_header_list_destroy(&self->headers);
 }
 
@@ -345,24 +366,71 @@ static void
 vssc_http_response_init_ctx_with_status(vssc_http_response_t *self, size_t status_code) {
 
     VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(100 <= status_code && status_code <= 599);
 
     vssc_http_response_init_ctx(self);
-
-    self->status_code = status_code;
+    vssc_http_response_set_status(self, status_code);
 }
 
 //
 //  Create response with a status and body.
 //
 static void
-vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_str_t body) {
+vssc_http_response_init_ctx_with_body(vssc_http_response_t *self, size_t status_code, vsc_data_t body) {
 
     VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(body));
 
     vssc_http_response_init_ctx_with_status(self, status_code);
+    vssc_http_response_set_body(self, body);
+}
 
-    self->body = vsc_str_buffer_new_with_str(body);
+//
+//  Set HTTP status.
+//
+VSSC_PUBLIC void
+vssc_http_response_set_status(vssc_http_response_t *self, size_t status_code) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(100 <= status_code && status_code <= 599);
+
+    self->status_code = status_code;
+}
+
+//
+//  Set HTTP body.
+//
+VSSC_PUBLIC void
+vssc_http_response_set_body(vssc_http_response_t *self, vsc_data_t body) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT(vsc_data_is_valid_and_non_empty(body));
+
+    vsc_buffer_t *body_buffer = vsc_buffer_new_with_data(body);
+    vssc_http_response_set_body_disown(self, &body_buffer);
+}
+
+//
+//  Set HTTP body.
+//
+VSSC_PUBLIC void
+vssc_http_response_set_body_disown(vssc_http_response_t *self, vsc_buffer_t **body_ref) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_REF(body_ref);
+    VSSC_ASSERT(vsc_buffer_is_valid(*body_ref));
+
+    self->body = *body_ref;
+    *body_ref = NULL;
+
+    vsc_str_t body = vsc_str_from_data(vsc_buffer_data(self->body));
+
+    if (!vsc_str_is_empty(body)) {
+        self->body_json_object = vssc_json_object_parse(body, NULL);
+
+        if (NULL == self->body_json_object) {
+            self->body_json_array = vssc_json_array_parse(body, NULL);
+        }
+    }
 }
 
 //
@@ -404,15 +472,15 @@ vssc_http_response_status_code(const vssc_http_response_t *self) {
 //
 //  Return HTTP body.
 //
-VSSC_PUBLIC vsc_str_t
+VSSC_PUBLIC vsc_data_t
 vssc_http_response_body(const vssc_http_response_t *self) {
 
     VSSC_ASSERT_PTR(self);
 
     if (NULL == self->body) {
-        return vsc_str_empty();
+        return vsc_data_empty();
     } else {
-        return vsc_str_buffer_str(self->body);
+        return vsc_buffer_data(self->body);
     }
 }
 
@@ -438,6 +506,115 @@ vssc_http_response_find_header(const vssc_http_response_t *self, vsc_str_t name,
     VSSC_ASSERT_PTR(self->headers);
 
     return vssc_http_header_list_find(self->headers, name, error);
+}
+
+//
+//  Return true if response handles a valid body as JSON object.
+//
+VSSC_PUBLIC bool
+vssc_http_response_body_is_json_object(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    return self->body_json_object != NULL;
+}
+
+//
+//  Return true if response handles a valid body as JSON array.
+//
+VSSC_PUBLIC bool
+vssc_http_response_body_is_json_array(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    return self->body_json_array != NULL;
+}
+
+//
+//  Return response body as JSON object.
+//
+VSSC_PUBLIC const vssc_json_object_t *
+vssc_http_response_body_as_json_object(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->body_json_object);
+
+    return self->body_json_object;
+}
+
+//
+//  Return response body as JSON array.
+//
+VSSC_PUBLIC const vssc_json_array_t *
+vssc_http_response_body_as_json_array(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->body_json_array);
+
+    return self->body_json_array;
+}
+
+//
+//  Return true if response handles a service error and it's description.
+//
+VSSC_PUBLIC bool
+vssc_http_response_has_service_error(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    if (vssc_http_response_is_success(self) || !vssc_http_response_body_is_json_object(self)) {
+        return false;
+    }
+
+    vssc_error_t error;
+    vssc_error_reset(&error);
+
+    const int error_code =
+            vssc_json_object_get_int_value(self->body_json_object, k_json_key_service_error_code, &error);
+    VSSC_UNUSED(error_code);
+
+    return !vssc_error_has_error(&error);
+}
+
+//
+//  Return service error code.
+//
+VSSC_PUBLIC size_t
+vssc_http_response_service_error_code(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    if (vssc_http_response_is_success(self) || !vssc_http_response_body_is_json_object(self)) {
+        return 0;
+    }
+
+    vssc_error_t error;
+    vssc_error_reset(&error);
+
+    const int error_code =
+            vssc_json_object_get_int_value(self->body_json_object, k_json_key_service_error_code, &error);
+
+    if (!vssc_error_has_error(&error) && error_code > 0) {
+        return (size_t)error_code;
+    }
+
+    return 0;
+}
+
+//
+//  Return service error description.
+//  Note, empty string can be returned.
+//
+VSSC_PUBLIC vsc_str_t
+vssc_http_response_service_error_description(const vssc_http_response_t *self) {
+
+    VSSC_ASSERT_PTR(self);
+
+    if (vssc_http_response_is_success(self) || !vssc_http_response_body_is_json_object(self)) {
+        return vsc_str_empty();
+    }
+
+    return vssc_json_object_get_string_value(self->body_json_object, k_json_key_service_error_message, NULL);
 }
 
 //

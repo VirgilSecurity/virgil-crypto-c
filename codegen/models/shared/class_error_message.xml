@@ -1,0 +1,25 @@
+<class name="error message" context="none" lifecycle="none">
+    Provide error and status messages.
+
+    <method name="from status" is_static="1">
+        Return a message string from the given status.
+
+        <argument name="status" enum="status"/>
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="from error" is_static="1">
+        Return a message string from the given status.
+
+        <argument name="error" class="error" access="readonly"/>
+
+        <return class="str"/>
+
+        <code>
+            .(c_class_assert_macros_ptr)(error);
+            return .(c_class_error_message_method_from_status)(error->status);
+        </code>
+    </method>
+</class>

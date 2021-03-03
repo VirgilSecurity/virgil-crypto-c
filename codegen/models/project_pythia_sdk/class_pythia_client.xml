@@ -73,7 +73,7 @@
     <method name="process response generate seed" is_static="1">
         Map response to the correspond model.
 
-        <argument name="response" class="virgil http response" project="core sdk"/>
+        <argument name="response" class="http response" project="core sdk"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="brain key seed" access="disown"/>

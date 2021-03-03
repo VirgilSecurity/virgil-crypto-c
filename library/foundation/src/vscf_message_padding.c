@@ -308,7 +308,7 @@ vscf_message_padding_padded_len(size_t plain_text_len) {
 }
 
 VSCF_PUBLIC vscf_status_t
-vscf_message_padding_add_padding(vscf_message_padding_t *self, vsc_buffer_t *plain_text) {
+vscf_message_padding_add_padding(const vscf_message_padding_t *self, vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->rng);

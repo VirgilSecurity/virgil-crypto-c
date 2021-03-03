@@ -103,6 +103,8 @@ struct vscf_message_info_editor_t {
     vscf_impl_t *message_info_serializer;
 
     vsc_buffer_t *encryption_key;
+
+    vsc_buffer_t *non_message_info_data;
 };
 
 

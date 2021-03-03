@@ -56,13 +56,14 @@
 #include "vssc_library.h"
 #include "vssc_atomic.h"
 #include "vssc_http_header_list.h"
+#include "vssc_json_array.h"
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str_buffer.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -93,11 +94,15 @@ struct vssc_http_response_t {
     //
     VSSC_ATOMIC size_t refcnt;
 
-    size_t status_code;
-
-    vsc_str_buffer_t *body;
-
     vssc_http_header_list_t *headers;
+
+    vsc_buffer_t *body;
+
+    vssc_json_object_t *body_json_object;
+
+    vssc_json_array_t *body_json_array;
+
+    size_t status_code;
 };
 
 

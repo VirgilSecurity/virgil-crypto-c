@@ -1,0 +1,49 @@
+<class name="string map bucket" scope="private">
+    Handles a list of map's list of key-value pairs.
+
+    <property name="key" class="str buffer" access="readonly"/>
+    <property name="value" class="str buffer" access="readonly"/>
+    <property name="next" class="self"/>
+    <property name="prev" class="self"/>
+
+
+    <method name="put">
+        Add key-value pair to the bucket.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="str"/>
+    </method>
+
+
+    <method name="put shallow copy">
+        Add key-value pair to the bucket.
+
+        <argument name="key" class="str buffer" access="readonly"/>
+        <argument name="value" class="str buffer" access="readonly"/>
+    </method>
+
+
+    <method name="clear">
+        Remove all items.
+    </method>
+
+
+    <method name="find" is_const="1">
+        Find value for a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="find inner" is_const="1">
+        Find value for a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="str buffer" access="readonly"/>
+    </method>
+</class>

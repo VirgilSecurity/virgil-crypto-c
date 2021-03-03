@@ -1,0 +1,70 @@
+#
+#  Limits:
+#    - file|folder id: 32
+#
+
+
+# CreateFileReq
+vssq_pb.CreateFileReq.name max_length:1024
+vssq_pb.CreateFileReq.type max_length:100
+vssq_pb.CreateFileReq.folder_id max_length:32 fixed_length:true
+vssq_pb.CreateFileReq.file_encrypted_key type:FT_POINTER
+
+# CreateFileResp
+vssq_pb.CreateFileResp.upload_link max_length:2048
+
+# GetFileLinkReq
+vssq_pb.GetFileLinkReq.id max_length:32 fixed_length:true
+
+# GetFileLinkResp
+vssq_pb.GetFileLinkResp.download_link max_length:2048
+vssq_pb.GetFileLinkResp.file_encrypted_key type:FT_POINTER
+
+# DeleteFileReq
+vssq_pb.DeleteFileReq.id max_length:32 fixed_length:true
+
+# CreateFolderReq
+vssq_pb.CreateFolderReq.name max_length:1024
+vssq_pb.CreateFolderReq.parent_folder_id max_length:32 fixed_length:true
+vssq_pb.CreateFolderReq.folder_public_key type:FT_POINTER
+vssq_pb.CreateFolderReq.folder_encrypted_key type:FT_POINTER
+vssq_pb.CreateFolderReq.users type:FT_POINTER
+
+# ListFolderReq
+vssq_pb.ListFolderReq.folder_id max_length:32 fixed_length:true
+
+# ListFolderResp
+vssq_pb.ListFolderResp.files type:FT_POINTER
+vssq_pb.ListFolderResp.folders type:FT_POINTER
+vssq_pb.ListFolderResp.folder_encrypted_key type:FT_POINTER
+vssq_pb.ListFolderResp.folder_public_key type:FT_POINTER
+
+# DeleteFolderReq
+vssq_pb.DeleteFolderReq.id max_length:32 fixed_length:true
+
+# GetSharedGroupReq
+vssq_pb.GetSharedGroupReq.id max_length:32 fixed_length:true
+
+# SetSharedGroupReq
+vssq_pb.SetSharedGroupReq.id max_length:32 fixed_length:true
+vssq_pb.SetSharedGroupReq.entry_encrypted_key type:FT_POINTER
+vssq_pb.SetSharedGroupReq.users type:FT_POINTER
+
+# SharedGroup
+vssq_pb.SharedGroup.id max_length:32 fixed_length:true
+vssq_pb.SharedGroup.users type:FT_POINTER
+
+# File
+vssq_pb.File.id max_length:32 fixed_length:true
+vssq_pb.File.name max_length:1024
+vssq_pb.File.type max_length:100
+vssq_pb.File.updated_by max_length:256 fixed_length:true
+
+# Folder
+vssq_pb.Folder.name max_length:1024
+vssq_pb.Folder.id max_length:32 fixed_length:true
+vssq_pb.Folder.updated_by max_length:256 fixed_length:true
+vssq_pb.Folder.shared_group_id max_length:32 fixed_length:true
+
+# User
+vssq_pb.User.identity max_length:512;

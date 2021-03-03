@@ -409,13 +409,10 @@ vssp_pythia_client_make_request_generate_seed_with_id(
         vssc_json_object_add_string_value(json_obj, k_json_key_brainkey_id, brain_key_id);
     }
 
-    vsc_str_t body = vssc_json_object_as_str(json_obj);
+    vsc_data_t body = vsc_str_as_data(vssc_json_object_as_str(json_obj));
 
     vssc_http_request_t *http_request = vssc_http_request_new_with_body(
             vssc_http_request_method_post, vsc_str_mutable_as_str(self->brain_key_url), body);
-
-    vssc_http_request_add_header(
-            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
     vssc_json_object_destroy(&json_obj);
 
@@ -429,23 +426,23 @@ vssp_pythia_client_make_request_generate_seed_with_id(
 //  Map response to the correspond model.
 //
 VSSP_PUBLIC vssp_brain_key_seed_t *
-vssp_pythia_client_process_response_generate_seed(const vssc_virgil_http_response_t *response, vssp_error_t *error) {
+vssp_pythia_client_process_response_generate_seed(const vssc_http_response_t *response, vssp_error_t *error) {
 
     VSSP_ASSERT_PTR(response);
 
-    if (!vssc_virgil_http_response_is_success(response)) {
+    if (!vssc_http_response_is_success(response)) {
         VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
         return NULL;
     }
 
     // TODO: Check Content-Type to be equal application/json
 
-    if (!vssc_virgil_http_response_body_is_json_object(response)) {
+    if (!vssc_http_response_body_is_json_object(response)) {
         VSSP_ERROR_SAFE_UPDATE(error, vssp_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
         return NULL;
     }
 
-    const vssc_json_object_t *response_body = vssc_virgil_http_response_body_as_json_object(response);
+    const vssc_json_object_t *response_body = vssc_http_response_body_as_json_object(response);
 
     const size_t seed_len = vssc_json_object_get_binary_value_len(response_body, k_json_key_seed);
     if (0 == seed_len) {

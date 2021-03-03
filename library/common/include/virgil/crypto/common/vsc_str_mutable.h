@@ -120,6 +120,12 @@ VSC_PUBLIC vsc_str_mutable_t
 vsc_str_mutable_concat(vsc_str_t lhs, vsc_str_t rhs);
 
 //
+//  Create a mutable string by concatenating 2 strings separated with a space.
+//
+VSC_PUBLIC vsc_str_mutable_t
+vsc_str_mutable_concat_with_space_sep(vsc_str_t lhs, vsc_str_t rhs);
+
+//
 //  Returns true if underlying string is defined.
 //
 VSC_PUBLIC bool

@@ -2,6 +2,7 @@
     Minimal JSON array.
     Currently only objects array are supported
 
+    <require header="errno.h" is_system="1"/>
     <require header="json-c/json.h" library="json-c" scope="context"/>
     <require header="json-c/json.h" library="json-c" scope="private" definition="public"/>
     <require class="json object"/>
@@ -46,7 +47,7 @@
     </method>
 
 
-    <method name="add object value disown" visibility="private">
+    <method name="add object value disown" scope="private">
         Add object value .
 
         <argument name="value" class="json object" access="disown"/>
@@ -79,6 +80,56 @@
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="str"/>
+    </method>
+
+
+    <method name="add string values">
+        Add string values from the given list.
+
+        <argument name="string values" class="string list"/>
+    </method>
+
+
+    <method name="get string values" is_const="1">
+        Return string values as list.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string list" access="disown"/>
+    </method>
+
+
+    <method name="add number value">
+        Add number value.
+
+        <argument name="value" type="size"/>
+    </method>
+
+
+    <method name="get number value" is_const="1">
+        Return a number value for a given index.
+        Check array length before call this method.
+
+        <argument name="index" type="size"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return type="size"/>
+    </method>
+
+
+    <method name="add number values">
+        Add number values from the given list.
+
+        <argument name="number values" class="number list"/>
+    </method>
+
+
+    <method name="get number values" is_const="1">
+        Return number values as list.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="number list" access="disown"/>
     </method>
 
 

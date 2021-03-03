@@ -1,0 +1,26 @@
+<class name="messenger cloud fs file download info">
+    Handles info required to download and decrypt file.
+
+    <property name="link" class="str mutable"/>
+    <property name="file encrypted key" class="buffer"/>
+
+
+    <constructor name="with">
+        Create fully defined object.
+
+        <argument name="link" class="str"/>
+        <argument name="file encrypted key" class="data"/>
+    </constructor>
+
+
+    <method name="link" is_const="1">
+
+        <return class="str"/>
+    </method>
+
+
+    <method name="file encrypted key" is_const="1">
+
+        <return class="data"/>
+    </method>
+</class>

@@ -10,7 +10,15 @@
     </constant>
 
     <constant name="rng failed" value="-101">
-        Failed to initialze RNG.
+        Failed to initialize RNG.
+    </constant>
+
+    <constant name="not found" value="-102">
+        Generic error for any find operation.
+    </constant>
+
+    <constant name="http send failed" value="-103">
+        Failed to send HTTP request.
     </constant>
 
     <constant name="parse ejabberd jwt failed" value="-201">
@@ -41,7 +49,7 @@
         Failed to create card manager.
     </constant>
 
-    <constant name="generate card failed" value="-306">
+    <constant name="generate card failed" value="-307">
         Failed to generate card.
     </constant>
 
@@ -78,23 +86,23 @@
     </constant>
 
     <constant name="generate brainkey failed blind failed" value="-503">
-        Failed to generate brain key because of deblind fail.
-    </constant>
-
-    <constant name="generate brainkey failed deblind failed" value="-504">
         Failed to generate brain key because of blind fail.
     </constant>
 
-    <constant name="generate brainkey failed seed request failed" value="-505">
-        Failed to generate brain key because requesting seed from the service failed.
+    <constant name="generate brainkey failed deblind failed" value="-504">
+        Failed to generate brain key because of deblind fail.
     </constant>
 
-    <constant name="generate brainkey failed seed response with error" value="-506">
-        Failed to generate brain key because seed response was returned with error.
+    <constant name="generate brainkey failed hardened point request failed" value="-505">
+        Failed to generate brain key because requesting hardened point from the service failed.
     </constant>
 
-    <constant name="generate brainkey failed seed parse failed" value="-507">
-        Failed to generate brain key because parsing seed response failed.
+    <constant name="generate brainkey failed hardened point response with error" value="-506">
+        Failed to generate brain key because hardened point response was returned with error.
+    </constant>
+
+    <constant name="generate brainkey failed hardened point parse failed" value="-507">
+        Failed to generate brain key because parsing hardened point response failed.
     </constant>
 
     <constant name="keyknox failed request failed" value="-601">
@@ -109,43 +117,43 @@
         Failed to process Keyknox entry because response parsing failed.
     </constant>
 
-    <constant name="keyknox pack creds failed export private key failed" value="-604">
+    <constant name="keyknox pack entry failed export private key failed" value="-604">
         Failed to pack Keyknox entry because export private key failed.
     </constant>
 
-    <constant name="keyknox pack creds failed encrypt failed" value="-605">
+    <constant name="keyknox pack entry failed encrypt failed" value="-605">
         Failed to pack Keyknox entry because encrypt operation failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed decrypt failed" value="-606">
+    <constant name="keyknox unpack entry failed decrypt failed" value="-606">
         Failed to unpack Keyknox entry because decrypt operation failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed verify signature failed" value="-607">
+    <constant name="keyknox unpack entry failed verify signature failed" value="-607">
         Failed to unpack Keyknox entry because verifying signature failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed parse failed" value="-608">
+    <constant name="keyknox unpack entry failed parse failed" value="-608">
         Failed to unpack Keyknox entry because parse operation failed.
     </constant>
 
-    <constant name="keyknox unpack creds failed import private key failed" value="-609">
+    <constant name="keyknox unpack entry failed import private key failed" value="-609">
         Failed to unpack Keyknox entry because import private key failed.
     </constant>
 
-    <constant name="refresh token failed request failed" value="-701">
+    <constant name="refresh jwt failed request failed" value="-701">
         Failed to refresh JWT because send operation failed.
     </constant>
 
-    <constant name="refresh token failed response with error" value="-702">
+    <constant name="refresh jwt failed response with error" value="-702">
         Failed to refresh JWT because response with error was returned.
     </constant>
 
-    <constant name="refresh token failed parse response failed" value="-703">
+    <constant name="refresh jwt failed parse response failed" value="-703">
         Failed to refresh JWT because response parsing failed.
     </constant>
 
-    <constant name="refresh token failed parse failed" value="-704">
+    <constant name="refresh jwt failed parse failed" value="-704">
         Failed to refresh JWT because JWT parsing failed.
     </constant>
 
@@ -190,23 +198,23 @@
     </constant>
 
     <constant name="export creds failed init crypto failed" value="-1000">
-        Failed to export creentials because initializing crypto module failed.
+        Failed to export credentials because initializing crypto module failed.
     </constant>
 
     <constant name="export creds failed export private key failed" value="-1001">
-        Failed to export creentials because exporting private key failed.
+        Failed to export credentials because exporting private key failed.
     </constant>
 
     <constant name="import creds failed init crypto failed" value="-1002">
-        Failed to import creentials because initializing crypto module failed.
+        Failed to import credentials because initializing crypto module failed.
     </constant>
 
     <constant name="import creds failed parse failed" value="-1003">
-        Failed to import creentials because parsing json failed.
+        Failed to import credentials because parsing JSON failed.
     </constant>
 
     <constant name="import creds failed import private key failed" value="-1004">
-        Failed to import creentials because importing private key failed.
+        Failed to import credentials because importing private key failed.
     </constant>
 
     <constant name="contact validation failed username too long" value="-1100">
@@ -215,5 +223,225 @@
 
     <constant name="contact validation failed username bad chars" value="-1101">
         Username validation failed because it contains invalid characters.
+    </constant>
+
+    <constant name="contact validation failed phone number bad format" value="-1102">
+        Phone number validation failed because it does not conform to E.164 standard.
+    </constant>
+
+    <constant name="contact validation failed email bad format" value="-1103">
+        Email validation failed because it has invalid format.
+    </constant>
+
+    <constant name="modify group failed permission violation" value="-1200">
+        The current user can not modify the group - permission violation.
+    </constant>
+
+    <constant name="access group failed permission violation" value="-1201">
+        The current user can not access the group - permission violation.
+    </constant>
+
+    <constant name="create group failed crypto failed" value="-1202">
+        Failed to create group because underlying crypto module failed.
+    </constant>
+
+    <constant name="import group epoch failed parse failed" value="-1203">
+        Failed to import group epoch because parsing JSON failed.
+    </constant>
+
+    <constant name="process group message failed session id doesnt match" value="-1204">
+        Failed to process group message because session id doesn't match.
+    </constant>
+
+    <constant name="process group message failed epoch not found" value="-1205">
+        Failed to process group message because epoch not found.
+    </constant>
+
+    <constant name="process group message failed wrong key type" value="-1206">
+        Failed to process group message because wrong key type.
+    </constant>
+
+    <constant name="process group message failed invalid signature" value="-1207">
+        Failed to process group message because of invalid signature.
+    </constant>
+
+    <constant name="process group message failed ed25519 failed" value="-1208">
+        Failed to process group message because ed25519 failed.
+    </constant>
+
+    <constant name="process group message failed duplicate epoch" value="-1209">
+        Failed to process group message because of duplicated epoch.
+    </constant>
+
+    <constant name="process group message failed plain text too long" value="-1210">
+        Failed to process group message because plain text too long.
+    </constant>
+
+    <constant name="process group message failed crypto failed" value="-1299">
+        Failed to process group message because underlying crypto module failed.
+    </constant>
+
+    <constant name="decrypt regular message failed invalid encrypted message" value="-1301">
+        Failed to decrypt regular message because of invalid encrypted message.
+    </constant>
+
+    <constant name="decrypt regular message failed wrong private key" value="-1302">
+        Failed to decrypt regular message because a private key can not decrypt.
+    </constant>
+
+    <constant name="decrypt regular message failed recipient not found" value="-1303">
+        Failed to decrypt regular message because recipient was not found.
+    </constant>
+
+    <constant name="decrypt regular message failed verify signature" value="-1304">
+        Failed to decrypt regular message because failed to verify signature.
+    </constant>
+
+    <constant name="decrypt regular message failed crypto failed" value="-1398">
+        Failed to decrypt regular message because underlying crypto module failed.
+    </constant>
+
+    <constant name="encrypt regular message failed crypto failed" value="-1399">
+        Failed to encrypt regular message because underlying crypto module failed.
+    </constant>
+
+    <constant name="contacts failed send request failed" value="-1401">
+        Failed to perform contacts operation because send operation failed.
+    </constant>
+
+    <constant name="contacts failed response with error" value="-1402">
+        Failed to perform contacts operation because response with error was returned.
+    </constant>
+
+    <constant name="contacts failed parse response failed" value="-1403">
+        Failed to perform contacts operation because response parsing failed.
+    </constant>
+
+    <constant name="cloud fs failed send request failed" value="-1500">
+        Communicate with Cloud FS failed because send request failed.
+    </constant>
+
+    <constant name="cloud fs service error internal server error" value="-1501">
+        Cloud FS got a service error - internal server error (10000) - status 500.
+    </constant>
+
+    <constant name="cloud fs failed entry not found" value="-1502">
+        Cloud FS got a service error - entry not found - status 404.
+    </constant>
+
+    <constant name="cloud fs service error identity is invalid" value="-1503">
+        Cloud FS got a service error - identity is invalid (40001) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error user not found" value="-1504">
+        Cloud FS got a service error - user not found (40002) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error folder not found" value="-1505">
+        Cloud FS got a service error - folder not found (40003) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error invalid filename" value="-1506">
+        Cloud FS got a service error - invalid filename (40004) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid file id" value="-1507">
+        Cloud FS got a service error - invalid file id (40005) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid file size" value="-1508">
+        Cloud FS got a service error - invalid file size (40006) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid file type" value="-1509">
+        Cloud FS got a service error - invalid file type (40007) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid folder id" value="-1510">
+        Cloud FS got a service error - invalid folder id (40008) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid folder name" value="-1511">
+        Cloud FS got a service error - invalid folder name (40009) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid user permission" value="-1512">
+        Cloud FS got a service error - invalid user permission (40010) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error group folder has limited depth" value="-1513">
+        Cloud FS got a service error - group folder has limited depth (40011) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error permission denied" value="-1514">
+        Cloud FS got a service error - permission denied (40012) - status 403.
+    </constant>
+
+    <constant name="cloud fs service error key is not specified" value="-1515">
+        Cloud FS got a service error - key is not specified (40013) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error file with such name already exists" value="-1516">
+        Cloud FS got a service error - file with such name already exists (40014) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error file not found" value="-1517">
+        Cloud FS got a service error - file not found (40015) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error folder with such name already exists" value="-1518">
+        Cloud FS got a service error - folder with such name already exists (40016) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error invalid group id" value="-1519">
+        Cloud FS got a service error - invalid group id (40017) - status 400.
+    </constant>
+
+    <constant name="cloud fs service error group not found" value="-1520">
+        Cloud FS got a service error - group not found (40018) - status 404.
+    </constant>
+
+    <constant name="cloud fs service error undefined" value="-1529">
+        Cloud FS got a service error - undefined error - status 4xx.
+    </constant>
+
+    <constant name="cloud fs failed response unexpected content type" value="-1530">
+        Communicate with Cloud FS failed because met unexpected HTTP content type, expected application/protobuf.
+    </constant>
+
+    <constant name="cloud fs failed parse response failed" value="-1531">
+        Communicate with Cloud FS failed because failed to parse response body.
+    </constant>
+
+    <constant name="cloud fs failed generate key failed" value="-1532">
+        Cloud FS operation failed because key generation failed.
+    </constant>
+
+    <constant name="cloud fs failed encrypt key failed" value="-1533">
+        Cloud FS operation failed because something went wrong during key encryption.
+    </constant>
+
+    <constant name="cloud fs failed import key failed" value="-1534">
+        Cloud FS operation failed because import key failed.
+    </constant>
+
+    <constant name="cloud fs failed export key failed" value="-1535">
+        Cloud FS operation failed because export key failed.
+    </constant>
+
+    <constant name="cloud fs failed decrypt key failed invalid format" value="-1536">
+        Cloud FS operation failed because encrypted key has invalid format.
+    </constant>
+
+    <constant name="cloud fs failed decrypt key wrong key" value="-1537">
+        Cloud FS operation failed because encrypted key can not be decrypted with a given key.
+    </constant>
+
+    <constant name="cloud fs failed decrypt key signer mismatch" value="-1538">
+        Cloud FS operation failed because encrypted key can not be decrypted due to signer mismatch.
+    </constant>
+
+    <constant name="cloud fs failed decrypt key invalid signature" value="-1539">
+        Cloud FS operation failed because encrypted key can not be decrypted due to invalid signature.
     </constant>
 </enum>

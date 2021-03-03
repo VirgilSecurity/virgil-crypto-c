@@ -56,6 +56,8 @@
 #include "vssc_http_client_x_defs.h"
 #include "vssc_http_client_x_internal.h"
 
+#include <virgil/crypto/common/vsc_str.h>
+
 // clang-format on
 //  @end
 
@@ -71,14 +73,6 @@ vssc_http_client_x_create_obj_ascii_string(vsc_str_t str);
 
 static NSString *
 vssc_http_client_x_create_obj_utf8_string(vsc_str_t str);
-
-//
-//  Send given request over HTTP.
-//  Note, "auth type" and "auth credentials" can be empty.
-//
-static vssc_http_response_t *
-vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_request_t *http_request,
-        vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -134,11 +128,12 @@ vssc_http_client_x_create_obj_utf8_string(vsc_str_t str) {
 
 //
 //  Send given request over HTTP.
-//  Note, "auth type" and "auth credentials" can be empty.
 //
-static vssc_http_response_t *
-vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_request_t *http_request,
-        vsc_str_t auth_type, vsc_str_t auth_credentials, vssc_error_t *error) {
+VSSC_PUBLIC vssc_http_response_t *
+vssc_http_client_x_send(vssc_http_client_x_t *self, const vssc_http_request_t *http_request, vssc_error_t *error) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(http_request);
 
     VSSC_ASSERT_PTR(self);
     VSSC_ASSERT_PTR(http_request);
@@ -167,11 +162,10 @@ vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_req
     //
 
     // Authorization
-    if (vsc_str_is_valid_and_non_empty(auth_type) && vsc_str_is_valid_and_non_empty(auth_credentials)) {
+    vsc_str_t auth_header_value = vssc_http_request_auth_header_value(http_request);
+    if (!vsc_str_is_empty(auth_header_value)) {
         NSString *key_objc = @"Authorization";
-        NSString *type_objc = vssc_http_client_x_create_obj_ascii_string(auth_type);
-        NSString *credentials_objc = vssc_http_client_x_create_obj_ascii_string(auth_credentials);
-        NSString *value_objc = [NSString stringWithFormat:@"%@ %@", type_objc, credentials_objc];
+        NSString *value_objc = vssc_http_client_x_create_obj_ascii_string(auth_header_value);
         [request setValue:value_objc forHTTPHeaderField:key_objc];
     }
 
@@ -189,9 +183,9 @@ vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_req
         [request setValue:header_value_objc forHTTPHeaderField:header_name_objc];
     }
 
-    vsc_str_t body = vssc_http_request_body(http_request);
-    if (!vsc_str_is_empty(body)) {
-        [request setHTTPBody:[NSData dataWithBytes:body.chars length:body.len]];
+    vsc_data_t body = vssc_http_request_body(http_request);
+    if (!vsc_data_is_empty(body)) {
+        [request setHTTPBody:[NSData dataWithBytes:body.bytes length:body.len]];
     }
 
     //
@@ -233,8 +227,7 @@ vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_req
     if (nil == data || 0 == data.length) {
         http_response = vssc_http_response_new_with_status((size_t)status_code);
     } else {
-        // TODO: Check if body is a string.
-        vsc_str_t response_body = vsc_str((const char *)data.bytes, (size_t)data.length);
+        vsc_data_t response_body = vsc_data((const byte *)data.bytes, (size_t)data.length);
         http_response = vssc_http_response_new_with_body((size_t)status_code, response_body);
     }
 
@@ -251,31 +244,4 @@ vssc_http_client_x_send_internal(vssc_http_client_x_t *self, const vssc_http_req
     }
 
     return http_response;
-}
-
-//
-//  Send given request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_http_client_x_send(vssc_http_client_x_t *self, const vssc_http_request_t *http_request, vssc_error_t *error) {
-
-    VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_PTR(http_request);
-
-    return vssc_http_client_x_send_internal(self, http_request, vsc_str_empty(), vsc_str_empty(), error);
-}
-
-//
-//  Send given request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_http_client_x_auth_send(vssc_http_client_x_t *self, const vssc_http_request_t *http_request, vsc_str_t auth_type,
-        vsc_str_t auth_credentials, vssc_error_t *error) {
-
-    VSSC_ASSERT_PTR(self);
-    VSSC_ASSERT_PTR(http_request);
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_type));
-    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(auth_credentials));
-
-    return vssc_http_client_x_send_internal(self, http_request, auth_type, auth_credentials, error);
 }

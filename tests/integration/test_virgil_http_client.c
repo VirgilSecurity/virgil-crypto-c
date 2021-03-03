@@ -44,6 +44,7 @@
 
 
 #include "vssc_virgil_http_client.h"
+#include "vssc_jwt.h"
 
 #include "test_data_virgil_http_client.h"
 
@@ -58,27 +59,29 @@ test__send__with_stale_jwt__returns_response_with_service_error(void) {
     TEST_ASSERT_NOT_NULL(jwt);
 
     vssc_http_request_t *request = vssc_http_request_new_with_body(vssc_http_request_method_post,
-            test_data_virgil_http_client_HTTP_URL, test_data_virgil_http_client_HTTP_BODY);
+            test_data_virgil_http_client_HTTP_URL, vsc_str_as_data(test_data_virgil_http_client_HTTP_BODY));
 
     vssc_http_request_add_header(request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
 
-    vssc_virgil_http_response_t *response = vssc_virgil_http_client_send(request, jwt, &error);
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(jwt));
+
+    vssc_http_response_t *response = vssc_virgil_http_client_send(request, &error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, vssc_error_status(&error));
     TEST_ASSERT_NOT_NULL(jwt);
 
+    TEST_ASSERT_EQUAL(test_data_virgil_http_client_RESPONSE_STATUS_CODE, vssc_http_response_status_code(response));
+
+    TEST_ASSERT_TRUE(vssc_http_response_has_service_error(response));
+
+
     TEST_ASSERT_EQUAL(
-            test_data_virgil_http_client_RESPONSE_STATUS_CODE, vssc_virgil_http_response_status_code(response));
-
-    TEST_ASSERT_TRUE(vssc_virgil_http_response_has_service_error(response));
-
-
-    TEST_ASSERT_EQUAL(test_data_virgil_http_client_RESPONSE_SERVICE_ERROR_CODE,
-            vssc_virgil_http_response_service_error_code(response));
+            test_data_virgil_http_client_RESPONSE_SERVICE_ERROR_CODE, vssc_http_response_service_error_code(response));
 
     TEST_ASSERT_EQUAL_STR(test_data_virgil_http_client_RESPONSE_SERVICE_ERROR_DESRIPTION,
-            vssc_virgil_http_response_service_error_description(response));
+            vssc_http_response_service_error_description(response));
 
-    vssc_virgil_http_response_destroy(&response);
+    vssc_http_response_destroy(&response);
     vssc_http_request_destroy(&request);
     vssc_jwt_destroy(&jwt);
 }

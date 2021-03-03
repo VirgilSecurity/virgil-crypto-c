@@ -324,6 +324,7 @@ vscf_message_info_editor_cleanup_ctx(vscf_message_info_editor_t *self) {
     vscf_impl_destroy(&self->message_info_serializer);
     vscf_message_info_destroy(&self->message_info);
     vsc_buffer_destroy(&self->encryption_key);
+    vsc_buffer_destroy(&self->non_message_info_data);
 }
 
 //
@@ -364,9 +365,26 @@ vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t mes
 
     vscf_message_info_destroy(&self->message_info);
     vsc_buffer_release(self->encryption_key);
+    vsc_buffer_destroy(&self->non_message_info_data);
 
     self->message_info =
             vscf_message_info_serializer_deserialize(self->message_info_serializer, message_info_data, &error);
+
+    //
+    //  Store tail after message info.
+    //
+    if (self->message_info) {
+        const size_t message_info_data_len =
+                vscf_message_info_serializer_read_prefix(self->message_info_serializer, message_info_data);
+        VSCF_ASSERT(0 < message_info_data_len && message_info_data_len <= message_info_data.len);
+
+        const size_t non_message_info_data_len = message_info_data.len - message_info_data_len;
+        if (non_message_info_data_len > 0) {
+            const vsc_data_t non_message_info_data =
+                    vsc_data_slice_end(message_info_data, 0, non_message_info_data_len);
+            self->non_message_info_data = vsc_buffer_new_with_data(non_message_info_data);
+        }
+    }
 
     return vscf_error_status(&error);
 }
@@ -535,7 +553,15 @@ vscf_message_info_editor_packed_len(const vscf_message_info_editor_t *self) {
     VSCF_ASSERT(self->message_info);
     VSCF_ASSERT(self->message_info_serializer);
 
-    return vscf_message_info_serializer_serialized_len(self->message_info_serializer, self->message_info);
+    size_t len = 0;
+
+    if (self->non_message_info_data) {
+        len += vsc_buffer_len(self->non_message_info_data);
+    }
+
+    len += vscf_message_info_serializer_serialized_len(self->message_info_serializer, self->message_info);
+
+    return len;
 }
 
 //
@@ -553,4 +579,28 @@ vscf_message_info_editor_pack(vscf_message_info_editor_t *self, vsc_buffer_t *me
     VSCF_ASSERT(vsc_buffer_unused_len(message_info) >= vscf_message_info_editor_packed_len(self));
 
     vscf_message_info_serializer_serialize(self->message_info_serializer, self->message_info, message_info);
+
+    if (self->non_message_info_data) {
+        vsc_buffer_write_data(message_info, vsc_buffer_data(self->non_message_info_data));
+    }
+}
+
+//
+//  Read message info prefix from the given data, and if it is valid,
+//  return a length of bytes of the whole message info.
+//
+//  Zero returned if length can not be determined from the given data,
+//  and this means that there is no message info at the data beginning.
+//
+VSCF_PUBLIC size_t
+vscf_message_info_editor_read_prefix(vsc_data_t data) {
+
+    vscf_message_info_der_serializer_t *der_serializer = vscf_message_info_der_serializer_new();
+    vscf_message_info_der_serializer_setup_defaults(der_serializer);
+
+    const size_t result = vscf_message_info_der_serializer_read_prefix(der_serializer, data);
+
+    vscf_message_info_der_serializer_destroy(&der_serializer);
+
+    return result;
 }

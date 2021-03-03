@@ -1,0 +1,126 @@
+.template 0
+#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#
+#   All rights reserved.
+#
+#   Redistribution and use in source and binary forms, with or without
+#   modification, are permitted provided that the following conditions are
+#   met:
+#
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
+#
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
+#   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+#   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+#   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+#   DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+#   INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+#   (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+#   SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+#   HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+#   STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+#   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#   POSSIBILITY OF SUCH DAMAGE.
+#
+#   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
+# ---------------------------------------------------------------------------
+#   Implement class "error message" by adding code to the methods.
+#
+# ---------------------------------------------------------------------------
+#   This is a code generator built using the iMatix GSL code generation
+#   language. See https://github.com/zeromq/gsl for details.
+# ---------------------------------------------------------------------------
+
+gsl from "common.gsl"
+gsl from "component.gsl"
+gsl from "meta.gsl"
+
+
+# ---------------------------------------------------------------------------
+#   Implement class 'error message' if exists.
+# ---------------------------------------------------------------------------
+function class_error_message_implement (project, root)
+    check_arguments (my, "project, root", my)
+
+    my.class_error_message = my.root->class(class.name = "error message") ?
+    my.enum_status = my.root->enum(enum.name = "status") ?
+
+    if !defined(my.class_error_message)
+        return
+    endif
+
+    if !defined(my.enum_status)
+        echo_fatal("Expected enum 'status' within project '$(my.project.name:)'")
+    endif
+
+    my.method_from_status = my.class_error_message->method(method.name = "from status") ?
+
+    if !defined(my.method_from_status)
+        echo_fatal("Expected method 'from status' within class 'error message'")
+    endif
+
+
+    new constant to my.class_error_message
+        .name = "k message unknown error"
+        .type = "string"
+        .visibility = "private"
+
+        new value to constant
+            .value = "Unknown error."
+        endnew
+    endnew
+
+
+    for my.enum_status.constant as enum_constant
+        new constant to my.class_error_message
+            .name = cat("k message", enum_constant.name)
+            .type = "string"
+            .visibility = "private"
+
+            new value to constant
+                .value = string_to_singleline(enum_constant. ? "")
+            endnew
+        endnew
+    endfor
+
+
+    new code to my.method_from_status
+        my.body_switch_start = "\
+            switch(.(_argument_status)) {
+        "
+
+        for my.enum_status.constant
+            my.c_enum_constant_ref = make_ref_c(make_id("class status enum status constant", constant.name))
+            my.c_message_ref = make_ref_c(make_id("class error message variable k message", constant.name))
+            my.body_switch_case ?= ""
+            my.body_switch_case += "
+                case $(my.c_enum_constant_ref):
+                    return $(my.c_message_ref);"
+        endfor
+
+        my.body_switch_end = "\
+                default:
+                    return .(c_class_error_message_variable_k_message_unknown_error);
+            }
+        "
+
+        my.method_body = ""
+        my.method_body += format_left(my.body_switch_start)
+        my.method_body += format_left(my.body_switch_case, 1)
+        my.method_body += format_left(my.body_switch_end)
+
+        . = my.method_body
+    endnew
+endfunction
+
+.endtemplate

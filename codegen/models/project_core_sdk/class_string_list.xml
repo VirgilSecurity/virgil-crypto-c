@@ -1,16 +1,31 @@
 <class name="string list">
     Handles a list of "string" class objects.
 
-    <property name="item" class="str mutable"/>
+    <property name="item" class="str buffer" access="readonly"/>
     <property name="next" class="self"/>
     <property name="prev" class="self"/>
 
 
     <method name="add">
         Add new item to the list.
-        Note, ownership is transfered.
 
         <argument name="str" class="str"/>
+    </method>
+
+
+    <method name="add copy" scope="private">
+        Add new item to the list.
+        Note, string buffer is copied.
+
+        <argument name="str buffer" class="str buffer" access="readonly"/>
+    </method>
+
+
+    <method name="add disown" scope="private">
+        Add new item to the list.
+        Note, ownership is transfered.
+
+        <argument name="str buffer" class="str buffer" access="disown"/>
     </method>
 
 
@@ -63,6 +78,13 @@
 
     <method name="clear">
         Remove all items.
+    </method>
+
+
+    <method name="count" is_const="1">
+        Return number of items within list.
+
+        <return type="size"/>
     </method>
 
 

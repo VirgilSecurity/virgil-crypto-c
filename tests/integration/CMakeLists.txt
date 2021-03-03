@@ -43,11 +43,35 @@ macro(_add_test test)
     add_executable(${test} ${test}.c)
     target_sources(${test} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/test_sdk_utils.h")
     target_add_filename_definitions(${test})
-    target_link_libraries(${test} test_utils test_env "${ARGN}")
+    target_link_libraries(${test} test_utils test_env)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
     enable_target_pedantic(${test})
     set_tests_properties(${test} PROPERTIES LABELS "integration")
+
+    if(TARGET vsc::core_sdk)
+        target_link_libraries(${test} test_data_core_sdk vsc::core_sdk)
+    endif()
+
+
+    if(TARGET vsc::keyknox_sdk)
+        target_link_libraries(${test} vsc::keyknox_sdk)
+    endif()
+
+
+    if(TARGET vsc::brainkey_sdk)
+        target_link_libraries(${test} vsc::brainkey_sdk)
+    endif()
+
+
+    if(TARGET vsc::comm_kit)
+        target_link_libraries(${test} vsc::comm_kit)
+        target_sources(${test} PRIVATE
+                "${CMAKE_CURRENT_LIST_DIR}/test_comm_kit_utils.h"
+                "${CMAKE_CURRENT_LIST_DIR}/test_comm_kit_utils.c"
+        )
+    endif()
+
 
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
@@ -56,21 +80,23 @@ endmacro()
 
 
 if(TARGET vsc::core_sdk)
-    set(DEPENDENCIES test_data_core_sdk vsc::core_sdk)
-
-    _add_test(test_virgil_http_client ${DEPENDENCIES})
-    _add_test(test_cards_service ${DEPENDENCIES})
+    _add_test(test_virgil_http_client)
+    _add_test(test_cards_service)
 endif()
+
 
 
 if(TARGET vsc::keyknox_sdk)
-    set(DEPENDENCIES vsc::keyknox_sdk)
-
-    _add_test(test_keyknox_service ${DEPENDENCIES})
+    _add_test(test_keyknox_service)
 endif()
 
-if(TARGET vsc::comm_kit)
-    set(DEPENDENCIES vsc::comm_kit)
 
-    _add_test(test_comm_kit_messenger_auth ${DEPENDENCIES})
+if(TARGET vsc::brainkey_sdk)
+    _add_test(test_brainkey_service)
+endif()
+
+
+if(TARGET vsc::comm_kit)
+    _add_test(test_comm_kit_messenger)
+    _add_test(test_comm_kit_messenger_cloud_fs_client)
 endif()

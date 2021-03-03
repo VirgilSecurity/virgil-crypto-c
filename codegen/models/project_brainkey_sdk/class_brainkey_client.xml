@@ -1,0 +1,72 @@
+<class name="brainkey client">
+    Helps to communicate with Virgil Brainkey Service.
+
+    <require class="json object" project="core sdk"/>
+    <require class="brainkey hardened point" api="private"/>
+
+
+    <property name="brainkey url" class="str mutable"/>
+
+
+    <constant name="k base url" type="string" visibility="private">
+        Base service URL.
+
+        <value value="https://api.virgilsecurity.com"/>
+    </constant>
+
+
+    <constant name="k brainkey url path" type="string" visibility="private" >
+        POST /brainkey/v2/harden
+
+        <value value="/brainkey/v2/harden"/>
+    </constant>
+
+
+    <constant name="k json key blinded point" type="string" visibility="private" >
+        JSON key: blinded_point
+
+        <value value="blinded_point"/>
+    </constant>
+
+
+    <constant name="k json key hardened point" type="string" visibility="private" >
+        JSON key: hardened_point
+
+        <value value="hardened_point"/>
+    </constant>
+
+
+    <constructor name="with base url">
+        Create Brainkey Client with a given Virgil Base URL, aka https://api.virgilsecurity.com
+
+        <argument name="url" class="str"/>
+    </constructor>
+
+
+    <method name="make request harden point" is_const="1">
+         Create request that makes a hardened point from a blinded point.
+
+        <argument name="blinded point" class="data"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response harden point" is_static="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="brainkey hardened point" access="disown"/>
+    </method>
+
+
+    <method name="map service status" is_static="1" declaration="private">
+        Map service response status to the SDK status.
+
+        <argument name="response" class="http response" project="core sdk"/>
+
+        <return enum="status"/>
+    </method>
+</class>

@@ -4,6 +4,7 @@
     <require header="pythia_init.h" is_system="0"/>
     <require header="pythia_wrapper.h" is_system="0"/>
     <require header="pythia_buf_sizes.h" is_system="0"/>
+    <require module="atomic"/>
 
     <require header="mbedtls/ctr_drbg.h"/>
     <require header="mbedtls/entropy.h"/>
@@ -32,7 +33,9 @@
 
     <method name="configure" is_static="1">
         Performs global initialization of the pythia library.
-        Must be called once for entire application at startup.
+
+        Note, can be called multiple times, but actual configuration takes place once.
+        Note, this method is thread-safe.
 
         <return enum="status"/>
     </method>
@@ -40,7 +43,10 @@
 
     <method name="cleanup" is_static="1">
         Performs global cleanup of the pythia library.
-        Must be called once for entire application before exit.
+
+        Note, can be called multiple times, but actual cleanup takes place once.
+        Note, should be called as many times, as "configure()" method called".
+        Note, this method is thread-safe.
     </method>
 
 

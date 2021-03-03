@@ -60,14 +60,6 @@
 #include "vssc_http_response.h"
 #include "vssc_api.h"
 
-#if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str.h>
-#endif
-
-#if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str.h>
-#endif
-
 // clang-format on
 //  @end
 
@@ -96,13 +88,6 @@ extern "C" {
 //
 VSSC_PUBLIC vssc_http_response_t *
 vssc_http_client_send(vssc_impl_t *impl, const vssc_http_request_t *http_request, vssc_error_t *error);
-
-//
-//  Send given request over HTTP.
-//
-VSSC_PUBLIC vssc_http_response_t *
-vssc_http_client_auth_send(vssc_impl_t *impl, const vssc_http_request_t *http_request, vsc_str_t auth_type,
-        vsc_str_t auth_credentials, vssc_error_t *error);
 
 //
 //  Return http client API, or NULL if it is not implemented.

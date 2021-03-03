@@ -52,10 +52,14 @@ option(VSSC_HTTP_CLIENT "Enable interface 'http client'." ON)
 option(VSSC_HTTP_CLIENT_CURL "Enable class 'http client curl'." ON)
 option(VSSC_HTTP_CLIENT_X "Enable class 'http client x'." OFF)
 option(VSSC_ERROR "Enable class 'error'." ON)
+option(VSSC_ERROR_MESSAGE "Enable class 'error message'." ON)
 option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
 option(VSSC_JSON_ARRAY "Enable class 'json array'." ON)
 option(VSSC_UNIX_TIME "Enable class 'unix time'." ON)
 option(VSSC_STRING_LIST "Enable class 'string list'." ON)
+option(VSSC_NUMBER_LIST "Enable class 'number list'." ON)
+option(VSSC_STRING_MAP "Enable class 'string map'." ON)
+option(VSSC_STRING_MAP_BUCKET "Enable class 'string map bucket'." ON)
 option(VSSC_BASE64_URL "Enable class 'base64 url'." ON)
 option(VSSC_JWT "Enable class 'jwt'." ON)
 option(VSSC_JWT_HEADER "Enable class 'jwt header'." ON)
@@ -66,7 +70,7 @@ option(VSSC_HTTP_HEADER_LIST "Enable class 'http header list'." ON)
 option(VSSC_HTTP_REQUEST "Enable class 'http request'." ON)
 option(VSSC_HTTP_RESPONSE "Enable class 'http response'." ON)
 option(VSSC_VIRGIL_HTTP_CLIENT "Enable class 'virgil http client'." ON)
-option(VSSC_VIRGIL_HTTP_RESPONSE "Enable class 'virgil http response'." ON)
+option(VSSC_VIRGIL_HTTP_CLIENT_DEBUG "" OFF)
 option(VSSC_KEY_HANDLER "Enable class 'key handler'." ON)
 option(VSSC_KEY_HANDLER_LIST "Enable class 'key handler list'." ON)
 option(VSSC_CARD_CLIENT "Enable class 'card client'." ON)
@@ -87,10 +91,14 @@ mark_as_advanced(
         VSSC_HTTP_CLIENT_CURL
         VSSC_HTTP_CLIENT_X
         VSSC_ERROR
+        VSSC_ERROR_MESSAGE
         VSSC_JSON_OBJECT
         VSSC_JSON_ARRAY
         VSSC_UNIX_TIME
         VSSC_STRING_LIST
+        VSSC_NUMBER_LIST
+        VSSC_STRING_MAP
+        VSSC_STRING_MAP_BUCKET
         VSSC_BASE64_URL
         VSSC_JWT
         VSSC_JWT_HEADER
@@ -101,7 +109,7 @@ mark_as_advanced(
         VSSC_HTTP_REQUEST
         VSSC_HTTP_RESPONSE
         VSSC_VIRGIL_HTTP_CLIENT
-        VSSC_VIRGIL_HTTP_RESPONSE
+        VSSC_VIRGIL_HTTP_CLIENT_DEBUG
         VSSC_KEY_HANDLER
         VSSC_KEY_HANDLER_LIST
         VSSC_CARD_CLIENT
@@ -125,11 +133,29 @@ if(VSSC_USE_DEFAULT_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT_CURL AND NOT VSSC_HTTP_
     message(FATAL_ERROR)
 endif()
 
+if(VSSC_HTTP_CLIENT_CURL AND NOT VSC_STR_BUFFER)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_HTTP_CLIENT_CURL depends on the feature:")
+    message("     VSC_STR_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSSC_HTTP_CLIENT_CURL AND NOT VSC_STR_MUTABLE)
     message("-- error --")
     message("--")
     message("Feature VSSC_HTTP_CLIENT_CURL depends on the feature:")
     message("     VSC_STR_MUTABLE - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_HTTP_CLIENT_CURL AND NOT VSSC_HTTP_RESPONSE)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_HTTP_CLIENT_CURL depends on the feature:")
+    message("     VSSC_HTTP_RESPONSE - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -175,6 +201,24 @@ if(VSSC_JSON_ARRAY AND NOT VSSC_JSON_OBJECT)
     message("--")
     message("Feature VSSC_JSON_ARRAY depends on the feature:")
     message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_STRING_MAP AND NOT VSSC_STRING_LIST)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_STRING_MAP depends on the feature:")
+    message("     VSSC_STRING_LIST - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_STRING_MAP AND NOT VSSC_STRING_MAP_BUCKET)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_STRING_MAP depends on the feature:")
+    message("     VSSC_STRING_MAP_BUCKET - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -278,6 +322,15 @@ if(VSSC_JWT_GENERATOR AND NOT VSCF_CTR_DRBG)
     message(FATAL_ERROR)
 endif()
 
+if(VSSC_HTTP_RESPONSE AND NOT VSSC_JSON_OBJECT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_HTTP_RESPONSE depends on the feature:")
+    message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSSC_VIRGIL_HTTP_CLIENT AND NOT VSSC_USE_DEFAULT_HTTP_CLIENT)
     message("-- error --")
     message("--")
@@ -296,20 +349,20 @@ if(VSSC_VIRGIL_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT)
     message(FATAL_ERROR)
 endif()
 
-if(VSSC_VIRGIL_HTTP_RESPONSE AND NOT VSSC_JSON_OBJECT)
-    message("-- error --")
-    message("--")
-    message("Feature VSSC_VIRGIL_HTTP_RESPONSE depends on the feature:")
-    message("     VSSC_JSON_OBJECT - which is disabled.")
-    message("--")
-    message(FATAL_ERROR)
-endif()
-
 if(VSSC_CARD_CLIENT AND NOT VSC_STR_BUFFER)
     message("-- error --")
     message("--")
     message("Feature VSSC_CARD_CLIENT depends on the feature:")
     message("     VSC_STR_BUFFER - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_CARD_CLIENT AND NOT VSSC_JSON_OBJECT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_CARD_CLIENT depends on the feature:")
+    message("     VSSC_JSON_OBJECT - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -346,6 +399,24 @@ if(VSSC_RAW_CARD AND NOT VSSC_JSON_OBJECT)
     message("--")
     message("Feature VSSC_RAW_CARD depends on the feature:")
     message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_RAW_CARD AND NOT VSSC_JSON_OBJECT)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_RAW_CARD depends on the feature:")
+    message("     VSSC_JSON_OBJECT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSSC_RAW_CARD AND NOT VSSC_JSON_ARRAY)
+    message("-- error --")
+    message("--")
+    message("Feature VSSC_RAW_CARD depends on the feature:")
+    message("     VSSC_JSON_ARRAY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

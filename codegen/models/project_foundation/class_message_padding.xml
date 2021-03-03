@@ -16,7 +16,7 @@
         <return type="size"/>
     </method>
 
-    <method name="add padding">
+    <method name="add padding" is_const="1">
         <argument name="plain text" class="buffer" access="readwrite"/>
 
         <return enum="status"/>

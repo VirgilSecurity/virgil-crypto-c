@@ -54,6 +54,7 @@ gsl from "context.gsl"
 gsl from "meta.gsl"
 gsl from "features.gsl"
 gsl from "projects_api.gsl"
+gsl from "class_error_message.gsl"
 gsl from "wrapper.gsl"
 
 gsl from "c_features.gsl"
@@ -142,6 +143,8 @@ function process_project (project, features_list, projects_api, wrappers, echo_l
     for my.project.enum
         load_project_model (my.project, enum, my.root)
     endfor
+
+    class_error_message_implement (my.project, my.root)
 
     #   Process project.
     project_generate_structure (my.project)

@@ -59,10 +59,12 @@
 
 #if !VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_str_mutable.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
 #endif
 
 #if VSSC_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str_mutable.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 // clang-format on
@@ -97,7 +99,9 @@ struct vssc_http_request_t {
 
     vsc_str_mutable_t url;
 
-    vsc_str_mutable_t body;
+    vsc_buffer_t *body;
+
+    vsc_str_mutable_t auth_header_value;
 
     vssc_http_header_list_t *headers;
 };

@@ -49,11 +49,11 @@ if(NOT TARGET vsc::core_sdk)
 endif()
 
 #
-# Virgil Security Library Pythia SDK
+# Virgil Security Library Brainkey SDK
 #
-if(NOT TARGET vsc::pythia_sdk)
+if(NOT TARGET vsc::brainkey_sdk)
     message(FATAL_ERROR
-            "Required library 'Virgil Security Pythia SDK' is not found - looking for target 'vsc::pythia_sdk'.")
+            "Required library 'Virgil Security Brainkey SDK' is not found - looking for target 'vsc::brainkey_sdk'.")
 endif()
 
 #
@@ -82,6 +82,10 @@ if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS)
     set(VSSK_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK YES CACHE INTERNAL "")
 endif()
 
+#
+# Library with protobuf models
+#
+add_subdirectory(protobuf)
 
 #
 # Define sources
@@ -106,7 +110,7 @@ target_include_directories(comm_kit
 #
 # Link to dependencies
 #
-target_link_libraries(comm_kit PUBLIC vsc::core_sdk vsc::pythia_sdk vsc::keyknox_sdk)
+target_link_libraries(comm_kit PUBLIC vsc::core_sdk vsc::brainkey_sdk vsc::keyknox_sdk vsc::comm_kit_pb)
 
 #
 # Define specific compilation and linkage flags.
@@ -170,9 +174,9 @@ endif()
 # ---------------------------------------------------------------------------
 if(CMAKE_CROSSCOMPILING AND APPLE AND BUILD_APPLE_FRAMEWORKS AND COMMAND target_apple_framework)
     target_apple_framework(comm_kit
-            NAME VSSKeyKnox
+            NAME VSSCommKit
             VERSION "A"
-            IDENTIFIER com.virgilsecurity.VSSKeyKnox
+            IDENTIFIER com.virgilsecurity.VSSCommKit
             )
 endif()
 
