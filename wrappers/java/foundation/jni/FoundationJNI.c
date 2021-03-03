@@ -4889,6 +4889,18 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
     return ret;
 }
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1readPrefix (JNIEnv *jenv, jobject jobj, jbyteArray jdata) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+
+    jint ret = (jint) vscf_message_info_editor_read_prefix(data /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_signer_info_t **)&c_ctx = vscf_signer_info_new();

@@ -85,9 +85,6 @@ func (obj *GroupSession) delete() {
     C.vscf_group_session_delete(obj.cCtx)
 }
 
-/*
-* Random
-*/
 func (obj *GroupSession) SetRng(rng Random) {
     C.vscf_group_session_release_rng(obj.cCtx)
     C.vscf_group_session_use_rng(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(rng.Ctx())))

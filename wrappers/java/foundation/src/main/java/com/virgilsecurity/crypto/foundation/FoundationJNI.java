@@ -905,9 +905,6 @@ public class FoundationJNI {
 
     public native void groupSession_close(long cCtx);
 
-    /*
-    * Random
-    */
     public native void groupSession_setRng(long cCtx, Random rng) throws FoundationException;
 
     /*
@@ -1003,6 +1000,15 @@ public class FoundationJNI {
     * Precondition: this method can be called after "apply".
     */
     public native byte[] messageInfoEditor_pack(long cCtx);
+
+    /*
+    * Read message info prefix from the given data, and if it is valid,
+    * return a length of bytes of the whole message info.
+    *
+    * Zero returned if length can not be determined from the given data,
+    * and this means that there is no message info at the data beginning.
+    */
+    public native int messageInfoEditor_readPrefix(byte[] data);
 
     public native long signerInfo_new();
 

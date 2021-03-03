@@ -110,9 +110,6 @@ public class GroupSession implements AutoCloseable {
         clearResources();
     }
 
-    /*
-    * Random
-    */
     public void setRng(Random rng) {
         FoundationJNI.INSTANCE.groupSession_setRng(this.cCtx, rng);
     }

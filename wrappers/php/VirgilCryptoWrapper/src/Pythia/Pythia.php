@@ -45,7 +45,9 @@ class Pythia
 
     /**
     * Performs global initialization of the pythia library.
-    * Must be called once for entire application at startup.
+    *
+    * Note, can be called multiple times, but actual configuration takes place once.
+    * Note, this method is thread-safe.
     *
     * @return void
     * @throws \Exception
@@ -57,7 +59,10 @@ class Pythia
 
     /**
     * Performs global cleanup of the pythia library.
-    * Must be called once for entire application before exit.
+    *
+    * Note, can be called multiple times, but actual cleanup takes place once.
+    * Note, should be called as many times, as "configure()" method called".
+    * Note, this method is thread-safe.
     *
     * @return void
     */

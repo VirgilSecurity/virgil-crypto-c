@@ -212,3 +212,18 @@ func (obj *MessageInfoEditor) Pack() []byte {
 
     return messageInfoBuf.getData() /* r7 */
 }
+
+/*
+* Read message info prefix from the given data, and if it is valid,
+* return a length of bytes of the whole message info.
+*
+* Zero returned if length can not be determined from the given data,
+* and this means that there is no message info at the data beginning.
+*/
+func MessageInfoEditorReadPrefix(data []byte) uint {
+    dataData := helperWrapData (data)
+
+    proxyResult := /*pr4*/C.vscf_message_info_editor_read_prefix(dataData)
+
+    return uint(proxyResult) /* r9 */
+}

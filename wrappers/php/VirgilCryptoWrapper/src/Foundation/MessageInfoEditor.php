@@ -178,6 +178,21 @@ class MessageInfoEditor
     }
 
     /**
+    * Read message info prefix from the given data, and if it is valid,
+    * return a length of bytes of the whole message info.
+    *
+    * Zero returned if length can not be determined from the given data,
+    * and this means that there is no message info at the data beginning.
+    *
+    * @param string $data
+    * @return int
+    */
+    public static function readPrefix(string $data): int
+    {
+        return vscf_message_info_editor_read_prefix_php($data);
+    }
+
+    /**
     * Get C context.
     *
     * @return resource

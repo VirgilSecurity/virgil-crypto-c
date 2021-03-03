@@ -455,6 +455,8 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_m
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1pack (JNIEnv *, jobject, jlong);
 
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1readPrefix (JNIEnv *, jobject, jbyteArray);
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1close (JNIEnv *, jobject, jlong);

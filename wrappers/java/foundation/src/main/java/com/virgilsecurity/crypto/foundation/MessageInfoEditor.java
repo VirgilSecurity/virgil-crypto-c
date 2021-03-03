@@ -152,5 +152,16 @@ public class MessageInfoEditor implements AutoCloseable {
     public byte[] pack() {
         return FoundationJNI.INSTANCE.messageInfoEditor_pack(this.cCtx);
     }
+
+    /*
+    * Read message info prefix from the given data, and if it is valid,
+    * return a length of bytes of the whole message info.
+    *
+    * Zero returned if length can not be determined from the given data,
+    * and this means that there is no message info at the data beginning.
+    */
+    public static int readPrefix(byte[] data) {
+        return FoundationJNI.INSTANCE.messageInfoEditor_readPrefix(data);
+    }
 }
 

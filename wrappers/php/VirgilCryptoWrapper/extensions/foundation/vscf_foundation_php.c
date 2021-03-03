@@ -10109,6 +10109,51 @@ PHP_FUNCTION(vscf_message_info_editor_pack_php) {
 }
 
 //
+// Wrap method: vscf_message_info_editor_read_prefix
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_message_info_editor_read_prefix_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_LONG /*type*/,
+    0 /*allow_null*/)
+
+
+    ZEND_ARG_TYPE_INFO(0, in_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_message_info_editor_read_prefix_php) {
+
+    //
+    // Declare input argument
+    //
+    char *in_data = NULL;
+    size_t in_data_len = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_STRING_EX(in_data, in_data_len, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vsc_data_t data = vsc_data((const byte*)in_data, in_data_len);
+
+    //
+    // Call main function
+    //
+    size_t res =vscf_message_info_editor_read_prefix(data);
+
+    //
+    // Write returned result
+    //
+    RETVAL_LONG(res);
+}
+
+//
 // Wrap method: vscf_message_info_editor_use_random
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -41508,6 +41553,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_message_info_editor_remove_all_php, arginfo_vscf_message_info_editor_remove_all_php)
     PHP_FE(vscf_message_info_editor_packed_len_php, arginfo_vscf_message_info_editor_packed_len_php)
     PHP_FE(vscf_message_info_editor_pack_php, arginfo_vscf_message_info_editor_pack_php)
+    PHP_FE(vscf_message_info_editor_read_prefix_php, arginfo_vscf_message_info_editor_read_prefix_php)
     PHP_FE(vscf_message_info_editor_use_random_php, arginfo_vscf_message_info_editor_use_random_php)
     PHP_FE(vscf_signer_info_new_php, arginfo_vscf_signer_info_new_php)
     PHP_FE(vscf_signer_info_delete_php, arginfo_vscf_signer_info_delete_php)
