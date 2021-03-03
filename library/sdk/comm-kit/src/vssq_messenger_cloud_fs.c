@@ -574,33 +574,48 @@ vssq_messenger_cloud_fs_get_shared_group_users(
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_cloud_fs_set_shared_group_users(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
-        vsc_data_t entry_key, const vssq_messenger_cloud_fs_access_list_t *users_access) {
+        vsc_data_t encrypted_group_key, const vssq_messenger_user_t *key_issuer,
+        const vssq_messenger_cloud_fs_access_list_t *users_access) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->random);
     VSSQ_ASSERT_PTR(vssq_messenger_cloud_fs_is_authenticated(self));
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
-    VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(entry_key));
+    VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(encrypted_group_key));
     VSSQ_ASSERT_PTR(users_access);
     VSSQ_ASSERT(vssq_messenger_cloud_fs_access_list_has_item(users_access));
 
     vssq_error_t error;
     vssq_error_reset(&error);
 
-    vsc_buffer_t *new_entry_encrypted_key = vssq_messenger_cloud_fs_encrypt_key(
-            self, entry_key, vsc_str_empty(), vsc_data_empty(), users_access, &error);
+    vsc_buffer_t *group_key = NULL;
+    vsc_buffer_t *new_group_encrypted_key = NULL;
+
+    const size_t group_key_len = vssq_messenger_cloud_fs_decrypted_key_len(self, encrypted_group_key);
+    group_key = vsc_buffer_new_with_capacity(group_key_len);
+    vsc_buffer_make_secure(group_key);
+
+    error.status = vssq_messenger_cloud_fs_decrypt_key(self, encrypted_group_key, key_issuer, group_key);
+    if (vssq_error_has_error(&error)) {
+        goto cleanup;
+    }
+
+    new_group_encrypted_key = vssq_messenger_cloud_fs_encrypt_key(
+            self, vsc_buffer_data(group_key), vsc_str_empty(), vsc_data_empty(), users_access, &error);
 
     if (vssq_error_has_error(&error)) {
-        return vssq_error_status(&error);
+        goto cleanup;
     }
 
     //
     //  Share folder.
     //
     error.status = vssq_messenger_cloud_fs_client_set_shared_group_users(
-            self->client, id, vsc_buffer_data(new_entry_encrypted_key), users_access);
+            self->client, id, vsc_buffer_data(new_group_encrypted_key), users_access);
 
-    vsc_buffer_destroy(&new_entry_encrypted_key);
+cleanup:
+    vsc_buffer_destroy(&group_key);
+    vsc_buffer_destroy(&new_group_encrypted_key);
 
     return vssq_error_status(&error);
 }
