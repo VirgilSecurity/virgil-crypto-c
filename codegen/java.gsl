@@ -1738,7 +1738,7 @@ function java_create_class_module (class, java_project, meta)
 
     assert_attribute (my.class, "name", my)
 
-    if string_in (my.class.name, "data, buffer, error")
+    if string_in2 (my.class.name, "data, buffer, error, error message")
         #   Do not generate classes that can be mapped to the built-in types.
         return
     endif
