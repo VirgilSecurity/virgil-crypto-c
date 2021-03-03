@@ -271,7 +271,7 @@ vssc_virgil_http_client_debug_print_response(const vssc_http_response_t *http_re
 
     printf("\n---------------------\n");
     printf("Got HTTP response:\n");
-    printf("    STATUS: %zu\n", vssc_http_response_status_code(http_response));
+    printf("    STATUS: %lu\n", (unsigned long)vssc_http_response_status_code(http_response));
     printf("      BODY: ");
 
     vsc_data_t body = vssc_http_response_body(http_response);
