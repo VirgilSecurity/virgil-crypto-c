@@ -810,7 +810,6 @@ test__messenger_cloud_fs_client_create_shared_folder__1_admin_and_1_member__got_
 
     vsc_str_t shared_group_id = vssq_messenger_cloud_fs_folder_info_shared_group_id(folder_info);
     TEST_ASSERT_EQUAL(32, vsc_str_len(shared_group_id));
-    print_str(shared_group_id);
 
     //
     //  Get folder shared group.
@@ -906,7 +905,6 @@ test__messenger_cloud_fs_client_set_shared_group__add_1_member_after_creation__g
 
     vsc_str_t shared_group_id = vssq_messenger_cloud_fs_folder_info_shared_group_id(folder_info);
     TEST_ASSERT_EQUAL(32, vsc_str_len(shared_group_id));
-    print_str(shared_group_id);
 
     //
     //  Add new member (Bob).
