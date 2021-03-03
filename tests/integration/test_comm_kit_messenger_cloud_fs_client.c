@@ -977,18 +977,18 @@ main(void) {
     UNITY_BEGIN();
 
 #if TEST_DEPENDENCIES_AVAILABLE
-    // RUN_TEST(test__messenger_cloud_fs_client_create_file__then_delete_it__got_upload_link);
-    // RUN_TEST(test__messenger_cloud_fs_client_get_download_link__of_created_file__success);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
-    // RUN_TEST(test__messenger_cloud_fs_client_list_folder__before_create_2_files_within_root__2_files_listed);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_file__with_duplicated_names__got_error);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_duplicated_names__got_error);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_file__with_256_russian_symbols_in_name__success_and_names_matches);
-    // RUN_TEST(
-    //         test__messenger_cloud_fs_client_create_folder__with_256_russian_symbols_in_name__success_and_names_matches);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_file__with_257_symbols_in_name__expect_error);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_257_symbols_in_name__expect_error);
-    // RUN_TEST(test__messenger_cloud_fs_client_create_shared_folder__1_admin_and_1_member__got_folder_with_both_users);
+    RUN_TEST(test__messenger_cloud_fs_client_create_file__then_delete_it__got_upload_link);
+    RUN_TEST(test__messenger_cloud_fs_client_get_download_link__of_created_file__success);
+    RUN_TEST(test__messenger_cloud_fs_client_create_folder__in_the_root_folder_then_delete_it__got_upload_link);
+    RUN_TEST(test__messenger_cloud_fs_client_list_folder__before_create_2_files_within_root__2_files_listed);
+    RUN_TEST(test__messenger_cloud_fs_client_create_file__with_duplicated_names__got_error);
+    RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_duplicated_names__got_error);
+    RUN_TEST(test__messenger_cloud_fs_client_create_file__with_256_russian_symbols_in_name__success_and_names_matches);
+    RUN_TEST(
+            test__messenger_cloud_fs_client_create_folder__with_256_russian_symbols_in_name__success_and_names_matches);
+    RUN_TEST(test__messenger_cloud_fs_client_create_file__with_257_symbols_in_name__expect_error);
+    RUN_TEST(test__messenger_cloud_fs_client_create_folder__with_257_symbols_in_name__expect_error);
+    RUN_TEST(test__messenger_cloud_fs_client_create_shared_folder__1_admin_and_1_member__got_folder_with_both_users);
     RUN_TEST(test__messenger_cloud_fs_client_set_shared_group__add_1_member_after_creation__got_3_users_after_request);
 
 #else
