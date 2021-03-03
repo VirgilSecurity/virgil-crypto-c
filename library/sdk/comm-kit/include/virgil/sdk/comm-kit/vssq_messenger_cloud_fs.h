@@ -266,7 +266,8 @@ vssq_messenger_cloud_fs_get_shared_group_users(const vssq_messenger_cloud_fs_t *
 //
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_cloud_fs_set_shared_group_users(const vssq_messenger_cloud_fs_t *self, vsc_str_t id,
-        vsc_data_t entry_key, const vssq_messenger_cloud_fs_access_list_t *users_access) VSSQ_NODISCARD;
+        vsc_data_t encrypted_group_key, const vssq_messenger_user_t *key_issuer,
+        const vssq_messenger_cloud_fs_access_list_t *users_access) VSSQ_NODISCARD;
 
 //
 //  Return true if a user is authenticated.

@@ -117,7 +117,8 @@
         Set shared group of users.
 
         <argument name="id" class="str"/>
-        <argument name="entry key" class="data"/>
+        <argument name="encrypted group key" class="data"/>
+        <argument name="key issuer" class="messenger user"/>
         <argument name="users access" class="messenger cloud fs access list"/>
 
         <return enum="status"/>
