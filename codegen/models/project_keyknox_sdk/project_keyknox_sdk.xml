@@ -5,7 +5,7 @@
         namespace="virgil sdk keyknox"
         framework="VSSKeyknox"
         prefix="vssk"
-        wrappers=""
+        wrappers="swift,java,python,go,php"
         >
 
     <version major="0" minor="16" patch="0"/>

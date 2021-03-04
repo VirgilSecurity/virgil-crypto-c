@@ -5,7 +5,7 @@
         namespace="virgil sdk pythia"
         framework="VSSPyhia"
         prefix="vssp"
-        wrappers=""
+        wrappers="java, swift, python, wasm, php"
         >
 
     <version major="0" minor="16" patch="0"/>
