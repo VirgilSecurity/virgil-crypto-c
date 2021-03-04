@@ -363,11 +363,24 @@ vssc_http_client_curl_send(
     curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, vssc_http_client_curl_write_recevied_header);
     curl_easy_setopt(curl, CURLOPT_HEADERDATA, response);
 
+    char errbuf[CURL_ERROR_SIZE] = {'\0'};
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errbuf);
+
     //
     //  Perform the request.
     //
     const CURLcode send_status = curl_easy_perform(curl);
+
     if (send_status != CURLE_OK) {
+        fprintf(stderr, "\nlibcurl: (%d) ", send_status);
+
+        if(*errbuf != '\0') {
+            fprintf(stderr, "%s\n", errbuf);
+        }
+        else {
+            fprintf(stderr, "%s\n", curl_easy_strerror(res));
+        }
+
         goto send_fail;
     }
 
