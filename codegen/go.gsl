@@ -913,7 +913,7 @@ endfunction
 function go_map_enum_default (go_interface, enum, go_project, meta)
     check_arguments (my, "go_interface, enum, go_project, meta")
 
-    for my.enum.constant
+    for my.enum.constant where !string_equal (constant.visibility, "private")
         go_create_constant (constant, my.enum, my.go_interface, my.go_project, my.meta)
     endfor
 endfunction
