@@ -378,7 +378,7 @@ vssc_http_client_curl_send(
             fprintf(stderr, "%s\n", errbuf);
         }
         else {
-            fprintf(stderr, "%s\n", curl_easy_strerror(res));
+            fprintf(stderr, "%s\n", curl_easy_strerror(send_status));
         }
 
         goto send_fail;
