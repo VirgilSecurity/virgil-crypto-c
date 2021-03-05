@@ -56,7 +56,6 @@
 #include "vssq_messenger_cloud_fs_defs.h"
 
 #include <virgil/crypto/foundation/vscf_recipient_cipher.h>
-#include <virgil/crypto/foundation/vscf_message_info_editor.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 
 // clang-format on
@@ -707,7 +706,7 @@ vssq_messenger_cloud_fs_encrypt_key(const vssq_messenger_cloud_fs_t *self, vsc_d
     //  Encrypt key for a parent folder.
     //
     if (!vsc_str_is_empty(parent_folder_id)) {
-        VSSQ_ASSERT(vsc_data_is_empty(parent_folder_public_key));
+        VSSQ_ASSERT(!vsc_data_is_empty(parent_folder_public_key));
 
         vscf_impl_t *folder_public_key =
                 vscf_key_provider_import_public_key(self->key_provider, parent_folder_public_key, &foundation_error);
@@ -819,9 +818,11 @@ vssq_messenger_cloud_fs_decrypted_key_len(const vssq_messenger_cloud_fs_t *self,
     VSSQ_ASSERT(self);
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(encrypted_key));
 
-    const size_t len = encrypted_key.len - vscf_message_info_editor_read_prefix(encrypted_key);
-
-    return len;
+    //
+    //  TODO: Make it precisely, when vscf_recipient_cipher such ability.
+    //  See, vscf_recipient_cipher.c:1069
+    //
+    return 32 + encrypted_key.len;
 }
 
 //

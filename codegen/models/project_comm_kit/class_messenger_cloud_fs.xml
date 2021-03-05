@@ -3,7 +3,6 @@
 
 
     <require class="recipient cipher" project="foundation"/>
-    <require class="message info editor" project="foundation"/>
     <require interface="private key" project="foundation"/>
 
     <dependency name="client" class="messenger cloud fs client"/>
