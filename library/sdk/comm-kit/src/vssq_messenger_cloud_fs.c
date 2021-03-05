@@ -582,7 +582,6 @@ vssq_messenger_cloud_fs_set_shared_group_users(const vssq_messenger_cloud_fs_t *
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(id));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(encrypted_group_key));
     VSSQ_ASSERT_PTR(users_access);
-    VSSQ_ASSERT(vssq_messenger_cloud_fs_access_list_has_item(users_access));
 
     vssq_error_t error;
     vssq_error_reset(&error);
