@@ -6,7 +6,7 @@
     <require class="group session" project="foundation"/>
     <require class="group session ticket" project="foundation"/>
     <require class="string list" project="core sdk"/>
-    <require class="messenger group epoch list" api="private"/>
+    <require class="messenger group epoch list"/>
     <require module="atomic"/>
 
     <property name="epoch keyknox storage" class="messenger group epoch keyknox storage"/>

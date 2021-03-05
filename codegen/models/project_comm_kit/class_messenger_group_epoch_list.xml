@@ -1,4 +1,4 @@
-<class name="messenger group epoch list">
+<class name="messenger group epoch list" scope="internal">
     Handles a list of "messenger group epoch" class objects.
 
     <property name="item" class="messenger group epoch"/>

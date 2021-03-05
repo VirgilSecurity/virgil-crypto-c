@@ -530,6 +530,8 @@ function go_derive_instance_type (instance)
                 #TODO verify char type
                 my.primitive_type = "uint8"
             endif
+        elsif my.instance.type = "string"
+            my.primitive_type = "string"
         else
             echo_fatal ("Unsupported instance type '$(my.instance.type)' for Go language.", my)
         endif
@@ -1111,6 +1113,19 @@ function go_map_instance_type (go_instance, instance)
     my.go_instance.is_array = count (my.instance.array) ?? "1" ?
     my.go_instance.is_string = count (my.instance.string) ?? "1" ?
     my.go_instance.is_reference = my.instance.is_reference ?
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true, if given class constant should be wrapped.
+# ---------------------------------------------------------------------------
+function go_should_wrap_class_constant(constant)
+    check_arguments(my, "constant", my)
+    
+    if string_equal (my.constant.visibility, "private")
+        return 0
+    else
+        return wrapper_should_wrap_class_constant(my.constant)
+    endif
 endfunction
 
 # ===========================================================================
@@ -1979,13 +1994,13 @@ function go_create_class_module (class, go_project, meta)
                 go_create_struct_close (go_struct, my.class, my.go_project, my.meta)
 
                 if ! string_in (my.class.lifecycle, "none")
-                    for my.class.constructor where constructor.visibility <> "private"
+                    for my.class.constructor where constructor.visibility <> "private" & constructor.scope <> "private"
                         go_create_struct_constructor (my.class, constructor, go_struct, go_module, my.go_project, my.meta)
                     endfor
                 endif
             endif
 
-            for my.class.constant where wrapper_should_wrap_class_constant(constant)
+            for my.class.constant where go_should_wrap_class_constant(constant)
                 go_create_constant (constant, my.class, go_struct, my.go_project, my.meta)
             endfor
 
@@ -2202,7 +2217,7 @@ function go_create_implementation_module (implementation, go_project, meta)
 
             go_map_attr_visibility (go_struct, my.implementation)
 
-            for my.implementation.constant where wrapper_should_wrap_class_constant(constant)
+            for my.implementation.constant where go_should_wrap_class_constant(constant)
                 go_create_constant (constant, my.implementation, go_struct, my.go_project, my.meta)
             endfor
 

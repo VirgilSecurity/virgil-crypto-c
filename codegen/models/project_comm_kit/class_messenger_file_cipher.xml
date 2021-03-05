@@ -33,7 +33,9 @@
     <method name="init encryption">
         Encryption initialization.
 
-        <argument name="out key" class="buffer"/>
+        <argument name="out key" class="buffer">
+            <length method="init encryption out key len"/>
+        </argument>
         <return enum="status"/>
     </method>
 
@@ -46,7 +48,9 @@
     <method name="start encryption">
         Start encryption and return header.
 
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="start encryption out len"/>
+        </argument>
         <return enum="status"/>
     </method>
 
@@ -61,7 +65,11 @@
         Encrypt data and return encrypted buffer.
 
         <argument name="data" class="data"/>
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="process encryption out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
         <return enum="status"/>
     </method>
 
@@ -84,8 +92,14 @@
         Also signature is returned.
 
         <argument name="signer private key" interface="private key" project="foundation"/>
-        <argument name="out" class="buffer"/>
-        <argument name="signature" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="finish encryption out len"/>
+        </argument>
+        <argument name="signature" class="buffer">
+            <length method="finish encryption signature len">
+                <proxy argument="signer private key" to="signer private key"/>
+            </length>
+        </argument>
         <return enum="status"/>
     </method>
 
@@ -110,7 +124,11 @@
         Decryption process.
 
         <argument name="data" class="data"/>
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="process decryption out len">
+                <proxy argument="data" to="data len" cast="data_length"/>
+            </length>
+        </argument>
         <return enum="status"/>
     </method>
 
@@ -124,7 +142,9 @@
         Finish decryption and check signature.
 
         <argument name="signer public key" interface="public key" project="foundation"/>
-        <argument name="out" class="buffer"/>
+        <argument name="out" class="buffer">
+            <length method="finish decryption out len"/>
+        </argument>
         <return enum="status"/>
     </method>
 </class>
