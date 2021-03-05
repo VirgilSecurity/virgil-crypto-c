@@ -15,7 +15,7 @@
         * &lt;session-id&gt; - HEX(sha512(session-id):0..32)
         * &lt;epoch&gt;      - integer counter, incrementing epoch means group key rotatation
 
-    <require class="messenger group epoch list" api="private"/>
+    <require class="messenger group epoch list"/>
     <require class="binary" project="foundation"/>
     <require class="key provider" project="foundation"/>
     <require class="recipient cipher" project="foundation"/>
