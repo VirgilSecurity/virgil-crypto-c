@@ -181,6 +181,12 @@ VSSC_PUBLIC vssc_raw_card_t *
 vssc_raw_card_import_from_json(const vssc_json_object_t *json, vssc_error_t *error);
 
 //
+//  Create raw card from JSON string representation.
+//
+VSSC_PUBLIC vssc_raw_card_t *
+vssc_raw_card_import_from_json_str(vsc_str_t str, vssc_error_t *error);
+
+//
 //  Export Raw Card as JSON.
 //
 VSSC_PUBLIC vssc_json_object_t *

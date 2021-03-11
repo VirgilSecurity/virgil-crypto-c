@@ -115,6 +115,16 @@
     </method>
 
 
+    <method name="import from json str" is_static="1">
+        Create raw card from JSON string representation.
+
+        <argument name="str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
     <method name="export as json" is_const="1">
         Export Raw Card as JSON.
 

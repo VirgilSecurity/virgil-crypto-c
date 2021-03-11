@@ -749,6 +749,28 @@ fail:
 }
 
 //
+//  Create raw card from JSON string representation.
+//
+VSSC_PUBLIC vssc_raw_card_t *
+vssc_raw_card_import_from_json_str(vsc_str_t str, vssc_error_t *error) {
+
+    VSSC_ASSERT(vsc_str_is_valid_and_non_empty(str));
+
+    vssc_json_object_t *json_obj = vssc_json_object_parse(str, NULL);
+
+    if (NULL == json_obj) {
+        VSSC_ERROR_SAFE_UPDATE(error, vssc_status_RAW_CARD_CONTENT_PARSE_FAILED);
+        return NULL;
+    }
+
+    vssc_raw_card_t *self = vssc_raw_card_import_from_json(json_obj, error);
+
+    vssc_json_object_destroy(&json_obj);
+
+    return self;
+}
+
+//
 //  Export Raw Card as JSON.
 //
 VSSC_PUBLIC vssc_json_object_t *
