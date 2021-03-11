@@ -449,6 +449,20 @@ static const vsc_str_t k_message_import_creds_failed_import_private_key_failed =
     sizeof(k_message_import_creds_failed_import_private_key_failed_chars) - 1
 };
 
+static const char k_message_import_user_failed_parse_failed_chars[] = "Failed to import user because parsing JSON failed.";
+
+static const vsc_str_t k_message_import_user_failed_parse_failed = {
+    k_message_import_user_failed_parse_failed_chars,
+    sizeof(k_message_import_user_failed_parse_failed_chars) - 1
+};
+
+static const char k_message_import_user_failed_version_mismatch_chars[] = "Failed to import user because parsing JSON failed.";
+
+static const vsc_str_t k_message_import_user_failed_version_mismatch = {
+    k_message_import_user_failed_version_mismatch_chars,
+    sizeof(k_message_import_user_failed_version_mismatch_chars) - 1
+};
+
 static const char k_message_contact_validation_failed_username_too_long_chars[] = "Username validation failed because it's length exceeds the allowed maximum (20).";
 
 static const vsc_str_t k_message_contact_validation_failed_username_too_long = {
@@ -963,6 +977,10 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_import_creds_failed_parse_failed;
         case vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED:
             return k_message_import_creds_failed_import_private_key_failed;
+        case vssq_status_IMPORT_USER_FAILED_PARSE_FAILED:
+            return k_message_import_user_failed_parse_failed;
+        case vssq_status_IMPORT_USER_FAILED_VERSION_MISMATCH:
+            return k_message_import_user_failed_version_mismatch;
         case vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_TOO_LONG:
             return k_message_contact_validation_failed_username_too_long;
         case vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS:

@@ -254,6 +254,7 @@
 
         <return enum="status"/>
     </method>
+
     <!-- Peer-to-Peer encryption -->
     <method name="encrypted message len" is_const="1">
         Return a buffer length enough to hold an encrypted message.

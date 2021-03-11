@@ -56,6 +56,10 @@
 #include "vssq_messenger_user_private.h"
 #include "vssq_messenger_user_defs.h"
 
+#include <virgil/sdk/core/vssc_card_manager.h>
+#include <virgil/sdk/core/vssc_json_object.h>
+#include <virgil/sdk/core/private/vssc_json_object_private.h>
+
 // clang-format on
 //  @end
 
@@ -93,6 +97,48 @@ vssq_messenger_user_init_ctx_with_card(vssq_messenger_user_t *self, const vssc_c
 //
 static void
 vssq_messenger_user_init_ctx_with_card_disown(vssq_messenger_user_t *self, vssc_card_t **card_ref);
+
+static const char k_json_version_v1_chars[] = "v1";
+
+static const vsc_str_t k_json_version_v1 = {
+    k_json_version_v1_chars,
+    sizeof(k_json_version_v1_chars) - 1
+};
+
+static const char k_json_key_version_chars[] = "version";
+
+static const vsc_str_t k_json_key_version = {
+    k_json_key_version_chars,
+    sizeof(k_json_key_version_chars) - 1
+};
+
+static const char k_json_key_username_chars[] = "username";
+
+static const vsc_str_t k_json_key_username = {
+    k_json_key_username_chars,
+    sizeof(k_json_key_username_chars) - 1
+};
+
+static const char k_json_key_phone_number_chars[] = "phone_number";
+
+static const vsc_str_t k_json_key_phone_number = {
+    k_json_key_phone_number_chars,
+    sizeof(k_json_key_phone_number_chars) - 1
+};
+
+static const char k_json_key_email_chars[] = "email";
+
+static const vsc_str_t k_json_key_email = {
+    k_json_key_email_chars,
+    sizeof(k_json_key_email_chars) - 1
+};
+
+static const char k_json_key_raw_card_chars[] = "raw_card";
+
+static const vsc_str_t k_json_key_raw_card = {
+    k_json_key_raw_card_chars,
+    sizeof(k_json_key_raw_card_chars) - 1
+};
 
 //
 //  Return size of 'vssq_messenger_user_t'.
@@ -526,4 +572,142 @@ vssq_messenger_user_set_email(vssq_messenger_user_t *self, vsc_str_t email) {
 
     vsc_str_mutable_release(&self->email);
     self->email = vsc_str_mutable_from_str(email);
+}
+
+//
+//  Return user as JSON object.
+//
+VSSQ_PUBLIC vssc_json_object_t *
+vssq_messenger_user_to_json(const vssq_messenger_user_t *self, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_UNUSED(error);
+
+    //
+    //  Build json:
+    //
+    //  {
+    //      "version" : "v1",
+    //      "raw_card" : "EXPORTED RAW CARD",
+    //      "username" : "STRING OPTIONAL",
+    //      "phone_number" : "STRING OPTIONAL",
+    //      "email" : "STRING OPTIONAL",
+    //  }
+    //
+    vssc_json_object_t *card_json_obj = vssc_raw_card_export_as_json(vssc_card_get_raw_card(self->card));
+
+    vssc_json_object_t *json_obj = vssc_json_object_new();
+    vssc_json_object_add_string_value(json_obj, k_json_key_version, k_json_version_v1);
+    vssc_json_object_add_object_value(json_obj, k_json_key_raw_card, card_json_obj);
+    vssc_json_object_add_string_value(json_obj, k_json_key_username, vssq_messenger_user_username(self));
+    vssc_json_object_add_string_value(json_obj, k_json_key_phone_number, vssq_messenger_user_phone_number(self));
+    vssc_json_object_add_string_value(json_obj, k_json_key_email, vssq_messenger_user_email(self));
+
+    vssc_json_object_destroy(&card_json_obj);
+
+    return json_obj;
+}
+
+//
+//  Parse user from JSON.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_from_json(const vssc_json_object_t *json_obj, const vscf_impl_t *random, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(json_obj);
+    VSSQ_ASSERT_PTR(random);
+
+    //
+    //  Parse json:
+    //
+    //  {
+    //      "version" : "v1",
+    //      "raw_card" : "EXPORTED RAW CARD",
+    //      "username" : "STRING OPTIONAL",
+    //      "phone_number" : "STRING OPTIONAL",
+    //      "email" : "STRING OPTIONAL",
+    //  }
+    //
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vsc_str_t version = vssc_json_object_get_string_value(json_obj, k_json_key_version, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error) || !vsc_str_equal(k_json_version_v1, version)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_USER_FAILED_VERSION_MISMATCH);
+        return NULL;
+    }
+
+    vsc_str_t raw_card_json = vssc_json_object_get_string_value(json_obj, k_json_key_raw_card, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error) || vsc_str_is_empty(raw_card_json)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_USER_FAILED_PARSE_FAILED);
+        return NULL;
+    }
+
+    vsc_str_t username = vssc_json_object_get_string_value(json_obj, k_json_key_username, &core_sdk_error);
+    vsc_str_t phone_number = vssc_json_object_get_string_value(json_obj, k_json_key_phone_number, &core_sdk_error);
+    vsc_str_t email = vssc_json_object_get_string_value(json_obj, k_json_key_email, &core_sdk_error);
+
+    vssc_card_manager_t *card_manager = vssc_card_manager_new();
+    vssc_card_manager_use_random(card_manager, (vscf_impl_t *)random);
+
+    core_sdk_error.status = vssc_card_manager_configure(card_manager);
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_USER_FAILED_PARSE_FAILED);
+        return NULL;
+    }
+
+    vssc_raw_card_t *raw_card = vssc_raw_card_import_from_json_str(raw_card_json, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_USER_FAILED_PARSE_FAILED);
+        return NULL;
+    }
+
+    vssc_card_t *card = vssc_card_manager_import_raw_card(card_manager, raw_card, &core_sdk_error);
+    vssc_card_manager_destroy(&card_manager);
+    vssc_raw_card_destroy(&raw_card);
+
+
+    if (vssc_error_has_error(&core_sdk_error)) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_USER_FAILED_PARSE_FAILED);
+        return NULL;
+    }
+
+    vssq_messenger_user_t *self = vssq_messenger_user_new_with_card_disown(&card);
+
+    if (vsc_str_is_valid_and_non_empty(username)) {
+        vssq_messenger_user_set_username(self, username);
+    }
+
+    if (vsc_str_is_valid_and_non_empty(phone_number)) {
+        vssq_messenger_user_set_phone_number(self, phone_number);
+    }
+
+    if (vsc_str_is_valid_and_non_empty(email)) {
+        vssq_messenger_user_set_email(self, email);
+    }
+
+    return self;
+}
+
+//
+//  Parse user from JSON string.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_from_json_str(vsc_str_t json_str, const vscf_impl_t *random, vssq_error_t *error) {
+
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(json_str));
+    VSSQ_ASSERT_PTR(random);
+
+    vssc_json_object_t *json_obj = vssc_json_object_parse(json_str, NULL);
+
+    if (NULL == json_obj) {
+        VSSQ_ERROR_SAFE_UPDATE(error, vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED);
+        return NULL;
+    }
+
+    vssq_messenger_user_t *self = vssq_messenger_user_from_json(json_obj, random, error);
+
+    vssc_json_object_destroy(&json_obj);
+
+    return self;
 }

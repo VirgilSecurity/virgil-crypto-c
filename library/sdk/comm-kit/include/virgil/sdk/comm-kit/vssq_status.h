@@ -289,6 +289,14 @@ enum vssq_status_t {
     //
     vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED = -1004,
     //
+    //  Failed to import user because parsing JSON failed.
+    //
+    vssq_status_IMPORT_USER_FAILED_PARSE_FAILED = -1010,
+    //
+    //  Failed to import user because parsing JSON failed.
+    //
+    vssq_status_IMPORT_USER_FAILED_VERSION_MISMATCH = -1011,
+    //
     //  Username validation failed because it's length exceeds the allowed maximum (20).
     //
     vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_TOO_LONG = -1100,
