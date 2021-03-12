@@ -595,13 +595,26 @@ vssq_messenger_user_to_json(const vssq_messenger_user_t *self, vssq_error_t *err
     //  }
     //
     vssc_json_object_t *card_json_obj = vssc_raw_card_export_as_json(vssc_card_get_raw_card(self->card));
+    VSSQ_ASSERT_PTR(card_json_obj);
 
     vssc_json_object_t *json_obj = vssc_json_object_new();
     vssc_json_object_add_string_value(json_obj, k_json_key_version, k_json_version_v1);
     vssc_json_object_add_object_value(json_obj, k_json_key_raw_card, card_json_obj);
-    vssc_json_object_add_string_value(json_obj, k_json_key_username, vssq_messenger_user_username(self));
-    vssc_json_object_add_string_value(json_obj, k_json_key_phone_number, vssq_messenger_user_phone_number(self));
-    vssc_json_object_add_string_value(json_obj, k_json_key_email, vssq_messenger_user_email(self));
+
+    vsc_str_t username = vssq_messenger_user_username(self);
+    if (vsc_str_is_valid_and_non_empty(username)) {
+        vssc_json_object_add_string_value(json_obj, k_json_key_username, username);
+    }
+
+    vsc_str_t phone_number = vssq_messenger_user_phone_number(self);
+    if (vsc_str_is_valid_and_non_empty(phone_number)) {
+        vssc_json_object_add_string_value(json_obj, k_json_key_phone_number, phone_number);
+    }
+
+    vsc_str_t email = vssq_messenger_user_email(self);
+    if (vsc_str_is_valid_and_non_empty(email)) {
+        vssc_json_object_add_string_value(json_obj, k_json_key_email, email);
+    }
 
     vssc_json_object_destroy(&card_json_obj);
 
