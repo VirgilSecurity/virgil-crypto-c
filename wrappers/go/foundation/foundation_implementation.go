@@ -8,7 +8,11 @@ type FoundationImplementation struct {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Alg. */
-func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
+func FoundationImplementationWrapAlg(anyctx interface{}) (Alg, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Alg."}
+    }
     if (!C.vscf_alg_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Alg."}
     }
@@ -51,13 +55,21 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Alg. */
-func FoundationImplementationWrapAlgCopy(ctx *C.vscf_impl_t) (Alg, error) {
+func FoundationImplementationWrapAlgCopy(anyctx interface{}) (Alg, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Alg."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAlg(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Hash. */
-func FoundationImplementationWrapHash(ctx *C.vscf_impl_t) (Hash, error) {
+func FoundationImplementationWrapHash(anyctx interface{}) (Hash, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Hash."}
+    }
     if (!C.vscf_hash_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Hash."}
     }
@@ -78,13 +90,21 @@ func FoundationImplementationWrapHash(ctx *C.vscf_impl_t) (Hash, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Hash. */
-func FoundationImplementationWrapHashCopy(ctx *C.vscf_impl_t) (Hash, error) {
+func FoundationImplementationWrapHashCopy(anyctx interface{}) (Hash, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Hash."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapHash(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Encrypt. */
-func FoundationImplementationWrapEncrypt(ctx *C.vscf_impl_t) (Encrypt, error) {
+func FoundationImplementationWrapEncrypt(anyctx interface{}) (Encrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Encrypt."}
+    }
     if (!C.vscf_encrypt_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Encrypt."}
     }
@@ -103,13 +123,21 @@ func FoundationImplementationWrapEncrypt(ctx *C.vscf_impl_t) (Encrypt, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Encrypt. */
-func FoundationImplementationWrapEncryptCopy(ctx *C.vscf_impl_t) (Encrypt, error) {
+func FoundationImplementationWrapEncryptCopy(anyctx interface{}) (Encrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Encrypt."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapEncrypt(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Decrypt. */
-func FoundationImplementationWrapDecrypt(ctx *C.vscf_impl_t) (Decrypt, error) {
+func FoundationImplementationWrapDecrypt(anyctx interface{}) (Decrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Decrypt."}
+    }
     if (!C.vscf_decrypt_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Decrypt."}
     }
@@ -128,13 +156,21 @@ func FoundationImplementationWrapDecrypt(ctx *C.vscf_impl_t) (Decrypt, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Decrypt. */
-func FoundationImplementationWrapDecryptCopy(ctx *C.vscf_impl_t) (Decrypt, error) {
+func FoundationImplementationWrapDecryptCopy(anyctx interface{}) (Decrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Decrypt."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapDecrypt(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface CipherInfo. */
-func FoundationImplementationWrapCipherInfo(ctx *C.vscf_impl_t) (CipherInfo, error) {
+func FoundationImplementationWrapCipherInfo(anyctx interface{}) (CipherInfo, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface CipherInfo."}
+    }
     if (!C.vscf_cipher_info_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface CipherInfo."}
     }
@@ -151,13 +187,21 @@ func FoundationImplementationWrapCipherInfo(ctx *C.vscf_impl_t) (CipherInfo, err
 }
 
 /* Wrap C implementation object to the Go object that implements interface CipherInfo. */
-func FoundationImplementationWrapCipherInfoCopy(ctx *C.vscf_impl_t) (CipherInfo, error) {
+func FoundationImplementationWrapCipherInfoCopy(anyctx interface{}) (CipherInfo, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface CipherInfo."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapCipherInfo(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Cipher. */
-func FoundationImplementationWrapCipher(ctx *C.vscf_impl_t) (Cipher, error) {
+func FoundationImplementationWrapCipher(anyctx interface{}) (Cipher, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Cipher."}
+    }
     if (!C.vscf_cipher_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Cipher."}
     }
@@ -174,13 +218,21 @@ func FoundationImplementationWrapCipher(ctx *C.vscf_impl_t) (Cipher, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Cipher. */
-func FoundationImplementationWrapCipherCopy(ctx *C.vscf_impl_t) (Cipher, error) {
+func FoundationImplementationWrapCipherCopy(anyctx interface{}) (Cipher, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Cipher."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapCipher(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface CipherAuthInfo. */
-func FoundationImplementationWrapCipherAuthInfo(ctx *C.vscf_impl_t) (CipherAuthInfo, error) {
+func FoundationImplementationWrapCipherAuthInfo(anyctx interface{}) (CipherAuthInfo, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface CipherAuthInfo."}
+    }
     if (!C.vscf_cipher_auth_info_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface CipherAuthInfo."}
     }
@@ -195,13 +247,21 @@ func FoundationImplementationWrapCipherAuthInfo(ctx *C.vscf_impl_t) (CipherAuthI
 }
 
 /* Wrap C implementation object to the Go object that implements interface CipherAuthInfo. */
-func FoundationImplementationWrapCipherAuthInfoCopy(ctx *C.vscf_impl_t) (CipherAuthInfo, error) {
+func FoundationImplementationWrapCipherAuthInfoCopy(anyctx interface{}) (CipherAuthInfo, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface CipherAuthInfo."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapCipherAuthInfo(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface AuthEncrypt. */
-func FoundationImplementationWrapAuthEncrypt(ctx *C.vscf_impl_t) (AuthEncrypt, error) {
+func FoundationImplementationWrapAuthEncrypt(anyctx interface{}) (AuthEncrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AuthEncrypt."}
+    }
     if (!C.vscf_auth_encrypt_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface AuthEncrypt."}
     }
@@ -216,13 +276,21 @@ func FoundationImplementationWrapAuthEncrypt(ctx *C.vscf_impl_t) (AuthEncrypt, e
 }
 
 /* Wrap C implementation object to the Go object that implements interface AuthEncrypt. */
-func FoundationImplementationWrapAuthEncryptCopy(ctx *C.vscf_impl_t) (AuthEncrypt, error) {
+func FoundationImplementationWrapAuthEncryptCopy(anyctx interface{}) (AuthEncrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AuthEncrypt."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAuthEncrypt(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface AuthDecrypt. */
-func FoundationImplementationWrapAuthDecrypt(ctx *C.vscf_impl_t) (AuthDecrypt, error) {
+func FoundationImplementationWrapAuthDecrypt(anyctx interface{}) (AuthDecrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AuthDecrypt."}
+    }
     if (!C.vscf_auth_decrypt_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface AuthDecrypt."}
     }
@@ -237,13 +305,21 @@ func FoundationImplementationWrapAuthDecrypt(ctx *C.vscf_impl_t) (AuthDecrypt, e
 }
 
 /* Wrap C implementation object to the Go object that implements interface AuthDecrypt. */
-func FoundationImplementationWrapAuthDecryptCopy(ctx *C.vscf_impl_t) (AuthDecrypt, error) {
+func FoundationImplementationWrapAuthDecryptCopy(anyctx interface{}) (AuthDecrypt, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AuthDecrypt."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAuthDecrypt(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface CipherAuth. */
-func FoundationImplementationWrapCipherAuth(ctx *C.vscf_impl_t) (CipherAuth, error) {
+func FoundationImplementationWrapCipherAuth(anyctx interface{}) (CipherAuth, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface CipherAuth."}
+    }
     if (!C.vscf_cipher_auth_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface CipherAuth."}
     }
@@ -258,13 +334,21 @@ func FoundationImplementationWrapCipherAuth(ctx *C.vscf_impl_t) (CipherAuth, err
 }
 
 /* Wrap C implementation object to the Go object that implements interface CipherAuth. */
-func FoundationImplementationWrapCipherAuthCopy(ctx *C.vscf_impl_t) (CipherAuth, error) {
+func FoundationImplementationWrapCipherAuthCopy(anyctx interface{}) (CipherAuth, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface CipherAuth."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapCipherAuth(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Asn1Reader. */
-func FoundationImplementationWrapAsn1Reader(ctx *C.vscf_impl_t) (Asn1Reader, error) {
+func FoundationImplementationWrapAsn1Reader(anyctx interface{}) (Asn1Reader, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Asn1Reader."}
+    }
     if (!C.vscf_asn1_reader_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Asn1Reader."}
     }
@@ -279,13 +363,21 @@ func FoundationImplementationWrapAsn1Reader(ctx *C.vscf_impl_t) (Asn1Reader, err
 }
 
 /* Wrap C implementation object to the Go object that implements interface Asn1Reader. */
-func FoundationImplementationWrapAsn1ReaderCopy(ctx *C.vscf_impl_t) (Asn1Reader, error) {
+func FoundationImplementationWrapAsn1ReaderCopy(anyctx interface{}) (Asn1Reader, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Asn1Reader."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAsn1Reader(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Asn1Writer. */
-func FoundationImplementationWrapAsn1Writer(ctx *C.vscf_impl_t) (Asn1Writer, error) {
+func FoundationImplementationWrapAsn1Writer(anyctx interface{}) (Asn1Writer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Asn1Writer."}
+    }
     if (!C.vscf_asn1_writer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Asn1Writer."}
     }
@@ -300,13 +392,21 @@ func FoundationImplementationWrapAsn1Writer(ctx *C.vscf_impl_t) (Asn1Writer, err
 }
 
 /* Wrap C implementation object to the Go object that implements interface Asn1Writer. */
-func FoundationImplementationWrapAsn1WriterCopy(ctx *C.vscf_impl_t) (Asn1Writer, error) {
+func FoundationImplementationWrapAsn1WriterCopy(anyctx interface{}) (Asn1Writer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Asn1Writer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAsn1Writer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Key. */
-func FoundationImplementationWrapKey(ctx *C.vscf_impl_t) (Key, error) {
+func FoundationImplementationWrapKey(anyctx interface{}) (Key, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Key."}
+    }
     if (!C.vscf_key_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Key."}
     }
@@ -339,13 +439,21 @@ func FoundationImplementationWrapKey(ctx *C.vscf_impl_t) (Key, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Key. */
-func FoundationImplementationWrapKeyCopy(ctx *C.vscf_impl_t) (Key, error) {
+func FoundationImplementationWrapKeyCopy(anyctx interface{}) (Key, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Key."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKey(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface PublicKey. */
-func FoundationImplementationWrapPublicKey(ctx *C.vscf_impl_t) (PublicKey, error) {
+func FoundationImplementationWrapPublicKey(anyctx interface{}) (PublicKey, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface PublicKey."}
+    }
     if (!C.vscf_public_key_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface PublicKey."}
     }
@@ -368,13 +476,21 @@ func FoundationImplementationWrapPublicKey(ctx *C.vscf_impl_t) (PublicKey, error
 }
 
 /* Wrap C implementation object to the Go object that implements interface PublicKey. */
-func FoundationImplementationWrapPublicKeyCopy(ctx *C.vscf_impl_t) (PublicKey, error) {
+func FoundationImplementationWrapPublicKeyCopy(anyctx interface{}) (PublicKey, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface PublicKey."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapPublicKey(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface PrivateKey. */
-func FoundationImplementationWrapPrivateKey(ctx *C.vscf_impl_t) (PrivateKey, error) {
+func FoundationImplementationWrapPrivateKey(anyctx interface{}) (PrivateKey, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface PrivateKey."}
+    }
     if (!C.vscf_private_key_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface PrivateKey."}
     }
@@ -397,13 +513,21 @@ func FoundationImplementationWrapPrivateKey(ctx *C.vscf_impl_t) (PrivateKey, err
 }
 
 /* Wrap C implementation object to the Go object that implements interface PrivateKey. */
-func FoundationImplementationWrapPrivateKeyCopy(ctx *C.vscf_impl_t) (PrivateKey, error) {
+func FoundationImplementationWrapPrivateKeyCopy(anyctx interface{}) (PrivateKey, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface PrivateKey."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapPrivateKey(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeyAlg. */
-func FoundationImplementationWrapKeyAlg(ctx *C.vscf_impl_t) (KeyAlg, error) {
+func FoundationImplementationWrapKeyAlg(anyctx interface{}) (KeyAlg, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeyAlg."}
+    }
     if (!C.vscf_key_alg_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyAlg."}
     }
@@ -432,13 +556,21 @@ func FoundationImplementationWrapKeyAlg(ctx *C.vscf_impl_t) (KeyAlg, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeyAlg. */
-func FoundationImplementationWrapKeyAlgCopy(ctx *C.vscf_impl_t) (KeyAlg, error) {
+func FoundationImplementationWrapKeyAlgCopy(anyctx interface{}) (KeyAlg, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeyAlg."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKeyAlg(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeyCipher. */
-func FoundationImplementationWrapKeyCipher(ctx *C.vscf_impl_t) (KeyCipher, error) {
+func FoundationImplementationWrapKeyCipher(anyctx interface{}) (KeyCipher, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeyCipher."}
+    }
     if (!C.vscf_key_cipher_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyCipher."}
     }
@@ -463,13 +595,21 @@ func FoundationImplementationWrapKeyCipher(ctx *C.vscf_impl_t) (KeyCipher, error
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeyCipher. */
-func FoundationImplementationWrapKeyCipherCopy(ctx *C.vscf_impl_t) (KeyCipher, error) {
+func FoundationImplementationWrapKeyCipherCopy(anyctx interface{}) (KeyCipher, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeyCipher."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKeyCipher(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeySigner. */
-func FoundationImplementationWrapKeySigner(ctx *C.vscf_impl_t) (KeySigner, error) {
+func FoundationImplementationWrapKeySigner(anyctx interface{}) (KeySigner, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeySigner."}
+    }
     if (!C.vscf_key_signer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface KeySigner."}
     }
@@ -494,13 +634,21 @@ func FoundationImplementationWrapKeySigner(ctx *C.vscf_impl_t) (KeySigner, error
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeySigner. */
-func FoundationImplementationWrapKeySignerCopy(ctx *C.vscf_impl_t) (KeySigner, error) {
+func FoundationImplementationWrapKeySignerCopy(anyctx interface{}) (KeySigner, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeySigner."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKeySigner(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface ComputeSharedKey. */
-func FoundationImplementationWrapComputeSharedKey(ctx *C.vscf_impl_t) (ComputeSharedKey, error) {
+func FoundationImplementationWrapComputeSharedKey(anyctx interface{}) (ComputeSharedKey, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface ComputeSharedKey."}
+    }
     if (!C.vscf_compute_shared_key_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface ComputeSharedKey."}
     }
@@ -519,13 +667,21 @@ func FoundationImplementationWrapComputeSharedKey(ctx *C.vscf_impl_t) (ComputeSh
 }
 
 /* Wrap C implementation object to the Go object that implements interface ComputeSharedKey. */
-func FoundationImplementationWrapComputeSharedKeyCopy(ctx *C.vscf_impl_t) (ComputeSharedKey, error) {
+func FoundationImplementationWrapComputeSharedKeyCopy(anyctx interface{}) (ComputeSharedKey, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface ComputeSharedKey."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapComputeSharedKey(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Kem. */
-func FoundationImplementationWrapKem(ctx *C.vscf_impl_t) (Kem, error) {
+func FoundationImplementationWrapKem(anyctx interface{}) (Kem, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Kem."}
+    }
     if (!C.vscf_kem_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Kem."}
     }
@@ -546,13 +702,21 @@ func FoundationImplementationWrapKem(ctx *C.vscf_impl_t) (Kem, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Kem. */
-func FoundationImplementationWrapKemCopy(ctx *C.vscf_impl_t) (Kem, error) {
+func FoundationImplementationWrapKemCopy(anyctx interface{}) (Kem, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Kem."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKem(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface EntropySource. */
-func FoundationImplementationWrapEntropySource(ctx *C.vscf_impl_t) (EntropySource, error) {
+func FoundationImplementationWrapEntropySource(anyctx interface{}) (EntropySource, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface EntropySource."}
+    }
     if (!C.vscf_entropy_source_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface EntropySource."}
     }
@@ -571,13 +735,21 @@ func FoundationImplementationWrapEntropySource(ctx *C.vscf_impl_t) (EntropySourc
 }
 
 /* Wrap C implementation object to the Go object that implements interface EntropySource. */
-func FoundationImplementationWrapEntropySourceCopy(ctx *C.vscf_impl_t) (EntropySource, error) {
+func FoundationImplementationWrapEntropySourceCopy(anyctx interface{}) (EntropySource, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface EntropySource."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapEntropySource(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Random. */
-func FoundationImplementationWrapRandom(ctx *C.vscf_impl_t) (Random, error) {
+func FoundationImplementationWrapRandom(anyctx interface{}) (Random, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Random."}
+    }
     if (!C.vscf_random_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Random."}
     }
@@ -596,13 +768,21 @@ func FoundationImplementationWrapRandom(ctx *C.vscf_impl_t) (Random, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Random. */
-func FoundationImplementationWrapRandomCopy(ctx *C.vscf_impl_t) (Random, error) {
+func FoundationImplementationWrapRandomCopy(anyctx interface{}) (Random, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Random."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapRandom(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Mac. */
-func FoundationImplementationWrapMac(ctx *C.vscf_impl_t) (Mac, error) {
+func FoundationImplementationWrapMac(anyctx interface{}) (Mac, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Mac."}
+    }
     if (!C.vscf_mac_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Mac."}
     }
@@ -617,13 +797,21 @@ func FoundationImplementationWrapMac(ctx *C.vscf_impl_t) (Mac, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Mac. */
-func FoundationImplementationWrapMacCopy(ctx *C.vscf_impl_t) (Mac, error) {
+func FoundationImplementationWrapMacCopy(anyctx interface{}) (Mac, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Mac."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapMac(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Kdf. */
-func FoundationImplementationWrapKdf(ctx *C.vscf_impl_t) (Kdf, error) {
+func FoundationImplementationWrapKdf(anyctx interface{}) (Kdf, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Kdf."}
+    }
     if (!C.vscf_kdf_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Kdf."}
     }
@@ -644,13 +832,21 @@ func FoundationImplementationWrapKdf(ctx *C.vscf_impl_t) (Kdf, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Kdf. */
-func FoundationImplementationWrapKdfCopy(ctx *C.vscf_impl_t) (Kdf, error) {
+func FoundationImplementationWrapKdfCopy(anyctx interface{}) (Kdf, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Kdf."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKdf(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface SaltedKdf. */
-func FoundationImplementationWrapSaltedKdf(ctx *C.vscf_impl_t) (SaltedKdf, error) {
+func FoundationImplementationWrapSaltedKdf(anyctx interface{}) (SaltedKdf, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface SaltedKdf."}
+    }
     if (!C.vscf_salted_kdf_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface SaltedKdf."}
     }
@@ -667,13 +863,21 @@ func FoundationImplementationWrapSaltedKdf(ctx *C.vscf_impl_t) (SaltedKdf, error
 }
 
 /* Wrap C implementation object to the Go object that implements interface SaltedKdf. */
-func FoundationImplementationWrapSaltedKdfCopy(ctx *C.vscf_impl_t) (SaltedKdf, error) {
+func FoundationImplementationWrapSaltedKdfCopy(anyctx interface{}) (SaltedKdf, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface SaltedKdf."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapSaltedKdf(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeySerializer. */
-func FoundationImplementationWrapKeySerializer(ctx *C.vscf_impl_t) (KeySerializer, error) {
+func FoundationImplementationWrapKeySerializer(anyctx interface{}) (KeySerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeySerializer."}
+    }
     if (!C.vscf_key_serializer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface KeySerializer."}
     }
@@ -692,13 +896,21 @@ func FoundationImplementationWrapKeySerializer(ctx *C.vscf_impl_t) (KeySerialize
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeySerializer. */
-func FoundationImplementationWrapKeySerializerCopy(ctx *C.vscf_impl_t) (KeySerializer, error) {
+func FoundationImplementationWrapKeySerializerCopy(anyctx interface{}) (KeySerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeySerializer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKeySerializer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeyDeserializer. */
-func FoundationImplementationWrapKeyDeserializer(ctx *C.vscf_impl_t) (KeyDeserializer, error) {
+func FoundationImplementationWrapKeyDeserializer(anyctx interface{}) (KeyDeserializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeyDeserializer."}
+    }
     if (!C.vscf_key_deserializer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface KeyDeserializer."}
     }
@@ -713,13 +925,21 @@ func FoundationImplementationWrapKeyDeserializer(ctx *C.vscf_impl_t) (KeyDeseria
 }
 
 /* Wrap C implementation object to the Go object that implements interface KeyDeserializer. */
-func FoundationImplementationWrapKeyDeserializerCopy(ctx *C.vscf_impl_t) (KeyDeserializer, error) {
+func FoundationImplementationWrapKeyDeserializerCopy(anyctx interface{}) (KeyDeserializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface KeyDeserializer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapKeyDeserializer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface AlgInfo. */
-func FoundationImplementationWrapAlgInfo(ctx *C.vscf_impl_t) (AlgInfo, error) {
+func FoundationImplementationWrapAlgInfo(anyctx interface{}) (AlgInfo, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AlgInfo."}
+    }
     if (!C.vscf_alg_info_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface AlgInfo."}
     }
@@ -748,13 +968,21 @@ func FoundationImplementationWrapAlgInfo(ctx *C.vscf_impl_t) (AlgInfo, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface AlgInfo. */
-func FoundationImplementationWrapAlgInfoCopy(ctx *C.vscf_impl_t) (AlgInfo, error) {
+func FoundationImplementationWrapAlgInfoCopy(anyctx interface{}) (AlgInfo, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AlgInfo."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAlgInfo(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface AlgInfoSerializer. */
-func FoundationImplementationWrapAlgInfoSerializer(ctx *C.vscf_impl_t) (AlgInfoSerializer, error) {
+func FoundationImplementationWrapAlgInfoSerializer(anyctx interface{}) (AlgInfoSerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AlgInfoSerializer."}
+    }
     if (!C.vscf_alg_info_serializer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface AlgInfoSerializer."}
     }
@@ -769,13 +997,21 @@ func FoundationImplementationWrapAlgInfoSerializer(ctx *C.vscf_impl_t) (AlgInfoS
 }
 
 /* Wrap C implementation object to the Go object that implements interface AlgInfoSerializer. */
-func FoundationImplementationWrapAlgInfoSerializerCopy(ctx *C.vscf_impl_t) (AlgInfoSerializer, error) {
+func FoundationImplementationWrapAlgInfoSerializerCopy(anyctx interface{}) (AlgInfoSerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AlgInfoSerializer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAlgInfoSerializer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface AlgInfoDeserializer. */
-func FoundationImplementationWrapAlgInfoDeserializer(ctx *C.vscf_impl_t) (AlgInfoDeserializer, error) {
+func FoundationImplementationWrapAlgInfoDeserializer(anyctx interface{}) (AlgInfoDeserializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AlgInfoDeserializer."}
+    }
     if (!C.vscf_alg_info_deserializer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface AlgInfoDeserializer."}
     }
@@ -790,13 +1026,21 @@ func FoundationImplementationWrapAlgInfoDeserializer(ctx *C.vscf_impl_t) (AlgInf
 }
 
 /* Wrap C implementation object to the Go object that implements interface AlgInfoDeserializer. */
-func FoundationImplementationWrapAlgInfoDeserializerCopy(ctx *C.vscf_impl_t) (AlgInfoDeserializer, error) {
+func FoundationImplementationWrapAlgInfoDeserializerCopy(anyctx interface{}) (AlgInfoDeserializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface AlgInfoDeserializer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapAlgInfoDeserializer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface MessageInfoSerializer. */
-func FoundationImplementationWrapMessageInfoSerializer(ctx *C.vscf_impl_t) (MessageInfoSerializer, error) {
+func FoundationImplementationWrapMessageInfoSerializer(anyctx interface{}) (MessageInfoSerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface MessageInfoSerializer."}
+    }
     if (!C.vscf_message_info_serializer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface MessageInfoSerializer."}
     }
@@ -811,13 +1055,21 @@ func FoundationImplementationWrapMessageInfoSerializer(ctx *C.vscf_impl_t) (Mess
 }
 
 /* Wrap C implementation object to the Go object that implements interface MessageInfoSerializer. */
-func FoundationImplementationWrapMessageInfoSerializerCopy(ctx *C.vscf_impl_t) (MessageInfoSerializer, error) {
+func FoundationImplementationWrapMessageInfoSerializerCopy(anyctx interface{}) (MessageInfoSerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface MessageInfoSerializer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapMessageInfoSerializer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface MessageInfoFooterSerializer. */
-func FoundationImplementationWrapMessageInfoFooterSerializer(ctx *C.vscf_impl_t) (MessageInfoFooterSerializer, error) {
+func FoundationImplementationWrapMessageInfoFooterSerializer(anyctx interface{}) (MessageInfoFooterSerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface MessageInfoFooterSerializer."}
+    }
     if (!C.vscf_message_info_footer_serializer_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface MessageInfoFooterSerializer."}
     }
@@ -832,13 +1084,21 @@ func FoundationImplementationWrapMessageInfoFooterSerializer(ctx *C.vscf_impl_t)
 }
 
 /* Wrap C implementation object to the Go object that implements interface MessageInfoFooterSerializer. */
-func FoundationImplementationWrapMessageInfoFooterSerializerCopy(ctx *C.vscf_impl_t) (MessageInfoFooterSerializer, error) {
+func FoundationImplementationWrapMessageInfoFooterSerializerCopy(anyctx interface{}) (MessageInfoFooterSerializer, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface MessageInfoFooterSerializer."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapMessageInfoFooterSerializer(shallowCopy)
 }
 
 /* Wrap C implementation object to the Go object that implements interface Padding. */
-func FoundationImplementationWrapPadding(ctx *C.vscf_impl_t) (Padding, error) {
+func FoundationImplementationWrapPadding(anyctx interface{}) (Padding, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Padding."}
+    }
     if (!C.vscf_padding_is_implemented(ctx)) {
         return nil, &FoundationError{-1,"Given C implementation does not implement interface Padding."}
     }
@@ -853,7 +1113,11 @@ func FoundationImplementationWrapPadding(ctx *C.vscf_impl_t) (Padding, error) {
 }
 
 /* Wrap C implementation object to the Go object that implements interface Padding. */
-func FoundationImplementationWrapPaddingCopy(ctx *C.vscf_impl_t) (Padding, error) {
+func FoundationImplementationWrapPaddingCopy(anyctx interface{}) (Padding, error) {
+    ctx, ok := anyctx. (*C.vscf_impl_t)
+    if !ok {
+        return nil, &FoundationError{-1,"Cast error for interface Padding."}
+    }
     shallowCopy := C.vscf_impl_shallow_copy(ctx)
     return FoundationImplementationWrapPadding(shallowCopy)
 }

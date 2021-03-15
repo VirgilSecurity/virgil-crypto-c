@@ -181,6 +181,25 @@ function string_in2 (str, list)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Return string part after the last delimiter.
+# ---------------------------------------------------------------------------
+function string_after_last (str, delimiter)
+
+    if ! defined (my.str) | ! defined (my.delimiter)
+        return my.str
+    endif
+    
+    my.pattern = "([\\w]+)$"
+    regexp.match (my.pattern, my.str, my.last_word)
+
+    if string_empty (my.last_word)
+        return my.str
+    else
+      return my.last_word
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Return true if given XML item name is equal to the given string.
 # ---------------------------------------------------------------------------
 function item_equal (item, str)

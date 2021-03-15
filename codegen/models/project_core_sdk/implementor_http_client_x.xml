@@ -2,7 +2,7 @@
     Provide implementation based on the library Apple Frameworks.
 
 
-    <implementation name="http client x" platform="apple">
+    <implementation name="http client x" platform="apple" scope="internal">
 
         Provide implementation based on the library URLSession.
 

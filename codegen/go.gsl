@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2010 Virgil Security Inc.
+#   Copyright (C) 2015-2021 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -181,6 +181,17 @@ function go_derive_buffer_length_getter (class, method, argument)
         endif
 
         return my.proxy_argument
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return true if go package is common.
+# ---------------------------------------------------------------------------
+function go_derive_common_package (name)
+    if defined (my.name) & string_in (my.name, "common, virgil/common")
+        return "1"
+    else
+        return "0"
     endif
 endfunction
 
@@ -499,6 +510,17 @@ function go_derive_instance_c_type (instance)
 endfunction
 
 # ---------------------------------------------------------------------------
+#   Derive Go type package from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function go_derive_instance_package (instance)
+    check_arguments (my, "instance", my)
+
+    if defined (my.instance.project)
+        return "$(my.instance.project:c)"
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
 #   Derive Go type from the <instance/> type attributes.
 # ---------------------------------------------------------------------------
 function go_derive_instance_type (instance)
@@ -693,12 +715,9 @@ endfunction
 function go_derive_package_dir (project, wrapper)
     check_arguments (my, "project, wrapper", my)
 
-    assert_attribute (my.project, "name", my)
-    assert_attribute (my.wrapper, "package", my)
+    assert_attribute (my.project, "package", my)
 
-    my.package = go_derive_package_name (my.project, my.wrapper)
-
-    return string.replace (my.package, ".|/")
+    return string_to_path (my.project.package)
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -710,7 +729,25 @@ function go_derive_package_name (project, wrapper)
     assert_attribute (my.project, "name", my)
     assert_attribute (my.wrapper, "package", my)
 
-    return string.replace ("$(my.project.name:c,lower)", "_|.")
+    return go_derive_package_name_str(my.project.package ? my.project.name)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return formatted package name.
+# ---------------------------------------------------------------------------
+function go_derive_package_name_str (name)
+    check_arguments (my, "name", my)
+    
+    my.str = string_collapse_spaces (my.name)
+    if string_empty(my.str)
+        return my.str
+    endif
+
+    #my.package_name = string.replace (my.str, " |.")
+    #my.package_name = string_after_last (my.str, " ")
+    my.package_name = "$(my.str:c)"
+
+    return my.package_name
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1073,9 +1110,9 @@ endfunction
 function go_map_instance_type (go_instance, instance)
     check_arguments (my, "go_instance, instance", my)
 
+    my.go_instance.package = go_derive_instance_package (my.instance) ?
     my.go_instance.type = go_derive_instance_type (my.instance)
     my.go_instance.c_type = go_derive_instance_c_type (my.instance) ?
-
 
     if defined (my.instance.type)
         my.go_instance.is_primitive_type = "1"
@@ -1217,7 +1254,7 @@ function go_create_cgo_include (unit_name, go_instance, go_project)
         # already imported
     else
         new go_cgo_include to my.go_instance
-            .unit_name = "virgil/crypto/$(my.go_project.name)/$(my.unit_name:)"
+            .unit_name = "$(my.go_project.namespace)/$(my.unit_name:)"
             #.unit_name = my.unit_name
         endnew
     endif
@@ -1237,12 +1274,13 @@ function go_create_cgo_instructions (go_module, go_project)
     check_arguments (my, "go_module, go_project", my)
 
     # Define CGO instructions
+    my.relative_path = "/.." * (string.cntch (my.go_project.package_dir, "/") + 1)
 
     for my.go_project.cgo_link
         if defined (cgo_link.path)
-            my.path = "${SRCDIR}/../pkg/$(cgo_link.path:)"
+            my.path = "${SRCDIR}$(my.relative_path:)/pkg/$(cgo_link.path:)"
         else
-            my.path = "${SRCDIR}/../pkg/$(cgo_link.platform:)_amd64"
+            my.path = "${SRCDIR}$(my.relative_path:)/pkg/$(cgo_link.platform:)_amd64"
         endif
 
         go_create_cgo_flag ("CFLAGS", cgo_link.platform, "-I$(my.path:)/include/", my.go_module)
@@ -1325,33 +1363,38 @@ function go_create_import (id, path, go_instance)
     check_arguments (my, "path, go_instance", my)
 
     if count (my.go_instance.go_import, string_equal (go_import.path, my.path))
-        # already imported
-    else
-        new go_import to my.go_instance
-            if !string_empty (my.id)
-                .id = my.id
-            endif
-            .path = my.path
-        endnew
+        return
     endif
+    
+    if go_derive_common_package (my.path)
+        return
+    endif
+
+    new go_import to my.go_instance
+        if !string_empty (my.id)
+            .id = my.id
+        endif
+        .path = my.path
+    endnew
 endfunction
 
 # ---------------------------------------------------------------------------
 #   Create <go_import/> for <go_module/> if method uses Buffer or Data.
 # ---------------------------------------------------------------------------
-function go_create_import_to_common (method, go_module)
+function go_create_imports (method, go_module)
     check_arguments (my, "method, go_module", my)
-    return
 
     for my.method.argument
-        if string_in (argument.class, "data, buffer")
-            go_create_import (".", "virgil/common", go_module)
+        if defined (argument.project) & ! go_derive_common_package (argument.project)
+            my.package_name = go_derive_package_name_str (argument.project)
+            go_create_import (my.package_name, "virgil/$(my.package_name:)", go_module)
         endif
     endfor
 
     for my.method.return
-        if string_in (return.class, "data, buffer")
-            go_create_import (".", "virgil/common", go_module)
+        if defined (return.project) & ! go_derive_common_package (argument.project)
+            my.package_name = go_derive_package_name_str (return.project)
+            go_create_import (my.package_name, "virgil/$(my.package_name:)", go_module)
         endif
     endfor
 endfunction
@@ -1366,7 +1409,11 @@ function go_create_constant (constant, instance, go_instance, go_project, meta)
     assert_attribute (my.constant, "name", my)
 
     if defined(my.constant.value)
-        the_value = my.constant.value
+        if string_equal(my.constant.type, "string")
+            the_value = "\"$(my.constant.value:)\""
+        else
+            the_value = my.constant.value
+        endif
     elsif defined(my.go_instance.last_value)
         the_value = my.go_instance.last_value + 1
     else
@@ -1578,7 +1625,7 @@ function go_create_interface_implementation (implementation, go_struct, go_modul
         endfor
 
         for interface.method where wrapper_should_wrap_method(method)
-            go_create_import_to_common (method, my.go_module)
+            go_create_imports (method, my.go_module)
             go_create_struct_func (my.implementation, method, my.go_struct, my.go_module, my.go_project, my.meta)
         endfor
     endfor
@@ -1994,7 +2041,7 @@ function go_create_class_module (class, go_project, meta)
                 go_create_struct_close (go_struct, my.class, my.go_project, my.meta)
 
                 if ! string_in (my.class.lifecycle, "none")
-                    for my.class.constructor where constructor.visibility <> "private" & constructor.scope <> "private"
+                    for my.class.constructor where constructor.visibility <> "private" & constructor.scope <> "private" & constructor.declaration <> "private"
                         go_create_struct_constructor (my.class, constructor, go_struct, go_module, my.go_project, my.meta)
                     endfor
                 endif
@@ -2012,7 +2059,7 @@ function go_create_class_module (class, go_project, meta)
             endfor
 
             for my.class.method where wrapper_should_wrap_method(method)
-                go_create_import_to_common (method, go_module)
+                go_create_imports (method, go_module)
                 go_create_struct_func (my.class, method, go_struct, go_module, my.go_project, my.meta)
             endfor
 
@@ -2159,10 +2206,11 @@ function go_create_project_module (project, wrapper)
     new go_project to my.wrapper
         . = my.project. ?
         .name = my.project.name
+        .namespace = string_to_path (my.project.namespace)
         .prefix = my.project.prefix
         .package = go_derive_package_name(my.project, my.wrapper)
         .package_dir = go_derive_package_dir(my.project, my.wrapper)
-        .source_dir = cat_path (my.wrapper.source_dir, my.project.name)
+        .source_dir = cat_path (my.wrapper.source_dir, go_project.package_dir)
         .c_umbrella_header = make_ref_c (make_id ("header", my.project.name, "public"))
 
         for my.project.cgo_link
@@ -2226,7 +2274,7 @@ function go_create_implementation_module (implementation, go_project, meta)
             endfor
 
             for my.implementation.method where wrapper_should_wrap_method(method)
-                go_create_import_to_common (method, go_module)
+                go_create_imports (method, go_module)
                 go_create_struct_func (my.implementation, method, go_struct, go_module, my.go_project, my.meta)
             endfor
 
@@ -2548,25 +2596,41 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         return "helperExtractData($(my.name:)) /* r1 */"
 
     elsif is_true (0.is_buffer) & is_false (0.was_argument)
-        go_create_import ("unsafe", "unsafe", my.go_module)
-        return "C.GoBytes(unsafe.Pointer(C..(c_project_common_class_buffer_method_bytes)($(my.name:))), C.int(C..(c_project_common_class_buffer_method_len)($(my.name:)))) /* r2 */"
+        if string_equal(0.type, "string")
+            return "C.GoString(C..(c_project_common_class_str_buffer_method_chars)($(my.name:))) /* r2.1 */"
+        else
+            go_create_import ("unsafe", "unsafe", my.go_module)
+            return "C.GoBytes(unsafe.Pointer(C..(c_project_common_class_buffer_method_bytes)($(my.name:))), C.int(C..(c_project_common_class_buffer_method_len)($(my.name:)))) /* r2 */"
+        endif
 
     elsif is_true (0.is_primitive_type) & is_true_any (0.is_array, 0.is_reference)
         go_create_import ("unsafe", "unsafe", my.go_module)
         return "unsafe.Pointer($(my.name:)) /* r3 */"
 
     elsif is_true (0.is_interface)
-        if string_in (go_return.access, "readonly, readwrite")
-            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4.1 */"
+        if defined (go_return.package)
+            my.package = "$(go_return.package:)."
+            my.prefix = "$(go_return.package:Pascal)"
         else
-            return "$(my.go_project.name:Pascal)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
+            my.package = ""
+            my.prefix = "$(my.go_project.name:Pascal)"
+        endif
+        if string_in (go_return.access, "readonly, readwrite")
+            return "$(my.package:)$(my.prefix:)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4.1 */"
+        else
+            return "$(my.package:)$(my.prefix:)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
         endif
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
-        if string_in (go_return.access, "readonly, readwrite")
-            return "new$(my.type:)Copy($(my.name:)) /* r5 */"
+        if string_equal(0.type, "string")
+            my.str_method_chars = "$(make_ref_c (make_id ("project", "common", "class", "str", "method", "chars")))"
+            return "C.GoString(C.$(my.str_method_chars:)($(my.name:))) /* r5.1 */"
         else
-            return "new$(my.type:)WithCtx($(my.name:)) /* r6 */"
+            if string_in (go_return.access, "readonly, readwrite")
+                return "new$(my.type:)Copy($(my.name:)) /* r5 */"
+            else
+                return "new$(my.type:)WithCtx($(my.name:)) /* r6 */"
+            endif
         endif
 
     elsif is_true (0.is_class) & is_true (0.is_buffer)
@@ -2655,10 +2719,10 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
         .is_static = "1"
         .is_primary = "1"
 
+        my.ctx_type = go_derive_struct_default_context_type()
         new go_argument to go_func
-            .name = "ctx"
-            #TODO
-            .type = go_derive_struct_default_context_type()
+            .name = "anyctx"
+            .type = "interface{}"
         endnew
 
         new go_return to go_func
@@ -2669,6 +2733,10 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
+                ctx, ok := anyctx. ($(my.ctx_type:))
+                if !ok {
+                    return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Cast error for interface $(my.interface_name:).\"}
+                }
                 if (!C.$(my.method_is_implemented:)(ctx)) {
                     return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Given C implementation does not implement interface $(my.interface_name:).\"}
                 }
@@ -2691,8 +2759,8 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
         .is_static = "1"
 
         new go_argument to go_func
-            .name = "ctx"
-            .type = go_derive_struct_default_context_type()
+            .name = "anyctx"
+            .type = "interface{}"
         endnew
 
         new go_return to go_func
@@ -2703,6 +2771,10 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             . = format_left("\
+                ctx, ok := anyctx. ($(my.ctx_type:))
+                if !ok {
+                    return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Cast error for interface $(my.interface_name:).\"}
+                }
                 shallowCopy := C..(c_class_impl_method_shallow_copy)(ctx)
                 return $(my.go_struct.name:)$(my.interface_func_name:)(shallowCopy)
             ")

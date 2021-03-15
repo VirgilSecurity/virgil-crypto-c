@@ -57,7 +57,11 @@ function go_format_argument_list (go_func)
         if is_true (go_argument.is_class) & is_true (go_argument.is_reference) & !string_equal (go_argument.type, "Data")
             my.arg_list += "$(go_argument.name:) *$(go_fix_type(go_argument.type):)"
         else
-            my.arg_list += "$(go_argument.name:) $(go_fix_type(go_argument.type):)"
+            if defined (go_argument.package) & ! go_derive_common_package (go_argument.package)
+                my.arg_list += "$(go_argument.name:) $(go_argument.package:).$(go_fix_type(go_argument.type):)"
+            else
+                my.arg_list += "$(go_argument.name:) $(go_fix_type(go_argument.type):)"
+            endif
         endif
 
         if ! last()
@@ -152,6 +156,8 @@ function go_format_result_nil_args (err, go_func, go_project)
             else
                 my.init_args += "0"
             endif
+        elsif string_equal (go_return.type, "string")
+            my.init_args += "\"\""
         else
             my.init_args += "nil"
         endif
@@ -205,10 +211,16 @@ function go_format_return_list (go_func)
 
     for my.go_func.go_return
         my.return_list ?= ""
-        if is_true (go_return.is_class) & is_true (go_return.is_reference) & is_false (go_return.is_buffer)
-            my.return_list += "*$(go_fix_type(go_return.type):)"
+        if defined (go_return.package) & ! go_derive_common_package (go_return.package)
+            my.package_prefix = "$(go_return.package:)."
         else
-            my.return_list += "$(go_fix_type(go_return.type):)"
+            my.package_prefix = ""
+        endif
+        
+        if is_true (go_return.is_class) & is_true (go_return.is_reference) & is_false (go_return.is_buffer)
+            my.return_list += "*$(my.package_prefix:)$(go_fix_type(go_return.type):)"
+        else
+            my.return_list += "$(my.package_prefix:)$(go_fix_type(go_return.type):)"
         endif
 
         if ! last()
