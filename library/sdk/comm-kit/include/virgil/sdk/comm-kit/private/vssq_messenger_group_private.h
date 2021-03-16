@@ -56,8 +56,16 @@
 #   include <virgil/crypto/common/vsc_str.h>
 #endif
 
+#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_json_array.h>
+#endif
+
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <VSCCommon/vsc_str.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSCore/vssc_json_array.h>
 #endif
 
 // clang-format on
@@ -88,6 +96,18 @@ vssq_messenger_group_create(vssq_messenger_group_t *self, vsc_str_t group_id,
 VSSQ_PUBLIC vssq_status_t
 vssq_messenger_group_load(vssq_messenger_group_t *self, vsc_str_t group_id,
         const vssq_messenger_user_t *owner) VSSQ_NODISCARD;
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_load_from_json(vssq_messenger_group_t *self, const vssc_json_object_t *json_obj) VSSQ_NODISCARD;
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_load_from_json_str(vssq_messenger_group_t *self, vsc_str_t json_str) VSSQ_NODISCARD;
 
 //
 //  Load requested epoch if needed and store it within cache.

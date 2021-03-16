@@ -289,6 +289,14 @@
         Failed to process group message because plain text too long.
     </constant>
 
+    <constant name="import group failed version mismatch" value="-1211">
+        Failed to import group because mismatch version within JSON.
+    </constant>
+
+    <constant name="import group failed parse failed" value="-1212">
+        Failed to import group because parsing JSON failed.
+    </constant>
+
     <constant name="process group message failed crypto failed" value="-1299">
         Failed to process group message because underlying crypto module failed.
     </constant>

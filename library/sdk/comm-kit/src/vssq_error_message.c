@@ -456,11 +456,18 @@ static const vsc_str_t k_message_import_user_failed_parse_failed = {
     sizeof(k_message_import_user_failed_parse_failed_chars) - 1
 };
 
-static const char k_message_import_user_failed_version_mismatch_chars[] = "Failed to import user because parsing JSON failed.";
+static const char k_message_import_user_failed_version_mismatch_chars[] = "Failed to import user because met unexpected version within JSON.";
 
 static const vsc_str_t k_message_import_user_failed_version_mismatch = {
     k_message_import_user_failed_version_mismatch_chars,
     sizeof(k_message_import_user_failed_version_mismatch_chars) - 1
+};
+
+static const char k_message_import_user_failed_import_card_failed_chars[] = "Failed to import user because failed to import a raw card.";
+
+static const vsc_str_t k_message_import_user_failed_import_card_failed = {
+    k_message_import_user_failed_import_card_failed_chars,
+    sizeof(k_message_import_user_failed_import_card_failed_chars) - 1
 };
 
 static const char k_message_contact_validation_failed_username_too_long_chars[] = "Username validation failed because it's length exceeds the allowed maximum (20).";
@@ -566,6 +573,20 @@ static const char k_message_process_group_message_failed_plain_text_too_long_cha
 static const vsc_str_t k_message_process_group_message_failed_plain_text_too_long = {
     k_message_process_group_message_failed_plain_text_too_long_chars,
     sizeof(k_message_process_group_message_failed_plain_text_too_long_chars) - 1
+};
+
+static const char k_message_import_group_failed_version_mismatch_chars[] = "Failed to import group because mismatch version within JSON.";
+
+static const vsc_str_t k_message_import_group_failed_version_mismatch = {
+    k_message_import_group_failed_version_mismatch_chars,
+    sizeof(k_message_import_group_failed_version_mismatch_chars) - 1
+};
+
+static const char k_message_import_group_failed_parse_failed_chars[] = "Failed to import group because parsing JSON failed.";
+
+static const vsc_str_t k_message_import_group_failed_parse_failed = {
+    k_message_import_group_failed_parse_failed_chars,
+    sizeof(k_message_import_group_failed_parse_failed_chars) - 1
 };
 
 static const char k_message_process_group_message_failed_crypto_failed_chars[] = "Failed to process group message because underlying crypto module failed.";
@@ -981,6 +1002,8 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_import_user_failed_parse_failed;
         case vssq_status_IMPORT_USER_FAILED_VERSION_MISMATCH:
             return k_message_import_user_failed_version_mismatch;
+        case vssq_status_IMPORT_USER_FAILED_IMPORT_CARD_FAILED:
+            return k_message_import_user_failed_import_card_failed;
         case vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_TOO_LONG:
             return k_message_contact_validation_failed_username_too_long;
         case vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS:
@@ -1011,6 +1034,10 @@ vssq_error_message_from_status(vssq_status_t status) {
             return k_message_process_group_message_failed_duplicate_epoch;
         case vssq_status_PROCESS_GROUP_MESSAGE_FAILED_PLAIN_TEXT_TOO_LONG:
             return k_message_process_group_message_failed_plain_text_too_long;
+        case vssq_status_IMPORT_GROUP_FAILED_VERSION_MISMATCH:
+            return k_message_import_group_failed_version_mismatch;
+        case vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED:
+            return k_message_import_group_failed_parse_failed;
         case vssq_status_PROCESS_GROUP_MESSAGE_FAILED_CRYPTO_FAILED:
             return k_message_process_group_message_failed_crypto_failed;
         case vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_INVALID_ENCRYPTED_MESSAGE:

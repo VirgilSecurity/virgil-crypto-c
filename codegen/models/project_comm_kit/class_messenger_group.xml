@@ -6,6 +6,9 @@
     <require class="group session" project="foundation"/>
     <require class="group session ticket" project="foundation"/>
     <require class="string list" project="core sdk"/>
+    <require class="json object" project="core sdk" definition="public"/>
+    <require class="json object" project="core sdk" api="private"/>
+    <require class="json array" project="core sdk" api="private"/>
     <require class="messenger group epoch list" api="private"/>
     <require module="atomic"/>
 
@@ -20,6 +23,31 @@
 
 
     <constant name="session id len" value="32"/>
+
+
+    <constant name="k json version v1" type="string" visibility="private">
+        <value value="v1"/>
+    </constant>
+
+
+    <constant name="k json key version" type="string" visibility="private">
+        <value value="version"/>
+    </constant>
+
+
+    <constant name="k json key group id" type="string" visibility="private">
+        <value value="group_id"/>
+    </constant>
+
+
+    <constant name="k json key owner" type="string" visibility="private">
+        <value value="owner"/>
+    </constant>
+
+
+    <constant name="k json key epochs" type="string" visibility="private">
+        <value value="epochs"/>
+    </constant>
 
 
     <method name="owner" is_const="1">
@@ -46,6 +74,40 @@
         <argument name="owner" class="messenger user"/>
 
         <return enum="status"/>
+    </method>
+
+
+
+    <method name="load from json" scope="private">
+        Load an existing group from a cached JSON value for a group messaging.
+
+        <argument name="json obj" class="json object" project="core sdk"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="load from json str" scope="private">
+        Load an existing group from a cached JSON value for a group messaging.
+
+        <argument name="json str" class="str"/>
+
+        <return enum="status"/>
+    </method>
+
+
+    <method name="to json" is_const="1">
+        Return the group as JSON object.
+
+        JSON format:
+        {
+            "version" : "v1",
+            "group_id" : "STRING",
+            "owner" : {},
+            "epochs" : []
+        }
+
+        <return class="json object" project="core sdk" access="disown"/>
     </method>
 
 

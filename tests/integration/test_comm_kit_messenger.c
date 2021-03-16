@@ -246,6 +246,167 @@ test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__su
     vsc_str_buffer_destroy(&decrypted_message);
 }
 
+void
+test__messenger_create_group__then_export_it__expect_equal_exported_groups() {
+    vssq_messenger_t *owner_messenger = create_messenger_and_register_user();
+    vssq_messenger_t *alice_messenger = create_messenger_and_register_user();
+
+    vssq_messenger_user_list_t *other_participants = vssq_messenger_user_list_new();
+    vssq_messenger_user_list_add(other_participants, vssq_messenger_user_modifiable(alice_messenger));
+
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    //
+    //  Create group.
+    //
+    vsc_str_t group_id = vsc_str_from_str("GROUP-AT-LEAST-10-SYMBOLS");
+    vssq_messenger_group_t *owner_group =
+            vssq_messenger_create_group(owner_messenger, group_id, other_participants, &error);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+    TEST_ASSERT_NOT_NULL(owner_group);
+
+    const vssq_messenger_user_t *owner = vssq_messenger_group_owner(owner_group);
+
+    //
+    //  Load group.
+    //
+    vssq_messenger_group_t *alice_group = vssq_messenger_load_group(alice_messenger, group_id, owner, &error);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+    TEST_ASSERT_NOT_NULL(owner_group);
+
+    //
+    //  Export groups.
+    //
+    vssc_json_object_t *owner_group_json = vssq_messenger_group_to_json(owner_group);
+    TEST_ASSERT_NOT_NULL(owner_group_json);
+
+    vsc_str_t owner_group_json_str = vssc_json_object_as_str(owner_group_json);
+    TEST_ASSERT_GREATER_THAN(0, owner_group_json_str.len);
+
+    vssc_json_object_t *alice_group_json = vssq_messenger_group_to_json(alice_group);
+    TEST_ASSERT_NOT_NULL(alice_group_json);
+
+    vsc_str_t alice_group_json_str = vssc_json_object_as_str(alice_group_json);
+    TEST_ASSERT_GREATER_THAN(0, owner_group_json_str.len);
+
+    //
+    //  Check
+    //
+    TEST_ASSERT_EQUAL_STR(owner_group_json_str, alice_group_json_str);
+    print_str(owner_group_json_str);
+
+    //
+    //  Delete group.
+    //
+    error.status = vssq_messenger_group_remove(owner_group);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&owner_messenger);
+    vssq_messenger_destroy(&alice_messenger);
+    vssq_messenger_user_list_destroy(&other_participants);
+    vssq_messenger_group_destroy(&owner_group);
+    vssq_messenger_group_destroy(&alice_group);
+    vssc_json_object_destroy(&owner_group_json);
+    vssc_json_object_destroy(&alice_group_json);
+}
+
+void
+test__messenger_import_group__then_encrypt_decrypt__success() {
+    vssq_messenger_t *owner_messenger = create_messenger_and_register_user();
+    vssq_messenger_t *alice_messenger = create_messenger_and_register_user();
+
+    vssq_messenger_user_list_t *other_participants = vssq_messenger_user_list_new();
+    vssq_messenger_user_list_add(other_participants, vssq_messenger_user_modifiable(alice_messenger));
+
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    //
+    //  Create group.
+    //
+    vsc_str_t group_id = vsc_str_from_str("GROUP-AT-LEAST-10-SYMBOLS");
+    vssq_messenger_group_t *owner_group =
+            vssq_messenger_create_group(owner_messenger, group_id, other_participants, &error);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+    TEST_ASSERT_NOT_NULL(owner_group);
+
+    const vssq_messenger_user_t *owner = vssq_messenger_group_owner(owner_group);
+
+    //
+    //  Export group.
+    //
+    vssc_json_object_t *owner_group_json = vssq_messenger_group_to_json(owner_group);
+    TEST_ASSERT_NOT_NULL(owner_group_json);
+
+    vsc_str_t owner_group_json_str = vssc_json_object_as_str(owner_group_json);
+    TEST_ASSERT_GREATER_THAN(0, owner_group_json_str.len);
+
+    //
+    //  Encrypt message.
+    //
+    vsc_str_t message = vsc_str_from_str("Greetings!");
+
+    const size_t encrypted_message_len = vssq_messenger_group_encrypted_message_len(owner_group, message.len);
+    vsc_buffer_t *encrypted_message = vsc_buffer_new_with_capacity(encrypted_message_len);
+
+    error.status = vssq_messenger_group_encrypt_message(owner_group, message, encrypted_message);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+
+    //
+    //  Import group.
+    //
+    vssq_messenger_group_t *alice_group =
+            vssq_messenger_load_group_from_json_str(alice_messenger, owner_group_json_str, &error);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+    TEST_ASSERT_NOT_NULL(owner_group);
+
+    //
+    //  Decrypt message.
+    //
+    const size_t decrypted_message_len =
+            vssq_messenger_group_decrypted_message_len(alice_group, vsc_buffer_len(encrypted_message));
+
+    vsc_str_buffer_t *decrypted_message = vsc_str_buffer_new_with_capacity(decrypted_message_len);
+
+    error.status = vssq_messenger_group_decrypt_message(
+            alice_group, vsc_buffer_data(encrypted_message), owner, decrypted_message);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+
+    //
+    //  Check
+    //
+    TEST_ASSERT_EQUAL_STR(message, vsc_str_buffer_str(decrypted_message));
+
+    //
+    //  Delete group.
+    //
+    error.status = vssq_messenger_group_remove(owner_group);
+    TEST_ASSERT_EQUAL_MESSAGE(
+            vssq_status_SUCCESS, vssq_error_status(&error), vssq_error_message_from_error(&error).chars);
+
+    //
+    //  Cleanup.
+    //
+    vssq_messenger_destroy(&owner_messenger);
+    vssq_messenger_destroy(&alice_messenger);
+    vssq_messenger_user_list_destroy(&other_participants);
+    vssq_messenger_group_destroy(&owner_group);
+    vssc_json_object_destroy(&owner_group_json);
+    vsc_buffer_destroy(&encrypted_message);
+    vssq_messenger_group_destroy(&alice_group);
+    vsc_str_buffer_destroy(&decrypted_message);
+}
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -262,6 +423,8 @@ main(void) {
     RUN_TEST(test__messenger_creds_backup_then_restore_then_remove__random_user__success);
     RUN_TEST(test__messenger_find_user_with_username__random_user__success);
     RUN_TEST(test__messenger_create_group__then_encrypt_decrypt_message_then_delete_group__success);
+    RUN_TEST(test__messenger_create_group__then_export_it__expect_equal_exported_groups);
+    RUN_TEST(test__messenger_import_group__then_encrypt_decrypt__success);
 
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);

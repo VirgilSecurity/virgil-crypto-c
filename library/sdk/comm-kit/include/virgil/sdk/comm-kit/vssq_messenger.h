@@ -74,6 +74,7 @@
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_json_array.h>
 #   include <virgil/sdk/core/vssc_string_list.h>
 #endif
 
@@ -82,14 +83,15 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_data.h>
-#   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_str.h>
 #   include <VSCCommon/vsc_str_buffer.h>
+#   include <VSCCommon/vsc_data.h>
+#   include <VSCCommon/vsc_buffer.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <VSSCore/vssc_string_list.h>
+#   include <VSSCore/vssc_json_array.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -429,6 +431,19 @@ vssq_messenger_create_group(const vssq_messenger_t *self, vsc_str_t group_id,
 //
 VSSQ_PUBLIC vssq_messenger_group_t *
 vssq_messenger_load_group(const vssq_messenger_t *self, vsc_str_t group_id, const vssq_messenger_user_t *owner,
+        vssq_error_t *error);
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_load_group_from_json_str(const vssq_messenger_t *self, vsc_str_t json_str, vssq_error_t *error);
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_load_group_from_json(const vssq_messenger_t *self, const vssc_json_object_t *json_obj,
         vssq_error_t *error);
 
 //

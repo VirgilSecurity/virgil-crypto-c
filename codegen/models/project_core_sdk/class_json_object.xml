@@ -135,6 +135,14 @@
     </method>
 
 
+    <method name="add object value disown" scope="private">
+        Add object value with a given key.
+
+        <argument name="key" class="str"/>
+        <argument name="value" class="self" access="disown"/>
+    </method>
+
+
     <method name="get object value" is_const="1">
         Return an object value for a given key.
         Return error, if given key is not found or type mismatch.

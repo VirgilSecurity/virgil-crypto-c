@@ -59,12 +59,17 @@
 #include "vssq_status.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
+#include <virgil/sdk/core/vssc_json_object.h>
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_buffer.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_str_buffer.h>
 #   include <virgil/crypto/common/vsc_str.h>
-#   include <virgil/crypto/common/vsc_data.h>
+#   include <virgil/crypto/common/vsc_buffer.h>
+#endif
+
+#if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <virgil/sdk/core/vssc_json_array.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -72,10 +77,14 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
+#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_buffer.h>
 #   include <VSCCommon/vsc_str.h>
-#   include <VSCCommon/vsc_data.h>
 #   include <VSCCommon/vsc_str_buffer.h>
+#endif
+
+#if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSCore/vssc_json_array.h>
 #endif
 
 #if VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -206,6 +215,20 @@ vssq_messenger_group_release_auth(vssq_messenger_group_t *self);
 //
 VSSQ_PUBLIC const vssq_messenger_user_t *
 vssq_messenger_group_owner(const vssq_messenger_group_t *self);
+
+//
+//  Return the group as JSON object.
+//
+//  JSON format:
+//  {
+//      "version" : "v1",
+//      "group_id" : "STRING",
+//      "owner" : {},
+//      "epochs" : []
+//  }
+//
+VSSQ_PUBLIC vssc_json_object_t *
+vssq_messenger_group_to_json(const vssq_messenger_group_t *self);
 
 //
 //  Delete group.

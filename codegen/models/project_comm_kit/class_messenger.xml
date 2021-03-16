@@ -371,6 +371,26 @@
     </method>
 
 
+    <method name="load group from json str" is_const="1">
+        Load an existing group from a cached JSON value for a group messaging.
+
+        <argument name="json str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group" access="disown"/>
+    </method>
+
+
+    <method name="load group from json" is_const="1">
+        Load an existing group from a cached JSON value for a group messaging.
+
+        <argument name="json obj" class="json object" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group" access="disown"/>
+    </method>
+
+
     <!-- Working with Cloud FS -->
     <method name="cloud fs" is_const="1">
         Returns module for working with the CLoud FS.

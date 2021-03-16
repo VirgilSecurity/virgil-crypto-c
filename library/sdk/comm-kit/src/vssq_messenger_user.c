@@ -112,6 +112,13 @@ static const vsc_str_t k_json_key_version = {
     sizeof(k_json_key_version_chars) - 1
 };
 
+static const char k_json_key_raw_card_chars[] = "raw_card";
+
+static const vsc_str_t k_json_key_raw_card = {
+    k_json_key_raw_card_chars,
+    sizeof(k_json_key_raw_card_chars) - 1
+};
+
 static const char k_json_key_username_chars[] = "username";
 
 static const vsc_str_t k_json_key_username = {
@@ -131,13 +138,6 @@ static const char k_json_key_email_chars[] = "email";
 static const vsc_str_t k_json_key_email = {
     k_json_key_email_chars,
     sizeof(k_json_key_email_chars) - 1
-};
-
-static const char k_json_key_raw_card_chars[] = "raw_card";
-
-static const vsc_str_t k_json_key_raw_card = {
-    k_json_key_raw_card_chars,
-    sizeof(k_json_key_raw_card_chars) - 1
 };
 
 //
