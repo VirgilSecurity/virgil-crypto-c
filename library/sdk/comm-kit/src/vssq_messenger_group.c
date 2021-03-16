@@ -663,25 +663,25 @@ vssq_messenger_group_load_from_json(vssq_messenger_group_t *self, const vssc_jso
 
     vsc_str_t group_id = vssc_json_object_get_string_value(json_obj, k_json_key_group_id, &core_sdk_error);
     if (!vsc_str_is_valid_and_non_empty(group_id)) {
-        VSSQ_ERROR_SAFE_UPDATE(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
     owner_json = vssc_json_object_get_object_value(json_obj, k_json_key_owner, &core_sdk_error);
     if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
     owner = vssq_messenger_user_from_json(owner_json, self->random, &error);
     if (vssq_error_has_error(&error)) {
-        VSSQ_ERROR_SAFE_UPDATE(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
     epochs_json = vssc_json_object_get_array_value(json_obj, k_json_key_epochs, &core_sdk_error);
     if (vssc_error_has_error(&core_sdk_error)) {
-        VSSQ_ERROR_SAFE_UPDATE(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
         goto cleanup;
     }
 
@@ -690,7 +690,7 @@ vssq_messenger_group_load_from_json(vssq_messenger_group_t *self, const vssc_jso
     for (size_t pos = 0; pos < vssc_json_array_count(epochs_json); ++pos) {
         vssc_json_object_t *epoch_json = vssc_json_array_get_object_value(epochs_json, pos, &core_sdk_error);
         if (vssc_error_has_error(&core_sdk_error)) {
-            VSSQ_ERROR_SAFE_UPDATE(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+            vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
             goto cleanup;
         }
 
@@ -698,7 +698,7 @@ vssq_messenger_group_load_from_json(vssq_messenger_group_t *self, const vssc_jso
         vssc_json_object_destroy(&epoch_json);
 
         if (vssq_error_has_error(&error)) {
-            VSSQ_ERROR_SAFE_UPDATE(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+            vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
             goto cleanup;
         }
 
