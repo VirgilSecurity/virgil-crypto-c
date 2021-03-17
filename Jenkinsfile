@@ -755,6 +755,30 @@ def buildPythonPackages() {
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
                 }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
             }
 
             stash includes: 'wrappers/python/dist/**', name: 'python_linux'
@@ -801,6 +825,22 @@ def buildPythonPackages() {
                 }
 
                 docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
                     sh "pip install wheel"
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
@@ -864,6 +904,22 @@ def buildPythonPackages() {
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_wheel --plat-name win32"
                 }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
             }
 
             // Windows x86_64
@@ -904,6 +960,22 @@ def buildPythonPackages() {
                 }
 
                 docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
                     sh "pip install wheel"
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_egg --plat-name win_amd64"
