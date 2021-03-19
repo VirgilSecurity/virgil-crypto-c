@@ -102,6 +102,14 @@ target_include_directories(core_sdk
         )
 
 #
+# Compile definitions
+#
+target_compile_definitions(core_sdk
+        PRIVATE
+            $<BUILD_INTERFACE:$<$<BOOL:${CURL_STATICLIB}>:CURL_STATICLIB>>
+        )
+
+#
 # Link to dependencies
 #
 target_link_libraries(core_sdk PUBLIC vsc::common vsc::foundation json_c)
