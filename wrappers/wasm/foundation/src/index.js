@@ -130,9 +130,9 @@ const initMessageInfoDerSerializer = require('./MessageInfoDerSerializer');
 const initRandomPadding = require('./RandomPadding');
 
 const initProject = options => {
-    const foundationModule = new FoundationModule(options);
     return new Promise((resolve, reject) => {
-        foundationModule.onRuntimeInitialized = () => {
+
+        FoundationModule(options).then(foundationModule => {
             const modules = {};
 
             modules.FoundationInterfaceTag = initFoundationInterfaceTag(foundationModule, modules);
@@ -227,11 +227,10 @@ const initProject = options => {
             modules.MessageInfoDerSerializer = initMessageInfoDerSerializer(foundationModule, modules);
             modules.RandomPadding = initRandomPadding(foundationModule, modules);
             resolve(modules);
-        };
+        }).catch(error => {
+            reject(error);
+        });
 
-        foundationModule.onAbort = message => {
-            reject(new Error(message));
-        };
     });
 };
 module.exports = initProject;
