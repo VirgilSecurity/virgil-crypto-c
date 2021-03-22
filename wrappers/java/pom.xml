@@ -36,7 +36,7 @@
 	<groupId>com.virgilsecurity.crypto</groupId>
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
-	<version>0.15.3</version>
+	<version>0.15.4</version>
 
 	<name>Virgil Security Crypto Library</name>
 	<description>
@@ -94,7 +94,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.12</version>
+				<version>4.13.1</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

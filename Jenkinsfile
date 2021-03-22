@@ -9,6 +9,15 @@ properties([
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
             description: 'Run Android instrumental tests.'),
 
+        booleanParam(name: 'DISABLE_PHP_BUILDS', defaultValue: false,
+            description: 'Disable build of PHP artifacts'),
+        
+        booleanParam(name: 'DISABLE_JAVA_BUILDS', defaultValue: false,
+            description: 'Disable build of Java artifacts'),
+
+        booleanParam(name: 'DISABLE_PYTHON_BUILDS', defaultValue: false,
+            description: 'Disable build of Python artifacts'),
+
         booleanParam(name: 'DEPLOY_JAVA_ARTIFACTS', defaultValue: false,
             description: 'If build succeeded then Java artifacts will be deployed to the Maven repository.'),
 
@@ -61,27 +70,35 @@ nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win10')
 //
 //  Language: PHP
 //
-nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
-nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
-nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win10')
+if (!params.DISABLE_PHP_BUILDS) {
+    nodes['lang-php-platform-linux'] = build_LangPHP_Linux('build-centos7')
+    nodes['lang-php-platform-macos'] = build_LangPHP_MacOS('build-os-x')
+    nodes['lang-php-platform-windows'] = build_LangPHP_Windows('build-win10')
+}
+
 
 //
 //  Language: Java
 //
-nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
-nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
-nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win10')
-nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
-nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
-nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
-nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
+if (!params.DISABLE_JAVA_BUILDS) {
+    nodes['lang-java-platform-linux'] = build_LangJava_Linux('build-centos7')
+    nodes['lang-java-platform-macos'] = build_LangJava_MacOS('build-os-x')
+    nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win10')
+    nodes['lang-java-platform-android-x86'] = build_LangJava_Android_x86('build-os-x')
+    nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android_x86_64('build-os-x')
+    nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android_armeabi_v7a('build-os-x')
+    nodes['lang-java-platform-android-arm64-v8a'] = build_LangJava_Android_arm64_v8a('build-os-x')
+}
+
 
 //
 // Language: Python
 //
-nodes['lang-python-platform-linux'] = build_LangPython_Linux('build-centos7')
-nodes['lang-python-platform-macos'] = build_LangPython_MacOS('build-os-x')
-nodes['lang-python-platform-windows'] = build_LangPython_Windows('build-win10')
+if (!params.DISABLE_PYTHON_BUILDS) {
+    nodes['lang-python-platform-linux'] = build_LangPython_Linux('build-centos7')
+    nodes['lang-python-platform-macos'] = build_LangPython_MacOS('build-os-x')
+    nodes['lang-python-platform-windows'] = build_LangPython_Windows('build-win10')
+}
 
 stage('Build') {
     parallel(nodes)
@@ -755,6 +772,30 @@ def buildPythonPackages() {
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
                 }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_x86_64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name manylinux1_i686"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name manylinux1_i686"
+                }
             }
 
             stash includes: 'wrappers/python/dist/**', name: 'python_linux'
@@ -801,6 +842,22 @@ def buildPythonPackages() {
                 }
 
                 docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name macosx_10_12_intel"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
                     sh "pip install wheel"
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_egg --plat-name macosx_10_12_intel"
@@ -864,6 +921,22 @@ def buildPythonPackages() {
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_wheel --plat-name win32"
                 }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win32"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win32"
+                }
             }
 
             // Windows x86_64
@@ -904,6 +977,22 @@ def buildPythonPackages() {
                 }
 
                 docker.image("python:3.7").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.8").inside("--user root") {
+                    sh "pip install wheel"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_egg --plat-name win_amd64"
+                    cleanPythonBuildDirectoriesLinux()
+                    sh "python setup.py bdist_wheel --plat-name win_amd64"
+                }
+
+                docker.image("python:3.9").inside("--user root") {
                     sh "pip install wheel"
                     cleanPythonBuildDirectoriesLinux()
                     sh "python setup.py bdist_egg --plat-name win_amd64"
