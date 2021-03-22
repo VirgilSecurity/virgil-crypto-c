@@ -53,7 +53,6 @@
 #include "vssq_messenger_group_epoch_list.h"
 #include "vssq_memory.h"
 #include "vssq_assert.h"
-#include "vssq_messenger_group_epoch_list_private.h"
 #include "vssq_messenger_group_epoch_list_defs.h"
 
 // clang-format on

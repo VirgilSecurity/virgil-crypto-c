@@ -39,7 +39,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Contains credentials of a group session related to the specifc epoch.
+//  Contains credentials of a group session related to the specific epoch.
 // --------------------------------------------------------------------------
 
 

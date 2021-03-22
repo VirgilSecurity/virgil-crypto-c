@@ -68,7 +68,6 @@
 #include "vssq_memory.h"
 #include "vssq_assert.h"
 #include "vssq_messenger_group_epoch_keyknox_storage_defs.h"
-#include "vssq_messenger_group_epoch_list_private.h"
 
 #include <virgil/crypto/foundation/vscf_binary.h>
 #include <virgil/crypto/foundation/vscf_key_provider.h>

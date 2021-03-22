@@ -69,12 +69,12 @@
 
 #include "vssq_library.h"
 #include "vssq_messenger_auth.h"
+#include "vssq_messenger_group_epoch_list.h"
 #include "vssq_messenger_group_epoch.h"
 #include "vssq_messenger_user_list.h"
 #include "vssq_status.h"
 #include "vssq_messenger_user.h"
 #include "vssq_error.h"
-#include "vssq_messenger_group_epoch_list.h"
 
 #include <virgil/crypto/foundation/vscf_random.h>
 

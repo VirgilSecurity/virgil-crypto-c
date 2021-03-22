@@ -44,11 +44,19 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_GROUP_EPOCH_LIST_PRIVATE_H_INCLUDED
-#define VSSQ_MESSENGER_GROUP_EPOCH_LIST_PRIVATE_H_INCLUDED
 
-#include "vssq_messenger_group_epoch_list.h"
+//  @description
+// --------------------------------------------------------------------------
+//  Class 'messenger group epoch list' types definition.
+// --------------------------------------------------------------------------
+
+#ifndef VSSQ_MESSENGER_GROUP_EPOCH_LIST_DEFS_H_INCLUDED
+#define VSSQ_MESSENGER_GROUP_EPOCH_LIST_DEFS_H_INCLUDED
+
+#include "vssq_library.h"
+#include "vssq_atomic.h"
 #include "vssq_messenger_group_epoch.h"
+#include "vssq_messenger_group_epoch_list.h"
 
 // clang-format on
 //  @end
@@ -66,12 +74,28 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Add new item to the list.
-//  Note, ownership is transfered.
+//  Handle 'messenger group epoch list' context.
 //
-VSSQ_PUBLIC void
-vssq_messenger_group_epoch_list_add(vssq_messenger_group_epoch_list_t *self,
-        vssq_messenger_group_epoch_t **messenger_group_epoch_ref);
+struct vssq_messenger_group_epoch_list_t {
+    //
+    //  Function do deallocate self context.
+    //
+    vssq_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
+    VSSQ_ATOMIC size_t refcnt;
+
+    vssq_messenger_group_epoch_t *item;
+    //
+    //  Class specific context.
+    //
+    vssq_messenger_group_epoch_list_t *next;
+    //
+    //  Class specific context.
+    //
+    vssq_messenger_group_epoch_list_t *prev;
+};
 
 
 // --------------------------------------------------------------------------
@@ -87,5 +111,5 @@ vssq_messenger_group_epoch_list_add(vssq_messenger_group_epoch_list_t *self,
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_GROUP_EPOCH_LIST_PRIVATE_H_INCLUDED
+#endif // VSSQ_MESSENGER_GROUP_EPOCH_LIST_DEFS_H_INCLUDED
 //  @end

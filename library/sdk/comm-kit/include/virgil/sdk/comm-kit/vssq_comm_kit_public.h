@@ -148,10 +148,6 @@
 #   include "vssq_messenger_group.h"
 #endif
 
-#if VSSQ_MESSENGER_GROUP_EPOCH_LIST
-#   include "vssq_messenger_group_epoch_list.h"
-#endif
-
 #if VSSQ_MESSENGER_USER
 #   include "vssq_messenger_user.h"
 #endif

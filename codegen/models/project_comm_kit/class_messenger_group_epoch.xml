@@ -1,5 +1,5 @@
 <class name="messenger group epoch" scope="internal">
-    Contains credentials of a group session related to the specifc epoch.
+    Contains credentials of a group session related to the specific epoch.
 
     <require class="json object" project="core sdk"/>
     <require class="json object" project="core sdk" api="private"/>

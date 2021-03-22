@@ -436,13 +436,14 @@ vssq_messenger_cloud_fs_client(const vssq_messenger_cloud_fs_t *self) {
 //  Note, if folder id is empty then file created in a root folder.
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_created_file_t *
-vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_str_t name, vsc_str_t type, size_t size,
-        vsc_data_t file_key, vsc_str_t parent_folder_id, vsc_data_t parent_folder_public_key, vssq_error_t *error) {
+vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_str_t name, vsc_str_t mime_tipe,
+        size_t size, vsc_data_t file_key, vsc_str_t parent_folder_id, vsc_data_t parent_folder_public_key,
+        vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->random);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(name));
-    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(type));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(mime_tipe));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(file_key));
     VSSQ_ASSERT(vsc_str_is_valid(parent_folder_id));
     VSSQ_ASSERT(vsc_data_is_valid(parent_folder_public_key));
@@ -455,7 +456,7 @@ vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_s
     }
 
     vssq_messenger_cloud_fs_created_file_t *result = vssq_messenger_cloud_fs_client_create_file(
-            self->client, name, type, size, parent_folder_id, vsc_buffer_data(file_encrypted_key), error);
+            self->client, name, mime_tipe, size, parent_folder_id, vsc_buffer_data(file_encrypted_key), error);
 
     vsc_buffer_destroy(&file_encrypted_key);
 

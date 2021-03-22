@@ -209,8 +209,9 @@ vssq_messenger_cloud_fs_client(const vssq_messenger_cloud_fs_t *self);
 //  Note, if folder id is empty then file created in a root folder.
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_created_file_t *
-vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_str_t name, vsc_str_t type, size_t size,
-        vsc_data_t file_key, vsc_str_t parent_folder_id, vsc_data_t parent_folder_public_key, vssq_error_t *error);
+vssq_messenger_cloud_fs_create_file(const vssq_messenger_cloud_fs_t *self, vsc_str_t name, vsc_str_t mime_tipe,
+        size_t size, vsc_data_t file_key, vsc_str_t parent_folder_id, vsc_data_t parent_folder_public_key,
+        vssq_error_t *error);
 
 //
 //  Get a file download link.

@@ -96,7 +96,7 @@ struct vssq_messenger_cloud_fs_file_info_t {
 
     vsc_str_mutable_t name;
 
-    vsc_str_mutable_t type;
+    vsc_str_mutable_t mime_tipe;
 
     vsc_str_mutable_t updated_by;
 

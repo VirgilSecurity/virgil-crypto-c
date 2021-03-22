@@ -47,7 +47,7 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Contains credentials of a group session related to the specifc epoch.
+//  Contains credentials of a group session related to the specific epoch.
 // --------------------------------------------------------------------------
 
 #ifndef VSSQ_MESSENGER_GROUP_EPOCH_H_INCLUDED

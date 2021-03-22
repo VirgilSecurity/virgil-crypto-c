@@ -47,21 +47,15 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  Value object that handles public available file info.
+//  Handles a list of "messenger group epoch" class objects.
 // --------------------------------------------------------------------------
 
-#ifndef VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_H_INCLUDED
-#define VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_H_INCLUDED
+#ifndef VSSQ_MESSENGER_GROUP_EPOCH_LIST_H_INCLUDED
+#define VSSQ_MESSENGER_GROUP_EPOCH_LIST_H_INCLUDED
 
 #include "vssq_library.h"
-
-#if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_str.h>
-#endif
-
-#if VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <VSCCommon/vsc_str.h>
-#endif
+#include "vssq_messenger_group_epoch.h"
+#include "vssq_error.h"
 
 // clang-format on
 //  @end
@@ -79,121 +73,132 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'messenger cloud fs file info' context.
+//  Handle 'messenger group epoch list' context.
 //
-#ifndef VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_T_DEFINED
-#define VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_T_DEFINED
-    typedef struct vssq_messenger_cloud_fs_file_info_t vssq_messenger_cloud_fs_file_info_t;
-#endif // VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_T_DEFINED
+#ifndef VSSQ_MESSENGER_GROUP_EPOCH_LIST_T_DEFINED
+#define VSSQ_MESSENGER_GROUP_EPOCH_LIST_T_DEFINED
+    typedef struct vssq_messenger_group_epoch_list_t vssq_messenger_group_epoch_list_t;
+#endif // VSSQ_MESSENGER_GROUP_EPOCH_LIST_T_DEFINED
 
 //
-//  Return size of 'vssq_messenger_cloud_fs_file_info_t'.
+//  Return size of 'vssq_messenger_group_epoch_list_t'.
 //
 VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_file_info_ctx_size(void);
+vssq_messenger_group_epoch_list_ctx_size(void);
 
 //
 //  Perform initialization of pre-allocated context.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_file_info_init(vssq_messenger_cloud_fs_file_info_t *self);
+vssq_messenger_group_epoch_list_init(vssq_messenger_group_epoch_list_t *self);
 
 //
 //  Release all inner resources including class dependencies.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_file_info_cleanup(vssq_messenger_cloud_fs_file_info_t *self);
+vssq_messenger_group_epoch_list_cleanup(vssq_messenger_group_epoch_list_t *self);
 
 //
 //  Allocate context and perform it's initialization.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_file_info_t *
-vssq_messenger_cloud_fs_file_info_new(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create fully defined object.
-//
-VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_file_info_init_with(vssq_messenger_cloud_fs_file_info_t *self, vsc_str_t id, vsc_str_t name,
-        vsc_str_t mime_tipe, size_t size, size_t created_at, size_t updated_at, vsc_str_t updated_by);
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create fully defined object.
-//
-VSSQ_PUBLIC vssq_messenger_cloud_fs_file_info_t *
-vssq_messenger_cloud_fs_file_info_new_with(vsc_str_t id, vsc_str_t name, vsc_str_t mime_tipe, size_t size,
-        size_t created_at, size_t updated_at, vsc_str_t updated_by);
+VSSQ_PUBLIC vssq_messenger_group_epoch_list_t *
+vssq_messenger_group_epoch_list_new(void);
 
 //
 //  Release all inner resources and deallocate context if needed.
 //  It is safe to call this method even if the context was statically allocated.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_file_info_delete(const vssq_messenger_cloud_fs_file_info_t *self);
+vssq_messenger_group_epoch_list_delete(const vssq_messenger_group_epoch_list_t *self);
 
 //
 //  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vssq_messenger_cloud_fs_file_info_new ()'.
+//  This is a reverse action of the function 'vssq_messenger_group_epoch_list_new ()'.
 //
 VSSQ_PUBLIC void
-vssq_messenger_cloud_fs_file_info_destroy(vssq_messenger_cloud_fs_file_info_t **self_ref);
+vssq_messenger_group_epoch_list_destroy(vssq_messenger_group_epoch_list_t **self_ref);
 
 //
 //  Copy given class context by increasing reference counter.
 //
-VSSQ_PUBLIC vssq_messenger_cloud_fs_file_info_t *
-vssq_messenger_cloud_fs_file_info_shallow_copy(vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC vssq_messenger_group_epoch_list_t *
+vssq_messenger_group_epoch_list_shallow_copy(vssq_messenger_group_epoch_list_t *self);
 
 //
 //  Copy given class context by increasing reference counter.
 //  Reference counter is internally synchronized, so constness is presumed.
 //
-VSSQ_PUBLIC const vssq_messenger_cloud_fs_file_info_t *
-vssq_messenger_cloud_fs_file_info_shallow_copy_const(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC const vssq_messenger_group_epoch_list_t *
+vssq_messenger_group_epoch_list_shallow_copy_const(const vssq_messenger_group_epoch_list_t *self);
 
 //
-//  Return file id.
+//  Add new item to the list.
+//  Note, ownership is transfered.
 //
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_file_info_id(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC void
+vssq_messenger_group_epoch_list_add(vssq_messenger_group_epoch_list_t *self,
+        vssq_messenger_group_epoch_t **messenger_group_epoch_ref);
 
 //
-//  Return file name.
+//  Remove current node.
 //
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_file_info_name(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PRIVATE void
+vssq_messenger_group_epoch_list_remove_self(vssq_messenger_group_epoch_list_t *self);
 
 //
-//  Return mime tipe, aka "text/plain".
+//  Return true if given list has item.
 //
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_file_info_type(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC bool
+vssq_messenger_group_epoch_list_has_item(const vssq_messenger_group_epoch_list_t *self);
 
 //
-//  Return file size.
+//  Return list item.
 //
-VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_file_info_size(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC const vssq_messenger_group_epoch_t *
+vssq_messenger_group_epoch_list_item(const vssq_messenger_group_epoch_list_t *self);
 
 //
-//  Return file "created at" timestamp.
+//  Return true if list has next item.
 //
-VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_file_info_created_at(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC bool
+vssq_messenger_group_epoch_list_has_next(const vssq_messenger_group_epoch_list_t *self);
 
 //
-//  Return file "updated at" timestamp.
+//  Return next list node if exists, or NULL otherwise.
 //
-VSSQ_PUBLIC size_t
-vssq_messenger_cloud_fs_file_info_updated_at(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC const vssq_messenger_group_epoch_list_t *
+vssq_messenger_group_epoch_list_next(const vssq_messenger_group_epoch_list_t *self);
 
 //
-//  Return file "updated by" - user identity that updated a file.
+//  Return true if list has previous item.
 //
-VSSQ_PUBLIC vsc_str_t
-vssq_messenger_cloud_fs_file_info_updated_by(const vssq_messenger_cloud_fs_file_info_t *self);
+VSSQ_PUBLIC bool
+vssq_messenger_group_epoch_list_has_prev(const vssq_messenger_group_epoch_list_t *self);
+
+//
+//  Return previous list node if exists, or NULL otherwise.
+//
+VSSQ_PUBLIC const vssq_messenger_group_epoch_list_t *
+vssq_messenger_group_epoch_list_prev(const vssq_messenger_group_epoch_list_t *self);
+
+//
+//  Remove all items.
+//
+VSSQ_PUBLIC void
+vssq_messenger_group_epoch_list_clear(vssq_messenger_group_epoch_list_t *self);
+
+//
+//  Return latest epoch.
+//
+VSSQ_PUBLIC const vssq_messenger_group_epoch_t *
+vssq_messenger_group_epoch_list_latest_epoch(const vssq_messenger_group_epoch_list_t *self);
+
+//
+//  Find epoch by it's number.
+//
+VSSQ_PUBLIC const vssq_messenger_group_epoch_t *
+vssq_messenger_group_epoch_list_find(const vssq_messenger_group_epoch_list_t *self, size_t epoch_num,
+        vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -209,5 +214,5 @@ vssq_messenger_cloud_fs_file_info_updated_by(const vssq_messenger_cloud_fs_file_
 
 
 //  @footer
-#endif // VSSQ_MESSENGER_CLOUD_FS_FILE_INFO_H_INCLUDED
+#endif // VSSQ_MESSENGER_GROUP_EPOCH_LIST_H_INCLUDED
 //  @end

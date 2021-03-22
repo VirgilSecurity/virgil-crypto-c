@@ -456,13 +456,13 @@ vssq_messenger_cloud_fs_client_cleanup_ctx(vssq_messenger_cloud_fs_client_t *sel
 //  Note, if folder id is empty then file created in a root folder.
 //
 VSSQ_PUBLIC vssq_messenger_cloud_fs_created_file_t *
-vssq_messenger_cloud_fs_client_create_file(const vssq_messenger_cloud_fs_client_t *self, vsc_str_t name, vsc_str_t type,
-        size_t size, vsc_str_t folder_id, vsc_data_t file_encrypted_key, vssq_error_t *error) {
+vssq_messenger_cloud_fs_client_create_file(const vssq_messenger_cloud_fs_client_t *self, vsc_str_t name,
+        vsc_str_t mime_tipe, size_t size, vsc_str_t folder_id, vsc_data_t file_encrypted_key, vssq_error_t *error) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->auth);
     VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(name));
-    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(type));
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(mime_tipe));
     VSSQ_ASSERT(vsc_str_is_valid(folder_id));
     VSSQ_ASSERT(vsc_data_is_valid_and_non_empty(file_encrypted_key));
 
@@ -487,8 +487,8 @@ vssq_messenger_cloud_fs_client_create_file(const vssq_messenger_cloud_fs_client_
     VSSQ_ASSERT(name.len < sizeof(request_body.name));
     memcpy(request_body.name, name.chars, name.len);
 
-    VSSQ_ASSERT(type.len < sizeof(request_body.type));
-    memcpy(request_body.type, type.chars, type.len);
+    VSSQ_ASSERT(mime_tipe.len < sizeof(request_body.type));
+    memcpy(request_body.type, mime_tipe.chars, mime_tipe.len);
 
     //
     //  Fulfill file info.
