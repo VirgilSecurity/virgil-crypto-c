@@ -4,25 +4,23 @@ import "C"
 
 /*
 * Common interface to get random data.
-*/
+ */
 type Random interface {
+	context
 
-    context
+	/*
+	 * Generate random bytes.
+	 * All RNG implementations must be thread-safe.
+	 */
+	Random(dataLen uint) ([]byte, error)
 
-    /*
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
-    */
-    Random (dataLen uint) ([]byte, error)
+	/*
+	 * Retrieve new seed data from the entropy sources.
+	 */
+	Reseed() error
 
-    /*
-    * Retrieve new seed data from the entropy sources.
-    */
-    Reseed () error
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
+	/*
+	 * Release underlying C context.
+	 */
+	Delete()
 }
-

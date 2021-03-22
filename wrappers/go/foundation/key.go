@@ -4,40 +4,38 @@ import "C"
 
 /*
 * Basic key type.
-*/
+ */
 type Key interface {
+	context
 
-    context
+	/*
+	 * Algorithm identifier the key belongs to.
+	 */
+	AlgId() AlgId
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
-    AlgId () AlgId
+	/*
+	 * Return algorithm information that can be used for serialization.
+	 */
+	AlgInfo() (AlgInfo, error)
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
-    AlgInfo () (AlgInfo, error)
+	/*
+	 * Length of the key in bytes.
+	 */
+	Len() uint
 
-    /*
-    * Length of the key in bytes.
-    */
-    Len () uint
+	/*
+	 * Length of the key in bits.
+	 */
+	Bitlen() uint
 
-    /*
-    * Length of the key in bits.
-    */
-    Bitlen () uint
+	/*
+	 * Check that key is valid.
+	 * Note, this operation can be slow.
+	 */
+	IsValid() bool
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
-    IsValid () bool
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
+	/*
+	 * Release underlying C context.
+	 */
+	Delete()
 }
-

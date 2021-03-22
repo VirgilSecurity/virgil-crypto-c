@@ -40,12 +40,12 @@ import (
 )
 
 func TestJwtParse(t *testing.T) {
-    jwt, err := JwtParse(TEST_JWT_VALID)
+	jwt, err := JwtParse(TEST_JWT_VALID)
 
-    require.Nil(t, err)
-    require.NotNil(t, jwt)
+	require.Nil(t, err)
+	require.NotNil(t, jwt)
 
-    identity := jwt.Identity()
-    require.Equal(t, TEST_IDENTITY, identity)
-    require.True(t, jwt.IsExpired())
+	identity := jwt.Identity()
+	require.Equal(t, TEST_IDENTITY, identity)
+	require.True(t, jwt.IsExpired())
 }

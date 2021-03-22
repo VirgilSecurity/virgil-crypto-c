@@ -62,7 +62,7 @@
         Note, if folder id is empty then file created in a root folder.
 
         <argument name="name" class="str"/>
-        <argument name="type" class="str"/>
+        <argument name="mime tipe" class="str"/>
         <argument name="size" type="size"/>
         <argument name="folder id" class="str"/>
         <argument name="file encrypted key" class="data"/>

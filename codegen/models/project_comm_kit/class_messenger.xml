@@ -272,9 +272,9 @@
         <argument name="recipient" class="messenger user"/>
 
         <argument name="out" class="buffer">
-            <length method="encrypted len">
-                <proxy argument="recipient" to="recipient"/>
+            <length method="encrypted message len">
                 <proxy argument="text" to="message message len" cast="str_length"/>
+                <proxy argument="recipient" to="recipient"/>
             </length>
         </argument>
 
@@ -289,9 +289,9 @@
         <argument name="recipient" class="messenger user"/>
 
         <argument name="out" class="buffer">
-            <length method="encrypted len">
-                <proxy argument="recipient" to="recipient"/>
+            <length method="encrypted message len">
                 <proxy argument="data" to="message message len" cast="data_length"/>
+                <proxy argument="recipient" to="recipient"/>
             </length>
         </argument>
 
@@ -316,7 +316,7 @@
         <argument name="sender" class="messenger user"/>
 
         <argument name="out" class="str buffer">
-            <length method="decrypted message  len">
+            <length method="decrypted message len">
                 <proxy argument="encrypted text" to="encrypted message len" cast="data_length"/>
             </length>
         </argument>
@@ -333,8 +333,8 @@
         <argument name="sender" class="messenger user"/>
 
         <argument name="out" class="buffer">
-            <length method="decrypted message  len">
-                <proxy argument="encrypted text" to="encrypted message len" cast="data_length"/>
+            <length method="decrypted message len">
+                <proxy argument="encrypted data" to="encrypted message len" cast="data_length"/>
             </length>
         </argument>
 

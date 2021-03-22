@@ -4,14 +4,12 @@ import "C"
 
 /*
 * Contains public part of the key.
-*/
+ */
 type PublicKey interface {
+	context
 
-    context
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
+	/*
+	 * Release underlying C context.
+	 */
+	Delete()
 }
-

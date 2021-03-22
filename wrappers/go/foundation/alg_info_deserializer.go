@@ -4,19 +4,17 @@ import "C"
 
 /*
 * Provide algorithm deserialization.
-*/
+ */
 type AlgInfoDeserializer interface {
+	context
 
-    context
+	/*
+	 * Deserialize algorithm from the data.
+	 */
+	Deserialize(data []byte) (AlgInfo, error)
 
-    /*
-    * Deserialize algorithm from the data.
-    */
-    Deserialize (data []byte) (AlgInfo, error)
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
+	/*
+	 * Release underlying C context.
+	 */
+	Delete()
 }
-

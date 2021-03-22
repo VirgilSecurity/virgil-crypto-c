@@ -55,9 +55,13 @@ function go_format_argument_list (go_func)
     for my.go_func.go_argument
         my.arg_list ?= ""
         if is_true (go_argument.is_class) & is_true (go_argument.is_reference) & !string_equal (go_argument.type, "Data")
-            my.arg_list += "$(go_argument.name:) *$(go_fix_type(go_argument.type):)"
+            if defined (go_argument.package)
+                my.arg_list += "$(go_argument.name:) *$(go_argument.package:).$(go_fix_type(go_argument.type):)"
+            else
+                my.arg_list += "$(go_argument.name:) *$(go_fix_type(go_argument.type):)"
+            endif
         else
-            if defined (go_argument.package) & ! go_derive_common_package (go_argument.package)
+            if defined (go_argument.package)
                 my.arg_list += "$(go_argument.name:) $(go_argument.package:).$(go_fix_type(go_argument.type):)"
             else
                 my.arg_list += "$(go_argument.name:) $(go_fix_type(go_argument.type):)"

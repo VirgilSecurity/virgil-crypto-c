@@ -3,7 +3,7 @@
 
     <property name="id" class="str mutable"/>
     <property name="name" class="str mutable"/>
-    <property name="type" class="str mutable"/>
+    <property name="mime tipe" class="str mutable"/>
     <property name="updated by" class="str mutable"/>
     <property name="size" type="size"/>
     <property name="created at" type="size"/>
@@ -15,7 +15,7 @@
 
         <argument name="id" class="str"/>
         <argument name="name" class="str"/>
-        <argument name="type" class="str"/>
+        <argument name="mime tipe" class="str"/>
         <argument name="size" type="size"/>
         <argument name="created at" type="size"/>
         <argument name="updated at" type="size"/>
@@ -38,7 +38,7 @@
 
 
     <method name="type" is_const="1">
-        Return file type, aka "text/plain".
+        Return mime tipe, aka "text/plain".
 
         <return class="str"/>
     </method>

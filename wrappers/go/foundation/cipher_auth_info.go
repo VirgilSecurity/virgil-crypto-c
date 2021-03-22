@@ -3,17 +3,15 @@ package foundation
 import "C"
 
 type CipherAuthInfo interface {
+	context
 
-    context
+	/*
+	 * Defines authentication tag length in bytes.
+	 */
+	GetAuthTagLen() uint
 
-    /*
-    * Defines authentication tag length in bytes.
-    */
-    GetAuthTagLen () uint
-
-    /*
-    * Release underlying C context.
-    */
-    Delete ()
+	/*
+	 * Release underlying C context.
+	 */
+	Delete()
 }
-

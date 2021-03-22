@@ -25,7 +25,7 @@
         Note, if folder id is empty then file created in a root folder.
 
         <argument name="name" class="str"/>
-        <argument name="type" class="str"/>
+        <argument name="mime tipe" class="str"/>
         <argument name="size" type="size"/>
         <argument name="file key" class="data"/>
         <argument name="parent folder id" class="str"/>

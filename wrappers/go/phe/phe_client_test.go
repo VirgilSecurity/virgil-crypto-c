@@ -41,7 +41,7 @@ import (
 
 func TestNewPheClient(t *testing.T) {
 	client := NewPheClient()
-    require.NotNil(t, client)
+	require.NotNil(t, client)
 
 	client.Delete()
 }
@@ -73,7 +73,7 @@ func TestFullFlowRandomCorrectPwdShouldSucceed(t *testing.T) {
 	require.True(t, len(serverEnrollment) > 0)
 
 	clientEnrollmentRecord, clientAccountKey, err := client.EnrollAccount(serverEnrollment, password)
-	require.Nil(t, err);
+	require.Nil(t, err)
 	require.NotNil(t, clientEnrollmentRecord)
 	require.NotNil(t, clientAccountKey)
 	require.Equal(t, 32, len(clientAccountKey))
@@ -110,7 +110,7 @@ func TestRotationRandomRotationServerPublicKeysMatch(t *testing.T) {
 	require.Nil(t, err)
 
 	require.NotNil(t, serverRotatedPrivateKey)
-	require.Equal(t,32, len(serverRotatedPrivateKey))
+	require.Equal(t, 32, len(serverRotatedPrivateKey))
 
 	require.NotNil(t, serverRotatedPublicKey)
 	require.Equal(t, 65, len(serverRotatedPublicKey))
@@ -133,7 +133,7 @@ func TestRotationRandomRotationServerPublicKeysMatch(t *testing.T) {
 	require.Equal(t, 32, len(clientNewPrivateKey))
 
 	require.NotNil(t, serverNewPublicKey)
-	require.Equal(t,65, len(serverNewPublicKey))
+	require.Equal(t, 65, len(serverNewPublicKey))
 
 	require.Equal(t, len(serverPublicKey), len(serverNewPublicKey))
 	require.Equal(t, len(clientPrivateKey), len(clientNewPrivateKey))

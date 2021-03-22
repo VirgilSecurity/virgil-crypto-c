@@ -41,7 +41,7 @@ import (
 
 func TestNewPheServer(t *testing.T) {
 	server := NewPheServer()
-    require.NotNil(t, server)
+	require.NotNil(t, server)
 
 	server.Delete()
 }

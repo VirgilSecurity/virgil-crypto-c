@@ -97,7 +97,7 @@
         </argument>
         <argument name="signature" class="buffer">
             <length method="finish encryption signature len">
-                <proxy argument="signer private key" to="signer private key"/>
+                <proxy argument="signer private key" to="private key" to_project="foundation"/>
             </length>
         </argument>
         <return enum="status"/>

@@ -44,7 +44,7 @@
         <argument name="username" class="str"/>
 
         <argument name="digest hex" class="str buffer">
-            <length constant="digest len"/>
+            <length constant="digest hex len"/>
         </argument>
 
         <return enum="status"/>
@@ -92,7 +92,7 @@
         <argument name="phone number" class="str"/>
 
         <argument name="digest hex" class="str buffer">
-            <length constant="digest len"/>
+            <length constant="digest hex len"/>
         </argument>
 
         <return enum="status"/>
@@ -139,7 +139,7 @@
         <argument name="email" class="str"/>
 
         <argument name="digest hex" class="str buffer">
-            <length constant="digest len"/>
+            <length constant="digest hex len"/>
         </argument>
 
         <return enum="status"/>

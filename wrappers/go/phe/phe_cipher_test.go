@@ -51,7 +51,7 @@ func TestNewPheCipherWithCtx(t *testing.T) {
 	cipher := NewPheCipher()
 	defer cipher.Delete()
 
-	newCipher := newPheCipherWithCtx(cipher.cCtx)
+	newCipher := NewPheCipherWithCtx(cipher.cCtx)
 	require.NotNil(t, newCipher)
 	require.Equal(t, cipher.cCtx, newCipher.cCtx)
 }
