@@ -92,6 +92,12 @@ VSSC_PUBLIC vsc_buffer_t *
 vssc_json_object_get_binary_value_new(const vssc_json_object_t *self, vsc_str_t key, vssc_error_t *error);
 
 //
+//  Add object value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_object_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_object_t **value_ref);
+
+//
 //  Add array value with a given key.
 //
 VSSC_PUBLIC void

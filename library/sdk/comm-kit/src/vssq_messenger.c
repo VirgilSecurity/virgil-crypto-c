@@ -1302,6 +1302,56 @@ vssq_messenger_load_group(
 }
 
 //
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_load_group_from_json_str(const vssq_messenger_t *self, vsc_str_t json_str, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(json_str));
+
+    vssq_messenger_group_t *group = vssq_messenger_group_new();
+    vssq_messenger_group_use_random(group, self->random);
+    vssq_messenger_group_use_auth(group, self->auth);
+
+    const vssq_status_t status = vssq_messenger_group_load_from_json_str(group, json_str);
+    if (status != vssq_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        vssq_messenger_group_destroy(&group);
+        return NULL;
+    }
+
+    return group;
+}
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_messenger_group_t *
+vssq_messenger_load_group_from_json(
+        const vssq_messenger_t *self, const vssc_json_object_t *json_obj, vssq_error_t *error) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(json_obj);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT_PTR(self->auth);
+
+    vssq_messenger_group_t *group = vssq_messenger_group_new();
+    vssq_messenger_group_use_random(group, self->random);
+    vssq_messenger_group_use_auth(group, self->auth);
+
+    const vssq_status_t status = vssq_messenger_group_load_from_json(group, json_obj);
+    if (status != vssq_status_SUCCESS) {
+        VSSQ_ERROR_SAFE_UPDATE(error, status);
+        vssq_messenger_group_destroy(&group);
+        return NULL;
+    }
+
+    return group;
+}
+
+//
 //  Returns module for working with the CLoud FS.
 //
 VSSQ_PUBLIC const vssq_messenger_cloud_fs_t *

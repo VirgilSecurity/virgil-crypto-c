@@ -217,6 +217,18 @@
         Failed to import credentials because importing private key failed.
     </constant>
 
+    <constant name="import user failed parse failed" value="-1010">
+        Failed to import user because parsing JSON failed.
+    </constant>
+
+    <constant name="import user failed version mismatch" value="-1011">
+        Failed to import user because met unexpected version within JSON.
+    </constant>
+
+    <constant name="import user failed import card failed" value="-1012">
+        Failed to import user because failed to import a raw card.
+    </constant>
+
     <constant name="contact validation failed username too long" value="-1100">
         Username validation failed because it's length exceeds the allowed maximum (20).
     </constant>
@@ -275,6 +287,14 @@
 
     <constant name="process group message failed plain text too long" value="-1210">
         Failed to process group message because plain text too long.
+    </constant>
+
+    <constant name="import group failed version mismatch" value="-1211">
+        Failed to import group because mismatch version within JSON.
+    </constant>
+
+    <constant name="import group failed parse failed" value="-1212">
+        Failed to import group because parsing JSON failed.
     </constant>
 
     <constant name="process group message failed crypto failed" value="-1299">

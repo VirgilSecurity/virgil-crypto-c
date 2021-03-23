@@ -600,6 +600,34 @@ vssc_json_object_add_object_value(vssc_json_object_t *self, vsc_str_t key, const
 }
 
 //
+//  Add object value with a given key.
+//
+VSSC_PUBLIC void
+vssc_json_object_add_object_value_disown(vssc_json_object_t *self, vsc_str_t key, vssc_json_object_t **value_ref) {
+
+    VSSC_ASSERT_PTR(self);
+    VSSC_ASSERT_PTR(self->json_obj);
+    VSSC_ASSERT_REF(value_ref);
+    VSSC_ASSERT_PTR((*value_ref)->json_obj);
+
+    json_object *value_json_obj = (json_object *)((*value_ref)->json_obj);
+
+    int add_result = 0;
+    if (vsc_str_is_null_terminated(key)) {
+        add_result = json_object_object_add(self->json_obj, key.chars, json_object_get(value_json_obj));
+
+    } else {
+        vsc_str_mutable_t key_nt = vsc_str_mutable_from_str(key);
+        add_result = json_object_object_add(self->json_obj, key_nt.chars, json_object_get(value_json_obj));
+        vsc_str_mutable_release(&key_nt);
+    }
+
+    vssc_json_object_destroy(value_ref);
+
+    VSSC_ASSERT_LIBRARY_JSON_C_SUCCESS(add_result);
+}
+
+//
 //  Return an object value for a given key.
 //  Return error, if given key is not found or type mismatch.
 //

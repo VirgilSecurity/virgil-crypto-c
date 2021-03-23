@@ -289,6 +289,18 @@ enum vssq_status_t {
     //
     vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED = -1004,
     //
+    //  Failed to import user because parsing JSON failed.
+    //
+    vssq_status_IMPORT_USER_FAILED_PARSE_FAILED = -1010,
+    //
+    //  Failed to import user because met unexpected version within JSON.
+    //
+    vssq_status_IMPORT_USER_FAILED_VERSION_MISMATCH = -1011,
+    //
+    //  Failed to import user because failed to import a raw card.
+    //
+    vssq_status_IMPORT_USER_FAILED_IMPORT_CARD_FAILED = -1012,
+    //
     //  Username validation failed because it's length exceeds the allowed maximum (20).
     //
     vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_TOO_LONG = -1100,
@@ -348,6 +360,14 @@ enum vssq_status_t {
     //  Failed to process group message because plain text too long.
     //
     vssq_status_PROCESS_GROUP_MESSAGE_FAILED_PLAIN_TEXT_TOO_LONG = -1210,
+    //
+    //  Failed to import group because mismatch version within JSON.
+    //
+    vssq_status_IMPORT_GROUP_FAILED_VERSION_MISMATCH = -1211,
+    //
+    //  Failed to import group because parsing JSON failed.
+    //
+    vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED = -1212,
     //
     //  Failed to process group message because underlying crypto module failed.
     //

@@ -66,6 +66,8 @@
 #include <virgil/crypto/foundation/vscf_group_session.h>
 #include <virgil/crypto/foundation/vscf_group_session_ticket.h>
 #include <virgil/sdk/core/vssc_string_list.h>
+#include <virgil/sdk/core/private/vssc_json_object_private.h>
+#include <virgil/sdk/core/private/vssc_json_array_private.h>
 #include <virgil/crypto/foundation/vscf_status.h>
 
 // clang-format on
@@ -136,6 +138,41 @@ vssq_messenger_group_generate_initial_epoch(const vssq_messenger_group_t *self, 
 //
 static vssq_status_t
 vssq_messenger_group_map_foundation_status(vscf_status_t foundation_status) VSSQ_NODISCARD;
+
+static const char k_json_version_v1_chars[] = "v1";
+
+static const vsc_str_t k_json_version_v1 = {
+    k_json_version_v1_chars,
+    sizeof(k_json_version_v1_chars) - 1
+};
+
+static const char k_json_key_version_chars[] = "version";
+
+static const vsc_str_t k_json_key_version = {
+    k_json_key_version_chars,
+    sizeof(k_json_key_version_chars) - 1
+};
+
+static const char k_json_key_group_id_chars[] = "group_id";
+
+static const vsc_str_t k_json_key_group_id = {
+    k_json_key_group_id_chars,
+    sizeof(k_json_key_group_id_chars) - 1
+};
+
+static const char k_json_key_owner_chars[] = "owner";
+
+static const vsc_str_t k_json_key_owner = {
+    k_json_key_owner_chars,
+    sizeof(k_json_key_owner_chars) - 1
+};
+
+static const char k_json_key_epochs_chars[] = "epochs";
+
+static const vsc_str_t k_json_key_epochs = {
+    k_json_key_epochs_chars,
+    sizeof(k_json_key_epochs_chars) - 1
+};
 
 //
 //  Return size of 'vssq_messenger_group_t'.
@@ -444,7 +481,6 @@ static void
 vssq_messenger_group_did_setup_auth(vssq_messenger_group_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
     vssq_messenger_group_epoch_keyknox_storage_use_auth(self->epoch_keyknox_storage, self->auth);
 }
@@ -579,6 +615,185 @@ vssq_messenger_group_load(vssq_messenger_group_t *self, vsc_str_t group_id, cons
     vsc_buffer_destroy(&session_id);
 
     return vssq_error_status(&error);
+}
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_load_from_json(vssq_messenger_group_t *self, const vssc_json_object_t *json_obj) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT_PTR(json_obj);
+
+    VSSQ_ASSERT_NULL(self->owner);
+    VSSQ_ASSERT_NULL(self->epochs);
+    VSSQ_ASSERT(!vsc_str_mutable_is_valid(self->group_id));
+
+    vssc_json_object_t *owner_json = NULL;
+    vssc_json_array_t *epochs_json = NULL;
+
+    vssq_messenger_user_t *owner = NULL;
+    vssq_messenger_group_epoch_list_t *epochs = NULL;
+
+
+    //
+    //  Parse JSON:
+    //
+    //  {
+    //      "version" : "v1",
+    //      "group_id" : "STRING",
+    //      "owner" : {},
+    //      "epochs" : []
+    //  }
+    //
+    vssq_error_t error;
+    vssq_error_reset(&error);
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vsc_str_t version = vssc_json_object_get_string_value(json_obj, k_json_key_version, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error) || !vsc_str_equal(k_json_version_v1, version)) {
+        return vssq_status_IMPORT_GROUP_FAILED_VERSION_MISMATCH;
+    }
+
+    vsc_str_t group_id = vssc_json_object_get_string_value(json_obj, k_json_key_group_id, &core_sdk_error);
+    if (!vsc_str_is_valid_and_non_empty(group_id)) {
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        goto cleanup;
+    }
+
+    owner_json = vssc_json_object_get_object_value(json_obj, k_json_key_owner, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error)) {
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        goto cleanup;
+    }
+
+    owner = vssq_messenger_user_from_json(owner_json, self->random, &error);
+    if (vssq_error_has_error(&error)) {
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        goto cleanup;
+    }
+
+    epochs_json = vssc_json_object_get_array_value(json_obj, k_json_key_epochs, &core_sdk_error);
+    if (vssc_error_has_error(&core_sdk_error)) {
+        vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+        goto cleanup;
+    }
+
+    epochs = vssq_messenger_group_epoch_list_new();
+
+    for (size_t pos = 0; pos < vssc_json_array_count(epochs_json); ++pos) {
+        vssc_json_object_t *epoch_json = vssc_json_array_get_object_value(epochs_json, pos, &core_sdk_error);
+        if (vssc_error_has_error(&core_sdk_error)) {
+            vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+            goto cleanup;
+        }
+
+        vssq_messenger_group_epoch_t *epoch = vssq_messenger_group_epoch_from_json(epoch_json, &error);
+        vssc_json_object_destroy(&epoch_json);
+
+        if (vssq_error_has_error(&error)) {
+            vssq_error_update(&error, vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED);
+            goto cleanup;
+        }
+
+        const vscf_status_t foundation_status =
+                vscf_group_session_add_epoch(self->group_session, vssq_messenger_group_epoch_group_info_message(epoch));
+        VSSQ_ASSERT_PROJECT_FOUNDATION_SUCCESS(foundation_status);
+
+        vssq_messenger_group_epoch_list_add(epochs, &epoch);
+    }
+
+    self->group_id = vsc_str_mutable_from_str(group_id);
+    self->owner = owner;
+    self->epochs = epochs;
+
+    owner = NULL;
+    epochs = NULL;
+
+cleanup:
+    vssc_json_object_destroy(&owner_json);
+    vssc_json_array_destroy(&epochs_json);
+    vssq_messenger_user_destroy(&owner);
+    vssq_messenger_group_epoch_list_destroy(&epochs);
+
+    return vssq_error_status(&error);
+}
+
+//
+//  Load an existing group from a cached JSON value for a group messaging.
+//
+VSSQ_PUBLIC vssq_status_t
+vssq_messenger_group_load_from_json_str(vssq_messenger_group_t *self, vsc_str_t json_str) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->random);
+    VSSQ_ASSERT_PTR(self->auth);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(json_str));
+
+    VSSQ_ASSERT_NULL(self->owner);
+    VSSQ_ASSERT_NULL(self->epochs);
+    VSSQ_ASSERT(!vsc_str_mutable_is_valid(self->group_id));
+
+    vssc_json_object_t *json_obj = vssc_json_object_parse(json_str, NULL);
+
+    if (NULL == json_obj) {
+        return vssq_status_IMPORT_CREDS_FAILED_PARSE_FAILED;
+    }
+
+    const vssq_status_t status = vssq_messenger_group_load_from_json(self, json_obj);
+
+    vssc_json_object_destroy(&json_obj);
+
+    return status;
+}
+
+//
+//  Return the group as JSON object.
+//
+//  JSON format:
+//  {
+//      "version" : "v1",
+//      "group_id" : "STRING",
+//      "owner" : {},
+//      "epochs" : []
+//  }
+//
+VSSQ_PUBLIC vssc_json_object_t *
+vssq_messenger_group_to_json(const vssq_messenger_group_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->owner);
+    VSSQ_ASSERT_PTR(self->epochs);
+    VSSQ_ASSERT(vsc_str_mutable_is_valid(self->group_id));
+
+    vssc_json_object_t *json_obj = vssc_json_object_new();
+    vssc_json_object_add_string_value(json_obj, k_json_key_version, k_json_version_v1);
+    vssc_json_object_add_string_value(json_obj, k_json_key_group_id, vsc_str_mutable_as_str(self->group_id));
+
+    vssc_json_object_t *owner_json = vssq_messenger_user_to_json(self->owner, NULL);
+    VSSQ_ASSERT_PTR(owner_json);
+    vssc_json_object_add_object_value_disown(json_obj, k_json_key_owner, &owner_json);
+
+    vssc_json_array_t *epochs_json = vssc_json_array_new();
+    for (const vssq_messenger_group_epoch_list_t *epochs_it = self->epochs;
+            (epochs_it != NULL) && vssq_messenger_group_epoch_list_has_item(epochs_it);
+            epochs_it = vssq_messenger_group_epoch_list_next(epochs_it)) {
+
+        const vssq_messenger_group_epoch_t *epoch = vssq_messenger_group_epoch_list_item(epochs_it);
+
+        vssc_json_object_t *epoch_json = vssq_messenger_group_epoch_to_json(epoch);
+        VSSQ_ASSERT_PTR(epoch_json);
+
+        vssc_json_array_add_object_value_disown(epochs_json, &epoch_json);
+    }
+    vssc_json_object_add_array_value_disown(json_obj, k_json_key_epochs, &epochs_json);
+
+    return json_obj;
 }
 
 //

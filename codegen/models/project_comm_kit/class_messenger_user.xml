@@ -1,10 +1,39 @@
 <class name="messenger user">
     Information about a messenger user, i.e. username, Virgil Card, etc.
 
+    <require class="card manager" project="core sdk"/>
+    <require class="json object" project="core sdk"/>
+    <require class="json object" project="core sdk" api="private"/>
+
     <property name="card" class="card" project="core sdk" access="readonly"/>
     <property name="username" class="str mutable"/>
     <property name="phone number" class="str mutable"/>
     <property name="email" class="str mutable"/>
+
+    <constant name="k json version v1" type="string" visibility="private">
+        <value value="v1"/>
+    </constant>
+
+    <constant name="k json key version" type="string" visibility="private">
+        <value value="version"/>
+    </constant>
+
+    <constant name="k json key raw card" type="string" visibility="private">
+        <value value="raw_card"/>
+    </constant>
+
+    <constant name="k json key username" type="string" visibility="private">
+        <value value="username"/>
+    </constant>
+
+    <constant name="k json key phone number" type="string" visibility="private">
+        <value value="phone_number"/>
+    </constant>
+
+    <constant name="k json key email" type="string" visibility="private">
+        <value value="email"/>
+    </constant>
+
 
     <constructor name="with card">
         Create an object with required fields.
@@ -108,5 +137,36 @@
         Set an optional email.
 
         <argument name="email" class="str"/>
+    </method>
+
+
+    <method name="to json" is_const="1">
+        Return user as JSON object.
+
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="json object" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="from json" is_static="1">
+        Parse user from JSON.
+
+        <argument name="json obj" class="json object" project="core sdk"/>
+        <argument name="random" interface="random" project="foundation"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
+    </method>
+
+
+    <method name="from json str" is_static="1">
+        Parse user from JSON string.
+
+        <argument name="json str" class="str"/>
+        <argument name="random" interface="random" project="foundation"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="self" access="disown"/>
     </method>
 </class>

@@ -254,6 +254,7 @@
 
         <return enum="status"/>
     </method>
+
     <!-- Peer-to-Peer encryption -->
     <method name="encrypted message len" is_const="1">
         Return a buffer length enough to hold an encrypted message.
@@ -364,6 +365,26 @@
 
         <argument name="group id" class="str"/>
         <argument name="owner" class="messenger user"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group" access="disown"/>
+    </method>
+
+
+    <method name="load group from json str" is_const="1">
+        Load an existing group from a cached JSON value for a group messaging.
+
+        <argument name="json str" class="str"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="messenger group" access="disown"/>
+    </method>
+
+
+    <method name="load group from json" is_const="1">
+        Load an existing group from a cached JSON value for a group messaging.
+
+        <argument name="json obj" class="json object" project="core sdk"/>
         <argument name="error" class="error" access="readwrite"/>
 
         <return class="messenger group" access="disown"/>

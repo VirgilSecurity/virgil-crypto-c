@@ -54,14 +54,16 @@
 #define VSSQ_MESSENGER_USER_H_INCLUDED
 
 #include "vssq_library.h"
+#include "vssq_error.h"
 
 #if !VSSQ_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
-#   include <virgil/crypto/common/vsc_data.h>
 #   include <virgil/crypto/common/vsc_str.h>
+#   include <virgil/crypto/common/vsc_data.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
 #   include <virgil/sdk/core/vssc_card.h>
+#   include <virgil/sdk/core/vssc_json_array.h>
 #endif
 
 #if !VSSQ_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
@@ -74,6 +76,7 @@
 #endif
 
 #if VSSQ_IMPORT_PROJECT_CORE_SDK_FROM_FRAMEWORK
+#   include <VSSCore/vssc_json_array.h>
 #   include <VSSCore/vssc_card.h>
 #endif
 
@@ -246,6 +249,24 @@ vssq_messenger_user_email(const vssq_messenger_user_t *self);
 //
 VSSQ_PUBLIC void
 vssq_messenger_user_set_email(vssq_messenger_user_t *self, vsc_str_t email);
+
+//
+//  Return user as JSON object.
+//
+VSSQ_PUBLIC vssc_json_object_t *
+vssq_messenger_user_to_json(const vssq_messenger_user_t *self, vssq_error_t *error);
+
+//
+//  Parse user from JSON.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_from_json(const vssc_json_object_t *json_obj, const vscf_impl_t *random, vssq_error_t *error);
+
+//
+//  Parse user from JSON string.
+//
+VSSQ_PUBLIC vssq_messenger_user_t *
+vssq_messenger_user_from_json_str(vsc_str_t json_str, const vscf_impl_t *random, vssq_error_t *error);
 
 
 // --------------------------------------------------------------------------
