@@ -481,7 +481,6 @@ static void
 vssq_messenger_group_did_setup_auth(vssq_messenger_group_t *self) {
 
     VSSQ_ASSERT_PTR(self);
-    VSSQ_ASSERT(vssq_messenger_auth_is_authenticated(self->auth));
 
     vssq_messenger_group_epoch_keyknox_storage_use_auth(self->epoch_keyknox_storage, self->auth);
 }
