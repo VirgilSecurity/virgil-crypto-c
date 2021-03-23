@@ -1272,7 +1272,11 @@ function go_create_cgo_include (unit_name, go_instance, go_project)
         # already imported
     else
         new go_cgo_include to my.go_instance
-            .unit_name = "$(my.go_project.namespace)/$(my.unit_name:)"
+            if defined (my.go_project)
+                .unit_name = "$(my.go_project.namespace)/$(my.unit_name:)"
+            else
+                .unit_name = "$(my.unit_name:)"
+            endif
         endnew
     endif
 endfunction
@@ -1281,6 +1285,12 @@ endfunction
 #   Create <go_cgo_include/> for <go_instance/>
 # ---------------------------------------------------------------------------
 function go_create_cgo_include_instructions (go_module, go_project)
+    if string_equal (go_module.name, "helper")
+        go_create_cgo_include ("virgil/crypto/common/vsc_data.h", my.go_module)
+        go_create_cgo_include ("virgil/crypto/common/vsc_buffer.h", my.go_module)
+        go_create_cgo_include ("virgil/crypto/common/vsc_str.h", my.go_module)
+        go_create_cgo_include ("virgil/crypto/common/vsc_str_buffer.h", my.go_module)
+    endif
     go_create_cgo_include (my.go_project.c_umbrella_header, my.go_module, my.go_project)
 endfunction
 
@@ -1827,6 +1837,7 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
     echo_debug ("Create constructor '$(my.go_struct.name:)'", my)
 
     go_create_import ("", "runtime", my.go_module)
+    go_create_import ("unsafe", "unsafe", my.go_module)
 
     if string_in (my.class.context, "public") & string_in (my.class.lifecycle, "none")
         my.ctx_size_invocation = "C.$(class_derive_class_c_method_ctx_size (my.class))()"
@@ -1866,19 +1877,15 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
         "
         .name = "WithCtx"
         .is_constructor = "1"
-        #.visibility = "private"
 
         new go_argument to go_func
-            .name = "anyctx"
-            .type = "interface{}"
+            .name = "pointer"
+            .type = "unsafe.Pointer"
         endnew
 
         new go_code to go_func
             . = "\
-                ctx, ok := anyctx. ($(my.ctx_type:))
-                if !ok {
-                    return nil //TODO, &$(go_derive_enum_status_name (my.go_project):){-1,\"Cast error for struct $(my.struct_name:).\"}
-                }
+                ctx := ($(my.ctx_type:))(pointer)
                 obj := &$(my.struct_name:) {
                     cCtx: ctx,
                 }
@@ -1904,16 +1911,13 @@ function go_create_struct_default_constructor (go_struct, class, go_module, go_p
             #.visibility = "private"
 
             new go_argument to go_func
-                .name = "anyctx"
-                .type = "interface{}"
+                .name = "pointer"
+                .type = "unsafe.Pointer"
             endnew
 
             new go_code to go_func
                 . = "\
-                    ctx, ok := anyctx. ($(my.ctx_type:))
-                    if !ok {
-                        return nil //TODO, &$(go_derive_enum_status_name (my.go_project):){-1,\"Cast error for struct $(my.struct_name:).\"}
-                    }
+                    ctx := ($(my.ctx_type:))(pointer)
                     obj := &$(my.struct_name:) {
                         cCtx: C.$(class_derive_c_method_shallow_copy (my.class))(ctx),
                     }
@@ -2669,10 +2673,11 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
             my.str_method_chars = "$(make_ref_c (make_id ("project", "common", "class", "str", "method", "chars")))"
             return "C.GoString(C.$(my.str_method_chars:)($(my.name:))) /* r5.1 */"
         else
+            go_create_import ("unsafe", "unsafe", my.go_module)
             if string_in (go_return.access, "readonly, readwrite")
-                return "$(my.package:)New$(my.type:)Copy($(my.name:)) /* r5 */"
+                return "$(my.package:)New$(my.type:)Copy(unsafe.Pointer($(my.name:))) /* r5 */"
             else
-                return "$(my.package:)New$(my.type:)WithCtx($(my.name:)) /* r6 */"
+                return "$(my.package:)New$(my.type:)WithCtx(unsafe.Pointer($(my.name:))) /* r6 */"
             endif
         endif
 
@@ -2844,7 +2849,7 @@ function go_update_implementation_helper_module (implementation, go_project, met
 
         my.wrap_interface_method->go_code.temp_code += format_left("\
             case C.$(my.refs.c_implementation_constant_tag):
-                return New$(go_derive_struct_name (my.implementation, my.go_project))WithCtx((*C.$(my.c_type:))(ctx)), nil
+                return New$(go_derive_struct_name (my.implementation, my.go_project))WithCtx(unsafe.Pointer(ctx)), nil
         ")
     endfor
 endfunction
@@ -2867,6 +2872,11 @@ function go_finalize_implementation_helper_modules (go_project, meta)
         go_func->go_code. = go_func->go_code.temp_code
         go_func->go_code.temp_code = # undefined
     endfor
+
+    if count (my.helper_class.go_func)
+        my.implementation_helper_module = my.go_project->go_module(name = "Implementation")
+        go_create_import ("unsafe", "unsafe", my.implementation_helper_module)
+    endif
 
     new go_module to my.go_project
         . = "/* Helper. */"
