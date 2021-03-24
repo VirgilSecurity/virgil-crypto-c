@@ -9,7 +9,7 @@
     <require class="json object" project="core sdk" definition="public"/>
     <require class="json object" project="core sdk" api="private"/>
     <require class="json array" project="core sdk" api="private"/>
-    <require class="messenger group epoch list" api="private"/>
+    <require class="messenger group epoch list"/>
     <require module="atomic"/>
 
     <property name="epoch keyknox storage" class="messenger group epoch keyknox storage"/>
