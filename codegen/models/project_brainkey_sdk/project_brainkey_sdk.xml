@@ -19,10 +19,10 @@
     <require project="foundation" feature="library"/>
     <require project="core sdk" feature="library"/>
 
-    <cgo_link platform="darwin" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
-    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
-    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
-    <cgo_link platform="windows" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="darwin" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lcares -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lcares -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lcares -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="windows" libraries="-lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lcares -lssl -lcrypto -lpthread -ldl"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for Brainkey SDK.
