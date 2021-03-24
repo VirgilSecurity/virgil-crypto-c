@@ -30,11 +30,8 @@ func NewUokmsWrapRotation() *UokmsWrapRotation {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewUokmsWrapRotationWithCtx(anyctx interface{}) *UokmsWrapRotation {
-	ctx, ok := anyctx.(*C.vsce_uokms_wrap_rotation_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct UokmsWrapRotation."}
-	}
+func NewUokmsWrapRotationWithCtx(pointer unsafe.Pointer) *UokmsWrapRotation {
+	ctx := (*C.vsce_uokms_wrap_rotation_t /*ct2*/)(pointer)
 	obj := &UokmsWrapRotation{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewUokmsWrapRotationWithCtx(anyctx interface{}) *UokmsWrapRotation {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewUokmsWrapRotationCopy(anyctx interface{}) *UokmsWrapRotation {
-	ctx, ok := anyctx.(*C.vsce_uokms_wrap_rotation_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct UokmsWrapRotation."}
-	}
+func NewUokmsWrapRotationCopy(pointer unsafe.Pointer) *UokmsWrapRotation {
+	ctx := (*C.vsce_uokms_wrap_rotation_t /*ct2*/)(pointer)
 	obj := &UokmsWrapRotation{
 		cCtx: C.vsce_uokms_wrap_rotation_shallow_copy(ctx),
 	}

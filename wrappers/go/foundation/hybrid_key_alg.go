@@ -94,11 +94,8 @@ func NewHybridKeyAlg() *HybridKeyAlg {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHybridKeyAlgWithCtx(anyctx interface{}) *HybridKeyAlg {
-	ctx, ok := anyctx.(*C.vscf_hybrid_key_alg_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HybridKeyAlg."}
-	}
+func NewHybridKeyAlgWithCtx(pointer unsafe.Pointer) *HybridKeyAlg {
+	ctx := (*C.vscf_hybrid_key_alg_t /*ct10*/)(pointer)
 	obj := &HybridKeyAlg{
 		cCtx: ctx,
 	}
@@ -109,11 +106,8 @@ func NewHybridKeyAlgWithCtx(anyctx interface{}) *HybridKeyAlg {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHybridKeyAlgCopy(anyctx interface{}) *HybridKeyAlg {
-	ctx, ok := anyctx.(*C.vscf_hybrid_key_alg_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HybridKeyAlg."}
-	}
+func NewHybridKeyAlgCopy(pointer unsafe.Pointer) *HybridKeyAlg {
+	ctx := (*C.vscf_hybrid_key_alg_t /*ct10*/)(pointer)
 	obj := &HybridKeyAlg{
 		cCtx: C.vscf_hybrid_key_alg_shallow_copy(ctx),
 	}
@@ -239,7 +233,7 @@ func (obj *HybridKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, er
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -292,7 +286,7 @@ func (obj *HybridKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

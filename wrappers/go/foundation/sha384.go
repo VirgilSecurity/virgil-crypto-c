@@ -29,11 +29,8 @@ func NewSha384() *Sha384 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSha384WithCtx(anyctx interface{}) *Sha384 {
-	ctx, ok := anyctx.(*C.vscf_sha384_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sha384."}
-	}
+func NewSha384WithCtx(pointer unsafe.Pointer) *Sha384 {
+	ctx := (*C.vscf_sha384_t /*ct10*/)(pointer)
 	obj := &Sha384{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSha384WithCtx(anyctx interface{}) *Sha384 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSha384Copy(anyctx interface{}) *Sha384 {
-	ctx, ok := anyctx.(*C.vscf_sha384_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sha384."}
-	}
+func NewSha384Copy(pointer unsafe.Pointer) *Sha384 {
+	ctx := (*C.vscf_sha384_t /*ct10*/)(pointer)
 	obj := &Sha384{
 		cCtx: C.vscf_sha384_shallow_copy(ctx),
 	}

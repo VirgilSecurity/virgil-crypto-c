@@ -40,11 +40,8 @@ func NewHashBasedAlgInfo() *HashBasedAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHashBasedAlgInfoWithCtx(anyctx interface{}) *HashBasedAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_hash_based_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HashBasedAlgInfo."}
-	}
+func NewHashBasedAlgInfoWithCtx(pointer unsafe.Pointer) *HashBasedAlgInfo {
+	ctx := (*C.vscf_hash_based_alg_info_t /*ct10*/)(pointer)
 	obj := &HashBasedAlgInfo{
 		cCtx: ctx,
 	}
@@ -55,11 +52,8 @@ func NewHashBasedAlgInfoWithCtx(anyctx interface{}) *HashBasedAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHashBasedAlgInfoCopy(anyctx interface{}) *HashBasedAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_hash_based_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HashBasedAlgInfo."}
-	}
+func NewHashBasedAlgInfoCopy(pointer unsafe.Pointer) *HashBasedAlgInfo {
+	ctx := (*C.vscf_hash_based_alg_info_t /*ct10*/)(pointer)
 	obj := &HashBasedAlgInfo{
 		cCtx: C.vscf_hash_based_alg_info_shallow_copy(ctx),
 	}

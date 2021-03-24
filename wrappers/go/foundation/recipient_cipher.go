@@ -31,11 +31,8 @@ func NewRecipientCipher() *RecipientCipher {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRecipientCipherWithCtx(anyctx interface{}) *RecipientCipher {
-	ctx, ok := anyctx.(*C.vscf_recipient_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RecipientCipher."}
-	}
+func NewRecipientCipherWithCtx(pointer unsafe.Pointer) *RecipientCipher {
+	ctx := (*C.vscf_recipient_cipher_t /*ct2*/)(pointer)
 	obj := &RecipientCipher{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewRecipientCipherWithCtx(anyctx interface{}) *RecipientCipher {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRecipientCipherCopy(anyctx interface{}) *RecipientCipher {
-	ctx, ok := anyctx.(*C.vscf_recipient_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RecipientCipher."}
-	}
+func NewRecipientCipherCopy(pointer unsafe.Pointer) *RecipientCipher {
+	ctx := (*C.vscf_recipient_cipher_t /*ct2*/)(pointer)
 	obj := &RecipientCipher{
 		cCtx: C.vscf_recipient_cipher_shallow_copy(ctx),
 	}
@@ -197,7 +191,7 @@ func (obj *RecipientCipher) CustomParams() *MessageInfoCustomParams {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessageInfoCustomParamsCopy(proxyResult) /* r5 */
+	return NewMessageInfoCustomParamsCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -460,7 +454,7 @@ func (obj *RecipientCipher) SignerInfos() *SignerInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewSignerInfoListCopy(proxyResult) /* r5 */
+	return NewSignerInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

@@ -29,11 +29,8 @@ func NewJwt() *Jwt {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJwtWithCtx(anyctx interface{}) *Jwt {
-	ctx, ok := anyctx.(*C.vssc_jwt_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct Jwt."}
-	}
+func NewJwtWithCtx(pointer unsafe.Pointer) *Jwt {
+	ctx := (*C.vssc_jwt_t /*ct2*/)(pointer)
 	obj := &Jwt{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewJwtWithCtx(anyctx interface{}) *Jwt {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJwtCopy(anyctx interface{}) *Jwt {
-	ctx, ok := anyctx.(*C.vssc_jwt_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct Jwt."}
-	}
+func NewJwtCopy(pointer unsafe.Pointer) *Jwt {
+	ctx := (*C.vssc_jwt_t /*ct2*/)(pointer)
 	obj := &Jwt{
 		cCtx: C.vssc_jwt_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func JwtParse(str string) (*Jwt, error) {
 
 	runtime.KeepAlive(str)
 
-	return NewJwtWithCtx(proxyResult) /* r6 */, nil
+	return NewJwtWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

@@ -31,11 +31,8 @@ func NewMessengerAuth() *MessengerAuth {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerAuthWithCtx(anyctx interface{}) *MessengerAuth {
-	ctx, ok := anyctx.(*C.vssq_messenger_auth_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerAuth."}
-	}
+func NewMessengerAuthWithCtx(pointer unsafe.Pointer) *MessengerAuth {
+	ctx := (*C.vssq_messenger_auth_t /*ct2*/)(pointer)
 	obj := &MessengerAuth{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewMessengerAuthWithCtx(anyctx interface{}) *MessengerAuth {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerAuthCopy(anyctx interface{}) *MessengerAuth {
-	ctx, ok := anyctx.(*C.vssq_messenger_auth_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerAuth."}
-	}
+func NewMessengerAuthCopy(pointer unsafe.Pointer) *MessengerAuth {
+	ctx := (*C.vssq_messenger_auth_t /*ct2*/)(pointer)
 	obj := &MessengerAuth{
 		cCtx: C.vssq_messenger_auth_shallow_copy(ctx),
 	}
@@ -107,7 +101,7 @@ func (obj *MessengerAuth) Config() *MessengerConfig {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerConfigCopy(proxyResult) /* r5 */
+	return NewMessengerConfigCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -171,7 +165,7 @@ func (obj *MessengerAuth) User() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -184,7 +178,7 @@ func (obj *MessengerAuth) UserModifiable() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -206,7 +200,7 @@ func (obj *MessengerAuth) Creds() *MessengerCreds {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCredsCopy(proxyResult) /* r5 */
+	return NewMessengerCredsCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -338,7 +332,7 @@ func (obj *MessengerAuth) VirgilJwt() (*sdk_core.Jwt, error) {
 
 	runtime.KeepAlive(obj)
 
-	return sdk_core.NewJwtCopy(proxyResult) /* r5 */, nil
+	return sdk_core.NewJwtCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }
 
 /*
@@ -361,7 +355,7 @@ func (obj *MessengerAuth) ContactDiscoveryJwt() (*sdk_core.Jwt, error) {
 
 	runtime.KeepAlive(obj)
 
-	return sdk_core.NewJwtCopy(proxyResult) /* r5 */, nil
+	return sdk_core.NewJwtCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }
 
 /*
@@ -386,7 +380,7 @@ func (obj *MessengerAuth) EjabberdJwt() (*EjabberdJwt, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewEjabberdJwtCopy(proxyResult) /* r5 */, nil
+	return NewEjabberdJwtCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }
 
 /*
@@ -410,7 +404,7 @@ func (obj *MessengerAuth) GenerateMessengerAuthHeader() (*sdk_core.HttpHeader, e
 
 	runtime.KeepAlive(obj)
 
-	return sdk_core.NewHttpHeaderWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewHttpHeaderWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -433,7 +427,7 @@ func (obj *MessengerAuth) SendMessengerRequest(httpRequest *sdk_core.HttpRequest
 
 	runtime.KeepAlive(httpRequest)
 
-	return sdk_core.NewHttpResponseWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewHttpResponseWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -456,7 +450,7 @@ func (obj *MessengerAuth) SendVirgilRequest(httpRequest *sdk_core.HttpRequest) (
 
 	runtime.KeepAlive(httpRequest)
 
-	return sdk_core.NewHttpResponseWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewHttpResponseWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -479,5 +473,5 @@ func (obj *MessengerAuth) SendContactDiscoveryRequest(httpRequest *sdk_core.Http
 
 	runtime.KeepAlive(httpRequest)
 
-	return sdk_core.NewHttpResponseWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewHttpResponseWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

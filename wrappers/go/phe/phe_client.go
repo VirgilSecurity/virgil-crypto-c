@@ -31,11 +31,8 @@ func NewPheClient() *PheClient {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPheClientWithCtx(anyctx interface{}) *PheClient {
-	ctx, ok := anyctx.(*C.vsce_phe_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct PheClient."}
-	}
+func NewPheClientWithCtx(pointer unsafe.Pointer) *PheClient {
+	ctx := (*C.vsce_phe_client_t /*ct2*/)(pointer)
 	obj := &PheClient{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewPheClientWithCtx(anyctx interface{}) *PheClient {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPheClientCopy(anyctx interface{}) *PheClient {
-	ctx, ok := anyctx.(*C.vsce_phe_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct PheClient."}
-	}
+func NewPheClientCopy(pointer unsafe.Pointer) *PheClient {
+	ctx := (*C.vsce_phe_client_t /*ct2*/)(pointer)
 	obj := &PheClient{
 		cCtx: C.vsce_phe_client_shallow_copy(ctx),
 	}

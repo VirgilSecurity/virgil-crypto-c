@@ -40,11 +40,8 @@ func NewGroupSessionMessage() *GroupSessionMessage {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewGroupSessionMessageWithCtx(anyctx interface{}) *GroupSessionMessage {
-	ctx, ok := anyctx.(*C.vscf_group_session_message_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct GroupSessionMessage."}
-	}
+func NewGroupSessionMessageWithCtx(pointer unsafe.Pointer) *GroupSessionMessage {
+	ctx := (*C.vscf_group_session_message_t /*ct2*/)(pointer)
 	obj := &GroupSessionMessage{
 		cCtx: ctx,
 	}
@@ -55,11 +52,8 @@ func NewGroupSessionMessageWithCtx(anyctx interface{}) *GroupSessionMessage {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewGroupSessionMessageCopy(anyctx interface{}) *GroupSessionMessage {
-	ctx, ok := anyctx.(*C.vscf_group_session_message_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct GroupSessionMessage."}
-	}
+func NewGroupSessionMessageCopy(pointer unsafe.Pointer) *GroupSessionMessage {
+	ctx := (*C.vscf_group_session_message_t /*ct2*/)(pointer)
 	obj := &GroupSessionMessage{
 		cCtx: C.vscf_group_session_message_shallow_copy(ctx),
 	}
@@ -162,5 +156,5 @@ func GroupSessionMessageDeserialize(input []byte) (*GroupSessionMessage, error) 
 		return nil, err
 	}
 
-	return NewGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
+	return NewGroupSessionMessageWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

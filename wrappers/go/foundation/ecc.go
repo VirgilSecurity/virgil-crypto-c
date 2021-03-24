@@ -86,11 +86,8 @@ func NewEcc() *Ecc {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEccWithCtx(anyctx interface{}) *Ecc {
-	ctx, ok := anyctx.(*C.vscf_ecc_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Ecc."}
-	}
+func NewEccWithCtx(pointer unsafe.Pointer) *Ecc {
+	ctx := (*C.vscf_ecc_t /*ct10*/)(pointer)
 	obj := &Ecc{
 		cCtx: ctx,
 	}
@@ -101,11 +98,8 @@ func NewEccWithCtx(anyctx interface{}) *Ecc {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEccCopy(anyctx interface{}) *Ecc {
-	ctx, ok := anyctx.(*C.vscf_ecc_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Ecc."}
-	}
+func NewEccCopy(pointer unsafe.Pointer) *Ecc {
+	ctx := (*C.vscf_ecc_t /*ct10*/)(pointer)
 	obj := &Ecc{
 		cCtx: C.vscf_ecc_shallow_copy(ctx),
 	}
@@ -231,7 +225,7 @@ func (obj *Ecc) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -284,7 +278,7 @@ func (obj *Ecc) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

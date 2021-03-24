@@ -29,11 +29,8 @@ func NewMessengerCloudFsFolder() *MessengerCloudFsFolder {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsFolderWithCtx(anyctx interface{}) *MessengerCloudFsFolder {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_folder_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsFolder."}
-	}
+func NewMessengerCloudFsFolderWithCtx(pointer unsafe.Pointer) *MessengerCloudFsFolder {
+	ctx := (*C.vssq_messenger_cloud_fs_folder_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsFolder{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerCloudFsFolderWithCtx(anyctx interface{}) *MessengerCloudFsFolde
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsFolderCopy(anyctx interface{}) *MessengerCloudFsFolder {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_folder_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsFolder."}
-	}
+func NewMessengerCloudFsFolderCopy(pointer unsafe.Pointer) *MessengerCloudFsFolder {
+	ctx := (*C.vssq_messenger_cloud_fs_folder_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsFolder{
 		cCtx: C.vssq_messenger_cloud_fs_folder_shallow_copy(ctx),
 	}
@@ -169,7 +163,7 @@ func (obj *MessengerCloudFsFolder) Folders() *MessengerCloudFsFolderInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsFolderInfoListCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsFolderInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -180,7 +174,7 @@ func (obj *MessengerCloudFsFolder) Files() *MessengerCloudFsFileInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsFileInfoListCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsFileInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -191,7 +185,7 @@ func (obj *MessengerCloudFsFolder) Info() *MessengerCloudFsFolderInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsFolderInfoCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsFolderInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -235,5 +229,5 @@ func (obj *MessengerCloudFsFolder) SharedUsersPermission() *MessengerCloudFsAcce
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessListCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }

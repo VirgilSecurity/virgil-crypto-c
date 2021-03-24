@@ -34,11 +34,8 @@ func NewMessageInfoEditor() *MessageInfoEditor {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoEditorWithCtx(anyctx interface{}) *MessageInfoEditor {
-	ctx, ok := anyctx.(*C.vscf_message_info_editor_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfoEditor."}
-	}
+func NewMessageInfoEditorWithCtx(pointer unsafe.Pointer) *MessageInfoEditor {
+	ctx := (*C.vscf_message_info_editor_t /*ct2*/)(pointer)
 	obj := &MessageInfoEditor{
 		cCtx: ctx,
 	}
@@ -49,11 +46,8 @@ func NewMessageInfoEditorWithCtx(anyctx interface{}) *MessageInfoEditor {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoEditorCopy(anyctx interface{}) *MessageInfoEditor {
-	ctx, ok := anyctx.(*C.vscf_message_info_editor_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfoEditor."}
-	}
+func NewMessageInfoEditorCopy(pointer unsafe.Pointer) *MessageInfoEditor {
+	ctx := (*C.vscf_message_info_editor_t /*ct2*/)(pointer)
 	obj := &MessageInfoEditor{
 		cCtx: C.vscf_message_info_editor_shallow_copy(ctx),
 	}

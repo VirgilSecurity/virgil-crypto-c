@@ -29,11 +29,8 @@ func NewEccPrivateKey() *EccPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEccPrivateKeyWithCtx(anyctx interface{}) *EccPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_ecc_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct EccPrivateKey."}
-	}
+func NewEccPrivateKeyWithCtx(pointer unsafe.Pointer) *EccPrivateKey {
+	ctx := (*C.vscf_ecc_private_key_t /*ct10*/)(pointer)
 	obj := &EccPrivateKey{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewEccPrivateKeyWithCtx(anyctx interface{}) *EccPrivateKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEccPrivateKeyCopy(anyctx interface{}) *EccPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_ecc_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct EccPrivateKey."}
-	}
+func NewEccPrivateKeyCopy(pointer unsafe.Pointer) *EccPrivateKey {
+	ctx := (*C.vscf_ecc_private_key_t /*ct10*/)(pointer)
 	obj := &EccPrivateKey{
 		cCtx: C.vscf_ecc_private_key_shallow_copy(ctx),
 	}

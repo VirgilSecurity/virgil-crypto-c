@@ -35,11 +35,8 @@ func NewPaddingParams() *PaddingParams {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPaddingParamsWithCtx(anyctx interface{}) *PaddingParams {
-	ctx, ok := anyctx.(*C.vscf_padding_params_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PaddingParams."}
-	}
+func NewPaddingParamsWithCtx(pointer unsafe.Pointer) *PaddingParams {
+	ctx := (*C.vscf_padding_params_t /*ct2*/)(pointer)
 	obj := &PaddingParams{
 		cCtx: ctx,
 	}
@@ -50,11 +47,8 @@ func NewPaddingParamsWithCtx(anyctx interface{}) *PaddingParams {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPaddingParamsCopy(anyctx interface{}) *PaddingParams {
-	ctx, ok := anyctx.(*C.vscf_padding_params_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PaddingParams."}
-	}
+func NewPaddingParamsCopy(pointer unsafe.Pointer) *PaddingParams {
+	ctx := (*C.vscf_padding_params_t /*ct2*/)(pointer)
 	obj := &PaddingParams{
 		cCtx: C.vscf_padding_params_shallow_copy(ctx),
 	}

@@ -29,11 +29,8 @@ func NewMessengerCloudFsAccess() *MessengerCloudFsAccess {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsAccessWithCtx(anyctx interface{}) *MessengerCloudFsAccess {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_access_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsAccess."}
-	}
+func NewMessengerCloudFsAccessWithCtx(pointer unsafe.Pointer) *MessengerCloudFsAccess {
+	ctx := (*C.vssq_messenger_cloud_fs_access_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsAccess{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerCloudFsAccessWithCtx(anyctx interface{}) *MessengerCloudFsAcces
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsAccessCopy(anyctx interface{}) *MessengerCloudFsAccess {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_access_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsAccess."}
-	}
+func NewMessengerCloudFsAccessCopy(pointer unsafe.Pointer) *MessengerCloudFsAccess {
+	ctx := (*C.vssq_messenger_cloud_fs_access_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsAccess{
 		cCtx: C.vssq_messenger_cloud_fs_access_shallow_copy(ctx),
 	}
@@ -127,7 +121,7 @@ func (obj *MessengerCloudFsAccess) User() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

@@ -40,11 +40,8 @@ func NewRawPublicKey() *RawPublicKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawPublicKeyWithCtx(anyctx interface{}) *RawPublicKey {
-	ctx, ok := anyctx.(*C.vscf_raw_public_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RawPublicKey."}
-	}
+func NewRawPublicKeyWithCtx(pointer unsafe.Pointer) *RawPublicKey {
+	ctx := (*C.vscf_raw_public_key_t /*ct10*/)(pointer)
 	obj := &RawPublicKey{
 		cCtx: ctx,
 	}
@@ -55,11 +52,8 @@ func NewRawPublicKeyWithCtx(anyctx interface{}) *RawPublicKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawPublicKeyCopy(anyctx interface{}) *RawPublicKey {
-	ctx, ok := anyctx.(*C.vscf_raw_public_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RawPublicKey."}
-	}
+func NewRawPublicKeyCopy(pointer unsafe.Pointer) *RawPublicKey {
+	ctx := (*C.vscf_raw_public_key_t /*ct10*/)(pointer)
 	obj := &RawPublicKey{
 		cCtx: C.vscf_raw_public_key_shallow_copy(ctx),
 	}

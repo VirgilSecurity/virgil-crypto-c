@@ -29,11 +29,8 @@ func NewAsn1rd() *Asn1rd {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAsn1rdWithCtx(anyctx interface{}) *Asn1rd {
-	ctx, ok := anyctx.(*C.vscf_asn1rd_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Asn1rd."}
-	}
+func NewAsn1rdWithCtx(pointer unsafe.Pointer) *Asn1rd {
+	ctx := (*C.vscf_asn1rd_t /*ct10*/)(pointer)
 	obj := &Asn1rd{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewAsn1rdWithCtx(anyctx interface{}) *Asn1rd {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAsn1rdCopy(anyctx interface{}) *Asn1rd {
-	ctx, ok := anyctx.(*C.vscf_asn1rd_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Asn1rd."}
-	}
+func NewAsn1rdCopy(pointer unsafe.Pointer) *Asn1rd {
+	ctx := (*C.vscf_asn1rd_t /*ct10*/)(pointer)
 	obj := &Asn1rd{
 		cCtx: C.vscf_asn1rd_shallow_copy(ctx),
 	}

@@ -29,11 +29,8 @@ func NewMessengerCloudFsCreatedFile() *MessengerCloudFsCreatedFile {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsCreatedFileWithCtx(anyctx interface{}) *MessengerCloudFsCreatedFile {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_created_file_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsCreatedFile."}
-	}
+func NewMessengerCloudFsCreatedFileWithCtx(pointer unsafe.Pointer) *MessengerCloudFsCreatedFile {
+	ctx := (*C.vssq_messenger_cloud_fs_created_file_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsCreatedFile{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerCloudFsCreatedFileWithCtx(anyctx interface{}) *MessengerCloudFs
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsCreatedFileCopy(anyctx interface{}) *MessengerCloudFsCreatedFile {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_created_file_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsCreatedFile."}
-	}
+func NewMessengerCloudFsCreatedFileCopy(pointer unsafe.Pointer) *MessengerCloudFsCreatedFile {
+	ctx := (*C.vssq_messenger_cloud_fs_created_file_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsCreatedFile{
 		cCtx: C.vssq_messenger_cloud_fs_created_file_shallow_copy(ctx),
 	}
@@ -114,5 +108,5 @@ func (obj *MessengerCloudFsCreatedFile) Info() *MessengerCloudFsFileInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsFileInfoCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsFileInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }

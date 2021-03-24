@@ -2,6 +2,7 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
+import unsafe "unsafe"
 
 type Implementation struct {
 }
@@ -19,35 +20,35 @@ func ImplementationWrapAlg(anyctx interface{}) (Alg, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_SHA224:
-		return NewSha224WithCtx((*C.vscf_sha224_t /*ct10*/)(ctx)), nil
+		return NewSha224WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SHA256:
-		return NewSha256WithCtx((*C.vscf_sha256_t /*ct10*/)(ctx)), nil
+		return NewSha256WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SHA384:
-		return NewSha384WithCtx((*C.vscf_sha384_t /*ct10*/)(ctx)), nil
+		return NewSha384WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SHA512:
-		return NewSha512WithCtx((*C.vscf_sha512_t /*ct10*/)(ctx)), nil
+		return NewSha512WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_AES256_CBC:
-		return NewAes256CbcWithCtx((*C.vscf_aes256_cbc_t /*ct10*/)(ctx)), nil
+		return NewAes256CbcWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HMAC:
-		return NewHmacWithCtx((*C.vscf_hmac_t /*ct10*/)(ctx)), nil
+		return NewHmacWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HKDF:
-		return NewHkdfWithCtx((*C.vscf_hkdf_t /*ct10*/)(ctx)), nil
+		return NewHkdfWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_KDF1:
-		return NewKdf1WithCtx((*C.vscf_kdf1_t /*ct10*/)(ctx)), nil
+		return NewKdf1WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_KDF2:
-		return NewKdf2WithCtx((*C.vscf_kdf2_t /*ct10*/)(ctx)), nil
+		return NewKdf2WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PKCS5_PBKDF2:
-		return NewPkcs5Pbkdf2WithCtx((*C.vscf_pkcs5_pbkdf2_t /*ct10*/)(ctx)), nil
+		return NewPkcs5Pbkdf2WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PKCS5_PBES2:
-		return NewPkcs5Pbes2WithCtx((*C.vscf_pkcs5_pbes2_t /*ct10*/)(ctx)), nil
+		return NewPkcs5Pbes2WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_FALCON:
-		return NewFalconWithCtx((*C.vscf_falcon_t /*ct10*/)(ctx)), nil
+		return NewFalconWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_KEY_ALG:
-		return NewCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+		return NewCompoundKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_RANDOM_PADDING:
-		return NewRandomPaddingWithCtx((*C.vscf_random_padding_t /*ct10*/)(ctx)), nil
+		return NewRandomPaddingWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -76,13 +77,13 @@ func ImplementationWrapHash(anyctx interface{}) (Hash, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_SHA224:
-		return NewSha224WithCtx((*C.vscf_sha224_t /*ct10*/)(ctx)), nil
+		return NewSha224WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SHA256:
-		return NewSha256WithCtx((*C.vscf_sha256_t /*ct10*/)(ctx)), nil
+		return NewSha256WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SHA384:
-		return NewSha384WithCtx((*C.vscf_sha384_t /*ct10*/)(ctx)), nil
+		return NewSha384WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SHA512:
-		return NewSha512WithCtx((*C.vscf_sha512_t /*ct10*/)(ctx)), nil
+		return NewSha512WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -111,11 +112,11 @@ func ImplementationWrapEncrypt(anyctx interface{}) (Encrypt, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_AES256_CBC:
-		return NewAes256CbcWithCtx((*C.vscf_aes256_cbc_t /*ct10*/)(ctx)), nil
+		return NewAes256CbcWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PKCS5_PBES2:
-		return NewPkcs5Pbes2WithCtx((*C.vscf_pkcs5_pbes2_t /*ct10*/)(ctx)), nil
+		return NewPkcs5Pbes2WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -144,11 +145,11 @@ func ImplementationWrapDecrypt(anyctx interface{}) (Decrypt, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_AES256_CBC:
-		return NewAes256CbcWithCtx((*C.vscf_aes256_cbc_t /*ct10*/)(ctx)), nil
+		return NewAes256CbcWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PKCS5_PBES2:
-		return NewPkcs5Pbes2WithCtx((*C.vscf_pkcs5_pbes2_t /*ct10*/)(ctx)), nil
+		return NewPkcs5Pbes2WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -177,9 +178,9 @@ func ImplementationWrapCipherInfo(anyctx interface{}) (CipherInfo, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_AES256_CBC:
-		return NewAes256CbcWithCtx((*C.vscf_aes256_cbc_t /*ct10*/)(ctx)), nil
+		return NewAes256CbcWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -208,9 +209,9 @@ func ImplementationWrapCipher(anyctx interface{}) (Cipher, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_AES256_CBC:
-		return NewAes256CbcWithCtx((*C.vscf_aes256_cbc_t /*ct10*/)(ctx)), nil
+		return NewAes256CbcWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -239,7 +240,7 @@ func ImplementationWrapCipherAuthInfo(anyctx interface{}) (CipherAuthInfo, error
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -268,7 +269,7 @@ func ImplementationWrapAuthEncrypt(anyctx interface{}) (AuthEncrypt, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -297,7 +298,7 @@ func ImplementationWrapAuthDecrypt(anyctx interface{}) (AuthDecrypt, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -326,7 +327,7 @@ func ImplementationWrapCipherAuth(anyctx interface{}) (CipherAuth, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_AES256_GCM:
-		return NewAes256GcmWithCtx((*C.vscf_aes256_gcm_t /*ct10*/)(ctx)), nil
+		return NewAes256GcmWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -355,7 +356,7 @@ func ImplementationWrapAsn1Reader(anyctx interface{}) (Asn1Reader, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ASN1RD:
-		return NewAsn1rdWithCtx((*C.vscf_asn1rd_t /*ct10*/)(ctx)), nil
+		return NewAsn1rdWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -384,7 +385,7 @@ func ImplementationWrapAsn1Writer(anyctx interface{}) (Asn1Writer, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ASN1WR:
-		return NewAsn1wrWithCtx((*C.vscf_asn1wr_t /*ct10*/)(ctx)), nil
+		return NewAsn1wrWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -413,25 +414,25 @@ func ImplementationWrapKey(anyctx interface{}) (Key, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RSA_PUBLIC_KEY:
-		return NewRsaPublicKeyWithCtx((*C.vscf_rsa_public_key_t /*ct10*/)(ctx)), nil
+		return NewRsaPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_RSA_PRIVATE_KEY:
-		return NewRsaPrivateKeyWithCtx((*C.vscf_rsa_private_key_t /*ct10*/)(ctx)), nil
+		return NewRsaPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC_PUBLIC_KEY:
-		return NewEccPublicKeyWithCtx((*C.vscf_ecc_public_key_t /*ct10*/)(ctx)), nil
+		return NewEccPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC_PRIVATE_KEY:
-		return NewEccPrivateKeyWithCtx((*C.vscf_ecc_private_key_t /*ct10*/)(ctx)), nil
+		return NewEccPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_RAW_PUBLIC_KEY:
-		return NewRawPublicKeyWithCtx((*C.vscf_raw_public_key_t /*ct10*/)(ctx)), nil
+		return NewRawPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_RAW_PRIVATE_KEY:
-		return NewRawPrivateKeyWithCtx((*C.vscf_raw_private_key_t /*ct10*/)(ctx)), nil
+		return NewRawPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_PUBLIC_KEY:
-		return NewCompoundPublicKeyWithCtx((*C.vscf_compound_public_key_t /*ct10*/)(ctx)), nil
+		return NewCompoundPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_PRIVATE_KEY:
-		return NewCompoundPrivateKeyWithCtx((*C.vscf_compound_private_key_t /*ct10*/)(ctx)), nil
+		return NewCompoundPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_PUBLIC_KEY:
-		return NewHybridPublicKeyWithCtx((*C.vscf_hybrid_public_key_t /*ct10*/)(ctx)), nil
+		return NewHybridPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_PRIVATE_KEY:
-		return NewHybridPrivateKeyWithCtx((*C.vscf_hybrid_private_key_t /*ct10*/)(ctx)), nil
+		return NewHybridPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -460,15 +461,15 @@ func ImplementationWrapPublicKey(anyctx interface{}) (PublicKey, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RSA_PUBLIC_KEY:
-		return NewRsaPublicKeyWithCtx((*C.vscf_rsa_public_key_t /*ct10*/)(ctx)), nil
+		return NewRsaPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC_PUBLIC_KEY:
-		return NewEccPublicKeyWithCtx((*C.vscf_ecc_public_key_t /*ct10*/)(ctx)), nil
+		return NewEccPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_RAW_PUBLIC_KEY:
-		return NewRawPublicKeyWithCtx((*C.vscf_raw_public_key_t /*ct10*/)(ctx)), nil
+		return NewRawPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_PUBLIC_KEY:
-		return NewCompoundPublicKeyWithCtx((*C.vscf_compound_public_key_t /*ct10*/)(ctx)), nil
+		return NewCompoundPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_PUBLIC_KEY:
-		return NewHybridPublicKeyWithCtx((*C.vscf_hybrid_public_key_t /*ct10*/)(ctx)), nil
+		return NewHybridPublicKeyWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -497,15 +498,15 @@ func ImplementationWrapPrivateKey(anyctx interface{}) (PrivateKey, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RSA_PRIVATE_KEY:
-		return NewRsaPrivateKeyWithCtx((*C.vscf_rsa_private_key_t /*ct10*/)(ctx)), nil
+		return NewRsaPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC_PRIVATE_KEY:
-		return NewEccPrivateKeyWithCtx((*C.vscf_ecc_private_key_t /*ct10*/)(ctx)), nil
+		return NewEccPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_RAW_PRIVATE_KEY:
-		return NewRawPrivateKeyWithCtx((*C.vscf_raw_private_key_t /*ct10*/)(ctx)), nil
+		return NewRawPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_PRIVATE_KEY:
-		return NewCompoundPrivateKeyWithCtx((*C.vscf_compound_private_key_t /*ct10*/)(ctx)), nil
+		return NewCompoundPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_PRIVATE_KEY:
-		return NewHybridPrivateKeyWithCtx((*C.vscf_hybrid_private_key_t /*ct10*/)(ctx)), nil
+		return NewHybridPrivateKeyWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -534,21 +535,21 @@ func ImplementationWrapKeyAlg(anyctx interface{}) (KeyAlg, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RSA:
-		return NewRsaWithCtx((*C.vscf_rsa_t /*ct10*/)(ctx)), nil
+		return NewRsaWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC:
-		return NewEccWithCtx((*C.vscf_ecc_t /*ct10*/)(ctx)), nil
+		return NewEccWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ED25519:
-		return NewEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
+		return NewEd25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_CURVE25519:
-		return NewCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+		return NewCurve25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_FALCON:
-		return NewFalconWithCtx((*C.vscf_falcon_t /*ct10*/)(ctx)), nil
+		return NewFalconWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ROUND5:
-		return NewRound5WithCtx((*C.vscf_round5_t /*ct10*/)(ctx)), nil
+		return NewRound5WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_KEY_ALG:
-		return NewCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+		return NewCompoundKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_KEY_ALG:
-		return NewHybridKeyAlgWithCtx((*C.vscf_hybrid_key_alg_t /*ct10*/)(ctx)), nil
+		return NewHybridKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -577,17 +578,17 @@ func ImplementationWrapKeyCipher(anyctx interface{}) (KeyCipher, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RSA:
-		return NewRsaWithCtx((*C.vscf_rsa_t /*ct10*/)(ctx)), nil
+		return NewRsaWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC:
-		return NewEccWithCtx((*C.vscf_ecc_t /*ct10*/)(ctx)), nil
+		return NewEccWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ED25519:
-		return NewEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
+		return NewEd25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_CURVE25519:
-		return NewCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+		return NewCurve25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_KEY_ALG:
-		return NewCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+		return NewCompoundKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_KEY_ALG:
-		return NewHybridKeyAlgWithCtx((*C.vscf_hybrid_key_alg_t /*ct10*/)(ctx)), nil
+		return NewHybridKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -616,17 +617,17 @@ func ImplementationWrapKeySigner(anyctx interface{}) (KeySigner, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RSA:
-		return NewRsaWithCtx((*C.vscf_rsa_t /*ct10*/)(ctx)), nil
+		return NewRsaWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC:
-		return NewEccWithCtx((*C.vscf_ecc_t /*ct10*/)(ctx)), nil
+		return NewEccWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ED25519:
-		return NewEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
+		return NewEd25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_FALCON:
-		return NewFalconWithCtx((*C.vscf_falcon_t /*ct10*/)(ctx)), nil
+		return NewFalconWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_COMPOUND_KEY_ALG:
-		return NewCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t /*ct10*/)(ctx)), nil
+		return NewCompoundKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_KEY_ALG:
-		return NewHybridKeyAlgWithCtx((*C.vscf_hybrid_key_alg_t /*ct10*/)(ctx)), nil
+		return NewHybridKeyAlgWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -655,11 +656,11 @@ func ImplementationWrapComputeSharedKey(anyctx interface{}) (ComputeSharedKey, e
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ECC:
-		return NewEccWithCtx((*C.vscf_ecc_t /*ct10*/)(ctx)), nil
+		return NewEccWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ED25519:
-		return NewEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
+		return NewEd25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_CURVE25519:
-		return NewCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+		return NewCurve25519WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -688,13 +689,13 @@ func ImplementationWrapKem(anyctx interface{}) (Kem, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ECC:
-		return NewEccWithCtx((*C.vscf_ecc_t /*ct10*/)(ctx)), nil
+		return NewEccWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ED25519:
-		return NewEd25519WithCtx((*C.vscf_ed25519_t /*ct10*/)(ctx)), nil
+		return NewEd25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_CURVE25519:
-		return NewCurve25519WithCtx((*C.vscf_curve25519_t /*ct10*/)(ctx)), nil
+		return NewCurve25519WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ROUND5:
-		return NewRound5WithCtx((*C.vscf_round5_t /*ct10*/)(ctx)), nil
+		return NewRound5WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -723,11 +724,11 @@ func ImplementationWrapEntropySource(anyctx interface{}) (EntropySource, error) 
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ENTROPY_ACCUMULATOR:
-		return NewEntropyAccumulatorWithCtx((*C.vscf_entropy_accumulator_t /*ct10*/)(ctx)), nil
+		return NewEntropyAccumulatorWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_FAKE_RANDOM:
-		return NewFakeRandomWithCtx((*C.vscf_fake_random_t /*ct10*/)(ctx)), nil
+		return NewFakeRandomWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SEED_ENTROPY_SOURCE:
-		return NewSeedEntropySourceWithCtx((*C.vscf_seed_entropy_source_t /*ct10*/)(ctx)), nil
+		return NewSeedEntropySourceWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -756,11 +757,11 @@ func ImplementationWrapRandom(anyctx interface{}) (Random, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_CTR_DRBG:
-		return NewCtrDrbgWithCtx((*C.vscf_ctr_drbg_t /*ct10*/)(ctx)), nil
+		return NewCtrDrbgWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_FAKE_RANDOM:
-		return NewFakeRandomWithCtx((*C.vscf_fake_random_t /*ct10*/)(ctx)), nil
+		return NewFakeRandomWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_KEY_MATERIAL_RNG:
-		return NewKeyMaterialRngWithCtx((*C.vscf_key_material_rng_t /*ct10*/)(ctx)), nil
+		return NewKeyMaterialRngWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -789,7 +790,7 @@ func ImplementationWrapMac(anyctx interface{}) (Mac, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_HMAC:
-		return NewHmacWithCtx((*C.vscf_hmac_t /*ct10*/)(ctx)), nil
+		return NewHmacWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -818,13 +819,13 @@ func ImplementationWrapKdf(anyctx interface{}) (Kdf, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_HKDF:
-		return NewHkdfWithCtx((*C.vscf_hkdf_t /*ct10*/)(ctx)), nil
+		return NewHkdfWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_KDF1:
-		return NewKdf1WithCtx((*C.vscf_kdf1_t /*ct10*/)(ctx)), nil
+		return NewKdf1WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_KDF2:
-		return NewKdf2WithCtx((*C.vscf_kdf2_t /*ct10*/)(ctx)), nil
+		return NewKdf2WithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PKCS5_PBKDF2:
-		return NewPkcs5Pbkdf2WithCtx((*C.vscf_pkcs5_pbkdf2_t /*ct10*/)(ctx)), nil
+		return NewPkcs5Pbkdf2WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -853,9 +854,9 @@ func ImplementationWrapSaltedKdf(anyctx interface{}) (SaltedKdf, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_HKDF:
-		return NewHkdfWithCtx((*C.vscf_hkdf_t /*ct10*/)(ctx)), nil
+		return NewHkdfWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PKCS5_PBKDF2:
-		return NewPkcs5Pbkdf2WithCtx((*C.vscf_pkcs5_pbkdf2_t /*ct10*/)(ctx)), nil
+		return NewPkcs5Pbkdf2WithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -884,11 +885,11 @@ func ImplementationWrapKeySerializer(anyctx interface{}) (KeySerializer, error) 
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_PKCS8_SERIALIZER:
-		return NewPkcs8SerializerWithCtx((*C.vscf_pkcs8_serializer_t /*ct10*/)(ctx)), nil
+		return NewPkcs8SerializerWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SEC1_SERIALIZER:
-		return NewSec1SerializerWithCtx((*C.vscf_sec1_serializer_t /*ct10*/)(ctx)), nil
+		return NewSec1SerializerWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_KEY_ASN1_SERIALIZER:
-		return NewKeyAsn1SerializerWithCtx((*C.vscf_key_asn1_serializer_t /*ct10*/)(ctx)), nil
+		return NewKeyAsn1SerializerWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -917,7 +918,7 @@ func ImplementationWrapKeyDeserializer(anyctx interface{}) (KeyDeserializer, err
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_KEY_ASN1_DESERIALIZER:
-		return NewKeyAsn1DeserializerWithCtx((*C.vscf_key_asn1_deserializer_t /*ct10*/)(ctx)), nil
+		return NewKeyAsn1DeserializerWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -946,21 +947,21 @@ func ImplementationWrapAlgInfo(anyctx interface{}) (AlgInfo, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_COMPOUND_KEY_ALG_INFO:
-		return NewCompoundKeyAlgInfoWithCtx((*C.vscf_compound_key_alg_info_t /*ct10*/)(ctx)), nil
+		return NewCompoundKeyAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HYBRID_KEY_ALG_INFO:
-		return NewHybridKeyAlgInfoWithCtx((*C.vscf_hybrid_key_alg_info_t /*ct10*/)(ctx)), nil
+		return NewHybridKeyAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SIMPLE_ALG_INFO:
-		return NewSimpleAlgInfoWithCtx((*C.vscf_simple_alg_info_t /*ct10*/)(ctx)), nil
+		return NewSimpleAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_HASH_BASED_ALG_INFO:
-		return NewHashBasedAlgInfoWithCtx((*C.vscf_hash_based_alg_info_t /*ct10*/)(ctx)), nil
+		return NewHashBasedAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_CIPHER_ALG_INFO:
-		return NewCipherAlgInfoWithCtx((*C.vscf_cipher_alg_info_t /*ct10*/)(ctx)), nil
+		return NewCipherAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_SALTED_KDF_ALG_INFO:
-		return NewSaltedKdfAlgInfoWithCtx((*C.vscf_salted_kdf_alg_info_t /*ct10*/)(ctx)), nil
+		return NewSaltedKdfAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_PBE_ALG_INFO:
-		return NewPbeAlgInfoWithCtx((*C.vscf_pbe_alg_info_t /*ct10*/)(ctx)), nil
+		return NewPbeAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	case C.vscf_impl_tag_ECC_ALG_INFO:
-		return NewEccAlgInfoWithCtx((*C.vscf_ecc_alg_info_t /*ct10*/)(ctx)), nil
+		return NewEccAlgInfoWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -989,7 +990,7 @@ func ImplementationWrapAlgInfoSerializer(anyctx interface{}) (AlgInfoSerializer,
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ALG_INFO_DER_SERIALIZER:
-		return NewAlgInfoDerSerializerWithCtx((*C.vscf_alg_info_der_serializer_t /*ct10*/)(ctx)), nil
+		return NewAlgInfoDerSerializerWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -1018,7 +1019,7 @@ func ImplementationWrapAlgInfoDeserializer(anyctx interface{}) (AlgInfoDeseriali
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_ALG_INFO_DER_DESERIALIZER:
-		return NewAlgInfoDerDeserializerWithCtx((*C.vscf_alg_info_der_deserializer_t /*ct10*/)(ctx)), nil
+		return NewAlgInfoDerDeserializerWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -1047,7 +1048,7 @@ func ImplementationWrapMessageInfoSerializer(anyctx interface{}) (MessageInfoSer
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
-		return NewMessageInfoDerSerializerWithCtx((*C.vscf_message_info_der_serializer_t /*ct10*/)(ctx)), nil
+		return NewMessageInfoDerSerializerWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -1076,7 +1077,7 @@ func ImplementationWrapMessageInfoFooterSerializer(anyctx interface{}) (MessageI
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER:
-		return NewMessageInfoDerSerializerWithCtx((*C.vscf_message_info_der_serializer_t /*ct10*/)(ctx)), nil
+		return NewMessageInfoDerSerializerWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}
@@ -1105,7 +1106,7 @@ func ImplementationWrapPadding(anyctx interface{}) (Padding, error) {
 	implTag := C.vscf_impl_tag(ctx)
 	switch implTag {
 	case C.vscf_impl_tag_RANDOM_PADDING:
-		return NewRandomPaddingWithCtx((*C.vscf_random_padding_t /*ct10*/)(ctx)), nil
+		return NewRandomPaddingWithCtx(unsafe.Pointer(ctx)), nil
 	default:
 		return nil, &FoundationError{-1, "Unexpected C implementation cast to the Go implementation."}
 	}

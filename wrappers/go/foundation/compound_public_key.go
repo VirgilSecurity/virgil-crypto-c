@@ -55,11 +55,8 @@ func NewCompoundPublicKey() *CompoundPublicKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundPublicKeyWithCtx(anyctx interface{}) *CompoundPublicKey {
-	ctx, ok := anyctx.(*C.vscf_compound_public_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundPublicKey."}
-	}
+func NewCompoundPublicKeyWithCtx(pointer unsafe.Pointer) *CompoundPublicKey {
+	ctx := (*C.vscf_compound_public_key_t /*ct10*/)(pointer)
 	obj := &CompoundPublicKey{
 		cCtx: ctx,
 	}
@@ -70,11 +67,8 @@ func NewCompoundPublicKeyWithCtx(anyctx interface{}) *CompoundPublicKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundPublicKeyCopy(anyctx interface{}) *CompoundPublicKey {
-	ctx, ok := anyctx.(*C.vscf_compound_public_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundPublicKey."}
-	}
+func NewCompoundPublicKeyCopy(pointer unsafe.Pointer) *CompoundPublicKey {
+	ctx := (*C.vscf_compound_public_key_t /*ct10*/)(pointer)
 	obj := &CompoundPublicKey{
 		cCtx: C.vscf_compound_public_key_shallow_copy(ctx),
 	}

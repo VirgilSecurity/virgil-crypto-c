@@ -51,11 +51,8 @@ func NewCompoundKeyAlgInfo() *CompoundKeyAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundKeyAlgInfoWithCtx(anyctx interface{}) *CompoundKeyAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_compound_key_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundKeyAlgInfo."}
-	}
+func NewCompoundKeyAlgInfoWithCtx(pointer unsafe.Pointer) *CompoundKeyAlgInfo {
+	ctx := (*C.vscf_compound_key_alg_info_t /*ct10*/)(pointer)
 	obj := &CompoundKeyAlgInfo{
 		cCtx: ctx,
 	}
@@ -66,11 +63,8 @@ func NewCompoundKeyAlgInfoWithCtx(anyctx interface{}) *CompoundKeyAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundKeyAlgInfoCopy(anyctx interface{}) *CompoundKeyAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_compound_key_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundKeyAlgInfo."}
-	}
+func NewCompoundKeyAlgInfoCopy(pointer unsafe.Pointer) *CompoundKeyAlgInfo {
+	ctx := (*C.vscf_compound_key_alg_info_t /*ct10*/)(pointer)
 	obj := &CompoundKeyAlgInfo{
 		cCtx: C.vscf_compound_key_alg_info_shallow_copy(ctx),
 	}

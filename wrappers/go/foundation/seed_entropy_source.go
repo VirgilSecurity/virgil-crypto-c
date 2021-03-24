@@ -42,11 +42,8 @@ func NewSeedEntropySource() *SeedEntropySource {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSeedEntropySourceWithCtx(anyctx interface{}) *SeedEntropySource {
-	ctx, ok := anyctx.(*C.vscf_seed_entropy_source_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SeedEntropySource."}
-	}
+func NewSeedEntropySourceWithCtx(pointer unsafe.Pointer) *SeedEntropySource {
+	ctx := (*C.vscf_seed_entropy_source_t /*ct10*/)(pointer)
 	obj := &SeedEntropySource{
 		cCtx: ctx,
 	}
@@ -57,11 +54,8 @@ func NewSeedEntropySourceWithCtx(anyctx interface{}) *SeedEntropySource {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSeedEntropySourceCopy(anyctx interface{}) *SeedEntropySource {
-	ctx, ok := anyctx.(*C.vscf_seed_entropy_source_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SeedEntropySource."}
-	}
+func NewSeedEntropySourceCopy(pointer unsafe.Pointer) *SeedEntropySource {
+	ctx := (*C.vscf_seed_entropy_source_t /*ct10*/)(pointer)
 	obj := &SeedEntropySource{
 		cCtx: C.vscf_seed_entropy_source_shallow_copy(ctx),
 	}

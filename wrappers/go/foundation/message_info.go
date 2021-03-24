@@ -30,11 +30,8 @@ func NewMessageInfo() *MessageInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoWithCtx(anyctx interface{}) *MessageInfo {
-	ctx, ok := anyctx.(*C.vscf_message_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfo."}
-	}
+func NewMessageInfoWithCtx(pointer unsafe.Pointer) *MessageInfo {
+	ctx := (*C.vscf_message_info_t /*ct2*/)(pointer)
 	obj := &MessageInfo{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewMessageInfoWithCtx(anyctx interface{}) *MessageInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoCopy(anyctx interface{}) *MessageInfo {
-	ctx, ok := anyctx.(*C.vscf_message_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfo."}
-	}
+func NewMessageInfoCopy(pointer unsafe.Pointer) *MessageInfo {
+	ctx := (*C.vscf_message_info_t /*ct2*/)(pointer)
 	obj := &MessageInfo{
 		cCtx: C.vscf_message_info_shallow_copy(ctx),
 	}
@@ -94,7 +88,7 @@ func (obj *MessageInfo) KeyRecipientInfoList() *KeyRecipientInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyRecipientInfoListCopy(proxyResult) /* r5 */
+	return NewKeyRecipientInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -105,7 +99,7 @@ func (obj *MessageInfo) PasswordRecipientInfoList() *PasswordRecipientInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewPasswordRecipientInfoListCopy(proxyResult) /* r5 */
+	return NewPasswordRecipientInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -129,7 +123,7 @@ func (obj *MessageInfo) CustomParams() *MessageInfoCustomParams {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessageInfoCustomParamsCopy(proxyResult) /* r5 */
+	return NewMessageInfoCustomParamsCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -195,7 +189,7 @@ func (obj *MessageInfo) FooterInfo() *FooterInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewFooterInfoCopy(proxyResult) /* r5 */
+	return NewFooterInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

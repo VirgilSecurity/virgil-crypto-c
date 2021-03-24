@@ -96,11 +96,8 @@ func NewKeyAsn1Serializer() *KeyAsn1Serializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyAsn1SerializerWithCtx(anyctx interface{}) *KeyAsn1Serializer {
-	ctx, ok := anyctx.(*C.vscf_key_asn1_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyAsn1Serializer."}
-	}
+func NewKeyAsn1SerializerWithCtx(pointer unsafe.Pointer) *KeyAsn1Serializer {
+	ctx := (*C.vscf_key_asn1_serializer_t /*ct10*/)(pointer)
 	obj := &KeyAsn1Serializer{
 		cCtx: ctx,
 	}
@@ -111,11 +108,8 @@ func NewKeyAsn1SerializerWithCtx(anyctx interface{}) *KeyAsn1Serializer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyAsn1SerializerCopy(anyctx interface{}) *KeyAsn1Serializer {
-	ctx, ok := anyctx.(*C.vscf_key_asn1_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyAsn1Serializer."}
-	}
+func NewKeyAsn1SerializerCopy(pointer unsafe.Pointer) *KeyAsn1Serializer {
+	ctx := (*C.vscf_key_asn1_serializer_t /*ct10*/)(pointer)
 	obj := &KeyAsn1Serializer{
 		cCtx: C.vscf_key_asn1_serializer_shallow_copy(ctx),
 	}

@@ -73,11 +73,8 @@ func NewRsa() *Rsa {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRsaWithCtx(anyctx interface{}) *Rsa {
-	ctx, ok := anyctx.(*C.vscf_rsa_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Rsa."}
-	}
+func NewRsaWithCtx(pointer unsafe.Pointer) *Rsa {
+	ctx := (*C.vscf_rsa_t /*ct10*/)(pointer)
 	obj := &Rsa{
 		cCtx: ctx,
 	}
@@ -88,11 +85,8 @@ func NewRsaWithCtx(anyctx interface{}) *Rsa {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRsaCopy(anyctx interface{}) *Rsa {
-	ctx, ok := anyctx.(*C.vscf_rsa_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Rsa."}
-	}
+func NewRsaCopy(pointer unsafe.Pointer) *Rsa {
+	ctx := (*C.vscf_rsa_t /*ct10*/)(pointer)
 	obj := &Rsa{
 		cCtx: C.vscf_rsa_shallow_copy(ctx),
 	}
@@ -218,7 +212,7 @@ func (obj *Rsa) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -271,7 +265,7 @@ func (obj *Rsa) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

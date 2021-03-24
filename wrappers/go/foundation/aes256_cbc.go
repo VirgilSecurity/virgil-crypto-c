@@ -31,11 +31,8 @@ func NewAes256Cbc() *Aes256Cbc {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAes256CbcWithCtx(anyctx interface{}) *Aes256Cbc {
-	ctx, ok := anyctx.(*C.vscf_aes256_cbc_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Aes256Cbc."}
-	}
+func NewAes256CbcWithCtx(pointer unsafe.Pointer) *Aes256Cbc {
+	ctx := (*C.vscf_aes256_cbc_t /*ct10*/)(pointer)
 	obj := &Aes256Cbc{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewAes256CbcWithCtx(anyctx interface{}) *Aes256Cbc {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAes256CbcCopy(anyctx interface{}) *Aes256Cbc {
-	ctx, ok := anyctx.(*C.vscf_aes256_cbc_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Aes256Cbc."}
-	}
+func NewAes256CbcCopy(pointer unsafe.Pointer) *Aes256Cbc {
+	ctx := (*C.vscf_aes256_cbc_t /*ct10*/)(pointer)
 	obj := &Aes256Cbc{
 		cCtx: C.vscf_aes256_cbc_shallow_copy(ctx),
 	}

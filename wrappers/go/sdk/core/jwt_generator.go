@@ -34,11 +34,8 @@ func NewJwtGenerator() *JwtGenerator {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJwtGeneratorWithCtx(anyctx interface{}) *JwtGenerator {
-	ctx, ok := anyctx.(*C.vssc_jwt_generator_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct JwtGenerator."}
-	}
+func NewJwtGeneratorWithCtx(pointer unsafe.Pointer) *JwtGenerator {
+	ctx := (*C.vssc_jwt_generator_t /*ct2*/)(pointer)
 	obj := &JwtGenerator{
 		cCtx: ctx,
 	}
@@ -49,11 +46,8 @@ func NewJwtGeneratorWithCtx(anyctx interface{}) *JwtGenerator {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJwtGeneratorCopy(anyctx interface{}) *JwtGenerator {
-	ctx, ok := anyctx.(*C.vssc_jwt_generator_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct JwtGenerator."}
-	}
+func NewJwtGeneratorCopy(pointer unsafe.Pointer) *JwtGenerator {
+	ctx := (*C.vssc_jwt_generator_t /*ct2*/)(pointer)
 	obj := &JwtGenerator{
 		cCtx: C.vssc_jwt_generator_shallow_copy(ctx),
 	}
@@ -161,5 +155,5 @@ func (obj *JwtGenerator) GenerateToken(identity string) (*Jwt, error) {
 
 	runtime.KeepAlive(identity)
 
-	return NewJwtWithCtx(proxyResult) /* r6 */, nil
+	return NewJwtWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

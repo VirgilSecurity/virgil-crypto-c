@@ -34,11 +34,8 @@ func NewBrainkeyClient() *BrainkeyClient {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewBrainkeyClientWithCtx(anyctx interface{}) *BrainkeyClient {
-	ctx, ok := anyctx.(*C.vscf_brainkey_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct BrainkeyClient."}
-	}
+func NewBrainkeyClientWithCtx(pointer unsafe.Pointer) *BrainkeyClient {
+	ctx := (*C.vscf_brainkey_client_t /*ct2*/)(pointer)
 	obj := &BrainkeyClient{
 		cCtx: ctx,
 	}
@@ -49,11 +46,8 @@ func NewBrainkeyClientWithCtx(anyctx interface{}) *BrainkeyClient {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewBrainkeyClientCopy(anyctx interface{}) *BrainkeyClient {
-	ctx, ok := anyctx.(*C.vscf_brainkey_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct BrainkeyClient."}
-	}
+func NewBrainkeyClientCopy(pointer unsafe.Pointer) *BrainkeyClient {
+	ctx := (*C.vscf_brainkey_client_t /*ct2*/)(pointer)
 	obj := &BrainkeyClient{
 		cCtx: C.vscf_brainkey_client_shallow_copy(ctx),
 	}

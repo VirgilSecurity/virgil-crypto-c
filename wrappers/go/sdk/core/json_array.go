@@ -30,11 +30,8 @@ func NewJsonArray() *JsonArray {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJsonArrayWithCtx(anyctx interface{}) *JsonArray {
-	ctx, ok := anyctx.(*C.vssc_json_array_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct JsonArray."}
-	}
+func NewJsonArrayWithCtx(pointer unsafe.Pointer) *JsonArray {
+	ctx := (*C.vssc_json_array_t /*ct2*/)(pointer)
 	obj := &JsonArray{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewJsonArrayWithCtx(anyctx interface{}) *JsonArray {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJsonArrayCopy(anyctx interface{}) *JsonArray {
-	ctx, ok := anyctx.(*C.vssc_json_array_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct JsonArray."}
-	}
+func NewJsonArrayCopy(pointer unsafe.Pointer) *JsonArray {
+	ctx := (*C.vssc_json_array_t /*ct2*/)(pointer)
 	obj := &JsonArray{
 		cCtx: C.vssc_json_array_shallow_copy(ctx),
 	}
@@ -116,7 +110,7 @@ func (obj *JsonArray) GetObjectValue(index uint) (*JsonObject, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewJsonObjectWithCtx(proxyResult) /* r6 */, nil
+	return NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -185,7 +179,7 @@ func (obj *JsonArray) GetStringValues() (*StringList, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewStringListWithCtx(proxyResult) /* r6 */, nil
+	return NewStringListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -248,7 +242,7 @@ func (obj *JsonArray) GetNumberValues() (*NumberList, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewNumberListWithCtx(proxyResult) /* r6 */, nil
+	return NewNumberListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -281,5 +275,5 @@ func JsonArrayParse(json string) (*JsonArray, error) {
 
 	runtime.KeepAlive(json)
 
-	return NewJsonArrayWithCtx(proxyResult) /* r6 */, nil
+	return NewJsonArrayWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

@@ -109,11 +109,8 @@ func NewCtrDrbg() *CtrDrbg {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCtrDrbgWithCtx(anyctx interface{}) *CtrDrbg {
-	ctx, ok := anyctx.(*C.vscf_ctr_drbg_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CtrDrbg."}
-	}
+func NewCtrDrbgWithCtx(pointer unsafe.Pointer) *CtrDrbg {
+	ctx := (*C.vscf_ctr_drbg_t /*ct10*/)(pointer)
 	obj := &CtrDrbg{
 		cCtx: ctx,
 	}
@@ -124,11 +121,8 @@ func NewCtrDrbgWithCtx(anyctx interface{}) *CtrDrbg {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCtrDrbgCopy(anyctx interface{}) *CtrDrbg {
-	ctx, ok := anyctx.(*C.vscf_ctr_drbg_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CtrDrbg."}
-	}
+func NewCtrDrbgCopy(pointer unsafe.Pointer) *CtrDrbg {
+	ctx := (*C.vscf_ctr_drbg_t /*ct10*/)(pointer)
 	obj := &CtrDrbg{
 		cCtx: C.vscf_ctr_drbg_shallow_copy(ctx),
 	}

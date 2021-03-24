@@ -35,11 +35,8 @@ func NewMessengerConfig() *MessengerConfig {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerConfigWithCtx(anyctx interface{}) *MessengerConfig {
-	ctx, ok := anyctx.(*C.vssq_messenger_config_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerConfig."}
-	}
+func NewMessengerConfigWithCtx(pointer unsafe.Pointer) *MessengerConfig {
+	ctx := (*C.vssq_messenger_config_t /*ct2*/)(pointer)
 	obj := &MessengerConfig{
 		cCtx: ctx,
 	}
@@ -50,11 +47,8 @@ func NewMessengerConfigWithCtx(anyctx interface{}) *MessengerConfig {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerConfigCopy(anyctx interface{}) *MessengerConfig {
-	ctx, ok := anyctx.(*C.vssq_messenger_config_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerConfig."}
-	}
+func NewMessengerConfigCopy(pointer unsafe.Pointer) *MessengerConfig {
+	ctx := (*C.vssq_messenger_config_t /*ct2*/)(pointer)
 	obj := &MessengerConfig{
 		cCtx: C.vssq_messenger_config_shallow_copy(ctx),
 	}

@@ -81,11 +81,8 @@ func NewEd25519() *Ed25519 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEd25519WithCtx(anyctx interface{}) *Ed25519 {
-	ctx, ok := anyctx.(*C.vscf_ed25519_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Ed25519."}
-	}
+func NewEd25519WithCtx(pointer unsafe.Pointer) *Ed25519 {
+	ctx := (*C.vscf_ed25519_t /*ct10*/)(pointer)
 	obj := &Ed25519{
 		cCtx: ctx,
 	}
@@ -96,11 +93,8 @@ func NewEd25519WithCtx(anyctx interface{}) *Ed25519 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEd25519Copy(anyctx interface{}) *Ed25519 {
-	ctx, ok := anyctx.(*C.vscf_ed25519_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Ed25519."}
-	}
+func NewEd25519Copy(pointer unsafe.Pointer) *Ed25519 {
+	ctx := (*C.vscf_ed25519_t /*ct10*/)(pointer)
 	obj := &Ed25519{
 		cCtx: C.vscf_ed25519_shallow_copy(ctx),
 	}
@@ -226,7 +220,7 @@ func (obj *Ed25519) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) 
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -279,7 +273,7 @@ func (obj *Ed25519) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, err
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

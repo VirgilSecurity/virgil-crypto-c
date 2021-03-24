@@ -29,11 +29,8 @@ func NewMessengerUserList() *MessengerUserList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerUserListWithCtx(anyctx interface{}) *MessengerUserList {
-	ctx, ok := anyctx.(*C.vssq_messenger_user_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerUserList."}
-	}
+func NewMessengerUserListWithCtx(pointer unsafe.Pointer) *MessengerUserList {
+	ctx := (*C.vssq_messenger_user_list_t /*ct2*/)(pointer)
 	obj := &MessengerUserList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerUserListWithCtx(anyctx interface{}) *MessengerUserList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerUserListCopy(anyctx interface{}) *MessengerUserList {
-	ctx, ok := anyctx.(*C.vssq_messenger_user_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerUserList."}
-	}
+func NewMessengerUserListCopy(pointer unsafe.Pointer) *MessengerUserList {
+	ctx := (*C.vssq_messenger_user_list_t /*ct2*/)(pointer)
 	obj := &MessengerUserList{
 		cCtx: C.vssq_messenger_user_list_shallow_copy(ctx),
 	}
@@ -107,7 +101,7 @@ func (obj *MessengerUserList) Item() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -118,7 +112,7 @@ func (obj *MessengerUserList) ItemModifiable() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -140,7 +134,7 @@ func (obj *MessengerUserList) Next() *MessengerUserList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserListCopy(proxyResult) /* r5 */
+	return NewMessengerUserListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -151,7 +145,7 @@ func (obj *MessengerUserList) NextModifiable() *MessengerUserList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserListCopy(proxyResult) /* r5 */
+	return NewMessengerUserListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -173,7 +167,7 @@ func (obj *MessengerUserList) Prev() *MessengerUserList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserListCopy(proxyResult) /* r5 */
+	return NewMessengerUserListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -184,7 +178,7 @@ func (obj *MessengerUserList) PrevModifiable() *MessengerUserList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserListCopy(proxyResult) /* r5 */
+	return NewMessengerUserListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -219,7 +213,7 @@ func (obj *MessengerUserList) FindWithIdentity(userIdentity string) (*MessengerU
 
 	runtime.KeepAlive(userIdentity)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */, nil
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }
 
 /*
@@ -243,5 +237,5 @@ func (obj *MessengerUserList) FindWithIdentityModifiable(userIdentity string) (*
 
 	runtime.KeepAlive(userIdentity)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */, nil
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }

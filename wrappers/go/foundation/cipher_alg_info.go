@@ -40,11 +40,8 @@ func NewCipherAlgInfo() *CipherAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCipherAlgInfoWithCtx(anyctx interface{}) *CipherAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_cipher_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CipherAlgInfo."}
-	}
+func NewCipherAlgInfoWithCtx(pointer unsafe.Pointer) *CipherAlgInfo {
+	ctx := (*C.vscf_cipher_alg_info_t /*ct10*/)(pointer)
 	obj := &CipherAlgInfo{
 		cCtx: ctx,
 	}
@@ -55,11 +52,8 @@ func NewCipherAlgInfoWithCtx(anyctx interface{}) *CipherAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCipherAlgInfoCopy(anyctx interface{}) *CipherAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_cipher_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CipherAlgInfo."}
-	}
+func NewCipherAlgInfoCopy(pointer unsafe.Pointer) *CipherAlgInfo {
+	ctx := (*C.vscf_cipher_alg_info_t /*ct10*/)(pointer)
 	obj := &CipherAlgInfo{
 		cCtx: C.vscf_cipher_alg_info_shallow_copy(ctx),
 	}

@@ -30,11 +30,8 @@ func NewMessengerFileCipher() *MessengerFileCipher {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerFileCipherWithCtx(anyctx interface{}) *MessengerFileCipher {
-	ctx, ok := anyctx.(*C.vssq_messenger_file_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerFileCipher."}
-	}
+func NewMessengerFileCipherWithCtx(pointer unsafe.Pointer) *MessengerFileCipher {
+	ctx := (*C.vssq_messenger_file_cipher_t /*ct2*/)(pointer)
 	obj := &MessengerFileCipher{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewMessengerFileCipherWithCtx(anyctx interface{}) *MessengerFileCipher {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerFileCipherCopy(anyctx interface{}) *MessengerFileCipher {
-	ctx, ok := anyctx.(*C.vssq_messenger_file_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerFileCipher."}
-	}
+func NewMessengerFileCipherCopy(pointer unsafe.Pointer) *MessengerFileCipher {
+	ctx := (*C.vssq_messenger_file_cipher_t /*ct2*/)(pointer)
 	obj := &MessengerFileCipher{
 		cCtx: C.vssq_messenger_file_cipher_shallow_copy(ctx),
 	}

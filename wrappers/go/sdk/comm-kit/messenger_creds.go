@@ -31,11 +31,8 @@ func NewMessengerCreds() *MessengerCreds {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCredsWithCtx(anyctx interface{}) *MessengerCreds {
-	ctx, ok := anyctx.(*C.vssq_messenger_creds_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCreds."}
-	}
+func NewMessengerCredsWithCtx(pointer unsafe.Pointer) *MessengerCreds {
+	ctx := (*C.vssq_messenger_creds_t /*ct2*/)(pointer)
 	obj := &MessengerCreds{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewMessengerCredsWithCtx(anyctx interface{}) *MessengerCreds {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCredsCopy(anyctx interface{}) *MessengerCreds {
-	ctx, ok := anyctx.(*C.vssq_messenger_creds_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCreds."}
-	}
+func NewMessengerCredsCopy(pointer unsafe.Pointer) *MessengerCreds {
+	ctx := (*C.vssq_messenger_creds_t /*ct2*/)(pointer)
 	obj := &MessengerCreds{
 		cCtx: C.vssq_messenger_creds_shallow_copy(ctx),
 	}
@@ -151,7 +145,7 @@ func (obj *MessengerCreds) ToJson() (*sdk_core.JsonObject, error) {
 
 	runtime.KeepAlive(obj)
 
-	return sdk_core.NewJsonObjectWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -170,7 +164,7 @@ func MessengerCredsFromJson(jsonObj *sdk_core.JsonObject) (*MessengerCreds, erro
 
 	runtime.KeepAlive(jsonObj)
 
-	return NewMessengerCredsWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCredsWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -192,5 +186,5 @@ func MessengerCredsFromJsonStr(jsonStr string) (*MessengerCreds, error) {
 
 	runtime.KeepAlive(jsonStr)
 
-	return NewMessengerCredsWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCredsWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

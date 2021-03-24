@@ -51,11 +51,8 @@ func NewHybridKeyAlgInfo() *HybridKeyAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHybridKeyAlgInfoWithCtx(anyctx interface{}) *HybridKeyAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_hybrid_key_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HybridKeyAlgInfo."}
-	}
+func NewHybridKeyAlgInfoWithCtx(pointer unsafe.Pointer) *HybridKeyAlgInfo {
+	ctx := (*C.vscf_hybrid_key_alg_info_t /*ct10*/)(pointer)
 	obj := &HybridKeyAlgInfo{
 		cCtx: ctx,
 	}
@@ -66,11 +63,8 @@ func NewHybridKeyAlgInfoWithCtx(anyctx interface{}) *HybridKeyAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHybridKeyAlgInfoCopy(anyctx interface{}) *HybridKeyAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_hybrid_key_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HybridKeyAlgInfo."}
-	}
+func NewHybridKeyAlgInfoCopy(pointer unsafe.Pointer) *HybridKeyAlgInfo {
+	ctx := (*C.vscf_hybrid_key_alg_info_t /*ct10*/)(pointer)
 	obj := &HybridKeyAlgInfo{
 		cCtx: C.vscf_hybrid_key_alg_info_shallow_copy(ctx),
 	}

@@ -29,11 +29,8 @@ func NewHttpRequest() *HttpRequest {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHttpRequestWithCtx(anyctx interface{}) *HttpRequest {
-	ctx, ok := anyctx.(*C.vssc_http_request_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct HttpRequest."}
-	}
+func NewHttpRequestWithCtx(pointer unsafe.Pointer) *HttpRequest {
+	ctx := (*C.vssc_http_request_t /*ct2*/)(pointer)
 	obj := &HttpRequest{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewHttpRequestWithCtx(anyctx interface{}) *HttpRequest {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHttpRequestCopy(anyctx interface{}) *HttpRequest {
-	ctx, ok := anyctx.(*C.vssc_http_request_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct HttpRequest."}
-	}
+func NewHttpRequestCopy(pointer unsafe.Pointer) *HttpRequest {
+	ctx := (*C.vssc_http_request_t /*ct2*/)(pointer)
 	obj := &HttpRequest{
 		cCtx: C.vssc_http_request_shallow_copy(ctx),
 	}
@@ -186,7 +180,7 @@ func (obj *HttpRequest) Headers() *HttpHeaderList {
 
 	runtime.KeepAlive(obj)
 
-	return NewHttpHeaderListCopy(proxyResult) /* r5 */
+	return NewHttpHeaderListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

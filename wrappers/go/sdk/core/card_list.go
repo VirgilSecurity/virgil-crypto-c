@@ -29,11 +29,8 @@ func NewCardList() *CardList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCardListWithCtx(anyctx interface{}) *CardList {
-	ctx, ok := anyctx.(*C.vssc_card_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct CardList."}
-	}
+func NewCardListWithCtx(pointer unsafe.Pointer) *CardList {
+	ctx := (*C.vssc_card_list_t /*ct2*/)(pointer)
 	obj := &CardList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewCardListWithCtx(anyctx interface{}) *CardList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCardListCopy(anyctx interface{}) *CardList {
-	ctx, ok := anyctx.(*C.vssc_card_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct CardList."}
-	}
+func NewCardListCopy(pointer unsafe.Pointer) *CardList {
+	ctx := (*C.vssc_card_list_t /*ct2*/)(pointer)
 	obj := &CardList{
 		cCtx: C.vssc_card_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *CardList) Item() *Card {
 
 	runtime.KeepAlive(obj)
 
-	return NewCardCopy(proxyResult) /* r5 */
+	return NewCardCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *CardList) Next() *CardList {
 
 	runtime.KeepAlive(obj)
 
-	return NewCardListCopy(proxyResult) /* r5 */
+	return NewCardListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *CardList) Prev() *CardList {
 
 	runtime.KeepAlive(obj)
 
-	return NewCardListCopy(proxyResult) /* r5 */
+	return NewCardListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -172,7 +166,7 @@ func (obj *CardList) FindWithIdentity(identity string) (*Card, error) {
 
 	runtime.KeepAlive(identity)
 
-	return NewCardCopy(proxyResult) /* r5 */, nil
+	return NewCardCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }
 
 /*
@@ -196,5 +190,5 @@ func (obj *CardList) FindWithIdentifier(identifier string) (*Card, error) {
 
 	runtime.KeepAlive(identifier)
 
-	return NewCardCopy(proxyResult) /* r5 */, nil
+	return NewCardCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }

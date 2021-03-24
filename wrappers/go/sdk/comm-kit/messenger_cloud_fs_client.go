@@ -30,11 +30,8 @@ func NewMessengerCloudFsClient() *MessengerCloudFsClient {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsClientWithCtx(anyctx interface{}) *MessengerCloudFsClient {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsClient."}
-	}
+func NewMessengerCloudFsClientWithCtx(pointer unsafe.Pointer) *MessengerCloudFsClient {
+	ctx := (*C.vssq_messenger_cloud_fs_client_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsClient{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewMessengerCloudFsClientWithCtx(anyctx interface{}) *MessengerCloudFsClien
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsClientCopy(anyctx interface{}) *MessengerCloudFsClient {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsClient."}
-	}
+func NewMessengerCloudFsClientCopy(pointer unsafe.Pointer) *MessengerCloudFsClient {
+	ctx := (*C.vssq_messenger_cloud_fs_client_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsClient{
 		cCtx: C.vssq_messenger_cloud_fs_client_shallow_copy(ctx),
 	}
@@ -116,7 +110,7 @@ func (obj *MessengerCloudFsClient) CreateFile(name string, mimeTipe string, size
 
 	runtime.KeepAlive(folderId)
 
-	return NewMessengerCloudFsCreatedFileWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCloudFsCreatedFileWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -140,7 +134,7 @@ func (obj *MessengerCloudFsClient) GetDownloadLink(id string) (*MessengerCloudFs
 
 	runtime.KeepAlive(id)
 
-	return NewMessengerCloudFsFileDownloadInfoWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCloudFsFileDownloadInfoWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -194,7 +188,7 @@ func (obj *MessengerCloudFsClient) CreateFolder(name string, folderEncryptedKey 
 
 	runtime.KeepAlive(parentFolderId)
 
-	return NewMessengerCloudFsFolderInfoWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCloudFsFolderInfoWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -228,7 +222,7 @@ func (obj *MessengerCloudFsClient) CreateSharedFolder(name string, folderEncrypt
 
 	runtime.KeepAlive(users)
 
-	return NewMessengerCloudFsFolderInfoWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCloudFsFolderInfoWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -253,7 +247,7 @@ func (obj *MessengerCloudFsClient) ListFolder(id string) (*MessengerCloudFsFolde
 
 	runtime.KeepAlive(id)
 
-	return NewMessengerCloudFsFolderWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCloudFsFolderWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -299,7 +293,7 @@ func (obj *MessengerCloudFsClient) GetSharedGroupUsers(id string) (*MessengerClo
 
 	runtime.KeepAlive(id)
 
-	return NewMessengerCloudFsAccessListWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerCloudFsAccessListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -348,7 +342,7 @@ func (obj *MessengerCloudFsClient) User() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

@@ -92,7 +92,7 @@ func ContactUtilsHashUsernames(usernames *sdk_core.StringList) (*sdk_core.String
 
 	runtime.KeepAlive(usernames)
 
-	return sdk_core.NewStringMapWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -170,7 +170,7 @@ func ContactUtilsHashPhoneNumbers(phoneNumbers *sdk_core.StringList) (*sdk_core.
 
 	runtime.KeepAlive(phoneNumbers)
 
-	return sdk_core.NewStringMapWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -247,7 +247,7 @@ func ContactUtilsHashEmails(emails *sdk_core.StringList) (*sdk_core.StringMap, e
 
 	runtime.KeepAlive(emails)
 
-	return sdk_core.NewStringMapWithCtx(proxyResult) /* r6 */, nil
+	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -264,5 +264,5 @@ func ContactUtilsMergeContactDiscoveryMaps(contactRequestMap *sdk_core.StringMap
 
 	runtime.KeepAlive(contactResponseMap)
 
-	return sdk_core.NewStringMapWithCtx(proxyResult) /* r6 */
+	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }

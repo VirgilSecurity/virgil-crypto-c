@@ -30,11 +30,8 @@ func NewRawCardSigner() *RawCardSigner {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardSignerWithCtx(anyctx interface{}) *RawCardSigner {
-	ctx, ok := anyctx.(*C.vssc_raw_card_signer_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardSigner."}
-	}
+func NewRawCardSignerWithCtx(pointer unsafe.Pointer) *RawCardSigner {
+	ctx := (*C.vssc_raw_card_signer_t /*ct2*/)(pointer)
 	obj := &RawCardSigner{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewRawCardSignerWithCtx(anyctx interface{}) *RawCardSigner {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardSignerCopy(anyctx interface{}) *RawCardSigner {
-	ctx, ok := anyctx.(*C.vssc_raw_card_signer_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardSigner."}
-	}
+func NewRawCardSignerCopy(pointer unsafe.Pointer) *RawCardSigner {
+	ctx := (*C.vssc_raw_card_signer_t /*ct2*/)(pointer)
 	obj := &RawCardSigner{
 		cCtx: C.vssc_raw_card_signer_shallow_copy(ctx),
 	}

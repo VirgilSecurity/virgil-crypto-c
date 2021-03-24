@@ -69,11 +69,8 @@ func NewAlgInfoDerDeserializer() *AlgInfoDerDeserializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAlgInfoDerDeserializerWithCtx(anyctx interface{}) *AlgInfoDerDeserializer {
-	ctx, ok := anyctx.(*C.vscf_alg_info_der_deserializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct AlgInfoDerDeserializer."}
-	}
+func NewAlgInfoDerDeserializerWithCtx(pointer unsafe.Pointer) *AlgInfoDerDeserializer {
+	ctx := (*C.vscf_alg_info_der_deserializer_t /*ct10*/)(pointer)
 	obj := &AlgInfoDerDeserializer{
 		cCtx: ctx,
 	}
@@ -84,11 +81,8 @@ func NewAlgInfoDerDeserializerWithCtx(anyctx interface{}) *AlgInfoDerDeserialize
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAlgInfoDerDeserializerCopy(anyctx interface{}) *AlgInfoDerDeserializer {
-	ctx, ok := anyctx.(*C.vscf_alg_info_der_deserializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct AlgInfoDerDeserializer."}
-	}
+func NewAlgInfoDerDeserializerCopy(pointer unsafe.Pointer) *AlgInfoDerDeserializer {
+	ctx := (*C.vscf_alg_info_der_deserializer_t /*ct10*/)(pointer)
 	obj := &AlgInfoDerDeserializer{
 		cCtx: C.vscf_alg_info_der_deserializer_shallow_copy(ctx),
 	}

@@ -55,11 +55,8 @@ func NewCompoundPrivateKey() *CompoundPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundPrivateKeyWithCtx(anyctx interface{}) *CompoundPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_compound_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundPrivateKey."}
-	}
+func NewCompoundPrivateKeyWithCtx(pointer unsafe.Pointer) *CompoundPrivateKey {
+	ctx := (*C.vscf_compound_private_key_t /*ct10*/)(pointer)
 	obj := &CompoundPrivateKey{
 		cCtx: ctx,
 	}
@@ -70,11 +67,8 @@ func NewCompoundPrivateKeyWithCtx(anyctx interface{}) *CompoundPrivateKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundPrivateKeyCopy(anyctx interface{}) *CompoundPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_compound_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundPrivateKey."}
-	}
+func NewCompoundPrivateKeyCopy(pointer unsafe.Pointer) *CompoundPrivateKey {
+	ctx := (*C.vscf_compound_private_key_t /*ct10*/)(pointer)
 	obj := &CompoundPrivateKey{
 		cCtx: C.vscf_compound_private_key_shallow_copy(ctx),
 	}

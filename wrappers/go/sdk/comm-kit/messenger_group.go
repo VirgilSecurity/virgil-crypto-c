@@ -5,6 +5,7 @@ import "C"
 import unsafe "unsafe"
 import "runtime"
 import foundation "virgil/foundation"
+import sdk_core "virgil/sdk/core"
 
 /*
 * Contains information about the group and performs encryption and decryption operations.
@@ -34,11 +35,8 @@ func NewMessengerGroup() *MessengerGroup {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerGroupWithCtx(anyctx interface{}) *MessengerGroup {
-	ctx, ok := anyctx.(*C.vssq_messenger_group_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerGroup."}
-	}
+func NewMessengerGroupWithCtx(pointer unsafe.Pointer) *MessengerGroup {
+	ctx := (*C.vssq_messenger_group_t /*ct2*/)(pointer)
 	obj := &MessengerGroup{
 		cCtx: ctx,
 	}
@@ -49,11 +47,8 @@ func NewMessengerGroupWithCtx(anyctx interface{}) *MessengerGroup {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerGroupCopy(anyctx interface{}) *MessengerGroup {
-	ctx, ok := anyctx.(*C.vssq_messenger_group_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerGroup."}
-	}
+func NewMessengerGroupCopy(pointer unsafe.Pointer) *MessengerGroup {
+	ctx := (*C.vssq_messenger_group_t /*ct2*/)(pointer)
 	obj := &MessengerGroup{
 		cCtx: C.vssq_messenger_group_shallow_copy(ctx),
 	}
@@ -103,7 +98,26 @@ func (obj *MessengerGroup) Owner() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
+}
+
+/*
+* Return the group as JSON object.
+*
+* JSON format:
+* {
+* "version" : "v1",
+* "group_id" : "STRING",
+* "owner" : {},
+* "epochs" : []
+* }
+ */
+func (obj *MessengerGroup) ToJson() *sdk_core.JsonObject {
+	proxyResult := /*pr4*/ C.vssq_messenger_group_to_json(obj.cCtx)
+
+	runtime.KeepAlive(obj)
+
+	return sdk_core.NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }
 
 /*

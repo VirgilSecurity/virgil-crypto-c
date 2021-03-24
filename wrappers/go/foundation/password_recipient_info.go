@@ -29,11 +29,8 @@ func NewPasswordRecipientInfo() *PasswordRecipientInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPasswordRecipientInfoWithCtx(anyctx interface{}) *PasswordRecipientInfo {
-	ctx, ok := anyctx.(*C.vscf_password_recipient_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PasswordRecipientInfo."}
-	}
+func NewPasswordRecipientInfoWithCtx(pointer unsafe.Pointer) *PasswordRecipientInfo {
+	ctx := (*C.vscf_password_recipient_info_t /*ct2*/)(pointer)
 	obj := &PasswordRecipientInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewPasswordRecipientInfoWithCtx(anyctx interface{}) *PasswordRecipientInfo 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPasswordRecipientInfoCopy(anyctx interface{}) *PasswordRecipientInfo {
-	ctx, ok := anyctx.(*C.vscf_password_recipient_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PasswordRecipientInfo."}
-	}
+func NewPasswordRecipientInfoCopy(pointer unsafe.Pointer) *PasswordRecipientInfo {
+	ctx := (*C.vscf_password_recipient_info_t /*ct2*/)(pointer)
 	obj := &PasswordRecipientInfo{
 		cCtx: C.vscf_password_recipient_info_shallow_copy(ctx),
 	}

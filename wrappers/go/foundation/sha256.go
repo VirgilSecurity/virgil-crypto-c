@@ -29,11 +29,8 @@ func NewSha256() *Sha256 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSha256WithCtx(anyctx interface{}) *Sha256 {
-	ctx, ok := anyctx.(*C.vscf_sha256_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sha256."}
-	}
+func NewSha256WithCtx(pointer unsafe.Pointer) *Sha256 {
+	ctx := (*C.vscf_sha256_t /*ct10*/)(pointer)
 	obj := &Sha256{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSha256WithCtx(anyctx interface{}) *Sha256 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSha256Copy(anyctx interface{}) *Sha256 {
-	ctx, ok := anyctx.(*C.vscf_sha256_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sha256."}
-	}
+func NewSha256Copy(pointer unsafe.Pointer) *Sha256 {
+	ctx := (*C.vscf_sha256_t /*ct10*/)(pointer)
 	obj := &Sha256{
 		cCtx: C.vscf_sha256_shallow_copy(ctx),
 	}

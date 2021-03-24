@@ -29,11 +29,8 @@ func NewMessageInfoFooter() *MessageInfoFooter {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoFooterWithCtx(anyctx interface{}) *MessageInfoFooter {
-	ctx, ok := anyctx.(*C.vscf_message_info_footer_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfoFooter."}
-	}
+func NewMessageInfoFooterWithCtx(pointer unsafe.Pointer) *MessageInfoFooter {
+	ctx := (*C.vscf_message_info_footer_t /*ct2*/)(pointer)
 	obj := &MessageInfoFooter{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessageInfoFooterWithCtx(anyctx interface{}) *MessageInfoFooter {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoFooterCopy(anyctx interface{}) *MessageInfoFooter {
-	ctx, ok := anyctx.(*C.vscf_message_info_footer_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfoFooter."}
-	}
+func NewMessageInfoFooterCopy(pointer unsafe.Pointer) *MessageInfoFooter {
+	ctx := (*C.vscf_message_info_footer_t /*ct2*/)(pointer)
 	obj := &MessageInfoFooter{
 		cCtx: C.vscf_message_info_footer_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *MessageInfoFooter) SignerInfos() *SignerInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewSignerInfoListCopy(proxyResult) /* r5 */
+	return NewSignerInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

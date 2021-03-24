@@ -51,11 +51,8 @@ func NewEccAlgInfo() *EccAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEccAlgInfoWithCtx(anyctx interface{}) *EccAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_ecc_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct EccAlgInfo."}
-	}
+func NewEccAlgInfoWithCtx(pointer unsafe.Pointer) *EccAlgInfo {
+	ctx := (*C.vscf_ecc_alg_info_t /*ct10*/)(pointer)
 	obj := &EccAlgInfo{
 		cCtx: ctx,
 	}
@@ -66,11 +63,8 @@ func NewEccAlgInfoWithCtx(anyctx interface{}) *EccAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEccAlgInfoCopy(anyctx interface{}) *EccAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_ecc_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct EccAlgInfo."}
-	}
+func NewEccAlgInfoCopy(pointer unsafe.Pointer) *EccAlgInfo {
+	ctx := (*C.vscf_ecc_alg_info_t /*ct10*/)(pointer)
 	obj := &EccAlgInfo{
 		cCtx: C.vscf_ecc_alg_info_shallow_copy(ctx),
 	}

@@ -33,11 +33,8 @@ func NewKeyHandler() *KeyHandler {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyHandlerWithCtx(anyctx interface{}) *KeyHandler {
-	ctx, ok := anyctx.(*C.vssc_key_handler_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct KeyHandler."}
-	}
+func NewKeyHandlerWithCtx(pointer unsafe.Pointer) *KeyHandler {
+	ctx := (*C.vssc_key_handler_t /*ct2*/)(pointer)
 	obj := &KeyHandler{
 		cCtx: ctx,
 	}
@@ -48,11 +45,8 @@ func NewKeyHandlerWithCtx(anyctx interface{}) *KeyHandler {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyHandlerCopy(anyctx interface{}) *KeyHandler {
-	ctx, ok := anyctx.(*C.vssc_key_handler_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct KeyHandler."}
-	}
+func NewKeyHandlerCopy(pointer unsafe.Pointer) *KeyHandler {
+	ctx := (*C.vssc_key_handler_t /*ct2*/)(pointer)
 	obj := &KeyHandler{
 		cCtx: C.vssc_key_handler_shallow_copy(ctx),
 	}

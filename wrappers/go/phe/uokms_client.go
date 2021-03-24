@@ -30,11 +30,8 @@ func NewUokmsClient() *UokmsClient {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewUokmsClientWithCtx(anyctx interface{}) *UokmsClient {
-	ctx, ok := anyctx.(*C.vsce_uokms_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct UokmsClient."}
-	}
+func NewUokmsClientWithCtx(pointer unsafe.Pointer) *UokmsClient {
+	ctx := (*C.vsce_uokms_client_t /*ct2*/)(pointer)
 	obj := &UokmsClient{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewUokmsClientWithCtx(anyctx interface{}) *UokmsClient {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewUokmsClientCopy(anyctx interface{}) *UokmsClient {
-	ctx, ok := anyctx.(*C.vsce_uokms_client_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct UokmsClient."}
-	}
+func NewUokmsClientCopy(pointer unsafe.Pointer) *UokmsClient {
+	ctx := (*C.vsce_uokms_client_t /*ct2*/)(pointer)
 	obj := &UokmsClient{
 		cCtx: C.vsce_uokms_client_shallow_copy(ctx),
 	}

@@ -56,11 +56,8 @@ func NewMessageInfoDerSerializer() *MessageInfoDerSerializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoDerSerializerWithCtx(anyctx interface{}) *MessageInfoDerSerializer {
-	ctx, ok := anyctx.(*C.vscf_message_info_der_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfoDerSerializer."}
-	}
+func NewMessageInfoDerSerializerWithCtx(pointer unsafe.Pointer) *MessageInfoDerSerializer {
+	ctx := (*C.vscf_message_info_der_serializer_t /*ct10*/)(pointer)
 	obj := &MessageInfoDerSerializer{
 		cCtx: ctx,
 	}
@@ -71,11 +68,8 @@ func NewMessageInfoDerSerializerWithCtx(anyctx interface{}) *MessageInfoDerSeria
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessageInfoDerSerializerCopy(anyctx interface{}) *MessageInfoDerSerializer {
-	ctx, ok := anyctx.(*C.vscf_message_info_der_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct MessageInfoDerSerializer."}
-	}
+func NewMessageInfoDerSerializerCopy(pointer unsafe.Pointer) *MessageInfoDerSerializer {
+	ctx := (*C.vscf_message_info_der_serializer_t /*ct10*/)(pointer)
 	obj := &MessageInfoDerSerializer{
 		cCtx: C.vscf_message_info_der_serializer_shallow_copy(ctx),
 	}
@@ -171,7 +165,7 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 
 	runtime.KeepAlive(obj)
 
-	return NewMessageInfoWithCtx(proxyResult) /* r6 */, nil
+	return NewMessageInfoWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -223,5 +217,5 @@ func (obj *MessageInfoDerSerializer) DeserializeFooter(data []byte) (*MessageInf
 
 	runtime.KeepAlive(obj)
 
-	return NewMessageInfoFooterWithCtx(proxyResult) /* r6 */, nil
+	return NewMessageInfoFooterWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

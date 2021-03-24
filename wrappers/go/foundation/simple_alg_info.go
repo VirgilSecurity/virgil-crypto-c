@@ -29,11 +29,8 @@ func NewSimpleAlgInfo() *SimpleAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSimpleAlgInfoWithCtx(anyctx interface{}) *SimpleAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_simple_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SimpleAlgInfo."}
-	}
+func NewSimpleAlgInfoWithCtx(pointer unsafe.Pointer) *SimpleAlgInfo {
+	ctx := (*C.vscf_simple_alg_info_t /*ct10*/)(pointer)
 	obj := &SimpleAlgInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSimpleAlgInfoWithCtx(anyctx interface{}) *SimpleAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSimpleAlgInfoCopy(anyctx interface{}) *SimpleAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_simple_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SimpleAlgInfo."}
-	}
+func NewSimpleAlgInfoCopy(pointer unsafe.Pointer) *SimpleAlgInfo {
+	ctx := (*C.vscf_simple_alg_info_t /*ct10*/)(pointer)
 	obj := &SimpleAlgInfo{
 		cCtx: C.vscf_simple_alg_info_shallow_copy(ctx),
 	}

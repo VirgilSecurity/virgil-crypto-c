@@ -74,11 +74,8 @@ func NewRound5() *Round5 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRound5WithCtx(anyctx interface{}) *Round5 {
-	ctx, ok := anyctx.(*C.vscf_round5_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Round5."}
-	}
+func NewRound5WithCtx(pointer unsafe.Pointer) *Round5 {
+	ctx := (*C.vscf_round5_t /*ct10*/)(pointer)
 	obj := &Round5{
 		cCtx: ctx,
 	}
@@ -89,11 +86,8 @@ func NewRound5WithCtx(anyctx interface{}) *Round5 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRound5Copy(anyctx interface{}) *Round5 {
-	ctx, ok := anyctx.(*C.vscf_round5_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Round5."}
-	}
+func NewRound5Copy(pointer unsafe.Pointer) *Round5 {
+	ctx := (*C.vscf_round5_t /*ct10*/)(pointer)
 	obj := &Round5{
 		cCtx: C.vscf_round5_shallow_copy(ctx),
 	}
@@ -219,7 +213,7 @@ func (obj *Round5) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -272,7 +266,7 @@ func (obj *Round5) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

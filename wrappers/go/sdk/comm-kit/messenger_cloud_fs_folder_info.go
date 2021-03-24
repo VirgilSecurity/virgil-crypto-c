@@ -29,11 +29,8 @@ func NewMessengerCloudFsFolderInfo() *MessengerCloudFsFolderInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsFolderInfoWithCtx(anyctx interface{}) *MessengerCloudFsFolderInfo {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_folder_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsFolderInfo."}
-	}
+func NewMessengerCloudFsFolderInfoWithCtx(pointer unsafe.Pointer) *MessengerCloudFsFolderInfo {
+	ctx := (*C.vssq_messenger_cloud_fs_folder_info_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsFolderInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerCloudFsFolderInfoWithCtx(anyctx interface{}) *MessengerCloudFsF
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsFolderInfoCopy(anyctx interface{}) *MessengerCloudFsFolderInfo {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_folder_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsFolderInfo."}
-	}
+func NewMessengerCloudFsFolderInfoCopy(pointer unsafe.Pointer) *MessengerCloudFsFolderInfo {
+	ctx := (*C.vssq_messenger_cloud_fs_folder_info_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsFolderInfo{
 		cCtx: C.vssq_messenger_cloud_fs_folder_info_shallow_copy(ctx),
 	}

@@ -31,11 +31,8 @@ func NewAes256Gcm() *Aes256Gcm {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAes256GcmWithCtx(anyctx interface{}) *Aes256Gcm {
-	ctx, ok := anyctx.(*C.vscf_aes256_gcm_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Aes256Gcm."}
-	}
+func NewAes256GcmWithCtx(pointer unsafe.Pointer) *Aes256Gcm {
+	ctx := (*C.vscf_aes256_gcm_t /*ct10*/)(pointer)
 	obj := &Aes256Gcm{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewAes256GcmWithCtx(anyctx interface{}) *Aes256Gcm {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAes256GcmCopy(anyctx interface{}) *Aes256Gcm {
-	ctx, ok := anyctx.(*C.vscf_aes256_gcm_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Aes256Gcm."}
-	}
+func NewAes256GcmCopy(pointer unsafe.Pointer) *Aes256Gcm {
+	ctx := (*C.vscf_aes256_gcm_t /*ct10*/)(pointer)
 	obj := &Aes256Gcm{
 		cCtx: C.vscf_aes256_gcm_shallow_copy(ctx),
 	}

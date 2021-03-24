@@ -29,11 +29,8 @@ func NewKeyRecipientInfo() *KeyRecipientInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyRecipientInfoWithCtx(anyctx interface{}) *KeyRecipientInfo {
-	ctx, ok := anyctx.(*C.vscf_key_recipient_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyRecipientInfo."}
-	}
+func NewKeyRecipientInfoWithCtx(pointer unsafe.Pointer) *KeyRecipientInfo {
+	ctx := (*C.vscf_key_recipient_info_t /*ct2*/)(pointer)
 	obj := &KeyRecipientInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewKeyRecipientInfoWithCtx(anyctx interface{}) *KeyRecipientInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyRecipientInfoCopy(anyctx interface{}) *KeyRecipientInfo {
-	ctx, ok := anyctx.(*C.vscf_key_recipient_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyRecipientInfo."}
-	}
+func NewKeyRecipientInfoCopy(pointer unsafe.Pointer) *KeyRecipientInfo {
+	ctx := (*C.vscf_key_recipient_info_t /*ct2*/)(pointer)
 	obj := &KeyRecipientInfo{
 		cCtx: C.vscf_key_recipient_info_shallow_copy(ctx),
 	}

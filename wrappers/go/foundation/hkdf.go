@@ -37,11 +37,8 @@ func NewHkdf() *Hkdf {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHkdfWithCtx(anyctx interface{}) *Hkdf {
-	ctx, ok := anyctx.(*C.vscf_hkdf_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Hkdf."}
-	}
+func NewHkdfWithCtx(pointer unsafe.Pointer) *Hkdf {
+	ctx := (*C.vscf_hkdf_t /*ct10*/)(pointer)
 	obj := &Hkdf{
 		cCtx: ctx,
 	}
@@ -52,11 +49,8 @@ func NewHkdfWithCtx(anyctx interface{}) *Hkdf {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHkdfCopy(anyctx interface{}) *Hkdf {
-	ctx, ok := anyctx.(*C.vscf_hkdf_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Hkdf."}
-	}
+func NewHkdfCopy(pointer unsafe.Pointer) *Hkdf {
+	ctx := (*C.vscf_hkdf_t /*ct10*/)(pointer)
 	obj := &Hkdf{
 		cCtx: C.vscf_hkdf_shallow_copy(ctx),
 	}

@@ -53,11 +53,8 @@ func NewHybridPrivateKey() *HybridPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHybridPrivateKeyWithCtx(anyctx interface{}) *HybridPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_hybrid_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HybridPrivateKey."}
-	}
+func NewHybridPrivateKeyWithCtx(pointer unsafe.Pointer) *HybridPrivateKey {
+	ctx := (*C.vscf_hybrid_private_key_t /*ct10*/)(pointer)
 	obj := &HybridPrivateKey{
 		cCtx: ctx,
 	}
@@ -68,11 +65,8 @@ func NewHybridPrivateKeyWithCtx(anyctx interface{}) *HybridPrivateKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHybridPrivateKeyCopy(anyctx interface{}) *HybridPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_hybrid_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct HybridPrivateKey."}
-	}
+func NewHybridPrivateKeyCopy(pointer unsafe.Pointer) *HybridPrivateKey {
+	ctx := (*C.vscf_hybrid_private_key_t /*ct10*/)(pointer)
 	obj := &HybridPrivateKey{
 		cCtx: C.vscf_hybrid_private_key_shallow_copy(ctx),
 	}

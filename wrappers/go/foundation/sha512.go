@@ -29,11 +29,8 @@ func NewSha512() *Sha512 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSha512WithCtx(anyctx interface{}) *Sha512 {
-	ctx, ok := anyctx.(*C.vscf_sha512_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sha512."}
-	}
+func NewSha512WithCtx(pointer unsafe.Pointer) *Sha512 {
+	ctx := (*C.vscf_sha512_t /*ct10*/)(pointer)
 	obj := &Sha512{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSha512WithCtx(anyctx interface{}) *Sha512 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSha512Copy(anyctx interface{}) *Sha512 {
-	ctx, ok := anyctx.(*C.vscf_sha512_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sha512."}
-	}
+func NewSha512Copy(pointer unsafe.Pointer) *Sha512 {
+	ctx := (*C.vscf_sha512_t /*ct10*/)(pointer)
 	obj := &Sha512{
 		cCtx: C.vscf_sha512_shallow_copy(ctx),
 	}

@@ -29,11 +29,8 @@ func NewRawCard() *RawCard {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardWithCtx(anyctx interface{}) *RawCard {
-	ctx, ok := anyctx.(*C.vssc_raw_card_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCard."}
-	}
+func NewRawCardWithCtx(pointer unsafe.Pointer) *RawCard {
+	ctx := (*C.vssc_raw_card_t /*ct2*/)(pointer)
 	obj := &RawCard{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewRawCardWithCtx(anyctx interface{}) *RawCard {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardCopy(anyctx interface{}) *RawCard {
-	ctx, ok := anyctx.(*C.vssc_raw_card_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCard."}
-	}
+func NewRawCardCopy(pointer unsafe.Pointer) *RawCard {
+	ctx := (*C.vssc_raw_card_t /*ct2*/)(pointer)
 	obj := &RawCard{
 		cCtx: C.vssc_raw_card_shallow_copy(ctx),
 	}
@@ -110,7 +104,29 @@ func RawCardImportFromJson(json *JsonObject) (*RawCard, error) {
 
 	runtime.KeepAlive(json)
 
-	return NewRawCardWithCtx(proxyResult) /* r6 */, nil
+	return NewRawCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+}
+
+/*
+* Create raw card from JSON string representation.
+ */
+func RawCardImportFromJsonStr(str string) (*RawCard, error) {
+	var error C.vssc_error_t
+	C.vssc_error_reset(&error)
+	strChar := C.CString(str)
+	defer C.free(unsafe.Pointer(strChar))
+	strStr := C.vsc_str_from_str(strChar)
+
+	proxyResult := /*pr4*/ C.vssc_raw_card_import_from_json_str(strStr, &error)
+
+	err := CoreSdkErrorHandleStatus(error.status)
+	if err != nil {
+		return nil, err
+	}
+
+	runtime.KeepAlive(str)
+
+	return NewRawCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -121,7 +137,7 @@ func (obj *RawCard) ExportAsJson() *JsonObject {
 
 	runtime.KeepAlive(obj)
 
-	return NewJsonObjectWithCtx(proxyResult) /* r6 */
+	return NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }
 
 /*
@@ -273,7 +289,7 @@ func (obj *RawCard) Signatures() *RawCardSignatureList {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardSignatureListCopy(proxyResult) /* r5 */
+	return NewRawCardSignatureListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

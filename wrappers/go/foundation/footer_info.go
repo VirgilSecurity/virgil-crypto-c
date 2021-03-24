@@ -29,11 +29,8 @@ func NewFooterInfo() *FooterInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewFooterInfoWithCtx(anyctx interface{}) *FooterInfo {
-	ctx, ok := anyctx.(*C.vscf_footer_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct FooterInfo."}
-	}
+func NewFooterInfoWithCtx(pointer unsafe.Pointer) *FooterInfo {
+	ctx := (*C.vscf_footer_info_t /*ct2*/)(pointer)
 	obj := &FooterInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewFooterInfoWithCtx(anyctx interface{}) *FooterInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewFooterInfoCopy(anyctx interface{}) *FooterInfo {
-	ctx, ok := anyctx.(*C.vscf_footer_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct FooterInfo."}
-	}
+func NewFooterInfoCopy(pointer unsafe.Pointer) *FooterInfo {
+	ctx := (*C.vscf_footer_info_t /*ct2*/)(pointer)
 	obj := &FooterInfo{
 		cCtx: C.vscf_footer_info_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *FooterInfo) SignedDataInfo() *SignedDataInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewSignedDataInfoCopy(proxyResult) /* r5 */
+	return NewSignedDataInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

@@ -37,11 +37,8 @@ func NewHmac() *Hmac {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHmacWithCtx(anyctx interface{}) *Hmac {
-	ctx, ok := anyctx.(*C.vscf_hmac_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Hmac."}
-	}
+func NewHmacWithCtx(pointer unsafe.Pointer) *Hmac {
+	ctx := (*C.vscf_hmac_t /*ct10*/)(pointer)
 	obj := &Hmac{
 		cCtx: ctx,
 	}
@@ -52,11 +49,8 @@ func NewHmacWithCtx(anyctx interface{}) *Hmac {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHmacCopy(anyctx interface{}) *Hmac {
-	ctx, ok := anyctx.(*C.vscf_hmac_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Hmac."}
-	}
+func NewHmacCopy(pointer unsafe.Pointer) *Hmac {
+	ctx := (*C.vscf_hmac_t /*ct10*/)(pointer)
 	obj := &Hmac{
 		cCtx: C.vscf_hmac_shallow_copy(ctx),
 	}

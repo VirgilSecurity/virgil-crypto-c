@@ -31,11 +31,8 @@ func NewMessengerUser() *MessengerUser {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerUserWithCtx(anyctx interface{}) *MessengerUser {
-	ctx, ok := anyctx.(*C.vssq_messenger_user_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerUser."}
-	}
+func NewMessengerUserWithCtx(pointer unsafe.Pointer) *MessengerUser {
+	ctx := (*C.vssq_messenger_user_t /*ct2*/)(pointer)
 	obj := &MessengerUser{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewMessengerUserWithCtx(anyctx interface{}) *MessengerUser {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerUserCopy(anyctx interface{}) *MessengerUser {
-	ctx, ok := anyctx.(*C.vssq_messenger_user_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerUser."}
-	}
+func NewMessengerUserCopy(pointer unsafe.Pointer) *MessengerUser {
+	ctx := (*C.vssq_messenger_user_t /*ct2*/)(pointer)
 	obj := &MessengerUser{
 		cCtx: C.vssq_messenger_user_shallow_copy(ctx),
 	}
@@ -99,7 +93,7 @@ func (obj *MessengerUser) Card() *sdk_core.Card {
 
 	runtime.KeepAlive(obj)
 
-	return sdk_core.NewCardCopy(proxyResult) /* r5 */
+	return sdk_core.NewCardCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -250,4 +244,68 @@ func (obj *MessengerUser) SetEmail(email string) {
 	runtime.KeepAlive(email)
 
 	return
+}
+
+/*
+* Return user as JSON object.
+ */
+func (obj *MessengerUser) ToJson() (*sdk_core.JsonObject, error) {
+	var error C.vssq_error_t
+	C.vssq_error_reset(&error)
+
+	proxyResult := /*pr4*/ C.vssq_messenger_user_to_json(obj.cCtx, &error)
+
+	err := CommKitErrorHandleStatus(error.status)
+	if err != nil {
+		return nil, err
+	}
+
+	runtime.KeepAlive(obj)
+
+	return sdk_core.NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+}
+
+/*
+* Parse user from JSON.
+ */
+func MessengerUserFromJson(jsonObj *sdk_core.JsonObject, random foundation.Random) (*MessengerUser, error) {
+	var error C.vssq_error_t
+	C.vssq_error_reset(&error)
+
+	proxyResult := /*pr4*/ C.vssq_messenger_user_from_json((*C.vssc_json_object_t)(unsafe.Pointer(jsonObj.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())), &error)
+
+	err := CommKitErrorHandleStatus(error.status)
+	if err != nil {
+		return nil, err
+	}
+
+	runtime.KeepAlive(jsonObj)
+
+	runtime.KeepAlive(random)
+
+	return NewMessengerUserWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+}
+
+/*
+* Parse user from JSON string.
+ */
+func MessengerUserFromJsonStr(jsonStr string, random foundation.Random) (*MessengerUser, error) {
+	var error C.vssq_error_t
+	C.vssq_error_reset(&error)
+	jsonStrChar := C.CString(jsonStr)
+	defer C.free(unsafe.Pointer(jsonStrChar))
+	jsonStrStr := C.vsc_str_from_str(jsonStrChar)
+
+	proxyResult := /*pr4*/ C.vssq_messenger_user_from_json_str(jsonStrStr, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())), &error)
+
+	err := CommKitErrorHandleStatus(error.status)
+	if err != nil {
+		return nil, err
+	}
+
+	runtime.KeepAlive(jsonStr)
+
+	runtime.KeepAlive(random)
+
+	return NewMessengerUserWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

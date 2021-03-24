@@ -32,11 +32,8 @@ func NewCard() *Card {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCardWithCtx(anyctx interface{}) *Card {
-	ctx, ok := anyctx.(*C.vssc_card_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct Card."}
-	}
+func NewCardWithCtx(pointer unsafe.Pointer) *Card {
+	ctx := (*C.vssc_card_t /*ct2*/)(pointer)
 	obj := &Card{
 		cCtx: ctx,
 	}
@@ -47,11 +44,8 @@ func NewCardWithCtx(anyctx interface{}) *Card {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCardCopy(anyctx interface{}) *Card {
-	ctx, ok := anyctx.(*C.vssc_card_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct Card."}
-	}
+func NewCardCopy(pointer unsafe.Pointer) *Card {
+	ctx := (*C.vssc_card_t /*ct2*/)(pointer)
 	obj := &Card{
 		cCtx: C.vssc_card_shallow_copy(ctx),
 	}
@@ -227,7 +221,7 @@ func (obj *Card) PreviousCard() *Card {
 
 	runtime.KeepAlive(obj)
 
-	return NewCardCopy(proxyResult) /* r5 */
+	return NewCardCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -238,7 +232,7 @@ func (obj *Card) Signatures() *RawCardSignatureList {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardSignatureListCopy(proxyResult) /* r5 */
+	return NewRawCardSignatureListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -249,5 +243,5 @@ func (obj *Card) GetRawCard() *RawCard {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardCopy(proxyResult) /* r5 */
+	return NewRawCardCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }

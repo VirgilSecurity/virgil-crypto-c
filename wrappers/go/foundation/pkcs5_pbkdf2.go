@@ -48,11 +48,8 @@ func NewPkcs5Pbkdf2() *Pkcs5Pbkdf2 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPkcs5Pbkdf2WithCtx(anyctx interface{}) *Pkcs5Pbkdf2 {
-	ctx, ok := anyctx.(*C.vscf_pkcs5_pbkdf2_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Pkcs5Pbkdf2."}
-	}
+func NewPkcs5Pbkdf2WithCtx(pointer unsafe.Pointer) *Pkcs5Pbkdf2 {
+	ctx := (*C.vscf_pkcs5_pbkdf2_t /*ct10*/)(pointer)
 	obj := &Pkcs5Pbkdf2{
 		cCtx: ctx,
 	}
@@ -63,11 +60,8 @@ func NewPkcs5Pbkdf2WithCtx(anyctx interface{}) *Pkcs5Pbkdf2 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPkcs5Pbkdf2Copy(anyctx interface{}) *Pkcs5Pbkdf2 {
-	ctx, ok := anyctx.(*C.vscf_pkcs5_pbkdf2_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Pkcs5Pbkdf2."}
-	}
+func NewPkcs5Pbkdf2Copy(pointer unsafe.Pointer) *Pkcs5Pbkdf2 {
+	ctx := (*C.vscf_pkcs5_pbkdf2_t /*ct10*/)(pointer)
 	obj := &Pkcs5Pbkdf2{
 		cCtx: C.vscf_pkcs5_pbkdf2_shallow_copy(ctx),
 	}

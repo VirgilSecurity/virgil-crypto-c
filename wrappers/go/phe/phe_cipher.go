@@ -31,11 +31,8 @@ func NewPheCipher() *PheCipher {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPheCipherWithCtx(anyctx interface{}) *PheCipher {
-	ctx, ok := anyctx.(*C.vsce_phe_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct PheCipher."}
-	}
+func NewPheCipherWithCtx(pointer unsafe.Pointer) *PheCipher {
+	ctx := (*C.vsce_phe_cipher_t /*ct2*/)(pointer)
 	obj := &PheCipher{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewPheCipherWithCtx(anyctx interface{}) *PheCipher {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPheCipherCopy(anyctx interface{}) *PheCipher {
-	ctx, ok := anyctx.(*C.vsce_phe_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct PheCipher."}
-	}
+func NewPheCipherCopy(pointer unsafe.Pointer) *PheCipher {
+	ctx := (*C.vsce_phe_cipher_t /*ct2*/)(pointer)
 	obj := &PheCipher{
 		cCtx: C.vsce_phe_cipher_shallow_copy(ctx),
 	}

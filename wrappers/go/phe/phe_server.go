@@ -31,11 +31,8 @@ func NewPheServer() *PheServer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPheServerWithCtx(anyctx interface{}) *PheServer {
-	ctx, ok := anyctx.(*C.vsce_phe_server_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct PheServer."}
-	}
+func NewPheServerWithCtx(pointer unsafe.Pointer) *PheServer {
+	ctx := (*C.vsce_phe_server_t /*ct2*/)(pointer)
 	obj := &PheServer{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewPheServerWithCtx(anyctx interface{}) *PheServer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPheServerCopy(anyctx interface{}) *PheServer {
-	ctx, ok := anyctx.(*C.vsce_phe_server_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &PheError{-1,"Cast error for struct PheServer."}
-	}
+func NewPheServerCopy(pointer unsafe.Pointer) *PheServer {
+	ctx := (*C.vsce_phe_server_t /*ct2*/)(pointer)
 	obj := &PheServer{
 		cCtx: C.vsce_phe_server_shallow_copy(ctx),
 	}

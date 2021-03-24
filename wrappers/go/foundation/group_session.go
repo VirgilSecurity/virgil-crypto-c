@@ -48,11 +48,8 @@ func NewGroupSession() *GroupSession {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewGroupSessionWithCtx(anyctx interface{}) *GroupSession {
-	ctx, ok := anyctx.(*C.vscf_group_session_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct GroupSession."}
-	}
+func NewGroupSessionWithCtx(pointer unsafe.Pointer) *GroupSession {
+	ctx := (*C.vscf_group_session_t /*ct2*/)(pointer)
 	obj := &GroupSession{
 		cCtx: ctx,
 	}
@@ -63,11 +60,8 @@ func NewGroupSessionWithCtx(anyctx interface{}) *GroupSession {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewGroupSessionCopy(anyctx interface{}) *GroupSession {
-	ctx, ok := anyctx.(*C.vscf_group_session_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct GroupSession."}
-	}
+func NewGroupSessionCopy(pointer unsafe.Pointer) *GroupSession {
+	ctx := (*C.vscf_group_session_t /*ct2*/)(pointer)
 	obj := &GroupSession{
 		cCtx: C.vscf_group_session_shallow_copy(ctx),
 	}
@@ -178,7 +172,7 @@ func (obj *GroupSession) Encrypt(plainText []byte, privateKey PrivateKey) (*Grou
 
 	runtime.KeepAlive(privateKey)
 
-	return NewGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
+	return NewGroupSessionMessageWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -236,5 +230,5 @@ func (obj *GroupSession) CreateGroupTicket() (*GroupSessionTicket, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewGroupSessionTicketWithCtx(proxyResult) /* r6 */, nil
+	return NewGroupSessionTicketWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

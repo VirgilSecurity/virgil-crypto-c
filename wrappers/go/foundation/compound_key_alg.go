@@ -81,11 +81,8 @@ func NewCompoundKeyAlg() *CompoundKeyAlg {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundKeyAlgWithCtx(anyctx interface{}) *CompoundKeyAlg {
-	ctx, ok := anyctx.(*C.vscf_compound_key_alg_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundKeyAlg."}
-	}
+func NewCompoundKeyAlgWithCtx(pointer unsafe.Pointer) *CompoundKeyAlg {
+	ctx := (*C.vscf_compound_key_alg_t /*ct10*/)(pointer)
 	obj := &CompoundKeyAlg{
 		cCtx: ctx,
 	}
@@ -96,11 +93,8 @@ func NewCompoundKeyAlgWithCtx(anyctx interface{}) *CompoundKeyAlg {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCompoundKeyAlgCopy(anyctx interface{}) *CompoundKeyAlg {
-	ctx, ok := anyctx.(*C.vscf_compound_key_alg_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct CompoundKeyAlg."}
-	}
+func NewCompoundKeyAlgCopy(pointer unsafe.Pointer) *CompoundKeyAlg {
+	ctx := (*C.vscf_compound_key_alg_t /*ct10*/)(pointer)
 	obj := &CompoundKeyAlg{
 		cCtx: C.vscf_compound_key_alg_shallow_copy(ctx),
 	}
@@ -266,7 +260,7 @@ func (obj *CompoundKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, 
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -319,7 +313,7 @@ func (obj *CompoundKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateK
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

@@ -29,11 +29,8 @@ func NewHttpHeader() *HttpHeader {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHttpHeaderWithCtx(anyctx interface{}) *HttpHeader {
-	ctx, ok := anyctx.(*C.vssc_http_header_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct HttpHeader."}
-	}
+func NewHttpHeaderWithCtx(pointer unsafe.Pointer) *HttpHeader {
+	ctx := (*C.vssc_http_header_t /*ct2*/)(pointer)
 	obj := &HttpHeader{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewHttpHeaderWithCtx(anyctx interface{}) *HttpHeader {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHttpHeaderCopy(anyctx interface{}) *HttpHeader {
-	ctx, ok := anyctx.(*C.vssc_http_header_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct HttpHeader."}
-	}
+func NewHttpHeaderCopy(pointer unsafe.Pointer) *HttpHeader {
+	ctx := (*C.vssc_http_header_t /*ct2*/)(pointer)
 	obj := &HttpHeader{
 		cCtx: C.vssc_http_header_shallow_copy(ctx),
 	}

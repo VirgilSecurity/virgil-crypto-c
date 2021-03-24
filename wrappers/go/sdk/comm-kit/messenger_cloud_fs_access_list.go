@@ -29,11 +29,8 @@ func NewMessengerCloudFsAccessList() *MessengerCloudFsAccessList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsAccessListWithCtx(anyctx interface{}) *MessengerCloudFsAccessList {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsAccessList."}
-	}
+func NewMessengerCloudFsAccessListWithCtx(pointer unsafe.Pointer) *MessengerCloudFsAccessList {
+	ctx := (*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsAccessList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerCloudFsAccessListWithCtx(anyctx interface{}) *MessengerCloudFsA
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsAccessListCopy(anyctx interface{}) *MessengerCloudFsAccessList {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsAccessList."}
-	}
+func NewMessengerCloudFsAccessListCopy(pointer unsafe.Pointer) *MessengerCloudFsAccessList {
+	ctx := (*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsAccessList{
 		cCtx: C.vssq_messenger_cloud_fs_access_list_shallow_copy(ctx),
 	}
@@ -150,7 +144,7 @@ func (obj *MessengerCloudFsAccessList) Item() *MessengerCloudFsAccess {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsAccessCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -172,7 +166,7 @@ func (obj *MessengerCloudFsAccessList) Next() *MessengerCloudFsAccessList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessListCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -194,7 +188,7 @@ func (obj *MessengerCloudFsAccessList) Prev() *MessengerCloudFsAccessList {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessListCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -229,5 +223,5 @@ func (obj *MessengerCloudFsAccessList) FindWithIdentity(userIdentity string) (*M
 
 	runtime.KeepAlive(userIdentity)
 
-	return NewMessengerCloudFsAccessCopy(proxyResult) /* r5 */, nil
+	return NewMessengerCloudFsAccessCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }

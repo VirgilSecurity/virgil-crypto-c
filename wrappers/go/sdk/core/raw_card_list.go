@@ -29,11 +29,8 @@ func NewRawCardList() *RawCardList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardListWithCtx(anyctx interface{}) *RawCardList {
-	ctx, ok := anyctx.(*C.vssc_raw_card_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardList."}
-	}
+func NewRawCardListWithCtx(pointer unsafe.Pointer) *RawCardList {
+	ctx := (*C.vssc_raw_card_list_t /*ct2*/)(pointer)
 	obj := &RawCardList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewRawCardListWithCtx(anyctx interface{}) *RawCardList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardListCopy(anyctx interface{}) *RawCardList {
-	ctx, ok := anyctx.(*C.vssc_raw_card_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardList."}
-	}
+func NewRawCardListCopy(pointer unsafe.Pointer) *RawCardList {
+	ctx := (*C.vssc_raw_card_list_t /*ct2*/)(pointer)
 	obj := &RawCardList{
 		cCtx: C.vssc_raw_card_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *RawCardList) Item() *RawCard {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardCopy(proxyResult) /* r5 */
+	return NewRawCardCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *RawCardList) Next() *RawCardList {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardListCopy(proxyResult) /* r5 */
+	return NewRawCardListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *RawCardList) Prev() *RawCardList {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardListCopy(proxyResult) /* r5 */
+	return NewRawCardListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

@@ -63,11 +63,8 @@ func NewAlgInfoDerSerializer() *AlgInfoDerSerializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAlgInfoDerSerializerWithCtx(anyctx interface{}) *AlgInfoDerSerializer {
-	ctx, ok := anyctx.(*C.vscf_alg_info_der_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct AlgInfoDerSerializer."}
-	}
+func NewAlgInfoDerSerializerWithCtx(pointer unsafe.Pointer) *AlgInfoDerSerializer {
+	ctx := (*C.vscf_alg_info_der_serializer_t /*ct10*/)(pointer)
 	obj := &AlgInfoDerSerializer{
 		cCtx: ctx,
 	}
@@ -78,11 +75,8 @@ func NewAlgInfoDerSerializerWithCtx(anyctx interface{}) *AlgInfoDerSerializer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewAlgInfoDerSerializerCopy(anyctx interface{}) *AlgInfoDerSerializer {
-	ctx, ok := anyctx.(*C.vscf_alg_info_der_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct AlgInfoDerSerializer."}
-	}
+func NewAlgInfoDerSerializerCopy(pointer unsafe.Pointer) *AlgInfoDerSerializer {
+	ctx := (*C.vscf_alg_info_der_serializer_t /*ct10*/)(pointer)
 	obj := &AlgInfoDerSerializer{
 		cCtx: C.vscf_alg_info_der_serializer_shallow_copy(ctx),
 	}

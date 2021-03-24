@@ -63,11 +63,8 @@ func NewSaltedKdfAlgInfo() *SaltedKdfAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSaltedKdfAlgInfoWithCtx(anyctx interface{}) *SaltedKdfAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_salted_kdf_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SaltedKdfAlgInfo."}
-	}
+func NewSaltedKdfAlgInfoWithCtx(pointer unsafe.Pointer) *SaltedKdfAlgInfo {
+	ctx := (*C.vscf_salted_kdf_alg_info_t /*ct10*/)(pointer)
 	obj := &SaltedKdfAlgInfo{
 		cCtx: ctx,
 	}
@@ -78,11 +75,8 @@ func NewSaltedKdfAlgInfoWithCtx(anyctx interface{}) *SaltedKdfAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSaltedKdfAlgInfoCopy(anyctx interface{}) *SaltedKdfAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_salted_kdf_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SaltedKdfAlgInfo."}
-	}
+func NewSaltedKdfAlgInfoCopy(pointer unsafe.Pointer) *SaltedKdfAlgInfo {
+	ctx := (*C.vscf_salted_kdf_alg_info_t /*ct10*/)(pointer)
 	obj := &SaltedKdfAlgInfo{
 		cCtx: C.vscf_salted_kdf_alg_info_shallow_copy(ctx),
 	}

@@ -29,11 +29,8 @@ func NewSignedDataInfo() *SignedDataInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSignedDataInfoWithCtx(anyctx interface{}) *SignedDataInfo {
-	ctx, ok := anyctx.(*C.vscf_signed_data_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SignedDataInfo."}
-	}
+func NewSignedDataInfoWithCtx(pointer unsafe.Pointer) *SignedDataInfo {
+	ctx := (*C.vscf_signed_data_info_t /*ct2*/)(pointer)
 	obj := &SignedDataInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSignedDataInfoWithCtx(anyctx interface{}) *SignedDataInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSignedDataInfoCopy(anyctx interface{}) *SignedDataInfo {
-	ctx, ok := anyctx.(*C.vscf_signed_data_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SignedDataInfo."}
-	}
+func NewSignedDataInfoCopy(pointer unsafe.Pointer) *SignedDataInfo {
+	ctx := (*C.vscf_signed_data_info_t /*ct2*/)(pointer)
 	obj := &SignedDataInfo{
 		cCtx: C.vscf_signed_data_info_shallow_copy(ctx),
 	}

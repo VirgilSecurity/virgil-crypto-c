@@ -49,7 +49,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace() (*RawPublicKey, er
 
 	runtime.KeepAlive(obj)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -70,7 +70,7 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, 
 
 	runtime.KeepAlive(obj)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /* Handle underlying C context. */
@@ -90,11 +90,8 @@ func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyAsn1DeserializerWithCtx(anyctx interface{}) *KeyAsn1Deserializer {
-	ctx, ok := anyctx.(*C.vscf_key_asn1_deserializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyAsn1Deserializer."}
-	}
+func NewKeyAsn1DeserializerWithCtx(pointer unsafe.Pointer) *KeyAsn1Deserializer {
+	ctx := (*C.vscf_key_asn1_deserializer_t /*ct10*/)(pointer)
 	obj := &KeyAsn1Deserializer{
 		cCtx: ctx,
 	}
@@ -105,11 +102,8 @@ func NewKeyAsn1DeserializerWithCtx(anyctx interface{}) *KeyAsn1Deserializer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyAsn1DeserializerCopy(anyctx interface{}) *KeyAsn1Deserializer {
-	ctx, ok := anyctx.(*C.vscf_key_asn1_deserializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyAsn1Deserializer."}
-	}
+func NewKeyAsn1DeserializerCopy(pointer unsafe.Pointer) *KeyAsn1Deserializer {
+	ctx := (*C.vscf_key_asn1_deserializer_t /*ct10*/)(pointer)
 	obj := &KeyAsn1Deserializer{
 		cCtx: C.vscf_key_asn1_deserializer_shallow_copy(ctx),
 	}
@@ -152,7 +146,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*Raw
 
 	runtime.KeepAlive(obj)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -172,5 +166,5 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKey(privateKeyData []byte) (*R
 
 	runtime.KeepAlive(obj)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

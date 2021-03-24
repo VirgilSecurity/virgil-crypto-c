@@ -54,11 +54,8 @@ func NewFakeRandom() *FakeRandom {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewFakeRandomWithCtx(anyctx interface{}) *FakeRandom {
-	ctx, ok := anyctx.(*C.vscf_fake_random_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct FakeRandom."}
-	}
+func NewFakeRandomWithCtx(pointer unsafe.Pointer) *FakeRandom {
+	ctx := (*C.vscf_fake_random_t /*ct10*/)(pointer)
 	obj := &FakeRandom{
 		cCtx: ctx,
 	}
@@ -69,11 +66,8 @@ func NewFakeRandomWithCtx(anyctx interface{}) *FakeRandom {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewFakeRandomCopy(anyctx interface{}) *FakeRandom {
-	ctx, ok := anyctx.(*C.vscf_fake_random_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct FakeRandom."}
-	}
+func NewFakeRandomCopy(pointer unsafe.Pointer) *FakeRandom {
+	ctx := (*C.vscf_fake_random_t /*ct10*/)(pointer)
 	obj := &FakeRandom{
 		cCtx: C.vscf_fake_random_shallow_copy(ctx),
 	}

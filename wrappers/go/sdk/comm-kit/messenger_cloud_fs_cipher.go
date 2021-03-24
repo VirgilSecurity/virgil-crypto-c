@@ -30,11 +30,8 @@ func NewMessengerCloudFsCipher() *MessengerCloudFsCipher {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsCipherWithCtx(anyctx interface{}) *MessengerCloudFsCipher {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsCipher."}
-	}
+func NewMessengerCloudFsCipherWithCtx(pointer unsafe.Pointer) *MessengerCloudFsCipher {
+	ctx := (*C.vssq_messenger_cloud_fs_cipher_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsCipher{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewMessengerCloudFsCipherWithCtx(anyctx interface{}) *MessengerCloudFsCiphe
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsCipherCopy(anyctx interface{}) *MessengerCloudFsCipher {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_cipher_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsCipher."}
-	}
+func NewMessengerCloudFsCipherCopy(pointer unsafe.Pointer) *MessengerCloudFsCipher {
+	ctx := (*C.vssq_messenger_cloud_fs_cipher_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsCipher{
 		cCtx: C.vssq_messenger_cloud_fs_cipher_shallow_copy(ctx),
 	}

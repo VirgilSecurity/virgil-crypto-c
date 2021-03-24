@@ -29,11 +29,8 @@ func NewMessengerCloudFsFileDownloadInfo() *MessengerCloudFsFileDownloadInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsFileDownloadInfoWithCtx(anyctx interface{}) *MessengerCloudFsFileDownloadInfo {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_file_download_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsFileDownloadInfo."}
-	}
+func NewMessengerCloudFsFileDownloadInfoWithCtx(pointer unsafe.Pointer) *MessengerCloudFsFileDownloadInfo {
+	ctx := (*C.vssq_messenger_cloud_fs_file_download_info_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsFileDownloadInfo{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewMessengerCloudFsFileDownloadInfoWithCtx(anyctx interface{}) *MessengerCl
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCloudFsFileDownloadInfoCopy(anyctx interface{}) *MessengerCloudFsFileDownloadInfo {
-	ctx, ok := anyctx.(*C.vssq_messenger_cloud_fs_file_download_info_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct MessengerCloudFsFileDownloadInfo."}
-	}
+func NewMessengerCloudFsFileDownloadInfoCopy(pointer unsafe.Pointer) *MessengerCloudFsFileDownloadInfo {
+	ctx := (*C.vssq_messenger_cloud_fs_file_download_info_t /*ct2*/)(pointer)
 	obj := &MessengerCloudFsFileDownloadInfo{
 		cCtx: C.vssq_messenger_cloud_fs_file_download_info_shallow_copy(ctx),
 	}

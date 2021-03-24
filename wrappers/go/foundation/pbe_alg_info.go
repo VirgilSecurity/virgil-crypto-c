@@ -51,11 +51,8 @@ func NewPbeAlgInfo() *PbeAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPbeAlgInfoWithCtx(anyctx interface{}) *PbeAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_pbe_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PbeAlgInfo."}
-	}
+func NewPbeAlgInfoWithCtx(pointer unsafe.Pointer) *PbeAlgInfo {
+	ctx := (*C.vscf_pbe_alg_info_t /*ct10*/)(pointer)
 	obj := &PbeAlgInfo{
 		cCtx: ctx,
 	}
@@ -66,11 +63,8 @@ func NewPbeAlgInfoWithCtx(anyctx interface{}) *PbeAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPbeAlgInfoCopy(anyctx interface{}) *PbeAlgInfo {
-	ctx, ok := anyctx.(*C.vscf_pbe_alg_info_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PbeAlgInfo."}
-	}
+func NewPbeAlgInfoCopy(pointer unsafe.Pointer) *PbeAlgInfo {
+	ctx := (*C.vscf_pbe_alg_info_t /*ct10*/)(pointer)
 	obj := &PbeAlgInfo{
 		cCtx: C.vscf_pbe_alg_info_shallow_copy(ctx),
 	}

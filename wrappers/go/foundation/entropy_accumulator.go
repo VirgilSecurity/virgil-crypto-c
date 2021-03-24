@@ -59,11 +59,8 @@ func NewEntropyAccumulator() *EntropyAccumulator {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEntropyAccumulatorWithCtx(anyctx interface{}) *EntropyAccumulator {
-	ctx, ok := anyctx.(*C.vscf_entropy_accumulator_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct EntropyAccumulator."}
-	}
+func NewEntropyAccumulatorWithCtx(pointer unsafe.Pointer) *EntropyAccumulator {
+	ctx := (*C.vscf_entropy_accumulator_t /*ct10*/)(pointer)
 	obj := &EntropyAccumulator{
 		cCtx: ctx,
 	}
@@ -74,11 +71,8 @@ func NewEntropyAccumulatorWithCtx(anyctx interface{}) *EntropyAccumulator {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEntropyAccumulatorCopy(anyctx interface{}) *EntropyAccumulator {
-	ctx, ok := anyctx.(*C.vscf_entropy_accumulator_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct EntropyAccumulator."}
-	}
+func NewEntropyAccumulatorCopy(pointer unsafe.Pointer) *EntropyAccumulator {
+	ctx := (*C.vscf_entropy_accumulator_t /*ct10*/)(pointer)
 	obj := &EntropyAccumulator{
 		cCtx: C.vscf_entropy_accumulator_shallow_copy(ctx),
 	}

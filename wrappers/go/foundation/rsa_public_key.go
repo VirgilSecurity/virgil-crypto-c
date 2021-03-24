@@ -40,11 +40,8 @@ func NewRsaPublicKey() *RsaPublicKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRsaPublicKeyWithCtx(anyctx interface{}) *RsaPublicKey {
-	ctx, ok := anyctx.(*C.vscf_rsa_public_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RsaPublicKey."}
-	}
+func NewRsaPublicKeyWithCtx(pointer unsafe.Pointer) *RsaPublicKey {
+	ctx := (*C.vscf_rsa_public_key_t /*ct10*/)(pointer)
 	obj := &RsaPublicKey{
 		cCtx: ctx,
 	}
@@ -55,11 +52,8 @@ func NewRsaPublicKeyWithCtx(anyctx interface{}) *RsaPublicKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRsaPublicKeyCopy(anyctx interface{}) *RsaPublicKey {
-	ctx, ok := anyctx.(*C.vscf_rsa_public_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RsaPublicKey."}
-	}
+func NewRsaPublicKeyCopy(pointer unsafe.Pointer) *RsaPublicKey {
+	ctx := (*C.vscf_rsa_public_key_t /*ct10*/)(pointer)
 	obj := &RsaPublicKey{
 		cCtx: C.vscf_rsa_public_key_shallow_copy(ctx),
 	}

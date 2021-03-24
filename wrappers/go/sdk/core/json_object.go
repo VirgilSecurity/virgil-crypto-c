@@ -29,11 +29,8 @@ func NewJsonObject() *JsonObject {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJsonObjectWithCtx(anyctx interface{}) *JsonObject {
-	ctx, ok := anyctx.(*C.vssc_json_object_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct JsonObject."}
-	}
+func NewJsonObjectWithCtx(pointer unsafe.Pointer) *JsonObject {
+	ctx := (*C.vssc_json_object_t /*ct2*/)(pointer)
 	obj := &JsonObject{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewJsonObjectWithCtx(anyctx interface{}) *JsonObject {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewJsonObjectCopy(anyctx interface{}) *JsonObject {
-	ctx, ok := anyctx.(*C.vssc_json_object_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct JsonObject."}
-	}
+func NewJsonObjectCopy(pointer unsafe.Pointer) *JsonObject {
+	ctx := (*C.vssc_json_object_t /*ct2*/)(pointer)
 	obj := &JsonObject{
 		cCtx: C.vssc_json_object_shallow_copy(ctx),
 	}
@@ -282,7 +276,7 @@ func (obj *JsonObject) GetObjectValue(key string) (*JsonObject, error) {
 
 	runtime.KeepAlive(key)
 
-	return NewJsonObjectWithCtx(proxyResult) /* r6 */, nil
+	return NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -326,7 +320,7 @@ func (obj *JsonObject) GetArrayValue(key string) (*JsonArray, error) {
 
 	runtime.KeepAlive(key)
 
-	return NewJsonArrayWithCtx(proxyResult) /* r6 */, nil
+	return NewJsonArrayWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -357,7 +351,7 @@ func (obj *JsonObject) AsStringMap() (*StringMap, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewStringMapWithCtx(proxyResult) /* r6 */, nil
+	return NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -379,5 +373,5 @@ func JsonObjectParse(json string) (*JsonObject, error) {
 
 	runtime.KeepAlive(json)
 
-	return NewJsonObjectWithCtx(proxyResult) /* r6 */, nil
+	return NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

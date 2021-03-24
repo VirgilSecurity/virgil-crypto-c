@@ -29,11 +29,8 @@ func NewKeyRecipientInfoList() *KeyRecipientInfoList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyRecipientInfoListWithCtx(anyctx interface{}) *KeyRecipientInfoList {
-	ctx, ok := anyctx.(*C.vscf_key_recipient_info_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyRecipientInfoList."}
-	}
+func NewKeyRecipientInfoListWithCtx(pointer unsafe.Pointer) *KeyRecipientInfoList {
+	ctx := (*C.vscf_key_recipient_info_list_t /*ct2*/)(pointer)
 	obj := &KeyRecipientInfoList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewKeyRecipientInfoListWithCtx(anyctx interface{}) *KeyRecipientInfoList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyRecipientInfoListCopy(anyctx interface{}) *KeyRecipientInfoList {
-	ctx, ok := anyctx.(*C.vscf_key_recipient_info_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyRecipientInfoList."}
-	}
+func NewKeyRecipientInfoListCopy(pointer unsafe.Pointer) *KeyRecipientInfoList {
+	ctx := (*C.vscf_key_recipient_info_list_t /*ct2*/)(pointer)
 	obj := &KeyRecipientInfoList{
 		cCtx: C.vscf_key_recipient_info_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *KeyRecipientInfoList) Item() *KeyRecipientInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyRecipientInfoCopy(proxyResult) /* r5 */
+	return NewKeyRecipientInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *KeyRecipientInfoList) Next() *KeyRecipientInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyRecipientInfoListCopy(proxyResult) /* r5 */
+	return NewKeyRecipientInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *KeyRecipientInfoList) Prev() *KeyRecipientInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyRecipientInfoListCopy(proxyResult) /* r5 */
+	return NewKeyRecipientInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

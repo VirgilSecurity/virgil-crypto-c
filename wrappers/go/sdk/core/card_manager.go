@@ -30,11 +30,8 @@ func NewCardManager() *CardManager {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCardManagerWithCtx(anyctx interface{}) *CardManager {
-	ctx, ok := anyctx.(*C.vssc_card_manager_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct CardManager."}
-	}
+func NewCardManagerWithCtx(pointer unsafe.Pointer) *CardManager {
+	ctx := (*C.vssc_card_manager_t /*ct2*/)(pointer)
 	obj := &CardManager{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewCardManagerWithCtx(anyctx interface{}) *CardManager {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewCardManagerCopy(anyctx interface{}) *CardManager {
-	ctx, ok := anyctx.(*C.vssc_card_manager_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct CardManager."}
-	}
+func NewCardManagerCopy(pointer unsafe.Pointer) *CardManager {
+	ctx := (*C.vssc_card_manager_t /*ct2*/)(pointer)
 	obj := &CardManager{
 		cCtx: C.vssc_card_manager_shallow_copy(ctx),
 	}
@@ -141,7 +135,7 @@ func (obj *CardManager) GenerateRawCard(identity string, privateKey foundation.P
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawCardWithCtx(proxyResult) /* r6 */, nil
+	return NewRawCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -172,7 +166,7 @@ func (obj *CardManager) GenerateReplacementRawCard(identity string, privateKey f
 
 	runtime.KeepAlive(previousCardId)
 
-	return NewRawCardWithCtx(proxyResult) /* r6 */, nil
+	return NewRawCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -195,7 +189,7 @@ func (obj *CardManager) ImportRawCard(rawCard *RawCard) (*Card, error) {
 
 	runtime.KeepAlive(rawCard)
 
-	return NewCardWithCtx(proxyResult) /* r6 */, nil
+	return NewCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -218,7 +212,7 @@ func (obj *CardManager) ImportRawCardList(rawCardList *RawCardList) (*CardList, 
 
 	runtime.KeepAlive(rawCardList)
 
-	return NewCardListWithCtx(proxyResult) /* r6 */, nil
+	return NewCardListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -246,7 +240,7 @@ func (obj *CardManager) ImportRawCardWithId(rawCard *RawCard, cardId string) (*C
 
 	runtime.KeepAlive(cardId)
 
-	return NewCardWithCtx(proxyResult) /* r6 */, nil
+	return NewCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -272,5 +266,5 @@ func (obj *CardManager) ImportRawCardWithInitialRawCard(rawCard *RawCard, initia
 
 	runtime.KeepAlive(initialRawCard)
 
-	return NewCardWithCtx(proxyResult) /* r6 */, nil
+	return NewCardWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }

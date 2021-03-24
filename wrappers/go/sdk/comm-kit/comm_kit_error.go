@@ -226,6 +226,18 @@ const (
 	 */
 	CommKitErrorImportCredsFailedImportPrivateKeyFailed int = -1004
 	/*
+	 * Failed to import user because parsing JSON failed.
+	 */
+	CommKitErrorImportUserFailedParseFailed int = -1010
+	/*
+	 * Failed to import user because met unexpected version within JSON.
+	 */
+	CommKitErrorImportUserFailedVersionMismatch int = -1011
+	/*
+	 * Failed to import user because failed to import a raw card.
+	 */
+	CommKitErrorImportUserFailedImportCardFailed int = -1012
+	/*
 	 * Username validation failed because it's length exceeds the allowed maximum (20).
 	 */
 	CommKitErrorContactValidationFailedUsernameTooLong int = -1100
@@ -285,6 +297,14 @@ const (
 	 * Failed to process group message because plain text too long.
 	 */
 	CommKitErrorProcessGroupMessageFailedPlainTextTooLong int = -1210
+	/*
+	 * Failed to import group because mismatch version within JSON.
+	 */
+	CommKitErrorImportGroupFailedVersionMismatch int = -1211
+	/*
+	 * Failed to import group because parsing JSON failed.
+	 */
+	CommKitErrorImportGroupFailedParseFailed int = -1212
 	/*
 	 * Failed to process group message because underlying crypto module failed.
 	 */
@@ -569,6 +589,12 @@ func CommKitErrorHandleStatus(status C.vssq_status_t) error {
 			return &CommKitError{int(status), "Failed to import credentials because parsing JSON failed."}
 		case C.vssq_status_IMPORT_CREDS_FAILED_IMPORT_PRIVATE_KEY_FAILED:
 			return &CommKitError{int(status), "Failed to import credentials because importing private key failed."}
+		case C.vssq_status_IMPORT_USER_FAILED_PARSE_FAILED:
+			return &CommKitError{int(status), "Failed to import user because parsing JSON failed."}
+		case C.vssq_status_IMPORT_USER_FAILED_VERSION_MISMATCH:
+			return &CommKitError{int(status), "Failed to import user because met unexpected version within JSON."}
+		case C.vssq_status_IMPORT_USER_FAILED_IMPORT_CARD_FAILED:
+			return &CommKitError{int(status), "Failed to import user because failed to import a raw card."}
 		case C.vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_TOO_LONG:
 			return &CommKitError{int(status), "Username validation failed because it's length exceeds the allowed maximum (20)."}
 		case C.vssq_status_CONTACT_VALIDATION_FAILED_USERNAME_BAD_CHARS:
@@ -599,6 +625,10 @@ func CommKitErrorHandleStatus(status C.vssq_status_t) error {
 			return &CommKitError{int(status), "Failed to process group message because of duplicated epoch."}
 		case C.vssq_status_PROCESS_GROUP_MESSAGE_FAILED_PLAIN_TEXT_TOO_LONG:
 			return &CommKitError{int(status), "Failed to process group message because plain text too long."}
+		case C.vssq_status_IMPORT_GROUP_FAILED_VERSION_MISMATCH:
+			return &CommKitError{int(status), "Failed to import group because mismatch version within JSON."}
+		case C.vssq_status_IMPORT_GROUP_FAILED_PARSE_FAILED:
+			return &CommKitError{int(status), "Failed to import group because parsing JSON failed."}
 		case C.vssq_status_PROCESS_GROUP_MESSAGE_FAILED_CRYPTO_FAILED:
 			return &CommKitError{int(status), "Failed to process group message because underlying crypto module failed."}
 		case C.vssq_status_DECRYPT_REGULAR_MESSAGE_FAILED_INVALID_ENCRYPTED_MESSAGE:

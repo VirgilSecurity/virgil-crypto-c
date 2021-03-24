@@ -30,11 +30,8 @@ func NewVerifier() *Verifier {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewVerifierWithCtx(anyctx interface{}) *Verifier {
-	ctx, ok := anyctx.(*C.vscf_verifier_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Verifier."}
-	}
+func NewVerifierWithCtx(pointer unsafe.Pointer) *Verifier {
+	ctx := (*C.vscf_verifier_t /*ct2*/)(pointer)
 	obj := &Verifier{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewVerifierWithCtx(anyctx interface{}) *Verifier {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewVerifierCopy(anyctx interface{}) *Verifier {
-	ctx, ok := anyctx.(*C.vscf_verifier_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Verifier."}
-	}
+func NewVerifierCopy(pointer unsafe.Pointer) *Verifier {
+	ctx := (*C.vscf_verifier_t /*ct2*/)(pointer)
 	obj := &Verifier{
 		cCtx: C.vscf_verifier_shallow_copy(ctx),
 	}

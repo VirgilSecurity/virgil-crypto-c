@@ -31,11 +31,8 @@ func NewMessenger() *Messenger {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerWithCtx(anyctx interface{}) *Messenger {
-	ctx, ok := anyctx.(*C.vssq_messenger_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct Messenger."}
-	}
+func NewMessengerWithCtx(pointer unsafe.Pointer) *Messenger {
+	ctx := (*C.vssq_messenger_t /*ct2*/)(pointer)
 	obj := &Messenger{
 		cCtx: ctx,
 	}
@@ -46,11 +43,8 @@ func NewMessengerWithCtx(anyctx interface{}) *Messenger {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewMessengerCopy(anyctx interface{}) *Messenger {
-	ctx, ok := anyctx.(*C.vssq_messenger_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct Messenger."}
-	}
+func NewMessengerCopy(pointer unsafe.Pointer) *Messenger {
+	ctx := (*C.vssq_messenger_t /*ct2*/)(pointer)
 	obj := &Messenger{
 		cCtx: C.vssq_messenger_shallow_copy(ctx),
 	}
@@ -176,7 +170,7 @@ func (obj *Messenger) User() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -189,7 +183,7 @@ func (obj *Messenger) UserModifiable() *MessengerUser {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerUserCopy(proxyResult) /* r5 */
+	return NewMessengerUserCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -213,7 +207,7 @@ func (obj *Messenger) Creds() *MessengerCreds {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCredsCopy(proxyResult) /* r5 */
+	return NewMessengerCredsCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -316,7 +310,7 @@ func (obj *Messenger) Auth() *MessengerAuth {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerAuthCopy(proxyResult) /* r5 */
+	return NewMessengerAuthCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -340,7 +334,7 @@ func (obj *Messenger) FindUserWithIdentity(identity string) (*MessengerUser, err
 
 	runtime.KeepAlive(identity)
 
-	return NewMessengerUserWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerUserWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -361,7 +355,7 @@ func (obj *Messenger) FindUsersWithIdentities(identities *sdk_core.StringList) (
 
 	runtime.KeepAlive(identities)
 
-	return NewMessengerUserListWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerUserListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -385,7 +379,7 @@ func (obj *Messenger) FindUserWithUsername(username string) (*MessengerUser, err
 
 	runtime.KeepAlive(username)
 
-	return NewMessengerUserWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerUserWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -406,7 +400,7 @@ func (obj *Messenger) FindUsersByPhones(phones *sdk_core.StringList) (*Messenger
 
 	runtime.KeepAlive(phones)
 
-	return NewMessengerUserListWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerUserListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -427,7 +421,7 @@ func (obj *Messenger) FindUsersByEmails(emails *sdk_core.StringList) (*Messenger
 
 	runtime.KeepAlive(emails)
 
-	return NewMessengerUserListWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerUserListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -730,7 +724,7 @@ func (obj *Messenger) CreateGroup(groupId string, participants *MessengerUserLis
 
 	runtime.KeepAlive(participants)
 
-	return NewMessengerGroupWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerGroupWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -758,7 +752,52 @@ func (obj *Messenger) LoadGroup(groupId string, owner *MessengerUser) (*Messenge
 
 	runtime.KeepAlive(owner)
 
-	return NewMessengerGroupWithCtx(proxyResult) /* r6 */, nil
+	return NewMessengerGroupWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+}
+
+/*
+* Load an existing group from a cached JSON value for a group messaging.
+ */
+func (obj *Messenger) LoadGroupFromJsonStr(jsonStr string) (*MessengerGroup, error) {
+	var error C.vssq_error_t
+	C.vssq_error_reset(&error)
+	jsonStrChar := C.CString(jsonStr)
+	defer C.free(unsafe.Pointer(jsonStrChar))
+	jsonStrStr := C.vsc_str_from_str(jsonStrChar)
+
+	proxyResult := /*pr4*/ C.vssq_messenger_load_group_from_json_str(obj.cCtx, jsonStrStr, &error)
+
+	err := CommKitErrorHandleStatus(error.status)
+	if err != nil {
+		return nil, err
+	}
+
+	runtime.KeepAlive(obj)
+
+	runtime.KeepAlive(jsonStr)
+
+	return NewMessengerGroupWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+}
+
+/*
+* Load an existing group from a cached JSON value for a group messaging.
+ */
+func (obj *Messenger) LoadGroupFromJson(jsonObj *sdk_core.JsonObject) (*MessengerGroup, error) {
+	var error C.vssq_error_t
+	C.vssq_error_reset(&error)
+
+	proxyResult := /*pr4*/ C.vssq_messenger_load_group_from_json(obj.cCtx, (*C.vssc_json_object_t)(unsafe.Pointer(jsonObj.Ctx())), &error)
+
+	err := CommKitErrorHandleStatus(error.status)
+	if err != nil {
+		return nil, err
+	}
+
+	runtime.KeepAlive(obj)
+
+	runtime.KeepAlive(jsonObj)
+
+	return NewMessengerGroupWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -769,5 +808,5 @@ func (obj *Messenger) CloudFs() *MessengerCloudFs {
 
 	runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsCopy(proxyResult) /* r5 */
+	return NewMessengerCloudFsCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }

@@ -29,11 +29,8 @@ func NewSignerInfoList() *SignerInfoList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSignerInfoListWithCtx(anyctx interface{}) *SignerInfoList {
-	ctx, ok := anyctx.(*C.vscf_signer_info_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SignerInfoList."}
-	}
+func NewSignerInfoListWithCtx(pointer unsafe.Pointer) *SignerInfoList {
+	ctx := (*C.vscf_signer_info_list_t /*ct2*/)(pointer)
 	obj := &SignerInfoList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSignerInfoListWithCtx(anyctx interface{}) *SignerInfoList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSignerInfoListCopy(anyctx interface{}) *SignerInfoList {
-	ctx, ok := anyctx.(*C.vscf_signer_info_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct SignerInfoList."}
-	}
+func NewSignerInfoListCopy(pointer unsafe.Pointer) *SignerInfoList {
+	ctx := (*C.vscf_signer_info_list_t /*ct2*/)(pointer)
 	obj := &SignerInfoList{
 		cCtx: C.vscf_signer_info_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *SignerInfoList) Item() *SignerInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewSignerInfoCopy(proxyResult) /* r5 */
+	return NewSignerInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *SignerInfoList) Next() *SignerInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewSignerInfoListWithCtx(proxyResult) /* r6 */
+	return NewSignerInfoListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *SignerInfoList) Prev() *SignerInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewSignerInfoListWithCtx(proxyResult) /* r6 */
+	return NewSignerInfoListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }
 
 /*

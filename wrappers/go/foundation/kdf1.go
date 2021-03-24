@@ -37,11 +37,8 @@ func NewKdf1() *Kdf1 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKdf1WithCtx(anyctx interface{}) *Kdf1 {
-	ctx, ok := anyctx.(*C.vscf_kdf1_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Kdf1."}
-	}
+func NewKdf1WithCtx(pointer unsafe.Pointer) *Kdf1 {
+	ctx := (*C.vscf_kdf1_t /*ct10*/)(pointer)
 	obj := &Kdf1{
 		cCtx: ctx,
 	}
@@ -52,11 +49,8 @@ func NewKdf1WithCtx(anyctx interface{}) *Kdf1 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKdf1Copy(anyctx interface{}) *Kdf1 {
-	ctx, ok := anyctx.(*C.vscf_kdf1_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Kdf1."}
-	}
+func NewKdf1Copy(pointer unsafe.Pointer) *Kdf1 {
+	ctx := (*C.vscf_kdf1_t /*ct10*/)(pointer)
 	obj := &Kdf1{
 		cCtx: C.vscf_kdf1_shallow_copy(ctx),
 	}

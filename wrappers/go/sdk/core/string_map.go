@@ -33,11 +33,8 @@ func NewStringMap() *StringMap {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewStringMapWithCtx(anyctx interface{}) *StringMap {
-	ctx, ok := anyctx.(*C.vssc_string_map_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct StringMap."}
-	}
+func NewStringMapWithCtx(pointer unsafe.Pointer) *StringMap {
+	ctx := (*C.vssc_string_map_t /*ct2*/)(pointer)
 	obj := &StringMap{
 		cCtx: ctx,
 	}
@@ -48,11 +45,8 @@ func NewStringMapWithCtx(anyctx interface{}) *StringMap {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewStringMapCopy(anyctx interface{}) *StringMap {
-	ctx, ok := anyctx.(*C.vssc_string_map_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct StringMap."}
-	}
+func NewStringMapCopy(pointer unsafe.Pointer) *StringMap {
+	ctx := (*C.vssc_string_map_t /*ct2*/)(pointer)
 	obj := &StringMap{
 		cCtx: C.vssc_string_map_shallow_copy(ctx),
 	}
@@ -197,7 +191,7 @@ func (obj *StringMap) Keys() *StringList {
 
 	runtime.KeepAlive(obj)
 
-	return NewStringListWithCtx(proxyResult) /* r6 */
+	return NewStringListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }
 
 /*
@@ -208,7 +202,7 @@ func (obj *StringMap) Values() *StringList {
 
 	runtime.KeepAlive(obj)
 
-	return NewStringListWithCtx(proxyResult) /* r6 */
+	return NewStringListWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }
 
 /*
@@ -219,5 +213,5 @@ func (obj *StringMap) SwapKeyValues() *StringMap {
 
 	runtime.KeepAlive(obj)
 
-	return NewStringMapWithCtx(proxyResult) /* r6 */
+	return NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }

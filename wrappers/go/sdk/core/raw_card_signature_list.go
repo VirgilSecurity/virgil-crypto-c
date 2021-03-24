@@ -29,11 +29,8 @@ func NewRawCardSignatureList() *RawCardSignatureList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardSignatureListWithCtx(anyctx interface{}) *RawCardSignatureList {
-	ctx, ok := anyctx.(*C.vssc_raw_card_signature_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardSignatureList."}
-	}
+func NewRawCardSignatureListWithCtx(pointer unsafe.Pointer) *RawCardSignatureList {
+	ctx := (*C.vssc_raw_card_signature_list_t /*ct2*/)(pointer)
 	obj := &RawCardSignatureList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewRawCardSignatureListWithCtx(anyctx interface{}) *RawCardSignatureList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardSignatureListCopy(anyctx interface{}) *RawCardSignatureList {
-	ctx, ok := anyctx.(*C.vssc_raw_card_signature_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardSignatureList."}
-	}
+func NewRawCardSignatureListCopy(pointer unsafe.Pointer) *RawCardSignatureList {
+	ctx := (*C.vssc_raw_card_signature_list_t /*ct2*/)(pointer)
 	obj := &RawCardSignatureList{
 		cCtx: C.vssc_raw_card_signature_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *RawCardSignatureList) Item() *RawCardSignature {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardSignatureCopy(proxyResult) /* r5 */
+	return NewRawCardSignatureCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *RawCardSignatureList) Next() *RawCardSignatureList {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardSignatureListCopy(proxyResult) /* r5 */
+	return NewRawCardSignatureListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *RawCardSignatureList) Prev() *RawCardSignatureList {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawCardSignatureListCopy(proxyResult) /* r5 */
+	return NewRawCardSignatureListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

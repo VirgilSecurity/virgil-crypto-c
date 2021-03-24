@@ -94,11 +94,8 @@ func NewPkcs8Serializer() *Pkcs8Serializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPkcs8SerializerWithCtx(anyctx interface{}) *Pkcs8Serializer {
-	ctx, ok := anyctx.(*C.vscf_pkcs8_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Pkcs8Serializer."}
-	}
+func NewPkcs8SerializerWithCtx(pointer unsafe.Pointer) *Pkcs8Serializer {
+	ctx := (*C.vscf_pkcs8_serializer_t /*ct10*/)(pointer)
 	obj := &Pkcs8Serializer{
 		cCtx: ctx,
 	}
@@ -109,11 +106,8 @@ func NewPkcs8SerializerWithCtx(anyctx interface{}) *Pkcs8Serializer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPkcs8SerializerCopy(anyctx interface{}) *Pkcs8Serializer {
-	ctx, ok := anyctx.(*C.vscf_pkcs8_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Pkcs8Serializer."}
-	}
+func NewPkcs8SerializerCopy(pointer unsafe.Pointer) *Pkcs8Serializer {
+	ctx := (*C.vscf_pkcs8_serializer_t /*ct10*/)(pointer)
 	obj := &Pkcs8Serializer{
 		cCtx: C.vscf_pkcs8_serializer_shallow_copy(ctx),
 	}

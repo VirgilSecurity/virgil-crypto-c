@@ -29,11 +29,8 @@ func NewRawCardSignature() *RawCardSignature {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardSignatureWithCtx(anyctx interface{}) *RawCardSignature {
-	ctx, ok := anyctx.(*C.vssc_raw_card_signature_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardSignature."}
-	}
+func NewRawCardSignatureWithCtx(pointer unsafe.Pointer) *RawCardSignature {
+	ctx := (*C.vssc_raw_card_signature_t /*ct2*/)(pointer)
 	obj := &RawCardSignature{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewRawCardSignatureWithCtx(anyctx interface{}) *RawCardSignature {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawCardSignatureCopy(anyctx interface{}) *RawCardSignature {
-	ctx, ok := anyctx.(*C.vssc_raw_card_signature_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct RawCardSignature."}
-	}
+func NewRawCardSignatureCopy(pointer unsafe.Pointer) *RawCardSignature {
+	ctx := (*C.vssc_raw_card_signature_t /*ct2*/)(pointer)
 	obj := &RawCardSignature{
 		cCtx: C.vssc_raw_card_signature_shallow_copy(ctx),
 	}
@@ -159,7 +153,7 @@ func (obj *RawCardSignature) ExtraFields() *JsonObject {
 
 	runtime.KeepAlive(obj)
 
-	return NewJsonObjectCopy(proxyResult) /* r5 */
+	return NewJsonObjectCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -178,7 +172,7 @@ func RawCardSignatureImportFromJson(json *JsonObject) (*RawCardSignature, error)
 
 	runtime.KeepAlive(json)
 
-	return NewRawCardSignatureWithCtx(proxyResult) /* r6 */, nil
+	return NewRawCardSignatureWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -189,5 +183,5 @@ func (obj *RawCardSignature) ExportAsJson() *JsonObject {
 
 	runtime.KeepAlive(obj)
 
-	return NewJsonObjectWithCtx(proxyResult) /* r6 */
+	return NewJsonObjectWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }

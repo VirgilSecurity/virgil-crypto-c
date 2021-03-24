@@ -29,11 +29,8 @@ func NewGroupSessionTicket() *GroupSessionTicket {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewGroupSessionTicketWithCtx(anyctx interface{}) *GroupSessionTicket {
-	ctx, ok := anyctx.(*C.vscf_group_session_ticket_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct GroupSessionTicket."}
-	}
+func NewGroupSessionTicketWithCtx(pointer unsafe.Pointer) *GroupSessionTicket {
+	ctx := (*C.vscf_group_session_ticket_t /*ct2*/)(pointer)
 	obj := &GroupSessionTicket{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewGroupSessionTicketWithCtx(anyctx interface{}) *GroupSessionTicket {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewGroupSessionTicketCopy(anyctx interface{}) *GroupSessionTicket {
-	ctx, ok := anyctx.(*C.vscf_group_session_ticket_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct GroupSessionTicket."}
-	}
+func NewGroupSessionTicketCopy(pointer unsafe.Pointer) *GroupSessionTicket {
+	ctx := (*C.vscf_group_session_ticket_t /*ct2*/)(pointer)
 	obj := &GroupSessionTicket{
 		cCtx: C.vscf_group_session_ticket_shallow_copy(ctx),
 	}
@@ -128,5 +122,5 @@ func (obj *GroupSessionTicket) GetTicketMessage() *GroupSessionMessage {
 
 	runtime.KeepAlive(obj)
 
-	return NewGroupSessionMessageCopy(proxyResult) /* r5 */
+	return NewGroupSessionMessageCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }

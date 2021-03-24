@@ -29,11 +29,8 @@ func NewKeyHandlerList() *KeyHandlerList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyHandlerListWithCtx(anyctx interface{}) *KeyHandlerList {
-	ctx, ok := anyctx.(*C.vssc_key_handler_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct KeyHandlerList."}
-	}
+func NewKeyHandlerListWithCtx(pointer unsafe.Pointer) *KeyHandlerList {
+	ctx := (*C.vssc_key_handler_list_t /*ct2*/)(pointer)
 	obj := &KeyHandlerList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewKeyHandlerListWithCtx(anyctx interface{}) *KeyHandlerList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyHandlerListCopy(anyctx interface{}) *KeyHandlerList {
-	ctx, ok := anyctx.(*C.vssc_key_handler_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct KeyHandlerList."}
-	}
+func NewKeyHandlerListCopy(pointer unsafe.Pointer) *KeyHandlerList {
+	ctx := (*C.vssc_key_handler_list_t /*ct2*/)(pointer)
 	obj := &KeyHandlerList{
 		cCtx: C.vssc_key_handler_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *KeyHandlerList) Item() *KeyHandler {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyHandlerCopy(proxyResult) /* r5 */
+	return NewKeyHandlerCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *KeyHandlerList) Next() *KeyHandlerList {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyHandlerListCopy(proxyResult) /* r5 */
+	return NewKeyHandlerListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *KeyHandlerList) Prev() *KeyHandlerList {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyHandlerListCopy(proxyResult) /* r5 */
+	return NewKeyHandlerListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -172,7 +166,7 @@ func (obj *KeyHandlerList) FindWithIdentity(identity string) (*KeyHandler, error
 
 	runtime.KeepAlive(identity)
 
-	return NewKeyHandlerCopy(proxyResult) /* r5 */, nil
+	return NewKeyHandlerCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }
 
 /*
@@ -192,5 +186,5 @@ func (obj *KeyHandlerList) FindWithKeyId(keyId []byte) (*KeyHandler, error) {
 
 	runtime.KeepAlive(obj)
 
-	return NewKeyHandlerCopy(proxyResult) /* r5 */, nil
+	return NewKeyHandlerCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }

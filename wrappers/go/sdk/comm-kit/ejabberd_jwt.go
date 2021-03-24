@@ -29,11 +29,8 @@ func NewEjabberdJwt() *EjabberdJwt {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEjabberdJwtWithCtx(anyctx interface{}) *EjabberdJwt {
-	ctx, ok := anyctx.(*C.vssq_ejabberd_jwt_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct EjabberdJwt."}
-	}
+func NewEjabberdJwtWithCtx(pointer unsafe.Pointer) *EjabberdJwt {
+	ctx := (*C.vssq_ejabberd_jwt_t /*ct2*/)(pointer)
 	obj := &EjabberdJwt{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewEjabberdJwtWithCtx(anyctx interface{}) *EjabberdJwt {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEjabberdJwtCopy(anyctx interface{}) *EjabberdJwt {
-	ctx, ok := anyctx.(*C.vssq_ejabberd_jwt_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CommKitError{-1,"Cast error for struct EjabberdJwt."}
-	}
+func NewEjabberdJwtCopy(pointer unsafe.Pointer) *EjabberdJwt {
+	ctx := (*C.vssq_ejabberd_jwt_t /*ct2*/)(pointer)
 	obj := &EjabberdJwt{
 		cCtx: C.vssq_ejabberd_jwt_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func EjabberdJwtParse(str string) (*EjabberdJwt, error) {
 
 	runtime.KeepAlive(str)
 
-	return NewEjabberdJwtWithCtx(proxyResult) /* r6 */, nil
+	return NewEjabberdJwtWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

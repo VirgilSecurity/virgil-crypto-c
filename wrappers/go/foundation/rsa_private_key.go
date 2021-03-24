@@ -29,11 +29,8 @@ func NewRsaPrivateKey() *RsaPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRsaPrivateKeyWithCtx(anyctx interface{}) *RsaPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_rsa_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RsaPrivateKey."}
-	}
+func NewRsaPrivateKeyWithCtx(pointer unsafe.Pointer) *RsaPrivateKey {
+	ctx := (*C.vscf_rsa_private_key_t /*ct10*/)(pointer)
 	obj := &RsaPrivateKey{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewRsaPrivateKeyWithCtx(anyctx interface{}) *RsaPrivateKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRsaPrivateKeyCopy(anyctx interface{}) *RsaPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_rsa_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RsaPrivateKey."}
-	}
+func NewRsaPrivateKeyCopy(pointer unsafe.Pointer) *RsaPrivateKey {
+	ctx := (*C.vscf_rsa_private_key_t /*ct10*/)(pointer)
 	obj := &RsaPrivateKey{
 		cCtx: C.vscf_rsa_private_key_shallow_copy(ctx),
 	}

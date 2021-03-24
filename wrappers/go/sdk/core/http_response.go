@@ -30,11 +30,8 @@ func NewHttpResponse() *HttpResponse {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHttpResponseWithCtx(anyctx interface{}) *HttpResponse {
-	ctx, ok := anyctx.(*C.vssc_http_response_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct HttpResponse."}
-	}
+func NewHttpResponseWithCtx(pointer unsafe.Pointer) *HttpResponse {
+	ctx := (*C.vssc_http_response_t /*ct2*/)(pointer)
 	obj := &HttpResponse{
 		cCtx: ctx,
 	}
@@ -45,11 +42,8 @@ func NewHttpResponseWithCtx(anyctx interface{}) *HttpResponse {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewHttpResponseCopy(anyctx interface{}) *HttpResponse {
-	ctx, ok := anyctx.(*C.vssc_http_response_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct HttpResponse."}
-	}
+func NewHttpResponseCopy(pointer unsafe.Pointer) *HttpResponse {
+	ctx := (*C.vssc_http_response_t /*ct2*/)(pointer)
 	obj := &HttpResponse{
 		cCtx: C.vssc_http_response_shallow_copy(ctx),
 	}
@@ -190,7 +184,7 @@ func (obj *HttpResponse) Headers() *HttpHeaderList {
 
 	runtime.KeepAlive(obj)
 
-	return NewHttpHeaderListCopy(proxyResult) /* r5 */
+	return NewHttpHeaderListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -247,7 +241,7 @@ func (obj *HttpResponse) BodyAsJsonObject() *JsonObject {
 
 	runtime.KeepAlive(obj)
 
-	return NewJsonObjectCopy(proxyResult) /* r5 */
+	return NewJsonObjectCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -258,7 +252,7 @@ func (obj *HttpResponse) BodyAsJsonArray() *JsonArray {
 
 	runtime.KeepAlive(obj)
 
-	return NewJsonArrayCopy(proxyResult) /* r5 */
+	return NewJsonArrayCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

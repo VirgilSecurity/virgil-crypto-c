@@ -29,11 +29,8 @@ func NewEcies() *Ecies {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEciesWithCtx(anyctx interface{}) *Ecies {
-	ctx, ok := anyctx.(*C.vscf_ecies_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Ecies."}
-	}
+func NewEciesWithCtx(pointer unsafe.Pointer) *Ecies {
+	ctx := (*C.vscf_ecies_t /*ct2*/)(pointer)
 	obj := &Ecies{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewEciesWithCtx(anyctx interface{}) *Ecies {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewEciesCopy(anyctx interface{}) *Ecies {
-	ctx, ok := anyctx.(*C.vscf_ecies_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Ecies."}
-	}
+func NewEciesCopy(pointer unsafe.Pointer) *Ecies {
+	ctx := (*C.vscf_ecies_t /*ct2*/)(pointer)
 	obj := &Ecies{
 		cCtx: C.vscf_ecies_shallow_copy(ctx),
 	}

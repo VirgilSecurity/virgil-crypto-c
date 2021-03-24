@@ -37,11 +37,8 @@ func NewRandomPadding() *RandomPadding {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRandomPaddingWithCtx(anyctx interface{}) *RandomPadding {
-	ctx, ok := anyctx.(*C.vscf_random_padding_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RandomPadding."}
-	}
+func NewRandomPaddingWithCtx(pointer unsafe.Pointer) *RandomPadding {
+	ctx := (*C.vscf_random_padding_t /*ct10*/)(pointer)
 	obj := &RandomPadding{
 		cCtx: ctx,
 	}
@@ -52,11 +49,8 @@ func NewRandomPaddingWithCtx(anyctx interface{}) *RandomPadding {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRandomPaddingCopy(anyctx interface{}) *RandomPadding {
-	ctx, ok := anyctx.(*C.vscf_random_padding_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RandomPadding."}
-	}
+func NewRandomPaddingCopy(pointer unsafe.Pointer) *RandomPadding {
+	ctx := (*C.vscf_random_padding_t /*ct10*/)(pointer)
 	obj := &RandomPadding{
 		cCtx: C.vscf_random_padding_shallow_copy(ctx),
 	}

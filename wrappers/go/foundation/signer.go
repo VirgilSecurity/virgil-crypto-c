@@ -29,11 +29,8 @@ func NewSigner() *Signer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSignerWithCtx(anyctx interface{}) *Signer {
-	ctx, ok := anyctx.(*C.vscf_signer_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Signer."}
-	}
+func NewSignerWithCtx(pointer unsafe.Pointer) *Signer {
+	ctx := (*C.vscf_signer_t /*ct2*/)(pointer)
 	obj := &Signer{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewSignerWithCtx(anyctx interface{}) *Signer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSignerCopy(anyctx interface{}) *Signer {
-	ctx, ok := anyctx.(*C.vscf_signer_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Signer."}
-	}
+func NewSignerCopy(pointer unsafe.Pointer) *Signer {
+	ctx := (*C.vscf_signer_t /*ct2*/)(pointer)
 	obj := &Signer{
 		cCtx: C.vscf_signer_shallow_copy(ctx),
 	}

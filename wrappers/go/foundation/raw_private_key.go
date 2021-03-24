@@ -57,7 +57,7 @@ func (obj *RawPrivateKey) GetPublicKey() *RawPublicKey {
 
 	runtime.KeepAlive(obj)
 
-	return NewRawPublicKeyCopy(proxyResult) /* r5 */
+	return NewRawPublicKeyCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /* Handle underlying C context. */
@@ -77,11 +77,8 @@ func NewRawPrivateKey() *RawPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawPrivateKeyWithCtx(anyctx interface{}) *RawPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_raw_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RawPrivateKey."}
-	}
+func NewRawPrivateKeyWithCtx(pointer unsafe.Pointer) *RawPrivateKey {
+	ctx := (*C.vscf_raw_private_key_t /*ct10*/)(pointer)
 	obj := &RawPrivateKey{
 		cCtx: ctx,
 	}
@@ -92,11 +89,8 @@ func NewRawPrivateKeyWithCtx(anyctx interface{}) *RawPrivateKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewRawPrivateKeyCopy(anyctx interface{}) *RawPrivateKey {
-	ctx, ok := anyctx.(*C.vscf_raw_private_key_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct RawPrivateKey."}
-	}
+func NewRawPrivateKeyCopy(pointer unsafe.Pointer) *RawPrivateKey {
+	ctx := (*C.vscf_raw_private_key_t /*ct10*/)(pointer)
 	obj := &RawPrivateKey{
 		cCtx: C.vscf_raw_private_key_shallow_copy(ctx),
 	}

@@ -37,11 +37,8 @@ func NewKeyProvider() *KeyProvider {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyProviderWithCtx(anyctx interface{}) *KeyProvider {
-	ctx, ok := anyctx.(*C.vscf_key_provider_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyProvider."}
-	}
+func NewKeyProviderWithCtx(pointer unsafe.Pointer) *KeyProvider {
+	ctx := (*C.vscf_key_provider_t /*ct2*/)(pointer)
 	obj := &KeyProvider{
 		cCtx: ctx,
 	}
@@ -52,11 +49,8 @@ func NewKeyProviderWithCtx(anyctx interface{}) *KeyProvider {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewKeyProviderCopy(anyctx interface{}) *KeyProvider {
-	ctx, ok := anyctx.(*C.vscf_key_provider_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct KeyProvider."}
-	}
+func NewKeyProviderCopy(pointer unsafe.Pointer) *KeyProvider {
+	ctx := (*C.vscf_key_provider_t /*ct2*/)(pointer)
 	obj := &KeyProvider{
 		cCtx: C.vscf_key_provider_shallow_copy(ctx),
 	}

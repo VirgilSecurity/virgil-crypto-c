@@ -95,11 +95,8 @@ func NewSec1Serializer() *Sec1Serializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSec1SerializerWithCtx(anyctx interface{}) *Sec1Serializer {
-	ctx, ok := anyctx.(*C.vscf_sec1_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sec1Serializer."}
-	}
+func NewSec1SerializerWithCtx(pointer unsafe.Pointer) *Sec1Serializer {
+	ctx := (*C.vscf_sec1_serializer_t /*ct10*/)(pointer)
 	obj := &Sec1Serializer{
 		cCtx: ctx,
 	}
@@ -110,11 +107,8 @@ func NewSec1SerializerWithCtx(anyctx interface{}) *Sec1Serializer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewSec1SerializerCopy(anyctx interface{}) *Sec1Serializer {
-	ctx, ok := anyctx.(*C.vscf_sec1_serializer_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Sec1Serializer."}
-	}
+func NewSec1SerializerCopy(pointer unsafe.Pointer) *Sec1Serializer {
+	ctx := (*C.vscf_sec1_serializer_t /*ct10*/)(pointer)
 	obj := &Sec1Serializer{
 		cCtx: C.vscf_sec1_serializer_shallow_copy(ctx),
 	}

@@ -29,11 +29,8 @@ func NewNumberList() *NumberList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewNumberListWithCtx(anyctx interface{}) *NumberList {
-	ctx, ok := anyctx.(*C.vssc_number_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct NumberList."}
-	}
+func NewNumberListWithCtx(pointer unsafe.Pointer) *NumberList {
+	ctx := (*C.vssc_number_list_t /*ct2*/)(pointer)
 	obj := &NumberList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewNumberListWithCtx(anyctx interface{}) *NumberList {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewNumberListCopy(anyctx interface{}) *NumberList {
-	ctx, ok := anyctx.(*C.vssc_number_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &CoreSdkError{-1,"Cast error for struct NumberList."}
-	}
+func NewNumberListCopy(pointer unsafe.Pointer) *NumberList {
+	ctx := (*C.vssc_number_list_t /*ct2*/)(pointer)
 	obj := &NumberList{
 		cCtx: C.vssc_number_list_shallow_copy(ctx),
 	}
@@ -127,7 +121,7 @@ func (obj *NumberList) Next() *NumberList {
 
 	runtime.KeepAlive(obj)
 
-	return NewNumberListCopy(proxyResult) /* r5 */
+	return NewNumberListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -149,7 +143,7 @@ func (obj *NumberList) Prev() *NumberList {
 
 	runtime.KeepAlive(obj)
 
-	return NewNumberListCopy(proxyResult) /* r5 */
+	return NewNumberListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*

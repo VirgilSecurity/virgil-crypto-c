@@ -74,11 +74,8 @@ func NewFalcon() *Falcon {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewFalconWithCtx(anyctx interface{}) *Falcon {
-	ctx, ok := anyctx.(*C.vscf_falcon_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Falcon."}
-	}
+func NewFalconWithCtx(pointer unsafe.Pointer) *Falcon {
+	ctx := (*C.vscf_falcon_t /*ct10*/)(pointer)
 	obj := &Falcon{
 		cCtx: ctx,
 	}
@@ -89,11 +86,8 @@ func NewFalconWithCtx(anyctx interface{}) *Falcon {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewFalconCopy(anyctx interface{}) *Falcon {
-	ctx, ok := anyctx.(*C.vscf_falcon_t /*ct10*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct Falcon."}
-	}
+func NewFalconCopy(pointer unsafe.Pointer) *Falcon {
+	ctx := (*C.vscf_falcon_t /*ct10*/)(pointer)
 	obj := &Falcon{
 		cCtx: C.vscf_falcon_shallow_copy(ctx),
 	}
@@ -259,7 +253,7 @@ func (obj *Falcon) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
 	runtime.KeepAlive(publicKey)
 
-	return NewRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPublicKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -312,7 +306,7 @@ func (obj *Falcon) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
 
 	runtime.KeepAlive(privateKey)
 
-	return NewRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+	return NewRawPrivateKeyWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*

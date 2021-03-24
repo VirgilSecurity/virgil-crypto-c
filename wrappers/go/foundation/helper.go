@@ -1,5 +1,9 @@
 package foundation
 
+// #include <virgil/crypto/common/vsc_data.h>
+// #include <virgil/crypto/common/vsc_buffer.h>
+// #include <virgil/crypto/common/vsc_str.h>
+// #include <virgil/crypto/common/vsc_str_buffer.h>
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
 import unsafe "unsafe"

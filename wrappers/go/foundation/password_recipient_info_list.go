@@ -29,11 +29,8 @@ func NewPasswordRecipientInfoList() *PasswordRecipientInfoList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPasswordRecipientInfoListWithCtx(anyctx interface{}) *PasswordRecipientInfoList {
-	ctx, ok := anyctx.(*C.vscf_password_recipient_info_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PasswordRecipientInfoList."}
-	}
+func NewPasswordRecipientInfoListWithCtx(pointer unsafe.Pointer) *PasswordRecipientInfoList {
+	ctx := (*C.vscf_password_recipient_info_list_t /*ct2*/)(pointer)
 	obj := &PasswordRecipientInfoList{
 		cCtx: ctx,
 	}
@@ -44,11 +41,8 @@ func NewPasswordRecipientInfoListWithCtx(anyctx interface{}) *PasswordRecipientI
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
  */
-func NewPasswordRecipientInfoListCopy(anyctx interface{}) *PasswordRecipientInfoList {
-	ctx, ok := anyctx.(*C.vscf_password_recipient_info_list_t /*ct2*/)
-	if !ok {
-		return nil //TODO, &FoundationError{-1,"Cast error for struct PasswordRecipientInfoList."}
-	}
+func NewPasswordRecipientInfoListCopy(pointer unsafe.Pointer) *PasswordRecipientInfoList {
+	ctx := (*C.vscf_password_recipient_info_list_t /*ct2*/)(pointer)
 	obj := &PasswordRecipientInfoList{
 		cCtx: C.vscf_password_recipient_info_list_shallow_copy(ctx),
 	}
@@ -93,7 +87,7 @@ func (obj *PasswordRecipientInfoList) Item() *PasswordRecipientInfo {
 
 	runtime.KeepAlive(obj)
 
-	return NewPasswordRecipientInfoCopy(proxyResult) /* r5 */
+	return NewPasswordRecipientInfoCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -115,7 +109,7 @@ func (obj *PasswordRecipientInfoList) Next() *PasswordRecipientInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewPasswordRecipientInfoListCopy(proxyResult) /* r5 */
+	return NewPasswordRecipientInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
@@ -137,7 +131,7 @@ func (obj *PasswordRecipientInfoList) Prev() *PasswordRecipientInfoList {
 
 	runtime.KeepAlive(obj)
 
-	return NewPasswordRecipientInfoListCopy(proxyResult) /* r5 */
+	return NewPasswordRecipientInfoListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
