@@ -37,6 +37,7 @@ package phe
 import (
 	"github.com/stretchr/testify/require"
 	"testing"
+  unsafe "unsafe"
 	"virgil/foundation"
 )
 
@@ -51,7 +52,7 @@ func TestNewPheCipherWithCtx(t *testing.T) {
 	cipher := NewPheCipher()
 	defer cipher.Delete()
 
-	newCipher := NewPheCipherWithCtx(cipher.cCtx)
+	newCipher := NewPheCipherWithCtx(unsafe.Pointer(cipher.cCtx))
 	require.NotNil(t, newCipher)
 	require.Equal(t, cipher.cCtx, newCipher.cCtx)
 }
