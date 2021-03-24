@@ -16,10 +16,10 @@
     <require project="brainkey sdk" feature="library"/>
     <require project="keyknox sdk" feature="library"/>
 
-    <cgo_link platform="darwin" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl"/>
-    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl"/>
-    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl"/>
-    <cgo_link platform="windows" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl"/>
+    <cgo_link platform="darwin" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
+    <cgo_link platform="windows" libraries="-lvsc_comm_kit -lvsc_comm_kit_pb -lvsc_keyknox_sdk -lvsc_brainkey_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lnghttp2 -lssl -lcrypto -lpthread -ldl"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for CommKit.
