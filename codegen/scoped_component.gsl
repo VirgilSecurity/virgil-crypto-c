@@ -164,7 +164,7 @@ function class_add_scoped_components_to_extended_module (class, add_method_callb
         component_clean_copy (require, my.module)
     endfor
 
-    for my.class.constant where 0.scope = my.module.scope
+    for my.class.constant where 0.scope = my.module.scope & 0.visibility = "public"
         my.component = component_clean_copy (constant, my.module)
         my.component.definition = "public"
     endfor
@@ -179,7 +179,7 @@ function class_add_scoped_components_to_extended_module (class, add_method_callb
         my.component = component_clean_copy (callback, my.module)
     endfor
 
-    for my.class.method where 0.scope = my.module.scope
+    for my.class.method where 0.scope = my.module.scope & 0.declaration = "public"
         my.component = $(my.add_method_callback:) (my.class, method, my.module, my.meta)
         my.component.declaration = "public"
         my.component.definition = "external"
