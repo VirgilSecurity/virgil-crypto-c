@@ -94,16 +94,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_curl.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_x.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -281,10 +271,10 @@ target_sources(core_sdk
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_impl_private.h"
             "$<$<BOOL:${VSSC_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_api.h>"
-            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_curl.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_curl_defs.h>"
-            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_x.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_internal.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_x_defs.h>"
             "$<$<BOOL:${VSSC_BASE64_URL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_base64_url.h>"

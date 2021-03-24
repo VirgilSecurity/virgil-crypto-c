@@ -57,8 +57,14 @@
 #include "vssc_http_client_curl_defs.h"
 #include "vssc_http_client.h"
 #include "vssc_http_client_api.h"
+#include "vssc_http_response_internal.h"
 #include "vssc_impl.h"
 #include "vssc_api.h"
+
+#include <curl/curl.h>
+#include <ctype.h>
+#include <virgil/crypto/common/private/vsc_str_buffer_defs.h>
+#include <virgil/crypto/common/vsc_str_mutable.h>
 
 // clang-format on
 //  @end
