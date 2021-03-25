@@ -4,32 +4,34 @@ import "C"
 
 /*
 * Provides generic interface to the Key Encapsulation Mechanism (KEM).
- */
+*/
 type Kem interface {
-	context
 
-	/*
-	 * Return length in bytes required to hold encapsulated shared key.
-	 */
-	KemSharedKeyLen(key Key) uint
+    context
 
-	/*
-	 * Return length in bytes required to hold encapsulated key.
-	 */
-	KemEncapsulatedKeyLen(publicKey PublicKey) uint
+    /*
+    * Return length in bytes required to hold encapsulated shared key.
+    */
+    KemSharedKeyLen (key Key) uint
 
-	/*
-	 * Generate a shared key and a key encapsulated message.
-	 */
-	KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error)
+    /*
+    * Return length in bytes required to hold encapsulated key.
+    */
+    KemEncapsulatedKeyLen (publicKey PublicKey) uint
 
-	/*
-	 * Decapsulate the shared key.
-	 */
-	KemDecapsulate(encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error)
+    /*
+    * Generate a shared key and a key encapsulated message.
+    */
+    KemEncapsulate (publicKey PublicKey) ([]byte, []byte, error)
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Decapsulate the shared key.
+    */
+    KemDecapsulate (encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

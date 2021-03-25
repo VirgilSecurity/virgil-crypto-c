@@ -4,42 +4,44 @@ import "C"
 
 /*
 * Provides interface to the hashing (messege digest) algorithms.
- */
+*/
 type Hash interface {
-	context
 
-	/*
-	 * Length of the digest (hashing output) in bytes.
-	 */
-	GetDigestLen() uint
+    context
 
-	/*
-	 * Block length of the digest function in bytes.
-	 */
-	GetBlockLen() uint
+    /*
+    * Length of the digest (hashing output) in bytes.
+    */
+    GetDigestLen () uint
 
-	/*
-	 * Calculate hash over given data.
-	 */
-	Hash(data []byte) []byte
+    /*
+    * Block length of the digest function in bytes.
+    */
+    GetBlockLen () uint
 
-	/*
-	 * Start a new hashing.
-	 */
-	Start()
+    /*
+    * Calculate hash over given data.
+    */
+    Hash (data []byte) []byte
 
-	/*
-	 * Add given data to the hash.
-	 */
-	Update(data []byte)
+    /*
+    * Start a new hashing.
+    */
+    Start ()
 
-	/*
-	 * Accompilsh hashing and return it's result (a message digest).
-	 */
-	Finish() []byte
+    /*
+    * Add given data to the hash.
+    */
+    Update (data []byte)
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Accompilsh hashing and return it's result (a message digest).
+    */
+    Finish () []byte
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

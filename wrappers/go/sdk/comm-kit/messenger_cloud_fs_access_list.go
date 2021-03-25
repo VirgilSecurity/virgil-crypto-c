@@ -5,223 +5,224 @@ import "C"
 import unsafe "unsafe"
 import "runtime"
 
+
 /*
 * Handles a list of "messenger cloud fs access" class objects.
- */
+*/
 type MessengerCloudFsAccessList struct {
-	cCtx *C.vssq_messenger_cloud_fs_access_list_t /*ct2*/
+    cCtx *C.vssq_messenger_cloud_fs_access_list_t /*ct2*/
 }
 
 /* Handle underlying C context. */
 func (obj *MessengerCloudFsAccessList) Ctx() uintptr {
-	return uintptr(unsafe.Pointer(obj.cCtx))
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewMessengerCloudFsAccessList() *MessengerCloudFsAccessList {
-	ctx := C.vssq_messenger_cloud_fs_access_list_new()
-	obj := &MessengerCloudFsAccessList{
-		cCtx: ctx,
-	}
-	runtime.SetFinalizer(obj, (*MessengerCloudFsAccessList).Delete)
-	return obj
+    ctx := C.vssq_messenger_cloud_fs_access_list_new()
+    obj := &MessengerCloudFsAccessList {
+        cCtx: ctx,
+    }
+    runtime.SetFinalizer(obj, (*MessengerCloudFsAccessList).Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
- */
+*/
 func NewMessengerCloudFsAccessListWithCtx(pointer unsafe.Pointer) *MessengerCloudFsAccessList {
-	ctx := (*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)(pointer)
-	obj := &MessengerCloudFsAccessList{
-		cCtx: ctx,
-	}
-	runtime.SetFinalizer(obj, (*MessengerCloudFsAccessList).Delete)
-	return obj
+    ctx := (*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)(pointer)
+    obj := &MessengerCloudFsAccessList {
+        cCtx: ctx,
+    }
+    runtime.SetFinalizer(obj, (*MessengerCloudFsAccessList).Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
- */
+*/
 func NewMessengerCloudFsAccessListCopy(pointer unsafe.Pointer) *MessengerCloudFsAccessList {
-	ctx := (*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)(pointer)
-	obj := &MessengerCloudFsAccessList{
-		cCtx: C.vssq_messenger_cloud_fs_access_list_shallow_copy(ctx),
-	}
-	runtime.SetFinalizer(obj, (*MessengerCloudFsAccessList).Delete)
-	return obj
+    ctx := (*C.vssq_messenger_cloud_fs_access_list_t /*ct2*/)(pointer)
+    obj := &MessengerCloudFsAccessList {
+        cCtx: C.vssq_messenger_cloud_fs_access_list_shallow_copy(ctx),
+    }
+    runtime.SetFinalizer(obj, (*MessengerCloudFsAccessList).Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Delete() {
-	if obj == nil {
-		return
-	}
-	runtime.SetFinalizer(obj, nil)
-	obj.delete()
+    if obj == nil {
+        return
+    }
+    runtime.SetFinalizer(obj, nil)
+    obj.delete()
 }
 
 /*
 * Release underlying C context.
- */
+*/
 func (obj *MessengerCloudFsAccessList) delete() {
-	C.vssq_messenger_cloud_fs_access_list_delete(obj.cCtx)
+    C.vssq_messenger_cloud_fs_access_list_delete(obj.cCtx)
 }
 
 /*
 * Return items count in a list.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Count() uint {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_count(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_count(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return uint(proxyResult) /* r9 */
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Add new item to the list.
 * Note, ownership is transfered.
- */
+*/
 func (obj *MessengerCloudFsAccessList) AddUser(user *MessengerUser, permission MessengerCloudFsPermission) {
-	C.vssq_messenger_cloud_fs_access_list_add_user(obj.cCtx, (*C.vssq_messenger_user_t)(unsafe.Pointer(user.Ctx())), C.vssq_messenger_cloud_fs_permission_t(permission) /*pa7*/)
+    C.vssq_messenger_cloud_fs_access_list_add_user(obj.cCtx, (*C.vssq_messenger_user_t)(unsafe.Pointer(user.Ctx())), C.vssq_messenger_cloud_fs_permission_t(permission) /*pa7*/)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	runtime.KeepAlive(user)
+    runtime.KeepAlive(user)
 
-	return
+    return
 }
 
 /*
 * Add new item to the list.
 * Note, ownership is transfered.
- */
+*/
 func (obj *MessengerCloudFsAccessList) AddUserWithIdentity(identity string, permission MessengerCloudFsPermission) {
-	identityChar := C.CString(identity)
-	defer C.free(unsafe.Pointer(identityChar))
-	identityStr := C.vsc_str_from_str(identityChar)
+    identityChar := C.CString(identity)
+    defer C.free(unsafe.Pointer(identityChar))
+    identityStr := C.vsc_str_from_str(identityChar)
 
-	C.vssq_messenger_cloud_fs_access_list_add_user_with_identity(obj.cCtx, identityStr, C.vssq_messenger_cloud_fs_permission_t(permission) /*pa7*/)
+    C.vssq_messenger_cloud_fs_access_list_add_user_with_identity(obj.cCtx, identityStr, C.vssq_messenger_cloud_fs_permission_t(permission) /*pa7*/)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	runtime.KeepAlive(identity)
+    runtime.KeepAlive(identity)
 
-	return
+    return
 }
 
 /*
 * Add new item to the list.
 * Note, ownership is transfered.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Add(access *MessengerCloudFsAccess) {
-	C.vssq_messenger_cloud_fs_access_list_add(obj.cCtx, (*C.vssq_messenger_cloud_fs_access_t)(unsafe.Pointer(access.Ctx())))
+    C.vssq_messenger_cloud_fs_access_list_add(obj.cCtx, (*C.vssq_messenger_cloud_fs_access_t)(unsafe.Pointer(access.Ctx())))
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	runtime.KeepAlive(access)
+    runtime.KeepAlive(access)
 
-	return
+    return
 }
 
 /*
 * Return true if given list has item.
- */
+*/
 func (obj *MessengerCloudFsAccessList) HasItem() bool {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_has_item(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_has_item(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return bool(proxyResult) /* r9 */
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return list item.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Item() *MessengerCloudFsAccess {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_item(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_item(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessCopy(unsafe.Pointer(proxyResult)) /* r5 */
+    return NewMessengerCloudFsAccessCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
 * Return true if list has next item.
- */
+*/
 func (obj *MessengerCloudFsAccessList) HasNext() bool {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_has_next(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_has_next(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return bool(proxyResult) /* r9 */
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return next list node if exists, or NULL otherwise.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Next() *MessengerCloudFsAccessList {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_next(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_next(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
+    return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
 * Return true if list has previous item.
- */
+*/
 func (obj *MessengerCloudFsAccessList) HasPrev() bool {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_has_prev(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_has_prev(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return bool(proxyResult) /* r9 */
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return previous list node if exists, or NULL otherwise.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Prev() *MessengerCloudFsAccessList {
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_prev(obj.cCtx)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_prev(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
+    return NewMessengerCloudFsAccessListCopy(unsafe.Pointer(proxyResult)) /* r5 */
 }
 
 /*
 * Remove all items.
- */
+*/
 func (obj *MessengerCloudFsAccessList) Clear() {
-	C.vssq_messenger_cloud_fs_access_list_clear(obj.cCtx)
+    C.vssq_messenger_cloud_fs_access_list_clear(obj.cCtx)
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return
+    return
 }
 
 /*
 * Find user with a given identity.
- */
+*/
 func (obj *MessengerCloudFsAccessList) FindWithIdentity(userIdentity string) (*MessengerCloudFsAccess, error) {
-	var error C.vssq_error_t
-	C.vssq_error_reset(&error)
-	userIdentityChar := C.CString(userIdentity)
-	defer C.free(unsafe.Pointer(userIdentityChar))
-	userIdentityStr := C.vsc_str_from_str(userIdentityChar)
+    var error C.vssq_error_t
+    C.vssq_error_reset(&error)
+    userIdentityChar := C.CString(userIdentity)
+    defer C.free(unsafe.Pointer(userIdentityChar))
+    userIdentityStr := C.vsc_str_from_str(userIdentityChar)
 
-	proxyResult := /*pr4*/ C.vssq_messenger_cloud_fs_access_list_find_with_identity(obj.cCtx, userIdentityStr, &error)
+    proxyResult := /*pr4*/C.vssq_messenger_cloud_fs_access_list_find_with_identity(obj.cCtx, userIdentityStr, &error)
 
-	err := CommKitErrorHandleStatus(error.status)
-	if err != nil {
-		return nil, err
-	}
+    err := CommKitErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	runtime.KeepAlive(userIdentity)
+    runtime.KeepAlive(userIdentity)
 
-	return NewMessengerCloudFsAccessCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
+    return NewMessengerCloudFsAccessCopy(unsafe.Pointer(proxyResult)) /* r5 */, nil
 }

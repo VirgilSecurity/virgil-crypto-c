@@ -9,3 +9,4 @@ package sdk_keyknox
 // #cgo windows CFLAGS: -I${SRCDIR}/../../pkg/windows_amd64/include/
 // #cgo windows LDFLAGS: -L${SRCDIR}/../../pkg/windows_amd64/lib -lvsc_keyknox_sdk -lvsc_core_sdk -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -ljson-c -lfalcon -lround5 -lcurl -lcares -lssl -lcrypto -lpthread -ldl
 import "C"
+

@@ -4,22 +4,24 @@ import "C"
 
 /*
 * Provide interface for data encryption.
- */
+*/
 type Decrypt interface {
-	context
 
-	/*
-	 * Decrypt given data.
-	 */
-	Decrypt(data []byte) ([]byte, error)
+    context
 
-	/*
-	 * Calculate required buffer length to hold the decrypted data.
-	 */
-	DecryptedLen(dataLen uint) uint
+    /*
+    * Decrypt given data.
+    */
+    Decrypt (data []byte) ([]byte, error)
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Calculate required buffer length to hold the decrypted data.
+    */
+    DecryptedLen (dataLen uint) uint
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

@@ -4,17 +4,19 @@ import "C"
 
 /*
 * HTTP client interface.
- */
+*/
 type HttpClient interface {
-	context
 
-	/*
-	 * Send given request over HTTP.
-	 */
-	Send(httpRequest *HttpRequest) (*HttpResponse, error)
+    context
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Send given request over HTTP.
+    */
+    Send (httpRequest *HttpRequest) (*HttpResponse, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

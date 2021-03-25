@@ -6,15 +6,15 @@ import unsafe "unsafe"
 import "runtime"
 import sdk_core "virgil/sdk/core"
 
+
 /*
 * Helps to normalize and hash user contacts: username, email, phone, etc.
- */
+*/
 type ContactUtils struct {
 }
-
 const (
-	ContactUtilsDigestHexLen   uint = 64
-	ContactUtilsUsernameLenMax uint = 20
+    ContactUtilsDigestHexLen uint = 64
+    ContactUtilsUsernameLenMax uint = 20
 )
 
 /*
@@ -28,48 +28,50 @@ const (
 *
 * Normalization rules:
 * 1. To lowercase
- */
+*/
 func ContactUtilsNormalizeUsername(username string) (string, error) {
-	usernameChar := C.CString(username)
-	defer C.free(unsafe.Pointer(usernameChar))
-	usernameStr := C.vsc_str_from_str(usernameChar)
+    usernameChar := C.CString(username)
+    defer C.free(unsafe.Pointer(usernameChar))
+    usernameStr := C.vsc_str_from_str(usernameChar)
 
-	normalizedBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(len(username)))
-	defer C.vsc_str_buffer_delete(normalizedBuf)
+    normalizedBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(len(username)))
+    defer C.vsc_str_buffer_delete(normalizedBuf)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_normalize_username(usernameStr, normalizedBuf)
 
-	err := CommKitErrorHandleStatus(proxyResult)
-	if err != nil {
-		return "", err
-	}
+    proxyResult := /*pr4*/C.vssq_contact_utils_normalize_username(usernameStr, normalizedBuf)
 
-	runtime.KeepAlive(username)
+    err := CommKitErrorHandleStatus(proxyResult)
+    if err != nil {
+        return "", err
+    }
 
-	return C.GoString(C.vsc_str_buffer_chars(normalizedBuf)) /* r7.1 */, nil
+    runtime.KeepAlive(username)
+
+    return C.GoString(C.vsc_str_buffer_chars(normalizedBuf)) /* r7.1 */, nil
 }
 
 /*
 * Validate, normalize, and hash username.
- */
+*/
 func ContactUtilsHashUsername(username string) (string, error) {
-	usernameChar := C.CString(username)
-	defer C.free(unsafe.Pointer(usernameChar))
-	usernameStr := C.vsc_str_from_str(usernameChar)
+    usernameChar := C.CString(username)
+    defer C.free(unsafe.Pointer(usernameChar))
+    usernameStr := C.vsc_str_from_str(usernameChar)
 
-	digestHexBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(ContactUtilsDigestHexLen /* lg4 */))
-	defer C.vsc_str_buffer_delete(digestHexBuf)
+    digestHexBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(ContactUtilsDigestHexLen /* lg4 */))
+    defer C.vsc_str_buffer_delete(digestHexBuf)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_hash_username(usernameStr, digestHexBuf)
 
-	err := CommKitErrorHandleStatus(proxyResult)
-	if err != nil {
-		return "", err
-	}
+    proxyResult := /*pr4*/C.vssq_contact_utils_hash_username(usernameStr, digestHexBuf)
 
-	runtime.KeepAlive(username)
+    err := CommKitErrorHandleStatus(proxyResult)
+    if err != nil {
+        return "", err
+    }
 
-	return C.GoString(C.vsc_str_buffer_chars(digestHexBuf)) /* r7.1 */, nil
+    runtime.KeepAlive(username)
+
+    return C.GoString(C.vsc_str_buffer_chars(digestHexBuf)) /* r7.1 */, nil
 }
 
 /*
@@ -78,21 +80,21 @@ func ContactUtilsHashUsername(username string) (string, error) {
 * Return a map "username->hash".
 *
 * Note, usernames in the returned map equals to the given.
- */
+*/
 func ContactUtilsHashUsernames(usernames *sdk_core.StringList) (*sdk_core.StringMap, error) {
-	var error C.vssq_error_t
-	C.vssq_error_reset(&error)
+    var error C.vssq_error_t
+    C.vssq_error_reset(&error)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_hash_usernames((*C.vssc_string_list_t)(unsafe.Pointer(usernames.Ctx())), &error)
+    proxyResult := /*pr4*/C.vssq_contact_utils_hash_usernames((*C.vssc_string_list_t)(unsafe.Pointer(usernames.Ctx())), &error)
 
-	err := CommKitErrorHandleStatus(error.status)
-	if err != nil {
-		return nil, err
-	}
+    err := CommKitErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
-	runtime.KeepAlive(usernames)
+    runtime.KeepAlive(usernames)
 
-	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+    return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -102,22 +104,22 @@ func ContactUtilsHashUsernames(usernames *sdk_core.StringList) (*sdk_core.String
 * 1. Start with plus (+) sign.
 * 2. Contains only digits after plus sign.
 * 3. Phone number max 15 digits.
- */
+*/
 func ContactUtilsValidatePhoneNumber(phoneNumber string) error {
-	phoneNumberChar := C.CString(phoneNumber)
-	defer C.free(unsafe.Pointer(phoneNumberChar))
-	phoneNumberStr := C.vsc_str_from_str(phoneNumberChar)
+    phoneNumberChar := C.CString(phoneNumber)
+    defer C.free(unsafe.Pointer(phoneNumberChar))
+    phoneNumberStr := C.vsc_str_from_str(phoneNumberChar)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_validate_phone_number(phoneNumberStr)
+    proxyResult := /*pr4*/C.vssq_contact_utils_validate_phone_number(phoneNumberStr)
 
-	err := CommKitErrorHandleStatus(proxyResult)
-	if err != nil {
-		return err
-	}
+    err := CommKitErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
 
-	runtime.KeepAlive(phoneNumber)
+    runtime.KeepAlive(phoneNumber)
 
-	return nil
+    return nil
 }
 
 /*
@@ -129,25 +131,26 @@ func ContactUtilsValidatePhoneNumber(phoneNumber string) error {
 * 3. Phone number max 15 digits.
 *
 * Note, for now given phone number is not formatted.
- */
+*/
 func ContactUtilsHashPhoneNumber(phoneNumber string) (string, error) {
-	phoneNumberChar := C.CString(phoneNumber)
-	defer C.free(unsafe.Pointer(phoneNumberChar))
-	phoneNumberStr := C.vsc_str_from_str(phoneNumberChar)
+    phoneNumberChar := C.CString(phoneNumber)
+    defer C.free(unsafe.Pointer(phoneNumberChar))
+    phoneNumberStr := C.vsc_str_from_str(phoneNumberChar)
 
-	digestHexBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(ContactUtilsDigestHexLen /* lg4 */))
-	defer C.vsc_str_buffer_delete(digestHexBuf)
+    digestHexBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(ContactUtilsDigestHexLen /* lg4 */))
+    defer C.vsc_str_buffer_delete(digestHexBuf)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_hash_phone_number(phoneNumberStr, digestHexBuf)
 
-	err := CommKitErrorHandleStatus(proxyResult)
-	if err != nil {
-		return "", err
-	}
+    proxyResult := /*pr4*/C.vssq_contact_utils_hash_phone_number(phoneNumberStr, digestHexBuf)
 
-	runtime.KeepAlive(phoneNumber)
+    err := CommKitErrorHandleStatus(proxyResult)
+    if err != nil {
+        return "", err
+    }
 
-	return C.GoString(C.vsc_str_buffer_chars(digestHexBuf)) /* r7.1 */, nil
+    runtime.KeepAlive(phoneNumber)
+
+    return C.GoString(C.vsc_str_buffer_chars(digestHexBuf)) /* r7.1 */, nil
 }
 
 /*
@@ -156,21 +159,21 @@ func ContactUtilsHashPhoneNumber(phoneNumber string) (string, error) {
 * Return a map "phone-number->hash".
 *
 * Note, phone numbers in the returned map equals to the given.
- */
+*/
 func ContactUtilsHashPhoneNumbers(phoneNumbers *sdk_core.StringList) (*sdk_core.StringMap, error) {
-	var error C.vssq_error_t
-	C.vssq_error_reset(&error)
+    var error C.vssq_error_t
+    C.vssq_error_reset(&error)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_hash_phone_numbers((*C.vssc_string_list_t)(unsafe.Pointer(phoneNumbers.Ctx())), &error)
+    proxyResult := /*pr4*/C.vssq_contact_utils_hash_phone_numbers((*C.vssc_string_list_t)(unsafe.Pointer(phoneNumbers.Ctx())), &error)
 
-	err := CommKitErrorHandleStatus(error.status)
-	if err != nil {
-		return nil, err
-	}
+    err := CommKitErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
-	runtime.KeepAlive(phoneNumbers)
+    runtime.KeepAlive(phoneNumbers)
 
-	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+    return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -178,22 +181,22 @@ func ContactUtilsHashPhoneNumbers(phoneNumbers *sdk_core.StringList) (*sdk_core.
 *
 * Validation rules:
 * 1. Check email regex: "(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$)".
- */
+*/
 func ContactUtilsValidateEmail(email string) error {
-	emailChar := C.CString(email)
-	defer C.free(unsafe.Pointer(emailChar))
-	emailStr := C.vsc_str_from_str(emailChar)
+    emailChar := C.CString(email)
+    defer C.free(unsafe.Pointer(emailChar))
+    emailStr := C.vsc_str_from_str(emailChar)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_validate_email(emailStr)
+    proxyResult := /*pr4*/C.vssq_contact_utils_validate_email(emailStr)
 
-	err := CommKitErrorHandleStatus(proxyResult)
-	if err != nil {
-		return err
-	}
+    err := CommKitErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
 
-	runtime.KeepAlive(email)
+    runtime.KeepAlive(email)
 
-	return nil
+    return nil
 }
 
 /*
@@ -206,25 +209,26 @@ func ContactUtilsValidateEmail(email string) error {
 * 1. To lowercase
 * 2. Remove dots.
 * 3. Remove suffix that starts with a plus sign.
- */
+*/
 func ContactUtilsHashEmail(email string) (string, error) {
-	emailChar := C.CString(email)
-	defer C.free(unsafe.Pointer(emailChar))
-	emailStr := C.vsc_str_from_str(emailChar)
+    emailChar := C.CString(email)
+    defer C.free(unsafe.Pointer(emailChar))
+    emailStr := C.vsc_str_from_str(emailChar)
 
-	digestHexBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(ContactUtilsDigestHexLen /* lg4 */))
-	defer C.vsc_str_buffer_delete(digestHexBuf)
+    digestHexBuf := C.vsc_str_buffer_new_with_capacity((C.size_t)(ContactUtilsDigestHexLen /* lg4 */))
+    defer C.vsc_str_buffer_delete(digestHexBuf)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_hash_email(emailStr, digestHexBuf)
 
-	err := CommKitErrorHandleStatus(proxyResult)
-	if err != nil {
-		return "", err
-	}
+    proxyResult := /*pr4*/C.vssq_contact_utils_hash_email(emailStr, digestHexBuf)
 
-	runtime.KeepAlive(email)
+    err := CommKitErrorHandleStatus(proxyResult)
+    if err != nil {
+        return "", err
+    }
 
-	return C.GoString(C.vsc_str_buffer_chars(digestHexBuf)) /* r7.1 */, nil
+    runtime.KeepAlive(email)
+
+    return C.GoString(C.vsc_str_buffer_chars(digestHexBuf)) /* r7.1 */, nil
 }
 
 /*
@@ -233,21 +237,21 @@ func ContactUtilsHashEmail(email string) (string, error) {
 * Return a map "email->hash".
 *
 * Note, emails in the returned map equals to the given.
- */
+*/
 func ContactUtilsHashEmails(emails *sdk_core.StringList) (*sdk_core.StringMap, error) {
-	var error C.vssq_error_t
-	C.vssq_error_reset(&error)
+    var error C.vssq_error_t
+    C.vssq_error_reset(&error)
 
-	proxyResult := /*pr4*/ C.vssq_contact_utils_hash_emails((*C.vssc_string_list_t)(unsafe.Pointer(emails.Ctx())), &error)
+    proxyResult := /*pr4*/C.vssq_contact_utils_hash_emails((*C.vssc_string_list_t)(unsafe.Pointer(emails.Ctx())), &error)
 
-	err := CommKitErrorHandleStatus(error.status)
-	if err != nil {
-		return nil, err
-	}
+    err := CommKitErrorHandleStatus(error.status)
+    if err != nil {
+        return nil, err
+    }
 
-	runtime.KeepAlive(emails)
+    runtime.KeepAlive(emails)
 
-	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
+    return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */, nil
 }
 
 /*
@@ -256,13 +260,13 @@ func ContactUtilsHashEmails(emails *sdk_core.StringList) (*sdk_core.StringMap, e
 * Contact request map : username | email | phone-number -> hash
 * Contact response map: hash -> identity
 * Final map : username | email | phone-number -> identity
- */
+*/
 func ContactUtilsMergeContactDiscoveryMaps(contactRequestMap *sdk_core.StringMap, contactResponseMap *sdk_core.StringMap) *sdk_core.StringMap {
-	proxyResult := /*pr4*/ C.vssq_contact_utils_merge_contact_discovery_maps((*C.vssc_string_map_t)(unsafe.Pointer(contactRequestMap.Ctx())), (*C.vssc_string_map_t)(unsafe.Pointer(contactResponseMap.Ctx())))
+    proxyResult := /*pr4*/C.vssq_contact_utils_merge_contact_discovery_maps((*C.vssc_string_map_t)(unsafe.Pointer(contactRequestMap.Ctx())), (*C.vssc_string_map_t)(unsafe.Pointer(contactResponseMap.Ctx())))
 
-	runtime.KeepAlive(contactRequestMap)
+    runtime.KeepAlive(contactRequestMap)
 
-	runtime.KeepAlive(contactResponseMap)
+    runtime.KeepAlive(contactResponseMap)
 
-	return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
+    return sdk_core.NewStringMapWithCtx(unsafe.Pointer(proxyResult)) /* r6 */
 }

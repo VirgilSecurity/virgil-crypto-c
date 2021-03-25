@@ -5,6 +5,7 @@ import "C"
 
 type context interface {
 
-	/* Get C context */
-	Ctx() uintptr
+    /* Get C context */
+    Ctx () uintptr
 }
+

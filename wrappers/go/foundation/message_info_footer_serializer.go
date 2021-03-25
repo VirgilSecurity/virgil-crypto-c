@@ -4,27 +4,29 @@ import "C"
 
 /*
 * Provide interface for "message info footer" class serialization.
- */
+*/
 type MessageInfoFooterSerializer interface {
-	context
 
-	/*
-	 * Return buffer size enough to hold serialized message info footer.
-	 */
-	SerializedFooterLen(messageInfoFooter *MessageInfoFooter) uint
+    context
 
-	/*
-	 * Serialize class "message info footer".
-	 */
-	SerializeFooter(messageInfoFooter *MessageInfoFooter) []byte
+    /*
+    * Return buffer size enough to hold serialized message info footer.
+    */
+    SerializedFooterLen (messageInfoFooter *MessageInfoFooter) uint
 
-	/*
-	 * Deserialize class "message info footer".
-	 */
-	DeserializeFooter(data []byte) (*MessageInfoFooter, error)
+    /*
+    * Serialize class "message info footer".
+    */
+    SerializeFooter (messageInfoFooter *MessageInfoFooter) []byte
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Deserialize class "message info footer".
+    */
+    DeserializeFooter (data []byte) (*MessageInfoFooter, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

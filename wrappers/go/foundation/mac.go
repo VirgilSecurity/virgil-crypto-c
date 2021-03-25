@@ -4,43 +4,45 @@ import "C"
 
 /*
 * Provides interface to the stateless MAC (message authentication code) algorithms.
- */
+*/
 type Mac interface {
-	context
 
-	/*
-	 * Size of the digest (mac output) in bytes.
-	 */
-	DigestLen() uint
+    context
 
-	/*
-	 * Calculate MAC over given data.
-	 */
-	Mac(key []byte, data []byte) []byte
+    /*
+    * Size of the digest (mac output) in bytes.
+    */
+    DigestLen () uint
 
-	/*
-	 * Start a new MAC.
-	 */
-	Start(key []byte)
+    /*
+    * Calculate MAC over given data.
+    */
+    Mac (key []byte, data []byte) []byte
 
-	/*
-	 * Add given data to the MAC.
-	 */
-	Update(data []byte)
+    /*
+    * Start a new MAC.
+    */
+    Start (key []byte)
 
-	/*
-	 * Accomplish MAC and return it's result (a message digest).
-	 */
-	Finish() []byte
+    /*
+    * Add given data to the MAC.
+    */
+    Update (data []byte)
 
-	/*
-	 * Prepare to authenticate a new message with the same key
-	 * as the previous MAC operation.
-	 */
-	Reset()
+    /*
+    * Accomplish MAC and return it's result (a message digest).
+    */
+    Finish () []byte
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Prepare to authenticate a new message with the same key
+    * as the previous MAC operation.
+    */
+    Reset ()
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

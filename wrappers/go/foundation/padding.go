@@ -4,71 +4,73 @@ import "C"
 
 /*
 * Provide an interface to add and remove data padding.
- */
+*/
 type Padding interface {
-	context
 
-	/*
-	 * Set new padding parameters.
-	 */
-	Configure(params *PaddingParams)
+    context
 
-	/*
-	 * Return length in bytes of a data with a padding.
-	 */
-	PaddedDataLen(dataLen uint) uint
+    /*
+    * Set new padding parameters.
+    */
+    Configure (params *PaddingParams)
 
-	/*
-	 * Return an actual number of padding in bytes.
-	 * Note, this method might be called right before "finish data processing".
-	 */
-	Len() uint
+    /*
+    * Return length in bytes of a data with a padding.
+    */
+    PaddedDataLen (dataLen uint) uint
 
-	/*
-	 * Return a maximum number of padding in bytes.
-	 */
-	LenMax() uint
+    /*
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
+    */
+    Len () uint
 
-	/*
-	 * Prepare the algorithm to process data.
-	 */
-	StartDataProcessing()
+    /*
+    * Return a maximum number of padding in bytes.
+    */
+    LenMax () uint
 
-	/*
-	 * Only data length is needed to produce padding later.
-	 * Return data that should be further proceeded.
-	 */
-	ProcessData(data []byte) []byte
+    /*
+    * Prepare the algorithm to process data.
+    */
+    StartDataProcessing ()
 
-	/*
-	 * Accomplish data processing and return padding.
-	 */
-	FinishDataProcessing() ([]byte, error)
+    /*
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
+    */
+    ProcessData (data []byte) []byte
 
-	/*
-	 * Prepare the algorithm to process padded data.
-	 */
-	StartPaddedDataProcessing()
+    /*
+    * Accomplish data processing and return padding.
+    */
+    FinishDataProcessing () ([]byte, error)
 
-	/*
-	 * Process padded data.
-	 * Return filtered data without padding.
-	 */
-	ProcessPaddedData(data []byte) []byte
+    /*
+    * Prepare the algorithm to process padded data.
+    */
+    StartPaddedDataProcessing ()
 
-	/*
-	 * Return length in bytes required hold output of the method
-	 * "finish padded data processing".
-	 */
-	FinishPaddedDataProcessingOutLen() uint
+    /*
+    * Process padded data.
+    * Return filtered data without padding.
+    */
+    ProcessPaddedData (data []byte) []byte
 
-	/*
-	 * Accomplish padded data processing and return left data without a padding.
-	 */
-	FinishPaddedDataProcessing() ([]byte, error)
+    /*
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
+    */
+    FinishPaddedDataProcessingOutLen () uint
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Accomplish padded data processing and return left data without a padding.
+    */
+    FinishPaddedDataProcessing () ([]byte, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

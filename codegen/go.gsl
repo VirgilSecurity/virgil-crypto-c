@@ -2662,10 +2662,11 @@ function go_wrap_c_returned_value (go_return, go_module, go_project)
         return "unsafe.Pointer($(my.name:)) /* r3 */"
 
     elsif is_true (0.is_interface)
+        go_create_import ("unsafe", "unsafe", my.go_module)
         if string_in (go_return.access, "readonly, readwrite")
-            return "$(my.package:)ImplementationWrap$(my.go_return.type:)Copy($(my.name:)) /* r4.1 */"
+            return "$(my.package:)ImplementationWrap$(my.go_return.type:)Copy(unsafe.Pointer($(my.name:))) /* r4.1 */"
         else
-            return "$(my.package:)ImplementationWrap$(my.go_return.type:)($(my.name:)) /* r4 */"
+            return "$(my.package:)ImplementationWrap$(my.go_return.type:)(unsafe.Pointer($(my.name:))) /* r4 */"
         endif
 
     elsif is_true (0.is_class) & is_false (0.is_buffer)
@@ -2769,8 +2770,8 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
 
         my.ctx_type = go_derive_struct_default_context_type()
         new go_argument to go_func
-            .name = "anyctx"
-            .type = "interface{}"
+            .name = "pointer"
+            .type = "unsafe.Pointer"
         endnew
 
         new go_return to go_func
@@ -2781,10 +2782,7 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             .temp_code = format_left("\
-                ctx, ok := anyctx. ($(my.ctx_type:))
-                if !ok {
-                    return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Cast error for interface $(my.interface_name:).\"}
-                }
+                ctx := ($(my.ctx_type:))(pointer)
                 if (!C.$(my.method_is_implemented:)(ctx)) {
                     return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Given C implementation does not implement interface $(my.interface_name:).\"}
                 }
@@ -2807,8 +2805,8 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
         .is_static = "1"
 
         new go_argument to go_func
-            .name = "anyctx"
-            .type = "interface{}"
+            .name = "pointer"
+            .type = "unsafe.Pointer"
         endnew
 
         new go_return to go_func
@@ -2819,12 +2817,9 @@ function go_get_implementation_helper_interface_func (go_struct, interface, go_p
             my.method_of_class = my.interface.of_class ? my.interface.name
             my.method_is_implemented = make_ref_c (make_id ("class", my.method_of_class, "method", "is_implemented"))
             . = format_left("\
-                ctx, ok := anyctx. ($(my.ctx_type:))
-                if !ok {
-                    return nil, &$(go_derive_enum_status_name (my.go_project):){-1,\"Cast error for interface $(my.interface_name:).\"}
-                }
+                ctx := ($(my.ctx_type:))(pointer)
                 shallowCopy := C..(c_class_impl_method_shallow_copy)(ctx)
-                return $(my.go_struct.name:)$(my.interface_func_name:)(shallowCopy)
+                return $(my.go_struct.name:)$(my.interface_func_name:)(unsafe.Pointer(shallowCopy))
             ")
         endnew
     endnew

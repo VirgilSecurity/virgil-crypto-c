@@ -4,22 +4,24 @@ import "C"
 
 /*
 * Defines generic interface for the entropy source.
- */
+*/
 type EntropySource interface {
-	context
 
-	/*
-	 * Defines that implemented source is strong.
-	 */
-	IsStrong() bool
+    context
 
-	/*
-	 * Gather entropy of the requested length.
-	 */
-	Gather(len uint) ([]byte, error)
+    /*
+    * Defines that implemented source is strong.
+    */
+    IsStrong () bool
 
-	/*
-	 * Release underlying C context.
-	 */
-	Delete()
+    /*
+    * Gather entropy of the requested length.
+    */
+    Gather (len uint) ([]byte, error)
+
+    /*
+    * Release underlying C context.
+    */
+    Delete ()
 }
+

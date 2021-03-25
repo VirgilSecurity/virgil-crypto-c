@@ -6,133 +6,134 @@ import unsafe "unsafe"
 import "runtime"
 import foundation "virgil/foundation"
 
+
 /*
 * Implements wrap rotation.
- */
+*/
 type UokmsWrapRotation struct {
-	cCtx *C.vsce_uokms_wrap_rotation_t /*ct2*/
+    cCtx *C.vsce_uokms_wrap_rotation_t /*ct2*/
 }
 
 /* Handle underlying C context. */
 func (obj *UokmsWrapRotation) Ctx() uintptr {
-	return uintptr(unsafe.Pointer(obj.cCtx))
+    return uintptr(unsafe.Pointer(obj.cCtx))
 }
 
 func NewUokmsWrapRotation() *UokmsWrapRotation {
-	ctx := C.vsce_uokms_wrap_rotation_new()
-	obj := &UokmsWrapRotation{
-		cCtx: ctx,
-	}
-	runtime.SetFinalizer(obj, (*UokmsWrapRotation).Delete)
-	return obj
+    ctx := C.vsce_uokms_wrap_rotation_new()
+    obj := &UokmsWrapRotation {
+        cCtx: ctx,
+    }
+    runtime.SetFinalizer(obj, (*UokmsWrapRotation).Delete)
+    return obj
 }
 
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
- */
+*/
 func NewUokmsWrapRotationWithCtx(pointer unsafe.Pointer) *UokmsWrapRotation {
-	ctx := (*C.vsce_uokms_wrap_rotation_t /*ct2*/)(pointer)
-	obj := &UokmsWrapRotation{
-		cCtx: ctx,
-	}
-	runtime.SetFinalizer(obj, (*UokmsWrapRotation).Delete)
-	return obj
+    ctx := (*C.vsce_uokms_wrap_rotation_t /*ct2*/)(pointer)
+    obj := &UokmsWrapRotation {
+        cCtx: ctx,
+    }
+    runtime.SetFinalizer(obj, (*UokmsWrapRotation).Delete)
+    return obj
 }
 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
- */
+*/
 func NewUokmsWrapRotationCopy(pointer unsafe.Pointer) *UokmsWrapRotation {
-	ctx := (*C.vsce_uokms_wrap_rotation_t /*ct2*/)(pointer)
-	obj := &UokmsWrapRotation{
-		cCtx: C.vsce_uokms_wrap_rotation_shallow_copy(ctx),
-	}
-	runtime.SetFinalizer(obj, (*UokmsWrapRotation).Delete)
-	return obj
+    ctx := (*C.vsce_uokms_wrap_rotation_t /*ct2*/)(pointer)
+    obj := &UokmsWrapRotation {
+        cCtx: C.vsce_uokms_wrap_rotation_shallow_copy(ctx),
+    }
+    runtime.SetFinalizer(obj, (*UokmsWrapRotation).Delete)
+    return obj
 }
 
 /*
 * Release underlying C context.
- */
+*/
 func (obj *UokmsWrapRotation) Delete() {
-	if obj == nil {
-		return
-	}
-	runtime.SetFinalizer(obj, nil)
-	obj.delete()
+    if obj == nil {
+        return
+    }
+    runtime.SetFinalizer(obj, nil)
+    obj.delete()
 }
 
 /*
 * Release underlying C context.
- */
+*/
 func (obj *UokmsWrapRotation) delete() {
-	C.vsce_uokms_wrap_rotation_delete(obj.cCtx)
+    C.vsce_uokms_wrap_rotation_delete(obj.cCtx)
 }
 
 /*
 * Random used for crypto operations to make them const-time
- */
+*/
 func (obj *UokmsWrapRotation) SetOperationRandom(operationRandom foundation.Random) {
-	C.vsce_uokms_wrap_rotation_release_operation_random(obj.cCtx)
-	C.vsce_uokms_wrap_rotation_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
+    C.vsce_uokms_wrap_rotation_release_operation_random(obj.cCtx)
+    C.vsce_uokms_wrap_rotation_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
 
-	runtime.KeepAlive(operationRandom)
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(operationRandom)
+    runtime.KeepAlive(obj)
 }
 
 /*
 * Setups dependencies with default values.
- */
+*/
 func (obj *UokmsWrapRotation) SetupDefaults() error {
-	proxyResult := /*pr4*/ C.vsce_uokms_wrap_rotation_setup_defaults(obj.cCtx)
+    proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_setup_defaults(obj.cCtx)
 
-	err := PheErrorHandleStatus(proxyResult)
-	if err != nil {
-		return err
-	}
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return nil
+    return nil
 }
 
 /*
 * Sets update token. Should be called only once and before any other function
- */
+*/
 func (obj *UokmsWrapRotation) SetUpdateToken(updateToken []byte) error {
-	updateTokenData := helperWrapData(updateToken)
+    updateTokenData := helperWrapData (updateToken)
 
-	proxyResult := /*pr4*/ C.vsce_uokms_wrap_rotation_set_update_token(obj.cCtx, updateTokenData)
+    proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_set_update_token(obj.cCtx, updateTokenData)
 
-	err := PheErrorHandleStatus(proxyResult)
-	if err != nil {
-		return err
-	}
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return err
+    }
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return nil
+    return nil
 }
 
 /*
 * Updates EnrollmentRecord using server's update token
- */
+*/
 func (obj *UokmsWrapRotation) UpdateWrap(wrap []byte) ([]byte, error) {
-	newWrapBuf, newWrapBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
-	if newWrapBufErr != nil {
-		return nil, newWrapBufErr
-	}
-	defer newWrapBuf.delete()
-	wrapData := helperWrapData(wrap)
+    newWrapBuf, newWrapBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    if newWrapBufErr != nil {
+        return nil, newWrapBufErr
+    }
+    defer newWrapBuf.delete()
+    wrapData := helperWrapData (wrap)
 
-	proxyResult := /*pr4*/ C.vsce_uokms_wrap_rotation_update_wrap(obj.cCtx, wrapData, newWrapBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_update_wrap(obj.cCtx, wrapData, newWrapBuf.ctx)
 
-	err := PheErrorHandleStatus(proxyResult)
-	if err != nil {
-		return nil, err
-	}
+    err := PheErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
 
-	runtime.KeepAlive(obj)
+    runtime.KeepAlive(obj)
 
-	return newWrapBuf.getData() /* r7 */, nil
+    return newWrapBuf.getData() /* r7 */, nil
 }
