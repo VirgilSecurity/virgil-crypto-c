@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name                        = "VSCCrypto"
-  s.version                     = "0.16.0-beta1"
-  s.license                     = { :type => "BSD", :file => "Carthage/LICENSE" }
+  s.version                     = "0.16.0-beta2"
+  s.license                     = { :type => "BSD", :file => "VSCCrypto-XCFrameworks/LICENSE" }
   s.summary                     = "Contains basic c functions classes for creating key pairs, encrypting/decrypting data, signing data and verifying signatures."
   s.homepage                    = "https://github.com/VirgilSecurity/virgil-crypto-c"
   s.authors                     = { "Virgil Security" => "https://virgilsecurity.com/" }
@@ -12,18 +12,18 @@ Pod::Spec.new do |s|
   s.watchos.deployment_target   = "2.0"
 
   s.subspec 'Common' do |sp|
-    sp.vendored_frameworks     = "Carthage/VSCCommon.xcframework"
+    sp.vendored_frameworks     = "VSCCrypto-XCFrameworks/VSCCommon.xcframework"
   end
 
   s.subspec 'Foundation' do |sp|
-    sp.vendored_frameworks     = "Carthage/VSCFoundation.xcframework"
+    sp.vendored_frameworks     = "VSCCrypto-XCFrameworks/VSCFoundation.xcframework"
   end
 
   s.subspec 'Pythia' do |sp|
-    sp.vendored_frameworks     = "Carthage/VSCPythia.xcframework"
+    sp.vendored_frameworks     = "VSCCrypto-XCFrameworks/VSCPythia.xcframework"
   end
 
   s.subspec 'Ratchet' do |sp|
-    sp.vendored_frameworks     = "Carthage/VSCRatchet.xcframework"
+    sp.vendored_frameworks     = "VSCCrypto-XCFrameworks/VSCRatchet.xcframework"
   end
 end
