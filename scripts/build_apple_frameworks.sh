@@ -124,7 +124,7 @@ IOS_DESTINATION_DIR="${DESTINATION_DIR}/iOS"
 MACOS_DESTINATION_DIR="${DESTINATION_DIR}/macOS"
 TVOS_DESTINATION_DIR="${DESTINATION_DIR}/tvOS"
 WATCHOS_DESTINATION_DIR="${DESTINATION_DIR}/watchOS"
-XCFRAMEWORK_DESTINATION_DIR="${DESTINATION_DIR}/xcframeworks"
+XCFRAMEWORKS_DESTINATION_DIR="${DESTINATION_DIR}/VSCCrypto-XCFrameworks"
 
 rm -fr "${BUILD_DIR}"
 mkdir -p "${BUILD_DIR}"
@@ -151,27 +151,24 @@ function build_ios {
     show_info "Build C Frameworks for iOS..."
 
     local BUILD_DIR="${1}/build"
-    local INSTALL_DIR="${1}/install"
     local FRAMEWORKS_DIR=$2
 
     rm -fr "${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}"
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=IOS \
                         -DRELIC_USE_PTHREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=IOS_SIM \
                         -DRELIC_USE_PTHREAD=OFF \
-                        -DCMAKE_INSTALL_LIBDIR=lib/sim \
+                        -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j8
-
-    cp -fa "${INSTALL_DIR}/lib/." "${FRAMEWORKS_DIR}/"
 
     show_info "Installed iOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
@@ -180,27 +177,24 @@ function build_tvos {
     show_info "Build C Frameworks for tvOS..."
 
     local BUILD_DIR="${1}/build"
-    local INSTALL_DIR="${1}/install"
     local FRAMEWORKS_DIR=$2
 
     rm -fr "${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}"
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=TVOS \
                         -DRELIC_USE_PTHREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=TVOS_SIM \
                         -DRELIC_USE_PTHREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/sim \
+                        -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j8
-
-    cp -fa "${INSTALL_DIR}/lib/." "${FRAMEWORKS_DIR}/"
 
     show_info "Installed tvOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
@@ -209,27 +203,24 @@ function build_watchos {
     show_info "Build C Frameworks for watchOS..."
 
     local BUILD_DIR="${1}/build"
-    local INSTALL_DIR="${1}/install"
     local FRAMEWORKS_DIR=$2
 
     rm -fr "${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}"
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS \
                         -DRELIC_USE_PTHREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS_SIM \
                         -DRELIC_USE_PTHREAD=OFF \
-                        -DCMAKE_INSTALL_LIBDIR=lib/sim \
+                        -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j8
-
-    cp -fa "${INSTALL_DIR}/lib/." "${FRAMEWORKS_DIR}/"
 
     show_info "Installed watchOS C Frameworks for to ${FRAMEWORKS_DIR}"
 }
@@ -238,21 +229,17 @@ function build_macosx {
     show_info "Build C Frameworks for macOS..."
 
     local BUILD_DIR="${1}/build"
-    local INSTALL_DIR="${1}/install"
     local FRAMEWORKS_DIR=$2
 
     rm -fr "${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}"
 
-    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${INSTALL_DIR}" \
+    cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=MACOS \
                         -DRELIC_USE_PTHREAD=ON \
-                        -DCMAKE_INSTALL_LIBDIR=lib/dev \
+                        -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j8
-
-
-    cp -fa "${INSTALL_DIR}/lib/." "${FRAMEWORKS_DIR}/"
 
     show_info "Installed macOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
@@ -262,22 +249,19 @@ build_tvos "${BUILD_DIR}/tvOS" "${TVOS_DESTINATION_DIR}"
 build_watchos "${BUILD_DIR}/watchOS" "${WATCHOS_DESTINATION_DIR}"
 build_macosx "${BUILD_DIR}/macOS" "${MACOS_DESTINATION_DIR}"
 
-make_xcarchive VSCCommon "${DESTINATION_DIR}" "${XCFRAMEWORK_DESTINATION_DIR}"
-make_xcarchive VSCFoundation "${DESTINATION_DIR}" "${XCFRAMEWORK_DESTINATION_DIR}"
-make_xcarchive VSCPythia "${DESTINATION_DIR}" "${XCFRAMEWORK_DESTINATION_DIR}"
-make_xcarchive VSCRatchet "${DESTINATION_DIR}" "${XCFRAMEWORK_DESTINATION_DIR}"
+make_xcarchive VSCCommon "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
+make_xcarchive VSCFoundation "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
+make_xcarchive VSCPythia "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
+make_xcarchive VSCRatchet "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
 
 
 PREPARE_RELEASE="YES"
 
 if [ $PREPARE_RELEASE == "YES" ]; then
-    rm -rf "${ROOT_DIR}/Carthage"
-    mkdir -p "${ROOT_DIR}/Carthage"
-    cp -p -R "${ROOT_DIR}/LICENSE" "${ROOT_DIR}/Carthage"
-    rsync --recursive --links "${XCFRAMEWORK_DESTINATION_DIR}/" "${ROOT_DIR}/Carthage"
+    cp -p -R "${ROOT_DIR}/LICENSE" "${XCFRAMEWORKS_DESTINATION_DIR}"
 
-    pushd "${ROOT_DIR}"
+    pushd "${DESTINATION_DIR}"
         rm -f VSCCrypto.framework.zip
-        zip --symlinks -r VSCCrypto.xcframework.zip "Carthage"
+        zip --symlinks -r VSCCrypto.xcframework.zip "VSCCrypto-XCFrameworks"
     popd
 fi
