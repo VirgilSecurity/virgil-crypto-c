@@ -30,7 +30,6 @@
 #   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 #   POSSIBILITY OF SUCH DAMAGE.
 
-
 # ---------------------------------------------------------------------------
 #   Configuration options
 # ---------------------------------------------------------------------------
@@ -41,7 +40,6 @@ if(NOT PB_LIBRARY)
     message(STATUS "Skip build of library: nanopb")
     return()
 endif()
-
 
 # ---------------------------------------------------------------------------
 #   Build Options
@@ -64,7 +62,7 @@ endif()
 # ---------------------------------------------------------------------------
 #   Optionally load and import protobuf generator as an external project
 # ---------------------------------------------------------------------------
-include(ExternalProject)
+include(FetchContent)
 
 if(WIN32 AND NOT CYGWIN)
     set(EXECUTABLE_SUFFIX ".exe")
@@ -82,174 +80,67 @@ endif()
 
 
 if(NOT PROTOC_EXE)
-    ExternalProject_Add(protobuf-bin-ext
-            URL "${PROTOC_BIN_URL}"
-            URL_HASH SHA256=${PROTOC_BIN_HASH}
-            PREFIX "${CMAKE_CURRENT_BINARY_DIR}/protobuf-bin-ext"
-            BUILD_IN_SOURCE
-            CONFIGURE_COMMAND ""
-            BUILD_COMMAND ""
-            INSTALL_COMMAND "${CMAKE_COMMAND}" -E copy_directory
-                "${CMAKE_CURRENT_BINARY_DIR}/protobuf-bin-ext/src/protobuf-bin-ext/bin"
-                "${NANOPB_INSTALL_LOCATION}/bin"
-            )
+    FetchContent_Declare(
+        protobuf-bin-ext
+        URL "${PROTOC_BIN_URL}"
+        URL_HASH SHA256=${PROTOC_BIN_HASH}
+    )
+
+    FetchContent_MakeAvailable(protobuf-bin-ext)
 
     add_executable(protoc IMPORTED GLOBAL)
-
-    add_dependencies(protoc protobuf-bin-ext)
 
     set_target_properties(protoc
             PROPERTIES
             IMPORTED_LOCATION
-                "${NANOPB_INSTALL_LOCATION}/bin/protoc${EXECUTABLE_SUFFIX}"
+                "${protobuf-bin-ext_SOURCE_DIR}/bin/protoc${EXECUTABLE_SUFFIX}"
             )
 
-    set(PROTOC_EXE protoc)
+    set(PROTOC_EXE_EXE protoc)
+endif()
+
+# ---------------------------------------------------------------------------
+#   Load and build nanopb library as an external project
+# ---------------------------------------------------------------------------
+FetchContent_Declare(
+    nanopb
+    GIT_REPOSITORY https://github.com/nanopb/nanopb
+    GIT_TAG 0.4.5
+)
+
+
+FetchContent_GetProperties(nanopb)
+if(NOT nanopb_POPULATED)
+    FetchContent_Populate(nanopb)
+
+    add_subdirectory(${nanopb_SOURCE_DIR} ${nanopb_BINARY_DIR})
+
+    target_include_directories(protobuf-nanopb-static
+        INTERFACE $<BUILD_INTERFACE:${nanopb_SOURCE_DIR}>
+    )
+
+    target_compile_definitions(protobuf-nanopb-static PUBLIC
+        $<$<BOOL:${PB_ENABLE_MALLOC}>:PB_ENABLE_MALLOC>
+        $<$<BOOL:${PB_NO_PACKED_STRUCTS}>:PB_NO_PACKED_STRUCTS>
+        $<$<BOOL:${PB_MAX_REQUIRED_FIELDS}>:PB_MAX_REQUIRED_FIELDS>
+        $<$<BOOL:${PB_FIELD_16BIT}>:PB_FIELD_16BIT>
+        $<$<BOOL:${PB_FIELD_32BIT}>:PB_FIELD_32BIT>
+        $<$<BOOL:${PB_NO_ERRMSG}>:PB_NO_ERRMSG>
+        $<$<BOOL:${PB_BUFFER_ONLY}>:PB_BUFFER_ONLY>
+    )
 endif()
 
 
-# ---------------------------------------------------------------------------
-#   Load and build nanopb as an external project
-# ---------------------------------------------------------------------------
-ExternalProject_Add(protobuf-nanopb-ext
-        GIT_REPOSITORY
-            https://github.com/nanopb/nanopb
-        GIT_TAG
-            0.3.9.4
-        CMAKE_ARGS
-            "${TRANSITIVE_ARGS}"
-            "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
-            "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
-            "-DCMAKE_INSTALL_PREFIX=${NANOPB_INSTALL_LOCATION}"
-            "-DBUILD_SHARED_LIBS=OFF"
-            "-Dnanopb_BUILD_RUNTIME=ON"
-            "-Dnanopb_BUILD_GENERATOR=OFF"
-            "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
-            "-DCMAKE_INSTALL_LIBDIR=lib"
-        PATCH_COMMAND
-            ${CMAKE_COMMAND}
-                -DPB_H_FILE="${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/pb.h"
-                -DPB_ENABLE_MALLOC=${PB_ENABLE_MALLOC}
-                -DPB_NO_PACKED_STRUCTS=${PB_NO_PACKED_STRUCTS}
-                -DPB_MAX_REQUIRED_FIELDS=${PB_MAX_REQUIRED_FIELDS}
-                -DPB_FIELD_16BIT=${PB_FIELD_16BIT}
-                -DPB_FIELD_32BIT=${PB_FIELD_32BIT}
-                -DPB_NO_ERRMSG=${PB_NO_ERRMSG}
-                -DPB_BUFFER_ONLY=${PB_BUFFER_ONLY}
-                -DPB_OLD_CALLBACK_STYLE=${PB_OLD_CALLBACK_STYLE}
-                -P "${CMAKE_CURRENT_LIST_DIR}/patch_pb.h.cmake"
-        BUILD_BYPRODUCTS
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_directory
-                    "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/generator"
-                    "${NANOPB_INSTALL_LOCATION}/generator"
-        COMMENT
-            "Install protobuf generator"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext build-protobuf-generator-model-nanopb
-        COMMAND
-            "${PROTOC_EXE}" --python_out=. nanopb.proto
-        COMMENT
-            "Build protobuf generator extension model: nanopb.proto"
-        DEPENDEES
-            install-protobuf-generator
-        WORKING_DIRECTORY
-            "${NANOPB_INSTALL_LOCATION}/generator/proto"
-        )
-
-
-ExternalProject_Add_Step(protobuf-nanopb-ext build-protobuf-generator-model-plugin
-        COMMAND
-            "${PROTOC_EXE}" --python_out=. plugin.proto
-        COMMENT
-            "Build protobuf generator extension model: plugin.proto"
-        DEPENDEES
-            install-protobuf-generator
-        WORKING_DIRECTORY
-            "${NANOPB_INSTALL_LOCATION}/generator/proto"
-        )
+if(NOT TARGET nanopb::protobuf-nanopb)
+    add_library(nanopb::protobuf-nanopb ALIAS protobuf-nanopb-static)
+endif()
 
 
 # ---------------------------------------------------------------------------
 #   Defines path to nanopb protobuf plugin script
 # ---------------------------------------------------------------------------
 if(UNIX OR CYGWIN)
-    set(PROTOC_GEN_NANOPB "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb" CACHE INTERNAL "")
+    set(PROTOC_GEN_NANOPB "${nanopb_SOURCE_DIR}/generator/protoc-gen-nanopb" CACHE INTERNAL "")
 else()
-    set(PROTOC_GEN_NANOPB "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb.bat" CACHE INTERNAL "")
-endif()
-
-
-
-# ---------------------------------------------------------------------------
-#   Import library as a target
-# ---------------------------------------------------------------------------
-file(MAKE_DIRECTORY ${NANOPB_INSTALL_LOCATION}/include)
-
-#
-# nonopb
-#
-add_library(protobuf-nanopb STATIC IMPORTED GLOBAL)
-
-add_dependencies(protobuf-nanopb protobuf-nanopb-ext)
-
-set_target_properties(protobuf-nanopb
-        PROPERTIES
-        IMPORTED_LOCATION
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopb${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        IMPORTED_LOCATION_DEBUG
-            "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
-        INTERFACE_INCLUDE_DIRECTORIES
-            "${NANOPB_INSTALL_LOCATION}/include"
-        )
-
-# ---------------------------------------------------------------------------
-#   Alias library alias
-# ---------------------------------------------------------------------------
-if(NOT TARGET nanopb::protobuf-nanopb)
-    add_library(nanopb::protobuf-nanopb ALIAS protobuf-nanopb)
-endif()
-
-
-# ---------------------------------------------------------------------------
-#   Install library
-# ---------------------------------------------------------------------------
-
-#
-# Install headers.
-#
-if(VIRGIL_INSTALL_DEPS_HDRS)
-    install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/include/"
-            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
-            )
-endif()
-
-#
-# Install libraries.
-#
-if(VIRGIL_INSTALL_DEPS_LIBS)
-    install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/lib/"
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            PATTERN "cmake" EXCLUDE
-            )
-endif()
-
-#
-# Install CMake configuration files.
-#
-if(VIRGIL_INSTALL_DEPS_CMAKE)
-    install(
-            DIRECTORY "${NANOPB_INSTALL_LOCATION}/lib/cmake"
-            DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-            )
+    set(PROTOC_GEN_NANOPB "${nanopb_SOURCE_DIR}/generator/protoc-gen-nanopb.bat" CACHE INTERNAL "")
 endif()
