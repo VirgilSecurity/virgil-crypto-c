@@ -171,6 +171,14 @@ VSSQ_PUBLIC void
 vssq_messenger_config_set_ca_bundle(vssq_messenger_config_t *self, vsc_str_t ca_bundle);
 
 //
+//  Set identifier of default virtual host.
+//  Note, if set then all new users will be registered on the virtual host.
+//  Note, if set then Contact Discovery will search only within this virtual host.
+//
+VSSQ_PUBLIC void
+vssq_messenger_config_set_default_vhost_id(vssq_messenger_config_t *self, vsc_str_t vhost_id);
+
+//
 //  Return URL of the Messenger backend (main service).
 //
 VSSQ_PUBLIC vsc_str_t
@@ -193,6 +201,12 @@ vssq_messenger_config_ejabberd_url(const vssq_messenger_config_t *self);
 //
 VSSQ_PUBLIC vsc_str_t
 vssq_messenger_config_ca_bundle(const vssq_messenger_config_t *self);
+
+//
+//  Return default virtual host id if defined, empty string otherwise.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_config_default_vhost_id(const vssq_messenger_config_t *self);
 
 
 // --------------------------------------------------------------------------

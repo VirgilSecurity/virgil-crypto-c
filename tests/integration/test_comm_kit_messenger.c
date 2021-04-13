@@ -296,7 +296,6 @@ test__messenger_create_group__then_export_it__expect_equal_exported_groups() {
     //  Check
     //
     TEST_ASSERT_EQUAL_STR(owner_group_json_str, alice_group_json_str);
-    print_str(owner_group_json_str);
 
     //
     //  Delete group.

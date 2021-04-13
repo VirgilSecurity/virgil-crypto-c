@@ -151,7 +151,7 @@ vssq_messenger_auth_refresh_virgil_jwt_with_password(const vssq_messenger_auth_t
 //  Request Virgil JWt, Ejabberd JWT, or Virgil Contact Discovery JWT depends on the given endpoint.
 //
 static vssq_status_t
-vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t endpoint,
+vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t endpoint, bool with_host_id,
         vsc_str_buffer_t *jwt_str) VSSQ_NODISCARD;
 
 //
@@ -355,6 +355,13 @@ static const char k_json_key_username_chars[] = "username";
 static const vsc_str_t k_json_key_username = {
     k_json_key_username_chars,
     sizeof(k_json_key_username_chars) - 1
+};
+
+static const char k_json_key_host_id_chars[] = "host_id";
+
+static const vsc_str_t k_json_key_host_id = {
+    k_json_key_host_id_chars,
+    sizeof(k_json_key_host_id_chars) - 1
 };
 
 static const char k_brain_key_json_version_chars[] = "version";
@@ -797,6 +804,11 @@ vssq_messenger_auth_register(vssq_messenger_auth_t *self, vsc_str_t username) {
     vssc_json_object_add_object_value(register_raw_card_json, k_json_key_raw_card, initial_raw_card_json);
 
     vssc_json_object_add_string_value(register_raw_card_json, k_json_key_username, username);
+
+    vsc_str_t host_id = vssq_messenger_config_default_vhost_id(self->config);
+    if (!vsc_str_is_empty(host_id)) {
+        vssc_json_object_add_string_value(register_raw_card_json, k_json_key_host_id, host_id);
+    }
 
     request_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), k_url_path_signup);
 
@@ -1507,7 +1519,8 @@ cleanup:
 //  Request Virgil JWt, Ejabberd JWT, or Virgil Contact Discovery JWT depends on the given endpoint.
 //
 static vssq_status_t
-vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t endpoint, vsc_str_buffer_t *jwt_str) {
+vssq_messenger_auth_request_token(
+        const vssq_messenger_auth_t *self, vsc_str_t endpoint, bool with_host_id, vsc_str_buffer_t *jwt_str) {
 
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT(vssq_messenger_auth_has_creds(self));
@@ -1532,7 +1545,20 @@ vssq_messenger_auth_request_token(const vssq_messenger_auth_t *self, vsc_str_t e
     //
     auth_url = vsc_str_mutable_concat(vssq_messenger_config_messenger_url(self->config), endpoint);
 
-    http_request = vssc_http_request_new_with_url(vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url));
+    vsc_str_t host_id = vssq_messenger_config_default_vhost_id(self->config);
+    if (with_host_id && !vsc_str_is_empty(host_id)) {
+        vssc_json_object_t *http_body_json = vssc_json_object_new();
+        vssc_json_object_add_string_value(http_body_json, k_json_key_host_id, host_id);
+        vsc_str_t http_body = vssc_json_object_as_str(http_body_json);
+
+        http_request = vssc_http_request_new_with_body(
+                vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url), vsc_str_as_data(http_body));
+
+        vssc_json_object_destroy(&http_body_json);
+
+    } else {
+        http_request = vssc_http_request_new_with_url(vssc_http_request_method_post, vsc_str_mutable_as_str(auth_url));
+    }
 
     http_response = vssq_messenger_auth_send_messenger_request(self, http_request, true, &error);
 
@@ -1596,7 +1622,7 @@ vssq_messenger_auth_refresh_virgil_jwt(const vssq_messenger_auth_t *self) {
     //
     vsc_str_buffer_t *virgil_jwt_str = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_VIRGIL_JWT_LEN_MAX);
 
-    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_virgil_jwt, virgil_jwt_str);
+    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_virgil_jwt, false, virgil_jwt_str);
     if (status != vssq_status_SUCCESS) {
         vsc_str_buffer_destroy(&virgil_jwt_str);
         return status;
@@ -1641,7 +1667,8 @@ vssq_messenger_auth_refresh_contact_discovery_jwt(const vssq_messenger_auth_t *s
     //
     vsc_str_buffer_t *jwt_str = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_CONTACT_DISCOVERY_JWT_LEN_MAX);
 
-    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_contact_discovery_jwt, jwt_str);
+    const vssq_status_t status =
+            vssq_messenger_auth_request_token(self, k_url_path_contact_discovery_jwt, true, jwt_str);
     if (status != vssq_status_SUCCESS) {
         vsc_str_buffer_destroy(&jwt_str);
         return status;
@@ -1686,7 +1713,8 @@ vssq_messenger_auth_refresh_ejabberd_token(const vssq_messenger_auth_t *self) {
     //
     vsc_str_buffer_t *ejabberd_jwt_str = vsc_str_buffer_new_with_capacity(vssq_messenger_auth_EJABBERD_JWT_LEN_MAX);
 
-    const vssq_status_t status = vssq_messenger_auth_request_token(self, k_url_path_ejabberd_jwt, ejabberd_jwt_str);
+    const vssq_status_t status =
+            vssq_messenger_auth_request_token(self, k_url_path_ejabberd_jwt, false, ejabberd_jwt_str);
     if (status != vssq_status_SUCCESS) {
         vsc_str_buffer_destroy(&ejabberd_jwt_str);
         return status;

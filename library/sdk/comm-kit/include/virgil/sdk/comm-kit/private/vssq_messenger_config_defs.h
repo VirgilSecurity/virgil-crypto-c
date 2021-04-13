@@ -99,6 +99,8 @@ struct vssq_messenger_config_t {
     vsc_str_mutable_t ejabberd_url;
 
     vsc_str_mutable_t ca_bundle;
+
+    vsc_str_mutable_t default_vhost_id;
 };
 
 

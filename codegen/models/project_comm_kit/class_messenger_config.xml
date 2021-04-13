@@ -5,6 +5,7 @@
     <property name="contact discovery url" class="str mutable"/>
     <property name="ejabberd url" class="str mutable"/>
     <property name="ca bundle" class="str mutable"/>
+    <property name="default vhost id" class="str mutable"/>
 
 
     <constant name="k url messenger" type="string" visibility="public">
@@ -38,6 +39,15 @@
     </method>
 
 
+    <method name="set default vhost id">
+        Set identifier of default virtual host.
+        Note, if set then all new users will be registered on the virtual host.
+        Note, if set then Contact Discovery will search only within this virtual host.
+
+        <argument name="vhost id" class="str"/>
+    </method>
+
+
     <method name="messenger url" is_const="1">
         Return URL of the Messenger backend (main service).
 
@@ -61,6 +71,13 @@
 
     <method name="ca bundle" is_const="1">
         Return path to the custom CA bundle.
+
+         <return class="str"/>
+    </method>
+
+
+    <method name="default vhost id" is_const="1">
+        Return default virtual host id if defined, empty string otherwise.
 
          <return class="str"/>
     </method>

@@ -320,6 +320,7 @@ vssq_messenger_config_cleanup_ctx(vssq_messenger_config_t *self) {
     vsc_str_mutable_release(&self->contact_discovery_url);
     vsc_str_mutable_release(&self->ejabberd_url);
     vsc_str_mutable_release(&self->ca_bundle);
+    vsc_str_mutable_release(&self->default_vhost_id);
 }
 
 //
@@ -351,6 +352,23 @@ vssq_messenger_config_set_ca_bundle(vssq_messenger_config_t *self, vsc_str_t ca_
     vsc_str_mutable_release(&self->ca_bundle);
 
     self->ca_bundle = vsc_str_mutable_from_str(ca_bundle);
+}
+
+//
+//  Set identifier of default virtual host.
+//  Note, if set then all new users will be registered on the virtual host.
+//  Note, if set then Contact Discovery will search only within this virtual host.
+//
+VSSQ_PUBLIC void
+vssq_messenger_config_set_default_vhost_id(vssq_messenger_config_t *self, vsc_str_t vhost_id) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT(vsc_str_is_valid_and_non_empty(vhost_id));
+    VSSQ_ASSERT(vsc_str_len(vhost_id) == 32);
+
+    vsc_str_mutable_release(&self->default_vhost_id);
+
+    self->default_vhost_id = vsc_str_mutable_from_str(vhost_id);
 }
 
 //
@@ -408,6 +426,21 @@ vssq_messenger_config_ca_bundle(const vssq_messenger_config_t *self) {
 
     if (vsc_str_mutable_is_valid(self->ca_bundle)) {
         return vsc_str_mutable_as_str(self->ca_bundle);
+    } else {
+        return vsc_str_empty();
+    }
+}
+
+//
+//  Return default virtual host id if defined, empty string otherwise.
+//
+VSSQ_PUBLIC vsc_str_t
+vssq_messenger_config_default_vhost_id(const vssq_messenger_config_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+
+    if (vsc_str_mutable_is_valid(self->default_vhost_id)) {
+        return vsc_str_mutable_as_str(self->default_vhost_id);
     } else {
         return vsc_str_empty();
     }
