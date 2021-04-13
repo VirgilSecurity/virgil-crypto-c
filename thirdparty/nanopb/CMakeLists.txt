@@ -47,16 +47,16 @@ endif()
 set(NANOPB_INSTALL_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb")
 
 if(CMAKE_HOST_APPLE)
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-osx-x86_64.zip")
-    set(PROTOC_BIN_HASH "0decc6ce5beed07f8c20361ddeb5ac7666f09cf34572cca530e16814093f9c0c")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-osx-x86_64.zip")
+    set(PROTOC_BIN_HASH "ab11029340de61bb707a4d564ceeb580d31436f5466fad2194c91beb040aa828")
 
 elseif(CMAKE_HOST_WIN32)
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-win32.zip")
-    set(PROTOC_BIN_HASH "65e5d6f890e8df5b6b411e3fdbad04c33b2bd34a3576f343a8986589bd8d05e2")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-win32.zip")
+    set(PROTOC_BIN_HASH "ec9081e6f0ad1b7e2737673eacbda9a9c0046ab4a25f7b5cfcd833c419e11469")
 
 else()
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip")
-    set(PROTOC_BIN_HASH "6003de742ea3fcf703cfec1cd4a3380fd143081a2eb0e559065563496af27807")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip")
+    set(PROTOC_BIN_HASH "b9ff821d2a4f9e9943dc2a13e6a76d99c7472dac46ddd3718a3a4c3b877c044a")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -69,7 +69,7 @@ if(WIN32 AND NOT CYGWIN)
 endif()
 
 if(TARGET protoc)
-    set(PROTOC_EXE protoc)
+    get_target_property(PROTOC_EXE protoc LOCATION)
 
 elseif(COMMAND find_host_program)
     find_host_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
@@ -90,13 +90,12 @@ if(NOT PROTOC_EXE)
 
     add_executable(protoc IMPORTED GLOBAL)
 
-    set_target_properties(protoc
-            PROPERTIES
-            IMPORTED_LOCATION
-                "${protobuf-bin-ext_SOURCE_DIR}/bin/protoc${EXECUTABLE_SUFFIX}"
-            )
+    set(PROTOC_EXE "${protobuf-bin-ext_SOURCE_DIR}/bin/protoc${EXECUTABLE_SUFFIX}")
 
-    set(PROTOC_EXE_EXE protoc)
+    set_target_properties(protoc
+        PROPERTIES
+        IMPORTED_LOCATION "${PROTOC_EXE}"
+    )
 endif()
 
 # ---------------------------------------------------------------------------
@@ -112,6 +111,8 @@ FetchContent_Declare(
 FetchContent_GetProperties(nanopb)
 if(NOT nanopb_POPULATED)
     FetchContent_Populate(nanopb)
+
+    set(nanopb_PROTOC_PATH "${PROTOC_EXE}")
 
     add_subdirectory(${nanopb_SOURCE_DIR} ${nanopb_BINARY_DIR})
 
@@ -137,10 +138,6 @@ endif()
 
 
 # ---------------------------------------------------------------------------
-#   Defines path to nanopb protobuf plugin script
+#   Defines path to nanopb protobuf generator script.
 # ---------------------------------------------------------------------------
-if(UNIX OR CYGWIN)
-    set(PROTOC_GEN_NANOPB "${nanopb_SOURCE_DIR}/generator/protoc-gen-nanopb" CACHE INTERNAL "")
-else()
-    set(PROTOC_GEN_NANOPB "${nanopb_SOURCE_DIR}/generator/protoc-gen-nanopb.bat" CACHE INTERNAL "")
-endif()
+set(NANOPB_GENERATOR "${nanopb_SOURCE_DIR}/generator/nanopb_generator.py" CACHE PATH "" FORCE)
