@@ -81,21 +81,24 @@ endif()
 
 if(NOT PROTOC_EXE)
     FetchContent_Declare(
-        protobuf-bin-ext
+        protoc_bin
         URL "${PROTOC_BIN_URL}"
         URL_HASH SHA256=${PROTOC_BIN_HASH}
     )
 
-    FetchContent_MakeAvailable(protobuf-bin-ext)
+    FetchContent_GetProperties(protoc_bin)
+    if(NOT protoc_bin_POPULATED)
+        FetchContent_Populate(protoc_bin)
 
-    add_executable(protoc IMPORTED GLOBAL)
+        add_executable(protoc IMPORTED GLOBAL)
 
-    set(PROTOC_EXE "${protobuf-bin-ext_SOURCE_DIR}/bin/protoc${EXECUTABLE_SUFFIX}")
+        set(PROTOC_EXE "${protoc_bin_SOURCE_DIR}/bin/protoc${EXECUTABLE_SUFFIX}")
 
-    set_target_properties(protoc
-        PROPERTIES
-        IMPORTED_LOCATION "${PROTOC_EXE}"
-    )
+        set_target_properties(protoc
+            PROPERTIES
+            IMPORTED_LOCATION "${PROTOC_EXE}"
+        )
+    endif()
 endif()
 
 # ---------------------------------------------------------------------------
