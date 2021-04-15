@@ -1,8 +1,6 @@
-dist: trusty
-sudo: required
+dist: focal
 
 language: c
-python: 3
 
 compiler:
   - gcc
@@ -13,23 +11,19 @@ addons:
     packages:
       - valgrind
       - cloc
-      - python3-pip
 
 install:
-  - travis_retry wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
-  - sudo bash cmake-3.12.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
-  - export PATH="/usr/local/bin:$PATH"
-  - pip3 uninstall setuptools
-  - pip3 install setuptools
   - pip3 install protobuf grpcio-tools
 
 before_script:
   - ${CC} --version
   - cmake --version
   - valgrind --version
+  - python --version
+  - python3 --version
 
 script:
-  - cmake -H. -Bbuild
+  - cmake -S. -Bbuild
       -DENABLE_HEAVY_TESTS=OFF
       -DVIRGIL_C_MT_TESTING=OFF
       -DENABLE_BENCHMARKING=ON
