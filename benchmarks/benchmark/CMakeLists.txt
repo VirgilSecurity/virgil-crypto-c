@@ -74,5 +74,5 @@ set_property(TARGET benchmark::benchmark_main
         INTERFACE_LINK_LIBRARIES
             benchmark::benchmark
             $<$<BOOL:${WIN32}>:shlwapi>
-            $<CXX_COMPILER_ID:GNU,Clang>:pthread>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:pthread>
         )
