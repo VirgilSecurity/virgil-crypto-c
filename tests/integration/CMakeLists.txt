@@ -98,5 +98,6 @@ endif()
 
 if(TARGET vsc::comm_kit)
     _add_test(test_comm_kit_messenger)
+    _add_test(test_comm_kit_messenger_vhost)
     _add_test(test_comm_kit_messenger_cloud_fs_client)
 endif()

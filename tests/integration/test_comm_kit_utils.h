@@ -46,6 +46,12 @@ create_messenger(void);
 vssq_messenger_t *
 create_messenger_and_register_user(void);
 
+vssq_messenger_t *
+create_vhost_messenger(void);
+
+vssq_messenger_t *
+create_vhost_messenger_and_register_user(void);
+
 
 #define TEST_ASSERT_VSSQ_STATUS_SUCCESS(status)                                                                        \
     TEST_ASSERT_EQUAL_MESSAGE(vssq_status_SUCCESS, (status), vssq_error_message_from_status(status).chars)

@@ -107,3 +107,40 @@ create_messenger_and_register_user(void) {
 
     return messenger;
 }
+
+vssq_messenger_t *
+create_vhost_messenger(void) {
+    //
+    //  Configure.
+    //
+    vsc_str_t base_url = vsc_str_from_str("https://messenger-dev.virgilsecurity.com");
+    vsc_str_t contact_discovery_url = vsc_str_from_str("https://disco-dev-va.virgilsecurity.com");
+    vsc_str_t ejabberd_url = vsc_str_from_str("xmpp-dev.virgilsecurity.com");
+    vsc_str_t vhost_id = vsc_str_from_str("be166cd051053f913fc28b5fc70adc67");
+
+    vssq_messenger_config_t *config = vssq_messenger_config_new_with(base_url, contact_discovery_url, ejabberd_url);
+    vssq_messenger_config_set_default_vhost_id(config, vhost_id);
+
+    vssq_messenger_t *messenger = vssq_messenger_new_with_config(config);
+    const vssq_status_t status = vssq_messenger_setup_defaults(messenger);
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(status);
+
+    vssq_messenger_config_destroy(&config);
+
+    return messenger;
+}
+
+
+vssq_messenger_t *
+create_vhost_messenger_and_register_user(void) {
+
+    vssq_messenger_t *messenger = create_vhost_messenger();
+    vsc_str_buffer_t *username = generate_random_username();
+
+    const vssq_status_t status = vssq_messenger_register(messenger, vsc_str_buffer_str(username));
+    TEST_ASSERT_VSSQ_STATUS_SUCCESS(status);
+
+    vsc_str_buffer_destroy(&username);
+
+    return messenger;
+}
