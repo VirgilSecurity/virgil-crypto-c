@@ -137,6 +137,12 @@ ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
 # ---------------------------------------------------------------------------
 set(NANOPB_GENERATOR "${NANOPB_INSTALL_LOCATION}/generator/nanopb_generator.py" CACHE PATH "" FORCE)
 
+if(UNIX OR CYGWIN)
+    set(PROTOC_GEN_NANOPB "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb" CACHE PATH "" FORCE)
+else()
+    set(PROTOC_GEN_NANOPB "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb.bat" CACHE PATH "" FORCE)
+endif()
+
 # ---------------------------------------------------------------------------
 #   Import library as a target
 # ---------------------------------------------------------------------------
