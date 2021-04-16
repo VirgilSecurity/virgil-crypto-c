@@ -13,7 +13,7 @@ addons:
       - cloc
 
 install:
-  - pip3 install protobuf
+  - pip3 install protobuf grpcio-tools
 
 before_script:
   - ${CC} --version
