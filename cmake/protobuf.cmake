@@ -49,7 +49,7 @@ function(target_protobuf_sources target)
     #
     # Check nanopb plug-in.
     #
-    if(NOT EXISTS "${NANOPB_GENERATOR}")
+    if(NOT NANOPB_GENERATOR)
         message(FATAL_ERROR "CMake variable NANOPB_GENERATOR that points to the nanopb generator is not defined.")
     endif()
 
