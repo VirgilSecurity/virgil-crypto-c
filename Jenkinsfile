@@ -198,27 +198,6 @@ def build_LangPHP_Linux(slave) {
             clearContentUnix()
             unstash 'src'
             sh '''
-                source /opt/remi/php72/enable
-                cmake -Cconfigs/php-config.cmake \
-                      -DCMAKE_BUILD_TYPE=Release \
-                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
-                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
-                      -DCPACK_OUTPUT_FILE_PREFIX=php \
-                      -DENABLE_CLANGFORMAT=OFF \
-                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
-                      -Bbuild -H.
-                cmake --build build -- -j10
-                cd build
-                ctest --verbose
-                cpack
-            '''
-            dir('build') {
-                archiveArtifacts('php/**')
-            }
-
-            clearContentUnix()
-            unstash 'src'
-            sh '''
                 source /opt/remi/php73/enable
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
@@ -226,6 +205,7 @@ def build_LangPHP_Linux(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -244,6 +224,27 @@ def build_LangPHP_Linux(slave) {
                       -DCMAKE_BUILD_TYPE=Release \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 \
+                      -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
+                      -Bbuild -H.
+                cmake --build build -- -j10
+                cd build
+                ctest --verbose
+                cpack
+            '''
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentUnix()
+            unstash 'src'
+            sh '''
+                source /opt/remi/php80/enable
+                cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=8.0 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
@@ -336,32 +337,6 @@ def build_LangPHP_Windows(slave) {
         ws("workspace\\${jobPath}") {
             clearContentWindows()
             unstash 'src'
-            withEnv(["PHP_HOME=C:\\php-7.2.28",
-                     "PHP_DEVEL_HOME=C:\\php-7.2.28-devel"]) {
-                bat '''
-                    set PATH=%PATH:"=%
-                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
-                    cmake -G"NMake Makefiles" ^
-                          -Cconfigs/php-config.cmake ^
-                          -DVIRGIL_LIB_PYTHIA=OFF ^
-                          -DCMAKE_BUILD_TYPE=Release ^
-                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
-                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
-                          -DCPACK_OUTPUT_FILE_PREFIX=php ^
-                          -DENABLE_CLANGFORMAT=OFF ^
-                          -Bbuild -H.
-                    cmake --build build
-                    cd build
-                    ctest --verbose
-                    cpack
-                '''
-            }
-            dir('build') {
-                archiveArtifacts('php/**')
-            }
-
-            clearContentWindows()
-            unstash 'src'
             withEnv(["PHP_HOME=C:\\php-7.3.15",
                      "PHP_DEVEL_HOME=C:\\php-7.3.15-devel"]) {
                 bat '''
@@ -399,6 +374,32 @@ def build_LangPHP_Windows(slave) {
                           -DCMAKE_BUILD_TYPE=Release ^
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 ^
+                          -DCPACK_OUTPUT_FILE_PREFIX=php ^
+                          -DENABLE_CLANGFORMAT=OFF ^
+                          -Bbuild -H.
+                    cmake --build build
+                    cd build
+                    ctest --verbose
+                    cpack
+                '''
+            }
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentWindows()
+            unstash 'src'
+            withEnv(["PHP_HOME=C:\\php-8.0.3",
+                     "PHP_DEVEL_HOME=C:\\php-8.0.3-devel"]) {
+                bat '''
+                    set PATH=%PATH:"=%
+                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                    cmake -G"NMake Makefiles" ^
+                          -Cconfigs/php-config.cmake ^
+                          -DVIRGIL_LIB_PYTHIA=OFF ^
+                          -DCMAKE_BUILD_TYPE=Release ^
+                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
+                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=8.0 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
                           -DENABLE_CLANGFORMAT=OFF ^
                           -Bbuild -H.
