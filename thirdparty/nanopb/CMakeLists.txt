@@ -121,13 +121,57 @@ ExternalProject_Add(protobuf-nanopb-ext
             protobuf-bin-ext
         )
 
-ExternalProject_Add_Step(protobuf-nanopb-ext install-protobuf-generator
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-generator
         COMMAND
-            "${CMAKE_COMMAND}" -E copy_directory
-                    "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/generator"
-                    "${NANOPB_INSTALL_LOCATION}/generator"
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<SOURCE_DIR>/generator/nanopb_generator.py"
+                    "${NANOPB_INSTALL_LOCATION}/generator/nanopb_generator.py"
         COMMENT
-            "Install protobuf generator"
+            "Install file: nanopb_generator.py"
+        DEPENDEES
+            install
+        )
+
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-protoc-gen-nanopb
+        COMMAND
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<SOURCE_DIR>/generator/protoc-gen-nanopb"
+                    "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb"
+        COMMENT
+            "Install file: protoc-gen-nanopb"
+        DEPENDEES
+            install
+        )
+
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-protoc-gen-nanopb-win
+        COMMAND
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<SOURCE_DIR>/generator/protoc-gen-nanopb.bat"
+                    "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb.bat"
+        COMMENT
+            "Install file: protoc-gen-nanopb.bat"
+        DEPENDEES
+            install
+        )
+
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-utils
+        COMMAND
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<SOURCE_DIR>/generator/proto/_utils.py"
+                    "${NANOPB_INSTALL_LOCATION}/generator/proto/_utils.py"
+        COMMENT
+            "Install file: _utils.py"
+        DEPENDEES
+            install
+        )
+
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-pb2
+        COMMAND
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<BINARY_DIR>/nanopb_pb2.py"
+                    "${NANOPB_INSTALL_LOCATION}/generator/proto/nanopb_pb2.py"
+        COMMENT
+            "Install file: nanopb_pb2.py"
         DEPENDEES
             install
         )
