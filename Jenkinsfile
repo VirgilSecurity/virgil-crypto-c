@@ -11,7 +11,7 @@ properties([
 
         booleanParam(name: 'DISABLE_PHP_BUILDS', defaultValue: false,
             description: 'Disable build of PHP artifacts'),
-        
+
         booleanParam(name: 'DISABLE_JAVA_BUILDS', defaultValue: false,
             description: 'Disable build of Java artifacts'),
 
@@ -704,6 +704,12 @@ def build_LangPython_Windows(slave) {
 def buildPythonPackages() {
     return { node("build-docker") {
         stage('Build Python packages') {
+            echo "DISABLE_PYTHON_BUILDS = ${params.DISABLE_PYTHON_BUILDS}"
+            if (params.DISABLE_PYTHON_BUILDS) {
+                echo "Skipped due to the false parameter: DISABLE_PYTHON_BUILDS"
+                return
+            }
+
             // Clean workspace
             docker.image('python:2.7').inside("--user root") {
                 clearContentUnix()
@@ -1140,7 +1146,17 @@ def deployPythonArtifacts() {
     return {
         node('master') {
             stage('Deploy Python artifacts') {
+                echo "DISABLE_PYTHON_BUILDS = ${params.DISABLE_PYTHON_BUILDS}"
+                if (params.DISABLE_PYTHON_BUILDS) {
+                    echo "Skipped due to the false parameter: DISABLE_PYTHON_BUILDS"
+                    return
+                }
 
+                echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
+                if (!params.DEPLOY_PYTHON_ARTIFACTS) {
+                    echo "Skipped due to the false parameter: DEPLOY_PYTHON_ARTIFACTS"
+                    return
+                }
                 clearContentUnix()
                 unstash "python_linux"
                 unstash "python_macos"
@@ -1152,14 +1168,11 @@ def deployPythonArtifacts() {
                     archiveArtifacts('python/**')
                 }
 
-                echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
-                if (params.DEPLOY_PYTHON_ARTIFACTS) {
-                    sh """
-                        env
-                        cd wrappers/python
-                        twine upload dist/*
-                    """
-                }
+                sh """
+                    env
+                    cd wrappers/python
+                    twine upload dist/*
+                """
             }
         }
     }
