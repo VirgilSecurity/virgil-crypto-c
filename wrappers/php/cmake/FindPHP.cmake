@@ -129,7 +129,7 @@ if(WIN32)
 
         unset(_INCLUDE_DIRS)
 
-        find_library(PHP_LIBRARIES NAMES php5 php5ts php7 php7ts php phpts PATHS "${PHP_DEVEL_HOME}/lib")
+        find_library(PHP_LIBRARIES NAMES php7 php7ts php8 php8ts php phpts PATHS "${PHP_DEVEL_HOME}/lib")
     endif()
 
     #
