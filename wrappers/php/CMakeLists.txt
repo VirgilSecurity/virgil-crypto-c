@@ -76,24 +76,30 @@ endif()
 # ---------------------------------------------------------------------------
 #   Fetch PHP suitable composer.
 # ---------------------------------------------------------------------------
-set(COMPOSER_VERSION 2.0.12)
+if(NOT COMPOSER_EXECUTABLE)
+    set(COMPOSER_VERSION "2.0.12")
+    set(COMPOSER_DOWNLOADED "${CMAKE_CURRENT_BINARY_DIR}/tmp/composer")
 
-include(FetchContent)
+    file(DOWNLOAD
+        https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar "${COMPOSER_DOWNLOADED}"
+        SHOW_PROGRESS
+    )
 
-FetchContent_Declare(
-    composer
-    URL https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar
-    URL_HASH SHA256=82ea8c1537cfaceb7e56f6004c7ccdf99ddafce7237c07374d920e635730a631
-    DOWNLOAD_NO_EXTRACT TRUE
-)
+    file(SHA256 "${COMPOSER_DOWNLOADED}" COMPOSER_DOWNLOADED_HASH)
+    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "82ea8c1537cfaceb7e56f6004c7ccdf99ddafce7237c07374d920e635730a631")
+        message(FATAL_ERROR "Download 'composer.phar' file hash mismatch")
+    endif()
 
-FetchContent_GetProperties(composer)
-if(NOT composer_POPULATED)
-    FetchContent_Populate(composer)
+    file(
+        COPY "${COMPOSER_DOWNLOADED}" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}"
+        FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    )
+
+    set(COMPOSER_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/composer" CACHE PATH "Path to the PHP composer" FORCE)
+
+    message(STATUS "Fetched PHP composer ${COMPOSER_VERSION}")
 endif()
 
-set(COMPOSER_EXECUTABLE "${composer_SOURCE_DIR}/composer.phar" CACHE PATH "Path to the PHP composer" FORCE)
-message(STATUS "Fetched PHP composer ${COMPOSER_VERSION}")
 
 # ---------------------------------------------------------------------------
 #   Common step for all tests
