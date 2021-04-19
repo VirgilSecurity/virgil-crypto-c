@@ -104,11 +104,13 @@ function(target_protobuf_sources target)
                     "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.h"
                     "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.c"
                 COMMAND
-                    "${PROTOC_EXE}" --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
-                                    --nanopb_out=${proto_options}:"${CMAKE_CURRENT_BINARY_DIR}"
-                                    --proto_path=. "${proto_file_name}.proto"
+                    "${PROTOC_EXE}"
+                ARGS
+                    --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
+                    --nanopb_out=${proto_options}:"${CMAKE_CURRENT_BINARY_DIR}"
+                    --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
-                    "${proto_file}" "${proto_options_file}"
+                    "${proto_file}" "${proto_options_file}" protobuf-nanopb
                 COMMENT "Processing protobuf model: ${proto_file}"
                 WORKING_DIRECTORY "${proto_file_path}"
                 )

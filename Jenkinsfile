@@ -11,7 +11,7 @@ properties([
 
         booleanParam(name: 'DISABLE_PHP_BUILDS', defaultValue: false,
             description: 'Disable build of PHP artifacts'),
-        
+
         booleanParam(name: 'DISABLE_JAVA_BUILDS', defaultValue: false,
             description: 'Disable build of Java artifacts'),
 
@@ -198,27 +198,6 @@ def build_LangPHP_Linux(slave) {
             clearContentUnix()
             unstash 'src'
             sh '''
-                source /opt/remi/php72/enable
-                cmake -Cconfigs/php-config.cmake \
-                      -DCMAKE_BUILD_TYPE=Release \
-                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
-                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
-                      -DCPACK_OUTPUT_FILE_PREFIX=php \
-                      -DENABLE_CLANGFORMAT=OFF \
-                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
-                      -Bbuild -H.
-                cmake --build build -- -j10
-                cd build
-                ctest --verbose
-                cpack
-            '''
-            dir('build') {
-                archiveArtifacts('php/**')
-            }
-
-            clearContentUnix()
-            unstash 'src'
-            sh '''
                 source /opt/remi/php73/enable
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
@@ -226,6 +205,7 @@ def build_LangPHP_Linux(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -256,24 +236,15 @@ def build_LangPHP_Linux(slave) {
             dir('build') {
                 archiveArtifacts('php/**')
             }
-        }
-    }}
-}
-
-def build_LangPHP_MacOS(slave) {
-    return { node(slave) {
-        def jobPath = pathFromJobName(env.JOB_NAME)
-        ws("workspace/${jobPath}") {
-            def phpVersions = "php php@7.2 php@7.3 php@7.4"
 
             clearContentUnix()
             unstash 'src'
-            sh """
-                brew unlink ${phpVersions} && brew link php@7.2 --force
+            sh '''
+                source /opt/remi/php80/enable
                 cmake -Cconfigs/php-config.cmake \
                       -DCMAKE_BUILD_TYPE=Release \
-                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
-                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=8.0 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
@@ -282,10 +253,19 @@ def build_LangPHP_MacOS(slave) {
                 cd build
                 ctest --verbose
                 cpack
-            """
+            '''
             dir('build') {
                 archiveArtifacts('php/**')
             }
+        }
+    }}
+}
+
+def build_LangPHP_MacOS(slave) {
+    return { node(slave) {
+        def jobPath = pathFromJobName(env.JOB_NAME)
+        ws("workspace/${jobPath}") {
+            def phpVersions = "php php@7.3 php@7.4 php@8.0"
 
             clearContentUnix()
             unstash 'src'
@@ -297,6 +277,7 @@ def build_LangPHP_MacOS(slave) {
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
                       -DENABLE_CLANGFORMAT=OFF \
+                      -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
                 cd build
@@ -326,6 +307,26 @@ def build_LangPHP_MacOS(slave) {
             dir('build') {
                 archiveArtifacts('php/**')
             }
+
+            clearContentUnix()
+            unstash 'src'
+            sh """
+                brew unlink ${phpVersions} && brew link php@8.0 --force
+                cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
+                      -DVIRGIL_PACKAGE_LANGUAGE_VERSION=8.0 \
+                      -DCPACK_OUTPUT_FILE_PREFIX=php \
+                      -DENABLE_CLANGFORMAT=OFF \
+                      -Bbuild -H.
+                cmake --build build -- -j10
+                cd build
+                ctest --verbose
+                cpack
+            """
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
         }
     }}
 }
@@ -334,32 +335,6 @@ def build_LangPHP_Windows(slave) {
     return { node(slave) {
         def jobPath = pathFromJobName(env.JOB_NAME)
         ws("workspace\\${jobPath}") {
-            clearContentWindows()
-            unstash 'src'
-            withEnv(["PHP_HOME=C:\\php-7.2.28",
-                     "PHP_DEVEL_HOME=C:\\php-7.2.28-devel"]) {
-                bat '''
-                    set PATH=%PATH:"=%
-                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
-                    cmake -G"NMake Makefiles" ^
-                          -Cconfigs/php-config.cmake ^
-                          -DVIRGIL_LIB_PYTHIA=OFF ^
-                          -DCMAKE_BUILD_TYPE=Release ^
-                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
-                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.2 ^
-                          -DCPACK_OUTPUT_FILE_PREFIX=php ^
-                          -DENABLE_CLANGFORMAT=OFF ^
-                          -Bbuild -H.
-                    cmake --build build
-                    cd build
-                    ctest --verbose
-                    cpack
-                '''
-            }
-            dir('build') {
-                archiveArtifacts('php/**')
-            }
-
             clearContentWindows()
             unstash 'src'
             withEnv(["PHP_HOME=C:\\php-7.3.15",
@@ -399,6 +374,32 @@ def build_LangPHP_Windows(slave) {
                           -DCMAKE_BUILD_TYPE=Release ^
                           -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
                           -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.4 ^
+                          -DCPACK_OUTPUT_FILE_PREFIX=php ^
+                          -DENABLE_CLANGFORMAT=OFF ^
+                          -Bbuild -H.
+                    cmake --build build
+                    cd build
+                    ctest --verbose
+                    cpack
+                '''
+            }
+            dir('build') {
+                archiveArtifacts('php/**')
+            }
+
+            clearContentWindows()
+            unstash 'src'
+            withEnv(["PHP_HOME=C:\\php-8.0.3",
+                     "PHP_DEVEL_HOME=C:\\php-8.0.3-devel"]) {
+                bat '''
+                    set PATH=%PATH:"=%
+                    call "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                    cmake -G"NMake Makefiles" ^
+                          -Cconfigs/php-config.cmake ^
+                          -DVIRGIL_LIB_PYTHIA=OFF ^
+                          -DCMAKE_BUILD_TYPE=Release ^
+                          -DVIRGIL_PACKAGE_PLATFORM_ARCH=x86_64 ^
+                          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=8.0 ^
                           -DCPACK_OUTPUT_FILE_PREFIX=php ^
                           -DENABLE_CLANGFORMAT=OFF ^
                           -Bbuild -H.
@@ -704,6 +705,12 @@ def build_LangPython_Windows(slave) {
 def buildPythonPackages() {
     return { node("build-docker") {
         stage('Build Python packages') {
+            echo "DISABLE_PYTHON_BUILDS = ${params.DISABLE_PYTHON_BUILDS}"
+            if (params.DISABLE_PYTHON_BUILDS) {
+                echo "Skipped due to the false parameter: DISABLE_PYTHON_BUILDS"
+                return
+            }
+
             // Clean workspace
             docker.image('python:2.7').inside("--user root") {
                 clearContentUnix()
@@ -1140,7 +1147,17 @@ def deployPythonArtifacts() {
     return {
         node('master') {
             stage('Deploy Python artifacts') {
+                echo "DISABLE_PYTHON_BUILDS = ${params.DISABLE_PYTHON_BUILDS}"
+                if (params.DISABLE_PYTHON_BUILDS) {
+                    echo "Skipped due to the false parameter: DISABLE_PYTHON_BUILDS"
+                    return
+                }
 
+                echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
+                if (!params.DEPLOY_PYTHON_ARTIFACTS) {
+                    echo "Skipped due to the false parameter: DEPLOY_PYTHON_ARTIFACTS"
+                    return
+                }
                 clearContentUnix()
                 unstash "python_linux"
                 unstash "python_macos"
@@ -1152,14 +1169,11 @@ def deployPythonArtifacts() {
                     archiveArtifacts('python/**')
                 }
 
-                echo "DEPLOY_PYTHON_ARTIFACTS = ${params.DEPLOY_PYTHON_ARTIFACTS}"
-                if (params.DEPLOY_PYTHON_ARTIFACTS) {
-                    sh """
-                        env
-                        cd wrappers/python
-                        twine upload dist/*
-                    """
-                }
+                sh """
+                    env
+                    cd wrappers/python
+                    twine upload dist/*
+                """
             }
         }
     }
