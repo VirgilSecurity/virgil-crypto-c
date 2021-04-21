@@ -100,7 +100,7 @@ struct vssq_ejabberd_jwt_t {
     //
     vsc_str_mutable_t jid;
     //
-    //  JWT expiration unix timestamp.
+    //  JWT expiration Unix timestamp.
     //
     size_t expires_at;
 };

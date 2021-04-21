@@ -157,6 +157,12 @@ VSSQ_PUBLIC vsc_str_t
 vssq_ejabberd_jwt_jid(const vssq_ejabberd_jwt_t *self);
 
 //
+//  Return Unix timestamp of JWT expiration.
+//
+VSSQ_PUBLIC size_t
+vssq_ejabberd_jwt_expires_at(const vssq_ejabberd_jwt_t *self);
+
+//
 //  Return true if token is expired.
 //
 VSSQ_PUBLIC bool

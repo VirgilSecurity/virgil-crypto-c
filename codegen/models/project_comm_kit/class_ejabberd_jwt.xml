@@ -15,7 +15,7 @@
     </property>
 
     <property name="expires at" type="size">
-        JWT expiration unix timestamp.
+        JWT expiration Unix timestamp.
     </property>
 
 
@@ -63,6 +63,13 @@
         Return identity to whom this token was issued.
 
         <return class="str"/>
+    </method>
+
+
+    <method name="expires at" is_const="1">
+        Return Unix timestamp of JWT expiration.
+
+        <return type="size"/>
     </method>
 
 

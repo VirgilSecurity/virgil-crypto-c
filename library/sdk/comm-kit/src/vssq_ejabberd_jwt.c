@@ -502,6 +502,18 @@ vssq_ejabberd_jwt_jid(const vssq_ejabberd_jwt_t *self) {
 }
 
 //
+//  Return Unix timestamp of JWT expiration.
+//
+VSSQ_PUBLIC size_t
+vssq_ejabberd_jwt_expires_at(const vssq_ejabberd_jwt_t *self) {
+
+    VSSQ_ASSERT_PTR(self);
+    VSSQ_ASSERT_PTR(self->expires_at != 0);
+
+    return self->expires_at;
+}
+
+//
 //  Return true if token is expired.
 //
 VSSQ_PUBLIC bool
@@ -510,5 +522,7 @@ vssq_ejabberd_jwt_is_expired(const vssq_ejabberd_jwt_t *self) {
     VSSQ_ASSERT_PTR(self);
     VSSQ_ASSERT_PTR(self->expires_at != 0);
 
-    return self->expires_at;
+    size_t now = vssc_unix_time_now();
+
+    return now >= self->expires_at;
 }
