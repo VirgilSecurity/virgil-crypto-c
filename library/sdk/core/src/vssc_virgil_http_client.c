@@ -61,6 +61,10 @@
 #   include "vssc_http_client_curl.h"
 #endif
 
+#if VSSC_HTTP_CLIENT_WASM
+#   include "vssc_http_client_wasm.h"
+#endif
+
 #if VSSC_HTTP_CLIENT_X
 #   include "vssc_http_client_x.h"
 #endif
@@ -181,6 +185,11 @@ vssc_virgil_http_client_create_http_client_impl(vsc_str_t ca_bundle_path) {
     } else {
         return vssc_http_client_curl_impl(vssc_http_client_curl_new());
     }
+#endif
+
+#if VSSC_HTTP_CLIENT_WASM
+    VSSC_UNUSED(ca_bundle_path);
+    return vssc_http_client_wasm_impl(vssc_http_client_wasm_new());
 #endif
 
     VSSC_ASSERT(0 && "Default HTTP Client implementation is not defined.");

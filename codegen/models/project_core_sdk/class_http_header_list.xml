@@ -73,4 +73,11 @@
 
         <return class="str"/>
     </method>
+
+
+    <method name="count" is_const="1">
+        Return number of items within list.
+
+        <return type="size"/>
+    </method>
 </class>

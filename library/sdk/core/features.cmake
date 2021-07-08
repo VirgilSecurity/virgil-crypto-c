@@ -51,6 +51,7 @@ option(VSSC_USE_DEFAULT_HTTP_CLIENT "" ON)
 option(VSSC_HTTP_CLIENT "Enable interface 'http client'." ON)
 option(VSSC_HTTP_CLIENT_CURL "Enable class 'http client curl'." ON)
 option(VSSC_HTTP_CLIENT_X "Enable class 'http client x'." OFF)
+option(VSSC_HTTP_CLIENT_WASM "Enable class 'http client wasm'." OFF)
 option(VSSC_ERROR "Enable class 'error'." ON)
 option(VSSC_ERROR_MESSAGE "Enable class 'error message'." ON)
 option(VSSC_JSON_OBJECT "Enable class 'json object'." ON)
@@ -90,6 +91,7 @@ mark_as_advanced(
         VSSC_HTTP_CLIENT
         VSSC_HTTP_CLIENT_CURL
         VSSC_HTTP_CLIENT_X
+        VSSC_HTTP_CLIENT_WASM
         VSSC_ERROR
         VSSC_ERROR_MESSAGE
         VSSC_JSON_OBJECT
@@ -124,11 +126,11 @@ mark_as_advanced(
         VSSC_CARD_MANAGER
         )
 
-if(VSSC_USE_DEFAULT_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT_CURL AND NOT VSSC_HTTP_CLIENT_X)
+if(VSSC_USE_DEFAULT_HTTP_CLIENT AND NOT VSSC_HTTP_CLIENT_CURL AND NOT VSSC_HTTP_CLIENT_X AND NOT VSSC_HTTP_CLIENT_WASM)
     message("-- error --")
     message("--")
     message("Feature VSSC_USE_DEFAULT_HTTP_CLIENT depends on one of the features:")
-    message("     VSSC_HTTP_CLIENT_CURL, VSSC_HTTP_CLIENT_X - which are disabled.")
+    message("     VSSC_HTTP_CLIENT_CURL, VSSC_HTTP_CLIENT_X, VSSC_HTTP_CLIENT_WASM - which are disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

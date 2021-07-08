@@ -5,7 +5,7 @@
         namespace="virgil sdk core"
         framework="VSSCore"
         prefix="vssc"
-        wrappers="swift,java,python,go,php"
+        wrappers="all"
         >
 
     <version major="0" minor="16" patch="0"/>
@@ -59,6 +59,7 @@
         <require>
             <alternative feature="http client curl"/>
             <alternative feature="http client x"/>
+            <alternative feature="http client wasm"/>
         </require>
     </feature>
 
@@ -96,6 +97,7 @@
     <interface name="http client"/>
     <implementor name="http client curl"/>
     <implementor name="http client x"/>
+    <implementor name="http client wasm"/>
     <class name="virgil http client"/>
 
     <!-- Key Handlers -->

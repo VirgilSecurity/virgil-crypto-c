@@ -99,6 +99,11 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_wasm.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_x.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -284,6 +289,9 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_curl.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_curl_defs.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_WASM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_wasm.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_WASM}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_wasm_internal.h>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_WASM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_wasm_defs.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/vssc_http_client_x.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_internal.h>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/sdk/core/private/vssc_http_client_x_defs.h>"
@@ -371,6 +379,9 @@ target_sources(core_sdk
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl.c>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_internal.c>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_CURL}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_curl_defs.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_WASM}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_wasm.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_WASM}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_wasm_internal.c>"
+            "$<$<BOOL:${VSSC_HTTP_CLIENT_WASM}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_wasm_defs.c>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x.m>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_internal.m>"
             "$<$<BOOL:${VSSC_HTTP_CLIENT_X}>:${CMAKE_CURRENT_LIST_DIR}/src/vssc_http_client_x_defs.m>"

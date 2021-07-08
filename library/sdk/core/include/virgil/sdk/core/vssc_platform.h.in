@@ -100,6 +100,10 @@ extern "C" {
 #cmakedefine01 VSSC_HTTP_CLIENT_X
 #endif
 
+#ifndef VSSC_HTTP_CLIENT_WASM
+#cmakedefine01 VSSC_HTTP_CLIENT_WASM
+#endif
+
 #ifndef VSSC_ERROR
 #cmakedefine01 VSSC_ERROR
 #endif

@@ -200,6 +200,12 @@ vssc_http_header_list_clear(vssc_http_header_list_t *self);
 VSSC_PUBLIC vsc_str_t
 vssc_http_header_list_find(const vssc_http_header_list_t *self, vsc_str_t name, vssc_error_t *error);
 
+//
+//  Return number of items within list.
+//
+VSSC_PUBLIC size_t
+vssc_http_header_list_count(const vssc_http_header_list_t *self);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

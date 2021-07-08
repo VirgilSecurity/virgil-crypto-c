@@ -47,15 +47,19 @@
 
 //  @description
 // --------------------------------------------------------------------------
-//  This module contains common functionality for all 'implementation' object.
-//  It is also enumerate all available implementations within crypto libary.
+//  Types of the 'http client wasm' implementation.
+//  This types SHOULD NOT be used directly.
+//  The only purpose of including this module is to place implementation
+//  object in the stack memory.
 // --------------------------------------------------------------------------
 
-#ifndef VSSC_IMPL_H_INCLUDED
-#define VSSC_IMPL_H_INCLUDED
+#ifndef VSSC_HTTP_CLIENT_WASM_DEFS_H_INCLUDED
+#define VSSC_HTTP_CLIENT_WASM_DEFS_H_INCLUDED
 
 #include "vssc_library.h"
-#include "vssc_api.h"
+#include "vssc_http_client_wasm.h"
+#include "vssc_atomic.h"
+#include "vssc_impl_private.h"
 
 // clang-format on
 //  @end
@@ -73,72 +77,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Enumerates all possible implementations within crypto library.
+//  Handles implementation details.
 //
-enum vssc_impl_tag_t {
-    vssc_impl_tag_BEGIN = 0,
-    vssc_impl_tag_HTTP_CLIENT_CURL,
-    vssc_impl_tag_HTTP_CLIENT_WASM,
-    vssc_impl_tag_HTTP_CLIENT_X,
-    vssc_impl_tag_END
+struct vssc_http_client_wasm_t {
+    //
+    //  Compile-time known information about this implementation.
+    //
+    const vssc_impl_info_t *info;
+    //
+    //  Reference counter.
+    //
+    VSSC_ATOMIC size_t refcnt;
 };
-#ifndef VSSC_IMPL_TAG_T_DEFINED
-#define VSSC_IMPL_TAG_T_DEFINED
-    typedef enum vssc_impl_tag_t vssc_impl_tag_t;
-#endif // VSSC_IMPL_TAG_T_DEFINED
-
-//
-//  Generic type for any 'implementation'.
-//
-#ifndef VSSC_IMPL_T_DEFINED
-#define VSSC_IMPL_T_DEFINED
-    typedef struct vssc_impl_t vssc_impl_t;
-#endif // VSSC_IMPL_T_DEFINED
-
-//
-//  Return 'API' object that is fulfiled with a meta information
-//  specific to the given implementation object.
-//  Or NULL if object does not implement requested 'API'.
-//
-VSSC_PUBLIC const vssc_api_t *
-vssc_impl_api(const vssc_impl_t *impl, vssc_api_tag_t api_tag);
-
-//
-//  Return unique 'Implementation TAG'.
-//
-VSSC_PUBLIC vssc_impl_tag_t
-vssc_impl_tag(const vssc_impl_t *impl);
-
-//
-//  Cleanup implementation object and it's dependencies.
-//
-VSSC_PUBLIC void
-vssc_impl_cleanup(vssc_impl_t *impl);
-
-//
-//  Delete implementation object and it's dependencies.
-//
-VSSC_PUBLIC void
-vssc_impl_delete(const vssc_impl_t *impl);
-
-//
-//  Destroy implementation object and it's dependencies.
-//
-VSSC_PUBLIC void
-vssc_impl_destroy(vssc_impl_t **impl_ref);
-
-//
-//  Copy implementation object by increasing reference counter.
-//
-VSSC_PUBLIC vssc_impl_t *
-vssc_impl_shallow_copy(vssc_impl_t *impl);
-
-//
-//  Copy implementation object by increasing reference counter.
-//  Reference counter is internally synchronized, so constness is presumed.
-//
-VSSC_PUBLIC const vssc_impl_t *
-vssc_impl_shallow_copy_const(const vssc_impl_t *impl);
 
 
 // --------------------------------------------------------------------------
@@ -154,5 +104,5 @@ vssc_impl_shallow_copy_const(const vssc_impl_t *impl);
 
 
 //  @footer
-#endif // VSSC_IMPL_H_INCLUDED
+#endif // VSSC_HTTP_CLIENT_WASM_DEFS_H_INCLUDED
 //  @end

@@ -1,0 +1,25 @@
+<implementor name="http client wasm" is_default="1">
+    Provide implementation specific for WebAssembly and JavaScript.
+
+
+    <implementation name="http client wasm" platform="wasm">
+
+        Provide implementation based on the emscripten Fetch API.
+
+        <feature name="http client wasm" default="off"/>
+
+        <require header="emscripten/fetch.h" is_system="1"/>
+
+        <interface name="http client"/>
+
+        <method name="copy header" is_static="1">
+            Copy given header name and value to an array:
+                {"key1", "value1", "key2", "value2", "key3", "value3", ..., 0 };
+
+            <argument name="header name" class="str"/>
+            <argument name="header value" class="str"/>
+            <argument name="fetch_headers" type="string" access="readwrite" is_reference="1"/>
+            <argument name="fetch_headers_index" type="size" access="readwrite" is_reference="1"/>
+        </method>
+    </implementation>
+</implementor>

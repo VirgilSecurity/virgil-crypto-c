@@ -403,3 +403,18 @@ vssc_http_header_list_find(const vssc_http_header_list_t *self, vsc_str_t name, 
 
     return vsc_str_empty();
 }
+
+//
+//  Return number of items within list.
+//
+VSSC_PUBLIC size_t
+vssc_http_header_list_count(const vssc_http_header_list_t *self) {
+
+    size_t count = 0;
+
+    for (const vssc_http_header_list_t *it = self; (it != NULL) && (it->item != NULL); it = it->next) {
+        ++count;
+    }
+
+    return count;
+}

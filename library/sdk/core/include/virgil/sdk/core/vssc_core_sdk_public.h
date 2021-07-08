@@ -97,6 +97,10 @@
 #   include "vssc_http_client_curl.h"
 #endif
 
+#if VSSC_HTTP_CLIENT_WASM
+#   include "vssc_http_client_wasm.h"
+#endif
+
 #if VSSC_HTTP_CLIENT_X
 #   include "vssc_http_client_x.h"
 #endif

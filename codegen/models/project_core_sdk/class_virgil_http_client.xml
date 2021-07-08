@@ -7,6 +7,7 @@
     <require interface="http client"/>
     <require impl="http client curl" is_optional="1"/>
     <require impl="http client x" is_optional="1"/>
+    <require impl="http client wasm" is_optional="1"/>
 
     <require header="stdio.h" is_system="1" if_feature="virgil http client debug"/>
     <require header="ctype.h" is_system="1" if_feature="virgil http client debug"/>
