@@ -67,7 +67,7 @@ extern "C" {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PUBLIC void
 vssc_key_handler_list_add(vssc_key_handler_list_t *self, vssc_key_handler_t **key_handler_ref);

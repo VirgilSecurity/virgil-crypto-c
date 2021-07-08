@@ -11,7 +11,7 @@
 
     <method name="add">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="signer id" class="data"/>
         <argument name="signer public key" interface="public key" access="retain"/>

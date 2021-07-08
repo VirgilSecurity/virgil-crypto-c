@@ -260,7 +260,7 @@ vscf_password_recipient_info_list_cleanup_ctx(vscf_password_recipient_info_list_
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSCF_PRIVATE void
 vscf_password_recipient_info_list_add(

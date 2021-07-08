@@ -237,7 +237,7 @@ vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key);
 //  Public and ephemeral keys should belong to the same curve.
 //  This dependency is optional.
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void

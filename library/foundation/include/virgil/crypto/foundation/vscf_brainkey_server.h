@@ -156,7 +156,7 @@ vscf_brainkey_server_use_random(vscf_brainkey_server_t *self, vscf_impl_t *rando
 //
 //  Random used for key generation, proofs, etc.
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -179,7 +179,7 @@ vscf_brainkey_server_use_operation_random(vscf_brainkey_server_t *self, vscf_imp
 //
 //  Random used for crypto operations to make them const-time
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void

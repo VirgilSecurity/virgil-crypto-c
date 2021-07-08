@@ -132,7 +132,7 @@ vssc_raw_card_signature_list_shallow_copy_const(const vssc_raw_card_signature_li
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PRIVATE void
 vssc_raw_card_signature_list_add(vssc_raw_card_signature_list_t *self,
@@ -140,7 +140,7 @@ vssc_raw_card_signature_list_add(vssc_raw_card_signature_list_t *self,
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PRIVATE void
 vssc_raw_card_signature_list_add_disown(vssc_raw_card_signature_list_t *self,

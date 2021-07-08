@@ -7,7 +7,7 @@
 
     <method name="add" scope="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="key handler" class="key handler" access="disown"/>
     </method>

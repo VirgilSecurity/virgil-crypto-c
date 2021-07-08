@@ -67,7 +67,7 @@ extern "C" {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_user_list_add_disown(vssq_messenger_user_list_t *self, vssq_messenger_user_t **messenger_user_ref);

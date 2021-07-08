@@ -140,7 +140,7 @@ vscf_key_recipient_list_shallow_copy_const(const vscf_key_recipient_list_t *self
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSCF_PUBLIC void
 vscf_key_recipient_list_add(vscf_key_recipient_list_t *self, vsc_data_t recipient_id,

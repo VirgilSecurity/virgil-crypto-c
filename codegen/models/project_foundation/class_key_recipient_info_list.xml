@@ -7,7 +7,7 @@
 
     <method name="add" visibility="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="key recipient info" class="key recipient info" access="disown"/>
     </method>

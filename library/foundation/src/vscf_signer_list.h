@@ -140,7 +140,7 @@ vscf_signer_list_shallow_copy_const(const vscf_signer_list_t *self);
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSCF_PUBLIC void
 vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, const vscf_impl_t *signer_private_key);

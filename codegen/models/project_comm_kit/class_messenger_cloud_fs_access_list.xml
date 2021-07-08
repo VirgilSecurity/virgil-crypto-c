@@ -15,7 +15,7 @@
 
     <method name="add user" >
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="user" class="messenger user"/>
         <argument name="permission" enum="messenger cloud fs permission"/>
@@ -24,7 +24,7 @@
 
     <method name="add user with identity" >
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="identity" class="str"/>
         <argument name="permission" enum="messenger cloud fs permission"/>
@@ -33,7 +33,7 @@
 
     <method name="add" >
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="access" class="messenger cloud fs access"/>
     </method>
@@ -41,7 +41,7 @@
 
     <method name="add disown" scope="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="access" class="messenger cloud fs access" access="disown"/>
     </method>

@@ -132,7 +132,7 @@ vssq_messenger_cloud_fs_file_info_list_shallow_copy_const(const vssq_messenger_c
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_file_info_list_add(vssq_messenger_cloud_fs_file_info_list_t *self,

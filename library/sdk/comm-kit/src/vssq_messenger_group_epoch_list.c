@@ -260,7 +260,7 @@ vssq_messenger_group_epoch_list_cleanup_ctx(vssq_messenger_group_epoch_list_t *s
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_group_epoch_list_add(

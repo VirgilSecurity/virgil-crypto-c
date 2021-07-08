@@ -487,7 +487,7 @@ vscf_ecies_use_encryption_key(vscf_ecies_t *self, vscf_impl_t *encryption_key) {
 //  In turn, Ephemeral Key must be conformed to the interface
 //  "compute shared key".
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -537,7 +537,7 @@ vscf_ecies_use_decryption_key(vscf_ecies_t *self, vscf_impl_t *decryption_key) {
 //
 //  Private Key must be conformed to the interface "compute shared key".
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void
@@ -587,7 +587,7 @@ vscf_ecies_use_ephemeral_key(vscf_ecies_t *self, vscf_impl_t *ephemeral_key) {
 //
 //  Ephemeral Key must be conformed to the interface "compute shared key".
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void

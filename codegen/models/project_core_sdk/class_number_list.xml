@@ -9,7 +9,7 @@
 
     <method name="add">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="number" type="size"/>
     </method>

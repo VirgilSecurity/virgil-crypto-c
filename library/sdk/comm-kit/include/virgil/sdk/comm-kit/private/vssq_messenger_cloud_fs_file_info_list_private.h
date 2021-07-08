@@ -67,7 +67,7 @@ extern "C" {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_file_info_list_add_disown(vssq_messenger_cloud_fs_file_info_list_t *self,

@@ -260,7 +260,7 @@ vssc_http_header_list_cleanup_ctx(vssc_http_header_list_t *self) {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PRIVATE void
 vssc_http_header_list_add(vssc_http_header_list_t *self, vssc_http_header_t **http_header_ref) {

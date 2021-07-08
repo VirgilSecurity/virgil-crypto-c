@@ -15,7 +15,7 @@
 
     <method name="add disown" scope="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="folder info" class="messenger cloud fs folder info" access="disown"/>
     </method>

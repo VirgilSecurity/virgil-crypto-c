@@ -260,7 +260,7 @@ vssq_messenger_cloud_fs_file_info_list_cleanup_ctx(vssq_messenger_cloud_fs_file_
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_file_info_list_add(
@@ -282,7 +282,7 @@ vssq_messenger_cloud_fs_file_info_list_add(
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_file_info_list_add_disown(

@@ -260,7 +260,7 @@ vssc_card_list_cleanup_ctx(vssc_card_list_t *self) {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PUBLIC void
 vssc_card_list_add(vssc_card_list_t *self, vssc_card_t **card_ref) {

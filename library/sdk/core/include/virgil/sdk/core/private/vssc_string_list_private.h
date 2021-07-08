@@ -81,7 +81,7 @@ vssc_string_list_add_copy(vssc_string_list_t *self, const vsc_str_buffer_t *str_
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PUBLIC void
 vssc_string_list_add_disown(vssc_string_list_t *self, vsc_str_buffer_t **str_buffer_ref);

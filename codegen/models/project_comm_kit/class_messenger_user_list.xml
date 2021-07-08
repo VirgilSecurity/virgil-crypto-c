@@ -7,7 +7,7 @@
 
     <method name="add" >
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="messenger user" class="messenger user" access="readwrite"/>
     </method>
@@ -15,7 +15,7 @@
 
     <method name="add disown" scope="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="messenger user" class="messenger user" access="disown"/>
     </method>

@@ -132,7 +132,7 @@ vscf_password_recipient_info_list_shallow_copy_const(const vscf_password_recipie
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSCF_PRIVATE void
 vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self,

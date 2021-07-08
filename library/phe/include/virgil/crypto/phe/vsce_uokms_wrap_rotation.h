@@ -162,7 +162,7 @@ vsce_uokms_wrap_rotation_use_operation_random(vsce_uokms_wrap_rotation_t *self, 
 //
 //  Random used for crypto operations to make them const-time
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void

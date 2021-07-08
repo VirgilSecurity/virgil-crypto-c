@@ -149,7 +149,7 @@ vssq_messenger_cloud_fs_access_list_count(const vssq_messenger_cloud_fs_access_l
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_access_list_add_user(vssq_messenger_cloud_fs_access_list_t *self,
@@ -157,7 +157,7 @@ vssq_messenger_cloud_fs_access_list_add_user(vssq_messenger_cloud_fs_access_list
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_access_list_add_user_with_identity(vssq_messenger_cloud_fs_access_list_t *self,
@@ -165,7 +165,7 @@ vssq_messenger_cloud_fs_access_list_add_user_with_identity(vssq_messenger_cloud_
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSQ_PUBLIC void
 vssq_messenger_cloud_fs_access_list_add(vssq_messenger_cloud_fs_access_list_t *self,

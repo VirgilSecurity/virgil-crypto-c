@@ -262,7 +262,7 @@ vscf_group_session_ticket_use_rng(vscf_group_session_ticket_t *self, vscf_impl_t
 //
 //  Random used to generate keys
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCF_PUBLIC void

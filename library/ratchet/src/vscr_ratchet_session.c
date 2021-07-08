@@ -283,7 +283,7 @@ vscr_ratchet_session_use_rng(vscr_ratchet_session_t *self, vscf_impl_t *rng) {
 //
 //  Random used to generate keys
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCR_PUBLIC void

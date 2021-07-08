@@ -260,7 +260,7 @@ vssc_raw_card_signature_list_cleanup_ctx(vssc_raw_card_signature_list_t *self) {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PRIVATE void
 vssc_raw_card_signature_list_add(
@@ -282,7 +282,7 @@ vssc_raw_card_signature_list_add(
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PRIVATE void
 vssc_raw_card_signature_list_add_disown(

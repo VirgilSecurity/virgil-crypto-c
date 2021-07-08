@@ -67,7 +67,7 @@ extern "C" {
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PUBLIC void
 vssc_raw_card_list_add(vssc_raw_card_list_t *self, vssc_raw_card_t **raw_card_ref);

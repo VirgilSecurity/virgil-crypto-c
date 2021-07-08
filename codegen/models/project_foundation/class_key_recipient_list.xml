@@ -10,7 +10,7 @@
 
     <method name="add">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="recipient id" class="data"/>
         <argument name="recipient public key" interface="public key"/>

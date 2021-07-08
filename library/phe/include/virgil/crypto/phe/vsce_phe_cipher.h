@@ -163,7 +163,7 @@ vsce_phe_cipher_use_random(vsce_phe_cipher_t *self, vscf_impl_t *random);
 //
 //  Random used for salt generation
 //
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
 VSCE_PUBLIC void

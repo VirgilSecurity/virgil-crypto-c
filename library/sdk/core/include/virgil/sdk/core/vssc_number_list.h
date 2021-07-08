@@ -131,7 +131,7 @@ vssc_number_list_shallow_copy_const(const vssc_number_list_t *self);
 
 //
 //  Add new item to the list.
-//  Note, ownership is transfered.
+//  Note, ownership is transferred.
 //
 VSSC_PUBLIC void
 vssc_number_list_add(vssc_number_list_t *self, size_t number);

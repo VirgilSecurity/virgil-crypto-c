@@ -7,7 +7,7 @@
 
     <method name="add" visibility="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="raw card signature" class="raw card signature"/>
     </method>
@@ -15,7 +15,7 @@
 
     <method name="add disown" visibility="private">
         Add new item to the list.
-        Note, ownership is transfered.
+        Note, ownership is transferred.
 
         <argument name="raw card signature" class="raw card signature" access="disown"/>
     </method>
