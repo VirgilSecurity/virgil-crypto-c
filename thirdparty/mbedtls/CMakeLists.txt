@@ -84,9 +84,9 @@ configure_file(
 include(ExternalProject)
 ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
-            https://github.com/VirgilSecurity/mbedtls
+            https://github.com/ARMmbed/mbedtls
         GIT_TAG
-            virgil-mbedtls-2.14.0-patched-2
+            v2.26.0
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -94,12 +94,28 @@ ExternalProject_Add(mbedtls-ext
             "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
             "-DENABLE_TESTING=OFF"
             "-DENABLE_PROGRAMS=OFF"
-        PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            "${CMAKE_CURRENT_BINARY_DIR}/config.h"
-            "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls/config.h"
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${MBEDTLS_ALT_INCLUDE_FILES}
-            "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-ext-prefix/src/mbedtls-ext/include/mbedtls"
+
+        UPDATE_COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/patched_src/check_config.h"
+                    "<SOURCE_DIR>/include/mbedtls/check_config.h" &&
+
+            ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/patched_src/threading.h"
+                    "<SOURCE_DIR>/include/mbedtls/threading.h" &&
+
+            ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_LIST_DIR}/patched_src/threading.c"
+                    "<SOURCE_DIR>/library/threading.c"
+
+        PATCH_COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different
+                    "${CMAKE_CURRENT_BINARY_DIR}/config.h"
+                    "<SOURCE_DIR>/include/mbedtls/config.h"
+        COMMAND
+            ${CMAKE_COMMAND} -E copy
+                    ${MBEDTLS_ALT_INCLUDE_FILES}
+                    "<SOURCE_DIR>/include/mbedtls"
         BUILD_BYPRODUCTS
             "${MBEDTLS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}mbedcrypto${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )

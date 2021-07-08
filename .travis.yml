@@ -1,7 +1,6 @@
-language: c
+dist: focal
 
-dist: trusty
-sudo: required
+language: cpp
 
 compiler:
   - gcc
@@ -10,8 +9,8 @@ compiler:
 addons:
   apt:
     packages:
-      valgrind
-      cloc
+      - valgrind
+      - cloc
 
 before_install:
   - openssl aes-256-cbc
@@ -21,27 +20,17 @@ before_install:
     -out ./tests/integration/env.json -d
 
 install:
-  - travis_retry wget https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.sh
-  - sudo bash cmake-3.12.4-Linux-x86_64.sh --skip-license --exclude-subdir --prefix=/usr/local
-  - export PATH="/usr/local/bin:$PATH"
-  - mkdir -p $HOME/protobuf && pushd $HOME/protobuf
-    && wget 'https://github.com/google/protobuf/releases/download/v3.6.1/protoc-3.6.1-linux-x86_64.zip' -O protoc-3.6.1-linux-x86_64.zip
-    && unzip protoc-3.6.1-linux-x86_64.zip -d protoc-3.6.1-linux-x86_64
-    && wget 'https://github.com/google/protobuf/releases/download/v3.6.1/protobuf-python-3.6.1.tar.gz' -O protobuf-python-3.6.1.tar.gz
-    && tar xzf protobuf-python-3.6.1.tar.gz
-    && cp protoc-3.6.1-linux-x86_64/bin/protoc protobuf-3.6.1/src/
-    && pushd protobuf-3.6.1/python
-    && python setup.py build && sudo python setup.py install
-    && popd
-    && popd
+  - pip3 install protobuf
 
 before_script:
   - ${CC} --version
   - cmake --version
   - valgrind --version
+  - python --version
+  - python3 --version
 
 script:
-  - cmake -H. -Bbuild
+  - cmake -S. -Bbuild
       -DENABLE_HEAVY_TESTS=OFF
       -DVIRGIL_C_MT_TESTING=OFF
       -DENABLE_INTEGRATION_TESTS=OFF
@@ -52,7 +41,7 @@ script:
     && pushd build
     && ctest -T memcheck --output-on-failure
     && popd
-  - cmake -H. -Bbuild
+  - cmake -S. -Bbuild
       -DVIRGIL_C_MT_TESTING=ON
       -DENABLE_INTEGRATION_TESTS=ON
   - cmake --build build -- -j8

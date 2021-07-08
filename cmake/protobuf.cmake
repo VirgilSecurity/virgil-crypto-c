@@ -137,11 +137,13 @@ function(target_protobuf_sources target)
                 COMMAND
                     "${CMAKE_COMMAND}" -E make_directory "${proto_file_out_dir}"
                 COMMAND
-                    "${PROTOC_EXE}" --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
+                    "${PROTOC_EXE}"
+                ARGS
+                    --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
                                     --nanopb_out=${proto_options}:"${proto_file_out_dir}"
                                     --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
-                    "${proto_file_path}" "${proto_options_file}"
+                    "${proto_file_path}" "${proto_options_file}" protobuf-nanopb
                 COMMENT "Processing protobuf model: ${proto_file_path}"
                 WORKING_DIRECTORY "${proto_file_dir}"
                 )
