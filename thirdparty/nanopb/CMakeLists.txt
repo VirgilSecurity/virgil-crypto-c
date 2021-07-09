@@ -60,6 +60,13 @@ else()
 endif()
 
 # ---------------------------------------------------------------------------
+#   System introspection
+# ---------------------------------------------------------------------------
+if(CMAKE_HOST_WIN32)
+    set(HOST_EXECUTABLE_SUFFIX ".exe")
+endif()
+
+# ---------------------------------------------------------------------------
 #   Optionally load and import protobuf generator as an external project
 # ---------------------------------------------------------------------------
 include(ExternalProject)
@@ -80,7 +87,7 @@ add_executable(protoc IMPORTED GLOBAL)
 
 add_dependencies(protoc protobuf-bin-ext)
 
-set(PROTOC_EXE "${NANOPB_INSTALL_LOCATION}/bin/protoc${CMAKE_EXECUTABLE_SUFFIX}")
+set(PROTOC_EXE "${NANOPB_INSTALL_LOCATION}/bin/protoc${HOST_EXECUTABLE_SUFFIX}")
 
 set_target_properties(protoc PROPERTIES IMPORTED_LOCATION "${PROTOC_EXE}")
 
