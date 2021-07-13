@@ -213,8 +213,8 @@ fi
 
 # ###########################################################################
 show_info "Change version within VSCCrypto.podspec file."
-sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
-sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*" "\1${VERSION}" "${ROOT_DIR}/VSCCrypto.podspec"
+sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/VSCCrypto.podspec"
+sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}" "\1${VERSION_FULL}" "${ROOT_DIR}/VSCCrypto.podspec"
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
