@@ -86,7 +86,7 @@ ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
             https://github.com/ARMmbed/mbedtls
         GIT_TAG
-            v2.26.0
+            v2.27.0
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
