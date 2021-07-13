@@ -261,7 +261,6 @@ if [ $PREPARE_RELEASE == "YES" ]; then
     cp -p -R "${ROOT_DIR}/LICENSE" "${XCFRAMEWORKS_DESTINATION_DIR}"
 
     pushd "${DESTINATION_DIR}"
-        rm -f VSCCrypto.framework.zip
         zip --symlinks -r VSCCrypto.xcframework.zip "VSCCrypto-XCFrameworks"
     popd
 fi
