@@ -49,8 +49,8 @@ function(target_protobuf_sources target)
     #
     # Inspect host system
     #
-    if(WIN32 AND NOT CYGWIN)
-        set(EXECUTABLE_SUFFIX ".exe")
+    if(CMAKE_HOST_WIN32)
+        set(HOST_EXECUTABLE_SUFFIX ".exe")
     endif()
 
     #
@@ -60,15 +60,15 @@ function(target_protobuf_sources target)
         set(PROTOC_EXE protoc)
 
     elseif(COMMAND find_host_package)
-        find_host_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
+        find_host_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
 
     else()
-        find_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
+        find_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
     endif()
 
     if(NOT PROTOC_EXE)
         message(FATAL_ERROR
-                "Protobuf generator 'protoc${EXECUTABLE_SUFFIX}' is not found as a target "
+                "Protobuf generator 'protoc${HOST_EXECUTABLE_SUFFIX}' is not found as a target "
                 "and not found as an executable within system"
                 )
     endif()
