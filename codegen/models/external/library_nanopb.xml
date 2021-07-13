@@ -18,10 +18,6 @@
         Increase the number of required fields that are tracked. A compiler warning will tell if you need this.
     </feature>
 
-    <feature name="FIELD_16BIT" default="off">
-        Add support for tag numbers > 255 and fields larger than 255 bytes.
-    </feature>
-
     <feature name="FIELD_32BIT" default="on">
         Add support for tag numbers > 65536 and fields larger than 65536 bytes.
     </feature>
@@ -32,9 +28,5 @@
 
     <feature name="BUFFER_ONLY" default="on">
         Disable support for custom streams (support only memory buffers).
-    </feature>
-
-    <feature name="OLD_CALLBACK_STYLE" default="off">
-        Switch back to the old-style callback function signature. This was the default until nanopb-0.2.1.
     </feature>
 </library>

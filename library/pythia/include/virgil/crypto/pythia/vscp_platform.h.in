@@ -68,14 +68,12 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#ifndef VSCP_HAVE_ASSERT_H
 #cmakedefine01 VSCP_HAVE_ASSERT_H
-#if VSCP_HAVE_ASSERT_H
-#   include <assert.h>
 #endif
 
+#ifndef VSCP_HAVE_STDATOMIC_H
 #cmakedefine01 VSCP_HAVE_STDATOMIC_H
-#if VSCP_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
 #endif
 
 #ifndef VSCP_SHARED_LIBRARY

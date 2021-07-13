@@ -7,6 +7,7 @@
     <require module="library" scope="public" />
 
     <c_include file="stdio.h" scope="private" is_system="1" />
+    <c_include file="assert.h" scope="private" is_system="1" if=".(c_global_macros_have_assert_h)" />
 
     <callback name="handler">
         Assertion handler callback type.

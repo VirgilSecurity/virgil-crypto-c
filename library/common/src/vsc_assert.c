@@ -57,6 +57,10 @@
 
 #include <stdio.h>
 
+#if VSC_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
+
 // clang-format on
 //  @end
 

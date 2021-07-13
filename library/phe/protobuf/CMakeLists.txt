@@ -43,9 +43,9 @@ project(virgil_crypto_c_phe_pb VERSION ${virgil_crypto_c_phe_VERSION} LANGUAGES 
 #
 # protobuf-nanopb
 #
-if(NOT TARGET protobuf-nanopb)
+if(NOT TARGET nanopb::protobuf-nanopb)
     message(FATAL_ERROR
-            "Required library 'protobuf-nanopb' is not found - looking for target 'protobuf-nanopb'.")
+            "Required library 'protobuf-nanopb' is not found - looking for target 'nanopb::protobuf-nanopb'.")
 endif()
 
 if(NOT COMMAND target_protobuf_sources)

@@ -43,7 +43,6 @@
 # ::
 #
 #   Runtime  = PHP executable
-#   Test     = PHPUnit
 #   Devel    = Headers and libraries required to build PHP extension
 #
 # This module sets the following result variables:
@@ -64,7 +63,6 @@
 #   PHP_VERSION           - This is set to: $major[.$minor[.$patch]]
 #   PHP_FOUND             - TRUE if all components are found.
 #   PHP_<component>_FOUND - TRUE if <component> is found.
-#   COMPOSER_EXECUTABLE   - the full path to the 'composer' executable
 #   COMPOSER_FOUND        - TRUE if 'composer' executable is found
 #   COMPOSER_VERSION      - COMPOSER version as $major[.$minor[.$patch]]
 #   COMPOSER_FOUND        - TRUE if 'composer' executable is found
@@ -95,17 +93,12 @@ if(WIN32)
     # Find executables
     #
     find_program(PHP_EXECUTABLE NAMES php.exe PATHS "${PHP_HOME}")
-    find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar PATHS "${COMPOSER_HOME}")
 
     #
     # Set 'PHP_HOME' and 'COMPOSER_HOME' if executables are found and variable are not defined.
     #
     if(NOT PHP_HOME AND PHP_EXECUTABLE)
         get_filename_component(PHP_HOME "${PHP_EXECUTABLE}" DIRECTORY)
-    endif()
-
-    if(NOT COMPOSER_HOME AND COMPOSER_EXECUTABLE)
-        get_filename_component(COMPOSER_HOME "${COMPOSER_EXECUTABLE}" DIRECTORY)
     endif()
 
     #
@@ -136,7 +129,7 @@ if(WIN32)
 
         unset(_INCLUDE_DIRS)
 
-        find_library(PHP_LIBRARIES NAMES php5 php5ts php7 php7ts php phpts PATHS "${PHP_DEVEL_HOME}/lib")
+        find_library(PHP_LIBRARIES NAMES php7 php7ts php8 php8ts php phpts PATHS "${PHP_DEVEL_HOME}/lib")
     endif()
 
     #
@@ -157,8 +150,6 @@ if(WIN32)
 # ---------------------------------------------------------------------------
 else()
     find_program(PHP_CONFIG_EXECUTABLE NAMES php5-config php-config)
-    find_program(COMPOSER_EXECUTABLE NAMES composer composer.phar)
-
 
     if(PHP_CONFIG_EXECUTABLE)
         #
@@ -261,29 +252,6 @@ if(PHP_INFO)
 endif()
 
 # ---------------------------------------------------------------------------
-#   Get information from 'composer --version' output
-# ---------------------------------------------------------------------------
-if(COMPOSER_EXECUTABLE)
-    execute_process(
-            COMMAND "${COMPOSER_EXECUTABLE}" "--version"
-            RESULT_VARIABLE composer_info_res
-            OUTPUT_VARIABLE composer_info_var
-            ERROR_VARIABLE composer_info_err
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            ERROR_STRIP_TRAILING_WHITESPACE
-            )
-
-    if(composer_info_res EQUAL 0)
-        set(COMPOSER_INFO "${composer_info_var}")
-    endif()
-endif()
-
-if(COMPOSER_INFO)
-    string(REGEX REPLACE "Composer version ([0-9]+\\.[0-9]+\\.[0-9]+).+" "\\1" COMPOSER_VERSION "${COMPOSER_INFO}")
-endif()
-
-
-# ---------------------------------------------------------------------------
 #   Handle package arguments
 # ---------------------------------------------------------------------------
 include(FindPackageHandleStandardArgs)
@@ -321,13 +289,6 @@ if(PHP_FIND_COMPONENTS)
                     set(PHP_Devel_FOUND TRUE)
                 endif()
             endif()
-
-        elseif(component STREQUAL "Test")
-            set(_PHP_TEST_REQUIRED_VARS PHP_EXECUTABLE COMPOSER_EXECUTABLE)
-
-            if(PHP_EXECUTABLE AND COMPOSER_EXECUTABLE)
-                set(PHP_Test_FOUND TRUE)
-            endif()
         endif()
     endforeach()
 
@@ -335,7 +296,6 @@ if(PHP_FIND_COMPONENTS)
             REQUIRED_VARS
                 ${_PHP_DEVEL_REQUIRED_VARS}
                 ${_PHP_RUNTIME_REQUIRED_VARS}
-                ${_PHP_TEST_REQUIRED_VARS}
 
             HANDLE_COMPONENTS
 
@@ -345,7 +305,6 @@ if(PHP_FIND_COMPONENTS)
 
     unset(_PHP_RUNTIME_REQUIRED_VARS)
     unset(_PHP_DEVEL_REQUIRED_VARS)
-    unset(_PHP_TEST_REQUIRED_VARS)
 else()
 
     if(WIN32)
@@ -381,10 +340,6 @@ else()
         if(PHP_INCLUDE_DIR AND PHP_INCLUDE_DIRS)
             set(PHP_Devel_FOUND TRUE)
         endif()
-
-        if(PHP_EXECUTABLE AND COMPOSER_EXECUTABLE)
-            set(PHP_Test_FOUND TRUE)
-        endif()
     endif()
 endif()
 
@@ -397,7 +352,6 @@ set(PHP_LIBRARIES "${PHP_LIBRARIES}" CACHE STRING "The list of paths to PHP libr
 mark_as_advanced(
         PHP_EXECUTABLE
         PHP_CONFIG_EXECUTABLE
-        COMPOSER_EXECUTABLE
         PHP_INCLUDE_DIR
         PHP_INCLUDE_DIRS
         PHP_LIBRARIES
