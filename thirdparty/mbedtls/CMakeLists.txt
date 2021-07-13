@@ -85,7 +85,7 @@ configure_file(
 #
 #  Fix compiling with GCC 4.x.
 #
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set(MBEDTLS_C_FLAGS "-std=c99")
 endif()
 
