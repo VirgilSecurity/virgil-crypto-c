@@ -86,7 +86,7 @@ configure_file(
 #  Fix compiling with GCC 4.x.
 #
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set(MBEDTLS_C_FLAGS "-std=c99")
+    set(MBEDTLS_C_FLAGS "-DCMAKE_C_FLAGS=-std=c99")
 endif()
 
 include(ExternalProject)
@@ -97,7 +97,7 @@ ExternalProject_Add(mbedtls-ext
             v2.27.0
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
-            "-DCMAKE_C_FLAGS=${MBEDTLS_C_FLAGS}"
+            "${MBEDTLS_C_FLAGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
