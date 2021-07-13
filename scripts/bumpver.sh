@@ -119,17 +119,17 @@ show_info "New version is: ${VERSION_FULL}"
 
 
 # ###########################################################################
-show_info "Change verion within VERSION file."
+show_info "Change version within VERSION file."
 echo "${VERSION_FULL}" > "${ROOT_DIR}/VERSION"
 
 # ###########################################################################
-show_info "Change verion within CMakeLists.txt file."
+show_info "Change version within CMakeLists.txt file."
 sed_replace "VERSION *[0-9]*\.[0-9]*\.[0-9]" "VERSION ${VERSION}" "${ROOT_DIR}/CMakeLists.txt"
 sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
 
 
 # ###########################################################################
-show_info "Change verion within XML in the main.xml."
+show_info "Change version within XML in the main.xml."
 
 main_xml_file="${ROOT_DIR}/codegen/main.xml"
 
@@ -144,7 +144,7 @@ sed_extended_replace "${main_version_from}" "${main_version_to}" "${main_xml_fil
 
 
 # ###########################################################################
-show_info "Change verion within XML project files."
+show_info "Change version within XML project files."
 
 XML_PROJECT_FILES=$(find "${ROOT_DIR}/codegen/models" -name "project_*.xml" | tr '\n' ' ')
 
@@ -156,7 +156,7 @@ for project_file in ${XML_PROJECT_FILES}; do
 done
 
 # ###########################################################################
-show_info "Change verion within C header files."
+show_info "Change version within C header files."
 
 C_HEADER_FILES=$(find "${ROOT_DIR}/library" -name "*_library.h" | tr '\n' ' ')
 
@@ -167,7 +167,7 @@ for header_file in ${C_HEADER_FILES}; do
 done
 
 # ###########################################################################
-show_info "Change verion within PHP wrapper files."
+show_info "Change version within PHP wrapper files."
 
 PHP_SOURCE_FILES=$(find "${ROOT_DIR}/wrappers/php" -name "vsc*.c" | tr '\n' ' ')
 
@@ -176,7 +176,7 @@ for source_file in ${PHP_SOURCE_FILES}; do
 done
 
 # ###########################################################################
-show_info "Change verion within Python wrapper files."
+show_info "Change version within Python wrapper files."
 
 sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py"
 
@@ -193,7 +193,7 @@ else
 fi
 
 # ###########################################################################
-show_info "Change verion within Java project files."
+show_info "Change version within Java project files."
 pushd ${ROOT_DIR}/wrappers/java >/dev/null
 if [ -z "${VERSION_LABEL}" ]; then
     ./mvnw versions:set -DnewVersion="${VERSION}" >/dev/null
@@ -203,7 +203,7 @@ fi
 popd >/dev/null
 
 # ###########################################################################
-show_info "Change verion within Android project files."
+show_info "Change version within Android project files."
 
 if [ -z "${VERSION_LABEL}" ]; then
     sed_replace "version \".*\"" "version \"${VERSION}\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
@@ -212,10 +212,10 @@ else
 fi
 
 # ###########################################################################
-show_info "Change verion within VSCCrypto.podspec file."
+show_info "Change version within VSCCrypto.podspec file."
 sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "s.version\1\"${VERSION}\"" "${ROOT_DIR}/VSCCrypto.podspec"
 sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*" "\1${VERSION}" "${ROOT_DIR}/VSCCrypto.podspec"
 
 # ###########################################################################
-show_info "Change verion within JS package.json file."
+show_info "Change version within JS package.json file."
 sed_replace "\(\"version\" *: *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
