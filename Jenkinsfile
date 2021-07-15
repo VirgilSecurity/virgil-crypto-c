@@ -141,6 +141,7 @@ def build_LangC_Unix(slave) {
             unstash 'src'
             sh '''
                 cmake -DCMAKE_BUILD_TYPE=Release \
+                      -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=$(uname -m) \
                       -DCPACK_OUTPUT_FILE_PREFIX=c \
                       -DENABLE_CLANGFORMAT=OFF \
@@ -272,6 +273,7 @@ def build_LangPHP_MacOS(slave) {
             sh """
                 brew unlink ${phpVersions} && brew link php@7.3 --force
                 cmake -Cconfigs/php-config.cmake \
+                      -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                       -DCMAKE_BUILD_TYPE=Release \
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=\$(uname -m) \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
@@ -426,8 +428,8 @@ def build_LangJava_Linux(slave) {
             clearContentUnix()
             unstash 'src'
             sh '''
-                cmake -DCMAKE_BUILD_TYPE=Release \
-                      -Cconfigs/java-config.cmake \
+                cmake -Cconfigs/java-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
@@ -450,8 +452,9 @@ def build_LangJava_MacOS(slave) {
             clearContentUnix()
             unstash 'src'
             sh '''
-                cmake -DCMAKE_BUILD_TYPE=Release \
-                      -Cconfigs/java-config.cmake \
+                cmake -Cconfigs/java-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos" \
                       -DENABLE_CLANGFORMAT=OFF \
                       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
@@ -607,8 +610,8 @@ def build_LangPython_Linux(slave) {
             clearContentUnix()
             unstash 'src'
             sh '''
-                cmake -DCMAKE_BUILD_TYPE=Release \
-                      -Cconfigs/python-config.cmake \
+                cmake -Cconfigs/python-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
                       -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
                       -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
@@ -630,8 +633,9 @@ def build_LangPython_MacOS(slave) {
             clearContentUnix()
             unstash 'src'
             sh '''
-                cmake -DCMAKE_BUILD_TYPE=Release \
-                      -Cconfigs/python-config.cmake \
+                cmake -Cconfigs/python-config.cmake \
+                      -DCMAKE_BUILD_TYPE=Release \
+                      -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
                       -DCMAKE_INSTALL_PREFIX="wrappers/python/virgil_crypto_lib" \
                       -DCMAKE_INSTALL_LIBDIR=_libs \
                       -DENABLE_CLANGFORMAT=OFF \
