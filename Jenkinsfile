@@ -160,9 +160,6 @@ def build_LangC_Unix(slave, arch) {
                       -DVIRGIL_C_MT_TESTING=ON \
                       -Bbuild -H.
                 cmake --build build -- -j10
-                cd build
-                ctest --verbose
-                cpack
             """
             dir('build') {
                 if (canRunTest) {
@@ -325,9 +322,6 @@ def build_LangPHP_MacOS(slave, arch) {
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
-                cd build
-                ctest --verbose
-                cpack
             """
             dir('build') {
                 if (canRunTest) {
@@ -350,9 +344,6 @@ def build_LangPHP_MacOS(slave, arch) {
                       -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
-                cd build
-                ctest --verbose
-                cpack
             """
             dir('build') {
                 if (canRunTest) {
