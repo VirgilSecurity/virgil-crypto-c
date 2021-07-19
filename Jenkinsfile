@@ -699,18 +699,20 @@ def build_LangPython_Windows(slave, arch) {
     return { node(slave) {
         def jobPath = pathFromJobName(env.JOB_NAME)
         ws("workspace\\${jobPath}") {
-            def toolchainConfig = ""
+            def buildToolchain = ""
             if (arch == "x86_64") {
-                toolchainConfig = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                buildToolchain = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+                pythonEnv = "C:\\Python36_x64"
             } else {
-                toolchainConfig = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars32.bat"
+                buildToolchain = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars32.bat"
+                pythonEnv = "C:\\Python36_x86"
             }
 
             clearContentWindows()
             unstash 'src'
             bat """
                 set PATH=%PATH:"=%
-                call "${toolchainConfig}"
+                call "${buildToolchain}"
                 cmake -G\"NMake Makefiles\" ^
                       -Cconfigs/python-config.cmake ^
                       -DVIRGIL_LIB_PYTHIA=OFF ^
@@ -724,7 +726,7 @@ def build_LangPython_Windows(slave, arch) {
 
                 rmdir wrappers\\python\\virgil_crypto_lib\\pythia /s /q
             """
-            withEnv(["PATH=C:\\Python36_x64;${env.PATH}"]) {
+            withEnv(["PATH=${pythonEnv};${env.PATH}"]) {
                 bat 'cd wrappers\\python && python -m unittest discover -s virgil_crypto_lib/tests -p "*_test.py"'
             }
             stash includes: 'wrappers/python/**', excludes: 'dist/**, build/**', name: "python_wrapper_windows_${arch}"
