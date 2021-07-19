@@ -297,7 +297,7 @@ def build_LangPHP_MacOS(slave, arch) {
                       -DVIRGIL_PACKAGE_PLATFORM_ARCH=${arch} \
                       -DVIRGIL_PACKAGE_LANGUAGE_VERSION=7.3 \
                       -DCPACK_OUTPUT_FILE_PREFIX=php \
-                      -DENABLE_CLANGFORMAT=OFF
+                      -DENABLE_CLANGFORMAT=OFF \
                       -Bbuild -H.
                 cmake --build build -- -j10
             """
