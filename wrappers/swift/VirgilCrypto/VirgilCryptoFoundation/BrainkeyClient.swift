@@ -93,14 +93,14 @@ import VSCFoundation
     @objc public func blind(password: Data) throws -> BrainkeyClientBlindResult {
         let deblindFactorCount = BrainkeyClient.mpiLen
         var deblindFactor = Data(count: deblindFactorCount)
-        var deblindFactorBuf = vsc_buffer_new()
+        let deblindFactorBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(deblindFactorBuf)
         }
 
         let blindedPointCount = BrainkeyClient.pointLen
         var blindedPoint = Data(count: blindedPointCount)
-        var blindedPointBuf = vsc_buffer_new()
+        let blindedPointBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(blindedPointBuf)
         }
@@ -127,7 +127,7 @@ import VSCFoundation
     @objc public func deblind(password: Data, hardenedPoint: Data, deblindFactor: Data, keyName: Data) throws -> Data {
         let seedCount = BrainkeyClient.pointLen
         var seed = Data(count: seedCount)
-        var seedBuf = vsc_buffer_new()
+        let seedBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(seedBuf)
         }

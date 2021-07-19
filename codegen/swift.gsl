@@ -554,7 +554,7 @@ function swift_wrap_c_proxy_call (swift_method, proxy_call, proxy_return_type, s
         my.buffers_instantiation += terminator + format_left ("\
             let $(my.buffer_name:)Count = $(swift_return.length_getter:)
             var $(my.buffer_name:) = Data(count: $(my.buffer_name:)Count)
-            var $(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
+            let $(my.buffer_name:)Buf = .(c_project_common_class_buffer_method_new)()
             defer {
                 .(c_project_common_class_buffer_method_delete)($(my.buffer_name:)Buf)
             }

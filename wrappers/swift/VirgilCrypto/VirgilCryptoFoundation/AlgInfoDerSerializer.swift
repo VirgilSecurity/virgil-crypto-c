@@ -97,7 +97,7 @@ import VSCFoundation
     @objc public func serialize(algInfo: AlgInfo) -> Data {
         let outCount = self.serializedLen(algInfo: algInfo)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

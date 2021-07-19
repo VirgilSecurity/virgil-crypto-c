@@ -202,7 +202,7 @@ import VSCFoundation
     @objc public func exportPublicKey(publicKey: PublicKey) throws -> Data {
         let outCount = self.exportedPublicKeyLen(publicKey: publicKey)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -234,7 +234,7 @@ import VSCFoundation
     @objc public func exportPrivateKey(privateKey: PrivateKey) throws -> Data {
         let outCount = self.exportedPrivateKeyLen(privateKey: privateKey)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

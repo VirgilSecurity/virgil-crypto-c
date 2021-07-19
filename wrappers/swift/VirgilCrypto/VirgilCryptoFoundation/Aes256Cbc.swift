@@ -106,7 +106,7 @@ import VSCFoundation
     @objc public func encrypt(data: Data) throws -> Data {
         let outCount = self.encryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -143,7 +143,7 @@ import VSCFoundation
     @objc public func decrypt(data: Data) throws -> Data {
         let outCount = self.decryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -199,7 +199,7 @@ import VSCFoundation
     @objc public func update(data: Data) -> Data {
         let outCount = self.outLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -247,7 +247,7 @@ import VSCFoundation
     @objc public func finish() throws -> Data {
         let outCount = self.outLen(dataLen: 0)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

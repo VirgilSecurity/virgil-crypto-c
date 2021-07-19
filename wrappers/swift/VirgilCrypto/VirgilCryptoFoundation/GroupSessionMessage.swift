@@ -105,7 +105,7 @@ import VSCFoundation
     @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
-        var outputBuf = vsc_buffer_new()
+        let outputBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outputBuf)
         }

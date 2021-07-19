@@ -146,7 +146,7 @@ import VSCFoundation
     @objc public func pack() -> Data {
         let messageInfoCount = self.packedLen()
         var messageInfo = Data(count: messageInfoCount)
-        var messageInfoBuf = vsc_buffer_new()
+        let messageInfoBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(messageInfoBuf)
         }

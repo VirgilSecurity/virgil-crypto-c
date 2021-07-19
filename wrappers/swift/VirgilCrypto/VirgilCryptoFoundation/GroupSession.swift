@@ -138,7 +138,7 @@ import VSCFoundation
     @objc public func decrypt(message: GroupSessionMessage, publicKey: PublicKey) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
-        var plainTextBuf = vsc_buffer_new()
+        let plainTextBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(plainTextBuf)
         }

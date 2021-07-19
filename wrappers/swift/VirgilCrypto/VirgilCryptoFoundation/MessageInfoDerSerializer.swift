@@ -95,7 +95,7 @@ import VSCFoundation
     @objc public func serialize(messageInfo: MessageInfo) -> Data {
         let outCount = self.serializedLen(messageInfo: messageInfo)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -150,7 +150,7 @@ import VSCFoundation
     @objc public func serializeFooter(messageInfoFooter: MessageInfoFooter) -> Data {
         let outCount = self.serializedFooterLen(messageInfoFooter: messageInfoFooter)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

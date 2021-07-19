@@ -181,7 +181,7 @@ import VSCFoundation
     @objc public func packMessageInfo() -> Data {
         let messageInfoCount = self.messageInfoLen()
         var messageInfo = Data(count: messageInfoCount)
-        var messageInfoBuf = vsc_buffer_new()
+        let messageInfoBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(messageInfoBuf)
         }
@@ -208,7 +208,7 @@ import VSCFoundation
     @objc public func processEncryption(data: Data) throws -> Data {
         let outCount = self.encryptionOutLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -231,7 +231,7 @@ import VSCFoundation
     @objc public func finishEncryption() throws -> Data {
         let outCount = self.encryptionOutLen(dataLen: 0)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -291,7 +291,7 @@ import VSCFoundation
     @objc public func processDecryption(data: Data) throws -> Data {
         let outCount = self.decryptionOutLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -314,7 +314,7 @@ import VSCFoundation
     @objc public func finishDecryption() throws -> Data {
         let outCount = self.decryptionOutLen(dataLen: 0)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -378,7 +378,7 @@ import VSCFoundation
     @objc public func packMessageInfoFooter() throws -> Data {
         let outCount = self.messageInfoFooterLen()
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

@@ -98,7 +98,7 @@ import VSCFoundation
     @objc public func hash(data: Data) -> Data {
         let digestCount = self.digestLen
         var digest = Data(count: digestCount)
-        var digestBuf = vsc_buffer_new()
+        let digestBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(digestBuf)
         }
@@ -132,7 +132,7 @@ import VSCFoundation
     @objc public func finish() -> Data {
         let digestCount = self.digestLen
         var digest = Data(count: digestCount)
-        var digestBuf = vsc_buffer_new()
+        let digestBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(digestBuf)
         }

@@ -210,7 +210,7 @@ import VSCFoundation
     @objc public func encrypt(publicKey: PublicKey, data: Data) throws -> Data {
         let outCount = self.encryptedLen(publicKey: publicKey, dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -248,7 +248,7 @@ import VSCFoundation
     @objc public func decrypt(privateKey: PrivateKey, data: Data) throws -> Data {
         let outCount = self.decryptedLen(privateKey: privateKey, dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -272,7 +272,7 @@ import VSCFoundation
     @objc public func computeSharedKey(publicKey: PublicKey, privateKey: PrivateKey) throws -> Data {
         let sharedKeyCount = self.sharedKeyLen(key: privateKey)
         var sharedKey = Data(count: sharedKeyCount)
-        var sharedKeyBuf = vsc_buffer_new()
+        let sharedKeyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(sharedKeyBuf)
         }
@@ -315,14 +315,14 @@ import VSCFoundation
     @objc public func kemEncapsulate(publicKey: PublicKey) throws -> KemKemEncapsulateResult {
         let sharedKeyCount = self.kemSharedKeyLen(key: publicKey)
         var sharedKey = Data(count: sharedKeyCount)
-        var sharedKeyBuf = vsc_buffer_new()
+        let sharedKeyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(sharedKeyBuf)
         }
 
         let encapsulatedKeyCount = self.kemEncapsulatedKeyLen(publicKey: publicKey)
         var encapsulatedKey = Data(count: encapsulatedKeyCount)
-        var encapsulatedKeyBuf = vsc_buffer_new()
+        let encapsulatedKeyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(encapsulatedKeyBuf)
         }
@@ -348,7 +348,7 @@ import VSCFoundation
     @objc public func kemDecapsulate(encapsulatedKey: Data, privateKey: PrivateKey) throws -> Data {
         let sharedKeyCount = self.kemSharedKeyLen(key: privateKey)
         var sharedKey = Data(count: sharedKeyCount)
-        var sharedKeyBuf = vsc_buffer_new()
+        let sharedKeyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(sharedKeyBuf)
         }

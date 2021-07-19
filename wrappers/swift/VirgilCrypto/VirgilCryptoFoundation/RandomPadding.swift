@@ -140,7 +140,7 @@ import VSCFoundation
     @objc public func finishDataProcessing() throws -> Data {
         let outCount = self.len()
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -167,7 +167,7 @@ import VSCFoundation
     @objc public func processPaddedData(data: Data) -> Data {
         let outCount = data.count
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -196,7 +196,7 @@ import VSCFoundation
     @objc public func finishPaddedDataProcessing() throws -> Data {
         let outCount = self.finishPaddedDataProcessingOutLen()
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

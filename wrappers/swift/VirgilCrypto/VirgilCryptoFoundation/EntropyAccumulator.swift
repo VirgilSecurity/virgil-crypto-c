@@ -92,7 +92,7 @@ import VSCFoundation
     @objc public func gather(len: Int) throws -> Data {
         let outCount = len
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

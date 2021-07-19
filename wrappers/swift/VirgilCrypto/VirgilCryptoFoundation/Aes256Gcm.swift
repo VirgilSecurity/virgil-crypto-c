@@ -109,7 +109,7 @@ import VSCFoundation
     @objc public func encrypt(data: Data) throws -> Data {
         let outCount = self.encryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -146,7 +146,7 @@ import VSCFoundation
     @objc public func decrypt(data: Data) throws -> Data {
         let outCount = self.decryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -202,7 +202,7 @@ import VSCFoundation
     @objc public func update(data: Data) -> Data {
         let outCount = self.outLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -250,7 +250,7 @@ import VSCFoundation
     @objc public func finish() throws -> Data {
         let outCount = self.outLen(dataLen: 0)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -272,14 +272,14 @@ import VSCFoundation
     @objc public func authEncrypt(data: Data, authData: Data) throws -> AuthEncryptAuthEncryptResult {
         let outCount = self.authEncryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
 
         let tagCount = self.authTagLen
         var tag = Data(count: tagCount)
-        var tagBuf = vsc_buffer_new()
+        let tagBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(tagBuf)
         }
@@ -317,7 +317,7 @@ import VSCFoundation
     @objc public func authDecrypt(data: Data, authData: Data, tag: Data) throws -> Data {
         let outCount = self.authDecryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -362,14 +362,14 @@ import VSCFoundation
     @objc public func finishAuthEncryption() throws -> CipherAuthFinishAuthEncryptionResult {
         let outCount = self.outLen(dataLen: 0)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
 
         let tagCount = self.authTagLen
         var tag = Data(count: tagCount)
-        var tagBuf = vsc_buffer_new()
+        let tagBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(tagBuf)
         }
@@ -398,7 +398,7 @@ import VSCFoundation
     @objc public func finishAuthDecryption(tag: Data) throws -> Data {
         let outCount = self.outLen(dataLen: 0)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

@@ -52,7 +52,7 @@ import VSCFoundation
     @objc public static func wrap(title: String, data: Data) -> Data {
         let pemCount = Pem.wrappedLen(title: title, dataLen: data.count)
         var pem = Data(count: pemCount)
-        var pemBuf = vsc_buffer_new()
+        let pemBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(pemBuf)
         }
@@ -80,7 +80,7 @@ import VSCFoundation
     @objc public static func unwrap(pem: Data) throws -> Data {
         let dataCount = Pem.unwrappedLen(pemLen: pem.count)
         var data = Data(count: dataCount)
-        var dataBuf = vsc_buffer_new()
+        let dataBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(dataBuf)
         }
