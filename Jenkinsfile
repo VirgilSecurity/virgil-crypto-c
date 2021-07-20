@@ -768,8 +768,8 @@ def testAndroidArtifacts() {
             unstash "src"
             unstash "java_android_x86"
             unstash "java_android_x86_64"
-            unstash "java_android_armeabi_v7a"
-            unstash "java_android_arm64_v8a"
+            unstash "java_android_armeabi-v7a"
+            unstash "java_android_arm64-v8a"
 
             withEnv(['ANDROID_HOME=/Users/virgil/Library/VirgilEnviroment/android-sdk']) {
                 sh '''
@@ -874,8 +874,8 @@ def deployAndroidArtifacts() {
                 unstash "src"
                 unstash "java_android_x86"
                 unstash "java_android_x86_64"
-                unstash "java_android_armeabi_v7a"
-                unstash "java_android_arm64_v8a"
+                unstash "java_android_armeabi-v7a"
+                unstash "java_android_arm64-v8a"
 
                 withEnv(['ANDROID_HOME=/srv/apps/android-sdk']) {
                     sh '''
