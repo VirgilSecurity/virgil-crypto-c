@@ -15,6 +15,9 @@ properties([
         booleanParam(name: 'DISABLE_JAVA_BUILDS', defaultValue: false,
             description: 'Disable build of Java artifacts'),
 
+        booleanParam(name: 'DISABLE_ANDROID_BUILDS', defaultValue: false,
+            description: 'Disable build of Java Android artifacts'),
+
         booleanParam(name: 'DISABLE_PYTHON_BUILDS', defaultValue: false,
             description: 'Disable build of Python artifacts'),
 
@@ -87,6 +90,13 @@ if (!params.DISABLE_JAVA_BUILDS) {
     nodes['lang-java-platform-macos-x86_64'] = build_LangJava_MacOS('build-os-x', 'x86_64')
     nodes['lang-java-platform-macos-arm64'] = build_LangJava_MacOS('build-os-x', 'arm64')
     nodes['lang-java-platform-windows'] = build_LangJava_Windows('build-win10')
+}
+
+
+//
+//  Language: Java Android
+//
+if (!params.DISABLE_ANDROID_BUILDS) {
     nodes['lang-java-platform-android-x86'] = build_LangJava_Android('build-os-x', 'x86')
     nodes['lang-java-platform-android-x86_64'] = build_LangJava_Android('build-os-x', 'x86_64')
     nodes['lang-java-platform-android-armeabi-v7a'] = build_LangJava_Android('build-os-x', 'armeabi-v7a')
@@ -746,6 +756,10 @@ def testAndroidArtifacts() {
         stage('Test Android artifacts') {
             echo "RUN_ANDROID_TESTS = ${params.RUN_ANDROID_TESTS}"
             echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+            if (params.DISABLE_ANDROID_BUILDS) {
+                echo "Skipped due to the true parameter: DISABLE_ANDROID_BUILDS"
+                return
+            }
             if (!params.RUN_ANDROID_TESTS && !params.DEPLOY_ANDROID_ARTIFACTS) {
                 echo "Skipped due to the false parameter: RUN_ANDROID_TESTS"
                 return
@@ -848,6 +862,10 @@ def deployAndroidArtifacts() {
         node('master') {
             stage('Deploy Android artifacts') {
                 echo "DEPLOY_ANDROID_ARTIFACTS = ${params.DEPLOY_ANDROID_ARTIFACTS}"
+                if (params.DISABLE_ANDROID_BUILDS) {
+                    echo "Skipped due to the true parameter: DISABLE_ANDROID_BUILDS"
+                    return
+                }
                 if (!params.DEPLOY_ANDROID_ARTIFACTS) {
                     echo "Skipped due to the false parameter: DEPLOY_ANDROID_ARTIFACTS"
                     return
