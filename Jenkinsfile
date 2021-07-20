@@ -632,6 +632,7 @@ def build_LangPython_Windows(slave, arch) {
         def jobPath = pathFromJobName(env.JOB_NAME)
         ws("workspace\\${jobPath}") {
             def buildToolchain = ""
+            def pythonEnv = ""
             if (arch == "x86_64") {
                 buildToolchain = "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
                 pythonEnv = "C:\\Python36_x64"
