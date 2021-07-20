@@ -810,8 +810,8 @@ packaging_and_testing_nodes['build-python-packages-linux-x86'] = buildPythonPack
 packaging_and_testing_nodes['build-python-packages-linux-x86_64'] = buildPythonPackages('linux_x86_64', 'manylinux1_x86_64')
 packaging_and_testing_nodes['build-python-packages-macos-x86_64'] = buildPythonPackages('macos_x86_64', 'macosx_10_12_intel')
 packaging_and_testing_nodes['build-python-packages-macos-arm64'] = buildPythonPackages('macos_arm64', 'macosx_11_2_arm64')
-packaging_and_testing_nodes['build-python-packages-win-x86'] = buildPythonPackages('windows_x86_64', 'win_amd64')
-packaging_and_testing_nodes['build-python-packages-win-x86_64'] = buildPythonPackages('windows_x86', 'win32')
+packaging_and_testing_nodes['build-python-packages-win-x86'] = buildPythonPackages('windows_x86', 'win32')
+packaging_and_testing_nodes['build-python-packages-win-x86_64'] = buildPythonPackages('windows_x86_64', 'win_amd64')
 packaging_and_testing_nodes['test-android-artifacts'] = testAndroidArtifacts()
 parallel(packaging_and_testing_nodes)
 
