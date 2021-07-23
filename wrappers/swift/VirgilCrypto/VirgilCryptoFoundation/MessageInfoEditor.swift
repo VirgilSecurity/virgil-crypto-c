@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -146,7 +146,7 @@ import VSCFoundation
     @objc public func pack() -> Data {
         let messageInfoCount = self.packedLen()
         var messageInfo = Data(count: messageInfoCount)
-        var messageInfoBuf = vsc_buffer_new()
+        let messageInfoBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(messageInfoBuf)
         }

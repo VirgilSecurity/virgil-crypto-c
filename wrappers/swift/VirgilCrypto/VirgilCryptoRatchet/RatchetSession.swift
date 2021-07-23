@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -180,7 +180,7 @@ import VirgilCryptoFoundation
     @objc public func decrypt(message: RatchetMessage) throws -> Data {
         let plainTextCount = self.decryptLen(message: message)
         var plainText = Data(count: plainTextCount)
-        var plainTextBuf = vsc_buffer_new()
+        let plainTextBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(plainTextBuf)
         }

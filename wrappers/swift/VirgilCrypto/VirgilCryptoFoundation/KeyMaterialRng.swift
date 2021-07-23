@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -87,7 +87,7 @@ import VSCFoundation
     @objc public func random(dataLen: Int) throws -> Data {
         let dataCount = dataLen
         var data = Data(count: dataCount)
-        var dataBuf = vsc_buffer_new()
+        let dataBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(dataBuf)
         }

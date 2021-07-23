@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -104,7 +104,7 @@ import VSCFoundation
     @objc public func mac(key: Data, data: Data) -> Data {
         let macCount = self.digestLen()
         var mac = Data(count: macCount)
-        var macBuf = vsc_buffer_new()
+        let macBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(macBuf)
         }
@@ -143,7 +143,7 @@ import VSCFoundation
     @objc public func finish() -> Data {
         let macCount = self.digestLen()
         var mac = Data(count: macCount)
-        var macBuf = vsc_buffer_new()
+        let macBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(macBuf)
         }
