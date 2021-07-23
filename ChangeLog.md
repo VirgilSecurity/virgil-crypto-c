@@ -1,6 +1,6 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
-## Version 0.16.0 released 2021-07-14
+## Version 0.16.0 released 2021-07-23
 
 ### Features
 
