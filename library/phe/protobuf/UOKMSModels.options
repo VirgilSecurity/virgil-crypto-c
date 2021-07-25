@@ -1,4 +1,6 @@
 DecryptResponse.v max_size:65 fixed_length:true
+DecryptResponse.proof proto3_singular_msgs:true
+
 
 UOKMSProofOfSuccess.term1 max_size:65 fixed_length:true
 UOKMSProofOfSuccess.term2 max_size:65 fixed_length:true

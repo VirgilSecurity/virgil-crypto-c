@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -90,7 +90,7 @@ import VSCFoundation
     @objc public func generateIdentitySecret() throws -> Data {
         let identitySecretCount = BrainkeyServer.mpiLen
         var identitySecret = Data(count: identitySecretCount)
-        var identitySecretBuf = vsc_buffer_new()
+        let identitySecretBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(identitySecretBuf)
         }
@@ -110,7 +110,7 @@ import VSCFoundation
     @objc public func harden(identitySecret: Data, blindedPoint: Data) throws -> Data {
         let hardenedPointCount = BrainkeyServer.pointLen
         var hardenedPoint = Data(count: hardenedPointCount)
-        var hardenedPointBuf = vsc_buffer_new()
+        let hardenedPointBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(hardenedPointBuf)
         }

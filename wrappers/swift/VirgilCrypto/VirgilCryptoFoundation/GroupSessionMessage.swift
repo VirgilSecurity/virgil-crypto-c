@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -105,7 +105,7 @@ import VSCFoundation
     @objc public func serialize() -> Data {
         let outputCount = self.serializeLen()
         var output = Data(count: outputCount)
-        var outputBuf = vsc_buffer_new()
+        let outputBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outputBuf)
         }

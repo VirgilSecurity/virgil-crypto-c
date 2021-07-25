@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2020 Virgil Security, Inc.
+# Copyright (C) 2015-2021 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,8 +45,6 @@
 #   This decides which SDK will be selected. Possible values:
 #     * IOS         - Apple iPhone / iPad / iPod Touch SDK will be selected;
 #     * IOS_SIM     - Apple iPhone / iPad / iPod Touch SDK 32/64-bit simulators will be selected;
-#     * IOS_SIM32   - Apple iPhone / iPad / iPod Touch SDK 32-bit only simulator will be selected;
-#     * IOS_SIM64   - Apple iPhone / iPad / iPod Touch SDK 64-bit only simulator will be selected;
 #     * TVOS        - Apple TV SDK will be selected;
 #     * TVOS_SIM    - Apple TV SDK for simulator will be selected;
 #     * WATCHOS     - Apple Watch SDK will be selected;
@@ -85,8 +83,6 @@ include_guard()
 # ---------------------------------------------------------------------------
 #   Define toolchain required variables
 # ---------------------------------------------------------------------------
-
-set(CMAKE_SYSTEM_NAME Darwin)
 set(CMAKE_SYSTEM_VERSION 13)
 set(UNIX TRUE)
 set(APPLE TRUE)
@@ -135,6 +131,7 @@ endforeach()
 
 # Check the platform selection and setup for developer root and define
 if(APPLE_PLATFORM STREQUAL "IOS")
+    set(CMAKE_SYSTEM_NAME iOS)
     set(APPLE_PLATFORM_LOCATION "iPhoneOS.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphoneos")
     set(APPLE_ARCH armv7 armv7s arm64)
@@ -143,23 +140,16 @@ if(APPLE_PLATFORM STREQUAL "IOS")
     set(APPLE_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM MATCHES "IOS_SIM")
+    set(CMAKE_SYSTEM_NAME iOS)
     set(APPLE_PLATFORM_LOCATION "iPhoneSimulator.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphonesimulator")
+    set(APPLE_ARCH i386 x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mios-simulator-version-min=${IOS_DEPLOYMENT_TARGET}")
     set(APPLE_DEVICE_FAMILY "${IOS_DEVICE_FAMILY}")
     set(APPLE_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
 
-    if(APPLE_PLATFORM STREQUAL "IOS_SIM32")
-        set(APPLE_ARCH i386)
-
-    elseif(APPLE_PLATFORM STREQUAL "IOS_SIM64")
-        set(APPLE_ARCH x86_64)
-
-    else()
-        set(APPLE_ARCH i386 x86_64)
-    endif()
-
 elseif(APPLE_PLATFORM STREQUAL "WATCHOS")
+    set(CMAKE_SYSTEM_NAME watchOS)
     set(APPLE_PLATFORM_LOCATION "WatchOS.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-watchos")
     set(APPLE_ARCH armv7k arm64_32)
@@ -168,14 +158,16 @@ elseif(APPLE_PLATFORM STREQUAL "WATCHOS")
     set(APPLE_DEPLOYMENT_TARGET "${WATCHOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM STREQUAL "WATCHOS_SIM")
+    set(CMAKE_SYSTEM_NAME watchOS)
     set(APPLE_PLATFORM_LOCATION "WatchSimulator.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-watchsimulator")
-    set(APPLE_ARCH i386 x86_64)
+    set(APPLE_ARCH i386 x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mwatchos-simulator-version-min=${WATCHOS_DEPLOYMENT_TARGET}")
     set(APPLE_DEVICE_FAMILY "${WATCHOS_DEVICE_FAMILY}")
     set(APPLE_DEPLOYMENT_TARGET "${WATCHOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM STREQUAL "TVOS")
+    set(CMAKE_SYSTEM_NAME tvOS)
     set(APPLE_PLATFORM_LOCATION "AppleTVOS.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-appletvos")
     set(APPLE_ARCH arm64)
@@ -184,17 +176,19 @@ elseif(APPLE_PLATFORM STREQUAL "TVOS")
     set(APPLE_DEPLOYMENT_TARGET "${TVOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM STREQUAL "TVOS_SIM")
+    set(CMAKE_SYSTEM_NAME tvOS)
     set(APPLE_PLATFORM_LOCATION "AppleTVSimulator.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-appletvsimulator")
-    set(APPLE_ARCH x86_64)
+    set(APPLE_ARCH x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mtvos-simulator-version-min=${TVOS_DEPLOYMENT_TARGET}")
     set(APPLE_DEVICE_FAMILY "${TVOS_DEVICE_FAMILY}")
     set(APPLE_DEPLOYMENT_TARGET "${TVOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM STREQUAL "MACOS")
+    set(CMAKE_SYSTEM_NAME Darwin)
     set(APPLE_PLATFORM_LOCATION "MacOSX.platform")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-macos")
-    set(APPLE_ARCH x86_64)
+    set(APPLE_ARCH x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mmacos-version-min=${MACOS_DEPLOYMENT_TARGET}")
     set(APPLE_DEVICE_FAMILY)
     set(APPLE_DEPLOYMENT_TARGET "${MACOS_DEPLOYMENT_TARGET}")

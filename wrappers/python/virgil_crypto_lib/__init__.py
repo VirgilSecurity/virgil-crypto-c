@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2020 Virgil Security, Inc.
+# Copyright (C) 2015-2021 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -34,4 +34,4 @@
 
 
 __author__ = "Virgil Security"
-__version__ = "0.15.4"
+__version__ = "0.16.0"

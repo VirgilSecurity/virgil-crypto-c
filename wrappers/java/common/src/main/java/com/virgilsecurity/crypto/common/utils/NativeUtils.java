@@ -104,7 +104,7 @@ public class NativeUtils {
 			sb.append(LINUX_LIBS_DIRECTORY);
 			break;
 		case MACOS_OS_NAME:
-			sb.append(MACOS_LIBS_DIRECTORY);
+			sb.append(MACOS_LIBS_DIRECTORY + "_" + osArch);
 			break;
 		case WINDOWS_OS_NAME:
 			sb.append(WINDOWS_LIBS_DIRECTORY);

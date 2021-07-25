@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2021 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -49,8 +49,8 @@ function(target_protobuf_sources target)
     #
     # Inspect host system
     #
-    if(WIN32 AND NOT CYGWIN)
-        set(EXECUTABLE_SUFFIX ".exe")
+    if(CMAKE_HOST_WIN32)
+        set(HOST_EXECUTABLE_SUFFIX ".exe")
     endif()
 
     #
@@ -60,15 +60,15 @@ function(target_protobuf_sources target)
         set(PROTOC_EXE protoc)
 
     elseif(COMMAND find_host_package)
-        find_host_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
+        find_host_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
 
     else()
-        find_program(PROTOC_EXE NAMES protoc${EXECUTABLE_SUFFIX})
+        find_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
     endif()
 
     if(NOT PROTOC_EXE)
         message(FATAL_ERROR
-                "Protobuf generator 'protoc${EXECUTABLE_SUFFIX}' is not found as a target "
+                "Protobuf generator 'protoc${HOST_EXECUTABLE_SUFFIX}' is not found as a target "
                 "and not found as an executable within system"
                 )
     endif()
@@ -104,11 +104,13 @@ function(target_protobuf_sources target)
                     "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.h"
                     "${CMAKE_CURRENT_BINARY_DIR}/${proto_file_name}.pb.c"
                 COMMAND
-                    "${PROTOC_EXE}" --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
-                                    --nanopb_out=${proto_options}:"${CMAKE_CURRENT_BINARY_DIR}"
-                                    --proto_path=. "${proto_file_name}.proto"
+                    "${PROTOC_EXE}"
+                ARGS
+                    --plugin=protoc-gen-nanopb="${PROTOC_GEN_NANOPB}"
+                    --nanopb_out=${proto_options}:"${CMAKE_CURRENT_BINARY_DIR}"
+                    --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
-                    "${proto_file}" "${proto_options_file}"
+                    "${proto_file}" "${proto_options_file}" protobuf-nanopb
                 COMMENT "Processing protobuf model: ${proto_file}"
                 WORKING_DIRECTORY "${proto_file_path}"
                 )

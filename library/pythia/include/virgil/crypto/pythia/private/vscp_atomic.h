@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2021 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -54,6 +54,10 @@
 #define VSCP_ATOMIC_H_INCLUDED
 
 #include "vscp_library.h"
+
+#if VSCP_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
 
 // clang-format on
 //  @end

@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2021 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -43,9 +43,9 @@ project(virgil_crypto_c_foundation_pb VERSION ${virgil_crypto_c_foundation_VERSI
 #
 # protobuf-nanopb
 #
-if(NOT TARGET protobuf-nanopb)
+if(NOT TARGET nanopb::protobuf-nanopb)
     message(FATAL_ERROR
-            "Required library 'protobuf-nanopb' is not found - looking for target 'protobuf-nanopb'.")
+            "Required library 'protobuf-nanopb' is not found - looking for target 'nanopb::protobuf-nanopb'.")
 endif()
 
 if(NOT COMMAND target_protobuf_sources)
@@ -80,7 +80,7 @@ target_link_libraries(foundation_pb nanopb::protobuf-nanopb)
 #
 # Proxy COMPILE_DEFINITIONS of the library protobuf-nanopb.
 #
-get_target_property(NANOPB_COMPILE_DEFINITIONS protobuf-nanopb INTERFACE_COMPILE_DEFINITIONS)
+get_target_property(NANOPB_COMPILE_DEFINITIONS nanopb::protobuf-nanopb INTERFACE_COMPILE_DEFINITIONS)
 if(NANOPB_COMPILE_DEFINITIONS)
     set_target_properties(foundation_pb PROPERTIES
             COMPILE_DEFINITIONS "${NANOPB_COMPILE_DEFINITIONS}"

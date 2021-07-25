@@ -3,6 +3,9 @@
 
     <require module="library"/>
 
+    <c_include file="stdatomic.h" scope="public" is_system="1" if=".(c_global_macros_have_stdatomic_h)" />
+
+
     <method name="compare exchange weak" declaration="external" definition="external"/>
     <code definition="public">
         #if .(c_global_macros_multi_threading) &amp;&amp; defined(_MSC_VER) &amp;&amp; !defined(__INTEL_COMPILER)

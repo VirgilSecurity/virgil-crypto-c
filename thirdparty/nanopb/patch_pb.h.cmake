@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2021 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -73,19 +73,6 @@ else()
 endif()
 
 
-if(PB_FIELD_16BIT)
-    string(REGEX REPLACE
-            "(\\/\\* )?#define PB_FIELD_16BIT 1( \\*\\/)?"
-            "#define PB_FIELD_16BIT 1" content "${content}"
-    )
-else()
-    string(REGEX REPLACE
-            "(\\/\\* )?#define PB_FIELD_16BIT 1( \\*\\/)?"
-            "/* #define PB_FIELD_16BIT 1 */" content "${content}"
-    )
-endif()
-
-
 if(PB_FIELD_32BIT)
     string(REGEX REPLACE
             "(\\/\\* )?#define PB_FIELD_32BIT 1( \\*\\/)?"
@@ -121,19 +108,6 @@ else()
     string(REGEX REPLACE
             "(\\/\\* )?#define PB_BUFFER_ONLY 1( \\*\\/)?"
             "/* #define PB_BUFFER_ONLY 1 */" content "${content}"
-    )
-endif()
-
-
-if(PB_OLD_CALLBACK_STYLE)
-    string(REGEX REPLACE
-            "(\\/\\* )?#define PB_OLD_CALLBACK_STYLE 1( \\*\\/)?"
-            "#define PB_OLD_CALLBACK_STYLE 1" content "${content}"
-    )
-else()
-    string(REGEX REPLACE
-            "(\\/\\* )?#define PB_OLD_CALLBACK_STYLE 1( \\*\\/)?"
-            "/* #define PB_OLD_CALLBACK_STYLE 1 */" content "${content}"
     )
 endif()
 
