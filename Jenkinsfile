@@ -684,7 +684,13 @@ def buildPythonPackages(platform, bdistPlatformName) {
                 return
             }
 
-            unstash "python_wrapper_${platform}"
+            try {
+                unstash "python_wrapper_${platform}"
+
+            } catch(error) {
+                echo "Error unstashing python_wrapper_${platform}: ${error}"
+                return
+            }
 
             dir('wrappers/python') {
                 docker.image("python:2.7").inside("--user root") {
