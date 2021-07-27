@@ -9,6 +9,9 @@ properties([
         booleanParam(name: 'RUN_ANDROID_TESTS', defaultValue: true,
             description: 'Run Android instrumental tests.'),
 
+        booleanParam(name: 'DISABLE_C_BUILDS', defaultValue: false,
+            description: 'Disable build of C artifacts'),
+
         booleanParam(name: 'DISABLE_PHP_BUILDS', defaultValue: false,
             description: 'Disable build of PHP artifacts'),
 
@@ -66,10 +69,12 @@ def nodes = [:]
 //
 //  Language: C
 //
-nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7', 'x86_64')
-nodes['lang-c-platform-macos-x86_64'] = build_LangC_Unix('build-os-x', 'x86_64')
-nodes['lang-c-platform-macos-arm64'] = build_LangC_Unix('build-os-x', 'arm64')
-nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win10')
+if (!params.DISABLE_C_BUILDS) {
+    nodes['lang-c-platform-linux'] = build_LangC_Unix('build-centos7', 'x86_64')
+    nodes['lang-c-platform-macos-x86_64'] = build_LangC_Unix('build-os-x', 'x86_64')
+    nodes['lang-c-platform-macos-arm64'] = build_LangC_Unix('build-os-x', 'arm64')
+    nodes['lang-c-platform-windows'] = build_LangC_Windows('build-win10')
+}
 
 //
 //  Language: PHP
@@ -679,7 +684,17 @@ def buildPythonPackages(platform, bdistPlatformName) {
                 return
             }
 
-            unstash "python_wrapper_${platform}"
+            docker.image('python:2.7').inside("--user root") {
+                clearContentUnix()
+            }
+
+            try {
+                unstash "python_wrapper_${platform}"
+
+            } catch(error) {
+                echo "Error unstashing python_wrapper_${platform}: ${error}"
+                return
+            }
 
             dir('wrappers/python') {
                 docker.image("python:2.7").inside("--user root") {
