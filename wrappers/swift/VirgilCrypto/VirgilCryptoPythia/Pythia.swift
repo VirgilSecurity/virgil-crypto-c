@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -121,14 +121,14 @@ import VSCPythia
     @objc public static func blind(password: Data) throws -> PythiaBlindResult {
         let blindedPasswordCount = Pythia.blindedPasswordBufLen()
         var blindedPassword = Data(count: blindedPasswordCount)
-        var blindedPasswordBuf = vsc_buffer_new()
+        let blindedPasswordBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(blindedPasswordBuf)
         }
 
         let blindingSecretCount = Pythia.blindingSecretBufLen()
         var blindingSecret = Data(count: blindingSecretCount)
-        var blindingSecretBuf = vsc_buffer_new()
+        let blindingSecretBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(blindingSecretBuf)
         }
@@ -156,7 +156,7 @@ import VSCPythia
     @objc public static func deblind(transformedPassword: Data, blindingSecret: Data) throws -> Data {
         let deblindedPasswordCount = Pythia.deblindedPasswordBufLen()
         var deblindedPassword = Data(count: deblindedPasswordCount)
-        var deblindedPasswordBuf = vsc_buffer_new()
+        let deblindedPasswordBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(deblindedPasswordBuf)
         }
@@ -181,14 +181,14 @@ import VSCPythia
     @objc public static func computeTransformationKeyPair(transformationKeyId: Data, pythiaSecret: Data, pythiaScopeSecret: Data) throws -> PythiaComputeTransformationKeyPairResult {
         let transformationPrivateKeyCount = Pythia.transformationPrivateKeyBufLen()
         var transformationPrivateKey = Data(count: transformationPrivateKeyCount)
-        var transformationPrivateKeyBuf = vsc_buffer_new()
+        let transformationPrivateKeyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(transformationPrivateKeyBuf)
         }
 
         let transformationPublicKeyCount = Pythia.transformationPublicKeyBufLen()
         var transformationPublicKey = Data(count: transformationPublicKeyCount)
-        var transformationPublicKeyBuf = vsc_buffer_new()
+        let transformationPublicKeyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(transformationPublicKeyBuf)
         }
@@ -220,14 +220,14 @@ import VSCPythia
     @objc public static func transform(blindedPassword: Data, tweak: Data, transformationPrivateKey: Data) throws -> PythiaTransformResult {
         let transformedPasswordCount = Pythia.transformedPasswordBufLen()
         var transformedPassword = Data(count: transformedPasswordCount)
-        var transformedPasswordBuf = vsc_buffer_new()
+        let transformedPasswordBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(transformedPasswordBuf)
         }
 
         let transformedTweakCount = Pythia.transformedTweakBufLen()
         var transformedTweak = Data(count: transformedTweakCount)
-        var transformedTweakBuf = vsc_buffer_new()
+        let transformedTweakBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(transformedTweakBuf)
         }
@@ -259,14 +259,14 @@ import VSCPythia
     @objc public static func prove(transformedPassword: Data, blindedPassword: Data, transformedTweak: Data, transformationPrivateKey: Data, transformationPublicKey: Data) throws -> PythiaProveResult {
         let proofValueCCount = Pythia.proofValueBufLen()
         var proofValueC = Data(count: proofValueCCount)
-        var proofValueCBuf = vsc_buffer_new()
+        let proofValueCBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(proofValueCBuf)
         }
 
         let proofValueUCount = Pythia.proofValueBufLen()
         var proofValueU = Data(count: proofValueUCount)
-        var proofValueUBuf = vsc_buffer_new()
+        let proofValueUBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(proofValueUBuf)
         }
@@ -337,7 +337,7 @@ import VSCPythia
     @objc public static func getPasswordUpdateToken(previousTransformationPrivateKey: Data, newTransformationPrivateKey: Data) throws -> Data {
         let passwordUpdateTokenCount = Pythia.passwordUpdateTokenBufLen()
         var passwordUpdateToken = Data(count: passwordUpdateTokenCount)
-        var passwordUpdateTokenBuf = vsc_buffer_new()
+        let passwordUpdateTokenBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(passwordUpdateTokenBuf)
         }
@@ -363,7 +363,7 @@ import VSCPythia
     @objc public static func updateDeblindedWithToken(deblindedPassword: Data, passwordUpdateToken: Data) throws -> Data {
         let updatedDeblindedPasswordCount = Pythia.deblindedPasswordBufLen()
         var updatedDeblindedPassword = Data(count: updatedDeblindedPasswordCount)
-        var updatedDeblindedPasswordBuf = vsc_buffer_new()
+        let updatedDeblindedPasswordBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(updatedDeblindedPasswordBuf)
         }

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2021 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -117,7 +117,7 @@ extern "C" {
 
 #define VSCR_VERSION_MAJOR 0
 
-#define VSCR_VERSION_MINOR 16
+#define VSCR_VERSION_MINOR 17
 
 #define VSCR_VERSION_PATCH 0
 

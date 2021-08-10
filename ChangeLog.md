@@ -1,5 +1,21 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.16.0 released 2021-07-25
+
+### Features
+
+- macOS: Added Apple Silicon support.
+
+### Changes
+
+- iOS: Replaced a Universal Framework with an XCFramework.
+
+### Improvements
+
+- Ext: Updated mbedTLS to the version 2.17.0.
+- Ext: Updated nanopb to the version 0.4.5.
+
+
 ## Version 0.15.3 released 2020-08-13
 
 ### Bugfix

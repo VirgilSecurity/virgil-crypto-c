@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -134,7 +134,7 @@ import VSCFoundation
     @objc public func serializePublicKey(publicKey: RawPublicKey) throws -> Data {
         let outCount = self.serializedPublicKeyLen(publicKey: publicKey)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -166,7 +166,7 @@ import VSCFoundation
     @objc public func serializePrivateKey(privateKey: RawPrivateKey) throws -> Data {
         let outCount = self.serializedPrivateKeyLen(privateKey: privateKey)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

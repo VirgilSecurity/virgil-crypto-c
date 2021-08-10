@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -102,7 +102,7 @@ import VSCFoundation
     @objc public func derive(data: Data, keyLen: Int) -> Data {
         let keyCount = keyLen
         var key = Data(count: keyCount)
-        var keyBuf = vsc_buffer_new()
+        let keyBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(keyBuf)
         }

@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2021 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.16.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.17.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -58,7 +58,7 @@ include("${CMAKE_CURRENT_LIST_DIR}/cmake/apple_framework.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "dev" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev1" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options

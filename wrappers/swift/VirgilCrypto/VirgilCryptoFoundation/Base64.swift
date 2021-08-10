@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -51,7 +51,7 @@ import VSCFoundation
     @objc public static func encode(data: Data) -> Data {
         let strCount = Base64.encodedLen(dataLen: data.count)
         var str = Data(count: strCount)
-        var strBuf = vsc_buffer_new()
+        let strBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(strBuf)
         }
@@ -79,7 +79,7 @@ import VSCFoundation
     @objc public static func decode(str: Data) throws -> Data {
         let dataCount = Base64.decodedLen(strLen: str.count)
         var data = Data(count: dataCount)
-        var dataBuf = vsc_buffer_new()
+        let dataBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(dataBuf)
         }

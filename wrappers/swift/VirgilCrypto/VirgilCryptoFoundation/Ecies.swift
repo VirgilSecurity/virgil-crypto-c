@@ -1,4 +1,4 @@
-/// Copyright (C) 2015-2020 Virgil Security, Inc.
+/// Copyright (C) 2015-2021 Virgil Security, Inc.
 ///
 /// All rights reserved.
 ///
@@ -130,7 +130,7 @@ import VSCFoundation
     @objc public func encrypt(publicKey: PublicKey, data: Data) throws -> Data {
         let outCount = self.encryptedLen(publicKey: publicKey, dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }
@@ -160,7 +160,7 @@ import VSCFoundation
     @objc public func decrypt(privateKey: PrivateKey, data: Data) throws -> Data {
         let outCount = self.decryptedLen(privateKey: privateKey, dataLen: data.count)
         var out = Data(count: outCount)
-        var outBuf = vsc_buffer_new()
+        let outBuf = vsc_buffer_new()
         defer {
             vsc_buffer_delete(outBuf)
         }

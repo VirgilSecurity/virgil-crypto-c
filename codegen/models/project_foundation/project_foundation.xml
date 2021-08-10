@@ -7,10 +7,10 @@
         wrappers="all"
         >
 
-    <version major="0" minor="16" patch="0"/>
+    <version major="0" minor="17" patch="0"/>
 
     <license>
-        Copyright (C) 2015-2020 Virgil Security, Inc.
+        Copyright (C) 2015-2021 Virgil Security, Inc.
 
         All rights reserved.
 

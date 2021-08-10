@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2015-2019, Virgil Security, Inc.
+  ~ Copyright (c) 2015-2021, Virgil Security, Inc.
   ~
   ~ Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
   ~
@@ -36,7 +36,7 @@
 	<parent>
 		<groupId>com.virgilsecurity.crypto</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.16.0-SNAPSHOT</version>
+		<version>0.17.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>pythia</artifactId>
 
@@ -89,16 +89,35 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>copy-macos</id>
+						<id>copy-macos-x86-64</id>
 						<phase>validate</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>${basedir}/target/classes/macos</outputDirectory>
+							<outputDirectory>${basedir}/target/classes/macos_x86_64</outputDirectory>
 							<resources>
 								<resource>
-									<directory>${jni.binaries.dir}/macos/lib</directory>
+									<directory>${jni.binaries.dir}/macos_x86_64/lib</directory>
+									<includes>
+										<include>libvscp_pythia_java.so</include>
+									</includes>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-macos-arm64</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/target/classes/macos_arm64</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${jni.binaries.dir}/macos_arm64/lib</directory>
 									<includes>
 										<include>libvscp_pythia_java.so</include>
 									</includes>
