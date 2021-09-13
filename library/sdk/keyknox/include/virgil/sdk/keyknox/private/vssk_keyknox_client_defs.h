@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2021 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -99,6 +99,10 @@ struct vssk_keyknox_client_t {
     vsc_str_mutable_t keys_url;
 
     vsc_str_mutable_t reset_url;
+
+    vsc_str_mutable_t set_admins_url;
+
+    vsc_str_mutable_t list_admins_url;
 };
 
 

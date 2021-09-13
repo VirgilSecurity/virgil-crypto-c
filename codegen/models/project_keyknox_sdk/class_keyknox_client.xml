@@ -9,6 +9,8 @@
     <property name="pull url" class="str mutable"/>
     <property name="keys url" class="str mutable"/>
     <property name="reset url" class="str mutable"/>
+    <property name="set admins url" class="str mutable"/>
+    <property name="list admins url" class="str mutable"/>
 
 
     <constant name="k base url" type="string" visibility="private">
@@ -45,6 +47,21 @@
         <value value="/keyknox/v2/reset"/>
     </constant>
 
+    <constant name="k url path set admins" type="string" visibility="private" >
+        POST /set
+        FIXME: should be updated to 'set-admins' after the backend did.
+
+        <value value="/keyknox/v2/set-owners"/>
+    </constant>
+
+
+    <constant name="k url path list admins" type="string" visibility="private" >
+        POST /list-owners
+        FIXME: should be updated to 'list-admins' after the backend did.
+
+        <value value="/keyknox/v2/list-owners"/>
+    </constant>
+
 
     <constant name="k json key owner" type="string" visibility="private" >
         JSON key: owner
@@ -52,6 +69,12 @@
         <value value="owner"/>
     </constant>
 
+
+    <constant name="k json key admins" type="string" visibility="private" >
+        JSON key: admins
+
+        <value value="admins"/>
+    </constant>
 
     <constant name="k json key root" type="string" visibility="private" >
         JSON key: root
@@ -204,6 +227,49 @@
 
 
     <method name="process response get keys" is_static="1">
+        Map response to the correspond model.
+
+        <argument name="response" class="http response" project="core sdk"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return class="string list" access="disown" project="core sdk"/>
+    </method>
+
+
+    <method name="make request set admins" is_const="1">
+         Create request that setup set ownership for record,
+         specify owner field if you were granted with access previously,
+         so you can update records of other users.
+
+         Note, owner of the record is optional if you are owner, otherwise admin
+         should specify this field if he wants to change record of another owner.
+
+         Note, parameter 'admins' is a list of admins (identities) to add access.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="admins" class="string list" project="core sdk"/>
+        <argument name="owner" class="str"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="make request get admins" is_const="1">
+         Create request that lists admins of the record, if you are owner
+         then your identity will be omitted from the list as you are the admin by default.
+
+         Note, parameter 'owner' is optional if you are an owner.
+
+        <argument name="root" class="str"/>
+        <argument name="path" class="str"/>
+        <argument name="owner" class="str"/>
+
+        <return class="http request" project="core sdk" access="disown"/>
+    </method>
+
+
+    <method name="process response get admins" is_static="1">
         Map response to the correspond model.
 
         <argument name="response" class="http response" project="core sdk"/>

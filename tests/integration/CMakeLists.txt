@@ -39,7 +39,7 @@ project(virgil_crypto_integration_tests VERSION ${virgil_crypto_c_tests_VERSION}
 add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/test_env")
 
 
-macro(_add_test test)
+function(_add_test test)
     add_executable(${test} ${test}.c)
     target_sources(${test} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/test_sdk_utils.h")
     target_add_filename_definitions(${test})
@@ -47,7 +47,7 @@ macro(_add_test test)
     set_target_properties(${test} PROPERTIES C_STANDARD "99")
     add_test (NAME ${test} COMMAND ${test})
     enable_target_pedantic(${test})
-    set_tests_properties(${test} PROPERTIES LABELS "integration")
+    set_tests_properties(${test} PROPERTIES LABELS "integration;${ARGN}" )
 
     if(TARGET vsc::core_sdk)
         target_link_libraries(${test} test_data_core_sdk vsc::core_sdk)
@@ -76,7 +76,7 @@ macro(_add_test test)
     if(COMMAND add_clangformat AND ENABLE_CLANGFORMAT)
         add_clangformat(${test})
     endif()
-endmacro()
+endfunction()
 
 
 if(TARGET vsc::core_sdk)
@@ -87,7 +87,7 @@ endif()
 
 
 if(TARGET vsc::keyknox_sdk)
-    _add_test(test_keyknox_service)
+    _add_test(test_keyknox_service "keyknox")
 endif()
 
 

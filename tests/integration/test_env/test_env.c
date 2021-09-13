@@ -63,6 +63,7 @@ typedef struct {
     vscf_impl_t *app_public_key;
     vscf_impl_t *virgil_public_key;
     vssc_jwt_t *jwt;
+    vssc_jwt_t *jwt2;
     vscf_impl_t *random;
     size_t refcnt;
 } test_env_inner_t;
@@ -115,6 +116,9 @@ const vsc_str_t k_json_key_ENV = {VIRGIL_INTEGRATION_ENV, strlen(VIRGIL_INTEGRAT
 
 const char k_jwt_IDENTITY_CHARS[] = "test_user";
 const vsc_str_t k_jwt_IDENTITY = {k_jwt_IDENTITY_CHARS, sizeof(k_jwt_IDENTITY_CHARS) - 1};
+
+const char k_jwt_IDENTITY_2_CHARS[] = "test_user_2";
+const vsc_str_t k_jwt_IDENTITY_2 = {k_jwt_IDENTITY_2_CHARS, sizeof(k_jwt_IDENTITY_2_CHARS) - 1};
 
 //
 //  Print error message.
@@ -185,6 +189,7 @@ test_env_load(void) {
 
     vssc_jwt_generator_t *jwt_generator = NULL;
     vssc_jwt_t *jwt = NULL;
+    vssc_jwt_t *jwt2 = NULL;
 
     //
     //  Init crypto engine.
@@ -313,6 +318,11 @@ test_env_load(void) {
         goto fail;
     }
 
+    jwt2 = vssc_jwt_generator_generate_token(jwt_generator, k_jwt_IDENTITY_2, &error);
+    if (vssc_error_has_error(&error)) {
+        print_error(k_error_msg_FAILED_TO_GENERATE_JWT);
+        goto fail;
+    }
 
     //
     //  Pass to the env object.
@@ -327,6 +337,7 @@ test_env_load(void) {
     g_env_inner.app_public_key = app_public_key;
     g_env_inner.virgil_public_key = virgil_public_key;
     g_env_inner.jwt = jwt;
+    g_env_inner.jwt2 = jwt2;
     g_env_inner.random = vscf_ctr_drbg_impl(ctr_drbg);
 
     g_env.url = vsc_str_mutable_as_str(g_env_inner.url);
@@ -339,6 +350,7 @@ test_env_load(void) {
     g_env.app_public_key = g_env_inner.app_public_key;
     g_env.virgil_public_key = g_env_inner.virgil_public_key;
     g_env.jwt = g_env_inner.jwt;
+    g_env.jwt2 = g_env_inner.jwt2;
     g_env.random = g_env_inner.random;
     g_env.inner = &g_env_inner;
 
@@ -365,6 +377,7 @@ fail:
 
     vssc_jwt_generator_destroy(&jwt_generator);
     vssc_jwt_destroy(&jwt);
+    vssc_jwt_destroy(&jwt2);
 
     vsc_buffer_destroy(&app_key_buf);
     vsc_buffer_destroy(&app_public_key_buf);
@@ -392,6 +405,7 @@ test_env_release(void) {
     vscf_impl_destroy(&g_env_inner.app_public_key);
     vscf_impl_destroy(&g_env_inner.virgil_public_key);
     vssc_jwt_destroy(&g_env_inner.jwt);
+    vssc_jwt_destroy(&g_env_inner.jwt2);
     vscf_impl_destroy(&g_env_inner.random);
 
     vsc_zeroize(&g_env_inner, sizeof(test_env_inner_t));
