@@ -1007,9 +1007,52 @@ VSSK_PUBLIC vssc_string_list_t *
 vssk_keyknox_client_process_response_get_admins(const vssc_http_response_t *response, vssk_error_t *error) {
 
     VSSK_ASSERT_PTR(response);
-    VSSK_UNUSED(error);
 
-    //  TODO: This is STUB. Implement me.
+    vssc_error_t core_error;
+    vssc_error_reset(&core_error);
+
+    vssc_json_array_t *admins_json = NULL;
+    vssc_string_list_t *admins = NULL;
+
+    if (!vssc_http_response_is_success(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
+        goto fail;
+    }
+
+    // TODO: Check Content-Type to be equal application/json
+
+    if (!vssc_http_response_body_is_json_object(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
+        goto fail;
+    }
+
+    const vssc_json_object_t *json = vssc_http_response_body_as_json_object(response);
+
+    admins_json = vssc_json_object_get_array_value(json, k_json_key_admins, &core_error);
+    if (NULL == admins_json) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
+
+    admins = vssc_string_list_new();
+    for (size_t pos = 0; pos < vssc_json_array_count(admins_json); ++pos) {
+        vsc_str_t admin = vssc_json_array_get_string_value(admins_json, pos, &core_error);
+
+        if (vssc_error_has_error(&core_error)) {
+            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+            goto fail;
+        }
+
+        vssc_string_list_add(admins, admin);
+    }
+
+    vssc_json_array_destroy(&admins_json);
+
+    return admins;
+
+fail:
+    vssc_json_array_destroy(&admins_json);
+    vssc_string_list_destroy(&admins);
 
     return NULL;
 }

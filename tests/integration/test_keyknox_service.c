@@ -216,6 +216,7 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     //
     vssk_keyknox_entry_destroy(&new_keyknox_entry);
     vsc_str_buffer_destroy(&key_buf);
+    vssc_string_list_destroy(&identities);
 
     return pushed_keyknox_entry;
 }
@@ -659,11 +660,18 @@ test__get_admins__with_1_admin__previously_added_admin_is_listed(void) {
     //
     //  Check fields.
     //
+    vssc_string_list_t *listed_admins =
+            vssk_keyknox_client_process_response_get_admins(get_keyknox_admins_response, &keyknox_error);
+    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
+    TEST_ASSERT_NOT_NULL(listed_admins);
+    TEST_ASSERT_EQUAL(vssc_string_list_count(listed_admins), 1);
+    TEST_ASSERT_EQUAL_STR(vssc_string_list_item(listed_admins), identity2);
 
     //
     //  Cleanup.
     //
     vssc_string_list_destroy(&admins);
+    vssc_string_list_destroy(&listed_admins);
     vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&set_keyknox_admins_request);
