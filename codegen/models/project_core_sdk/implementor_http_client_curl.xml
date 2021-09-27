@@ -1,7 +1,7 @@
 <implementor name="http client curl" is_default="1">
     Provide implementation based on the library LIBCURL.
 
-    <implementation name="http client curl">
+    <implementation name="http client curl" scope="private">
         HTTP client based on the library LIBCURL.
 
         <require header="curl/curl.h" is_system="1"/>

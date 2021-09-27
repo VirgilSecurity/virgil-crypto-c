@@ -90,14 +90,17 @@
 #endif
 
 #if VSSC_HTTP_CLIENT_CURL
+#   include "vssc_http_client_curl.h"
 #   include "vssc_http_client_curl_defs.h"
 #endif
 
 #if VSSC_HTTP_CLIENT_WASM
+#   include "vssc_http_client_wasm.h"
 #   include "vssc_http_client_wasm_defs.h"
 #endif
 
 #if VSSC_HTTP_CLIENT_X
+#   include "vssc_http_client_x.h"
 #   include "vssc_http_client_x_defs.h"
 #endif
 

@@ -2,7 +2,7 @@
     Provide implementation specific for WebAssembly and JavaScript.
 
 
-    <implementation name="http client wasm" platform="wasm">
+    <implementation name="http client wasm" platform="wasm" scope="private">
 
         Provide implementation based on the emscripten Fetch API.
 
