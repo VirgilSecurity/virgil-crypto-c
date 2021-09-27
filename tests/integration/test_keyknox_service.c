@@ -69,9 +69,13 @@ MAKE_STR_CONSTANT(test_data_PATH1, "path1")
 MAKE_STR_CONSTANT(test_data_PATH2, "path2")
 MAKE_STR_CONSTANT(test_data_PATH3, "path3")
 MAKE_STR_CONSTANT(test_data_PATH4, "path4")
+MAKE_STR_CONSTANT(test_data_PATH5, "path5")
 
 MAKE_DATA_CONSTANT_FROM_STR(test_data_META, "d5b1f64f-75b2-45ef-adc7-1b095b0677d5")
 MAKE_DATA_CONSTANT_FROM_STR(test_data_VALUE, "4bc0ff31-cb8e-42da-a19a-8b8decdf63ed")
+
+MAKE_DATA_CONSTANT_FROM_STR(test_data_META_2, "ab8e7331-55c5-4eb9-a160-7f6b79a40df7")
+MAKE_DATA_CONSTANT_FROM_STR(test_data_VALUE_2, "19bd499c-27ca-4cbb-be81-f4666cda804f")
 
 static vsc_str_buffer_t *
 create_random_key(const test_env_t *env) {
@@ -98,6 +102,29 @@ create_random_key(const test_env_t *env) {
     return key_str;
 }
 
+void
+test_assert_equal_keyknox_entry(
+        vsc_str_t expected_owner, const vssk_keyknox_entry_t *expected_entry, const vssk_keyknox_entry_t *given_entry) {
+    if (vsc_str_is_empty(vssk_keyknox_entry_owner(expected_entry))) {
+        TEST_ASSERT_EQUAL_STR(expected_owner, vssk_keyknox_entry_owner(given_entry));
+    } else {
+        TEST_ASSERT_EQUAL_STR(vssk_keyknox_entry_owner(expected_entry), vssk_keyknox_entry_owner(given_entry));
+    }
+    TEST_ASSERT_EQUAL_STR(vssk_keyknox_entry_root(expected_entry), vssk_keyknox_entry_root(given_entry));
+    TEST_ASSERT_EQUAL_STR(vssk_keyknox_entry_path(expected_entry), vssk_keyknox_entry_path(given_entry));
+    TEST_ASSERT_EQUAL_STR(vssk_keyknox_entry_key(expected_entry), vssk_keyknox_entry_key(given_entry));
+    TEST_ASSERT_EQUAL_DATA(vssk_keyknox_entry_meta(expected_entry), vssk_keyknox_entry_meta(given_entry));
+    TEST_ASSERT_EQUAL_DATA(vssk_keyknox_entry_value(expected_entry), vssk_keyknox_entry_value(given_entry));
+
+    const vssc_string_list_t *expected_identites = vssk_keyknox_entry_identities(expected_entry);
+    const vssc_string_list_t *given_identities = vssk_keyknox_entry_identities(given_entry);
+    for (const vssc_string_list_t *expected_identity_it = expected_identites;
+            (expected_identity_it != NULL) && vssc_string_list_has_item(expected_identity_it);
+            expected_identity_it = vssc_string_list_next(expected_identity_it)) {
+
+        TEST_ASSERT_TRUE(vssc_string_list_contains(given_identities, vssc_string_list_item(expected_identity_it)));
+    }
+}
 
 //
 //  Return pushed keyknox entry.
@@ -105,7 +132,8 @@ create_random_key(const test_env_t *env) {
 //  If 'identity' is empty then it will be taken from JWT.
 //
 static vssk_keyknox_entry_t *
-push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
+push_new_keyknox_entry_ext(
+        const test_env_t *env, const vssc_jwt_t *jwt, const vssk_keyknox_entry_t *new_keyknox_entry) {
     //
     //  Init.
     //
@@ -115,38 +143,17 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     vssc_error_t core_sdk_error;
     vssc_error_reset(&core_sdk_error);
 
-    if (vsc_str_is_empty(identity)) {
-        identity = vssc_jwt_identity(env->jwt);
-    }
-
-    // Make key with timestamp.
-    vsc_str_buffer_t *key_buf = NULL;
-    if (vsc_str_is_empty(key)) {
-        key_buf = create_random_key(env);
-        key = vsc_str_buffer_str(key_buf);
-    }
-
     vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
-
-    //
-    //  Make Keyknox entry.
-    //
-    vssc_string_list_t *identities = vssc_string_list_new();
-    vssc_string_list_add(identities, identity);
-
-    vsc_data_t empty_previous_hash = vsc_data_empty();
-
-    vssk_keyknox_entry_t *new_entry = vssk_keyknox_entry_new_with(
-            root, path, key, identities, test_data_META, test_data_VALUE, empty_previous_hash);
 
     //
     //  Push Keyknox entry.
     //
-    vssc_http_request_t *push_keyknox_entry_request = vssk_keyknox_client_make_request_push(keyknox_client, new_entry);
+    vssc_http_request_t *push_keyknox_entry_request =
+            vssk_keyknox_client_make_request_push(keyknox_client, new_keyknox_entry);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, core_sdk_error.status);
 
     vssc_http_request_set_auth_header_value_from_type_and_credentials(
-            push_keyknox_entry_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+            push_keyknox_entry_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(jwt));
 
     vssc_http_response_t *push_keyknox_entry_response =
             vssc_virgil_http_client_send(push_keyknox_entry_request, &core_sdk_error);
@@ -162,30 +169,57 @@ push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vs
     //
     //  Check fields.
     //
-    TEST_ASSERT_EQUAL_STR(identity, vssk_keyknox_entry_owner(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_STR(root, vssk_keyknox_entry_root(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_STR(path, vssk_keyknox_entry_path(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_STR(key, vssk_keyknox_entry_key(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_DATA(test_data_META, vssk_keyknox_entry_meta(pushed_keyknox_entry));
-    TEST_ASSERT_EQUAL_DATA(test_data_VALUE, vssk_keyknox_entry_value(pushed_keyknox_entry));
-
-    const vssc_string_list_t *pushed_identities = vssk_keyknox_entry_identities(pushed_keyknox_entry);
-    TEST_ASSERT_TRUE(vssc_string_list_has_item(pushed_identities));
-    TEST_ASSERT_EQUAL_STR(identity, vssc_string_list_item(pushed_identities));
+    test_assert_equal_keyknox_entry(vssc_jwt_identity(jwt), new_keyknox_entry, pushed_keyknox_entry);
+    TEST_ASSERT_TRUE(vsc_data_is_valid_and_non_empty(vssk_keyknox_entry_hash(pushed_keyknox_entry)));
 
     //
     //  Cleanup.
     //
-    vssc_string_list_destroy(&identities);
-    vssk_keyknox_entry_destroy(&new_entry);
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&push_keyknox_entry_request);
     vssc_http_response_destroy(&push_keyknox_entry_response);
-    vsc_str_buffer_destroy(&key_buf);
 
     return pushed_keyknox_entry;
 }
 
+static vssk_keyknox_entry_t *
+push_new_keyknox_entry(const test_env_t *env, vsc_str_t root, vsc_str_t path, vsc_str_t key, vsc_str_t identity) {
+    //
+    //  Take identity from JWT if not given.
+    //
+    if (vsc_str_is_empty(identity)) {
+        identity = vssc_jwt_identity(env->jwt);
+    }
+
+    //
+    // Make a random key if not given.
+    //
+    vsc_str_buffer_t *key_buf = NULL;
+    if (vsc_str_is_empty(key)) {
+        key_buf = create_random_key(env);
+        key = vsc_str_buffer_str(key_buf);
+    }
+
+    //
+    //  Make Keyknox entry.
+    //
+    vssc_string_list_t *identities = vssc_string_list_new();
+    vssc_string_list_add(identities, identity);
+
+    vssk_keyknox_entry_t *new_keyknox_entry =
+            vssk_keyknox_entry_new_with(root, path, key, identities, test_data_META, test_data_VALUE, vsc_data_empty());
+
+    vssk_keyknox_entry_t *pushed_keyknox_entry = push_new_keyknox_entry_ext(env, env->jwt, new_keyknox_entry);
+
+    //
+    //  Cleanup and return.
+    //
+    vssk_keyknox_entry_destroy(&new_keyknox_entry);
+    vsc_str_buffer_destroy(&key_buf);
+    vssc_string_list_destroy(&identities);
+
+    return pushed_keyknox_entry;
+}
 
 void
 test__push__with_random_key_id__returns_expected_keyknox_entry(void) {
@@ -419,24 +453,232 @@ test__reset__all_entries__success(void) {
     vssc_http_request_t *reset_request =
             vssk_keyknox_client_make_request_reset(keyknox_client, empty_root, empty_path, empty_key, empty_identity);
 
+    //
+    //  Reset for user1.
+    //
     vssc_http_request_set_auth_header_value_from_type_and_credentials(
             reset_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
 
-    vssc_http_response_t *reset_response = vssc_virgil_http_client_send(reset_request, &core_sdk_error);
+    vssc_http_response_t *reset_response_1 = vssc_virgil_http_client_send(reset_request, &core_sdk_error);
     TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
 
-    vssk_keyknox_entry_t *reset_keyknox_entry =
-            vssk_keyknox_client_process_response_reset(reset_response, &keyknox_error);
+    vssk_keyknox_entry_t *reset_keyknox_entry_1 =
+            vssk_keyknox_client_process_response_reset(reset_response_1, &keyknox_error);
     TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
-    TEST_ASSERT_NOT_NULL(reset_keyknox_entry);
+    TEST_ASSERT_NOT_NULL(reset_keyknox_entry_1);
+
+    //
+    //  Reset for user2.
+    //
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            reset_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt2));
+
+    vssc_http_response_t *reset_response_2 = vssc_virgil_http_client_send(reset_request, &core_sdk_error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
+
+    vssk_keyknox_entry_t *reset_keyknox_entry_2 =
+            vssk_keyknox_client_process_response_reset(reset_response_2, &keyknox_error);
+    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
+    TEST_ASSERT_NOT_NULL(reset_keyknox_entry_2);
 
     //
     //  Cleanup.
     //
     vssk_keyknox_client_destroy(&keyknox_client);
     vssc_http_request_destroy(&reset_request);
-    vssc_http_response_destroy(&reset_response);
-    vssk_keyknox_entry_destroy(&reset_keyknox_entry);
+    vssc_http_response_destroy(&reset_response_1);
+    vssc_http_response_destroy(&reset_response_2);
+    vssk_keyknox_entry_destroy(&reset_keyknox_entry_1);
+    vssk_keyknox_entry_destroy(&reset_keyknox_entry_2);
+}
+
+void
+test__set_admins__for_1_admin__can_modify_record_as_admin(void) {
+    //
+    //  Init.
+    //
+    const test_env_t *env = test_env_get();
+
+    vssk_error_t keyknox_error;
+    vssk_error_reset(&keyknox_error);
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
+
+    //
+    //  Push Keyknox entry.
+    //
+    vsc_str_t identity = vssc_jwt_identity(env->jwt);
+    vsc_str_t identity2 = vssc_jwt_identity(env->jwt2);
+    vsc_str_buffer_t *key_buf = create_random_key(env);
+    vsc_str_t key = vsc_str_buffer_str(key_buf);
+
+    vssk_keyknox_entry_t *pushed_keyknox_entry =
+            push_new_keyknox_entry(env, test_data_ROOT, test_data_PATH5, key, identity);
+
+    //
+    //  Share Keyknox entry.
+    //
+    vssc_string_list_t *admins = vssc_string_list_new();
+    vssc_string_list_add(admins, identity2);
+
+
+    vssc_http_request_t *set_keyknox_admins_request = vssk_keyknox_client_make_request_set_admins(
+            keyknox_client, test_data_ROOT, test_data_PATH5, admins, vsc_str_empty());
+    TEST_ASSERT_NOT_NULL(set_keyknox_admins_request);
+
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            set_keyknox_admins_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *set_keyknox_admins_response =
+            vssc_virgil_http_client_send(set_keyknox_admins_request, &core_sdk_error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
+
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(set_keyknox_admins_response);
+
+    //
+    //  Push a new Keyknox entry as admin.
+    //
+    vsc_data_t original_entry_hash = vssk_keyknox_entry_hash(pushed_keyknox_entry);
+
+    vssc_string_list_t *new_identities = vssc_string_list_new();
+    vssc_string_list_add(new_identities, identity);
+    vssc_string_list_add(new_identities, identity2);
+
+    vssk_keyknox_entry_t *new_keyknox_entry = vssk_keyknox_entry_new_with_owner(identity, test_data_ROOT,
+            test_data_PATH5, key, new_identities, test_data_META_2, test_data_VALUE_2, original_entry_hash);
+
+    vssk_keyknox_entry_t *modified_keyknox_entry = push_new_keyknox_entry_ext(env, env->jwt2, new_keyknox_entry);
+
+    //
+    //  Pull the modified Keyknox entry from the original identity.
+    //
+    vssc_http_request_t *pull_keyknox_entry_request =
+            vssk_keyknox_client_make_request_pull(keyknox_client, test_data_ROOT, test_data_PATH5, key, identity);
+
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            pull_keyknox_entry_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *pull_keyknox_entry_response =
+            vssc_virgil_http_client_send(pull_keyknox_entry_request, &core_sdk_error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
+
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(pull_keyknox_entry_response);
+
+    vssk_keyknox_entry_t *pulled_keyknox_entry =
+            vssk_keyknox_client_process_response_pull(pull_keyknox_entry_response, &keyknox_error);
+    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
+    TEST_ASSERT_NOT_NULL(pulled_keyknox_entry);
+
+    //
+    //  Check fields.
+    //
+    test_assert_equal_keyknox_entry(identity, new_keyknox_entry, pulled_keyknox_entry);
+    TEST_ASSERT_TRUE(vsc_data_is_valid_and_non_empty(vssk_keyknox_entry_hash(pulled_keyknox_entry)));
+
+    //
+    //  Cleanup.
+    //
+    vssc_string_list_destroy(&admins);
+    vssc_string_list_destroy(&new_identities);
+    vssk_keyknox_entry_destroy(&new_keyknox_entry);
+    vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
+    vssk_keyknox_entry_destroy(&pulled_keyknox_entry);
+    vssk_keyknox_entry_destroy(&modified_keyknox_entry);
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&set_keyknox_admins_request);
+    vssc_http_response_destroy(&set_keyknox_admins_response);
+    vssc_http_request_destroy(&pull_keyknox_entry_request);
+    vssc_http_response_destroy(&pull_keyknox_entry_response);
+    vsc_str_buffer_destroy(&key_buf);
+}
+
+void
+test__get_admins__with_1_admin__previously_added_admin_is_listed(void) {
+    //
+    //  Init.
+    //
+    const test_env_t *env = test_env_get();
+
+    vssk_error_t keyknox_error;
+    vssk_error_reset(&keyknox_error);
+
+    vssc_error_t core_sdk_error;
+    vssc_error_reset(&core_sdk_error);
+
+    vssk_keyknox_client_t *keyknox_client = vssk_keyknox_client_new_with_base_url(env->url);
+
+    //
+    //  Push Keyknox entry.
+    //
+    vsc_str_t identity = vssc_jwt_identity(env->jwt);
+    vsc_str_t identity2 = vssc_jwt_identity(env->jwt2);
+    vsc_str_buffer_t *key_buf = create_random_key(env);
+    vsc_str_t key = vsc_str_buffer_str(key_buf);
+
+    vssk_keyknox_entry_t *pushed_keyknox_entry =
+            push_new_keyknox_entry(env, test_data_ROOT, test_data_PATH5, key, identity);
+
+    //
+    //  Share Keyknox entry.
+    //
+    vssc_string_list_t *admins = vssc_string_list_new();
+    vssc_string_list_add(admins, identity2);
+
+
+    vssc_http_request_t *set_keyknox_admins_request = vssk_keyknox_client_make_request_set_admins(
+            keyknox_client, test_data_ROOT, test_data_PATH5, admins, vsc_str_empty());
+    TEST_ASSERT_NOT_NULL(set_keyknox_admins_request);
+
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            set_keyknox_admins_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *set_keyknox_admins_response =
+            vssc_virgil_http_client_send(set_keyknox_admins_request, &core_sdk_error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
+
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(set_keyknox_admins_response);
+
+    //
+    //  List admins.
+    //
+    vssc_http_request_t *get_keyknox_admins_request =
+            vssk_keyknox_client_make_request_get_admins(keyknox_client, test_data_ROOT, test_data_PATH5, identity);
+    TEST_ASSERT_NOT_NULL(get_keyknox_admins_request);
+
+    vssc_http_request_set_auth_header_value_from_type_and_credentials(
+            get_keyknox_admins_request, vssc_virgil_http_client_k_auth_type_virgil, vssc_jwt_as_string(env->jwt));
+
+    vssc_http_response_t *get_keyknox_admins_response =
+            vssc_virgil_http_client_send(get_keyknox_admins_request, &core_sdk_error);
+    TEST_ASSERT_EQUAL(vssc_status_SUCCESS, core_sdk_error.status);
+
+    TEST_ASSERT_VIRGIL_HTTP_RESPONSE(get_keyknox_admins_response);
+
+    //
+    //  Check fields.
+    //
+    vssc_string_list_t *listed_admins =
+            vssk_keyknox_client_process_response_get_admins(get_keyknox_admins_response, &keyknox_error);
+    TEST_ASSERT_EQUAL(vssk_status_SUCCESS, keyknox_error.status);
+    TEST_ASSERT_NOT_NULL(listed_admins);
+    TEST_ASSERT_EQUAL(vssc_string_list_count(listed_admins), 1);
+    TEST_ASSERT_EQUAL_STR(vssc_string_list_item(listed_admins), identity2);
+
+    //
+    //  Cleanup.
+    //
+    vssc_string_list_destroy(&admins);
+    vssc_string_list_destroy(&listed_admins);
+    vssk_keyknox_entry_destroy(&pushed_keyknox_entry);
+    vssk_keyknox_client_destroy(&keyknox_client);
+    vssc_http_request_destroy(&set_keyknox_admins_request);
+    vssc_http_response_destroy(&set_keyknox_admins_response);
+    vssc_http_request_destroy(&get_keyknox_admins_request);
+    vssc_http_response_destroy(&get_keyknox_admins_response);
+    vsc_str_buffer_destroy(&key_buf);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
@@ -459,6 +701,8 @@ main(void) {
     RUN_TEST(test__pull__pushed_entry__returns_expected_keyknox_entry);
     RUN_TEST(test__reset__pushed_entry_with_defined_root_and_path__returns_expected_keyknox_entry);
     RUN_TEST(test__get_keys__pushed_1_entry__returns_list_with_1_key);
+    RUN_TEST(test__set_admins__for_1_admin__can_modify_record_as_admin);
+    RUN_TEST(test__get_admins__with_1_admin__previously_added_admin_is_listed);
     RUN_TEST(test__reset__all_entries__success);
 
     test_env_release();

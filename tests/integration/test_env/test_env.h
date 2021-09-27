@@ -55,6 +55,7 @@ typedef struct {
     const vscf_impl_t *random;
     const vscf_impl_t *virgil_public_key;
     const vssc_jwt_t *jwt;
+    const vssc_jwt_t *jwt2;
     const void *inner;
 } test_env_t;
 

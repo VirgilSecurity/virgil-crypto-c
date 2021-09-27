@@ -222,6 +222,36 @@ vssk_keyknox_client_make_request_get_keys(const vssk_keyknox_client_t *self, vsc
 VSSK_PUBLIC vssc_string_list_t *
 vssk_keyknox_client_process_response_get_keys(const vssc_http_response_t *response, vssk_error_t *error);
 
+//
+//  Create request that setup set ownership for record,
+//  specify owner field if you were granted with access previously,
+//  so you can update records of other users.
+//
+//  Note, owner of the record is optional if you are owner, otherwise admin
+//  should specify this field if he wants to change record of another owner.
+//
+//  Note, parameter 'admins' is a list of admins (identities) to add access.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_set_admins(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path,
+        const vssc_string_list_t *admins, vsc_str_t owner);
+
+//
+//  Create request that lists admins of the record, if you are owner
+//  then your identity will be omitted from the list as you are the admin by default.
+//
+//  Note, parameter 'owner' is optional if you are an owner.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_get_admins(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path,
+        vsc_str_t owner);
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssc_string_list_t *
+vssk_keyknox_client_process_response_get_admins(const vssc_http_response_t *response, vssk_error_t *error);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

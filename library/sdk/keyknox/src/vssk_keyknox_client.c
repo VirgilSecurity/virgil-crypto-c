@@ -163,6 +163,36 @@ static const vsc_str_t k_url_path_reset = {
 };
 
 //
+//  POST /set
+//  FIXME: should be updated to 'set-admins' after the backend did.
+//
+static const char k_url_path_set_admins_chars[] = "/keyknox/v2/set-owners";
+
+//
+//  POST /set
+//  FIXME: should be updated to 'set-admins' after the backend did.
+//
+static const vsc_str_t k_url_path_set_admins = {
+    k_url_path_set_admins_chars,
+    sizeof(k_url_path_set_admins_chars) - 1
+};
+
+//
+//  POST /list-owners
+//  FIXME: should be updated to 'list-admins' after the backend did.
+//
+static const char k_url_path_list_admins_chars[] = "/keyknox/v2/list-owners";
+
+//
+//  POST /list-owners
+//  FIXME: should be updated to 'list-admins' after the backend did.
+//
+static const vsc_str_t k_url_path_list_admins = {
+    k_url_path_list_admins_chars,
+    sizeof(k_url_path_list_admins_chars) - 1
+};
+
+//
 //  JSON key: owner
 //
 static const char k_json_key_owner_chars[] = "owner";
@@ -173,6 +203,19 @@ static const char k_json_key_owner_chars[] = "owner";
 static const vsc_str_t k_json_key_owner = {
     k_json_key_owner_chars,
     sizeof(k_json_key_owner_chars) - 1
+};
+
+//
+//  JSON key: admins
+//
+static const char k_json_key_admins_chars[] = "admins";
+
+//
+//  JSON key: admins
+//
+static const vsc_str_t k_json_key_admins = {
+    k_json_key_admins_chars,
+    sizeof(k_json_key_admins_chars) - 1
 };
 
 //
@@ -504,6 +547,8 @@ vssk_keyknox_client_cleanup_ctx(vssk_keyknox_client_t *self) {
     vsc_str_mutable_release(&self->pull_url);
     vsc_str_mutable_release(&self->keys_url);
     vsc_str_mutable_release(&self->reset_url);
+    vsc_str_mutable_release(&self->set_admins_url);
+    vsc_str_mutable_release(&self->list_admins_url);
 }
 
 //
@@ -519,6 +564,8 @@ vssk_keyknox_client_init_ctx_with_base_url(vssk_keyknox_client_t *self, vsc_str_
     self->pull_url = vsc_str_mutable_concat(url, k_url_path_pull);
     self->keys_url = vsc_str_mutable_concat(url, k_url_path_keys);
     self->reset_url = vsc_str_mutable_concat(url, k_url_path_reset);
+    self->set_admins_url = vsc_str_mutable_concat(url, k_url_path_set_admins);
+    self->list_admins_url = vsc_str_mutable_concat(url, k_url_path_list_admins);
 }
 
 //
@@ -533,6 +580,7 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
     //
     //  Validate fields.
     //
+    vsc_str_t owner = vssk_keyknox_entry_owner(new_entry);
     vsc_str_t root = vssk_keyknox_entry_root(new_entry);
     vsc_str_t path = vssk_keyknox_entry_path(new_entry);
     vsc_str_t key = vssk_keyknox_entry_key(new_entry);
@@ -551,6 +599,9 @@ vssk_keyknox_client_make_request_push(const vssk_keyknox_client_t *self, const v
     //  Create json body.
     //
     vssc_json_object_t *json = vssc_json_object_new();
+    if (!vsc_str_is_empty(owner)) {
+        vssc_json_object_add_string_value(json, k_json_key_owner, owner);
+    }
     vssc_json_object_add_string_value(json, k_json_key_root, root);
     vssc_json_object_add_string_value(json, k_json_key_path, path);
     vssc_json_object_add_string_value(json, k_json_key_key, key);
@@ -854,6 +905,156 @@ vssk_keyknox_client_process_response_get_keys(const vssc_http_response_t *respon
     }
 
     return keys;
+}
+
+//
+//  Create request that setup set ownership for record,
+//  specify owner field if you were granted with access previously,
+//  so you can update records of other users.
+//
+//  Note, owner of the record is optional if you are owner, otherwise admin
+//  should specify this field if he wants to change record of another owner.
+//
+//  Note, parameter 'admins' is a list of admins (identities) to add access.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_set_admins(const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path,
+        const vssc_string_list_t *admins, vsc_str_t owner) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(root));
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(path));
+    VSSK_ASSERT_PTR(admins);
+    VSSK_ASSERT(vsc_str_is_valid(owner));
+
+    //
+    //  Create json body.
+    //
+    vssc_json_object_t *json = vssc_json_object_new();
+
+    vssc_json_object_add_string_value(json, k_json_key_root, root);
+    vssc_json_object_add_string_value(json, k_json_key_path, path);
+
+    vssc_json_array_t *admins_json = vssc_json_array_new();
+    vssc_json_array_add_string_values(admins_json, admins);
+    vssc_json_object_add_array_value_disown(json, k_json_key_admins, &admins_json);
+
+    if (!vsc_str_is_empty(owner)) {
+        vssc_json_object_add_string_value(json, k_json_key_owner, owner);
+    }
+
+    //
+    //  Create request.
+    //
+    vsc_str_t json_body = vssc_json_object_as_str(json);
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->set_admins_url), vsc_str_as_data(json_body));
+
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
+
+    vssc_json_object_destroy(&json);
+
+    return http_request;
+}
+
+//
+//  Create request that lists admins of the record, if you are owner
+//  then your identity will be omitted from the list as you are the admin by default.
+//
+//  Note, parameter 'owner' is optional if you are an owner.
+//
+VSSK_PUBLIC vssc_http_request_t *
+vssk_keyknox_client_make_request_get_admins(
+        const vssk_keyknox_client_t *self, vsc_str_t root, vsc_str_t path, vsc_str_t owner) {
+
+    VSSK_ASSERT_PTR(self);
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(root));
+    VSSK_ASSERT(vsc_str_is_valid_and_non_empty(path));
+    VSSK_ASSERT(vsc_str_is_valid(owner));
+
+    //
+    //  Create json body.
+    //
+    vssc_json_object_t *json = vssc_json_object_new();
+
+    vssc_json_object_add_string_value(json, k_json_key_root, root);
+    vssc_json_object_add_string_value(json, k_json_key_path, path);
+
+    if (!vsc_str_is_empty(owner)) {
+        vssc_json_object_add_string_value(json, k_json_key_owner, owner);
+    }
+
+    //
+    //  Create request.
+    //
+    vsc_str_t json_body = vssc_json_object_as_str(json);
+    vssc_http_request_t *http_request = vssc_http_request_new_with_body(
+            vssc_http_request_method_post, vsc_str_mutable_as_str(self->list_admins_url), vsc_str_as_data(json_body));
+
+    vssc_http_request_add_header(
+            http_request, vssc_http_header_name_content_type, vssc_http_header_value_application_json);
+
+    vssc_json_object_destroy(&json);
+
+    return http_request;
+}
+
+//
+//  Map response to the correspond model.
+//
+VSSK_PUBLIC vssc_string_list_t *
+vssk_keyknox_client_process_response_get_admins(const vssc_http_response_t *response, vssk_error_t *error) {
+
+    VSSK_ASSERT_PTR(response);
+
+    vssc_error_t core_error;
+    vssc_error_reset(&core_error);
+
+    vssc_json_array_t *admins_json = NULL;
+    vssc_string_list_t *admins = NULL;
+
+    if (!vssc_http_response_is_success(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_CONTAINS_SERVICE_ERROR);
+        goto fail;
+    }
+
+    // TODO: Check Content-Type to be equal application/json
+
+    if (!vssc_http_response_body_is_json_object(response)) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_HTTP_RESPONSE_BODY_PARSE_FAILED);
+        goto fail;
+    }
+
+    const vssc_json_object_t *json = vssc_http_response_body_as_json_object(response);
+
+    admins_json = vssc_json_object_get_array_value(json, k_json_key_admins, &core_error);
+    if (NULL == admins_json) {
+        VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+        goto fail;
+    }
+
+    admins = vssc_string_list_new();
+    for (size_t pos = 0; pos < vssc_json_array_count(admins_json); ++pos) {
+        vsc_str_t admin = vssc_json_array_get_string_value(admins_json, pos, &core_error);
+
+        if (vssc_error_has_error(&core_error)) {
+            VSSK_ERROR_SAFE_UPDATE(error, vssk_status_KEYKNOX_ENTRY_PARSE_FAILED);
+            goto fail;
+        }
+
+        vssc_string_list_add(admins, admin);
+    }
+
+    vssc_json_array_destroy(&admins_json);
+
+    return admins;
+
+fail:
+    vssc_json_array_destroy(&admins_json);
+    vssc_string_list_destroy(&admins);
+
+    return NULL;
 }
 
 //
