@@ -94,7 +94,7 @@ ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
             https://github.com/ARMmbed/mbedtls
         GIT_TAG
-            v2.27.0
+            v2.28.0
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "${MBEDTLS_C_FLAGS}"
