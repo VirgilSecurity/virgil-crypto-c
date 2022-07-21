@@ -1,5 +1,12 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.16.1 released 2022-07-21
+
+### Improvements
+
+- Packages: Added specs for Carthage binary distribution
+
+
 ## Version 0.16.0 released 2021-07-25
 
 ### Features
