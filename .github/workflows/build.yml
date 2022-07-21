@@ -9,7 +9,7 @@ jobs:
         run: |
           cmake --version
           python3 --version
-          pip3 install protobuf
+          pip3 install protobuf grpcio-tools
       - name: Configure project
         run: >
           cmake -S. -Bbuild
