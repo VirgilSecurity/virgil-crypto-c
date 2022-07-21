@@ -90,6 +90,17 @@ function sed_extended_replace {
     fi
 }
 
+# sed_insert <line> <text> <file>
+function sed_unique_insert {
+    if ! grep "$2" "$3"; then
+        if [ "$(uname -s)" == "Darwin" ]; then
+            gsed -i -e "$1i $2" "$3"
+        else
+            gsed -i "$1i $2" "$3"
+        fi
+    fi
+}
+
 # ###########################################################################
 #   Variables.
 # ###########################################################################
@@ -215,6 +226,16 @@ fi
 show_info "Change version within VSCCrypto.podspec file."
 sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/VSCCrypto.podspec"
 sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}" "\1${VERSION_FULL}" "${ROOT_DIR}/VSCCrypto.podspec"
+
+
+# ###########################################################################
+show_info "Add version within Carthage spec files."
+PROJS=( "VSCCommon" "VSCFoundation" "VSCPythia" "VSCRatchet" )
+for PROJ in "${PROJS[@]}"; do
+    SPEC_TEXT="\    \"${VERSION_FULL}\": \"https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v${VERSION_FULL}/${PROJ}.xcframework.zip\","
+    SPEC_FILE="${ROOT_DIR}/carthage-specs/${PROJ}.json"
+    sed_unique_insert 2 "$SPEC_TEXT" "$SPEC_FILE"
+done
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
