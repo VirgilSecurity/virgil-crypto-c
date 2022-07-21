@@ -1,0 +1,22 @@
+name: Release
+on:
+  push:
+    tags: "*"
+
+jobs:
+  release-apple-xcframeworks:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure toolchain
+        run: |
+          cmake --version
+          python3 --version
+          pip3 install protobuf
+      - name: Build Frameworks
+        run: ./scripts/build_apple_frameworks.sh
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          files: ./build_apple/VSCFrameworks/*.xcframework.zip
