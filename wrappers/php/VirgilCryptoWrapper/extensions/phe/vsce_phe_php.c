@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2021 Virgil Security, Inc.
+// Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -84,7 +84,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 // Constants
 //
-const char VSCE_PHE_PHP_VERSION[] = "0.16.0";
+const char VSCE_PHE_PHP_VERSION[] = "0.16.1";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 static const char VSCE_PHE_SERVER_T_PHP_RES_NAME[] = "vsce_phe_server_t";

@@ -1,0 +1,23 @@
+name: build
+on: [push]
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure toolchain
+        run: |
+          cmake --version
+          python3 --version
+          pip3 install protobuf grpcio-tools
+      - name: Configure project
+        run: >
+          cmake -S. -Bbuild
+          -DVIRGIL_C_MT_TESTING=ON
+          -DENABLE_BENCHMARKING=ON
+          -DVIRGIL_PROGRAMS=ON
+      - name: Build project
+        run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
+      - name: Run tests
+        run: ctest --output-on-failure
+        working-directory: build

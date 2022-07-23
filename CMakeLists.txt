@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2021 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.16.0 LANGUAGES C)
+project(virgil_crypto VERSION 0.16.1 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright (C) 2015-2021 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -215,6 +215,18 @@ fi
 show_info "Change version within VSCCrypto.podspec file."
 sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/VSCCrypto.podspec"
 sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}" "\1${VERSION_FULL}" "${ROOT_DIR}/VSCCrypto.podspec"
+
+
+# ###########################################################################
+show_info "Add version within Carthage spec files."
+PROJS=( "VSCCommon" "VSCFoundation" "VSCPythia" "VSCRatchet" )
+for PROJ in "${PROJS[@]}"; do
+cat <<EOF > "${ROOT_DIR}/carthage-specs/${PROJ}.json"
+{
+    "${VERSION_FULL}": "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v${VERSION_FULL}/${PROJ}.xcframework.zip"
+}
+EOF
+done
 
 # ###########################################################################
 show_info "Change version within JS package.json file."

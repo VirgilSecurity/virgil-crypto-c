@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2015-2021, Virgil Security, Inc.
+  ~ Copyright (c) 2015-2022, Virgil Security, Inc.
   ~
   ~ Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
   ~
@@ -36,7 +36,7 @@
 	<parent>
 		<groupId>com.virgilsecurity.crypto</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.16.0</version>
+		<version>0.16.1</version>
 	</parent>
 	<artifactId>phe</artifactId>
 

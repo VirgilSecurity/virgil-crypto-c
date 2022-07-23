@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright (C) 2015-2021 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -258,6 +258,19 @@ make_xcarchive VSCRatchet "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
 PREPARE_RELEASE="YES"
 
 if [ $PREPARE_RELEASE == "YES" ]; then
+    # ZIP xcfameworks separately
+    pushd "${XCFRAMEWORKS_DESTINATION_DIR}"
+        # Find all xcframeworks to zip
+        XCFRAMEWORKS=$(find . -name "*.xcframework" | xargs basename -a | tr '\n' ' ')
+
+        # ZIP xcfameworks
+        for xcframework in ${XCFRAMEWORKS}; do
+            zip --symlinks -r "${xcframework}.zip" "${xcframework}"
+            mv "${xcframework}.zip" "${DESTINATION_DIR}"
+        done
+    popd
+
+    # ZIP xcfameworks all-in-one
     cp -p -R "${ROOT_DIR}/LICENSE" "${XCFRAMEWORKS_DESTINATION_DIR}"
 
     pushd "${DESTINATION_DIR}"
