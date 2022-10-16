@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2021 Virgil Security, Inc.
+// Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -65,7 +65,7 @@ vscp_handle_throw_exception(vscp_status_t status) {
 //
 // Constants
 //
-const char VSCP_PYTHIA_PHP_VERSION[] = "0.17.0";
+const char VSCP_PYTHIA_PHP_VERSION[] = "0.16.1";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 
 //

@@ -12,7 +12,7 @@ jobs:
         run: |
           cmake --version
           python3 --version
-          pip3 install protobuf
+          pip3 install protobuf grpcio-tools
       - name: Build Frameworks
         run: ./scripts/build_apple_frameworks.sh
       - name: Release

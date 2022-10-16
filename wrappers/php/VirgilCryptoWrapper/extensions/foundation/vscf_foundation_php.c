@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2021 Virgil Security, Inc.
+// Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -356,7 +356,7 @@ vscf_handle_throw_exception(vscf_status_t status) {
 //
 // Constants
 //
-const char VSCF_FOUNDATION_PHP_VERSION[] = "0.17.0";
+const char VSCF_FOUNDATION_PHP_VERSION[] = "0.16.1";
 const char VSCF_FOUNDATION_PHP_EXTNAME[] = "vscf_foundation_php";
 
 static const char VSCF_IMPL_T_PHP_RES_NAME[] = "vscf_impl_t";
