@@ -10,7 +10,7 @@
 
 - Ext: Updated protoc to the version 3.20.3.
 - Ext: Updated nanopb to the version 0.4.6.4.
-
+- Ext: Update google benchmark tool to the version 1.7.0
 
 ## Version 0.16.1 released 2022-07-21
 
