@@ -1,5 +1,17 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.16.2 released 2022-10-19
+
+### Features
+
+- watchOS: Added arm64 architecture.
+
+### Improvements
+
+- Ext: Updated protoc to the version 3.20.3.
+- Ext: Updated nanopb to the version 0.4.6.4.
+
+
 ## Version 0.16.1 released 2022-07-21
 
 ### Improvements
