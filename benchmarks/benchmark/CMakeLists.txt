@@ -39,7 +39,7 @@ ExternalProject_Add(benchmark-ext
         GIT_REPOSITORY
             https://github.com/google/benchmark.git
         GIT_TAG
-            v1.5.2
+            v1.7.0
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/benchmark"
             "-DCMAKE_BUILD_TYPE=Release"

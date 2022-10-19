@@ -47,16 +47,16 @@ endif()
 set(NANOPB_INSTALL_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb")
 
 if(CMAKE_HOST_APPLE)
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-osx-x86_64.zip")
-    set(PROTOC_BIN_HASH "ab11029340de61bb707a4d564ceeb580d31436f5466fad2194c91beb040aa828")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.20.3/protoc-3.20.3-osx-x86_64.zip")
+    set(PROTOC_BIN_HASH "f3ac8c37e87cb345a509eef7ec614092995d9423b8effb42c207c8fbdacb97ee")
 
 elseif(CMAKE_HOST_WIN32)
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-win32.zip")
-    set(PROTOC_BIN_HASH "ec9081e6f0ad1b7e2737673eacbda9a9c0046ab4a25f7b5cfcd833c419e11469")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.20.3/protoc-3.20.3-win32.zip")
+    set(PROTOC_BIN_HASH "e4517c9de9170d6beb7c7de0a17fcd6ad5eed2eb033bee7119b51ea86f43d3b3")
 
 else()
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.15.8/protoc-3.15.8-linux-x86_64.zip")
-    set(PROTOC_BIN_HASH "b9ff821d2a4f9e9943dc2a13e6a76d99c7472dac46ddd3718a3a4c3b877c044a")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.20.3/protoc-3.20.3-linux-x86_64.zip")
+    set(PROTOC_BIN_HASH "44a6b498e996b845edef83864734c0e52f42197e85c9d567af55f4e3ff09d755")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -99,7 +99,7 @@ ExternalProject_Add(protobuf-nanopb-ext
         GIT_REPOSITORY
             https://github.com/nanopb/nanopb
         GIT_TAG
-            0.4.5
+            0.4.6.4
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
