@@ -6,10 +6,10 @@ Pod::Spec.new do |s|
   s.homepage                    = "https://github.com/VirgilSecurity/virgil-crypto-c"
   s.authors                     = { "Virgil Security" => "https://virgilsecurity.com/" }
   s.source                      = { :http => "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.16.2/VSCCrypto.xcframework.zip" }
-  s.ios.deployment_target       = "9.0"
+  s.ios.deployment_target       = "11.0"
   s.osx.deployment_target       = "10.9"
-  s.tvos.deployment_target      = "9.0"
-  s.watchos.deployment_target   = "2.0"
+  s.tvos.deployment_target      = "11.0"
+  s.watchos.deployment_target   = "4.0"
 
   s.subspec 'Common' do |sp|
     sp.vendored_frameworks     = "VSCCrypto-XCFrameworks/VSCCommon.xcframework"

@@ -1,6 +1,6 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
-## Version 0.16.2 released 2022-10-19
+## Version 0.16.2 released 2022-10-21
 
 ### Features
 
@@ -10,7 +10,11 @@
 
 - Ext: Updated protoc to the version 3.20.3.
 - Ext: Updated nanopb to the version 0.4.6.4.
-- Ext: Update google benchmark tool to the version 1.7.0
+- Ext: Updated google benchmark tool to the version 1.7.0.
+- Cocoapods: Updated minimum required Apple deployment targets for Apple devices.
+  - iOS 9.0 -> 11.0
+  - tvOS 9.0 -> 11.0
+  - watchOS 2.0 -> 4.0
 
 ## Version 0.16.1 released 2022-07-21
 
