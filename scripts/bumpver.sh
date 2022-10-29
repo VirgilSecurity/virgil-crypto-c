@@ -76,15 +76,7 @@ function abspath() {
 # sed_replace <from> <to> <file>
 function sed_replace {
     if [ "$(uname -s)" == "Darwin" ]; then
-        sed -i "" -e "s/$1/$2/g" "$3"
-    else
-        sed -i"" "s/$1/$2/g" "$3"
-    fi
-}
-
-function sed_extended_replace {
-    if [ "$(uname -s)" == "Darwin" ]; then
-        sed -i "" -E -e "s/$1/$2/g" "$3"
+        sed -i "" -E "s/$1/$2/g" "$3"
     else
         sed -i"" -r "s/$1/$2/g" "$3"
     fi
@@ -125,7 +117,7 @@ echo "${VERSION_FULL}" > "${ROOT_DIR}/VERSION"
 # ###########################################################################
 show_info "Change version within CMakeLists.txt file."
 sed_replace "VERSION *[0-9]*\.[0-9]*\.[0-9]" "VERSION ${VERSION}" "${ROOT_DIR}/CMakeLists.txt"
-sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
+sed_replace "(VIRGIL_CRYPTO_VERSION_LABEL) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
 
 
 # ###########################################################################
@@ -140,7 +132,7 @@ else
     main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\" label=\"${VERSION_LABEL}\""
 fi
 
-sed_extended_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
+sed_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
 
 
 # ###########################################################################
@@ -161,9 +153,9 @@ show_info "Change version within C header files."
 C_HEADER_FILES=$(find "${ROOT_DIR}/library" -name "*_library.h" | tr '\n' ' ')
 
 for header_file in ${C_HEADER_FILES}; do
-    sed_replace "\(#define *[A-Z]\{3,4\}_VERSION_MAJOR\).*$" "\1 ${VERSION_MAJOR}" "${header_file}"
-    sed_replace "\(#define *[A-Z]\{3,4\}_VERSION_MINOR\).*$" "\1 ${VERSION_MINOR}" "${header_file}"
-    sed_replace "\(#define *[A-Z]\{3,4\}_VERSION_PATCH\).*$" "\1 ${VERSION_PATCH}" "${header_file}"
+    sed_replace "(#define *[A-Z]\{3,4\}_VERSION_MAJOR).*$" "\1 ${VERSION_MAJOR}" "${header_file}"
+    sed_replace "(#define *[A-Z]\{3,4\}_VERSION_MINOR).*$" "\1 ${VERSION_MINOR}" "${header_file}"
+    sed_replace "(#define *[A-Z]\{3,4\}_VERSION_PATCH).*$" "\1 ${VERSION_PATCH}" "${header_file}"
 done
 
 # ###########################################################################
@@ -172,7 +164,7 @@ show_info "Change version within PHP wrapper files."
 PHP_SOURCE_FILES=$(find "${ROOT_DIR}/wrappers/php" -name "vsc*.c" | tr '\n' ' ')
 
 for source_file in ${PHP_SOURCE_FILES}; do
-    sed_replace "\([A-Z_]*_PHP_VERSION\[\] *= *\)\"[0-9]*.[0-9]*.[0-9]*\".*$" "\1\"${VERSION}\";" "${source_file}"
+    sed_replace "([A-Z_]*_PHP_VERSION\[\] *= *)\"[0-9]*.[0-9]*.[0-9]*\".*$" "\1\"${VERSION}\";" "${source_file}"
 done
 
 # ###########################################################################
@@ -212,10 +204,11 @@ else
 fi
 
 # ###########################################################################
-show_info "Change version within VSCCrypto.podspec file."
-sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/VSCCrypto.podspec"
-sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}" "\1${VERSION_FULL}" "${ROOT_DIR}/VSCCrypto.podspec"
-
+for podspec in VSCCrypto VirgilCryptoFoundation VirgilCryptoPythia VirgilCryptoRatchet; do
+    show_info "Change version within ${podspec}.podspec file."
+    sed_replace "s.version( *= *)\"[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9]*)?\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/${podspec}.podspec"
+    sed_replace "(s\.dependency[^=]+[=] *)[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9]*)?" "\1${VERSION_FULL}" "${ROOT_DIR}/${podspec}.podspec"
+done
 
 # ###########################################################################
 show_info "Add version within Carthage spec files."
@@ -230,4 +223,4 @@ done
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
-sed_replace "\(\"version\" *: *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
+sed_replace "(\"version\"\s*:\s*)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
