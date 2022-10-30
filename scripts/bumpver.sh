@@ -204,6 +204,10 @@ else
 fi
 
 # ###########################################################################
+show_info "Change version within JS package.json file."
+sed_replace "(\"version\"\s*:\s*)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
+
+# ###########################################################################
 for podspec in VSCCrypto VirgilCryptoFoundation VirgilCryptoPythia VirgilCryptoRatchet; do
     show_info "Change version within ${podspec}.podspec file."
     sed_replace "s.version( *= *)\"[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9]*)?\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/${podspec}.podspec"
@@ -212,8 +216,7 @@ done
 
 # ###########################################################################
 show_info "Add version within Carthage spec files."
-PROJS=( "VSCCommon" "VSCFoundation" "VSCPythia" "VSCRatchet" )
-for PROJ in "${PROJS[@]}"; do
+for PROJ in VSCCommon VSCFoundation VSCPythia VSCRatchet; do
 cat <<EOF > "${ROOT_DIR}/carthage-specs/${PROJ}.json"
 {
     "${VERSION_FULL}": "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v${VERSION_FULL}/${PROJ}.xcframework.zip"
@@ -222,5 +225,5 @@ EOF
 done
 
 # ###########################################################################
-show_info "Change version within JS package.json file."
-sed_replace "(\"version\"\s*:\s*)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
+show_info "Change version within Package.swift"
+sed_replace "(let +version.+)" "let version = \"${VERSION_FULL}\"" "${ROOT_DIR}/Package.swift"

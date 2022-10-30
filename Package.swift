@@ -2,6 +2,11 @@
 
 import PackageDescription
 
+let version = "0.16.4-dev1"
+let vscCommonChecksum = "cce8876cc2f30adbc8400e962a4c7071fab42e9bb4424b242320e392ac6b94cf"
+let vscFoundationChecksum = "f856624d1e6f9f73e3f6019cec2f5f8fd1ff42a6258dc2c9f2e2c889819df362"
+let vscPythiaChecksum = "8c8311868cd53b43fe86e65cf66cb7e798aba129f4bb610c241ecfa702f71f67"
+let vscRatchetChecksum = "b1019a92dc87a68630882b87ae9fac45951d82345776fcadc255af2953de01c4"
 let package = Package(
     name: "VirgilCryptoWrapper",
     platforms: [
@@ -27,26 +32,26 @@ let package = Package(
         //
         .binaryTarget(
             name: "VSCCommon",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.16.3/VSCCommon.xcframework.zip",
-            checksum: "4eabaf85837889767652f87f7ecde7edab919752f62954938e30658cdb703939"
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCCommon.xcframework.zip",
+            checksum: vscCommonChecksum
         ),
 
         .binaryTarget(
             name: "VSCFoundation",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.16.3/VSCFoundation.xcframework.zip",
-            checksum: "7bcbac6b03b0d65245fb26febd1f28294b5314e815040e57e90f868f6b475924"
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCFoundation.xcframework.zip",
+            checksum: vscFoundationChecksum
         ),
 
         .binaryTarget(
             name: "VSCPythia",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.16.3/VSCPythia.xcframework.zip",
-            checksum: "51ac1cebec7e1d70c7a002ebff1f9c4313d7d4edfd232ce6898011b9996ea323"
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCPythia.xcframework.zip",
+            checksum: vscPythiaChecksum
         ),
 
         .binaryTarget(
             name: "VSCRatchet",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v0.16.3/VSCRatchet.xcframework.zip",
-            checksum: "7c2389d438b561726e438734ef20c19601ace8c4c391607e23465e2586e7f837"
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCRatchet.xcframework.zip",
+            checksum: vscRatchetChecksum
         ),
 
         //
