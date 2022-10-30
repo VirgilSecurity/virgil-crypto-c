@@ -63,7 +63,7 @@ BINARIES_DIR="${ROOT_DIR}/binaries"
 for xcframework in $(find "${ROOT_DIR}/build_apple/VSCFrameworks" -name "*.xcframework.zip"); do
     echo "Processing: ${xcframework}"
 
-    digest=$(sha256sum "${xcframework}" | awk '{ print $1 }')
+    digest=$(shasum -a 256 "${xcframework}" | awk '{ print $1 }')
 
     filename=$(basename -- "${xcframework}")
     short_name="${filename%.*.*}"
