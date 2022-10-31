@@ -75,4 +75,4 @@ jobs:
       - name: Run benchmarks
         run: ./build/benchmarks/foundation/bench
       - name: Calulate line of codes
-      - run: cmake --build build --target cloc
+        run: cmake --build build --target cloc
