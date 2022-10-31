@@ -68,7 +68,7 @@ jobs:
           ctest -T memcheck --output-on-failure
           cat Testing/Temporary/MemoryChecker.*.log
       - name: Build multi-threading tests
-        run:
+        run: |
           cmake -S. -Bbuild -DVIRGIL_C_MT_TESTING=ON
           cmake --build build -- -j$(nproc)
       - name: Run multi-threading tests
