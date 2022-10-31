@@ -16,7 +16,7 @@ jobs:
           xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
           xcrun simctl create "Apple Watch Ultra (49mm)" "Apple Watch Ultra (49mm)"
           xcrun simctl pair "Apple Watch Ultra (49mm)" "iPhone 14 Pro Max"
-          xcrun simctl list -v
+          xcrun simctl list
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
@@ -32,7 +32,7 @@ jobs:
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
-          pod trunk push --verbose VSCCrypto.podspec
-          pod trunk push --verbose VirgilCryptoFoundation.podspec
-          pod trunk push --verbose VirgilCryptoPythia.podspec
-          pod trunk push --verbose VirgilCryptoRatchet.podspec
+          pod trunk push VSCCrypto.podspec
+          pod trunk push VirgilCryptoFoundation.podspec
+          pod trunk push VirgilCryptoPythia.podspec
+          pod trunk push VirgilCryptoRatchet.podspec
