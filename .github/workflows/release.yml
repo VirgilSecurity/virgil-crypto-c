@@ -10,8 +10,8 @@ jobs:
         with:
           xcode-version: 14.0.1
       - uses: maxim-lobanov/setup-cocoapods@v1
-          with:
-            version: 1.11.3
+        with:
+          version: 1.11.3
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
