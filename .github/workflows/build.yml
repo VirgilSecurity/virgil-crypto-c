@@ -47,6 +47,7 @@ jobs:
         run: |
           cmake --version
           python3 --version
+          pip3 uninstall protobuf grpcio-tools || true
           pip3 install protobuf grpcio-tools
           sudo apt update
           sudo apt install valgrind
