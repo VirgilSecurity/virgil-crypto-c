@@ -54,11 +54,11 @@ jobs:
       - name: Configure project
         run: >
           cmake -S. -Bbuild
-            -DENABLE_HEAVY_TESTS=OFF
-            -DVIRGIL_C_MT_TESTING=OFF
-            -DENABLE_BENCHMARKING=ON
-            -DVIRGIL_POST_QUANTUM=ON
-            -DVIRGIL_PROGRAMS=ON
+          -DENABLE_HEAVY_TESTS=OFF
+          -DVIRGIL_C_MT_TESTING=OFF
+          -DENABLE_BENCHMARKING=ON
+          -DVIRGIL_POST_QUANTUM=ON
+          -DVIRGIL_PROGRAMS=ON
       - name: Build for memcheck
         run: cmake --build build -- -j$(nproc)
       - name: Run memcheck
