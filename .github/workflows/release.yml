@@ -11,22 +11,16 @@ jobs:
         with:
           xcode-version: 14.0.1
       - uses: actions/checkout@v3
-      - name: Configure toolchain
-        run: |
-          cmake --version
-          python3 --version
-          pip3 install protobuf grpcio-tools
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           draft: false
+          prerelease: true
           files: ./binaries/*.xcframework.zip
       - name: Check SPM
         run: swift test
-      - name: Check Cocoapods
-        run: pod spec lint
       - name: Deploy Cocoapods
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
