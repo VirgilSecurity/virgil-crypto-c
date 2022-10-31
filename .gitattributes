@@ -3,3 +3,8 @@ binaries/VSCCrypto.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
 binaries/VSCFoundation.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
 binaries/VSCPythia.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
 binaries/VSCRatchet.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
+binaries/VSCCommon.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
+binaries/VSCCrypto.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
+binaries/VSCFoundation.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
+binaries/VSCPythia.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
+binaries/VSCRatchet.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text

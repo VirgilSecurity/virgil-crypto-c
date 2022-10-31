@@ -269,7 +269,10 @@ if [ $PREPARE_RELEASE == "YES" ]; then
         short_name="${filename%.*.*}"
         short_name="${short_name:3}"
 
-        show_info "Updating SPM hash digest for '${filename}' to '${digest}'"
+        show_info "Updating '${filename}' hash digest to '${digest}' within '${filename}.sha256sum'"
+        echo "${digest}" > "${xcframework}.sha256sum"
+
+        show_info "Updating '${filename}' hash digest to '${digest}' within SPM"
         sed_replace "(let +vsc${short_name}Checksum.+)" "let vsc${short_name}Checksum = \"${digest}\"" "${ROOT_DIR}/Package.swift"
     done
 fi

@@ -23,7 +23,7 @@ jobs:
         with:
           draft: false
           files: ./binaries/*.xcframework.zip
-      - name: SPM
+      - name: Check SPM
         run: swift test
       - name: Check Cocoapods
         run: pod spec lint

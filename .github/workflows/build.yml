@@ -24,17 +24,12 @@ jobs:
       - name: Run tests
         run: ctest --output-on-failure
         working-directory: build
-  build-xcframeworks:
+  check-xcframeworks:
     runs-on: macos-12
     steps:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 14.0.1
       - uses: actions/checkout@v2
-      - name: Configure toolchain
-        run: |
-          cmake --version
-          python3 --version
-          pip3 install protobuf grpcio-tools
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
