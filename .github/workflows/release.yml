@@ -33,6 +33,6 @@ jobs:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
           pod trunk push VSCCrypto.podspec
-          pod trunk push VirgilCryptoFoundation.podspec
-          pod trunk push VirgilCryptoPythia.podspec
-          pod trunk push VirgilCryptoRatchet.podspec
+          pod trunk push --synchronous VirgilCryptoFoundation.podspec
+          pod trunk push --synchronous VirgilCryptoPythia.podspec
+          pod trunk push --synchronous VirgilCryptoRatchet.podspec
