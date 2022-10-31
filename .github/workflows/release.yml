@@ -9,7 +9,7 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 14.0.1
-      - name: Remove unused simulators
+      - name: Remove simulators and install missed one
         run: |
           xcrun simctl delete unavailable
           xcodebuild -downloadAllPlatforms
