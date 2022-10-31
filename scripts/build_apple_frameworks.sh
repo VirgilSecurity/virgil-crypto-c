@@ -36,29 +36,8 @@
 # Abort if something went wrong
 set -e
 
-# Color constants
-COLOR_RED='\033[0;31m'
-COLOR_GREEN='\033[0;32m'
-COLOR_RESET='\033[0m'
-
-function show_info {
-    echo -e "${COLOR_GREEN}[INFO] $@${COLOR_RESET}"
-}
-
-function show_error {
-    echo -e "${COLOR_RED}[ERROR] $@${COLOR_RESET}"
-    exit 1
-}
-
-function abspath() {
-  (
-    if [ -d "$1" ]; then
-        cd "$1" && pwd -P
-    else
-        echo "$(cd "$(dirname "$1")" && pwd -P)/$(basename "$1")"
-    fi
-  )
-}
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+source "${SCRIPT_DIR}/helpers.sh"
 
 function make_xcarchive {
     # Define name of the framework
@@ -111,7 +90,6 @@ function make_xcarchive {
 command -v cmake >/dev/null 2>&1 || show_error "Required utility CMake is not found."
 
 
-SCRIPT_DIR=$(dirname "$(abspath "${BASH_SOURCE[0]}")")
 ROOT_DIR=$(abspath "${SCRIPT_DIR}/..")
 SRC_DIR="${ROOT_DIR}"
 BUILD_DIR="${ROOT_DIR}/build_apple"
@@ -125,6 +103,7 @@ MACOS_DESTINATION_DIR="${DESTINATION_DIR}/macOS"
 TVOS_DESTINATION_DIR="${DESTINATION_DIR}/tvOS"
 WATCHOS_DESTINATION_DIR="${DESTINATION_DIR}/watchOS"
 XCFRAMEWORKS_DESTINATION_DIR="${DESTINATION_DIR}/VSCCrypto-XCFrameworks"
+LFS_BINARIES_DIR="${ROOT_DIR}/binaries"
 
 rm -fr "${BUILD_DIR}"
 mkdir -p "${BUILD_DIR}"
@@ -133,6 +112,8 @@ mkdir -p "${IOS_DESTINATION_DIR}"
 mkdir -p "${MACOS_DESTINATION_DIR}"
 mkdir -p "${TVOS_DESTINATION_DIR}"
 mkdir -p "${WATCHOS_DESTINATION_DIR}"
+mkdir -p "${LFS_BINARIES_DIR}"
+
 
 CMAKE_ARGS=""
 CMAKE_ARGS+=" -DCMAKE_BUILD_TYPE=Release"
@@ -258,22 +239,37 @@ make_xcarchive VSCRatchet "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
 PREPARE_RELEASE="YES"
 
 if [ $PREPARE_RELEASE == "YES" ]; then
-    # ZIP xcfameworks separately
+    show_info "ZIP xcfameworks separately"
     pushd "${XCFRAMEWORKS_DESTINATION_DIR}"
-        # Find all xcframeworks to zip
+        show_info "Find all xcframeworks to zip"
         XCFRAMEWORKS=$(find . -name "*.xcframework" | xargs basename -a | tr '\n' ' ')
 
-        # ZIP xcfameworks
         for xcframework in ${XCFRAMEWORKS}; do
+            show_info "ZIP xcfamework: ${xcframework}"
             zip --symlinks -r "${xcframework}.zip" "${xcframework}"
-            mv "${xcframework}.zip" "${DESTINATION_DIR}"
+            mv "${xcframework}.zip" "${LFS_BINARIES_DIR}/"
         done
     popd
 
-    # ZIP xcfameworks all-in-one
+    show_info "ZIP xcfameworks all-in-one"
     cp -p -R "${ROOT_DIR}/LICENSE" "${XCFRAMEWORKS_DESTINATION_DIR}"
 
     pushd "${DESTINATION_DIR}"
         zip --symlinks -r VSCCrypto.xcframework.zip "VSCCrypto-XCFrameworks"
+        mv "VSCCrypto.xcframework.zip" "${LFS_BINARIES_DIR}/"
     popd
+
+    show_info "Update xcframeworks binaries in GIT LFS"
+    for xcframework in $(find "${LFS_BINARIES_DIR}" -name "*.xcframework.zip"); do
+        show_info "Processing: ${xcframework}"
+
+        digest=$(shasum -a 256 "${xcframework}" | awk '{ print $1 }')
+
+        filename=$(basename -- "${xcframework}")
+        short_name="${filename%.*.*}"
+        short_name="${short_name:3}"
+
+        show_info "Updating SPM hash digest for '${filename}' to '${digest}'"
+        sed_replace "(let +vsc${short_name}Checksum.+)" "let vsc${short_name}Checksum = \"${digest}\"" "${ROOT_DIR}/Package.swift"
+    done
 fi

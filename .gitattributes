@@ -1,0 +1,5 @@
+binaries/VSCCommon.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
+binaries/VSCCrypto.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
+binaries/VSCFoundation.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
+binaries/VSCPythia.xcframework.zip filter=lfs diff=lfs merge=lfs -binary
+binaries/VSCRatchet.xcframework.zip filter=lfs diff=lfs merge=lfs -binary

@@ -35,57 +35,13 @@
 
 set -e
 
-# ###########################################################################
-#   Constants.
-# ###########################################################################
-COLOR_RED='\033[0;31m'
-COLOR_GREEN='\033[0;32m'
-COLOR_RESET='\033[0m'
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+source "${SCRIPT_DIR}/helpers.sh"
 
-
-# ###########################################################################
-#   Helper functions.
-# ###########################################################################
-function show_info {
-    echo -e "${COLOR_GREEN}[INFO    ]  $1${COLOR_RESET}"
-}
-
-function show_error {
-    echo -e "${COLOR_RED}[ERROR]  $1${COLOR_RESET}"
-
-    #   Second parameter is a flag that tells whether abort script or not.
-    if [ $# -eq 2 ]; then
-        if [ $2 -ne 0 ]; then
-            exit 1
-        fi
-    else
-        exit 1
-    fi
-}
-
-function abspath() {
-    (
-        if [ -d "$1" ]; then
-            cd "$1" && pwd -P
-        else
-            echo "$(cd "$(dirname "$1")" && pwd -P)/$(basename "$1")"
-        fi
-    )
-}
-
-# sed_replace <from> <to> <file>
-function sed_replace {
-    if [ "$(uname -s)" == "Darwin" ]; then
-        sed -i "" -E "s/$1/$2/g" "$3"
-    else
-        sed -i"" -r "s/$1/$2/g" "$3"
-    fi
-}
 
 # ###########################################################################
 #   Variables.
 # ###########################################################################
-SCRIPT_DIR=$(dirname "$(abspath "${BASH_SOURCE[0]}")")
 ROOT_DIR=$(abspath "${SCRIPT_DIR}/..")
 
 # ###########################################################################
