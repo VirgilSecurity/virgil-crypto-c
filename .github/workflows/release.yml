@@ -9,10 +9,12 @@ jobs:
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: 14.0.1
-      - name: Remove simulators and install missed one
+      - name: Configure Xcode simulator runtimes
         run: |
+          xcodebuild -runFirstLaunch
           xcrun simctl delete unavailable
           xcodebuild -downloadAllPlatforms
+          xcrun simctl runtime
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
@@ -28,7 +30,7 @@ jobs:
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
-          pod trunk push VSCCrypto.podspec
-          pod trunk push VirgilCryptoFoundation.podspec
-          pod trunk push VirgilCryptoPythia.podspec
-          pod trunk push VirgilCryptoRatchet.podspec
+          pod trunk push --verbose VSCCrypto.podspec
+          pod trunk push --verbose VirgilCryptoFoundation.podspec
+          pod trunk push --verbose VirgilCryptoPythia.podspec
+          pod trunk push --verbose VirgilCryptoRatchet.podspec
