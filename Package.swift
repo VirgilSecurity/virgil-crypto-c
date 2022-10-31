@@ -2,7 +2,7 @@
 
 import PackageDescription
 
-let version = "0.16.4-dev2"
+let version = "0.16.4-dev3"
 let vscCommonChecksum = "1ecfae821fdd89d1ee57139fac4ce523c2f18b5628bb5c6a552f891a2c4beb78"
 let vscFoundationChecksum = "3c47cb3016ab7d23451f18dde67bc8bba0883adaae4d3a5bf3b9cca7a38c77b1"
 let vscPythiaChecksum = "bad9f391c45e6c28e9d48740c5c5ce13a4f4c315278f30f3258fd3ffe98c56c5"
