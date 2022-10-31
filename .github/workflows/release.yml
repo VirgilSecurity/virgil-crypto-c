@@ -12,9 +12,11 @@ jobs:
       - name: Configure Xcode simulator runtimes
         run: |
           xcodebuild -runFirstLaunch
+          xcrun simctl erase all
           xcrun simctl delete unavailable
+          xcrun simctl list
           xcodebuild -downloadAllPlatforms
-          xcrun simctl runtime
+          xcrun simctl list
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
