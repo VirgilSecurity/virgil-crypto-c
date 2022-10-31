@@ -11,12 +11,12 @@ jobs:
           xcode-version: 14.0.1
       - name: Configure Xcode simulator runtimes
         run: |
-          xcodebuild -runFirstLaunch
-          xcrun simctl erase all
-          xcrun simctl delete unavailable
-          xcrun simctl list
-          xcodebuild -downloadAllPlatforms
-          xcrun simctl list
+          xcrun simctl delete all
+          xcrun simctl create "Apple TV 4K" "Apple TV 4K"
+          xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
+          xcrun simctl create "Apple Watch Ultra (49mm)" "Apple Watch Ultra (49mm)"
+          xcrun simctl pair "Apple Watch Ultra (49mm)" "iPhone 14 Pro Max"
+          xcrun simctl list -v
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
