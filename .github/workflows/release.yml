@@ -13,6 +13,7 @@ jobs:
         run: |
           xcrun simctl delete unavailable
           xcrun simctl list devices --json
+          defaults read com.apple.dt.Xcode DVTIgnoredDevices
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
@@ -28,7 +29,7 @@ jobs:
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
         run: |
-          pod trunk push --verbose VSCCrypto.podspec
-          pod trunk push --verbose VirgilCryptoFoundation.podspec
-          pod trunk push --verbose VirgilCryptoPythia.podspec
-          pod trunk push --verbose VirgilCryptoRatchet.podspec
+          pod trunk push VSCCrypto.podspec
+          pod trunk push VirgilCryptoFoundation.podspec
+          pod trunk push VirgilCryptoPythia.podspec
+          pod trunk push VirgilCryptoRatchet.podspec
