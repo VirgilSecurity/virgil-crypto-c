@@ -147,13 +147,13 @@ pythia_err(void *ptr) {
     while (!finished) {
         int caught = 0;
 
-        TRY {
-            THROW(ERR_CAUGHT);
+        RLC_TRY {
+            RLC_THROW(ERR_CAUGHT);
         }
-        CATCH_ANY {
+        RLC_CATCH_ANY {
             caught = 1;
         }
-        FINALLY{};
+        RLC_FINALLY{};
 
         TEST_ASSERT_NOT_EQUAL(0, caught);
     }

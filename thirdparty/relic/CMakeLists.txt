@@ -52,7 +52,7 @@ endif()
 include(ExternalProject)
 ExternalProject_Add(relic-ext
         GIT_REPOSITORY https://github.com/relic-toolkit/relic.git
-        GIT_TAG relic-toolkit-0.5.0
+        GIT_TAG 0.6.0
         CMAKE_ARGS
                 "${TRANSITIVE_ARGS}"
                 "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
