@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -58,6 +58,10 @@
 #include <mbedtls/config.h>
 #include <mbedtls/error.h>
 #include <stdio.h>
+
+#if VSCP_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
 
 // clang-format on
 //  @end

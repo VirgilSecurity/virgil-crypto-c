@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -64,9 +64,8 @@ function c_module_platform_create_cmake_include_file_check(file_name, module)
 
         new code to macroses
             . = "
+                #ifndef $(my.macros_ref)
                 #cmakedefine01 $(my.macros_ref)
-                #if $(my.macros_ref)
-                #   include <$(my.file_name)>
                 #endif
             "
         endnew

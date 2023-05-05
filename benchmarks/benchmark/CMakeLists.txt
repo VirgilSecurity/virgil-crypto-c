@@ -39,7 +39,7 @@ ExternalProject_Add(benchmark-ext
         GIT_REPOSITORY
             https://github.com/google/benchmark.git
         GIT_TAG
-            v1.5.0
+            v1.7.0
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/benchmark"
             "-DCMAKE_BUILD_TYPE=Release"
@@ -74,4 +74,5 @@ set_property(TARGET benchmark::benchmark_main
         INTERFACE_LINK_LIBRARIES
             benchmark::benchmark
             $<$<BOOL:${WIN32}>:shlwapi>
+            $<$<CXX_COMPILER_ID:GNU,Clang>:pthread>
         )

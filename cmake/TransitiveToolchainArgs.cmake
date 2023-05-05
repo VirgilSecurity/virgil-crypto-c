@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -94,6 +94,8 @@ function(TRANSITIVE_APPLE_ARGS_ADD)
                 CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT
                 CMAKE_APPLE_SDK_ROOT
                 CMAKE_OSX_ARCHITECTURES)
+    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        transitive_args_add(CMAKE_OSX_ARCHITECTURES)
     endif ()
 endfunction()
 

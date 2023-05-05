@@ -70,7 +70,7 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
   - `msvc` (version >= 14.0)
 * Build tools:
   - `cmake` (version >= 3.12)
-  - `python` (version >= 2.7)
+  - `python` (version >= 3)
   - `python-protobuf`
 
 ### Build & Install

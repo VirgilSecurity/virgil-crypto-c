@@ -1,5 +1,44 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.16.2 released 2022-10-21
+
+### Features
+
+- watchOS: Added arm64 architecture.
+
+### Improvements
+
+- Ext: Updated protoc to the version 3.20.3.
+- Ext: Updated nanopb to the version 0.4.6.4.
+- Ext: Updated google benchmark tool to the version 1.7.0.
+- Cocoapods: Updated minimum required Apple deployment targets for Apple devices.
+  - iOS 9.0 -> 11.0
+  - tvOS 9.0 -> 11.0
+  - watchOS 2.0 -> 4.0
+
+## Version 0.16.1 released 2022-07-21
+
+### Improvements
+
+- Packages: Added specs for Carthage binary distribution
+
+
+## Version 0.16.0 released 2021-07-25
+
+### Features
+
+- macOS: Added Apple Silicon support.
+
+### Changes
+
+- iOS: Replaced a Universal Framework with an XCFramework.
+
+### Improvements
+
+- Ext: Updated mbedTLS to the version 2.17.0.
+- Ext: Updated nanopb to the version 0.4.5.
+
+
 ## Version 0.15.3 released 2020-08-13
 
 ### Bugfix

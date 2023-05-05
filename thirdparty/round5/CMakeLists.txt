@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -126,6 +126,7 @@ ExternalProject_Add(round5-ext
             "-DCM_CT=ON"
             "-DCM_MALFORMED=ON"
             "-DSHIFT_LEFT64_CONSTANT_TIME=ON"
+        BUILD_BYPRODUCTS "${ROUND5_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}round5${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 # ---------------------------------------------------------------------------

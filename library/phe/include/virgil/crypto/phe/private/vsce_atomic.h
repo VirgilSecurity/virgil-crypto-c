@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -54,6 +54,10 @@
 #define VSCE_ATOMIC_H_INCLUDED
 
 #include "vsce_library.h"
+
+#if VSCE_HAVE_STDATOMIC_H
+#   include <stdatomic.h>
+#endif
 
 // clang-format on
 //  @end

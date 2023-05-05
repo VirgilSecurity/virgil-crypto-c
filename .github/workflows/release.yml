@@ -1,0 +1,38 @@
+name: Release
+on:
+  push:
+    tags: "*"
+jobs:
+  release-apple-xcframeworks:
+    runs-on: macos-12
+    steps:
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: 14.0.1
+      - name: Configure Xcode simulator runtimes
+        run: |
+          xcrun simctl delete all
+          xcrun simctl create "Apple TV 4K" "Apple TV 4K"
+          xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
+          xcrun simctl create "Apple Watch Ultra (49mm)" "Apple Watch Ultra (49mm)"
+          xcrun simctl pair "Apple Watch Ultra (49mm)" "iPhone 14 Pro Max"
+          xcrun simctl list
+      - uses: actions/checkout@v3
+      - name: Check that SPM has correspond xcframeworks hash
+        run: ./scripts/check_spm_xcframeworks.sh
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: false
+          prerelease: true
+          files: ./binaries/*.xcframework.zip
+      - name: Check SPM
+        run: swift test
+      - name: Deploy Cocoapods
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          pod trunk push VSCCrypto.podspec
+          pod trunk push --synchronous VirgilCryptoFoundation.podspec
+          pod trunk push --synchronous VirgilCryptoPythia.podspec
+          pod trunk push --synchronous VirgilCryptoRatchet.podspec

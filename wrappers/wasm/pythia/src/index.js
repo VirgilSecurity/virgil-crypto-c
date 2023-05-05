@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2020 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -41,19 +41,18 @@ const initPythiaError = require('./PythiaError');
 const initPythia = require('./Pythia');
 
 const initProject = options => {
-    const pythiaModule = new PythiaModule(options);
     return new Promise((resolve, reject) => {
-        pythiaModule.onRuntimeInitialized = () => {
+
+        PythiaModule(options).then(pythiaModule => {
             const modules = {};
 
             modules.PythiaError = initPythiaError(pythiaModule, modules);
             modules.Pythia = initPythia(pythiaModule, modules);
             resolve(modules);
-        };
+        }).catch(error => {
+            reject(error);
+        });
 
-        pythiaModule.onAbort = message => {
-            reject(new Error(message));
-        };
     });
 };
 module.exports = initProject;

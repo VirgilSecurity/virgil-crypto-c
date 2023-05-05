@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -57,6 +57,10 @@
 
 #include <virgil/crypto/foundation/vscf_status.h>
 #include <stdio.h>
+
+#if VSCR_HAVE_ASSERT_H
+#   include <assert.h>
+#endif
 
 // clang-format on
 //  @end

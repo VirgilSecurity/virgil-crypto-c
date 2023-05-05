@@ -1,5 +1,5 @@
 .template 0
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -1525,17 +1525,16 @@ function wasm_create_entrypoint_module(wasm_project)
 
         my.code += terminator + format_left("
             const initProject = options => {
-                const $(my.module_inst:) = new $(my.wasm_project.module_name:)(options);
                 return new Promise((resolve, reject) => {
-                    $(my.module_inst:).onRuntimeInitialized = () => {
+
+                    $(my.wasm_project.module_name:)(options).then($(my.module_inst:) => {
                         const modules = {};
                         $(format_left(my.init_code, 6))
                         resolve(modules);
-                    };
+                    }).catch(error => {
+                        reject(error);
+                    });
 
-                    $(my.module_inst:).onAbort = message => {
-                        reject(new Error(message));
-                    };
                 });
             };
             module.exports = initProject;

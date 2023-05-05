@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2020 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -55,9 +55,9 @@ const initUokmsServer = require('./UokmsServer');
 const initUokmsWrapRotation = require('./UokmsWrapRotation');
 
 const initProject = options => {
-    const pheModule = new PheModule(options);
     return new Promise((resolve, reject) => {
-        pheModule.onRuntimeInitialized = () => {
+
+        PheModule(options).then(pheModule => {
             const modules = {};
 
             modules.FoundationError = initFoundationError(pheModule, modules);
@@ -77,11 +77,10 @@ const initProject = options => {
             modules.UokmsServer = initUokmsServer(pheModule, modules);
             modules.UokmsWrapRotation = initUokmsWrapRotation(pheModule, modules);
             resolve(modules);
-        };
+        }).catch(error => {
+            reject(error);
+        });
 
-        pheModule.onAbort = message => {
-            reject(new Error(message));
-        };
     });
 };
 module.exports = initProject;

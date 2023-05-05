@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -73,18 +73,20 @@ if(PHP_DEFINITIONS)
     target_compile_definitions(phplib INTERFACE ${PHP_DEFINITIONS} ZEND_DEBUG=0)
 endif()
 
-if(ENABLE_TESTING AND NOT COMPOSER_EXECUTABLE)
-    set(COMPOSER_VERSION "1.9.1")
+# ---------------------------------------------------------------------------
+#   Fetch PHP suitable composer.
+# ---------------------------------------------------------------------------
+if(NOT COMPOSER_EXECUTABLE)
+    set(COMPOSER_VERSION "2.0.12")
     set(COMPOSER_DOWNLOADED "${CMAKE_CURRENT_BINARY_DIR}/tmp/composer")
 
-    file(
-        DOWNLOAD
-            https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar "${COMPOSER_DOWNLOADED}"
+    file(DOWNLOAD
+        https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar "${COMPOSER_DOWNLOADED}"
         SHOW_PROGRESS
     )
 
     file(SHA256 "${COMPOSER_DOWNLOADED}" COMPOSER_DOWNLOADED_HASH)
-    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "1f210b9037fcf82670d75892dfc44400f13fe9ada7af9e787f93e50e3b764111")
+    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "82ea8c1537cfaceb7e56f6004c7ccdf99ddafce7237c07374d920e635730a631")
         message(FATAL_ERROR "Download 'composer.phar' file hash mismatch")
     endif()
 
@@ -93,12 +95,11 @@ if(ENABLE_TESTING AND NOT COMPOSER_EXECUTABLE)
         FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
     )
 
-    set(COMPOSER_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/composer" CACHE STRING "Path to the PHP composer" FORCE)
+    set(COMPOSER_EXECUTABLE "${CMAKE_CURRENT_BINARY_DIR}/composer" CACHE PATH "Path to the PHP composer" FORCE)
+
+    message(STATUS "Fetched PHP composer ${COMPOSER_VERSION}")
 endif()
 
-if(COMPOSER_EXECUTABLE)
-    message(" Found Composer: ${COMPOSER_EXECUTABLE} (found version \"${COMPOSER_VERSION}\")")
-endif()
 
 # ---------------------------------------------------------------------------
 #   Common step for all tests

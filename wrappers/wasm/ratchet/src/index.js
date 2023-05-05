@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2020 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -53,9 +53,9 @@ const initRatchetMessage = require('./RatchetMessage');
 const initRatchetSession = require('./RatchetSession');
 
 const initProject = options => {
-    const ratchetModule = new RatchetModule(options);
     return new Promise((resolve, reject) => {
-        ratchetModule.onRuntimeInitialized = () => {
+
+        RatchetModule(options).then(ratchetModule => {
             const modules = {};
 
             modules.FoundationError = initFoundationError(ratchetModule, modules);
@@ -73,11 +73,10 @@ const initProject = options => {
             modules.RatchetMessage = initRatchetMessage(ratchetModule, modules);
             modules.RatchetSession = initRatchetSession(ratchetModule, modules);
             resolve(modules);
-        };
+        }).catch(error => {
+            reject(error);
+        });
 
-        ratchetModule.onAbort = message => {
-            reject(new Error(message));
-        };
     });
 };
 module.exports = initProject;

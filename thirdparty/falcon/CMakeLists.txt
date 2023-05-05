@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2020 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -65,6 +65,7 @@ ExternalProject_Add(falcon-ext
             "-DCMAKE_INSTALL_LIBDIR=lib"
             "-DENABLE_TESTING=${FALCON_ENABLE_TESTING}"
             "-DBUILD_SPEEDTEST=${FALCON_BUILD_SPEEDTEST}"
+        BUILD_BYPRODUCTS "${FALCON_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}falcon${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 # ---------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -68,14 +68,12 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+#ifndef VSCR_HAVE_ASSERT_H
 #cmakedefine01 VSCR_HAVE_ASSERT_H
-#if VSCR_HAVE_ASSERT_H
-#   include <assert.h>
 #endif
 
+#ifndef VSCR_HAVE_STDATOMIC_H
 #cmakedefine01 VSCR_HAVE_STDATOMIC_H
-#if VSCR_HAVE_STDATOMIC_H
-#   include <stdatomic.h>
 #endif
 
 #ifndef VSCR_SHARED_LIBRARY

@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2020 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -55,53 +55,48 @@
 //  Test functions.
 // --------------------------------------------------------------------------
 
-static bool
+static void
 reg_msg_hdr_cmp(vscf_RegularGroupMessageHeader *msg1, vscf_RegularGroupMessageHeader *msg2) {
-    return memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) == 0 &&
-           memcmp(msg1->salt, msg2->salt, sizeof(msg1->salt)) == 0 && msg1->epoch == msg2->epoch;
+
+    TEST_ASSERT_EQUAL(msg1->epoch, msg2->epoch);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->session_id, msg2->session_id, sizeof(msg1->session_id));
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->salt, msg2->salt, sizeof(msg1->salt));
 }
 
-static bool
+static void
 reg_msg_cmp(vscf_RegularGroupMessage *msg1, vscf_RegularGroupMessage *msg2) {
 
-    return msg1->cipher_text->size == msg2->cipher_text->size &&
-           memcmp(&msg1->header, &msg2->header, sizeof(msg1->header)) == 0 &&
-           memcmp(&msg1->signature, &msg2->signature, sizeof(msg1->signature)) == 0 &&
-           memcmp(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->size) == 0;
+    TEST_ASSERT_EQUAL(msg1->cipher_text->size, msg2->cipher_text->size);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->cipher_text->bytes, msg2->cipher_text->bytes, msg1->cipher_text->size);
+    TEST_ASSERT_EQUAL(msg1->header.size, msg2->header.size);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->header.bytes, msg2->header.bytes, msg1->header.size);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->signature, msg2->signature, sizeof(msg1->signature));
 }
 
-static bool
+static void
 grp_info_msg_cmp(vscf_MessageGroupInfo *msg1, vscf_MessageGroupInfo *msg2) {
 
-    if (memcmp(msg1->key, msg2->key, sizeof(msg1->key)) != 0)
-        return false;
-
-    if (msg1->epoch != msg2->epoch)
-        return false;
-
-    if (memcmp(msg1->session_id, msg2->session_id, sizeof(msg1->session_id)) != 0)
-        return false;
-
-    return true;
+    TEST_ASSERT_EQUAL(msg1->epoch, msg2->epoch);
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->key, msg2->key, sizeof(msg1->key));
+    TEST_ASSERT_EQUAL_UINT8_ARRAY(msg1->session_id, msg2->session_id, sizeof(msg1->session_id));
 }
 
-static bool
+static void
 msg_cmp(vscf_group_session_message_t *msg1, vscf_group_session_message_t *msg2) {
-    if (msg1->message_pb.version != msg2->message_pb.version ||
-            msg1->message_pb.has_group_info != msg2->message_pb.has_group_info ||
-            msg1->message_pb.has_regular_message != msg2->message_pb.has_regular_message)
-        return false;
+
+    TEST_ASSERT_EQUAL(msg1->message_pb.version, msg2->message_pb.version);
+    TEST_ASSERT_EQUAL(msg1->message_pb.has_group_info, msg2->message_pb.has_group_info);
+    TEST_ASSERT_EQUAL(msg1->message_pb.has_regular_message, msg2->message_pb.has_regular_message);
+    TEST_ASSERT(msg1->message_pb.has_regular_message || msg1->message_pb.has_group_info);
+
 
     if (msg1->message_pb.has_regular_message) {
-        return reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message) &&
-               reg_msg_hdr_cmp(msg1->header_pb, msg2->header_pb);
-    } else if (msg1->message_pb.has_group_info) {
-        return grp_info_msg_cmp(&msg1->message_pb.group_info, &msg2->message_pb.group_info);
-    } else {
-        TEST_ASSERT(false);
-    }
+        reg_msg_cmp(&msg1->message_pb.regular_message, &msg2->message_pb.regular_message);
+        reg_msg_hdr_cmp(msg1->header_pb, msg2->header_pb);
 
-    return false;
+    } else if (msg1->message_pb.has_group_info) {
+        grp_info_msg_cmp(&msg1->message_pb.group_info, &msg2->message_pb.group_info);
+    }
 }
 
 void
@@ -141,7 +136,7 @@ test__serialize_deserialize__fixed_regular_msg__should_be_equal(void) {
     TEST_ASSERT(msg2 != NULL);
     TEST_ASSERT_FALSE(vscf_error_has_error(&error));
 
-    TEST_ASSERT(msg_cmp(msg1, msg2));
+    msg_cmp(msg1, msg2);
 
     vscf_group_session_message_destroy(&msg1);
     vscf_group_session_message_destroy(&msg2);
@@ -173,7 +168,7 @@ test__serialize_deserialize__fixed_group_info_msg__should_be_equal(void) {
     TEST_ASSERT(msg2 != NULL);
     TEST_ASSERT_FALSE(vscf_error_has_error(&error));
 
-    TEST_ASSERT(msg_cmp(msg1, msg2));
+    msg_cmp(msg1, msg2);
 
     vscf_group_session_message_destroy(&msg1);
     vscf_group_session_message_destroy(&msg2);
@@ -207,7 +202,7 @@ test__serialize_deserialize__group_info_overflow__should_be_equal(void) {
     TEST_ASSERT(msg2 != NULL);
     TEST_ASSERT_FALSE(vscf_error_has_error(&error));
 
-    TEST_ASSERT(msg_cmp(msg1, msg2));
+    msg_cmp(msg1, msg2);
 
     vscf_group_session_message_destroy(&msg1);
     vscf_group_session_message_destroy(&msg2);
@@ -250,7 +245,7 @@ test__serialize_deserialize__regular_overflow__should_be_equal(void) {
     TEST_ASSERT(msg2 != NULL);
     TEST_ASSERT_FALSE(vscf_error_has_error(&error));
 
-    TEST_ASSERT(msg_cmp(msg1, msg2));
+    msg_cmp(msg1, msg2);
 
     vscf_group_session_message_destroy(&msg1);
     vscf_group_session_message_destroy(&msg2);
