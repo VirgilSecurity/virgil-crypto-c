@@ -161,7 +161,7 @@ fi
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
-sed_replace "(\"version\"\s*:\s*)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
+sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION}\"\2" "${ROOT_DIR}/wrappers/wasm/package.json"
 
 # ###########################################################################
 for podspec in VSCCrypto VirgilCryptoFoundation VirgilCryptoPythia VirgilCryptoRatchet; do
