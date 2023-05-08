@@ -58,7 +58,7 @@ ExternalProject_Add(relic-ext
                 "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
                 "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                 "-DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION}"
-                -DRAND=CALL ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
+                -DRAND=CALL $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-DARCH=> ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
         BUILD_BYPRODUCTS "${RELIC_LOCATION}/lib/librelic_s.a"
         )
 
