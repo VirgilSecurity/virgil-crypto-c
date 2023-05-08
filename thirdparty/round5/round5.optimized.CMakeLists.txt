@@ -199,7 +199,7 @@ target_compile_options(round5-optimized
                     -fomit-frame-pointer -fwrapv>
         PRIVATE
             $<$<OR:$<C_COMPILER_ID:GNU>,$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:
-                    -pedantic -Wall -Wextra -Wconversion -Wcast-qual -Wcast-align>
+                    -pedantic -Wall -Wextra -Wconversion -Wcast-qual -Wcast-align -Wno-implicit-int>
         )
 
 target_link_libraries(round5-optimized
