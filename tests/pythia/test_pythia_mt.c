@@ -150,8 +150,8 @@ pythia_succ(void *ptr) {
         deblind_stability();
     }
 
-    return NULL;
     vscp_pythia_cleanup();
+    return NULL;
 }
 
 void *
@@ -171,8 +171,8 @@ pythia_err(void *ptr) {
         TEST_ASSERT_NOT_EQUAL(0, caught);
     }
 
-    return NULL;
     vscp_pythia_cleanup();
+    return NULL;
 }
 
 void
