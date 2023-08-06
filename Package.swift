@@ -10,7 +10,7 @@ let vscRatchetChecksum = "a65bc9f27d7dd61fee8f7289e0596d8536e05ddfde49e9a3c6e71d
 let package = Package(
     name: "VirgilCryptoWrapper",
     platforms: [
-        .macOS(.v10_10), .iOS(.v11), .tvOS(.v11), .watchOS(.v4)
+        .macOS(.v10_13), .iOS(.v11), .tvOS(.v11), .watchOS(.v4)
     ],
     products: [
         .library(

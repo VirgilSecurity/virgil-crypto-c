@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.authors                     = { "Virgil Security" => "https://virgilsecurity.com/" }
   s.source                      = { :git => "https://github.com/VirgilSecurity/virgil-crypto-c.git", :tag => "v" + s.version.to_s }
   s.ios.deployment_target       = "11.0"
-  s.osx.deployment_target       = "10.9"
+  s.osx.deployment_target       = "10.13"
   s.tvos.deployment_target      = "11.0"
   s.watchos.deployment_target   = "4.0"
   s.public_header_files         = "wrappers/swift/VirgilCrypto/VirgilCryptoPythia/VirgilCryptoPythia.h"
