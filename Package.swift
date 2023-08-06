@@ -3,10 +3,10 @@
 import PackageDescription
 
 let version = "0.16.4-dev.10"
-let vscCommonChecksum = "7726ff32adb5d7426d22bb7e3105e2b2246a47d166a0e3f9113d6ece1c3435f8"
-let vscFoundationChecksum = "59ed43fb1d8861ae48dabce1c5050734a9d00fcc0e4cf9d362a4c35715a0a7ba"
-let vscPythiaChecksum = "9c3fdfb2d4170316f77fad5119d2232c7238426b128183192a55bc4dd863fe08"
-let vscRatchetChecksum = "a65bc9f27d7dd61fee8f7289e0596d8536e05ddfde49e9a3c6e71dcc45db1922"
+let vscCommonChecksum = "bdea79157c0fd40b4986dcd260845fd3b555747fccdba10a0de0737c95f2414b"
+let vscFoundationChecksum = "dee509a711c031567694ed4e16cfe413170d68a42dede34ce81fd6b643110c45"
+let vscPythiaChecksum = "3820eb6b384c8361cb9a111cb9d62272a762933d9138e2e6ae0b2486b947a568"
+let vscRatchetChecksum = "f1dae58fce864bcce6a347c580f6c89735060c73e9d3be57d1fcbdcb92bf372d"
 let package = Package(
     name: "VirgilCryptoWrapper",
     platforms: [
