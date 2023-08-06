@@ -4,19 +4,10 @@ on:
     tags: "*"
 jobs:
   release-apple-xcframeworks:
-    runs-on: macos-12
+    runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
     steps:
-      - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 14.0.1
-      - name: Configure Xcode simulator runtimes
-        run: |
-          xcrun simctl delete all
-          xcrun simctl create "Apple TV 4K" "Apple TV 4K"
-          xcrun simctl create "iPhone 14 Pro Max" "iPhone 14 Pro Max"
-          xcrun simctl create "Apple Watch Ultra (49mm)" "Apple Watch Ultra (49mm)"
-          xcrun simctl pair "Apple Watch Ultra (49mm)" "iPhone 14 Pro Max"
-          xcrun simctl list
       - uses: actions/checkout@v3
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
