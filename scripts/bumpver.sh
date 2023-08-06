@@ -166,8 +166,8 @@ sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION}\"\2" "${ROOT_DIR}/wrapp
 # ###########################################################################
 for podspec in VSCCrypto VirgilCryptoFoundation VirgilCryptoPythia VirgilCryptoRatchet; do
     show_info "Change version within ${podspec}.podspec file."
-    sed_replace "s.version( *= *)\"[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9]*)?\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/${podspec}.podspec"
-    sed_replace "(s\.dependency[^=]+[=] *)[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9]*)?" "\1${VERSION_FULL}" "${ROOT_DIR}/${podspec}.podspec"
+    sed_replace "s.version( *= *)\"[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9.]*)?\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/${podspec}.podspec"
+    sed_replace "(s\.dependency[^=]+[=] *)[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9.]*)?" "\1${VERSION_FULL}" "${ROOT_DIR}/${podspec}.podspec"
 done
 
 # ###########################################################################
