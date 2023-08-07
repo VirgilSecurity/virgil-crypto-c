@@ -43,7 +43,7 @@ set(RELIC_ARGS_FILE ${CMAKE_CURRENT_LIST_DIR}/relic-args.cmake)
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
 if(RELIC_USE_PTHREAD)
-    set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DERRMO=ERRMO_SPTHREAD)
+    set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DMULTI=PTHREAD)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -51,14 +51,14 @@ endif()
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 ExternalProject_Add(relic-ext
-        GIT_REPOSITORY https://github.com/VirgilSecurity/relic
-        GIT_TAG f55fcacde881e3b23aa3ed3cc76aac405cfba51c
+        GIT_REPOSITORY https://github.com/relic-toolkit/relic.git
+        GIT_TAG 0.6.0
         CMAKE_ARGS
                 "${TRANSITIVE_ARGS}"
                 "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
                 "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                 "-DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION}"
-                -DRAND=CALL ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
+                -DRAND=CALL $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-DARCH=> ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
         BUILD_BYPRODUCTS "${RELIC_LOCATION}/lib/librelic_s.a"
         )
 

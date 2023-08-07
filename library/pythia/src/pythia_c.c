@@ -15,33 +15,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdint.h>
 #include "pythia_c.h"
 #include "pythia_init.h"
-#include "pythia_init_c.h"
 #include "pythia_buf_sizes_c.h"
 
-static bn_t g1_ord;
-static g1_t g1_gen;
-static bn_t gt_ord;
-static gt_t gt_gen;
+#include <stdint.h>
+#include <relic/relic_label.h>
+
+#if MULTI == PTHREAD
+#define thread __thread
+#else
+#define thread /* */
+#endif
+
+static __thread bn_t g1_ord;
+static __thread g1_t g1_gen;
+static __thread bn_t gt_ord;
+static __thread gt_t gt_gen;
 
 int
 pythia_init(const pythia_init_args_t *init_args) {
     if (core_get())
         return 0;
 
-    if (core_init() != STS_OK)
+    if (core_init() != RLC_OK)
         return -1;
-
-    pythia_err_init();
 
     if (!init_args || !init_args->callback)
         return -1;
 
     rand_seed(init_args->callback, init_args->args);
 
-    if (ep_param_set_any_pairf() != STS_OK)
+    if (ep_param_set_any_pairf() != RLC_OK)
         return -1;
 
     bn_null(g1_ord);
@@ -49,7 +54,7 @@ pythia_init(const pythia_init_args_t *init_args) {
     bn_null(gt_ord);
     gt_null(gt_gen);
 
-    TRY {
+    RLC_TRY {
         bn_new(g1_ord);
         g1_get_ord(g1_ord);
 
@@ -62,7 +67,7 @@ pythia_init(const pythia_init_args_t *init_args) {
         gt_new(gt_gen);
         gt_get_gen(gt_gen);
     }
-    CATCH_ANY {
+    RLC_CATCH_ANY {
         gt_free(gt_gen);
         bn_free(gt_ord);
         g1_free(g1_gen);
@@ -84,15 +89,10 @@ pythia_deinit(void) {
     bn_free(g1_ord);
 }
 
-void
-pythia_err_init(void) {
-    err_core_reset_default();
-}
-
 static void
 random_bn_mod(bn_t r, bn_t max) {
     if (!max) {
-        bn_rand(r, BN_POS, 256);
+        bn_rand(r, RLC_POS, 256);
     } else {
         bn_rand_mod(r, max);
     }
@@ -111,13 +111,13 @@ hashG2(g2_t g2, const uint8_t *msg, size_t msg_size) {
 static void
 compute_kw(bn_t kw, const uint8_t *w, size_t w_size, const uint8_t *msk, size_t msk_size, const uint8_t *s,
         size_t s_size) {
-    uint8_t mac[MD_LEN];
+    uint8_t mac[RLC_MD_LEN];
     uint8_t *zw = NULL;
 
     bn_t b;
     bn_null(b);
 
-    TRY {
+    RLC_TRY {
         zw = calloc(s_size + w_size, sizeof(uint8_t));
         memcpy(zw, s, s_size);
         memcpy(zw + s_size, w, w_size);
@@ -125,14 +125,14 @@ compute_kw(bn_t kw, const uint8_t *w, size_t w_size, const uint8_t *msk, size_t 
         md_hmac(mac, zw, (int)(s_size + w_size), msk, (int)msk_size);
 
         bn_new(b);
-        bn_read_bin(b, mac, MD_LEN);
+        bn_read_bin(b, mac, RLC_MD_LEN);
 
         bn_mod(kw, b, gt_ord);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         bn_free(b);
         free(zw);
     }
@@ -143,16 +143,16 @@ gt_pow(gt_t res, gt_t a, bn_t exp) {
     bn_t e;
     bn_null(e);
 
-    TRY {
+    RLC_TRY {
         bn_new(e);
         bn_mod(e, exp, gt_ord);
 
         gt_exp(res, a, e);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         bn_free(e);
     }
 }
@@ -162,16 +162,16 @@ scalar_mul_g1(g1_t r, const g1_t p, bn_t a) {
     bn_t mod;
     bn_null(mod);
 
-    TRY {
+    RLC_TRY {
         bn_new(mod);
         bn_mod(mod, a, g1_ord);
 
         g1_mul(r, p, mod);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         bn_free(mod);
     }
 }
@@ -191,7 +191,7 @@ hashZ(bn_t hash, const uint8_t *const *args, size_t args_size, const size_t *arg
     const uint8_t tag_msg[31] = "TAG_RELIC_HASH_ZMESSAGE_HASH_Z";
     uint8_t *c = NULL;
 
-    TRY {
+    RLC_TRY {
         size_t total_size = 0;
         for (size_t i = 0; i < args_size; i++)
             total_size += args_sizes[i];
@@ -204,15 +204,15 @@ hashZ(bn_t hash, const uint8_t *const *args, size_t args_size, const size_t *arg
             p += args_sizes[i];
         }
 
-        uint8_t mac[MD_LEN];
+        uint8_t mac[RLC_MD_LEN];
         md_hmac(mac, c, (int)total_size, tag_msg, 31);
 
-        bn_read_bin(hash, mac, MD_LEN_SH256); // We need only 256 bits from that number
+        bn_read_bin(hash, mac, RLC_MD_LEN_SH256); // We need only 256 bits from that number
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         free(c);
     }
 }
@@ -220,7 +220,7 @@ hashZ(bn_t hash, const uint8_t *const *args, size_t args_size, const size_t *arg
 static void
 check_size(size_t size, size_t min_size, size_t max_size) {
     if (size < min_size || size > max_size)
-        THROW(ERR_NO_VALID);
+        RLC_THROW(ERR_NO_VALID);
 }
 
 void
@@ -246,14 +246,14 @@ pythia_blind(const uint8_t *m, size_t m_size, g1_t x, bn_t rInv) {
     g1_t g1;
     g1_null(g1);
 
-    TRY {
+    RLC_TRY {
         bn_new(r);
         bn_new(gcd);
 
         random_bn_mod(r, NULL);
         bn_gcd_ext(gcd, rInv, NULL, r, g1_ord);
-        if (bn_cmp_dig(gcd, (dig_t)1) != CMP_EQ) {
-            THROW(ERR_NO_VALID);
+        if (bn_cmp_dig(gcd, (dig_t)1) != RLC_EQ) {
+            RLC_THROW(ERR_NO_VALID);
         }
 
         g1_new(g1);
@@ -261,10 +261,10 @@ pythia_blind(const uint8_t *m, size_t m_size, g1_t x, bn_t rInv) {
 
         g1_mul(x, g1, r);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         g1_free(g1);
         bn_free(gcd);
         bn_free(r);
@@ -273,13 +273,13 @@ pythia_blind(const uint8_t *m, size_t m_size, g1_t x, bn_t rInv) {
 
 void
 pythia_deblind(gt_t y, bn_t rInv, gt_t u) {
-    TRY {
+    RLC_TRY {
         gt_pow(u, y, rInv);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
     }
 }
 
@@ -290,7 +290,7 @@ pythia_eval(g1_t x, const uint8_t *t, size_t t_size, bn_t kw, gt_t y, g2_t tTild
     g1_t xKw;
     g1_null(xKw);
 
-    TRY {
+    RLC_TRY {
         hashG2(tTilde, t, t_size);
 
         g1_new(xKw);
@@ -298,10 +298,10 @@ pythia_eval(g1_t x, const uint8_t *t, size_t t_size, bn_t kw, gt_t y, g2_t tTild
 
         pc_map(y, xKw, tTilde);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         g1_free(xKw);
     }
 }
@@ -324,7 +324,7 @@ pythia_prove(gt_t y, g1_t x, g2_t tTilde, bn_t kw, g1_t pi_p, bn_t pi_c, bn_t pi
     bn_t vscpkw;
     bn_null(vscpkw);
 
-    TRY {
+    RLC_TRY {
         gt_new(beta);
         pc_map(beta, x, tTilde);
 
@@ -374,10 +374,10 @@ pythia_prove(gt_t y, g1_t x, g2_t tTilde, bn_t kw, g1_t pi_p, bn_t pi_c, bn_t pi
 
         bn_mod(pi_u, vscpkw, gt_ord);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         bn_free(vscpkw);
         bn_free(cpkw);
 
@@ -421,7 +421,7 @@ pythia_verify(gt_t y, g1_t x, const uint8_t *t, size_t t_size, g1_t pi_p, bn_t p
     bn_t cPrime;
     bn_null(cPrime);
 
-    TRY {
+    RLC_TRY {
         g2_new(tTilde);
         hashG2(tTilde, t, t_size);
 
@@ -477,12 +477,12 @@ pythia_verify(gt_t y, g1_t x, const uint8_t *t, size_t t_size, g1_t pi_p, bn_t p
         bn_new(cPrime);
         hashZ(cPrime, args, 6, args_sizes);
 
-        *verified = bn_cmp(cPrime, pi_c) == CMP_EQ;
+        *verified = bn_cmp(cPrime, pi_c) == RLC_EQ;
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         bn_free(cPrime)
 
                 free(q_bin);
@@ -512,13 +512,13 @@ get_delta(bn_t kw0, bn_t kw1, bn_t delta) {
     bn_t kw1kw0Inv;
     bn_null(kw1kw0Inv);
 
-    TRY {
+    RLC_TRY {
         bn_new(kw0Inv);
         bn_new(gcd);
 
         bn_gcd_ext(gcd, kw0Inv, NULL, kw0, gt_ord);
-        if (bn_cmp_dig(gcd, (dig_t)1) != CMP_EQ) {
-            THROW(ERR_NO_VALID);
+        if (bn_cmp_dig(gcd, (dig_t)1) != RLC_EQ) {
+            RLC_THROW(ERR_NO_VALID);
         }
 
         bn_new(kw1kw0Inv);
@@ -526,10 +526,10 @@ get_delta(bn_t kw0, bn_t kw1, bn_t delta) {
 
         bn_mod(delta, kw1kw0Inv, gt_ord);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
         bn_free(kw1kw0Inv);
         bn_free(gcd);
         bn_free(kw0Inv);
@@ -538,12 +538,12 @@ get_delta(bn_t kw0, bn_t kw1, bn_t delta) {
 
 void
 pythia_update_with_delta(gt_t u0, bn_t delta, gt_t u1) {
-    TRY {
+    RLC_TRY {
         gt_pow(u1, u0, delta);
     }
-    CATCH_ANY {
-        THROW(ERR_CAUGHT);
+    RLC_CATCH_ANY {
+        RLC_THROW(ERR_CAUGHT);
     }
-    FINALLY {
+    RLC_FINALLY {
     }
 }
