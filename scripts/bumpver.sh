@@ -109,9 +109,9 @@ show_info "Change version within C header files."
 C_HEADER_FILES=$(find "${ROOT_DIR}/library" -name "*_library.h" | tr '\n' ' ')
 
 for header_file in ${C_HEADER_FILES}; do
-    sed_replace "(#define *[A-Z]\{3,4\}_VERSION_MAJOR).*$" "\1 ${VERSION_MAJOR}" "${header_file}"
-    sed_replace "(#define *[A-Z]\{3,4\}_VERSION_MINOR).*$" "\1 ${VERSION_MINOR}" "${header_file}"
-    sed_replace "(#define *[A-Z]\{3,4\}_VERSION_PATCH).*$" "\1 ${VERSION_PATCH}" "${header_file}"
+    sed_replace "(#define *[A-Z]{3,4}_VERSION_MAJOR).*$" "\1 ${VERSION_MAJOR}" "${header_file}"
+    sed_replace "(#define *[A-Z]{3,4}_VERSION_MINOR).*$" "\1 ${VERSION_MINOR}" "${header_file}"
+    sed_replace "(#define *[A-Z]{3,4}_VERSION_PATCH).*$" "\1 ${VERSION_PATCH}" "${header_file}"
 done
 
 # ###########################################################################
