@@ -3,10 +3,62 @@
 import PackageDescription
 
 let version = "0.16.4-dev.10"
-let vscCommonChecksum = "bdea79157c0fd40b4986dcd260845fd3b555747fccdba10a0de0737c95f2414b"
-let vscFoundationChecksum = "dee509a711c031567694ed4e16cfe413170d68a42dede34ce81fd6b643110c45"
-let vscPythiaChecksum = "3820eb6b384c8361cb9a111cb9d62272a762933d9138e2e6ae0b2486b947a568"
-let vscRatchetChecksum = "f1dae58fce864bcce6a347c580f6c89735060c73e9d3be57d1fcbdcb92bf372d"
+let useLocalBinaries = false
+
+let vscCommonBinaryTarget = {
+    if (useLocalBinaries) {
+        return Target.binaryTarget(name: "VSCCommon", path: "binaries//VSCCommon.xcframework.zip")
+    } else {
+        let vscCommonChecksum = "ee09b85f68b6c1e2538c5e04d2061facece0f970af9da84a74fc9ec3de4175bb"
+        return Target.binaryTarget(
+            name: "VSCCommon",
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCCommon.xcframework.zip",
+            checksum: vscCommonChecksum
+        )
+    }
+}()
+
+let vscFoundationBinaryTarget = {
+    if (useLocalBinaries) {
+        return Target.binaryTarget(name: "VSCFoundation", path: "binaries//VSCFoundation.xcframework.zip")
+    } else {
+        let vscFoundationChecksum = "963518172eb02135f0f2acd311ce902c5354764ce78d6f8a111f85e963ebe452"
+        return Target.binaryTarget(
+            name: "VSCFoundation",
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCFoundation.xcframework.zip",
+            checksum: vscFoundationChecksum
+        )
+    }
+}()
+
+let vscPythiaBinaryTarget = {
+    if (useLocalBinaries) {
+        return Target.binaryTarget(name: "VSCPythia", path: "binaries//VSCPythia.xcframework.zip")
+    } else {
+        let vscPythiaChecksum = "ae65fbe5cfa8870c4b518e532e2375c2dd3466330bca83813b2c8e3eff0467dc"
+        return Target.binaryTarget(
+            name: "VSCPythia",
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCPythia.xcframework.zip",
+            checksum: vscPythiaChecksum
+        )
+    }
+}()
+
+let vscRatchetBinaryTarget = {
+    if (useLocalBinaries) {
+        return Target.binaryTarget(name: "VSCRatchet", path: "binaries//VSCRatchet.xcframework.zip")
+    } else {
+        let vscRatchetChecksum = "11b1893f7e44fc41961622d91d6032932255293452530e65bb8a7f42cb1b979f"
+        return Target.binaryTarget(
+            name: "VSCRatchet",
+            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCRatchet.xcframework.zip",
+            checksum: vscRatchetChecksum
+        )
+    }
+}()
+
+
+
 let package = Package(
     name: "VirgilCryptoWrapper",
     platforms: [
@@ -30,29 +82,10 @@ let package = Package(
         //
         // VSCCrypto
         //
-        .binaryTarget(
-            name: "VSCCommon",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCCommon.xcframework.zip",
-            checksum: vscCommonChecksum
-        ),
-
-        .binaryTarget(
-            name: "VSCFoundation",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCFoundation.xcframework.zip",
-            checksum: vscFoundationChecksum
-        ),
-
-        .binaryTarget(
-            name: "VSCPythia",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCPythia.xcframework.zip",
-            checksum: vscPythiaChecksum
-        ),
-
-        .binaryTarget(
-            name: "VSCRatchet",
-            url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCRatchet.xcframework.zip",
-            checksum: vscRatchetChecksum
-        ),
+        vscCommonBinaryTarget,
+        vscFoundationBinaryTarget,
+        vscPythiaBinaryTarget,
+        vscRatchetBinaryTarget,
 
         //
         // VirgilCryptoFoundation
