@@ -47,8 +47,10 @@ if(RELIC_USE_PTHREAD)
 endif()
 
 set(RELIC_WSIZE 64)
-if(CMAKE_CROSSCOMPILING AND APPLE AND "i386" IN_LIST CMAKE_OSX_ARCHITECTURES)
-    set(RELIC_WSIZE 32)
+if(CMAKE_CROSSCOMPILING AND APPLE)
+    if (("i386" IN_LIST CMAKE_OSX_ARCHITECTURES) OR ("armv7k" IN_LIST CMAKE_OSX_ARCHITECTURES))
+        set(RELIC_WSIZE 32)
+    endif()
 endif()
 
 # ---------------------------------------------------------------------------
