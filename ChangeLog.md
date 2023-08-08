@@ -2,6 +2,7 @@
 
 ## Version 0.17.0 released 2023-08-09
 
+
 ### Changes
 
 - Apple: Remove support for Apple BITCODE
@@ -10,6 +11,7 @@
   - This version is **incompatible** with 0.5
 - Lib/Pythia: Adopt to incompatible Relic version
   - Now `blind()` produce different value, so stored blinded values can not be `deblinded()`
+- Apple: Move support of CocoaPods and SPM from https://github.com/VirgilSecurity/virgil-cryptowrapper-x to this repo
 
 ### Bugfix
 
