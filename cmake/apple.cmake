@@ -54,15 +54,6 @@
 # APPLE_BITCODE
 #   Same as XCode option, default is YES
 #
-# CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT = automatic(default) or /path/to/platform/Developer folder
-#   By default this location is automatcially chosen based on the PLATFORM value above.
-#   If set manually, it will override the default location and force the user of a particular Developer Platform
-#
-# CMAKE_APPLE_SDK_ROOT = automatic(default) or /path/to/platform/Developer/SDKs/SDK folder
-#   By default this location is automatcially chosen based on the CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT value.
-#   In this case it will always be the most up-to-date SDK found in the CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT path.
-#   If set manually, this will force the use of a specific SDK version
-#
 # Macros:
 #
 # set_xcode_property (TARGET XCODE_PROPERTY XCODE_VALUE)
@@ -110,15 +101,15 @@ set(APPLE_BITCODE TRUE CACHE BOOL "ON/OFF support of the Apple bitcode")
 set(APPLE_EXTENSION TRUE CACHE BOOL "ON/OFF support of the Apple Extensions")
 
 set(IOS_DEVICE_FAMILY "1,2" CACHE STRING "iPhone (1), iPad(2), iPhone/iPad(1,2)")
-set(IOS_DEPLOYMENT_TARGET "9.0" CACHE STRING "iOS deployment version")
+set(IOS_DEPLOYMENT_TARGET "11.0" CACHE STRING "iOS deployment version")
 
-set(WATCHOS_DEPLOYMENT_TARGET "2.0" CACHE STRING "WatchOS deployment version")
+set(WATCHOS_DEPLOYMENT_TARGET "4.0" CACHE STRING "WatchOS deployment version")
 set(WATCHOS_DEVICE_FAMILY "4" CACHE STRING "Apple Watch (4)")
 
-set(TVOS_DEPLOYMENT_TARGET "9.0" CACHE STRING "TVOS deployment version")
+set(TVOS_DEPLOYMENT_TARGET "11.0" CACHE STRING "TVOS deployment version")
 set(TVOS_DEVICE_FAMILY "4" CACHE STRING "Apple TV (4)")
 
-set(MACOS_DEPLOYMENT_TARGET "10.9" CACHE STRING "MACOS deployment version")
+set(MACOS_DEPLOYMENT_TARGET "10.13" CACHE STRING "MACOS deployment version")
 
 # Touch cache variables to suppress warning "Unused variable"
 foreach(_apple_os IOS WATCHOS TVOS MACOS)
@@ -132,25 +123,25 @@ endforeach()
 # Check the platform selection and setup for developer root and define
 if(APPLE_PLATFORM STREQUAL "IOS")
     set(CMAKE_SYSTEM_NAME iOS)
-    set(APPLE_PLATFORM_LOCATION "iPhoneOS.platform")
+    set(APPLE_PLATFORM_NAME "iphoneos")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphoneos")
-    set(APPLE_ARCH armv7 armv7s arm64)
+    set(APPLE_ARCH arm64)
     set(APPLE_VERSION_FLAG "-miphoneos-version-min=${IOS_DEPLOYMENT_TARGET}")
     set(APPLE_DEVICE_FAMILY "${IOS_DEVICE_FAMILY}")
     set(APPLE_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM MATCHES "IOS_SIM")
     set(CMAKE_SYSTEM_NAME iOS)
-    set(APPLE_PLATFORM_LOCATION "iPhoneSimulator.platform")
+    set(APPLE_PLATFORM_NAME "iphonesimulator")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-iphonesimulator")
-    set(APPLE_ARCH i386 x86_64 arm64)
+    set(APPLE_ARCH x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mios-simulator-version-min=${IOS_DEPLOYMENT_TARGET}")
     set(APPLE_DEVICE_FAMILY "${IOS_DEVICE_FAMILY}")
     set(APPLE_DEPLOYMENT_TARGET "${IOS_DEPLOYMENT_TARGET}")
 
 elseif(APPLE_PLATFORM STREQUAL "WATCHOS")
     set(CMAKE_SYSTEM_NAME watchOS)
-    set(APPLE_PLATFORM_LOCATION "WatchOS.platform")
+    set(APPLE_PLATFORM_NAME "watchos")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-watchos")
     set(APPLE_ARCH armv7k arm64_32 arm64)
     set(APPLE_VERSION_FLAG "-mwatchos-version-min=${WATCHOS_DEPLOYMENT_TARGET}")
@@ -159,7 +150,7 @@ elseif(APPLE_PLATFORM STREQUAL "WATCHOS")
 
 elseif(APPLE_PLATFORM STREQUAL "WATCHOS_SIM")
     set(CMAKE_SYSTEM_NAME watchOS)
-    set(APPLE_PLATFORM_LOCATION "WatchSimulator.platform")
+    set(APPLE_PLATFORM_NAME "watchsimulator")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-watchsimulator")
     set(APPLE_ARCH i386 x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mwatchos-simulator-version-min=${WATCHOS_DEPLOYMENT_TARGET}")
@@ -168,7 +159,7 @@ elseif(APPLE_PLATFORM STREQUAL "WATCHOS_SIM")
 
 elseif(APPLE_PLATFORM STREQUAL "TVOS")
     set(CMAKE_SYSTEM_NAME tvOS)
-    set(APPLE_PLATFORM_LOCATION "AppleTVOS.platform")
+    set(APPLE_PLATFORM_NAME "appletvos")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-appletvos")
     set(APPLE_ARCH arm64)
     set(APPLE_VERSION_FLAG "-mtvos-version-min=${TVOS_DEPLOYMENT_TARGET}")
@@ -177,7 +168,7 @@ elseif(APPLE_PLATFORM STREQUAL "TVOS")
 
 elseif(APPLE_PLATFORM STREQUAL "TVOS_SIM")
     set(CMAKE_SYSTEM_NAME tvOS)
-    set(APPLE_PLATFORM_LOCATION "AppleTVSimulator.platform")
+    set(APPLE_PLATFORM_NAME "appletvsimulator")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-appletvsimulator")
     set(APPLE_ARCH x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mtvos-simulator-version-min=${TVOS_DEPLOYMENT_TARGET}")
@@ -186,7 +177,7 @@ elseif(APPLE_PLATFORM STREQUAL "TVOS_SIM")
 
 elseif(APPLE_PLATFORM STREQUAL "MACOS")
     set(CMAKE_SYSTEM_NAME Darwin)
-    set(APPLE_PLATFORM_LOCATION "MacOSX.platform")
+    set(APPLE_PLATFORM_NAME "macosx")
     set(CMAKE_XCODE_EFFECTIVE_PLATFORMS "-macos")
     set(APPLE_ARCH x86_64 arm64)
     set(APPLE_VERSION_FLAG "-mmacos-version-min=${MACOS_DEPLOYMENT_TARGET}")
@@ -223,38 +214,28 @@ endif()
 # ---------------------------------------------------------------------------
 #   Define: CMAKE_OSX_SYSROOT
 # ---------------------------------------------------------------------------
+find_program(XCRUN_EXECUTABLE name xcrun PATHS /usr/bin /usr/local/bin NO_CMAKE_FIND_ROOT_PATH)
+if (NOT XCRUN_EXECUTABLE)
+    message(FATAL_ERROR "Can not find 'xcrun' utility")
+endif()
 
-# Setup Apple *OS developer location unless specified manually with CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT
-set(CMAKE_APPLE_DEVELOPER_ROOT "/Applications/Xcode.app/Contents/Developer")
+execute_process(
+    COMMAND ${XCRUN_EXECUTABLE} --sdk ${APPLE_PLATFORM_NAME} --show-sdk-path
+    RESULT_VARIABLE APPLE_SDK_ROOT_RESULT
+    OUTPUT_VARIABLE APPLE_SDK_ROOT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 
-if(NOT DEFINED CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT)
-    set(CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT "${CMAKE_APPLE_DEVELOPER_ROOT}/Platforms/${APPLE_PLATFORM_LOCATION}/Developer")
-endif(NOT DEFINED CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT)
+if (NOT APPLE_SDK_ROOT_RESULT STREQUAL "0")
+    message(FATAL_ERROR "Can not define SDK path for ${APPLE_PLATFORM_NAME}")
+else()
+    message(STATUS "Found Apple SDK at path: ${APPLE_SDK_ROOT}")
+endif()
 
-set(CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT ${CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT} CACHE PATH "Location of Apple Platform")
-
-# Find and use the most recent Apple SDK unless specified manually with CMAKE_APPLE_SDK_ROOT
-if(NOT DEFINED CMAKE_APPLE_SDK_ROOT)
-    file(GLOB _CMAKE_APPLE_SDKS "${CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT}/SDKs/*")
-
-    if(_CMAKE_APPLE_SDKS)
-        list(SORT _CMAKE_APPLE_SDKS)
-        list(REVERSE _CMAKE_APPLE_SDKS)
-        list(GET _CMAKE_APPLE_SDKS 0 CMAKE_APPLE_SDK_ROOT)
-
-    else(_CMAKE_APPLE_SDKS)
-        message(FATAL_ERROR "No Apple *OS SDK's found in default search path ${CMAKE_APPLE_PLATFORM_DEVELOPER_ROOT}."
-                " Manually set CMAKE_APPLE_SDK_ROOT or install the Apple *OS SDK.")
-    endif(_CMAKE_APPLE_SDKS)
-
-    message (STATUS "Apple SDK: ${CMAKE_APPLE_SDK_ROOT}")
-endif(NOT DEFINED CMAKE_APPLE_SDK_ROOT)
-
-set(CMAKE_APPLE_SDK_ROOT ${CMAKE_APPLE_SDK_ROOT} CACHE PATH "Location of the selected Apple *OS SDK")
+set(CMAKE_APPLE_SDK_ROOT ${APPLE_SDK_ROOT} CACHE PATH "Location of the selected Apple *OS SDK")
 
 # Set the sysroot default to the most recent SDK
-set(CMAKE_OSX_SYSROOT ${CMAKE_APPLE_SDK_ROOT} CACHE PATH "Sysroot used for Apple *OS support")
-
+set(CMAKE_OSX_SYSROOT ${APPLE_SDK_ROOT} CACHE PATH "Sysroot used for Apple *OS support")
 
 # Set the find root to the Apple *OS developer roots and to user defined paths
 set(CMAKE_FIND_ROOT_PATH

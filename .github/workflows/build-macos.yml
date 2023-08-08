@@ -1,0 +1,42 @@
+name: build-macos
+on:
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+      - 'release/**'
+      - 'hotfix/**'
+jobs:
+  build-macos:
+    runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure toolchain
+        run: |
+          cmake --version
+          python3 --version
+          pip3 install protobuf grpcio-tools
+      - name: Configure project
+        run: >
+          cmake -S. -Bbuild
+          -DVIRGIL_C_MT_TESTING=ON
+          -DENABLE_BENCHMARKING=ON
+          -DVIRGIL_PROGRAMS=ON
+      - name: Build project
+        run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
+      - name: Run tests
+        run: ctest --output-on-failure
+        working-directory: build
+
+  SPM:
+    runs-on: macos-13
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check that SPM has correspond xcframeworks hash
+        run: ./scripts/check_spm_xcframeworks.sh
+      - name: Run SPM tests
+        run: ./scripts/run_spm_tests_with_local_binaries.sh

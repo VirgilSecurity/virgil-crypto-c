@@ -2,11 +2,11 @@ const fs = require('fs');
 const path = require('path');
 
 const builtinModules = require('builtin-modules');
-const commonjs = require('rollup-plugin-commonjs');
+const commonjs = require('@rollup/plugin-commonjs');
 const copy = require('rollup-plugin-copy');
-const nodeResolve = require('rollup-plugin-node-resolve');
-const replace = require('rollup-plugin-replace');
-const { terser } = require('rollup-plugin-terser');
+const nodeResolve = require('@rollup/plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
+const terser = require('@rollup/plugin-terser');
 
 const builtinModulesMap = builtinModules.reduce((result, item) => {
   result[item] = item;
@@ -31,6 +31,7 @@ const createEntry = (inputFilePath, libraryFilePath, format, outputFilePath) => 
   },
   plugins: [
     replace({
+      preventAssignment: true,
       'process.env.PROJECT_MODULE': JSON.stringify(libraryFilePath),
     }),
     nodeResolve(),

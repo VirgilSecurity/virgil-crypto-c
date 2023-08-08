@@ -35,65 +35,13 @@
 
 set -e
 
-# ###########################################################################
-#   Constants.
-# ###########################################################################
-COLOR_RED='\033[0;31m'
-COLOR_GREEN='\033[0;32m'
-COLOR_RESET='\033[0m'
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+source "${SCRIPT_DIR}/helpers.sh"
 
-
-# ###########################################################################
-#   Helper functions.
-# ###########################################################################
-function show_info {
-    echo -e "${COLOR_GREEN}[INFO    ]  $1${COLOR_RESET}"
-}
-
-function show_error {
-    echo -e "${COLOR_RED}[ERROR]  $1${COLOR_RESET}"
-
-    #   Second parameter is a flag that tells whether abort script or not.
-    if [ $# -eq 2 ]; then
-        if [ $2 -ne 0 ]; then
-            exit 1
-        fi
-    else
-        exit 1
-    fi
-}
-
-function abspath() {
-    (
-        if [ -d "$1" ]; then
-            cd "$1" && pwd -P
-        else
-            echo "$(cd "$(dirname "$1")" && pwd -P)/$(basename "$1")"
-        fi
-    )
-}
-
-# sed_replace <from> <to> <file>
-function sed_replace {
-    if [ "$(uname -s)" == "Darwin" ]; then
-        sed -i "" -e "s/$1/$2/g" "$3"
-    else
-        sed -i"" "s/$1/$2/g" "$3"
-    fi
-}
-
-function sed_extended_replace {
-    if [ "$(uname -s)" == "Darwin" ]; then
-        sed -i "" -E -e "s/$1/$2/g" "$3"
-    else
-        sed -i"" -r "s/$1/$2/g" "$3"
-    fi
-}
 
 # ###########################################################################
 #   Variables.
 # ###########################################################################
-SCRIPT_DIR=$(dirname "$(abspath "${BASH_SOURCE[0]}")")
 ROOT_DIR=$(abspath "${SCRIPT_DIR}/..")
 
 # ###########################################################################
@@ -125,7 +73,7 @@ echo "${VERSION_FULL}" > "${ROOT_DIR}/VERSION"
 # ###########################################################################
 show_info "Change version within CMakeLists.txt file."
 sed_replace "VERSION *[0-9]*\.[0-9]*\.[0-9]" "VERSION ${VERSION}" "${ROOT_DIR}/CMakeLists.txt"
-sed_replace "\(VIRGIL_CRYPTO_VERSION_LABEL\) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
+sed_replace "(VIRGIL_CRYPTO_VERSION_LABEL) *\"[a-zA-Z0-9_]*\"" "\1 \"${VERSION_LABEL}\"" "${ROOT_DIR}/CMakeLists.txt"
 
 
 # ###########################################################################
@@ -140,7 +88,7 @@ else
     main_version_to="version major=\"${VERSION_MAJOR}\" minor=\"${VERSION_MINOR}\" patch=\"${VERSION_PATCH}\" label=\"${VERSION_LABEL}\""
 fi
 
-sed_extended_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
+sed_replace "${main_version_from}" "${main_version_to}" "${main_xml_file}"
 
 
 # ###########################################################################
@@ -161,9 +109,9 @@ show_info "Change version within C header files."
 C_HEADER_FILES=$(find "${ROOT_DIR}/library" -name "*_library.h" | tr '\n' ' ')
 
 for header_file in ${C_HEADER_FILES}; do
-    sed_replace "\(#define *[A-Z]\{3,4\}_VERSION_MAJOR\).*$" "\1 ${VERSION_MAJOR}" "${header_file}"
-    sed_replace "\(#define *[A-Z]\{3,4\}_VERSION_MINOR\).*$" "\1 ${VERSION_MINOR}" "${header_file}"
-    sed_replace "\(#define *[A-Z]\{3,4\}_VERSION_PATCH\).*$" "\1 ${VERSION_PATCH}" "${header_file}"
+    sed_replace "(#define *[A-Z]{3,4}_VERSION_MAJOR).*$" "\1 ${VERSION_MAJOR}" "${header_file}"
+    sed_replace "(#define *[A-Z]{3,4}_VERSION_MINOR).*$" "\1 ${VERSION_MINOR}" "${header_file}"
+    sed_replace "(#define *[A-Z]{3,4}_VERSION_PATCH).*$" "\1 ${VERSION_PATCH}" "${header_file}"
 done
 
 # ###########################################################################
@@ -172,7 +120,7 @@ show_info "Change version within PHP wrapper files."
 PHP_SOURCE_FILES=$(find "${ROOT_DIR}/wrappers/php" -name "vsc*.c" | tr '\n' ' ')
 
 for source_file in ${PHP_SOURCE_FILES}; do
-    sed_replace "\([A-Z_]*_PHP_VERSION\[\] *= *\)\"[0-9]*.[0-9]*.[0-9]*\".*$" "\1\"${VERSION}\";" "${source_file}"
+    sed_replace "([A-Z_]*_PHP_VERSION\[\] *= *)\"[0-9]*.[0-9]*.[0-9]*\".*$" "\1\"${VERSION}\";" "${source_file}"
 done
 
 # ###########################################################################
@@ -212,15 +160,19 @@ else
 fi
 
 # ###########################################################################
-show_info "Change version within VSCCrypto.podspec file."
-sed_replace "s.version\( *= *\)\"[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/VSCCrypto.podspec"
-sed_replace "\(s.source[^0-9]*\)[0-9]*\.[0-9]*\.[0-9]*\(-[a-zA-Z0-9]*\)\{0,1\}" "\1${VERSION_FULL}" "${ROOT_DIR}/VSCCrypto.podspec"
+show_info "Change version within JS package.json file."
+sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION}\"\2" "${ROOT_DIR}/wrappers/wasm/package.json"
 
+# ###########################################################################
+for podspec in VSCCrypto VirgilCryptoFoundation VirgilCryptoPythia VirgilCryptoRatchet; do
+    show_info "Change version within ${podspec}.podspec file."
+    sed_replace "s.version( *= *)\"[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9.]*)?\"" "s.version\1\"${VERSION_FULL}\"" "${ROOT_DIR}/${podspec}.podspec"
+    sed_replace "(s\.dependency[^=]+[=] *)[0-9]*\.[0-9]*\.[0-9]*(-[a-zA-Z0-9.]*)?" "\1${VERSION_FULL}" "${ROOT_DIR}/${podspec}.podspec"
+done
 
 # ###########################################################################
 show_info "Add version within Carthage spec files."
-PROJS=( "VSCCommon" "VSCFoundation" "VSCPythia" "VSCRatchet" )
-for PROJ in "${PROJS[@]}"; do
+for PROJ in VSCCommon VSCFoundation VSCPythia VSCRatchet; do
 cat <<EOF > "${ROOT_DIR}/carthage-specs/${PROJ}.json"
 {
     "${VERSION_FULL}": "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v${VERSION_FULL}/${PROJ}.xcframework.zip"
@@ -229,5 +181,5 @@ EOF
 done
 
 # ###########################################################################
-show_info "Change version within JS package.json file."
-sed_replace "\(\"version\" *: *\)\"[0-9]*\.[0-9]*\.[0-9]*\"" "\1\"${VERSION}\"" "${ROOT_DIR}/wrappers/wasm/package.json"
+show_info "Change version within Package.swift"
+sed_replace "(let +version.+)" "let version = \"${VERSION_FULL}\"" "${ROOT_DIR}/Package.swift"

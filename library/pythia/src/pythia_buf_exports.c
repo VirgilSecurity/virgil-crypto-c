@@ -17,6 +17,7 @@
 
 #include <relic/relic.h>
 #include <relic/relic_err.h>
+#include <relic/relic_label.h>
 #include <pythia.h>
 #include "pythia_buf.h"
 #include "pythia_buf_exports.h"
@@ -24,13 +25,13 @@
 static void
 check_size_read(const pythia_buf_t *buf, size_t min_size, size_t max_size) {
     if (!buf || buf->len < min_size || buf->len > max_size)
-        THROW(ERR_NO_BUFFER);
+        RLC_THROW(ERR_NO_BUFFER);
 }
 
 static void
 check_size_write(const pythia_buf_t *buf, size_t min_size) {
     if (!buf || buf->allocated < min_size)
-        THROW(ERR_NO_BUFFER);
+        RLC_THROW(ERR_NO_BUFFER);
 }
 
 void
@@ -39,8 +40,8 @@ bn_read_buf(bn_t b, const pythia_buf_t *buf) {
 
     uint8_t sign = buf->p[0];
 
-    if (sign != BN_POS && sign != BN_NEG)
-        THROW(ERR_NO_VALID);
+    if (sign != RLC_POS && sign != RLC_NEG)
+        RLC_THROW(ERR_NO_VALID);
 
     bn_read_bin(b, buf->p + 1, (int)(buf->len - 1));
     b->sign = sign;
@@ -56,7 +57,7 @@ gt_read_buf(gt_t g, const pythia_buf_t *buf) {
         zeroBytes += buf->p[i] == 0;
     }
     if (zeroBytes > 24)
-        THROW(ERR_NO_VALID);
+        RLC_THROW(ERR_NO_VALID);
 
     gt_read_bin(g, buf->p, (int)buf->len);
 }
@@ -66,7 +67,7 @@ g1_read_buf(g1_t g, const pythia_buf_t *buf) {
     check_size_read(buf, 1, PYTHIA_G1_BUF_SIZE);
     g1_read_bin(g, buf->p, (int)buf->len);
     if (!g1_is_valid(g))
-        THROW(ERR_NO_VALID);
+        RLC_THROW(ERR_NO_VALID);
 }
 
 void
@@ -74,7 +75,7 @@ g2_read_buf(g2_t g, const pythia_buf_t *buf) {
     check_size_read(buf, 1, PYTHIA_G2_BUF_SIZE);
     g2_read_bin(g, buf->p, (int)buf->len);
     if (!g2_is_valid(g))
-        THROW(ERR_NO_VALID);
+        RLC_THROW(ERR_NO_VALID);
 }
 
 void

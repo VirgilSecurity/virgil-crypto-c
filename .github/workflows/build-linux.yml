@@ -1,0 +1,45 @@
+name: build-linux
+on:
+  push:
+    branches:
+      - "**"
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure toolchain
+        run: |
+          sudo apt update
+          sudo apt install valgrind
+          sudo apt install cloc
+          cmake --version
+          python3 --version
+          pip3 list --outdated
+          pip3 install -U protobuf grpcio-tools
+      - name: Configure project
+        run: >
+          cmake -S. -Bbuild
+          -DENABLE_HEAVY_TESTS=OFF
+          -DVIRGIL_C_MT_TESTING=OFF
+          -DENABLE_BENCHMARKING=ON
+          -DVIRGIL_POST_QUANTUM=ON
+          -DVIRGIL_PROGRAMS=ON
+      - name: Build for memcheck
+        run: cmake --build build -- -j$(nproc)
+      - name: Run memcheck
+        working-directory: build
+        run: |
+          ctest -T memcheck --output-on-failure
+          cat Testing/Temporary/MemoryChecker.*.log
+      - name: Build multi-threading tests
+        run: |
+          cmake -S. -Bbuild -DVIRGIL_C_MT_TESTING=ON
+          cmake --build build -- -j$(nproc)
+      - name: Run multi-threading tests
+        working-directory: build
+        run: ctest -L multi-threading --output-on-failure
+      - name: Run benchmarks
+        run: ./build/benchmarks/foundation/bench
+      - name: Calulate line of codes
+        run: cmake --build build --target cloc

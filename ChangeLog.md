@@ -1,5 +1,28 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.17.0 released 2023-08-09
+
+
+### Changes
+
+- Apple: Remove support for Apple BITCODE
+- Apple: Bump min supported macOS version to 10.13
+- Ext: Upgrade Relic to the version 0.6.0
+  - This version is **incompatible** with 0.5
+- Lib/Pythia: Adopt to incompatible Relic version
+  - Now `blind()` produce different value, so stored blinded values can not be `deblinded()`
+- Apple: Move support of CocoaPods and SPM from https://github.com/VirgilSecurity/virgil-cryptowrapper-x to this repo
+
+### Bugfix
+
+- Lib: Fix type of key_id argument within vscr_ratchet_skipped_messages module
+  - Previously this leads to compilation error on some compilers, like emscripten
+
+### Improvements
+
+- Wrapper/JS: Update dependencies
+
+
 ## Version 0.16.3 released 2022-10-23
 
 ### Features
