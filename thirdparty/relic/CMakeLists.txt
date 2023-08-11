@@ -58,8 +58,8 @@ endif()
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 ExternalProject_Add(relic-ext
-        GIT_REPOSITORY https://github.com/relic-toolkit/relic.git
-        GIT_TAG 0.6.0
+        GIT_REPOSITORY https://github.com/VirgilSecurity/relic.git
+        GIT_TAG c16932f83899f06acd28304a1ce49e9602409a8d
         CMAKE_ARGS
                 "${TRANSITIVE_ARGS}"
                 "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
