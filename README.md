@@ -4,7 +4,7 @@
 
 [![Build Linux](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-linux.yml/badge.svg)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-linux.yml)
 [![Build macOS](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-macos.yml/badge.svg)](https://github.com/VirgilSecurity/virgil-crypto-c/actions/workflows/build-macos.yml)
-[![VirgilCrypto](https://img.shields.io/cocoapods/v/VirgilCrypto.svg?style=flat)](https://cocoapods.org/pods/VirgilCrypto)
+[![VirgilCrypto](https://img.shields.io/cocoapods/v/VSCCrypto.svg?style=flat)](https://cocoapods.org/pods/VSCCrypto)
 [![Swift Package Manager](https://img.shields.io/badge/Swift_Package_Manager-compatible-orange?style=flat)](https://www.swift.org/package-manager/)
 
 
