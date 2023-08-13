@@ -43,14 +43,7 @@ set(RELIC_ARGS_FILE ${CMAKE_CURRENT_LIST_DIR}/relic-args.cmake)
 include("${CMAKE_CURRENT_LIST_DIR}/features.cmake")
 
 if(RELIC_USE_PTHREAD)
-    set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DMULTI=PTHREAD)
-endif()
-
-set(RELIC_WSIZE 64)
-if(CMAKE_CROSSCOMPILING AND APPLE)
-    if (("i386" IN_LIST CMAKE_OSX_ARCHITECTURES) OR ("armv7k" IN_LIST CMAKE_OSX_ARCHITECTURES))
-        set(RELIC_WSIZE 32)
-    endif()
+    set(RELIC_CMAKE_ARGS ${RELIC_CMAKE_ARGS} -DERRMO=ERRMO_SPTHREAD)
 endif()
 
 # ---------------------------------------------------------------------------
@@ -58,14 +51,14 @@ endif()
 # ---------------------------------------------------------------------------
 include(ExternalProject)
 ExternalProject_Add(relic-ext
-        GIT_REPOSITORY https://github.com/relic-toolkit/relic.git
-        GIT_TAG 0.6.0
+        GIT_REPOSITORY https://github.com/VirgilSecurity/relic.git
+        GIT_TAG relic-toolkit-0.4.1
         CMAKE_ARGS
                 "${TRANSITIVE_ARGS}"
                 "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
                 "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
                 "-DCMAKE_INSTALL_PREFIX=${RELIC_LOCATION}"
-                -DRAND=CALL -DWSIZE=${RELIC_WSIZE} $<$<BOOL:${CMAKE_CROSSCOMPILING}>:-DARCH=>
+                -DRAND=CALL -DMULTI=
                 ${RELIC_CMAKE_ARGS} -C "${RELIC_ARGS_FILE}"
         BUILD_BYPRODUCTS "${RELIC_LOCATION}/lib/librelic_s.a"
         )

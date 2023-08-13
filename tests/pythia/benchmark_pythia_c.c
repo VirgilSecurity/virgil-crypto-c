@@ -26,6 +26,7 @@
 #include "pythia.h"
 #include "pythia_c.h"
 #include "pythia_init.h"
+#include "pythia_init_c.h"
 #include "vscp_pythia.h"
 
 #include <relic/relic.h>
@@ -60,7 +61,7 @@ bench1_BlindEvalProveVerify() {
         bn_t u;
         bn_null(u);
 
-        RLC_TRY {
+        TRY {
             g1_new(blinded);
             bn_new(rInv);
 
@@ -84,10 +85,10 @@ bench1_BlindEvalProveVerify() {
             pythia_verify(y, blinded, t, 5, pi_p, c, u, &verified);
             TEST_ASSERT_NOT_EQUAL(verified, 0);
         }
-        RLC_CATCH_ANY {
+        CATCH_ANY {
             TEST_FAIL();
         }
-        RLC_FINALLY {
+        FINALLY {
             bn_free(u);
             bn_free(c);
             g1_free(pi_p);

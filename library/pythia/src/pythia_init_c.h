@@ -15,21 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHIA_PYTHIA_BUF_SIZES_C_H
-#define PYTHIA_PYTHIA_BUF_SIZES_C_H
+#ifndef PYTHIA_PYTHIA_INIT_C_H
+#define PYTHIA_PYTHIA_INIT_C_H
 
-#include <relic/relic.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define DEF_PYTHIA_G1_BUF_SIZE FP_BYTES + 1
+void
+pythia_err_init(void);
 
-#define DEF_PYTHIA_G2_BUF_SIZE 2 * FP_BYTES + 1
+#ifdef __cplusplus
+}
+#endif
 
-#define DEF_PYTHIA_GT_BUF_SIZE 8 * FP_BYTES
-
-#define DEF_PYTHIA_BN_BUF_SIZE DEF_PYTHIA_G1_BUF_SIZE + 1
-
-#define DEF_PYTHIA_BIN_MIN_BUF_SIZE 1
-
-#define DEF_PYTHIA_BIN_MAX_BUF_SIZE 128
-
-#endif // PYTHIA_PYTHIA_BUF_SIZES_C_H
+#endif // PYTHIA_PYTHIA_INIT_C_H
