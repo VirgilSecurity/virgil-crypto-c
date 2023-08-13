@@ -99,12 +99,13 @@ ExternalProject_Add(protobuf-nanopb-ext
         GIT_REPOSITORY
             https://github.com/nanopb/nanopb
         GIT_TAG
-            0.4.6.4
+            8ef41e0ebd45daaf19459a011f67e66224b247cd
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${NANOPB_INSTALL_LOCATION}"
+            "-Dnanopb_PYTHON_INSTDIR_OVERRIDE=${NANOPB_INSTALL_LOCATION}"
             "-DBUILD_SHARED_LIBS=OFF"
             "-Dnanopb_BUILD_RUNTIME=ON"
             "-Dnanopb_BUILD_GENERATOR=ON"
@@ -166,6 +167,17 @@ ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-utils
             "${CMAKE_COMMAND}" -E copy_if_different
                     "<SOURCE_DIR>/generator/proto/_utils.py"
                     "${NANOPB_INSTALL_LOCATION}/generator/proto/_utils.py"
+        COMMENT
+            "Install file: _utils.py"
+        DEPENDEES
+            install
+        )
+
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-init
+        COMMAND
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<SOURCE_DIR>/generator/proto/__init__.py"
+                    "${NANOPB_INSTALL_LOCATION}/generator/proto/__init__.py"
         COMMENT
             "Install file: _utils.py"
         DEPENDEES

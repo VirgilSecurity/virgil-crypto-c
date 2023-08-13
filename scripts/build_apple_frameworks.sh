@@ -143,14 +143,14 @@ function build_ios {
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
-    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=IOS_SIM \
                         -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
-    cmake --build "${BUILD_DIR}/sim" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/sim" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     show_info "Installed iOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
@@ -169,14 +169,14 @@ function build_tvos {
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
-    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=TVOS_SIM \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
-    cmake --build "${BUILD_DIR}/sim" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/sim" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     show_info "Installed tvOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
@@ -195,14 +195,14 @@ function build_watchos {
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
-    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS_SIM \
                         -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
-    cmake --build "${BUILD_DIR}/sim" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/sim" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     show_info "Installed watchOS C Frameworks for to ${FRAMEWORKS_DIR}"
 }
@@ -221,7 +221,7 @@ function build_macosx {
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
-    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(nproc)
+    cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     show_info "Installed macOS C Frameworks to ${FRAMEWORKS_DIR}"
 }
