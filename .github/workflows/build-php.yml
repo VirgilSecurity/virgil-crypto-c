@@ -18,7 +18,7 @@ jobs:
           - os: macos-latest
             arch: arm64
             optimizations: -DED25519_REF10=ON
-    name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }}
+    name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
     steps:
       - name: Install PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
@@ -29,7 +29,6 @@ jobs:
       - uses: actions/checkout@v3
       - name: Configure toolchain
         run: |
-          sudo apt update
           cmake --version
           python3 --version
           pip3 list --outdated
