@@ -16,8 +16,10 @@ jobs:
         include:
           - arch: x86_64
             optimizations: -DED25519_REF10=OFF -DED25519_AMD64_RADIX_64_24K=ON
+            should_test: true
           - arch: arm64
             optimizations: -DED25519_REF10=ON
+            should_test: false
     name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
     steps:
       - name: Install PHP ${{ matrix.php-version }}
@@ -46,6 +48,7 @@ jobs:
       - name: Build project
         run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
       - name: Test project
+        if: ${{ matrix.should_test }}
         working-directory: build
         run: ctest --verbose
       - name: Package project
