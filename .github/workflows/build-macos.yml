@@ -2,10 +2,10 @@ name: build-macos
 on:
   push:
     branches:
-      - 'main'
-      - 'develop'
-      - 'release/**'
-      - 'hotfix/**'
+      - "main"
+      - "develop"
+      - "release/**"
+      - "hotfix/**"
 jobs:
   build-macos:
     runs-on: macos-13
