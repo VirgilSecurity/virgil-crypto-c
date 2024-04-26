@@ -21,7 +21,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
       - name: Check PHP Version
         run: php -v
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Configure toolchain
         run: |
           cmake --version
