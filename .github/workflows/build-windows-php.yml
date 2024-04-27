@@ -41,7 +41,7 @@ jobs:
           -DENABLE_CLANGFORMAT=OFF
           -Bbuild -S.
       - name: Build project
-        run: cmake --build build -- -j%NUMBER_OF_PROCESSORS%
+        run: cmake --build build --parallel %NUMBER_OF_PROCESSORS%
       - name: Test project
         working-directory: build
         run: ctest --verbose
