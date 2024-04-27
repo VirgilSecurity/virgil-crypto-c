@@ -52,11 +52,11 @@ jobs:
         run: >
           cmake -G"NMake Makefiles"
           -Cconfigs/php-config.cmake
-          -DPHP_DEVEL_HOME=${{ env.PHP_DEVEL_HOME }}
+          -DPHP_DEVEL_HOME="${{ env.PHP_DEVEL_HOME }}"
           -DVIRGIL_LIB_PYTHIA=OFF
           -DCMAKE_BUILD_TYPE=Release
-          -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }}
-          -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }}
+          -DVIRGIL_PACKAGE_PLATFORM_ARCH="${{ matrix.arch }}"
+          -DVIRGIL_PACKAGE_LANGUAGE_VERSION="${{ matrix.php-version }}"
           -DCPACK_OUTPUT_FILE_PREFIX=php
           -DENABLE_CLANGFORMAT=OFF
           -Bbuild -S.
