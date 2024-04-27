@@ -77,7 +77,7 @@ endif()
 #   Fetch PHP suitable composer.
 # ---------------------------------------------------------------------------
 if(NOT COMPOSER_EXECUTABLE)
-    set(COMPOSER_VERSION "2.0.12")
+    set(COMPOSER_VERSION "2.7.4")
     set(COMPOSER_DOWNLOADED "${CMAKE_CURRENT_BINARY_DIR}/tmp/composer")
 
     file(DOWNLOAD
@@ -86,7 +86,7 @@ if(NOT COMPOSER_EXECUTABLE)
     )
 
     file(SHA256 "${COMPOSER_DOWNLOADED}" COMPOSER_DOWNLOADED_HASH)
-    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "82ea8c1537cfaceb7e56f6004c7ccdf99ddafce7237c07374d920e635730a631")
+    if(NOT "${COMPOSER_DOWNLOADED_HASH}" STREQUAL "ee01080d632d2bbfa9c618009cca13718f36e751dda679a6009cee751c13b2d9")
         message(FATAL_ERROR "Download 'composer.phar' file hash mismatch")
     endif()
 
