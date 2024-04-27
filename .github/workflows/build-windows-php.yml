@@ -35,6 +35,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
+        env:
+          phpts: ts
       - name: Check PHP Version
         run: php -v
       - name: Download PHP development pack
