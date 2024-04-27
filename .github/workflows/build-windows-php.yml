@@ -12,8 +12,14 @@ jobs:
       matrix:
         os: [windows-latest]
         php-version: ["8.3.6"]
-        arch: ["x86_64"]
+        arch: [x86_64]
+        include:
+          - arch: x86_64
+            arch-short: x64
     name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
+    env:
+      TOOLS_DIR: "C:\\tools"
+      PHP_DEVEL_HOME: "C:\\tools\\php-${{ matrix.php-version }}-devel-vs16-${{ matrix.arch-short }}"
     steps:
       - name: Configure toolchain
         run: |
@@ -32,15 +38,13 @@ jobs:
         run: php -v
       - name: Download PHP development pack
         run: |
-          $php_dir = "C:\\tools\\php"
-          $php_version = "${{ matrix.php-version }}"
-          $php_url = "https://windows.php.net/downloads/releases/php-devel-pack-8.3.6-Win32-vs16-x64.zip"
-          $php_zip = "php.zip"
-          $php_dir = "php"
-          Invoke-WebRequest -Uri $php_url -OutFile $php_zip
-          Expand-Archive -Path $php_zip -DestinationPath $php_dir
-          Remove-Item -Path $php_zip
-          ls $php_dir
+          $php_devel_url = "https://windows.php.net/downloads/releases/php-devel-pack-${{ matrix.php-version }}-Win32-vs16-${{ matrix.arch-short }}.zip"
+          $php_devel_zip = "php-devel.zip"
+          Invoke-WebRequest -Uri $php_devel_url -OutFile $php_devel_zip
+          Expand-Archive -Path $php_devel_zip -DestinationPath $TOOLS_DIR
+          Remove-Item -Path $php_devel_zip
+          ls $TOOLS_DIR
+          ls $PHP_DEVEL_HOME
       - name: Checkout project
         uses: actions/checkout@v4
       - name: Configure project
