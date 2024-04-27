@@ -51,6 +51,7 @@ jobs:
       - name: Configure project
         run: >
           cmake -G"NMake Makefiles"
+          -Cconfigs/php-config.cmake
           -DPHP_DEVEL_HOME=${{ env.PHP_DEVEL_HOME }}
           -DVIRGIL_LIB_PYTHIA=OFF
           -DCMAKE_BUILD_TYPE=Release
@@ -60,7 +61,7 @@ jobs:
           -DENABLE_CLANGFORMAT=OFF
           -Bbuild -S.
       - name: Build project
-        run: cmake --build build --parallel %NUMBER_OF_PROCESSORS%
+        run: cmake --build build --parallel $NUMBER_OF_PROCESSORS
       - name: Test project
         working-directory: build
         run: ctest --verbose
