@@ -1,28 +1,18 @@
-name: build-php-macos
+name: build-php-linux
 on:
   push:
     branches:
-      - "main"
-      - "develop"
-      - "release/**"
-      - "hotfix/**"
+      - "**"
     tags:
       - "*"
 jobs:
-  build-php-macos:
+  build-php:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-13]
-        php-version: ["8.2", "8.3", "8.4"]
-        arch: [x86_64, arm64]
-        include:
-          - arch: x86_64
-            optimizations: -DED25519_REF10=OFF -DED25519_AMD64_RADIX_64_24K=ON
-            should_test: true
-          - arch: arm64
-            optimizations: -DED25519_REF10=ON
-            should_test: false
+        os: [windows-latest]
+        php-version: ["8.3"]
+        arch: ["x86_64"]
     name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
     steps:
       - name: Install PHP ${{ matrix.php-version }}
@@ -37,21 +27,22 @@ jobs:
           cmake --version
           python3 --version
           pip3 install protobuf grpcio-tools
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
       - name: Configure project
         run: >
-          cmake -Cconfigs/php-config.cmake \
+          cmake \
               -DCMAKE_BUILD_TYPE=Release \
-              -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
               -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }} \
               -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }} \
               -DCPACK_OUTPUT_FILE_PREFIX=php \
               -DENABLE_CLANGFORMAT=OFF \
-              ${{ matrix.optimizations }} \
+              -DED25519_REF10=OFF -DED25519_AMD64_RADIX_64_24K=ON \
               -Bbuild -S.
       - name: Build project
-        run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
+        run: cmake --build build -- -j$(nproc)
       - name: Test project
-        if: ${{ matrix.should_test }}
         working-directory: build
         run: ctest --verbose
       - name: Package project
