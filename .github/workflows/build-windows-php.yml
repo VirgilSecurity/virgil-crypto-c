@@ -51,7 +51,7 @@ jobs:
       - name: Configure project
         run: >
           cmake -G"NMake Makefiles"
-          -Cconfigs/php-config.cmake
+          -C"configs/php-config.cmake"
           -DPHP_DEVEL_HOME="${{ env.PHP_DEVEL_HOME }}"
           -DVIRGIL_LIB_PYTHIA=OFF
           -DCMAKE_BUILD_TYPE=Release
