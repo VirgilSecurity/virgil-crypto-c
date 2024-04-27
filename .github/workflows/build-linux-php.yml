@@ -1,4 +1,4 @@
-name: build-php-linux
+name: build-linux-php
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
     tags:
       - "*"
 jobs:
-  build-php:
+  build-linux-php:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

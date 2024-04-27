@@ -1,4 +1,4 @@
-name: build-php-linux
+name: build-windows-php
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
     tags:
       - "*"
 jobs:
-  build-php:
+  build-windows-php:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -31,14 +31,14 @@ jobs:
         with:
           arch: ${{ matrix.arch }}
       - name: Configure project
-        run: |
-          cmake -G"NMake Makefiles" ^
-            -DVIRGIL_LIB_PYTHIA=OFF ^
-            -DCMAKE_BUILD_TYPE=Release ^
-            -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }} ^
-            -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }} ^
-            -DCPACK_OUTPUT_FILE_PREFIX=php ^
-            -DENABLE_CLANGFORMAT=OFF ^
+        run: >
+          cmake -G"NMake Makefiles"
+            -DVIRGIL_LIB_PYTHIA=OFF
+            -DCMAKE_BUILD_TYPE=Release
+            -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }}
+            -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }}
+            -DCPACK_OUTPUT_FILE_PREFIX=php
+            -DENABLE_CLANGFORMAT=OFF
             -Bbuild -S.
       - name: Build project
         run: cmake --build build -- -j%NUMBER_OF_PROCESSORS%

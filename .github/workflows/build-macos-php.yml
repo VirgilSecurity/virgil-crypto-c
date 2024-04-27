@@ -1,4 +1,4 @@
-name: build-php-macos
+name: build-macos-php
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ on:
     tags:
       - "*"
 jobs:
-  build-php-macos:
+  build-macos-php:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
