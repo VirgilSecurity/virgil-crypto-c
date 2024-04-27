@@ -32,16 +32,16 @@ jobs:
           arch: ${{ matrix.arch }}
       - name: Configure project
         run: >
-          cmake \
-              -DCMAKE_BUILD_TYPE=Release \
-              -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }} \
-              -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }} \
-              -DCPACK_OUTPUT_FILE_PREFIX=php \
-              -DENABLE_CLANGFORMAT=OFF \
-              -DED25519_REF10=OFF -DED25519_AMD64_RADIX_64_24K=ON \
-              -Bbuild -S.
+          cmake -G"NMake Makefiles" ^
+            -DVIRGIL_LIB_PYTHIA=OFF ^
+            -DCMAKE_BUILD_TYPE=Release ^
+            -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }} ^
+            -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }} ^
+            -DCPACK_OUTPUT_FILE_PREFIX=php ^
+            -DENABLE_CLANGFORMAT=OFF ^
+            -Bbuild -S.
       - name: Build project
-        run: cmake --build build -- -j$(nproc)
+        run: cmake --build build -- -j%NUMBER_OF_PROCESSORS%
       - name: Test project
         working-directory: build
         run: ctest --verbose
