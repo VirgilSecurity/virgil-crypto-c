@@ -11,25 +11,38 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        php-version: ["8.3"]
+        php-version: ["8.3.6"]
         arch: ["x86_64"]
     name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
     steps:
+      - name: Configure toolchain
+        run: |
+          cmake --version
+          python3 --version
+          pip3 install protobuf grpcio-tools
+      - name: Install MSVC Dev Cmd
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
       - name: Install PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
       - name: Check PHP Version
         run: php -v
-      - uses: actions/checkout@v4
-      - name: Configure toolchain
+      - name: Download PHP development pack
         run: |
-          cmake --version
-          python3 --version
-          pip3 install protobuf grpcio-tools
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: ${{ matrix.arch }}
+          $php_dir = "C:\\tools\\php"
+          $php_version = "${{ matrix.php-version }}"
+          $php_url = "https://windows.php.net/downloads/releases/php-devel-pack-8.3.6-Win32-vs16-x64.zip"
+          $php_zip = "php.zip"
+          $php_dir = "php"
+          Invoke-WebRequest -Uri $php_url -OutFile $php_zip
+          Expand-Archive -Path $php_zip -DestinationPath $php_dir
+          Remove-Item -Path $php_zip
+          ls $php_dir
+      - name: Checkout project
+        uses: actions/checkout@v4
       - name: Configure project
         run: >
           cmake -G"NMake Makefiles"
