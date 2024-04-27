@@ -77,7 +77,7 @@ endif()
 #   Fetch PHP suitable composer.
 # ---------------------------------------------------------------------------
 if(NOT COMPOSER_EXECUTABLE)
-    set(COMPOSER_VERSION "2.0.12")
+    set(COMPOSER_VERSION "2.7.4")
     set(COMPOSER_DOWNLOADED "${CMAKE_CURRENT_BINARY_DIR}/tmp/composer")
 
     file(DOWNLOAD
