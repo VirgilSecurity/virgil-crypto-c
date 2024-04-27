@@ -20,6 +20,7 @@ jobs:
     env:
       TOOLS_DIR: "C:\\tools"
       PHP_DEVEL_HOME: "C:\\tools\\php-${{ matrix.php-version }}-devel-vs16-${{ matrix.arch-short }}"
+      PHP_DEVEL_URL: "https://windows.php.net/downloads/releases/php-devel-pack-${{ matrix.php-version }}-Win32-vs16-${{ matrix.arch-short }}.zip"
     steps:
       - name: Configure toolchain
         run: |
@@ -38,18 +39,19 @@ jobs:
         run: php -v
       - name: Download PHP development pack
         run: |
-          $php_devel_url = "https://windows.php.net/downloads/releases/php-devel-pack-${{ matrix.php-version }}-Win32-vs16-${{ matrix.arch-short }}.zip"
+          $php_devel_url = "${{ env.PHP_DEVEL_URL }}"
           $php_devel_zip = "php-devel.zip"
           Invoke-WebRequest -Uri $php_devel_url -OutFile $php_devel_zip
-          Expand-Archive -Path $php_devel_zip -DestinationPath $TOOLS_DIR
+          Expand-Archive -Path $php_devel_zip -DestinationPath "${{ env.TOOLS_DIR }}"
           Remove-Item -Path $php_devel_zip
-          ls $TOOLS_DIR
-          ls $PHP_DEVEL_HOME
+          ls "${{ env.TOOLS_DIR }}"
+          ls "${{ env.PHP_DEVEL_HOME }}"
       - name: Checkout project
         uses: actions/checkout@v4
       - name: Configure project
         run: >
           cmake -G"NMake Makefiles"
+          -DPHP_DEVEL_HOME=${{ env.PHP_DEVEL_HOME }}
           -DVIRGIL_LIB_PYTHIA=OFF
           -DCMAKE_BUILD_TYPE=Release
           -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }}
