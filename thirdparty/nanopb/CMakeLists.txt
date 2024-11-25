@@ -47,16 +47,16 @@ endif()
 set(NANOPB_INSTALL_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb")
 
 if(CMAKE_HOST_APPLE)
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.20.3/protoc-3.20.3-osx-x86_64.zip")
-    set(PROTOC_BIN_HASH "f3ac8c37e87cb345a509eef7ec614092995d9423b8effb42c207c8fbdacb97ee")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protoc-28.3-osx-universal_binary.zip")
+    set(PROTOC_BIN_HASH "52df502b263da20f3311b23b5c6553d10cc25c6ebb85df381d80a2806b6a698b")
 
 elseif(CMAKE_HOST_WIN32)
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.20.3/protoc-3.20.3-win32.zip")
-    set(PROTOC_BIN_HASH "e4517c9de9170d6beb7c7de0a17fcd6ad5eed2eb033bee7119b51ea86f43d3b3")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protoc-28.3-win64.zip")
+    set(PROTOC_BIN_HASH "ce64f49bdeddef49ce4bd313a8f59bcf92fcf67b5831efbf66170386d2e66948")
 
 else()
-    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v3.20.3/protoc-3.20.3-linux-x86_64.zip")
-    set(PROTOC_BIN_HASH "44a6b498e996b845edef83864734c0e52f42197e85c9d567af55f4e3ff09d755")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protoc-28.3-linux-x86_64.zip")
+    set(PROTOC_BIN_HASH "0ad949f04a6a174da83cdcbdb36dee0a4925272a5b6d83f79a6bf9852076d53f")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -99,7 +99,7 @@ ExternalProject_Add(protobuf-nanopb-ext
         GIT_REPOSITORY
             https://github.com/nanopb/nanopb
         GIT_TAG
-            8ef41e0ebd45daaf19459a011f67e66224b247cd
+            nanopb-0.4.9
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
@@ -187,7 +187,7 @@ ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-init
 ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-pb2
         COMMAND
             "${CMAKE_COMMAND}" -E copy_if_different
-                    "<BINARY_DIR>/nanopb_pb2.py"
+                    "<BINARY_DIR>/nanopb/generator/proto/nanopb_pb2.py"
                     "${NANOPB_INSTALL_LOCATION}/generator/proto/nanopb_pb2.py"
         COMMENT
             "Install file: nanopb_pb2.py"
@@ -210,6 +210,7 @@ endif()
 #   Import library as a target
 # ---------------------------------------------------------------------------
 file(MAKE_DIRECTORY ${NANOPB_INSTALL_LOCATION}/include)
+file(MAKE_DIRECTORY ${NANOPB_INSTALL_LOCATION}/include/nanopb)
 
 #
 # nonopb
@@ -225,7 +226,7 @@ set_target_properties(protobuf-nanopb
         IMPORTED_LOCATION_DEBUG
             "${NANOPB_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}protobuf-nanopbd${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INTERFACE_INCLUDE_DIRECTORIES
-            "${NANOPB_INSTALL_LOCATION}/include"
+            "${NANOPB_INSTALL_LOCATION}/include;${NANOPB_INSTALL_LOCATION}/include/nanopb"
         )
 
 # ---------------------------------------------------------------------------

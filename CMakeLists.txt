@@ -41,6 +41,7 @@ project(virgil_crypto VERSION 0.17.2 LANGUAGES C)
 #   Forced build options
 # ---------------------------------------------------------------------------
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ---------------------------------------------------------------------------
 #   Global policies
