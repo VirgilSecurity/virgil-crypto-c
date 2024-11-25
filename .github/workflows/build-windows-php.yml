@@ -2,9 +2,9 @@ name: build-windows-php
 on:
   push:
     branches:
-      - "**"
+      - "disabled"
     tags:
-      - "*"
+      - "disabled"
 jobs:
   build-windows-php:
     runs-on: ${{ matrix.os }}
