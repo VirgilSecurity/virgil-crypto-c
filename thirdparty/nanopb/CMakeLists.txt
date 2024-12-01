@@ -54,9 +54,16 @@ elseif(CMAKE_HOST_WIN32)
     set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protoc-28.3-win64.zip")
     set(PROTOC_BIN_HASH "ce64f49bdeddef49ce4bd313a8f59bcf92fcf67b5831efbf66170386d2e66948")
 
-else()
+elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "aarch64")
+    set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protoc-28.3-linux-aarch_64.zip")
+    set(PROTOC_BIN_HASH "1de522032a8b194002fe35cab86d747848238b5e4de4f99648372079f5b46f9a")
+
+elseif(CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set(PROTOC_BIN_URL "https://github.com/protocolbuffers/protobuf/releases/download/v28.3/protoc-28.3-linux-x86_64.zip")
     set(PROTOC_BIN_HASH "0ad949f04a6a174da83cdcbdb36dee0a4925272a5b6d83f79a6bf9852076d53f")
+
+else()
+    message(FATAL_ERROR "Unsupported host system processor: ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 endif()
 
 # ---------------------------------------------------------------------------
@@ -88,6 +95,7 @@ add_executable(protoc IMPORTED GLOBAL)
 add_dependencies(protoc protobuf-bin-ext)
 
 set(PROTOC_EXE "${NANOPB_INSTALL_LOCATION}/bin/protoc${HOST_EXECUTABLE_SUFFIX}")
+message(STATUS "PROTOC_EXE: ${PROTOC_EXE}")
 
 set_target_properties(protoc PROPERTIES IMPORTED_LOCATION "${PROTOC_EXE}")
 
@@ -189,6 +197,17 @@ ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-pb2
             "${CMAKE_COMMAND}" -E copy_if_different
                     "<BINARY_DIR>/nanopb/generator/proto/nanopb_pb2.py"
                     "${NANOPB_INSTALL_LOCATION}/generator/proto/nanopb_pb2.py"
+        COMMENT
+            "Install file: nanopb_pb2.py"
+        DEPENDEES
+            install
+        )
+
+ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-nanopb-proto
+        COMMAND
+            "${CMAKE_COMMAND}" -E copy_if_different
+                    "<BINARY_DIR>/nanopb/generator/proto/nanopb.proto"
+                    "${NANOPB_INSTALL_LOCATION}/generator/proto/nanopb.proto"
         COMMENT
             "Install file: nanopb_pb2.py"
         DEPENDEES

@@ -57,13 +57,7 @@ function(target_protobuf_sources target)
     # Check runtime
     #
     if(TARGET protoc)
-        set(PROTOC_EXE protoc)
-
-    elseif(COMMAND find_host_package)
-        find_host_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
-
-    else()
-        find_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
+        get_target_property(PROTOC_EXE protoc IMPORTED_LOCATION)
     endif()
 
     if(NOT PROTOC_EXE)
@@ -111,7 +105,7 @@ function(target_protobuf_sources target)
                     --proto_path=. "${proto_file_name}.proto"
                 DEPENDS
                     "${proto_file}" "${proto_options_file}" protobuf-nanopb
-                COMMENT "Processing protobuf model: ${proto_file}"
+                COMMENT "Processing protobuf model: ${proto_file}, PROTOC_EXE: ${PROTOC_EXE}"
                 WORKING_DIRECTORY "${proto_file_path}"
                 )
 
