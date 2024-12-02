@@ -14,8 +14,7 @@ jobs:
           sudo apt install valgrind cloc python3-pip python3-venv
       - name: Configure project
         run: >
-          python3 -m venv .venv &&
-          . .venv/bin/activate &&
+          python3 -m venv .venv && . .venv/bin/activate &&
           cmake -S. -Bbuild
           -DENABLE_HEAVY_TESTS=OFF
           -DVIRGIL_C_MT_TESTING=OFF
@@ -23,7 +22,9 @@ jobs:
           -DVIRGIL_POST_QUANTUM=ON
           -DVIRGIL_PROGRAMS=ON
       - name: Build for memcheck
-        run: cmake --build build -- -j$(nproc)
+        run: |
+          python3 -m venv .venv && . .venv/bin/activate
+          cmake --build build -- -j$(nproc)
       - name: Run memcheck
         working-directory: build
         run: |
@@ -31,6 +32,7 @@ jobs:
           cat Testing/Temporary/MemoryChecker.*.log
       - name: Build multi-threading tests
         run: |
+          python3 -m venv .venv && . .venv/bin/activate
           cmake -S. -Bbuild -DVIRGIL_C_MT_TESTING=ON
           cmake --build build -- -j$(nproc)
       - name: Run multi-threading tests
