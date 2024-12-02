@@ -14,6 +14,8 @@ jobs:
           sudo apt install valgrind cloc python3-pip python3-venv
       - name: Configure project
         run: >
+          python3 -m venv .venv
+          . .venv/bin/activate
           cmake -S. -Bbuild
           -DENABLE_HEAVY_TESTS=OFF
           -DVIRGIL_C_MT_TESTING=OFF
