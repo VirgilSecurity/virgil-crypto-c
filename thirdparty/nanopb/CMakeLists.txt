@@ -113,7 +113,6 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${NANOPB_INSTALL_LOCATION}"
-            "-Dnanopb_PYTHON_INSTDIR_OVERRIDE=${NANOPB_INSTALL_LOCATION}"
             "-DBUILD_SHARED_LIBS=OFF"
             "-Dnanopb_BUILD_RUNTIME=ON"
             "-Dnanopb_BUILD_GENERATOR=ON"
@@ -136,94 +135,6 @@ ExternalProject_Add(protobuf-nanopb-ext
         DEPENDS
             protobuf-bin-ext
         )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-generator
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<SOURCE_DIR>/generator/nanopb_generator.py"
-                    "${NANOPB_INSTALL_LOCATION}/generator/nanopb_generator.py"
-        COMMENT
-            "Install file: nanopb_generator.py"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-protoc-gen-nanopb
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<SOURCE_DIR>/generator/protoc-gen-nanopb"
-                    "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb"
-        COMMENT
-            "Install file: protoc-gen-nanopb"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-protoc-gen-nanopb-win
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<SOURCE_DIR>/generator/protoc-gen-nanopb.bat"
-                    "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb.bat"
-        COMMENT
-            "Install file: protoc-gen-nanopb.bat"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-utils
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<SOURCE_DIR>/generator/proto/_utils.py"
-                    "${NANOPB_INSTALL_LOCATION}/generator/proto/_utils.py"
-        COMMENT
-            "Install file: _utils.py"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-init
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<SOURCE_DIR>/generator/proto/__init__.py"
-                    "${NANOPB_INSTALL_LOCATION}/generator/proto/__init__.py"
-        COMMENT
-            "Install file: _utils.py"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-pb2
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<BINARY_DIR>/nanopb/generator/proto/nanopb_pb2.py"
-                    "${NANOPB_INSTALL_LOCATION}/generator/proto/nanopb_pb2.py"
-        COMMENT
-            "Install file: nanopb_pb2.py"
-        DEPENDEES
-            install
-        )
-
-ExternalProject_Add_Step(protobuf-nanopb-ext install-nanopb-nanopb-proto
-        COMMAND
-            "${CMAKE_COMMAND}" -E copy_if_different
-                    "<BINARY_DIR>/nanopb/generator/proto/nanopb.proto"
-                    "${NANOPB_INSTALL_LOCATION}/generator/proto/nanopb.proto"
-        COMMENT
-            "Install file: nanopb_pb2.py"
-        DEPENDEES
-            install
-        )
-
-# ---------------------------------------------------------------------------
-#   Defines path to nanopb protobuf generator script.
-# ---------------------------------------------------------------------------
-set(NANOPB_GENERATOR "${NANOPB_INSTALL_LOCATION}/generator/nanopb_generator.py" CACHE PATH "" FORCE)
-
-if(UNIX OR CYGWIN)
-    set(PROTOC_GEN_NANOPB "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb" CACHE PATH "" FORCE)
-else()
-    set(PROTOC_GEN_NANOPB "${NANOPB_INSTALL_LOCATION}/generator/protoc-gen-nanopb.bat" CACHE PATH "" FORCE)
-endif()
 
 # ---------------------------------------------------------------------------
 #   Import library as a target

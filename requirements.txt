@@ -1,0 +1,3 @@
+protobuf
+grpcio_tools
+nanopb

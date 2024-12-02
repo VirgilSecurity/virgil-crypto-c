@@ -165,6 +165,17 @@ option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 #
 include(GNUInstallDirs)
 
+# ---------------------------------------------------------------------------
+#   Library shall be built in python virtual environment
+# ---------------------------------------------------------------------------
+if (NOT DEFINED ENV{VIRTUAL_ENV})
+    message(STATUS "Create python virtual environment...")
+    set(ENV{VIRTUAL_ENV} "${CMAKE_CURRENT_BINARY_DIR}/.venv")
+    set(ENV{PATH} "$ENV{VIRTUAL_ENV}/bin:$ENV{PATH}")
+    execute_process(COMMAND python3 -m venv "$ENV{VIRTUAL_ENV}")
+endif()
+
+execute_process(COMMAND pip3 install -U -r "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries

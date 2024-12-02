@@ -38,3 +38,7 @@ bin/
 
 Carthage
 !/wrappers/php/VirgilCryptoWrapper/composer.lock
+
+# Python venv
+.venv/
+venv/
