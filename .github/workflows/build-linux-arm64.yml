@@ -27,6 +27,8 @@ jobs:
           push: true
           tags: localhost:5000/virgil-crypto-c-arm64:latest
 
-      - name: Inspect
+      - name: Copy artifacts
         run: |
-          docker buildx imagetools inspect localhost:5000/virgil-crypto-c-arm64:latest
+          DOCKER_CONTAINER_NAME=$(docker container list -l | grep virgil-crypto-c-arm64 | awk 'NF>1{print $NF}')
+          docker cp $DOCKER_CONTAINER_NAME:/home/build-dir/install ./install
+          ls -l install
