@@ -6,6 +6,7 @@ RUN apt-get update
 RUN apt-get install -y build-essential cmake git python3 python3-pip python3-venv
 
 WORKDIR /home/build-dir
+COPY . .
 RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/home/build-dir/install
 RUN cmake --build build -j10
 
