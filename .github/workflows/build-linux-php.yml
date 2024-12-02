@@ -15,6 +15,10 @@ jobs:
         arch: [x86_64]
     name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
     steps:
+      - name: Configure toolchain
+        run: |
+          sudo apt update
+          sudo apt install valgrind cloc python3-pip python3-venv
       - name: Install PHP ${{ matrix.php-version }}
         uses: shivammathur/setup-php@v2
         with:
