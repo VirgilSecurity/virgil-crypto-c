@@ -11,12 +11,7 @@ jobs:
       - name: Configure toolchain
         run: |
           sudo apt update
-          sudo apt install valgrind
-          sudo apt install cloc
-          cmake --version
-          python3 --version
-          pip3 list --outdated
-          pip3 install -U protobuf grpcio-tools
+          sudo apt install valgrind cloc python3-pip python3-venv
       - name: Configure project
         run: >
           cmake -S. -Bbuild
