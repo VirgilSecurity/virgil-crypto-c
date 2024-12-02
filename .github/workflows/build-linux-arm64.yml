@@ -5,35 +5,27 @@ on:
       - "**"
 jobs:
   build-linux:
-    runs-on: ubuntu22-arm64
+    runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
-      - uses: actions/checkout@v4
-      - name: Configure toolchain
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+
+      - name: Build and push to local registry
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: localhost:5000/virgil-crypto-c-arm64:latest
+
+      - name: Inspect
         run: |
-          sudo apt update
-          cmake --version
-          python3 --version
-          pip3 list --outdated
-          pip3 install -U protobuf grpcio-tools
-      - name: Configure project
-        run: >
-          cmake -S. -Bbuild
-          -DENABLE_HEAVY_TESTS=OFF
-          -DVIRGIL_C_MT_TESTING=OFF
-          -DENABLE_BENCHMARKING=ON
-          -DVIRGIL_POST_QUANTUM=ON
-          -DVIRGIL_PROGRAMS=ON
-      - name: Build for testing
-        run: cmake --build build -- -j$(nproc)
-      - name: Run tests
-        working-directory: build
-        run: ctest --output-on-failure
-      - name: Build multi-threading tests
-        run: |
-          cmake -S. -Bbuild -DVIRGIL_C_MT_TESTING=ON
-          cmake --build build -- -j$(nproc)
-      - name: Run multi-threading tests
-        working-directory: build
-        run: ctest -L multi-threading --output-on-failure
-      - name: Run benchmarks
-        run: ./build/benchmarks/foundation/bench
+          docker buildx imagetools inspect localhost:5000/virgil-crypto-c-arm64:latest
