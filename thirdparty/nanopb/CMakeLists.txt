@@ -114,6 +114,7 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${NANOPB_INSTALL_LOCATION}"
             "-DBUILD_SHARED_LIBS=OFF"
+            "-Dnanopb_PYTHON_INSTDIR_OVERRIDE=${NANOPB_INSTALL_LOCATION}"
             "-Dnanopb_BUILD_RUNTIME=ON"
             "-Dnanopb_BUILD_GENERATOR=ON"
             "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
