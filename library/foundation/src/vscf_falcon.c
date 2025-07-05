@@ -568,8 +568,8 @@ vscf_falcon_sign_hash(const vscf_falcon_t *self, const vscf_impl_t *private_key,
 
     unsigned char tmp[FALCON_TMPSIZE_SIGNDYN(vscf_falcon_LOGN_512)] = {0x00};
     size_t sig_len = vsc_buffer_unused_len(signature);
-    const int sign_status = falcon_sign_dyn(&shake256, vsc_buffer_unused_bytes(signature), &sig_len,
-            private_key_data.bytes, private_key_data.len, digest.bytes, digest.len, 1, tmp, sizeof(tmp));
+    const int sign_status = falcon_sign_dyn(&shake256, vsc_buffer_unused_bytes(signature), &sig_len, FALCON_SIG_CT,
+            private_key_data.bytes, private_key_data.len, digest.bytes, digest.len, tmp, sizeof(tmp));
 
     if (sign_status == FALCON_ERR_FORMAT) {
         return vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY;
@@ -618,8 +618,8 @@ vscf_falcon_verify_hash(const vscf_falcon_t *self, const vscf_impl_t *public_key
     vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
 
     unsigned char tmp[FALCON_TMPSIZE_VERIFY(vscf_falcon_LOGN_512)] = {0x00};
-    const int verify_status = falcon_verify(signature.bytes, signature.len, public_key_data.bytes, public_key_data.len,
-            digest.bytes, digest.len, tmp, sizeof(tmp));
+    const int verify_status = falcon_verify(signature.bytes, signature.len, FALCON_SIG_CT, public_key_data.bytes,
+            public_key_data.len, digest.bytes, digest.len, tmp, sizeof(tmp));
 
     return verify_status == 0;
 }
