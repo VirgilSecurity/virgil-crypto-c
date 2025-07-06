@@ -103,7 +103,7 @@ mock_assert_reset(void);
 //
 //  Assertion handler that fills g_mock_assert_result in case of assertion.
 //
-void
+VSC_NORETURN void
 mock_assert_handler(const char *message, const char *file, int line);
 
 
