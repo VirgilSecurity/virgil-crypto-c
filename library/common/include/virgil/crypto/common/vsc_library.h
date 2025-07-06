@@ -134,6 +134,12 @@ extern "C" {
 #   define VSC_NODISCARD
 #endif
 
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSC_NORETURN __attribute__ ((noreturn))
+#else
+#   define VSC_NORETURN
+#endif
+
 //
 //  Custom implementation of the number ceil algorithm.
 //

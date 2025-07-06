@@ -97,6 +97,16 @@
         </code>
     </macros>
 
+    <macros name="noreturn">
+        <code lang="c">
+            #if (defined(__GNUC__) &amp;&amp; __GNUC__ >= 4) || defined(__clang__)
+            #   define .(c_global_macros_noreturn) __attribute__ ((noreturn))
+            #else
+            #   define .(c_global_macros_noreturn)
+            #endif
+        </code>
+    </macros>
+
     <macros name="ceil">
         Custom implementation of the number ceil algorithm.
 

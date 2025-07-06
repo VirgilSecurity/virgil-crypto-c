@@ -57,6 +57,8 @@ vsce_handle_throw_exception(vsce_status_t status) {
 
     switch(status) {
 
+    case vsce_status_SUCCESS:
+        break;
     case vsce_status_ERROR_INVALID_SUCCESS_PROOF:
         zend_throw_exception_ex(vsce_exception_ce, -1, "Success proof check failed.");
         break;

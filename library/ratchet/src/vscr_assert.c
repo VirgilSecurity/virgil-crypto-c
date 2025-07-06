@@ -97,7 +97,7 @@ vscr_assert_change_handler(vscr_assert_handler_fn handler_cb) {
 //  Assertion handler, that print given information and abort program.
 //  This is default handler.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC VSCR_NORETURN void
 vscr_assert_abort(const char *message, const char *file, int line) {
 
     printf("Assertion failed: %s, file %s, line %d\n",
@@ -112,7 +112,7 @@ vscr_assert_abort(const char *message, const char *file, int line) {
 //
 //  Trigger active assertion handler.
 //
-VSCR_PUBLIC void
+VSCR_PUBLIC VSCR_NORETURN void
 vscr_assert_trigger(const char *message, const char *file, int line) {
 
     active_handler (message, file, line);

@@ -98,7 +98,7 @@ vscp_assert_change_handler(vscp_assert_handler_fn handler_cb) {
 //  Assertion handler, that print given information and abort program.
 //  This is default handler.
 //
-VSCP_PUBLIC void
+VSCP_PUBLIC VSCP_NORETURN void
 vscp_assert_abort(const char *message, const char *file, int line) {
 
     printf("Assertion failed: %s, file %s, line %d\n",
@@ -113,7 +113,7 @@ vscp_assert_abort(const char *message, const char *file, int line) {
 //
 //  Trigger active assertion handler.
 //
-VSCP_PUBLIC void
+VSCP_PUBLIC VSCP_NORETURN void
 vscp_assert_trigger(const char *message, const char *file, int line) {
 
     active_handler (message, file, line);

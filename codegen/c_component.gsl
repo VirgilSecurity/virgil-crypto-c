@@ -773,6 +773,12 @@ function c_component_create_modifiers (component, destination)
             .value = ".(c_global_macros_private)"
         endif
     endnew
+
+    if is_true (my.component.noreturn)
+        new c_modifier to my.destination
+            .value = ".(c_global_macros_noreturn)"
+        endnew
+    endif
 endfunction
 
 # ---------------------------------------------------------------------------
@@ -1122,6 +1128,12 @@ function c_component_create_callback (callback, destination)
             c_component_create_return (my.callback->return, c_callback)
         else
             c_component_create_void_return (c_callback)
+        endif
+
+        if is_true (my.callback.noreturn)
+            new c_modifier to c_callback
+                .value = ".(c_global_macros_noreturn)"
+            endnew
         endif
     endnew
 endfunction

@@ -9,7 +9,7 @@
     <c_include file="stdio.h" scope="private" is_system="1" />
     <c_include file="assert.h" scope="private" is_system="1" if=".(c_global_macros_have_assert_h)" />
 
-    <callback name="handler">
+    <callback name="handler" noreturn="1">
         Assertion handler callback type.
 
         <argument name="message" type="string" />
@@ -44,7 +44,7 @@
     </method>
 
 
-    <method name="abort">
+    <method name="abort" noreturn="1">
         Assertion handler, that print given information and abort program.
         This is default handler.
 
@@ -63,7 +63,7 @@
     </method>
 
 
-    <method name="trigger">
+    <method name="trigger" noreturn="1">
         Trigger active assertion handler.
 
         <argument name="message" type="string" />

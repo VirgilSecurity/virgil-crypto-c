@@ -50,6 +50,8 @@ vscp_handle_throw_exception(vscp_status_t status) {
 
     switch(status) {
 
+    case vscp_status_SUCCESS:
+        break;
     case vscp_status_ERROR_BAD_ARGUMENTS:
         zend_throw_exception_ex(vscp_exception_ce, -1, "This error should not be returned if assertions is enabled.");
         break;
