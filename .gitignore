@@ -40,8 +40,8 @@ Carthage
 !/wrappers/php/VirgilCryptoWrapper/composer.lock
 
 # Python venv
-.venv/
-venv/
+.venv*/
+venv*/
 
 # Copilot
 .codegpt

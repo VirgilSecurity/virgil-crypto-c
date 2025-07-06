@@ -186,7 +186,7 @@ extern "C" {
 //
 //  Assertion handler callback type.
 //
-typedef void (VSCE_NORETURN *vsce_assert_handler_fn)(const char *message, const char *file, int line);
+typedef VSCE_NORETURN void (*vsce_assert_handler_fn)(const char *message, const char *file, int line);
 
 //
 //  Change active assertion handler.
