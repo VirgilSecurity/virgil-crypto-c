@@ -18,11 +18,16 @@ jobs:
             arch-short: x64
     name: PHP ${{ matrix.php-version }} build on ${{ matrix.os }} for arch ${{ matrix.arch }}
     steps:
-      - name: Configure toolchain
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.13"
+      - name: Install dependencies
+        run: |
+          pip3 install protobuf grpcio-tools
+      - name: Check toolchain versions
         run: |
           cmake --version
           python3 --version
-          pip3 install protobuf grpcio-tools
       - name: Install MSVC Dev Cmd
         uses: ilammy/msvc-dev-cmd@v1
         with:

@@ -41,6 +41,8 @@ if(NOT PB_LIBRARY)
     return()
 endif()
 
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+
 # ---------------------------------------------------------------------------
 #   Build Options
 # ---------------------------------------------------------------------------
@@ -112,6 +114,7 @@ ExternalProject_Add(protobuf-nanopb-ext
             "-Dnanopb_MSVC_STATIC_RUNTIME=ON"
             "-DCMAKE_INSTALL_LIBDIR=lib"
             "-Dnanopb_PROTOC_PATH=${PROTOC_EXE}"
+            "-DPython_EXECUTABLE=${Python3_EXECUTABLE}"
         PATCH_COMMAND
             ${CMAKE_COMMAND}
                 -DPB_H_FILE="${CMAKE_CURRENT_BINARY_DIR}/protobuf-nanopb-ext-prefix/src/protobuf-nanopb-ext/pb.h"
