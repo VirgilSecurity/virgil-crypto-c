@@ -17,7 +17,7 @@
     <cgo_link platform="darwin" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon"/>
     <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lpthread"/>
     <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lpthread"/>
-    <cgo_link platform="windows" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon"/>
+    <cgo_link platform="windows" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lbcrypt"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for foundation library.

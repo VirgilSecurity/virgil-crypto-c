@@ -218,6 +218,7 @@ add_subdirectory("thirdparty/nanopb")
 if(VIRGIL_POST_QUANTUM)
     add_subdirectory("thirdparty/round5")
     add_subdirectory("thirdparty/falcon")
+    add_subdirectory("thirdparty/liboqs")
 endif()
 
 # ---------------------------------------------------------------------------
