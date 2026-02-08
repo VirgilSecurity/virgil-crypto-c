@@ -143,11 +143,7 @@ fi
 # ###########################################################################
 show_info "Change version within Java project files."
 pushd ${ROOT_DIR}/wrappers/java >/dev/null
-if [ -z "${VERSION_LABEL}" ]; then
-    ./mvnw versions:set -DnewVersion="${VERSION}" >/dev/null
-else
-    ./mvnw versions:set -DnewVersion="${VERSION}-SNAPSHOT" >/dev/null
-fi
+./mvnw versions:set -DnewVersion="${VERSION_FULL}" >/dev/null
 popd >/dev/null
 
 # ###########################################################################

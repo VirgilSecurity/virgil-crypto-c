@@ -1,0 +1,38 @@
+# Gradle Build Properties
+# ======================
+
+# Android Build Settings
+org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
+android.useAndroidX=true
+android.enableJetifier=false
+
+# Enable Gradle Module Metadata for unified JVM/Android artifacts
+# This allows consumers to automatically select the right variant (JVM jar or Android AAR)
+org.gradle.configureondemand=true
+
+# Publishing Credentials
+# ======================
+# Option 1: Store in this file (NOT recommended for version control)
+# Option 2: Store in ~/.gradle/gradle.properties (recommended)
+# Option 3: Use environment variables
+
+# Maven Central (Sonatype) credentials
+# Get these from https://s01.oss.sonatype.org/
+ossrhUsername=YOUR_SONATYPE_USERNAME
+ossrhPassword=YOUR_SONATYPE_PASSWORD
+
+# GPG Signing
+# ===========
+# Option 1: Use in-memory signing (recommended for CI/CD)
+# Export your key: gpg --export-secret-keys YOUR_KEY_ID | base64
+signing.key=YOUR_BASE64_ENCODED_GPG_KEY
+signing.password=YOUR_GPG_KEY_PASSWORD
+
+# Option 2: Use GPG agent (recommended for local development)
+# signing.gnupg.executable=gpg
+# signing.gnupg.keyName=YOUR_KEY_ID
+
+# Build Performance
+# =================
+org.gradle.parallel=true
+org.gradle.caching=true
