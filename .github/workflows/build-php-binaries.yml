@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ["8.2.30", "8.3.29", "8.4.16"]
+        php-version: ["8.2", "8.3", "8.4"]
         arch: [x86_64]
         include:
           - arch: x86_64
@@ -79,7 +79,10 @@ jobs:
           }
 
           $versionsToTry = @($runtime_ver)
-          if ($requested_ver -ne $runtime_ver) { $versionsToTry += $requested_ver }
+          # Only try the requested version if it is a fully-qualified PHP version (x.y.z).
+          if (($requested_ver -ne $runtime_ver) -and ($requested_ver -match '^\d+\.\d+\.\d+$')) {
+            $versionsToTry += $requested_ver
+          }
 
           $chosen = $null
           foreach ($ver in $versionsToTry) {
@@ -128,7 +131,8 @@ jobs:
           -DVIRGIL_LIB_PYTHIA=OFF ^
           -DCMAKE_BUILD_TYPE=Release ^
           -DVIRGIL_PACKAGE_PLATFORM_ARCH="${{ matrix.arch }}" ^
-          -DVIRGIL_PACKAGE_LANGUAGE_VERSION="${{ steps.setup-php.outputs.php-version }}" ^
+          -DVIRGIL_PACKAGE_PLATFORM=windows ^
+          -DVIRGIL_PACKAGE_LANGUAGE_VERSION="${{ matrix.php-version }}" ^
           -DCPACK_OUTPUT_FILE_PREFIX=php ^
           -DENABLE_CLANGFORMAT=OFF ^
           -Bbuild -S.
@@ -187,7 +191,8 @@ jobs:
           cmake -Cconfigs/php-config.cmake \
               -DCMAKE_BUILD_TYPE=Release \
               -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }} \
-              -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ steps.setup-php.outputs.php-version }} \
+              -DVIRGIL_PACKAGE_PLATFORM=linux \
+              -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }} \
               -DCPACK_OUTPUT_FILE_PREFIX=php \
               -DENABLE_CLANGFORMAT=OFF \
               -DED25519_REF10=OFF -DED25519_AMD64_RADIX_64_24K=ON \
@@ -265,7 +270,8 @@ jobs:
               -DCMAKE_BUILD_TYPE=Release \
               -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
               -DVIRGIL_PACKAGE_PLATFORM_ARCH=${{ matrix.arch }} \
-              -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ steps.setup-php.outputs.php-version }} \
+              -DVIRGIL_PACKAGE_PLATFORM=macos \
+              -DVIRGIL_PACKAGE_LANGUAGE_VERSION=${{ matrix.php-version }} \
               -DCPACK_OUTPUT_FILE_PREFIX=php \
               -DENABLE_CLANGFORMAT=OFF \
               ${{ matrix.optimizations }} \
