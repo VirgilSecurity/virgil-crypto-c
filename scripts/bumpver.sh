@@ -148,12 +148,7 @@ popd >/dev/null
 
 # ###########################################################################
 show_info "Change version within Android project files."
-
-if [ -z "${VERSION_LABEL}" ]; then
-    sed_replace "version \".*\"" "version \"${VERSION}\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
-else
-    sed_replace "version \".*\"" "version \"${VERSION}-SNAPSHOT\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
-fi
+sed_replace "version \".*\"" "version \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/java/android/build.gradle"
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
