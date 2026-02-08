@@ -227,10 +227,10 @@ jobs:
         include:
           - arch: x86_64
             optimizations: -DED25519_REF10=OFF -DED25519_AMD64_RADIX_64_24K=ON
-            should_test: true
+            should_test: false
           - arch: arm64
             optimizations: -DED25519_REF10=ON
-            should_test: false
+            should_test: true
     name: macOS PHP ${{ matrix.php-version }} (${{ matrix.arch }})
     steps:
       - name: Install PHP ${{ matrix.php-version }}
