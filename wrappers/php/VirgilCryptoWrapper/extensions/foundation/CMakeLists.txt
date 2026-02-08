@@ -96,7 +96,8 @@ if(ENABLE_TESTING)
             NAME test_foundation_php
             COMMAND "${PHP_EXECUTABLE}"
 
-                    -d "extension=$<TARGET_FILE:foundation_php>"
+                    -d "extension_dir=$<TARGET_FILE_DIR:foundation_php>"
+                    -d "extension=vscf_foundation_php"
                     -d safe_mode=Off
                     "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit"
                         --bootstrap
@@ -127,4 +128,3 @@ if(VIRGIL_INSTALL_WRAP_SRCS)
                 "*.php"
             )
 endif()
-

@@ -84,7 +84,10 @@ target_link_libraries(pythia_php
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_pythia_php
-            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:pythia_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+            COMMAND "${PHP_EXECUTABLE}"
+                    -d "extension_dir=$<TARGET_FILE_DIR:pythia_php>"
+                    -d "extension=pythia_php"
+                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests/PythiaTest.php"
             )
 endif()

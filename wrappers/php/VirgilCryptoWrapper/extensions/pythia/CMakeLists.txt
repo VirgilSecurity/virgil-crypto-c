@@ -96,7 +96,8 @@ if(ENABLE_TESTING)
             NAME test_pythia_php
             COMMAND "${PHP_EXECUTABLE}"
 
-                    -d "extension=$<TARGET_FILE:pythia_php>"
+                    -d "extension_dir=$<TARGET_FILE_DIR:pythia_php>"
+                    -d "extension=vscp_pythia_php"
                     -d safe_mode=Off
                     "${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit"
                         --bootstrap
@@ -127,4 +128,3 @@ if(VIRGIL_INSTALL_WRAP_SRCS)
                 "*.php"
             )
 endif()
-
