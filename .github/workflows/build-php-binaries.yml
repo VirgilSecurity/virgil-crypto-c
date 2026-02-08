@@ -59,7 +59,12 @@ jobs:
           $runtime_ver = "${{ steps.setup-php.outputs.php-version }}"
 
           $php_devel_zip = "php-devel.zip"
-          $base = "https://windows.php.net/downloads/releases"
+
+          # Devel packs for some patch versions can be moved to the archives directory.
+          $bases = @(
+            "https://windows.php.net/downloads/releases",
+            "https://windows.php.net/downloads/releases/archives"
+          )
 
           function Get-Candidates([string]$ver) {
             $variants = @(
@@ -70,19 +75,46 @@ jobs:
             )
 
             $items = @()
-            foreach ($v in $variants) {
-              $ntsPart = if ($v.nts) { "-nts" } else { "" }
-              $file = "php-devel-pack-$ver$ntsPart-Win32-$($v.vs)-$arch.zip"
-              $items += @{ url = "$base/$file"; ver = $ver; vs = $v.vs; nts = $v.nts }
+            foreach ($base in $bases) {
+              foreach ($v in $variants) {
+                $ntsPart = if ($v.nts) { "-nts" } else { "" }
+                $file = "php-devel-pack-$ver$ntsPart-Win32-$($v.vs)-$arch.zip"
+                $items += @{ url = "$base/$file"; ver = $ver; vs = $v.vs; nts = $v.nts }
+              }
             }
             return $items
           }
 
-          $versionsToTry = @($runtime_ver)
-          # Only try the requested version if it is a fully-qualified PHP version (x.y.z).
-          if (($requested_ver -ne $runtime_ver) -and ($requested_ver -match '^\d+\.\d+\.\d+$')) {
-            $versionsToTry += $requested_ver
+          function Get-VersionFallbacks([string]$ver) {
+            # For example, if runtime is 8.2.30, try: 8.2.30, 8.2.29, 8.2.28.
+            if ($ver -notmatch '^(\d+)\.(\d+)\.(\d+)$') {
+              return @($ver)
+            }
+
+            $maj = [int]$Matches[1]
+            $min = [int]$Matches[2]
+            $pat = [int]$Matches[3]
+
+            $out = @()
+            for ($i = 0; $i -lt 3; $i++) {
+              $p = $pat - $i
+              if ($p -lt 0) { break }
+              $out += "$maj.$min.$p"
+            }
+            return $out
           }
+
+          # Try patch fallbacks based on the actually installed PHP runtime.
+          $versionsToTry = @(Get-VersionFallbacks $runtime_ver)
+
+          # If the matrix requested a specific patch version, also try it (and its patch fallbacks).
+          if (($requested_ver -ne $runtime_ver) -and ($requested_ver -match '^\d+\.\d+\.\d+$')) {
+            $versionsToTry += (Get-VersionFallbacks $requested_ver)
+          }
+
+          # De-duplicate while preserving order.
+          $seen = @{}
+          $versionsToTry = @($versionsToTry | Where-Object { if ($seen.ContainsKey($_)) { $false } else { $seen[$_] = $true; $true } })
 
           $chosen = $null
           foreach ($ver in $versionsToTry) {
@@ -100,7 +132,7 @@ jobs:
           }
 
           if (-not $chosen) {
-            throw "Could not download a PHP devel pack for runtime '$runtime_ver' nor requested '$requested_ver' (tried vs17/vs16 and ts/nts variants)."
+            throw "Could not download a PHP devel pack for runtime '$runtime_ver' nor requested '$requested_ver' (tried versions: $($versionsToTry -join ', '); tried vs17/vs16 and ts/nts; tried releases and releases/archives)."
           }
 
           Expand-Archive -Path $php_devel_zip -DestinationPath "c:\\tools" -Force
