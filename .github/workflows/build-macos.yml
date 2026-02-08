@@ -8,21 +8,29 @@ on:
       - "hotfix/**"
 jobs:
   build-macos:
-    runs-on: macos-13
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
+      - name: Check Xcode
+        run: |
+          xcode-select -p
+          xcodebuild -version
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup Python virtual environment
+        run: python3 -m venv .venv
       - name: Configure toolchain
         run: |
           cmake --version
           python3 --version
-          pip3 install protobuf grpcio-tools
       - name: Configure project
-        run: >
-          cmake -S. -Bbuild
-          -DVIRGIL_C_MT_TESTING=ON
-          -DENABLE_BENCHMARKING=ON
+        run: |
+          source .venv/bin/activate
+          cmake -S. -Bbuild \
+          -DVIRGIL_C_MT_TESTING=ON \
+          -DENABLE_BENCHMARKING=ON \
           -DVIRGIL_PROGRAMS=ON
       - name: Build project
         run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
@@ -31,11 +39,13 @@ jobs:
         working-directory: build
 
   SPM:
-    runs-on: macos-13
-    env:
-      DEVELOPER_DIR: /Applications/Xcode_14.3.1.app/Contents/Developer
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
+      - name: Check Xcode
+        run: |
+          xcode-select -p
+          xcodebuild -version
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
       - name: Run SPM tests
