@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk rootProject.ext.androidCompileSdk
     namespace 'com.virgilsecurity.crypto.ratchet'
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion rootProject.ext.androidMinSdk
+        targetSdkVersion rootProject.ext.androidTargetSdk
         consumerProguardFiles 'proguard-rules.txt'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

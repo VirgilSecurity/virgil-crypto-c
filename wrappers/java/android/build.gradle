@@ -13,6 +13,13 @@ buildscript {
     }
 }
 
+// Shared Android SDK versions for all modules.
+ext {
+    androidCompileSdk = 34
+    androidMinSdk = 21
+    androidTargetSdk = 34
+}
+
 allprojects {
     repositories {
         google()

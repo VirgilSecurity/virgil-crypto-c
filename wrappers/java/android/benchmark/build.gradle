@@ -2,11 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'androidx.benchmark'
 
 android {
-    compileSdkVersion 28
+    compileSdk rootProject.ext.androidCompileSdk
+
+    namespace 'com.virgilsecurity.crypto.benchmark'
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.androidMinSdk
+        targetSdkVersion rootProject.ext.androidTargetSdk
         versionCode 1
         versionName "1.0"
 
