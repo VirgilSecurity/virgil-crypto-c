@@ -8,6 +8,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Setup Python virtual environment
+        run: python3 -m venv .venv
       - name: Configure toolchain
         run: |
           sudo apt update
@@ -15,15 +21,14 @@ jobs:
           sudo apt install cloc
           cmake --version
           python3 --version
-          pip3 list --outdated
-          pip3 install -U protobuf grpcio-tools
       - name: Configure project
-        run: >
-          cmake -S. -Bbuild
-          -DENABLE_HEAVY_TESTS=OFF
-          -DVIRGIL_C_MT_TESTING=OFF
-          -DENABLE_BENCHMARKING=ON
-          -DVIRGIL_POST_QUANTUM=ON
+        run: |
+          source .venv/bin/activate
+          cmake -S. -Bbuild \
+          -DENABLE_HEAVY_TESTS=OFF \
+          -DVIRGIL_C_MT_TESTING=OFF \
+          -DENABLE_BENCHMARKING=ON \
+          -DVIRGIL_POST_QUANTUM=ON \
           -DVIRGIL_PROGRAMS=ON
       - name: Build for memcheck
         run: cmake --build build -- -j$(nproc)
@@ -34,6 +39,7 @@ jobs:
           cat Testing/Temporary/MemoryChecker.*.log
       - name: Build multi-threading tests
         run: |
+          source .venv/bin/activate
           cmake -S. -Bbuild -DVIRGIL_C_MT_TESTING=ON
           cmake --build build -- -j$(nproc)
       - name: Run multi-threading tests

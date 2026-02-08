@@ -57,16 +57,12 @@ function(target_protobuf_sources target)
     # Check runtime
     #
     if(TARGET protoc)
-        set(PROTOC_EXE protoc)
-
-    elseif(COMMAND find_host_package)
-        find_host_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
-
-    else()
-        find_program(PROTOC_EXE NAMES protoc${HOST_EXECUTABLE_SUFFIX})
+        get_target_property(PROTOC_EXE protoc IMPORTED_LOCATION)
     endif()
 
-    if(NOT PROTOC_EXE)
+    if(PROTOC_EXE)
+        message(STATUS "Protobuf generator: ${PROTOC_EXE}")
+    else()
         message(FATAL_ERROR
                 "Protobuf generator 'protoc${HOST_EXECUTABLE_SUFFIX}' is not found as a target "
                 "and not found as an executable within system"
@@ -76,8 +72,9 @@ function(target_protobuf_sources target)
     #
     # Check nanopb plug-in.
     #
+    find_program(PROTOC_GEN_NANOPB  protoc-gen-nanopb PATHS "$ENV{VIRTUAL_ENV}/bin")
     if(NOT PROTOC_GEN_NANOPB)
-        message(FATAL_ERROR "CMake variable PROTOC_GEN_NANOPB that points to the nanopb plug-in script is not defined.")
+        message(FATAL_ERROR "Nanopb generator is not found nigher in system path nor in $ENV{VIRTUAL_ENV}/bin/protoc-gen-nanopb")
     endif()
 
     #
