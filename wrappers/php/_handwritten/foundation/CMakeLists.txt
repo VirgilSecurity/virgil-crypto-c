@@ -84,10 +84,7 @@ target_link_libraries(foundation_php
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_foundation_php
-            COMMAND "${PHP_EXECUTABLE}"
-                    -d "extension_dir=$<TARGET_FILE_DIR:foundation_php>"
-                    -d "extension=foundation_php"
-                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:foundation_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()

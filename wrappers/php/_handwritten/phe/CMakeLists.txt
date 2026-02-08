@@ -84,10 +84,7 @@ target_link_libraries(phe_php
 if(ENABLE_TESTING AND VIRGIL_PHP_TESTING AND PHP_EXECUTABLE AND PHPUNIT_EXECUTABLE)
     add_test(
             NAME test_phe_php
-            COMMAND "${PHP_EXECUTABLE}"
-                    -d "extension_dir=$<TARGET_FILE_DIR:phe_php>"
-                    -d "extension=phe_php"
-                    -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
+            COMMAND "${PHP_EXECUTABLE}" -d "extension=$<TARGET_FILE:phe_php>" -d safe_mode=Off "${PHPUNIT_EXECUTABLE}"
                     --include-path "${CMAKE_CURRENT_LIST_DIR}/src" "${CMAKE_CURRENT_LIST_DIR}/tests"
             )
 endif()

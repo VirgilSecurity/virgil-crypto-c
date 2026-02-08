@@ -56,8 +56,7 @@ function php_map_custom_cmakelists (in_php_project, out_php_module)
 
     for my.in_php_project->require_projects.require_project as require_project0
         my._dep_link += format_left("$(require_project0.name0:)_php", 5)
-        my._dep_ext += format_left("-d \"extension_dir=$<TARGET_FILE_DIR:$(require_project0.name0:)_php>\"", 8)
-        my._dep_ext += format_left("-d \"extension=$(require_project0.prefix0:)_$(require_project0.name0:)_php\"", 8)
+        my._dep_ext += format_left("-d \"extension=$<TARGET_FILE:$(require_project0.name0:)_php>\"", 8)
     endfor
 
     new licence to my.out_php_module
@@ -143,9 +142,8 @@ function php_map_custom_cmakelists (in_php_project, out_php_module)
                 add_test(
                         NAME test_$(my._project:)_php
                         COMMAND \"${PHP_EXECUTABLE}\"
-                                $(my._dep_ext:)
-                                -d \"extension_dir=$<TARGET_FILE_DIR:$(my._project:)_php>\"
-                                -d \"extension=$(my._project:)_php\"
+                                $(my._dep_ext:) 
+                                -d \"extension=$<TARGET_FILE:$(my._project:)_php>\"
                                 -d safe_mode=Off
                                 \"${VIRGIL_CRYPTO_WRAPPER_PROJECT_DIR}/vendor/phpunit/phpunit/phpunit\"
                                     --bootstrap
