@@ -36,3 +36,10 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+// Helper task for CI to print the effective Gradle project version.
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}

@@ -66,9 +66,11 @@ jobs:
 
       - name: Verify version matches tag
         if: github.event_name == 'push'
+        working-directory: wrappers/java
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          POM_VERSION=$(grep -m 1 '<version>' wrappers/java/pom.xml | sed 's/.*<version>\(.*\)<\/version>.*/\1/' | tr -d '[:space:]')
+          # Use Maven to evaluate the effective project version (more robust than grepping XML).
+          POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d '[:space:]')
           echo "Tag version: $TAG_VERSION"
           echo "POM version: $POM_VERSION"
           # Remove -SNAPSHOT suffix for comparison
@@ -125,12 +127,17 @@ jobs:
 
       - name: Verify version matches tag
         if: github.event_name == 'push'
+        working-directory: wrappers/java/android
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/v}
-          GRADLE_VERSION=$(grep 'version' wrappers/java/android/build.gradle | head -1 | sed 's/.*version "\(.*\)".*/\1/' | tr -d '[:space:]')
+          # Ask Gradle for the effective project version (no parsing of 'properties' output).
+          GRADLE_VERSION=$(./gradlew -q printVersion | tr -d '[:space:]')
+          if [ -z "$GRADLE_VERSION" ]; then
+            echo "ERROR: Could not extract Gradle version via ./gradlew printVersion"
+            exit 1
+          fi
           echo "Tag version: $TAG_VERSION"
           echo "Gradle version: $GRADLE_VERSION"
-          # Remove -SNAPSHOT suffix for comparison
           GRADLE_VERSION_BASE=${GRADLE_VERSION%-SNAPSHOT}
           if [ "$TAG_VERSION" != "$GRADLE_VERSION_BASE" ]; then
             echo "ERROR: Tag version ($TAG_VERSION) doesn't match Gradle version ($GRADLE_VERSION_BASE)"
