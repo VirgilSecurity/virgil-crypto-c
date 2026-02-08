@@ -2,7 +2,7 @@
 
 import PackageDescription
 
-let version = "0.17.2-dev.1"
+let version = "0.17.2-rc1"
 let useLocalBinaries = false
 
 let vscCommonBinaryTarget = {
