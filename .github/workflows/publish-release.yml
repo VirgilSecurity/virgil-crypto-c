@@ -200,6 +200,8 @@ jobs:
 
           # Central requires that each artifact directory ultimately contains a POM.
           for a in common foundation phe pythia ratchet; do
+            echo "Files directly under artifact dir (${a}):"
+            find "build/central-bundle-repo/com/virgilsecurity/crypto/${a}" -maxdepth 1 -type f 2>/dev/null | sort || true
             COUNT=$(find "build/central-bundle-repo/com/virgilsecurity/crypto/${a}" -type f -name '*.pom' 2>/dev/null | wc -l | tr -d '[:space:]')
             echo "POM count for ${a}: ${COUNT}"
             if [ "${COUNT}" = "0" ]; then
@@ -213,6 +215,11 @@ jobs:
         working-directory: wrappers/java/android
         run: |
           test -d build/central-bundle-repo
+
+          # Central Portal bundles should not include repository metadata files that some tools generate.
+          # These are normally served by repository managers and may cause validation failures.
+          find build/central-bundle-repo -type f -name 'maven-metadata.xml*' -delete
+          find build/central-bundle-repo -type f -name '*.module*' -delete
 
           echo "POM files generated:"
           POM_COUNT=$(find build/central-bundle-repo -type f -name '*.pom' | wc -l | tr -d '[:space:]')
