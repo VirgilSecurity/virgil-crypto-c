@@ -17,9 +17,10 @@ org.gradle.configureondemand=true
 # Option 3: Use environment variables
 
 # Maven Central (Sonatype) credentials
-# Get these from https://s01.oss.sonatype.org/
-ossrhUsername=YOUR_SONATYPE_USERNAME
-ossrhPassword=YOUR_SONATYPE_PASSWORD
+# Sonatype Central Portal publishing token (Account -> Generate User Token)
+# Note: CI uses GitHub secrets OSSRH_USERNAME/OSSRH_PASSWORD for this token for compatibility.
+ossrhUsername=YOUR_CENTRAL_PORTAL_TOKEN_USERNAME
+ossrhPassword=YOUR_CENTRAL_PORTAL_TOKEN_PASSWORD
 
 # GPG Signing
 # ===========

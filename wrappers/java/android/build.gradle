@@ -33,6 +33,26 @@ allprojects {
     def authentication_password = hasProperty('authentication_password') ? authentication_password : System.getenv('authentication_password')
 }
 
+subprojects { subproj ->
+    // Central Portal uploads expect a Maven-repository-layout bundle.
+    // We publish all Android modules to a local file-based repository, then zip it for upload.
+    subproj.plugins.withId('maven-publish') {
+        subproj.publishing {
+            repositories {
+                maven {
+                    name = 'centralBundle'
+                    url = uri("${rootProject.buildDir}/central-bundle-repo")
+                }
+            }
+        }
+    }
+
+    // Avoid publishing Gradle module metadata (adds extra files that may not be signed).
+    subproj.tasks.withType(org.gradle.api.publish.tasks.GenerateModuleMetadata).configureEach {
+        enabled = false
+    }
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
