@@ -187,6 +187,28 @@ jobs:
             --no-daemon \
             --stacktrace
 
+      - name: Validate bundle repo contains POMs
+        working-directory: wrappers/java/android
+        run: |
+          test -d build/central-bundle-repo
+
+          echo "Top-level bundle repo structure:"
+          find build/central-bundle-repo -maxdepth 6 -type d | head -n 200
+
+          echo "POM files present (first 100):"
+          find build/central-bundle-repo -type f -name '*.pom' | sort | head -n 100
+
+          # Central requires that each artifact directory ultimately contains a POM.
+          for a in common foundation phe pythia ratchet; do
+            COUNT=$(find "build/central-bundle-repo/com/virgilsecurity/crypto/${a}" -type f -name '*.pom' 2>/dev/null | wc -l | tr -d '[:space:]')
+            echo "POM count for ${a}: ${COUNT}"
+            if [ "${COUNT}" = "0" ]; then
+              echo "ERROR: No .pom found for ${a} in bundle repo."
+              find "build/central-bundle-repo/com/virgilsecurity/crypto/${a}" -maxdepth 4 -type f 2>/dev/null | head -n 200 || true
+              exit 1
+            fi
+          done
+
       - name: Build Central Portal bundle zip
         working-directory: wrappers/java/android
         run: |
@@ -213,6 +235,20 @@ jobs:
 
           (cd build/central-bundle-repo && zip -q -r ../central-bundle.zip .)
           ls -la build/central-bundle.zip
+
+      - name: Upload Central bundle (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: central-portal-bundle-android
+          path: wrappers/java/android/build/central-bundle.zip
+
+      - name: Upload Central bundle repo (debug)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: central-portal-bundle-repo-android
+          path: wrappers/java/android/build/central-bundle-repo/
 
       - name: Upload bundle to Sonatype Central Portal
         working-directory: wrappers/java/android
