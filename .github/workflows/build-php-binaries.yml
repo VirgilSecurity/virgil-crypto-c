@@ -4,9 +4,15 @@ on:
   workflow_call: {}
   push:
     branches:
-      - "**"
-    tags:
-      - "*"
+      - develop
+      - main
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
 
 jobs:
   build-windows-php:
