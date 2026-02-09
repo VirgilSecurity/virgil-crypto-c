@@ -158,10 +158,14 @@ jobs:
             exit 1
           fi
 
-      - name: Verify Central bundle publish task exists
+      - name: Verify Central bundle publish tasks exist
         working-directory: wrappers/java/android
         run: |
-          ./gradlew -q help --task publishAllPublicationsToCentralBundleRepository
+          ./gradlew -q help --task :common:publishReleasePublicationToCentralBundleRepository
+          ./gradlew -q help --task :foundation:publishReleasePublicationToCentralBundleRepository
+          ./gradlew -q help --task :phe:publishReleasePublicationToCentralBundleRepository
+          ./gradlew -q help --task :pythia:publishReleasePublicationToCentralBundleRepository
+          ./gradlew -q help --task :ratchet:publishReleasePublicationToCentralBundleRepository
 
       - name: Publish Android artifacts to local bundle repo
         working-directory: wrappers/java/android
@@ -172,7 +176,12 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: |
           rm -rf build/central-bundle-repo build/central-bundle.zip
-          ./gradlew publishAllPublicationsToCentralBundleRepository \
+          ./gradlew \
+            :common:publishReleasePublicationToCentralBundleRepository \
+            :foundation:publishReleasePublicationToCentralBundleRepository \
+            :phe:publishReleasePublicationToCentralBundleRepository \
+            :pythia:publishReleasePublicationToCentralBundleRepository \
+            :ratchet:publishReleasePublicationToCentralBundleRepository \
             -PsigningKey="${SIGNING_KEY}" \
             -PsigningPassword="${SIGNING_PASSWORD}" \
             --no-daemon \
@@ -182,6 +191,15 @@ jobs:
         working-directory: wrappers/java/android
         run: |
           test -d build/central-bundle-repo
+
+          echo "POM files generated:"
+          POM_COUNT=$(find build/central-bundle-repo -type f -name '*.pom' | wc -l | tr -d '[:space:]')
+          echo "${POM_COUNT}"
+          if [ "${POM_COUNT}" = "0" ]; then
+            echo "ERROR: No .pom files found in build/central-bundle-repo; Central Portal requires POMs for each artifact."
+            find build/central-bundle-repo -maxdepth 6 -type f | head -n 200
+            exit 1
+          fi
 
           # Central Portal expects a Maven-repository-layout archive with checksums.
           while IFS= read -r -d '' file; do
