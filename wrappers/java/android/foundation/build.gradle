@@ -86,9 +86,9 @@ afterEvaluate {
             release(MavenPublication) {
                 from components.release
 
-                // Use same artifactId as JVM for unified dependency resolution
+                // Split artifacts: JVM publishes foundation, Android publishes foundation-android.
                 groupId = 'com.virgilsecurity.crypto'
-                artifactId = 'foundation'
+                artifactId = 'foundation-android'
                 version = project.version
 
                 pom {
@@ -103,9 +103,9 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id = 'andrii-iakovenko'
-                            name = 'Andrii Iakovenko'
-                            email = 'iakovenko.andrii@gmail.com'
+                            id = 'virgil-security-inc'
+                            name = 'Virgil Security, Inc.'
+                            email = 'support@virgilsecurity.com'
                             organizationUrl = 'https://www.virgilsecurity.com/'
                         }
                     }
@@ -126,7 +126,7 @@ afterEvaluate {
 
         if (signingKey && signingPassword) {
             useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications.release
         }
-        sign publishing.publications.release
     }
 }
