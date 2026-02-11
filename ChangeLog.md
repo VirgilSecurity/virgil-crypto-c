@@ -1,13 +1,13 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
-## Version 0.17.2 released 2026-02-08
+## Version 0.17.2 released 2026-02-10
 
 ### Changes
 
 - Apple: Remove CocoaPods
 - PHP: Update composer version to 2.9.5
-- JVM: Update deploy to the central repo
-- Android: Update NDK to r29
+- JVM/Android: Update deploy to the central repo
+- Android: Support 16 KB page sizes
 - Third-party: Update nanopb to 0.4.9
 - PHP: Update PHP minimum version to 8.2
 - CI: Fix PHP builds
