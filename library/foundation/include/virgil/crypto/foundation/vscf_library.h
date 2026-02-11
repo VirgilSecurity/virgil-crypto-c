@@ -118,7 +118,7 @@ extern "C" {
 
 #define VSCF_VERSION_MINOR 17
 
-#define VSCF_VERSION_PATCH 1
+#define VSCF_VERSION_PATCH 2
 
 #define VSCF_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
@@ -132,6 +132,12 @@ extern "C" {
 #   define VSCF_NODISCARD __attribute__ ((warn_unused_result))
 #else
 #   define VSCF_NODISCARD
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCF_NORETURN __attribute__ ((noreturn))
+#else
+#   define VSCF_NORETURN
 #endif
 
 //

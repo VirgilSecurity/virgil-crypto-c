@@ -34,13 +34,14 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.17.1 LANGUAGES C)
+project(virgil_crypto VERSION 0.17.2 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
 #   Forced build options
 # ---------------------------------------------------------------------------
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ---------------------------------------------------------------------------
 #   Global policies
@@ -164,6 +165,17 @@ option(VIRGIL_INSTALL_WRAP_DEPS "Install wrapper dependencies" ON)
 #
 include(GNUInstallDirs)
 
+# ---------------------------------------------------------------------------
+#   Library shall be built in python virtual environment
+# ---------------------------------------------------------------------------
+if (NOT DEFINED ENV{VIRTUAL_ENV})
+    message(STATUS "Create python virtual environment...")
+    set(ENV{VIRTUAL_ENV} "${CMAKE_CURRENT_BINARY_DIR}/.venv")
+    execute_process(COMMAND python3 -m venv "$ENV{VIRTUAL_ENV}")
+endif()
+
+set(ENV{PATH} "$ENV{VIRTUAL_ENV}/bin:$ENV{PATH}")
+execute_process(COMMAND pip3 install -U -r "${CMAKE_CURRENT_SOURCE_DIR}/requirements.txt")
 
 # ---------------------------------------------------------------------------
 #   Dependencies / thirdparty libraries
@@ -345,13 +357,27 @@ set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture 
 #     platform = name[-version][-arch]
 #
 set(VIRGIL_PACKAGE_NAME "virgil-crypto-c")
+
+# Keep archive names stable and predictable across CI.
+# Desired format (lower-cased):
+#   virgil-crypto-c-<version>[-<label>]-<language>[-<lang_version>]-<platform>[-<arch>]
 list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_CRYPTO_VERSION_LABEL})
+
+if(VIRGIL_CRYPTO_VERSION_LABEL)
+    list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_CRYPTO_VERSION_LABEL})
+endif()
+
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+
+if(VIRGIL_PACKAGE_LANGUAGE_VERSION)
+    list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+endif()
+
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_VERSION})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+
+if(VIRGIL_PACKAGE_PLATFORM_ARCH)
+    list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+endif()
 
 string(REPLACE ";" "-" VIRGIL_PACKAGE_NAME "${VIRGIL_PACKAGE_NAME}")
 string(TOLOWER "${VIRGIL_PACKAGE_NAME}" VIRGIL_PACKAGE_NAME)

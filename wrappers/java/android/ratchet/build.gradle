@@ -1,17 +1,19 @@
 plugins {
     id 'com.android.library'
-    id 'digital.wup.android-maven-publish' version '3.6.2'
+    id 'maven-publish'
     id 'signing'
 }
+import java.util.zip.ZipFile
 
 android {
-    compileSdkVersion 28
+    compileSdk rootProject.ext.androidCompileSdk
+    namespace 'com.virgilsecurity.crypto.ratchet'
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.androidMinSdk
+        targetSdkVersion rootProject.ext.androidTargetSdk
         consumerProguardFiles 'proguard-rules.txt'
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -24,31 +26,29 @@ android {
     sourceSets {
         main {
             java.srcDirs 'src/main/java'
-            java.srcDirs 'src/generated/java'
+            java.srcDirs '../../ratchet/src/main/java'
             jniLibs.srcDirs 'src/main/jniLibs'
             jniLibs.srcDirs 'src/generated/jniLibs'
             res.srcDirs "src/main/res"
         }
     }
 
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
     api project(':common')
     api project(':foundation')
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'commons-lang:commons-lang:2.6'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-}
-
-// Copy *.java files from generated Java folder
-task copySources(type: Copy) {
-    from ('../../ratchet/src/main/java/'){
-        include '**/*.java'
-    }
-    into 'src/generated/java'
+    androidTestImplementation 'androidx.test:runner:1.5.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
 // Copy *.so files from binaries/ folder to native-libs folder
@@ -62,83 +62,84 @@ task copyNativeLibs(type: Copy) {
     }
 }
 
-task clearSources(type: Delete) {
-    delete 'src/generated/java', '*'
-    followSymlinks = true
-}
-
-preBuild.dependsOn 'clearSources'
-preBuild.dependsOn 'copySources'
 preBuild.dependsOn 'copyNativeLibs'
 
 // On "gradle clean" also reverse the copying of the native libraries
 clean.dependsOn 'cleanCopyNativeLibs'
 
-// Build a jar with source files
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
-// Build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-publishing {
-    publications {
-        mavenAar(MavenPublication) {
-
-            artifactId = 'ratchet-android'
-            from components.android
-            artifact sourcesJar
-            artifact javadocJar
-            pom {
-                name = 'Virgil Security Crypto Ratchet'
-                description = 'Implementation of the Double Ratchet Algorithm.'
-                url = 'https://www.virgilsecurity.com/'
-                licenses {
-                    license {
-                        name = 'Virgil Security, Inc. license'
-                        url = 'https://github.com/VirgilSecurity/virgil-crypto-c/blob/master/LICENSE'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'andrii-iakovenko'
-                        name = 'Andrii Iakovenko'
-                        email = 'iakovenko.andrii@gmail.com'
-                        organizationUrl = 'https://www.virgilsecurity.com/'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
-                    developerConnection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
-                    url = 'https://github.com/VirgilSecurity/virgil-crypto-c'
-                }
-            }
+task verifyReleaseAarContents {
+    dependsOn 'bundleReleaseAar'
+    doLast {
+        File aarFile = file("$buildDir/outputs/aar/${project.name}-release.aar")
+        if (!aarFile.exists()) {
+            throw new GradleException("Expected AAR is missing: ${aarFile}")
         }
-    }
-    repositories {
-        maven {
-            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-            credentials {
-                username "${authentication_username}"
-                password "${authentication_password}"
+        ZipFile aarZip = new ZipFile(aarFile)
+        try {
+            def classesEntry = aarZip.getEntry('classes.jar')
+            if (classesEntry == null || classesEntry.size <= 22L) {
+                throw new GradleException("AAR classes.jar is empty for ${project.path}.")
             }
+            def hasJni = aarZip.entries().any { it.name.startsWith('jni/') && it.name.endsWith('.so') }
+            if (!hasJni) {
+                throw new GradleException("AAR has no JNI .so files for ${project.path}.")
+            }
+        } finally {
+            aarZip.close()
         }
     }
 }
 
-signing {
-    sign publishing.publications.mavenAar
+afterEvaluate {
+    tasks.matching { it.name == 'publishReleasePublicationToCentralBundleRepository' || it.name == 'publishReleasePublicationToMavenLocal' }.configureEach {
+        dependsOn verifyReleaseAarContents
+    }
+
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                // Split artifacts: JVM publishes ratchet, Android publishes ratchet-android.
+                groupId = 'com.virgilsecurity.crypto'
+                artifactId = 'ratchet-android'
+                version = project.version
+
+                pom {
+                    name = 'Virgil Security Crypto Ratchet'
+                    description = 'Implementation of the Double Ratchet Algorithm.'
+                    url = 'https://www.virgilsecurity.com/'
+                    licenses {
+                        license {
+                            name = 'Virgil Security, Inc. license'
+                            url = 'https://github.com/VirgilSecurity/virgil-crypto-c/blob/master/LICENSE'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'virgil-security-inc'
+                            name = 'Virgil Security, Inc.'
+                            email = 'support@virgilsecurity.com'
+                            organizationUrl = 'https://www.virgilsecurity.com/'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
+                        developerConnection = 'scm:git:git@github.com:VirgilSecurity/virgil-crypto-c.git'
+                        url = 'https://github.com/VirgilSecurity/virgil-crypto-c'
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        def signingKey = findProperty('signingKey') ?: System.getenv('SIGNING_KEY')
+        def signingPassword = findProperty('signingPassword') ?: System.getenv('SIGNING_PASSWORD')
+
+        if (signingKey && signingPassword) {
+            useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications.release
+        }
+    }
 }

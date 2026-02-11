@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2015-2019 Virgil Security Inc.
+# Copyright (C) 2015-2025 Virgil Security Inc.
 #
 # All rights reserved.
 #
@@ -39,7 +39,7 @@ ExternalProject_Add(benchmark-ext
         GIT_REPOSITORY
             https://github.com/google/benchmark.git
         GIT_TAG
-            v1.7.0
+            v1.9.4
         CMAKE_ARGS
             "-DCMAKE_INSTALL_PREFIX=${CMAKE_CURRENT_BINARY_DIR}/benchmark"
             "-DCMAKE_BUILD_TYPE=Release"

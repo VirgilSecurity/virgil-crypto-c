@@ -71,6 +71,7 @@ function(TRANSITIVE_COMMON_ARGS_ADD)
     transitive_args_add(
             CMAKE_POSITION_INDEPENDENT_CODE
             CMAKE_INSTALL_LIBDIR
+            CMAKE_POLICY_VERSION_MINIMUM
     )
 endfunction()
 
@@ -118,7 +119,8 @@ function(TRANSITIVE_ANDROID_ARGS_ADD)
                 ANDROID_DISABLE_NO_EXECUTE
                 ANDROID_DISABLE_RELRO
                 ANDROID_DISABLE_FORMAT_STRING_CHECKS
-                ANDROID_CCACHE)
+                ANDROID_CCACHE
+                ANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES)
 
         transitive_args_add_value(CMAKE_C_FLAGS "${TRANSITIVE_C_FLAGS}")
         transitive_args_add_value(CMAKE_CXX_FLAGS "${TRANSITIVE_CXX_FLAGS}")

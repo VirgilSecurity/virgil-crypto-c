@@ -118,7 +118,7 @@ extern "C" {
 
 #define VSCR_VERSION_MINOR 17
 
-#define VSCR_VERSION_PATCH 1
+#define VSCR_VERSION_PATCH 2
 
 #define VSCR_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
@@ -132,6 +132,12 @@ extern "C" {
 #   define VSCR_NODISCARD __attribute__ ((warn_unused_result))
 #else
 #   define VSCR_NODISCARD
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCR_NORETURN __attribute__ ((noreturn))
+#else
+#   define VSCR_NORETURN
 #endif
 
 //

@@ -3,11 +3,18 @@ apply plugin: 'com.android.application'
 def BENCHMARK_MEASUREMENTS = hasProperty('BENCHMARK_MEASUREMENTS') ? BENCHMARK_MEASUREMENTS : 1
 
 android {
-    compileSdkVersion 28
+    compileSdk rootProject.ext.androidCompileSdk
+
+    namespace "com.virgilsecurity.crypto"
+
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         applicationId "com.virgilsecurity.crypto"
-        minSdkVersion 21
-        targetSdkVersion 28
+        minSdkVersion rootProject.ext.androidMinSdk
+        targetSdkVersion rootProject.ext.androidTargetSdk
 
         buildConfigField "Integer", "BENCHMARK_MEASUREMENTS", "$BENCHMARK_MEASUREMENTS"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

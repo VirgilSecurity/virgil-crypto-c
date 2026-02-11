@@ -131,6 +131,8 @@ vscf_handle_throw_exception(vscf_status_t status) {
 
     switch(status) {
 
+    case vscf_status_SUCCESS:
+        break;
     case vscf_status_ERROR_BAD_ARGUMENTS:
         zend_throw_exception_ex(vscf_exception_ce, -1, "This error should not be returned if assertions is enabled.");
         break;
@@ -356,7 +358,7 @@ vscf_handle_throw_exception(vscf_status_t status) {
 //
 // Constants
 //
-const char VSCF_FOUNDATION_PHP_VERSION[] = "0.17.1";
+const char VSCF_FOUNDATION_PHP_VERSION[] = "0.17.2";
 const char VSCF_FOUNDATION_PHP_EXTNAME[] = "vscf_foundation_php";
 
 static const char VSCF_IMPL_T_PHP_RES_NAME[] = "vscf_impl_t";

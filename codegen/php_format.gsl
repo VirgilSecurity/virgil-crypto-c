@@ -58,7 +58,7 @@ function php_format_comment (in_comment)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_extension_comment (in_comment)
     check_argument (my, "in_comment", my)
@@ -73,7 +73,7 @@ function php_format_extension_comment (in_comment)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_cmakelists_comment (in_comment)
     check_argument (my, "in_comment", my)
@@ -88,7 +88,7 @@ function php_format_cmakelists_comment (in_comment)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_cmakelists_comment_inline (in_comment)
     check_argument (my, "in_comment", my)
@@ -108,7 +108,7 @@ function php_format_cmakelists_comment_inline (in_comment)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_high_level_method_body (in_php_method)
     check_argument (my, "in_php_method", my)
@@ -179,7 +179,7 @@ function php_format_high_level_method_body (in_php_method)
             $ctx = $(my._function_name:)($(my._arguments:));
             return $(my._impl_class:)::wrap$(my.in_php_method.return_type:Pascal)($ctx);
             ", 0)
-    else 
+    else
         my._return = ""
 
         if my.in_php_method.return_type <> "void"
@@ -239,7 +239,7 @@ function php_format_high_level_method_body (in_php_method)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_low_level_status_exception (in_enum, in_php_module)
     check_arguments (my, "in_enum, in_php_module", my)
@@ -252,16 +252,23 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
 
     my._case = ""
 
-    for my.in_enum.constant as constant0 where constant0.name <> "success"
+    for my.in_enum.constant as constant0
 
         my._const = "$(my._prefix:)_status_$(constant0.name:c, UPPER)"
         my._msg = enum_constant_format_oneline_description(constant0)
 
-        my._case += format_left("\
-        case $(my._const:):
-            zend_throw_exception_ex($(my._prefix:lower)_exception_ce, $(constant0.value:), \"$(my._msg:)\");
-            break;
-        ", 0)
+        if constant0.name = "success"
+            my._case += format_left("\
+            case $(my._const:):
+                break;
+            ", 0)
+        else
+            my._case += format_left("\
+            case $(my._const:):
+                zend_throw_exception_ex($(my._prefix:lower)_exception_ce, $(constant0.value:), \"$(my._msg:)\");
+                break;
+            ", 0)
+        endif
     endfor
 
     my._case = format_left(my._case, 2)
@@ -289,7 +296,7 @@ function php_format_low_level_status_exception (in_enum, in_php_module)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_low_level_wrapp_func_const (in_name, in_prefix, in_is_h)
     check_arguments (my, "in_name, in_prefix, in_is_h", my)
@@ -313,7 +320,7 @@ function php_format_low_level_wrapp_func_const (in_name, in_prefix, in_is_h)
 endfunction
 
 # ---------------------------------------------------------------------------
-#   
+#
 # ---------------------------------------------------------------------------
 function php_format_low_level_wrapp_func_rr (in_name, in_prefix, in_is_h)
     check_arguments (my, "in_name, in_prefix, in_is_h", my)
@@ -322,7 +329,7 @@ function php_format_low_level_wrapp_func_rr (in_name, in_prefix, in_is_h)
 
     if my.in_is_h = 1
         my._res = format_left("\
-        $(my.in_prefix:UPPER)_PHP_PUBLIC int 
+        $(my.in_prefix:UPPER)_PHP_PUBLIC int
         $(my._func_name:lower)(void);
         ", 0)
     else

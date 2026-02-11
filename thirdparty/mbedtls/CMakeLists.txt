@@ -103,6 +103,7 @@ ExternalProject_Add(mbedtls-ext
             "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
             "-DENABLE_TESTING=OFF"
             "-DENABLE_PROGRAMS=OFF"
+            "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
 
         UPDATE_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different

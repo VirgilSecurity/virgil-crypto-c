@@ -118,7 +118,7 @@ extern "C" {
 
 #define VSCP_VERSION_MINOR 17
 
-#define VSCP_VERSION_PATCH 1
+#define VSCP_VERSION_PATCH 2
 
 #define VSCP_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
@@ -132,6 +132,12 @@ extern "C" {
 #   define VSCP_NODISCARD __attribute__ ((warn_unused_result))
 #else
 #   define VSCP_NODISCARD
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSCP_NORETURN __attribute__ ((noreturn))
+#else
+#   define VSCP_NORETURN
 #endif
 
 //

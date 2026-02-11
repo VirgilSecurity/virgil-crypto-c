@@ -66,9 +66,10 @@ test__impl__null_arg__call_assert(void) {
 
     vscf_assert_change_handler(mock_assert_handler);
 
-    vscf_impl_t *impl = vscf_hmac384_impl(NULL);
-
-    TEST_ASSERT_TRUE(g_mock_assert_result.handled);
+    if (TEST_PROTECT()) {
+        vscf_impl_t *impl = vscf_hmac384_impl(NULL);
+        TEST_ASSERT_TRUE(g_mock_assert_result.handled);
+    }
 
     vscf_assert_change_handler(vscf_assert_abort);
 }

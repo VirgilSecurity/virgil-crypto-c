@@ -131,12 +131,13 @@ print_bytes_formatted(const byte *bytes, size_t bytes_len) {
 
 mock_assert_result_t g_mock_assert_result = {false, NULL, NULL, 0};
 
-void
+VSC_NORETURN void
 mock_assert_handler(const char *message, const char *file, int line) {
     g_mock_assert_result.handled = true;
     g_mock_assert_result.message = message;
     g_mock_assert_result.file = file;
     g_mock_assert_result.line = line;
+    TEST_ABORT();
 }
 
 void

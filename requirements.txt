@@ -1,0 +1,3 @@
+protobuf>=5.28.3
+grpcio-tools>=1.32.0
+nanopb>=0.4.9

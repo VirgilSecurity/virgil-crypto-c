@@ -146,7 +146,7 @@ extern "C" {
 //
 //  Assertion handler callback type.
 //
-typedef void (*vsc_assert_handler_fn)(const char *message, const char *file, int line);
+typedef VSC_NORETURN void (*vsc_assert_handler_fn)(const char *message, const char *file, int line);
 
 //
 //  Change active assertion handler.
@@ -158,13 +158,13 @@ vsc_assert_change_handler(vsc_assert_handler_fn handler_cb);
 //  Assertion handler, that print given information and abort program.
 //  This is default handler.
 //
-VSC_PUBLIC void
+VSC_PUBLIC VSC_NORETURN void
 vsc_assert_abort(const char *message, const char *file, int line);
 
 //
 //  Trigger active assertion handler.
 //
-VSC_PUBLIC void
+VSC_PUBLIC VSC_NORETURN void
 vsc_assert_trigger(const char *message, const char *file, int line);
 
 

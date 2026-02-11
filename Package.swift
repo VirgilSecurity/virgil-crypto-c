@@ -2,14 +2,14 @@
 
 import PackageDescription
 
-let version = "0.17.1"
+let version = "0.17.2"
 let useLocalBinaries = false
 
 let vscCommonBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCCommon", path: "binaries//VSCCommon.xcframework.zip")
     } else {
-        let vscCommonChecksum = "99193a9c8a71cebcaadf282ac2f4d5d398f1dee8567799d6a0cdd3e3d63ba1a3"
+        let vscCommonChecksum = "a3e19e42610a56a51406b7e79066bfdbb6efb5c1b4f9b7ff4a35552aa819f186"
         return Target.binaryTarget(
             name: "VSCCommon",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCCommon.xcframework.zip",
@@ -22,7 +22,7 @@ let vscFoundationBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCFoundation", path: "binaries//VSCFoundation.xcframework.zip")
     } else {
-        let vscFoundationChecksum = "b38a85c73b033dc62b55e1d7c7e4988504176b451fd2e87eaad86b616921276a"
+        let vscFoundationChecksum = "24e713fef1a330e7f6ec1f7ff100b18c2342a1b780a66c38bc9bfa0a34e84785"
         return Target.binaryTarget(
             name: "VSCFoundation",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCFoundation.xcframework.zip",
@@ -35,7 +35,7 @@ let vscPythiaBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCPythia", path: "binaries//VSCPythia.xcframework.zip")
     } else {
-        let vscPythiaChecksum = "6d5fde11d0ff1c531a7943006a4b1816e37135ea5692f60f47497b9049a649b5"
+        let vscPythiaChecksum = "0b94f3f3c6c4d5b096ae5e0f93e3b6e256592a2122ad936fbbcdf377ef790462"
         return Target.binaryTarget(
             name: "VSCPythia",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCPythia.xcframework.zip",
@@ -48,7 +48,7 @@ let vscRatchetBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCRatchet", path: "binaries//VSCRatchet.xcframework.zip")
     } else {
-        let vscRatchetChecksum = "31e8e7ed15c7596262546b53ec36622876f2025f855799e22346d3bf13c0291a"
+        let vscRatchetChecksum = "fcc35c30049c8683c16edd48d398546f24e4087ce42faca142ca8efe25318d5e"
         return Target.binaryTarget(
             name: "VSCRatchet",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCRatchet.xcframework.zip",

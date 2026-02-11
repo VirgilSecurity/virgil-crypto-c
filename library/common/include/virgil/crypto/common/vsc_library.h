@@ -118,7 +118,7 @@ extern "C" {
 
 #define VSC_VERSION_MINOR 17
 
-#define VSC_VERSION_PATCH 1
+#define VSC_VERSION_PATCH 2
 
 #define VSC_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 
@@ -132,6 +132,12 @@ extern "C" {
 #   define VSC_NODISCARD __attribute__ ((warn_unused_result))
 #else
 #   define VSC_NODISCARD
+#endif
+
+#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)
+#   define VSC_NORETURN __attribute__ ((noreturn))
+#else
+#   define VSC_NORETURN
 #endif
 
 //
