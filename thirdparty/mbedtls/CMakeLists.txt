@@ -121,7 +121,7 @@ ExternalProject_Add(mbedtls-ext
         PATCH_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_BINARY_DIR}/config.h"
-                    "<SOURCE_DIR>/include/mbedtls/config.h"
+                    "<SOURCE_DIR>/include/mbedtls/mbedtls_config.h"
         COMMAND
             ${CMAKE_COMMAND} -E copy
                     ${MBEDTLS_ALT_INCLUDE_FILES}

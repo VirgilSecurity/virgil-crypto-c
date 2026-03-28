@@ -122,6 +122,4 @@ void *vsc_dealloc(size_t size);
 #define MBEDTLS_ECP_NIST_OPTIM 1
 #define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
 
-#include "check_config.h"
-
 #endif /* MBEDTLS_CONFIG_H */
