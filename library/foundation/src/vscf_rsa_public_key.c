@@ -89,7 +89,7 @@ vscf_rsa_public_key_init_ctx(vscf_rsa_public_key_t *self) {
 
     VSCF_ASSERT_PTR(self);
 
-    mbedtls_rsa_init(&self->rsa_ctx, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_NONE);
+    mbedtls_rsa_init(&self->rsa_ctx);
 }
 
 //
@@ -117,13 +117,19 @@ vscf_rsa_public_key_key_exponent(vscf_rsa_public_key_t *self) {
 
     byte exponent_asn1[2 + 8] = {0x00};
 
+    mbedtls_mpi E;
+    mbedtls_mpi_init(&E);
+    int ret = mbedtls_rsa_export(&self->rsa_ctx, NULL, NULL, NULL, NULL, &E);
+    VSCF_ASSERT_ALLOC(ret == 0);
+
     vscf_asn1wr_t asn1wr;
     vscf_asn1wr_init(&asn1wr);
     vscf_asn1wr_reset(&asn1wr, exponent_asn1, sizeof(exponent_asn1));
 
-    vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), &self->rsa_ctx.E);
+    vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), &E);
     VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));
     vscf_asn1wr_cleanup(&asn1wr);
+    mbedtls_mpi_free(&E);
 
     vscf_asn1rd_t asn1rd;
     vscf_asn1rd_init(&asn1rd);
@@ -163,22 +169,30 @@ vscf_rsa_public_key_import(vscf_rsa_public_key_t *self, const vscf_raw_public_ke
     // start
     vscf_asn1rd_read_sequence(&asn1rd);
 
+    mbedtls_mpi N, E;
+    mbedtls_mpi_init(&N);
+    mbedtls_mpi_init(&E);
+
     // modulus
-    vscf_mbedtls_bignum_read_asn1(vscf_asn1rd_impl(&asn1rd), &self->rsa_ctx.N);
+    vscf_mbedtls_bignum_read_asn1(vscf_asn1rd_impl(&asn1rd), &N);
 
     // exponent
-    vscf_mbedtls_bignum_read_asn1(vscf_asn1rd_impl(&asn1rd), &self->rsa_ctx.E);
+    vscf_mbedtls_bignum_read_asn1(vscf_asn1rd_impl(&asn1rd), &E);
 
     const bool has_parse_error = vscf_asn1rd_has_error(&asn1rd);
     vscf_asn1rd_cleanup(&asn1rd);
 
     if (has_parse_error) {
+        mbedtls_mpi_free(&N);
+        mbedtls_mpi_free(&E);
         return vscf_status_ERROR_BAD_PKCS1_PUBLIC_KEY;
     }
 
-    self->rsa_ctx.len = mbedtls_mpi_size(&self->rsa_ctx.N);
+    int ret = mbedtls_rsa_import(&self->rsa_ctx, &N, NULL, NULL, NULL, &E);
+    mbedtls_mpi_free(&N);
+    mbedtls_mpi_free(&E);
 
-    if (mbedtls_rsa_complete(&self->rsa_ctx) != 0 || mbedtls_rsa_check_pubkey(&self->rsa_ctx) != 0) {
+    if (ret != 0 || mbedtls_rsa_complete(&self->rsa_ctx) != 0 || mbedtls_rsa_check_pubkey(&self->rsa_ctx) != 0) {
         return vscf_status_ERROR_BAD_PKCS1_PUBLIC_KEY;
     }
 
@@ -199,6 +213,12 @@ vscf_rsa_public_key_export(const vscf_rsa_public_key_t *self) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_SAFE(vscf_rsa_public_key_is_valid(self));
 
+    mbedtls_mpi N, E;
+    mbedtls_mpi_init(&N);
+    mbedtls_mpi_init(&E);
+    int ret = mbedtls_rsa_export(&self->rsa_ctx, &N, NULL, NULL, NULL, &E);
+    VSCF_ASSERT_ALLOC(ret == 0);
+
     const size_t out_len = 1 + 2 + 3 + 4 + 4 + vscf_rsa_public_key_len(self);
     vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
 
@@ -208,8 +228,10 @@ vscf_rsa_public_key_export(const vscf_rsa_public_key_t *self) {
 
     size_t len = 0;
 
-    len += vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), &self->rsa_ctx.E);
-    len += vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), &self->rsa_ctx.N);
+    len += vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), &E);
+    len += vscf_mbedtls_bignum_write_asn1(vscf_asn1wr_impl(&asn1wr), &N);
+    mbedtls_mpi_free(&N);
+    mbedtls_mpi_free(&E);
     len += vscf_asn1wr_write_sequence(&asn1wr, len);
 
     VSCF_ASSERT(!vscf_asn1wr_has_error(&asn1wr));

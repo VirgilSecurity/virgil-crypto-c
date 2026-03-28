@@ -292,9 +292,6 @@ vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce) {
     VSCF_ASSERT(vscf_aes256_gcm_NONCE_LEN == nonce.len);
 
     memcpy(self->nonce, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
-
-    int status = mbedtls_cipher_set_iv(&self->cipher_ctx, nonce.bytes, nonce.len);
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 }
 
 //
@@ -335,6 +332,9 @@ vscf_aes256_gcm_start_encryption(vscf_aes256_gcm_t *self) {
     int status = mbedtls_cipher_setkey(&self->cipher_ctx, self->key, vscf_aes256_gcm_KEY_BITLEN, MBEDTLS_ENCRYPT);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
+    status = mbedtls_cipher_set_iv(&self->cipher_ctx, self->nonce, vscf_aes256_gcm_NONCE_LEN);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
     status = mbedtls_cipher_reset(&self->cipher_ctx);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
@@ -359,6 +359,9 @@ vscf_aes256_gcm_start_decryption(vscf_aes256_gcm_t *self) {
     self->state = vscf_cipher_state_DECRYPTION;
 
     int status = mbedtls_cipher_setkey(&self->cipher_ctx, self->key, vscf_aes256_gcm_KEY_BITLEN, MBEDTLS_DECRYPT);
+    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    status = mbedtls_cipher_set_iv(&self->cipher_ctx, self->nonce, vscf_aes256_gcm_NONCE_LEN);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
     status = mbedtls_cipher_reset(&self->cipher_ctx);

@@ -182,6 +182,11 @@ execute_process(COMMAND pip3 install -U -r "${CMAKE_CURRENT_SOURCE_DIR}/requirem
 # ---------------------------------------------------------------------------
 
 #
+# Allow access to mbedTLS private struct members during 2.x -> 3.x migration.
+#
+add_compile_definitions(MBEDTLS_ALLOW_PRIVATE_ACCESS)
+
+#
 # MbedTLS
 #
 if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)

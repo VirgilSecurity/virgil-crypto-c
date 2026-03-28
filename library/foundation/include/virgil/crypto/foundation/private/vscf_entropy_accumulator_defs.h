@@ -63,7 +63,6 @@
 #include "vscf_impl.h"
 
 #include <mbedtls/entropy.h>
-#include <mbedtls/entropy_poll.h>
 
 // clang-format on
 //  @end

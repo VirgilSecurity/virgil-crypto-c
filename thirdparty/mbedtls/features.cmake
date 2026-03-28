@@ -48,7 +48,9 @@ include_guard()
 option(MBEDTLS_LIBRARY "Enable build of the 'mbedtls' library" ON)
 option(MBEDTLS_ERROR_C "" ON)
 option(MBEDTLS_PLATFORM_C "" ON)
+option(MBEDTLS_SHA224_C "" ON)
 option(MBEDTLS_SHA256_C "" ON)
+option(MBEDTLS_SHA384_C "" ON)
 option(MBEDTLS_SHA512_C "" ON)
 option(MBEDTLS_CIPHER_C "" ON)
 option(MBEDTLS_AES_C "" ON)
@@ -82,7 +84,9 @@ mark_as_advanced(
         MBEDTLS_LIBRARY
         MBEDTLS_ERROR_C
         MBEDTLS_PLATFORM_C
+        MBEDTLS_SHA224_C
         MBEDTLS_SHA256_C
+        MBEDTLS_SHA384_C
         MBEDTLS_SHA512_C
         MBEDTLS_CIPHER_C
         MBEDTLS_AES_C

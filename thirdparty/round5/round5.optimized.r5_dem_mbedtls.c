@@ -31,7 +31,6 @@ int round5_dem(unsigned char *c2, unsigned long long *c2_len, const unsigned cha
     size_t c2length;
     const mbedtls_cipher_info_t *ctx_info = NULL;
     unsigned char final_key_iv[32 + 12];
-    unsigned char tag[16];
     const unsigned char * const iv = final_key_iv + PARAMS_KAPPA_BYTES;
 
     /* Hash key to obtain final key and IV */
@@ -66,16 +65,12 @@ int round5_dem(unsigned char *c2, unsigned long long *c2_len, const unsigned cha
         goto done_dem;
     }
 
-    /* Encrypt message into c2 */
-    res = mbedtls_cipher_auth_encrypt(&ctx, iv, 12, NULL, 0, m, (size_t)m_len, c2, &c2length, tag, 16);
+    /* Encrypt message into c2 (ext appends tag to output buffer) */
+    res = mbedtls_cipher_auth_encrypt_ext(&ctx, iv, 12, NULL, 0, m, (size_t)m_len, c2, (size_t)m_len + 16, &c2length, 16);
     if (res) {
         DEBUG_ERROR("Failed to encrypt\n");
         goto done_dem;
     }
-
-    /* Append tag and IV */
-    memcpy(c2 + c2length, tag, 16);
-    c2length += 16;
 
     /* Set total length */
     *c2_len = (unsigned long long) c2length;
@@ -94,8 +89,6 @@ int round5_dem_inverse(unsigned char *m, unsigned long long *m_len, const unsign
     size_t m_len_tmp = 0;
     const mbedtls_cipher_info_t *ctx_info = NULL;
     unsigned char final_key_iv[32 + 12];
-    unsigned char tag[16];
-    const unsigned long long c2_len_no_tag = c2_len - 16U;
     const unsigned char * const iv = final_key_iv + PARAMS_KAPPA_BYTES;
 
     mbedtls_cipher_context_t ctx;
@@ -113,9 +106,6 @@ int round5_dem_inverse(unsigned char *m, unsigned long long *m_len, const unsign
     /* Hash key to obtain final key and IV */
     assert(PARAMS_KAPPA_BYTES == 32 || PARAMS_KAPPA_BYTES == 24 || PARAMS_KAPPA_BYTES == 16);
     HashR5DEM(final_key_iv, (size_t) (PARAMS_KAPPA_BYTES + 12), key, PARAMS_KAPPA_BYTES);
-
-    /* Get tag */
-    memcpy(tag, c2 + c2_len_no_tag, 16);
 
     /* Initialise AES GCM */
     switch (PARAMS_KAPPA_BYTES) {
@@ -142,8 +132,8 @@ int round5_dem_inverse(unsigned char *m, unsigned long long *m_len, const unsign
         goto done_dem_inverse;
     }
 
-    /* Decrypt */
-    res = mbedtls_cipher_auth_decrypt(&ctx, iv, 12, NULL, 0, c2, (size_t)c2_len_no_tag, m, &m_len_tmp, tag, 16);
+    /* Decrypt (ext expects input = ciphertext + tag) */
+    res = mbedtls_cipher_auth_decrypt_ext(&ctx, iv, 12, NULL, 0, c2, (size_t)c2_len, m, (size_t)c2_len, &m_len_tmp, 16);
     if (res) {
         DEBUG_ERROR("Failed to decrypt\n");
         goto done_dem_inverse;

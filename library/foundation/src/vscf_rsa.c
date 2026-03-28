@@ -432,13 +432,13 @@ vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data
     vscf_rsa_public_key_t *rsa_public_key = (vscf_rsa_public_key_t *)public_key;
 
     mbedtls_rsa_context rsa;
-    mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
+    mbedtls_rsa_init(&rsa);
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_public_key->rsa_ctx);
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
 
     const int mbed_status = mbedtls_rsa_rsaes_oaep_encrypt(&rsa, vscf_mbedtls_bridge_random, self->random,
-            MBEDTLS_RSA_PUBLIC, NULL, 0, data.len, data.bytes, vsc_buffer_unused_bytes(out));
+            NULL, 0, data.len, data.bytes, vsc_buffer_unused_bytes(out));
 
     mbedtls_rsa_free(&rsa);
 
@@ -509,14 +509,14 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
     vscf_rsa_private_key_t *rsa_private_key = (vscf_rsa_private_key_t *)private_key;
 
     mbedtls_rsa_context rsa;
-    mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
+    mbedtls_rsa_init(&rsa);
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_private_key->rsa_ctx);
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
 
     size_t out_len = 0;
     const int mbed_status =
-            mbedtls_rsa_rsaes_oaep_decrypt(&rsa, vscf_mbedtls_bridge_random, self->random, MBEDTLS_RSA_PRIVATE, NULL, 0,
+            mbedtls_rsa_rsaes_oaep_decrypt(&rsa, vscf_mbedtls_bridge_random, self->random, NULL, 0,
                     &out_len, data.bytes, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     mbedtls_rsa_free(&rsa);
@@ -586,13 +586,13 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
 
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
     mbedtls_rsa_context rsa;
-    mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
+    mbedtls_rsa_init(&rsa);
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_private_key->rsa_ctx);
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, (void *)self->random,
-            MBEDTLS_RSA_PRIVATE, md_alg, (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
+            md_alg, (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
     VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MD_ALLOC_FAILED);
 
     mbedtls_rsa_free(&rsa);
@@ -648,13 +648,13 @@ vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf
 
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
     mbedtls_rsa_context rsa;
-    mbedtls_rsa_init(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
+    mbedtls_rsa_init(&rsa);
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_public_key->rsa_ctx);
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int result = mbedtls_rsa_rsassa_pss_verify(
-            &rsa, NULL, NULL, MBEDTLS_RSA_PUBLIC, md_alg, (unsigned int)digest.len, digest.bytes, signature.bytes);
+            &rsa, md_alg, (unsigned int)digest.len, digest.bytes, signature.bytes);
 
     mbedtls_rsa_free(&rsa);
 

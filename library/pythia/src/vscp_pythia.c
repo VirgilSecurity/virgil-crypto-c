@@ -59,7 +59,6 @@
 #include <pythia_buf_sizes.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
-#include <mbedtls/entropy_poll.h>
 
 // clang-format on
 //  @end
@@ -122,10 +121,9 @@ vscp_pythia_configure(void) {
     mbedtls_ctr_drbg_init(&g_rng);
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, 32,
             MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
-
 
     const unsigned char pers[] = "vscp_pythia";
     size_t pers_len = sizeof(pers);
