@@ -121,16 +121,6 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
     has_strong = true;
 #endif
 
-#if defined(MBEDTLS_TIMING_C)
-    mbedtls_entropy_add_source(
-            &self->ctx, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
-#endif
-
-#if defined(MBEDTLS_HAVEGE_C)
-    mbedtls_entropy_add_source(&self->ctx, mbedtls_havege_poll, &self->ctx.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
-            MBEDTLS_ENTROPY_SOURCE_STRONG);
-    has_strong = true;
-#endif
 
     VSCF_ASSERT(has_strong);
 }

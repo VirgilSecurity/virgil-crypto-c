@@ -56,7 +56,7 @@
 #include "vsce_assert.h"
 
 #include <virgil/crypto/foundation/vscf_status.h>
-#include <mbedtls/config.h>
+#include <mbedtls/build_info.h>
 #include <mbedtls/error.h>
 #include <stdio.h>
 

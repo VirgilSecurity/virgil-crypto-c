@@ -55,7 +55,7 @@
 
 #include "vscf_assert.h"
 
-#include <mbedtls/config.h>
+#include <mbedtls/build_info.h>
 #include <mbedtls/error.h>
 #include <stdio.h>
 

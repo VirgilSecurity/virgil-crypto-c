@@ -35,8 +35,10 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+#ifndef VIRGIL_MBEDTLS_CONFIG_H
+#define VIRGIL_MBEDTLS_CONFIG_H
+
+#define MBEDTLS_CONFIG_VERSION 0x03060500
 
 #include <stddef.h> // size_t
 
@@ -122,4 +124,4 @@ void *vsc_dealloc(size_t size);
 #define MBEDTLS_ECP_NIST_OPTIM 1
 #define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
 
-#endif /* MBEDTLS_CONFIG_H */
+#endif /* VIRGIL_MBEDTLS_CONFIG_H */

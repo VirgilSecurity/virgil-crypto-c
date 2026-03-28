@@ -126,15 +126,6 @@ vscp_pythia_configure(void) {
             MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
 
-#if defined(MBEDTLS_TIMING_C)
-    mbedtls_entropy_add_source(
-            &g_entropy, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
-#endif
-
-#if defined(MBEDTLS_HAVEGE_C)
-    mbedtls_entropy_add_source(&g_entropy, mbedtls_havege_poll, &g_entropy.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
-            MBEDTLS_ENTROPY_SOURCE_STRONG);
-#endif
 
     const unsigned char pers[] = "vscp_pythia";
     size_t pers_len = sizeof(pers);
