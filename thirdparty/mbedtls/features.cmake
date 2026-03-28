@@ -61,7 +61,6 @@ option(MBEDTLS_ASN1_PARSE_C "" ON)
 option(MBEDTLS_ASN1_WRITE_C "" ON)
 option(MBEDTLS_GENPRIME "" ON)
 option(MBEDTLS_TIMING_C "" ON)
-option(MBEDTLS_HAVEGE_C "" ON)
 option(MBEDTLS_PLATFORM_ENTROPY "" ON)
 option(MBEDTLS_BASE64_C "" ON)
 option(MBEDTLS_THREADING_C "" ON)
@@ -96,7 +95,6 @@ mark_as_advanced(
         MBEDTLS_ASN1_WRITE_C
         MBEDTLS_GENPRIME
         MBEDTLS_TIMING_C
-        MBEDTLS_HAVEGE_C
         MBEDTLS_PLATFORM_ENTROPY
         MBEDTLS_BASE64_C
         MBEDTLS_THREADING_C
@@ -197,11 +195,11 @@ if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_ENTROPY_C)
     message(FATAL_ERROR)
 endif()
 
-if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_TIMING_C AND NOT MBEDTLS_HAVEGE_C AND NOT MBEDTLS_PLATFORM_ENTROPY)
+if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_TIMING_C AND NOT MBEDTLS_PLATFORM_ENTROPY)
     message("-- error --")
     message("--")
     message("Feature MBEDTLS_CTR_DRBG_C depends on one of the features:")
-    message("     MBEDTLS_TIMING_C, MBEDTLS_HAVEGE_C, MBEDTLS_PLATFORM_ENTROPY - which are disabled.")
+    message("     MBEDTLS_TIMING_C, MBEDTLS_PLATFORM_ENTROPY - which are disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
