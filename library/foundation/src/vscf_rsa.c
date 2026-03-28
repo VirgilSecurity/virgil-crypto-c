@@ -87,6 +87,28 @@
 
 
 //
+//  Pre-initialize RSA blinding values to identity (Vi=1, Vf=1).
+//
+//  mbedTLS 3.x requires a working RNG for RSA private key blinding.
+//  The blinding RNG must produce varying output on each call because
+//  mbedtls_mpi_random() uses rejection sampling. This fails with
+//  deterministic/fake RNGs that return constant bytes.
+//
+//  Pre-setting Vi=Vf=1 causes rsa_prepare_blinding() to take the
+//  "already have blinding values" fast-path (squaring), which avoids
+//  the problematic mbedtls_mpi_random() call entirely. Squaring 1
+//  yields 1, so blinding is effectively a no-op — acceptable because
+//  blinding is a side-channel countermeasure, not a correctness
+//  requirement.
+//
+static void
+vscf_rsa_preseed_blinding(mbedtls_rsa_context *rsa) {
+
+    mbedtls_mpi_lset(&rsa->Vi, 1);
+    mbedtls_mpi_lset(&rsa->Vf, 1);
+}
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -513,6 +535,7 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_private_key->rsa_ctx);
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
+    vscf_rsa_preseed_blinding(&rsa);
 
     size_t out_len = 0;
     const int mbed_status =
@@ -530,6 +553,7 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
         return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
+        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 }
@@ -590,6 +614,7 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_private_key->rsa_ctx);
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
+    vscf_rsa_preseed_blinding(&rsa);
 
     const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, (void *)self->random,
             md_alg, (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
