@@ -92,9 +92,9 @@ endif()
 include(ExternalProject)
 ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
-            https://github.com/ARMmbed/mbedtls
+            https://github.com/Mbed-TLS/mbedtls
         GIT_TAG
-            v2.28.3
+            v3.6.5
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "${MBEDTLS_C_FLAGS}"
