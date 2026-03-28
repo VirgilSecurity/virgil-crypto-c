@@ -45,3 +45,9 @@ venv*/
 
 # Copilot
 .codegpt
+
+# Gas Town / Claude Code workspace
+.beads/
+.claude/
+.runtime/
+.serena/
