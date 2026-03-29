@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "virgil-crypto-lib"
+dynamic = ["version"]
+description = "Wrapper for Virgil Security crypto algorithms — small, flexible, and convenient."
+license = "BSD-3-Clause"
+requires-python = ">=3.8"
+authors = [
+    { name = "Virgil Security", email = "support@virgilsecurity.com" },
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Intended Audience :: Developers",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Homepage = "https://virgilsecurity.com"
+Documentation = "https://developer.virgilsecurity.com"
+Source = "https://github.com/VirgilSecurity/virgil-crypto-c"
+Tracker = "https://github.com/VirgilSecurity/virgil-crypto-c/issues"
+
+[tool.setuptools.dynamic]
+version = { attr = "virgil_crypto_lib.__version__" }
+
+[tool.setuptools.packages.find]
+exclude = ["doc-source"]
+
+[tool.setuptools.package-data]
+virgil_crypto_lib = ["tests/*", "_libs/*"]
