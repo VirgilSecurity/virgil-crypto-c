@@ -44,3 +44,19 @@ exclude = ["doc-source"]
 
 [tool.setuptools.package-data]
 virgil_crypto_lib = ["tests/*", "_libs/*"]
+
+# ---------------------------------------------------------------------------
+#   cibuildwheel — native C library compilation before wheel packaging
+# ---------------------------------------------------------------------------
+[tool.cibuildwheel]
+build = "cp38-* cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = ["pp*", "*-musllinux_*"]
+test-command = 'python -m unittest discover -s {package}/virgil_crypto_lib/tests -p "*_test.py"'
+
+[tool.cibuildwheel.linux]
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.macos]
+repair-wheel-command = "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
