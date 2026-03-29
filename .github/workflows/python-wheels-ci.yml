@@ -1,0 +1,10 @@
+name: python-wheels-ci
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/python-wheels-build.yml
