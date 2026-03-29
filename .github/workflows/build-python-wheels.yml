@@ -48,6 +48,11 @@ jobs:
           CIBW_ARCHS: ${{ matrix.cibw_archs }}
           CIBW_SKIP: "pp* *-musllinux_*"
 
+          # -- Test configuration (runs inside each build container) -----------
+          CIBW_TEST_REQUIRES: "unittest-xml-reporting"
+          CIBW_TEST_COMMAND: >-
+            python -c "from virgil_crypto_lib.foundation.sha256 import Sha256; h = Sha256().hash(bytearray(b'test')); assert len(h) == 32, 'SHA-256 smoke test failed'; print('smoke test OK')"
+
           # -- Linux ----------------------------------------------------------
           CIBW_ENVIRONMENT_LINUX: >-
             LD_LIBRARY_PATH={project}/wrappers/python/virgil_crypto_lib/_libs
@@ -113,3 +118,128 @@ jobs:
         with:
           name: sdist
           path: dist/*.tar.gz
+
+  # ---------------------------------------------------------------------------
+  #   Test wheels — install from built artifacts and verify on each platform
+  # ---------------------------------------------------------------------------
+  test-wheels:
+    name: Test wheels – ${{ matrix.name }}
+    needs: build-wheels
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-latest
+            artifact: wheels-linux-x86_64
+          - name: linux-aarch64
+            os: ubuntu-24.04-arm
+            artifact: wheels-linux-aarch64
+          - name: macos-arm64
+            os: macos-14
+            artifact: wheels-macos-universal
+          - name: macos-x86_64
+            os: macos-13
+            artifact: wheels-macos-universal
+          - name: windows-x86_64
+            os: windows-latest
+            artifact: wheels-windows-x86_64
+
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download wheels
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: wheelhouse
+
+      - name: Install wheel
+        shell: bash
+        run: |
+          pip install wheelhouse/*.whl
+
+      - name: Smoke test — import and basic crypto
+        shell: bash
+        run: |
+          python -c "
+          import virgil_crypto_lib
+          print('version:', virgil_crypto_lib.__version__)
+
+          from virgil_crypto_lib.foundation.sha256 import Sha256
+          digest = Sha256().hash(bytearray(b'hello'))
+          assert len(digest) == 32, f'Expected 32 bytes, got {len(digest)}'
+          print('SHA-256 OK')
+
+          from virgil_crypto_lib.foundation.kdf1 import Kdf1
+          print('KDF1 import OK')
+
+          from virgil_crypto_lib.foundation.key_provider import KeyProvider
+          kp = KeyProvider()
+          kp.setup_defaults()
+          print('KeyProvider setup OK')
+
+          print('All smoke tests passed')
+          "
+
+  # ---------------------------------------------------------------------------
+  #   Publish to PyPI — trusted publishing (OIDC), no stored API tokens
+  # ---------------------------------------------------------------------------
+  publish-pypi:
+    name: Publish to PyPI
+    if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, '-rc')
+    needs: [build-wheels, build-sdist, test-wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/virgil-crypto-lib
+    permissions:
+      id-token: write
+    steps:
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    if: startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '-rc')
+    needs: [build-wheels, build-sdist, test-wheels]
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/virgil-crypto-lib
+    permissions:
+      id-token: write
+    steps:
+      - name: Download all wheels
+        uses: actions/download-artifact@v4
+        with:
+          pattern: wheels-*
+          path: dist
+          merge-multiple: true
+
+      - name: Download sdist
+        uses: actions/download-artifact@v4
+        with:
+          name: sdist
+          path: dist
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
