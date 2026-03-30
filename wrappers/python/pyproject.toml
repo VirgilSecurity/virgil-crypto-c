@@ -13,7 +13,6 @@ authors = [
 ]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
-    "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
     "Intended Audience :: Developers",
     "Programming Language :: C",
@@ -54,8 +53,8 @@ skip = ["pp*", "*-musllinux_*"]
 test-command = 'python -m unittest discover -s {package}/virgil_crypto_lib/tests -p "*_test.py"'
 
 [tool.cibuildwheel.linux]
-manylinux-x86_64-image = "manylinux2014"
-manylinux-aarch64-image = "manylinux2014"
+manylinux-x86_64-image = "manylinux_2_17"
+manylinux-aarch64-image = "manylinux_2_17"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
 [tool.cibuildwheel.macos]
