@@ -52,6 +52,9 @@ jobs:
           # -- Linux ----------------------------------------------------------
           CIBW_ENVIRONMENT_LINUX: >-
             LD_LIBRARY_PATH={project}/wrappers/python/virgil_crypto_lib/_libs
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: >-
+            LD_LIBRARY_PATH={project}/wrappers/python/virgil_crypto_lib/_libs:$LD_LIBRARY_PATH
+            auditwheel repair -w {dest_dir} {wheel}
           CIBW_BEFORE_ALL_LINUX: >-
             pip install cmake &&
             yum install -y gcc-c++ &&
@@ -68,6 +71,9 @@ jobs:
           # -- macOS -----------------------------------------------------------
           CIBW_ENVIRONMENT_MACOS: >-
             DYLD_LIBRARY_PATH={project}/wrappers/python/virgil_crypto_lib/_libs
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: >-
+            DYLD_LIBRARY_PATH={project}/wrappers/python/virgil_crypto_lib/_libs
+            delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}
           CIBW_BEFORE_ALL_MACOS: >-
             cd {project} &&
             cmake -Cconfigs/python-config.cmake
