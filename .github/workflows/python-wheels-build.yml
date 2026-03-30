@@ -161,7 +161,7 @@ jobs:
       - name: Install wheel
         shell: bash
         run: |
-          pip install wheelhouse/*.whl
+          pip install --find-links wheelhouse virgil-crypto-lib
 
       - name: Smoke test — import and basic crypto
         shell: bash
