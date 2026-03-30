@@ -80,6 +80,7 @@ jobs:
             -DENABLE_CLANGFORMAT=OFF
             -Bbuild -H.
             && cmake --build build --target install -- -j$(sysctl -n hw.physicalcpu)
+            && mkdir -p /usr/local/lib
             && cp wrappers/python/virgil_crypto_lib/_libs/lib*.dylib /usr/local/lib/
 
           # -- Windows ---------------------------------------------------------
