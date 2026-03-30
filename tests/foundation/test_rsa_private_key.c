@@ -39,12 +39,11 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_RSA_PRIVATE_KEY && VSCF_FAKE_RANDOM && VSCF_KEY_MATERIAL_RNG)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_RSA_PRIVATE_KEY && VSCF_KEY_MATERIAL_RNG)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_assert.h"
 
-#include "vscf_fake_random.h"
 #include "vscf_key_material_rng.h"
 #include "vscf_private_key.h"
 #include "vscf_public_key.h"
@@ -128,10 +127,7 @@ test__rsa_private_key_decrypt__with_imported_2048_PRIVATE_KEY_PKCS1_and_2048_ENC
 
     //  Configure key algorithm
     vscf_rsa_t *rsa = vscf_rsa_new();
-
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_rsa_take_random(rsa, vscf_fake_random_impl(fake_random));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_setup_defaults(rsa));
 
     //  Import private key
     vscf_error_t error;
@@ -168,10 +164,7 @@ test__rsa_private_key_extract_public_key__from_imported_2048_PRIVATE_KEY_PKCS1__
 
     //  Configure key algorithm
     vscf_rsa_t *rsa = vscf_rsa_new();
-
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_rsa_take_random(rsa, vscf_fake_random_impl(fake_random));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_setup_defaults(rsa));
 
     //  Import private key
     vscf_error_t error;
@@ -210,12 +203,9 @@ test__rsa_private_key_sign_hash__with_imported_2048_PRIVATE_KEY_PKCS1_and_random
     vscf_raw_private_key_t *raw_private_key =
             vscf_raw_private_key_new_with_data(test_rsa_2048_PRIVATE_KEY_PKCS1, &alg_info);
 
-    //  Configure key algorithm
+    //  Configure key algorithm with real RNG (mbedTLS 3.x requires proper randomness for blinding)
     vscf_rsa_t *rsa = vscf_rsa_new();
-
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
-    vscf_rsa_take_random(rsa, vscf_fake_random_impl(fake_random));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_rsa_setup_defaults(rsa));
 
     //  Import private key
     vscf_error_t error;
@@ -230,13 +220,19 @@ test__rsa_private_key_sign_hash__with_imported_2048_PRIVATE_KEY_PKCS1_and_random
     vscf_status_t sign_result =
             vscf_rsa_sign_hash(rsa, private_key, vscf_alg_id_SHA512, test_rsa_DATA_1_SHA512_DIGEST, signature);
 
-    //  Check
+    //  Check: sign succeeds and signature verifies (PSS salt is random so byte comparison is not possible)
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, sign_result);
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_rsa_2048_DATA_1_SHA512_SIGNATURE, signature);
+
+    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
+    TEST_ASSERT_NOT_NULL(public_key);
+
+    vsc_data_t sig_data = vsc_buffer_data(signature);
+    TEST_ASSERT_TRUE(vscf_rsa_verify_hash(rsa, public_key, vscf_alg_id_SHA512, test_rsa_DATA_1_SHA512_DIGEST, sig_data));
 
     //  Cleanup
     vscf_rsa_destroy(&rsa);
     vscf_impl_destroy(&private_key);
+    vscf_impl_destroy(&public_key);
     vsc_buffer_destroy(&signature);
     vscf_raw_private_key_destroy(&raw_private_key);
 }

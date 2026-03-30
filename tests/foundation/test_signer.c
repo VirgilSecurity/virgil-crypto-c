@@ -40,17 +40,18 @@
 
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_SIGNER && VSCF_SHA384 && VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY && VSCF_FAKE_RANDOM &&            \
+    (VSCF_SIGNER && VSCF_VERIFIER && VSCF_SHA384 && VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY &&               \
             VSCF_RSA && VSCF_ED25519)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg.h"
-#include "vscf_fake_random.h"
+#include "vscf_ctr_drbg.h"
 #include "vscf_key.h"
 #include "vscf_key_provider.h"
 #include "vscf_private_key.h"
 #include "vscf_sha384.h"
 #include "vscf_signer.h"
+#include "vscf_verifier.h"
 
 #include "test_data_signer_verifier.h"
 
@@ -88,24 +89,35 @@ test__sign__with_sha384_and_rsa2048_private_key__returns_valid_signature(void) {
     vscf_status_t status = vscf_key_provider_setup_defaults(key_provider);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_byte(fake_random, 0XAB);
-
     vscf_impl_t *private_key =
             vscf_key_provider_import_private_key(key_provider, test_signer_RSA2048_PRIVATE_KEY_PKCS8, NULL);
     TEST_ASSERT_NOT_NULL(private_key);
 
+    //  Sign with real RNG (mbedTLS 3.x requires proper randomness for RSA blinding)
+    vscf_ctr_drbg_t *ctr_drbg = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(ctr_drbg));
+
     vscf_signer_t *signer = vscf_signer_new();
     vscf_signer_take_hash(signer, vscf_sha384_impl(vscf_sha384_new()));
-    vscf_signer_take_random(signer, vscf_fake_random_impl(fake_random));
+    vscf_signer_take_random(signer, vscf_ctr_drbg_impl(ctr_drbg));
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_signer_signature_len(signer, private_key));
 
     vscf_signer_reset(signer);
     vscf_signer_append_data(signer, test_signer_DATA);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_signer_sign(signer, private_key, signature));
 
-    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(test_signer_RSA2048_SHA384_SIGNATURE_V2_COMPAT, signature);
+    //  Verify signature (PSS salt is random so byte comparison is not deterministic)
+    vscf_impl_t *public_key =
+            vscf_key_provider_import_public_key(key_provider, test_signer_RSA2048_PUBLIC_KEY_PKCS8, NULL);
+    TEST_ASSERT_NOT_NULL(public_key);
 
+    vscf_verifier_t *verifier = vscf_verifier_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_verifier_reset(verifier, vsc_buffer_data(signature)));
+    vscf_verifier_append_data(verifier, test_signer_DATA);
+    TEST_ASSERT_TRUE(vscf_verifier_verify(verifier, public_key));
+
+    vscf_verifier_destroy(&verifier);
+    vscf_impl_destroy(&public_key);
     vsc_buffer_destroy(&signature);
     vscf_signer_destroy(&signer);
     vscf_impl_destroy(&private_key);

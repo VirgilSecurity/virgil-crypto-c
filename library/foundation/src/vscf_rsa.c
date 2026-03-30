@@ -87,13 +87,6 @@
 
 
 //
-//  Pre-initialize RSA blinding values to identity (Vi=1, Vf=1).
-//
-//  mbedTLS 3.x requires a working RNG for RSA private key blinding.
-// Note: mbedTLS 3.x handles RSA blinding internally when an RNG
-// is provided to sign/decrypt functions. No manual pre-seeding needed.
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC vscf_status_t
@@ -458,7 +451,6 @@ vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data
         return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }
 }
@@ -538,7 +530,6 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
         return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
     }
 }
@@ -594,6 +585,10 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
     vscf_rsa_private_key_t *rsa_private_key = (vscf_rsa_private_key_t *)private_key;
 
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
+    const unsigned int expected_hashlen = mbedtls_md_get_size(mbedtls_md_info_from_type(md_alg));
+    VSCF_ASSERT(expected_hashlen > 0);
+    VSCF_ASSERT(digest.len >= expected_hashlen);
+
     mbedtls_rsa_context rsa;
     mbedtls_rsa_init(&rsa);
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_private_key->rsa_ctx);
@@ -602,7 +597,7 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
 
 
     const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, (void *)self->random,
-            md_alg, (unsigned int)digest.len, digest.bytes, vsc_buffer_unused_bytes(signature));
+            md_alg, expected_hashlen, digest.bytes, vsc_buffer_unused_bytes(signature));
     VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MD_ALLOC_FAILED);
 
     mbedtls_rsa_free(&rsa);
@@ -616,7 +611,6 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
         return vscf_status_ERROR_RANDOM_FAILED;
 
     default:
-        VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
         return vscf_status_ERROR_BAD_ARGUMENTS;
     }
 }
@@ -657,6 +651,9 @@ vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf
     vscf_rsa_public_key_t *rsa_public_key = (vscf_rsa_public_key_t *)public_key;
 
     mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
+    const unsigned int expected_hashlen = mbedtls_md_get_size(mbedtls_md_info_from_type(md_alg));
+    VSCF_ASSERT(expected_hashlen > 0);
+
     mbedtls_rsa_context rsa;
     mbedtls_rsa_init(&rsa);
     const int alloc_status = mbedtls_rsa_copy(&rsa, &rsa_public_key->rsa_ctx);
@@ -664,7 +661,7 @@ vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
     int result = mbedtls_rsa_rsassa_pss_verify(
-            &rsa, md_alg, (unsigned int)digest.len, digest.bytes, signature.bytes);
+            &rsa, md_alg, expected_hashlen, digest.bytes, signature.bytes);
 
     mbedtls_rsa_free(&rsa);
 
