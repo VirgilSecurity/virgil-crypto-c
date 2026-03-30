@@ -54,8 +54,8 @@ jobs:
           CIBW_ENVIRONMENT_LINUX: >-
             LD_LIBRARY_PATH={project}/wrappers/python/virgil_crypto_lib/_libs
           CIBW_BEFORE_ALL_LINUX: >-
-            yum install -y cmake3 gcc-c++ &&
-            ln -sf /usr/bin/cmake3 /usr/local/bin/cmake &&
+            pip install cmake &&
+            yum install -y gcc-c++ &&
             cd {project} &&
             cmake -Cconfigs/python-config.cmake
             -DCMAKE_BUILD_TYPE=Release

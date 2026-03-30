@@ -159,6 +159,12 @@ set_target_properties(mbedcrypto
             "${MBEDTLS_INSTALL_LOCATION}/include"
         )
 
+# mbedTLS 3.x uses BCryptGenRandom for entropy on Windows
+if(WIN32)
+    set_property(TARGET mbedcrypto APPEND PROPERTY
+        INTERFACE_LINK_LIBRARIES bcrypt)
+endif()
+
 
 # ---------------------------------------------------------------------------
 #   Alias library alias

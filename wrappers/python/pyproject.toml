@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "virgil-crypto-lib"
 dynamic = ["version"]
 description = "Wrapper for Virgil Security crypto algorithms — small, flexible, and convenient."
-license = "BSD-3-Clause"
+license = {text = "BSD-3-Clause"}
 requires-python = ">=3.8"
 authors = [
     { name = "Virgil Security", email = "support@virgilsecurity.com" },
