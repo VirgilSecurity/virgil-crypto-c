@@ -46,7 +46,6 @@ jobs:
           CIBW_SKIP: "pp* *-musllinux_*"
 
           # -- Test configuration (runs inside each build container) -----------
-          CIBW_TEST_REQUIRES: "unittest-xml-reporting"
           CIBW_TEST_COMMAND: >-
             python -c "from virgil_crypto_lib.foundation.sha256 import Sha256; h = Sha256().hash(bytearray(b'test')); assert len(h) == 32, 'SHA-256 smoke test failed'; print('smoke test OK')"
 
