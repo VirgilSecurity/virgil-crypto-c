@@ -1,6 +1,7 @@
 name: build-php-binaries
 
 on:
+  workflow_call:
   push:
     branches:
       - "**"
