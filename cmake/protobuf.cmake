@@ -72,7 +72,7 @@ function(target_protobuf_sources target)
     #
     # Check nanopb plug-in.
     #
-    find_program(PROTOC_GEN_NANOPB  protoc-gen-nanopb PATHS "$ENV{VIRTUAL_ENV}/bin")
+    find_program(PROTOC_GEN_NANOPB  protoc-gen-nanopb PATHS "$ENV{VIRTUAL_ENV}/bin" NO_CMAKE_FIND_ROOT_PATH)
     if(NOT PROTOC_GEN_NANOPB)
         message(FATAL_ERROR "Nanopb generator is not found nigher in system path nor in $ENV{VIRTUAL_ENV}/bin/protoc-gen-nanopb")
     endif()
