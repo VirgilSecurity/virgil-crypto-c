@@ -3,14 +3,15 @@ plugins {
     id 'maven-publish'
     id 'signing'
 }
+import java.util.zip.ZipFile
 
 android {
-    compileSdk 34
+    compileSdk rootProject.ext.androidCompileSdk
     namespace 'com.virgilsecurity.crypto.phe'
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion rootProject.ext.androidMinSdk
+        targetSdkVersion rootProject.ext.androidTargetSdk
         consumerProguardFiles 'proguard-rules.txt'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -25,7 +26,7 @@ android {
     sourceSets {
         main {
             java.srcDirs 'src/main/java'
-            java.srcDirs 'src/generated/java'
+            java.srcDirs '../../phe/src/main/java'
             jniLibs.srcDirs 'src/main/jniLibs'
             jniLibs.srcDirs 'src/generated/jniLibs'
             res.srcDirs "src/main/res"
@@ -50,14 +51,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 
-// Copy *.java files from generated Java folder
-task copySources(type: Copy) {
-    from ('../../phe/src/main/java/'){
-        include '**/*.java'
-    }
-    into 'src/generated/java'
-}
-
 // Copy *.so files from binaries/ folder to native-libs folder
 task copyNativeLibs(type: Copy) {
     from ('../../binaries/android/lib/'){
@@ -69,27 +62,47 @@ task copyNativeLibs(type: Copy) {
     }
 }
 
-task clearSources(type: Delete) {
-    delete 'src/generated/java', '*'
-    followSymlinks = true
-}
-
-preBuild.dependsOn 'clearSources'
-preBuild.dependsOn 'copySources'
 preBuild.dependsOn 'copyNativeLibs'
 
 // On "gradle clean" also reverse the copying of the native libraries
 clean.dependsOn 'cleanCopyNativeLibs'
 
+task verifyReleaseAarContents {
+    dependsOn 'bundleReleaseAar'
+    doLast {
+        File aarFile = file("$buildDir/outputs/aar/${project.name}-release.aar")
+        if (!aarFile.exists()) {
+            throw new GradleException("Expected AAR is missing: ${aarFile}")
+        }
+        ZipFile aarZip = new ZipFile(aarFile)
+        try {
+            def classesEntry = aarZip.getEntry('classes.jar')
+            if (classesEntry == null || classesEntry.size <= 22L) {
+                throw new GradleException("AAR classes.jar is empty for ${project.path}.")
+            }
+            def hasJni = aarZip.entries().any { it.name.startsWith('jni/') && it.name.endsWith('.so') }
+            if (!hasJni) {
+                throw new GradleException("AAR has no JNI .so files for ${project.path}.")
+            }
+        } finally {
+            aarZip.close()
+        }
+    }
+}
+
 afterEvaluate {
+    tasks.matching { it.name == 'publishReleasePublicationToCentralBundleRepository' || it.name == 'publishReleasePublicationToMavenLocal' }.configureEach {
+        dependsOn verifyReleaseAarContents
+    }
+
     publishing {
         publications {
             release(MavenPublication) {
                 from components.release
 
-                // Use same artifactId as JVM for unified dependency resolution
+                // Split artifacts: JVM publishes phe, Android publishes phe-android.
                 groupId = 'com.virgilsecurity.crypto'
-                artifactId = 'phe'
+                artifactId = 'phe-android'
                 version = project.version
 
                 pom {
@@ -104,9 +117,9 @@ afterEvaluate {
                     }
                     developers {
                         developer {
-                            id = 'andrii-iakovenko'
-                            name = 'Andrii Iakovenko'
-                            email = 'iakovenko.andrii@gmail.com'
+                            id = 'virgil-security-inc'
+                            name = 'Virgil Security, Inc.'
+                            email = 'support@virgilsecurity.com'
                             organizationUrl = 'https://www.virgilsecurity.com/'
                         }
                     }
@@ -118,18 +131,6 @@ afterEvaluate {
                 }
             }
         }
-
-        repositories {
-            maven {
-                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-                credentials {
-                    username = findProperty('ossrhUsername') ?: System.getenv('OSSRH_USERNAME')
-                    password = findProperty('ossrhPassword') ?: System.getenv('OSSRH_PASSWORD')
-                }
-            }
-        }
     }
 
     signing {
@@ -138,7 +139,7 @@ afterEvaluate {
 
         if (signingKey && signingPassword) {
             useInMemoryPgpKeys(signingKey, signingPassword)
+            sign publishing.publications.release
         }
-        sign publishing.publications.release
     }
 }

@@ -64,7 +64,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "dev.1" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -362,13 +362,27 @@ set(VIRGIL_PACKAGE_PLATFORM_ARCH "" CACHE STRING "[CPack] Platform architecture 
 #     platform = name[-version][-arch]
 #
 set(VIRGIL_PACKAGE_NAME "virgil-crypto-c")
+
+# Keep archive names stable and predictable across CI.
+# Desired format (lower-cased):
+#   virgil-crypto-c-<version>[-<label>]-<language>[-<lang_version>]-<platform>[-<arch>]
 list(APPEND VIRGIL_PACKAGE_NAME ${virgil_crypto_VERSION})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_CRYPTO_VERSION_LABEL})
+
+if(VIRGIL_CRYPTO_VERSION_LABEL)
+    list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_CRYPTO_VERSION_LABEL})
+endif()
+
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+
+if(VIRGIL_PACKAGE_LANGUAGE_VERSION)
+    list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_LANGUAGE_VERSION})
+endif()
+
 list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_VERSION})
-list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+
+if(VIRGIL_PACKAGE_PLATFORM_ARCH)
+    list(APPEND VIRGIL_PACKAGE_NAME ${VIRGIL_PACKAGE_PLATFORM_ARCH})
+endif()
 
 string(REPLACE ";" "-" VIRGIL_PACKAGE_NAME "${VIRGIL_PACKAGE_NAME}")
 string(TOLOWER "${VIRGIL_PACKAGE_NAME}" VIRGIL_PACKAGE_NAME)

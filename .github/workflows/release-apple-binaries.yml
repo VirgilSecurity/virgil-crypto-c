@@ -14,11 +14,13 @@ jobs:
           xcodebuild -version
       - name: Check that SPM has correspond xcframeworks hash
         run: ./scripts/check_spm_xcframeworks.sh
-      - name: Check SPM
-        run: swift test
+      - name: Test SPM with local binaries
+        run: ./scripts/run_spm_tests_with_local_binaries.sh
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           draft: false
           prerelease: true
           files: ./binaries/*.xcframework.zip
+      - name: Check SPM with released binaries
+        run: swift test
