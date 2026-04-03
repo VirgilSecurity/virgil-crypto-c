@@ -53,13 +53,13 @@ jobs:
           cmake --build build-wasm -j$(nproc)
 
       - name: Install npm dependencies
-        working-directory: wrappers/wasm
+        working-directory: build-wasm/wrappers/wasm
         run: npm ci || npm install
 
       - name: Bundle with Rollup
-        working-directory: wrappers/wasm
+        working-directory: build-wasm/wrappers/wasm
         run: npm run prepare
 
       - name: Run Jest tests
-        working-directory: wrappers/wasm
+        working-directory: build-wasm/wrappers/wasm
         run: npm test
