@@ -329,6 +329,250 @@ function wasm_generate_sources(wasm_project_or_wrapper)
             wasm_insert_code(wasm_code.)
         endfor
     endfor
+
+    #   Generate TypeScript definition files.
+    for my.wasm_project_or_wrapper.wasm_module where wasm_module_has_dts(wasm_module)
+        my.dts_file_path = wasm_derive_dts_file_path(wasm_module)
+        echo_trace("Generate TypeScript definitions: \"$(my.dts_file_path:)\"", my)
+
+        output my.dts_file_path
+
+        for wasm_module.wasm_enum
+            wasm_insert_dts_enum(wasm_enum)
+        endfor
+
+        for wasm_module.wasm_class
+            wasm_insert_dts_class(wasm_class)
+        endfor
+    endfor
+
+    #   Generate TypeScript definition for the index (entrypoint) module.
+    for my.wasm_project_or_wrapper.wasm_module where wasm_module.name = "index"
+        my.dts_file_path = wasm_derive_dts_file_path(wasm_module)
+        echo_trace("Generate TypeScript index definitions: \"$(my.dts_file_path:)\"", my)
+
+        output my.dts_file_path
+
+        wasm_insert_dts_index(my.wasm_project_or_wrapper)
+    endfor
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Check if a module should have a .d.ts file generated.
+# ---------------------------------------------------------------------------
+function wasm_module_has_dts(wasm_module)
+    check_arguments(my, "wasm_module", my)
+
+    return count(my.wasm_module.wasm_class) + count(my.wasm_module.wasm_enum) > 0
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive the .d.ts file path from the .js source_file_path.
+#   Replaces the .js extension with .d.ts.
+# ---------------------------------------------------------------------------
+function wasm_derive_dts_file_path(wasm_module)
+    check_arguments(my, "wasm_module", my)
+
+    my.js_path = my.wasm_module.source_file_path
+    my.len = string.length(my.js_path)
+    my.base = string.substr(my.js_path, 0, , my.len - 3)
+    return my.base + ".d.ts"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return TypeScript return type for a method based on its wasm_return children.
+# ---------------------------------------------------------------------------
+function wasm_dts_method_return_type(wasm_method)
+    check_arguments(my, "wasm_method", my)
+
+    my.return_count = count(my.wasm_method.wasm_return)
+
+    if my.return_count = 0
+        return "void"
+
+    elsif my.return_count = 1
+        for my.wasm_method.wasm_return
+            if defined(wasm_return.ts_type)
+                return wasm_return.ts_type
+            elsif wasm_return.type = "Uint8Array"
+                return "Uint8Array"
+            elsif wasm_return.type = "boolean"
+                return "boolean"
+            elsif wasm_return.type = "number"
+                return "number"
+            elsif wasm_return.type = "undefined"
+                return "void"
+            else
+                return "any"
+            endif
+        endfor
+
+    else
+        #   Multiple returns produce an object.
+        my.obj_type = "{ "
+        for my.wasm_method.wasm_return
+            my.field_type = wasm_return.ts_type ? "any"
+            my.obj_type += "$(wasm_return.name:): $(my.field_type:)"
+            if !last()
+                my.obj_type += "; "
+            endif
+        endfor
+        my.obj_type += " }"
+        return my.obj_type
+    endif
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Return TypeScript argument type.
+# ---------------------------------------------------------------------------
+function wasm_dts_argument_type(wasm_argument)
+    check_arguments(my, "wasm_argument", my)
+
+    if defined(my.wasm_argument.ts_type)
+        return my.wasm_argument.ts_type
+    elsif defined(my.wasm_argument.type)
+        if my.wasm_argument.type = "Uint8Array"
+            return "Uint8Array"
+        elsif my.wasm_argument.type = "boolean"
+            return "boolean"
+        elsif my.wasm_argument.type = "number"
+            return "number"
+        elsif my.wasm_argument.type = "string"
+            return "string"
+        endif
+    endif
+
+    return "any"
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert TypeScript definition for a class.
+# ---------------------------------------------------------------------------
+function wasm_insert_dts_class(wasm_class)
+    check_arguments(my, "wasm_class", my)
+
+    my.extends = ""
+    if defined(my.wasm_class.extends)
+        my.extends = " extends $(my.wasm_class.extends:)"
+    endif
+
+    wasm_insert_code("declare class $(my.wasm_class.name:)$(my.extends:) {")
+
+    #   Constants as static readonly properties.
+    for my.wasm_class.wasm_constant
+        wasm_insert_code("static readonly $(wasm_constant.name:): $(wasm_constant.value:);", 1)
+        wasm_insert_code("readonly $(wasm_constant.name:): $(wasm_constant.value:);", 1)
+    endfor
+
+    #   Constructor.
+    for my.wasm_class.wasm_constructor
+        my.ctor_args = ""
+        for wasm_constructor.wasm_argument where is_false(wasm_argument.is_local)
+            my.arg_type = wasm_dts_argument_type(wasm_argument)
+            my.ctor_args += "$(wasm_argument.name:)?: $(my.arg_type:)"
+            if !last()
+                my.ctor_args += ", "
+            endif
+        endfor
+        wasm_insert_code("constructor($(my.ctor_args:));", 1)
+    endfor
+
+    #   Methods.
+    for my.wasm_class.wasm_method
+        my.method_args = ""
+        for wasm_method.wasm_argument where is_false(wasm_argument.is_local)
+            my.arg_type = wasm_dts_argument_type(wasm_argument)
+            my.method_args += "$(wasm_argument.name:): $(my.arg_type:)"
+            if !last()
+                my.method_args += ", "
+            endif
+        endfor
+
+        my.return_type = wasm_dts_method_return_type(wasm_method)
+        my.static = is_true(wasm_method.is_static) ?? "static " ?
+
+        if is_true(wasm_method.is_setter)
+            #   Setter: use 'set' accessor syntax.
+            wasm_insert_code("$(my.static?:)set $(wasm_method.name:)($(my.method_args:));", 1)
+        else
+            wasm_insert_code("$(my.static?:)$(wasm_method.name:)($(my.method_args:)): $(my.return_type:);", 1)
+        endif
+    endfor
+
+    wasm_insert_code("}")
+    newline()
+    wasm_insert_code("export default function(Module: any, modules: any): typeof $(my.wasm_class.name:);")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert TypeScript definition for an enum.
+# ---------------------------------------------------------------------------
+function wasm_insert_dts_enum(wasm_enum)
+    check_arguments(my, "wasm_enum", my)
+
+    wasm_insert_code("declare const $(my.wasm_enum.name:): {")
+
+    for my.wasm_enum.wasm_constant
+        wasm_insert_code("readonly $(wasm_constant.name:): $(wasm_constant.value:);", 1)
+    endfor
+
+    wasm_insert_code("};")
+    newline()
+    wasm_insert_code("export default function(Module: any, modules: any): typeof $(my.wasm_enum.name:);")
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Insert TypeScript definition for the index (entrypoint) module.
+# ---------------------------------------------------------------------------
+function wasm_insert_dts_index(wasm_project)
+    check_arguments(my, "wasm_project", my)
+
+    #   Import types from each module.
+    for my.wasm_project.wasm_module where wasm_module_has_dts(wasm_module)
+        for wasm_module.wasm_class
+            wasm_insert_code("import type init$(wasm_class.name:) from './$(wasm_module.name:)';")
+        endfor
+        for wasm_module.wasm_enum
+            wasm_insert_code("import type init$(wasm_enum.name:) from './$(wasm_module.name:)';")
+        endfor
+    endfor
+
+    newline()
+
+    #   Also import types from imported modules (cross-project dependencies).
+    for my.wasm_project.wasm_imported_module
+        wasm_insert_code("import type init$(wasm_imported_module.name:) from '$(wasm_imported_module.source_dir)/$(wasm_imported_module.name:)';")
+    endfor
+
+    if count(my.wasm_project.wasm_imported_module)
+        newline()
+    endif
+
+    #   Helper type to extract the return type of an init function.
+    wasm_insert_code("type InitResult<T> = T extends (Module: any, modules: any) => infer R ? R : never;")
+    newline()
+
+    #   Generate the Modules interface.
+    wasm_insert_code("export interface Modules {")
+
+    for my.wasm_project.wasm_imported_module
+        wasm_insert_code("$(wasm_imported_module.name:): InitResult<typeof init$(wasm_imported_module.name:)>;", 1)
+    endfor
+
+    for my.wasm_project.wasm_module where wasm_module_has_dts(wasm_module)
+        for wasm_module.wasm_class
+            wasm_insert_code("$(wasm_class.name:): InitResult<typeof init$(wasm_class.name:)>;", 1)
+        endfor
+        for wasm_module.wasm_enum
+            wasm_insert_code("$(wasm_enum.name:): InitResult<typeof init$(wasm_enum.name:)>;", 1)
+        endfor
+    endfor
+
+    wasm_insert_code("}")
+    newline()
+
+    wasm_insert_code("declare function initProject(options?: any): Promise<Modules>;")
+    wasm_insert_code("export default initProject;")
 endfunction
 
 

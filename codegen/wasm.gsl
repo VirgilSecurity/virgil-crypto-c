@@ -110,7 +110,58 @@ function wasm_map_instance_type(instance, wasm_instance)
     check_arguments(my, "instance, wasm_instance", my)
 
     my.wasm_instance.type = wasm_derive_instance_type(my.instance)
+    my.wasm_instance.ts_type = wasm_derive_ts_instance_type(my.instance)
     wrapper_map_instance_type_info(my.instance, my.wasm_instance)
+endfunction
+
+# ---------------------------------------------------------------------------
+#   Derive TypeScript type string from the <instance/> type attributes.
+# ---------------------------------------------------------------------------
+function wasm_derive_ts_instance_type(instance)
+    check_arguments(my, "instance", my)
+
+    if defined(my.instance.type)
+        if my.instance.type = "nothing"
+            my.ts_type = "void"
+
+        elsif my.instance.type = "boolean"
+            my.ts_type = "boolean"
+
+        elsif my.instance.type = "char"
+            my.ts_type = "string"
+
+        elsif my.instance.type = "size" | my.instance.type = "integer" | my.instance.type = "unsigned"
+            my.ts_type = "number"
+
+        else
+            my.ts_type = "number"
+        endif
+
+        if count(my.instance.array)
+            my.ts_type = "number[]"
+        endif
+
+        return my.ts_type
+
+    elsif defined(my.instance.class)
+        if my.instance.class = "data" | my.instance.class = "buffer"
+            return "Uint8Array"
+        else
+            return wasm_derive_class_name_str(my.instance.class)
+        endif
+
+    elsif defined(my.instance.impl)
+        return wasm_derive_class_name_str(my.instance.impl)
+
+    elsif defined(my.instance.interface)
+        return wasm_derive_class_name_str(my.instance.interface)
+
+    elsif defined(my.instance.enum)
+        return "number"
+
+    else
+        return "any"
+    endif
 endfunction
 
 
@@ -1751,7 +1802,7 @@ function wasm_create_project_cmake_module(wasm_project)
                             "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
                             "-s MODULARIZE=1"
                             "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
-                            "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1>"
+                            "$<$<CONFIG:Release>:-flto -Os --closure 1>"
                             "$<$<CONFIG:Debug>:--emrun>"
                             $(my.wasm_project.cmake_c_export_target:)
                             )
