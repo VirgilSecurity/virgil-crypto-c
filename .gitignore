@@ -50,3 +50,6 @@ venv*/
 .beads/
 .runtime/
 .serena/
+
+# Go wrapper pre-built libs (built locally or by CI)
+wrappers/go/pkg/
