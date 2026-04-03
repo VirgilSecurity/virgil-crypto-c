@@ -48,6 +48,5 @@ venv*/
 
 # Gas Town / Claude Code workspace
 .beads/
-.claude/
 .runtime/
 .serena/
