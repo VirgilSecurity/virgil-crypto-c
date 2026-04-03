@@ -42,6 +42,7 @@ jobs:
         run: |
           source .venv/bin/activate
           cmake -Cconfigs/go-config.cmake \
+                -DVIRGIL_WRAP_GO=OFF \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX="wrappers/go/pkg/linux_amd64" \
                 -DENABLE_CLANGFORMAT=OFF \
@@ -78,6 +79,7 @@ jobs:
         run: |
           source .venv/bin/activate
           cmake -Cconfigs/go-config.cmake \
+                -DVIRGIL_WRAP_GO=OFF \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_OSX_ARCHITECTURES=arm64 \
                 -DCMAKE_INSTALL_PREFIX="wrappers/go/pkg/darwin_arm64" \
