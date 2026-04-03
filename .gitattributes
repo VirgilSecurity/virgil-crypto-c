@@ -8,3 +8,4 @@ binaries/VSCCrypto.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
 binaries/VSCFoundation.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
 binaries/VSCPythia.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
 binaries/VSCRatchet.xcframework.zip.sha256sum filter=lfs diff=lfs merge=lfs -text
+wrappers/go/pkg/**/*.a filter=lfs diff=lfs merge=lfs -binary

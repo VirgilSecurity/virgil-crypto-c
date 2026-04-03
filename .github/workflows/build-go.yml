@@ -80,7 +80,7 @@ jobs:
           cmake -Cconfigs/go-config.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_OSX_ARCHITECTURES=arm64 \
-                -DCMAKE_INSTALL_PREFIX="wrappers/go/pkg/darwin_amd64" \
+                -DCMAKE_INSTALL_PREFIX="wrappers/go/pkg/darwin_arm64" \
                 -DENABLE_CLANGFORMAT=OFF \
                 -DVIRGIL_POST_QUANTUM=ON \
                 -Bbuild -S.
