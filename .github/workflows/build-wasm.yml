@@ -1,0 +1,65 @@
+name: Build and Test WASM Wrapper
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  build-and-test:
+    name: WASM (Emscripten)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: '3.1.51'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+
+      - name: Setup Python virtual environment
+        run: python3 -m venv .venv
+
+      - name: Build C libraries with Emscripten
+        run: |
+          source .venv/bin/activate
+          emcmake cmake -Cconfigs/wasm-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild-wasm -S.
+          cmake --build build-wasm -j$(nproc)
+
+      - name: Install npm dependencies
+        working-directory: wrappers/wasm
+        run: npm ci || npm install
+
+      - name: Bundle with Rollup
+        working-directory: wrappers/wasm
+        run: npm run prepare
+
+      - name: Run Jest tests
+        working-directory: wrappers/wasm
+        run: npm test

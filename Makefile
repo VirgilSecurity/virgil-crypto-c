@@ -9,6 +9,8 @@
 #   make test-python    Build + test Python wrapper
 #   make build-php      Build PHP wrapper
 #   make test-php       Build + test PHP wrapper
+#   make build-wasm     Build WASM wrapper (requires Emscripten)
+#   make test-wasm      Build + test WASM wrapper
 #   make build-all      Build everything
 #   make test-all       Run all tests
 #   make clean          Remove build directories
@@ -18,6 +20,7 @@
         build-go test-go \
         build-python test-python \
         build-php test-php \
+        build-wasm test-wasm \
         build-all test-all
 
 # Detect platform
@@ -117,6 +120,23 @@ test-php: build-php
 	cd wrappers/php && composer install --no-interaction && vendor/bin/phpunit
 
 # ---------------------------------------------------------------------------
+#   WASM wrapper
+# ---------------------------------------------------------------------------
+
+build-wasm:
+	@echo "==> Building WASM wrapper (requires Emscripten)"
+	@if [ -z "$$EMSDK" ]; then echo "ERROR: EMSDK not set. Install and activate Emscripten first."; exit 1; fi
+	emcmake cmake -Cconfigs/wasm-config.cmake \
+		-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
+		-DENABLE_CLANGFORMAT=OFF \
+		-Bbuild-wasm -S.
+	cmake --build build-wasm -j$(NPROC)
+
+test-wasm: build-wasm
+	@echo "==> Running WASM tests"
+	cd wrappers/wasm && npm ci && npm run prepare && npm test
+
+# ---------------------------------------------------------------------------
 #   Aggregate targets
 # ---------------------------------------------------------------------------
 
@@ -131,7 +151,7 @@ test-all: test test-go test-python test-php
 # ---------------------------------------------------------------------------
 
 clean:
-	rm -rf build build-go build-python build-php
+	rm -rf build build-go build-python build-php build-wasm
 	rm -rf wrappers/go/pkg/$(GO_OS)_$(GO_ARCH)
 	rm -rf wrappers/python/virgil_crypto_lib/_libs/*.so
 	rm -rf wrappers/python/virgil_crypto_lib/_libs/*.dylib
@@ -156,6 +176,8 @@ help:
 	@echo "  make test-python     Build + smoke test Python wrapper"
 	@echo "  make build-php       Build PHP wrapper"
 	@echo "  make test-php        Build + test PHP wrapper"
+	@echo "  make build-wasm      Build WASM wrapper (requires Emscripten)"
+	@echo "  make test-wasm       Build + test WASM wrapper"
 	@echo ""
 	@echo "Aggregate:"
 	@echo "  make build-all       Build C + all wrappers"
