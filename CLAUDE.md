@@ -4,7 +4,8 @@ C crypto library with language wrappers for Python, Java, Android, Swift, PHP, G
 
 ## Quick Reference
 
-- See [SKILLS.md](SKILLS.md) for version bump and release process.
+- **Release**: Use `/release` skill (see [SKILLS.md](SKILLS.md)). Asks for version, then runs: bumpver → build Apple frameworks → update Go module → tag → push. Each step is a separate commit.
+- **Version bump only**: `./scripts/bumpver.sh <version>`
 
 ## Build
 
