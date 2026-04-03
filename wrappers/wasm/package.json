@@ -5,7 +5,6 @@
   "repository": "https://github.com/VirgilSecurity/virgil-crypto-c",
   "author": "Virgil Security Inc. <support@virgilsecurity.com>",
   "license": "BSD-3-Clause",
-  "private": true,
   "scripts": {
     "test": "jest",
     "build:foundation": "cross-env PROJECT=foundation node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",

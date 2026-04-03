@@ -1,0 +1,138 @@
+name: Release WASM to npm
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-test:
+    name: Build and test WASM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: '3.1.51'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+
+      - name: Setup Python virtual environment
+        run: python3 -m venv .venv
+
+      - name: Build C libraries with Emscripten
+        run: |
+          source .venv/bin/activate
+          emcmake cmake -Cconfigs/wasm-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild-wasm -S.
+          cmake --build build-wasm -j$(nproc)
+
+      - name: Install npm dependencies
+        working-directory: wrappers/wasm
+        run: npm ci || npm install
+
+      - name: Bundle with Rollup
+        working-directory: wrappers/wasm
+        run: npm run prepare
+
+      - name: Run Jest tests
+        working-directory: wrappers/wasm
+        run: npm test
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-dist
+          path: wrappers/wasm/dist/
+
+  is-prerelease:
+    name: Check if pre-release
+    runs-on: ubuntu-latest
+    outputs:
+      prerelease: ${{ steps.check.outputs.prerelease }}
+    steps:
+      - name: Detect pre-release tag
+        id: check
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish-npm:
+    name: Publish to npm
+    if: needs.is-prerelease.outputs.prerelease == 'false'
+    needs: [build-and-test, is-prerelease]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-dist
+          path: wrappers/wasm/dist/
+
+      - name: Publish to npm
+        working-directory: wrappers/wasm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-npm-prerelease:
+    name: Publish pre-release to npm
+    if: needs.is-prerelease.outputs.prerelease == 'true'
+    needs: [build-and-test, is-prerelease]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: wasm-dist
+          path: wrappers/wasm/dist/
+
+      - name: Publish pre-release to npm
+        working-directory: wrappers/wasm
+        run: npm publish --provenance --access public --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
