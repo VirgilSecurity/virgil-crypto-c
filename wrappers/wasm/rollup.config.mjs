@@ -1,12 +1,17 @@
-const fs = require('fs');
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
-const builtinModules = require('builtin-modules');
-const commonjs = require('@rollup/plugin-commonjs');
-const copy = require('rollup-plugin-copy');
-const nodeResolve = require('@rollup/plugin-node-resolve');
-const replace = require('@rollup/plugin-replace');
-const terser = require('@rollup/plugin-terser');
+import commonjs from '@rollup/plugin-commonjs';
+import copy from 'rollup-plugin-copy';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
+import terser from '@rollup/plugin-terser';
+
+const require = createRequire(import.meta.url);
+const builtinModules = require('module').builtinModules;
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const builtinModulesMap = builtinModules.reduce((result, item) => {
   result[item] = item;
@@ -46,14 +51,8 @@ const createWasmEntry = (inputFilePath, libraryFilePath, wasmFilePath, format, o
   const entry = createEntry(inputFilePath, libraryFilePath, format, outputFilePath);
   entry.plugins.push(
     terser(),
-    copy({ targets: [wasmFilePath], outputFolder: path.dirname(outputFilePath) }),
+    copy({ targets: [{ src: wasmFilePath, dest: path.dirname(outputFilePath) }] }),
   );
-  return entry;
-};
-
-const createAsmjsEntry = (inputFilePath, libraryFilePath, format, outputFilePath) => {
-  const entry = createEntry(inputFilePath, libraryFilePath, format, outputFilePath);
-  entry.plugins.push(terser());
   return entry;
 };
 
@@ -79,42 +78,8 @@ const createEntries = format => [
     format,
     path.join(outputPath, `worker.${format}.js`),
   ),
-  createAsmjsEntry(
-    path.join(sourcePath, 'index.js'),
-    path.join(sourcePath, `lib${project}.asmjs.js`),
-    format,
-    path.join(outputPath, `node.asmjs.${format}.${format === 'cjs' ? 'js' : 'mjs'}`),
-  ),
-  createAsmjsEntry(
-    path.join(sourcePath, 'index.js'),
-    path.join(sourcePath, `lib${project}.browser.asmjs.js`),
-    format,
-    path.join(outputPath, `browser.asmjs.${format}.js`),
-  ),
-  createAsmjsEntry(
-    path.join(sourcePath, 'index.js'),
-    path.join(sourcePath, `lib${project}.worker.asmjs.js`),
-    format,
-    path.join(outputPath, `worker.asmjs.${format}.js`),
-  ),
 ];
 
-
-module.exports = [
+export default [
   ...formats.map(createEntries).reduce((result, entries) => result.concat(entries), []),
-  // Remove this code in the next major release
-  createAsmjsEntry(
-    path.join(sourcePath, 'index.js'),
-    path.join(sourcePath, `lib${project}.asmjs.js`),
-    'es',
-    path.join(outputPath, `node.asmjs.es.js`),
-  ),
-  createWasmEntry(
-    path.join(sourcePath, 'index.js'),
-    path.join(sourcePath, `lib${project}.js`),
-    path.join(sourcePath, `lib${project}.wasm`),
-    'es',
-    path.join(outputPath, `node.es.js`),
-  ),
-  // ------------------------------------------
 ];

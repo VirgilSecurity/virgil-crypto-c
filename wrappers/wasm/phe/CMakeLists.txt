@@ -80,21 +80,6 @@ function(wasm_add_common_wasm_options target)
             )
 endfunction()
 
-function(wasm_add_common_asmjs_options target)
-    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-    target_link_libraries(${target}
-            "-s WASM=0"
-            "-s SINGLE_FILE=1"
-            "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-            "-s MODULARIZE=1"
-            "-s EXPORT_NAME=PheModule"
-            "$<$<CONFIG:Release>:--llvm-lto 1 -O0>"
-            "$<$<CONFIG:Debug>:--emrun>"
-            vsc::phe
-            )
-endfunction()
-
 # ---------------------------------------------------------------------------
 #   Create WebAssembly library
 # ---------------------------------------------------------------------------
@@ -113,24 +98,6 @@ target_link_libraries(libphe.browser
 add_executable(libphe.worker)
 wasm_add_common_wasm_options(libphe.worker)
 target_link_libraries(libphe.worker
-        "-s ENVIRONMENT=worker"
-        )
-
-add_executable(libphe.asmjs)
-wasm_add_common_asmjs_options(libphe.asmjs)
-target_link_libraries(libphe.asmjs
-        "-s ENVIRONMENT=node"
-        )
-
-add_executable(libphe.browser.asmjs)
-wasm_add_common_asmjs_options(libphe.browser.asmjs)
-target_link_libraries(libphe.browser.asmjs
-        "-s ENVIRONMENT=web"
-        )
-
-add_executable(libphe.worker.asmjs)
-wasm_add_common_asmjs_options(libphe.worker.asmjs)
-target_link_libraries(libphe.worker.asmjs
         "-s ENVIRONMENT=worker"
         )
 

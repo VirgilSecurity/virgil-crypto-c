@@ -80,21 +80,6 @@ function(wasm_add_common_wasm_options target)
             )
 endfunction()
 
-function(wasm_add_common_asmjs_options target)
-    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-    target_link_libraries(${target}
-            "-s WASM=0"
-            "-s SINGLE_FILE=1"
-            "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-            "-s MODULARIZE=1"
-            "-s EXPORT_NAME=FoundationModule"
-            "$<$<CONFIG:Release>:--llvm-lto 1 -O0>"
-            "$<$<CONFIG:Debug>:--emrun>"
-            vsc::foundation
-            )
-endfunction()
-
 # ---------------------------------------------------------------------------
 #   Create WebAssembly library
 # ---------------------------------------------------------------------------
@@ -113,24 +98,6 @@ target_link_libraries(libfoundation.browser
 add_executable(libfoundation.worker)
 wasm_add_common_wasm_options(libfoundation.worker)
 target_link_libraries(libfoundation.worker
-        "-s ENVIRONMENT=worker"
-        )
-
-add_executable(libfoundation.asmjs)
-wasm_add_common_asmjs_options(libfoundation.asmjs)
-target_link_libraries(libfoundation.asmjs
-        "-s ENVIRONMENT=node"
-        )
-
-add_executable(libfoundation.browser.asmjs)
-wasm_add_common_asmjs_options(libfoundation.browser.asmjs)
-target_link_libraries(libfoundation.browser.asmjs
-        "-s ENVIRONMENT=web"
-        )
-
-add_executable(libfoundation.worker.asmjs)
-wasm_add_common_asmjs_options(libfoundation.worker.asmjs)
-target_link_libraries(libfoundation.worker.asmjs
         "-s ENVIRONMENT=worker"
         )
 

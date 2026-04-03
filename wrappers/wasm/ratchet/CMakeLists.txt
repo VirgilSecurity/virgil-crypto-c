@@ -80,21 +80,6 @@ function(wasm_add_common_wasm_options target)
             )
 endfunction()
 
-function(wasm_add_common_asmjs_options target)
-    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-    target_link_libraries(${target}
-            "-s WASM=0"
-            "-s SINGLE_FILE=1"
-            "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
-            "-s MODULARIZE=1"
-            "-s EXPORT_NAME=RatchetModule"
-            "$<$<CONFIG:Release>:--llvm-lto 1 -O0>"
-            "$<$<CONFIG:Debug>:--emrun>"
-            vsc::ratchet
-            )
-endfunction()
-
 # ---------------------------------------------------------------------------
 #   Create WebAssembly library
 # ---------------------------------------------------------------------------
@@ -113,24 +98,6 @@ target_link_libraries(libratchet.browser
 add_executable(libratchet.worker)
 wasm_add_common_wasm_options(libratchet.worker)
 target_link_libraries(libratchet.worker
-        "-s ENVIRONMENT=worker"
-        )
-
-add_executable(libratchet.asmjs)
-wasm_add_common_asmjs_options(libratchet.asmjs)
-target_link_libraries(libratchet.asmjs
-        "-s ENVIRONMENT=node"
-        )
-
-add_executable(libratchet.browser.asmjs)
-wasm_add_common_asmjs_options(libratchet.browser.asmjs)
-target_link_libraries(libratchet.browser.asmjs
-        "-s ENVIRONMENT=web"
-        )
-
-add_executable(libratchet.worker.asmjs)
-wasm_add_common_asmjs_options(libratchet.worker.asmjs)
-target_link_libraries(libratchet.worker.asmjs
         "-s ENVIRONMENT=worker"
         )
 

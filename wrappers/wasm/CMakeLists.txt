@@ -59,8 +59,8 @@ endif()
 #   Configure
 # ---------------------------------------------------------------------------
 configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/rollup.config.js"
-        "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.js"
+        "${CMAKE_CURRENT_LIST_DIR}/rollup.config.mjs"
+        "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.mjs"
         COPYONLY
         )
 
