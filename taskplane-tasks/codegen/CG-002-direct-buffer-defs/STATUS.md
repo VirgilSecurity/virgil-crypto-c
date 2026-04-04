@@ -83,6 +83,8 @@
 | 2026-04-04 20:58 | Step 3 completed | Python compile, build gate, and no-generated-artifact checks passed |
 | 2026-04-04 20:58 | Step 4 started | Documentation and delivery |
 | 2026-04-04 21:03 | Step 4 completed | Migration docs updated with `vsc_buffer_defs` direct coverage and `vsc_buffer` follow-up risks |
+| 2026-04-04 20:45 | Worker iter 1 | done in 489s, tools: 92 |
+| 2026-04-04 20:45 | Task complete | .DONE created |
 
 ---
 
