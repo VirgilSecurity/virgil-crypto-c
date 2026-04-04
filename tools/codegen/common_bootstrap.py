@@ -24,6 +24,8 @@ def split_generated_sections(content: str) -> tuple[str, str]:
     end = content.index(GENERATED_END, start)
     prefix = content[:start]
     suffix = content[end + len(GENERATED_END):]
+    if suffix.startswith("\n"):
+        suffix = suffix[1:]
     return prefix, suffix
 
 
@@ -48,19 +50,17 @@ def emit_comment_block(text: str | None) -> str:
     return text + "\n"
 
 
-def c_type(type_name: str, accessed_by: str = "value", is_const_type: str | None = None, is_string: bool = False) -> str:
+def c_decl(type_name: str, name: str, accessed_by: str = "value", is_const_type: str | None = None,
+           is_string: bool = False, is_array: bool = False, type_is: str | None = None) -> str:
     prefix = "const " if is_const_type == "1" else ""
-    if is_string:
-        return f"{prefix}{type_name} *".strip()
-    if accessed_by in ("pointer", "reference"):
-        return f"{prefix}{type_name} *".strip()
-    return f"{prefix}{type_name}".strip()
-
-
-def c_decl(type_name: str, name: str, accessed_by: str = "value", is_const_type: str | None = None, is_string: bool = False) -> str:
-    rendered_type = c_type(type_name, accessed_by, is_const_type, is_string)
-    if rendered_type.endswith("*"):
-        return f"{rendered_type}{name}"
+    stars = ""
+    if is_string or is_array or accessed_by == "pointer":
+        stars = "*"
+    elif accessed_by == "reference":
+        stars = "**" if type_is == "class" else "*"
+    rendered_type = f"{prefix}{type_name}".strip()
+    if stars:
+        return f"{rendered_type} {stars}{name}".strip()
     return f"{rendered_type} {name}".strip()
 
 
@@ -108,11 +108,11 @@ def render_macroses(elem: ET.Element) -> str:
 def render_callback(elem: ET.Element) -> str:
     comment = emit_comment_block(description_text(elem))
     ret = elem.find("c_return")
-    ret_type = c_type(ret.attrib["type"], ret.attrib.get("accessed_by", "value"), ret.attrib.get("is_const_type"), ret.attrib.get("string") is not None)
+    ret_type = c_decl(ret.attrib["type"], "", ret.attrib.get("accessed_by", "value"), ret.attrib.get("is_const_type"), ret.attrib.get("string") is not None, ret.attrib.get("array") is not None, ret.attrib.get("type_is")).strip()
     modifiers = " ".join(m.attrib["value"] for m in elem.findall("c_modifier"))
     args = []
     for arg in elem.findall("c_argument"):
-        rendered = c_decl(arg.attrib['type'], arg.attrib.get('name',''), arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None)
+        rendered = c_decl(arg.attrib['type'], arg.attrib.get('name',''), arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, arg.attrib.get('array') is not None, arg.attrib.get('type_is'))
         args.append(rendered)
     arg_str = ", ".join(args) if args else "void"
     left = f"typedef {modifiers} {ret_type}".replace("  ", " ").strip()
@@ -139,14 +139,15 @@ def render_struct(elem: ET.Element, for_header: bool) -> str:
     if elem.attrib.get("definition") == "external" and for_header:
         return f"{comment}typedef struct {name} {name};"
 
-    lines = [comment + f"struct {name} {{"]
+    typedef_public = for_header and elem.attrib.get("declaration") == "public" and elem.attrib.get("definition") == "public"
+    lines = [comment + (f"typedef struct {name} {{" if typedef_public else f"struct {name} {{")]
     for prop in elem.findall("c_property"):
         prop_comment = emit_comment_block(prop.text)
         if prop_comment:
             lines.append(indent(prop_comment.rstrip("\n"), 4))
-        decl = f"{c_decl(prop.attrib['type'], prop.attrib['name'], prop.attrib.get('accessed_by', 'value'), prop.attrib.get('is_const_type'), prop.attrib.get('string') is not None)};"
+        decl = f"{c_decl(prop.attrib['type'], prop.attrib['name'], prop.attrib.get('accessed_by', 'value'), prop.attrib.get('is_const_type'), prop.attrib.get('string') is not None, prop.attrib.get('array') is not None, prop.attrib.get('type_is'))};"
         lines.append(f"    {decl}")
-    lines.append("};")
+    lines.append(f"}} {name};" if typedef_public else "};")
     return "\n".join(lines)
 
 
@@ -161,7 +162,7 @@ def render_variable(elem: ET.Element) -> str:
             initializer = f" = {{\n    {value}\n}}"
         else:
             initializer = f" = {value}"
-    decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None)}"
+    decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None, elem.attrib.get('array') is not None, elem.attrib.get('type_is'))}"
     if elem.attrib.get("array") == "derived":
         decl += "[]"
     decl += initializer + ";"
@@ -172,7 +173,7 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
     ret = elem.find("c_return")
     ret_type = "void"
     if ret is not None:
-        ret_type = c_type(ret.attrib["type"], ret.attrib.get("accessed_by", "value"), ret.attrib.get("is_const_type"), ret.attrib.get("string") is not None)
+        ret_type = c_decl(ret.attrib["type"], "", ret.attrib.get("accessed_by", "value"), ret.attrib.get("is_const_type"), ret.attrib.get("string") is not None, ret.attrib.get("array") is not None, ret.attrib.get("type_is")).strip()
     modifiers = " ".join(m.attrib["value"] for m in elem.findall("c_modifier"))
     if for_definition and elem.attrib.get("definition") == "private":
         modifiers = "static"
@@ -183,7 +184,7 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
         if arg.attrib.get("type") == "void" and not arg.attrib.get("name"):
             args.append("void")
         else:
-            args.append(c_decl(arg.attrib['type'], arg.attrib['name'], arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None))
+            args.append(c_decl(arg.attrib['type'], arg.attrib['name'], arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, arg.attrib.get('array') is not None, arg.attrib.get('type_is')))
     arg_str = ", ".join(args) if args else "void"
     return f"{header}\n{elem.attrib['name']}({arg_str})"
 
