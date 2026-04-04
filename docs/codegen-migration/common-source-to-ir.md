@@ -75,12 +75,20 @@ python3 tools/codegen/inspect_common_ir.py --module assert
 python3 tools/codegen/inspect_common_ir.py --class-name data
 ```
 
+## Progress update
+
+The first direct semantic lowering is now implemented for:
+
+- `data` / `vsc_data`
+
+and is wired into the mixed-mode `common` bootstrap path.
+
 ## Recommended next step
 
-Implement the first semantic lowering rules for:
+Implement the next semantic lowering rules for:
 
 1. `assert` module
-2. `data` class
+2. then the remaining `common` entities
 
 Then compare that direct IR against the corresponding legacy resolved artifacts:
 

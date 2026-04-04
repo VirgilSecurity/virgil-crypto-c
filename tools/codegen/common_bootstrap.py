@@ -5,8 +5,13 @@ import html
 import os
 from pathlib import Path
 import shutil
+import sys
 import textwrap
 import xml.etree.ElementTree as ET
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from tools.codegen.common_direct_c import build_direct_data_c_module
 
 
 GENERATED_START = "//  @generated"
@@ -258,7 +263,10 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
 
 
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path) -> list[Path]:
-    root = ET.parse(xml_path).getroot()
+    if xml_path.name == 'c_module_vsc_data.xml':
+        root = build_direct_data_c_module(repo_root)
+    else:
+        root = ET.parse(xml_path).getroot()
     written = []
     for attr, is_header in [("header_file", True), ("source_file", False)]:
         rel = root.attrib.get(attr)
