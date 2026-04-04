@@ -29,8 +29,8 @@
 ### Step 2: Update docs
 **Status:** ⬜ Not Started
 
-- [ ] Write the audit into `docs/codegen-migration/`
-- [ ] Ensure the docs are consistent with the actual bootstrap routing in code
+- [x] Write the audit into `docs/codegen-migration/`
+- [x] Ensure the docs are consistent with the actual bootstrap routing in code
 
 ---
 

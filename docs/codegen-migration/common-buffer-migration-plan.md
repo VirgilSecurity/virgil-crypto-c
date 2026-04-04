@@ -30,7 +30,7 @@ That leaves the remaining fallback surface concentrated in `vsc_buffer` and thin
 | `vsc_buffer_defs.c` | Same effective source as `vsc_buffer_defs.h`. | **Direct** via the same builder, with an intentionally empty generated source block. | Parity risk stays mostly preservation/skeleton-related because the generated body remains empty. |
 | `vsc_buffer.h` | `codegen/models/project_common/class_buffer.xml` | Falls back through legacy resolved XML path. | Public API surface is almost entirely generated from the class model. |
 | `vsc_buffer.c` | `codegen/models/project_common/class_buffer.xml` plus preserved handwritten implementation outside `@generated`. | Falls back through legacy resolved XML path for the generated block only; manual body stays in the checked-in file skeleton. | Largest remaining `common` migration slice because generated and handwritten code meet in one file. |
-| `vsc_common_public.h` / `vsc_common_private.h` | Support/aggregation includes derived from project composition. | Still emitted via fallback/resolved path. | Thin support artifacts; should be handled after the core buffer family is direct. |
+| `vsc_common_public.h` / `vsc_common_private.h` | Support/aggregation includes derived from project composition. | Not directly owned by a dedicated emitter today; the checked-in files currently carry empty generated blocks. | Thin support artifacts; should be handled after the core buffer family is direct. |
 
 ## Recommended execution order
 
@@ -44,7 +44,8 @@ That leaves the remaining fallback surface concentrated in `vsc_buffer` and thin
    - Keep any remaining fallback usage explicit and temporary.
 3. **Support-header follow-up after both core tasks (`CG-003` and/or `CG-005`)**
    - Revisit `vsc_common_public.h` and `vsc_common_private.h` once `buffer_defs` and `buffer` are direct.
-   - Treat these as thin include aggregators whose end state can be decided with the smaller fallback boundary visible.
+   - Treat these as thin include aggregators whose end state can be decided with the smaller migration boundary visible.
+   - Prefer either a tiny direct/project-composition emitter or an explicit decision to keep them as static checked-in umbrella headers; avoid implying a large resolved-XML dependency if the generated blocks stay empty.
 
 ## Verification and commit-safety expectations
 
