@@ -21,7 +21,26 @@ Current project scope for Taskplane work:
 
 ## Current State
 
-The `common` generator has now completed the remaining buffer-family migration batch and successfully validated the `common` build.
+The `common` generator remains mixed mode at the whole-bootstrap level, but the current Taskplane `common` entity slice is now effectively closed and the remaining buffer-family migration batch has completed successfully.
+
+Completed direct-lowered core entities in this slice:
+
+- `vsc_library`
+- `vsc_assert`
+- `vsc_memory`
+- `vsc_atomic`
+- `vsc_data`
+- `vsc_buffer_defs`
+- `vsc_buffer`
+
+There is no longer a core `common` entity in this slice that still requires legacy resolved-XML fallback at runtime.
+
+Related support headers:
+
+- `vsc_common_public.h`
+- `vsc_common_private.h`
+
+remain checked-in umbrella headers with empty generated blocks and are now tracked as static support artifacts rather than as active fallback migration work.
 
 Current next-phase focus:
 
@@ -54,6 +73,7 @@ This script is allowed to apply generated output temporarily into the repo, buil
 | Migration overview | `docs/codegen-migration/README.md` |
 | Roadmap | `docs/codegen-migration/roadmap.md` |
 | Foundation status | `docs/codegen-migration/common-direct-foundation-status.md` |
+| Architecture ADR | `docs/adr/0002-project-rooted-codegen-pipeline.md` |
 
 ---
 
@@ -69,6 +89,16 @@ This script is allowed to apply generated output temporarily into the repo, buil
 
 ## Planned Task Sequence
 
+Completed:
+
+- `CG-001` — buffer family migration spec and dependency map ✅
+- `CG-002` — direct lowering for `vsc_buffer_defs` ✅
+- `CG-003` — support-file fallback audit and remaining-common plan ✅
+- `CG-004` — direct lowering for `vsc_buffer` ✅
+- `CG-005` — final common status/docs sweep after buffer migration ✅
+
+Next architecture phase:
+
 - `CG-006` — tests and fixtures for project-rooted `common` graph loading
 - `CG-007` — project-rooted model graph loader for `project_common.xml`
 - `CG-008` — normalized IR from the resolved project graph
@@ -82,3 +112,5 @@ This script is allowed to apply generated output temporarily into the repo, buil
 - Reduce remaining project-specific hardcodes in `tools/codegen/common_direct_c.py`.
 - Make `project_common.xml` and its referenced model graph the explicit entrypoint for `common` generation.
 - Tighten automated tests around graph loading, IR construction, and C resolution from model metadata.
+- Add parity/tooling checks that make mixed-mode formatting differences easier to review.
+- Revisit umbrella-header generation only if a broader project-composition emitter is introduced for reasons beyond the completed `common` migration slice.

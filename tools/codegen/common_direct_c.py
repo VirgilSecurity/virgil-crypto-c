@@ -421,3 +421,180 @@ def build_direct_data_c_module(repo_root: str | Path = '.') -> ET.Element:
         m.text = _comment_text(method.description)
 
     return root
+
+
+def _buffer_argument(parent: ET.Element, attrs: dict[str, str], *, name: str) -> ET.Element:
+    if attrs.get('class') == 'self':
+        extra = {'is_const_type': '1'} if attrs.get('access') == 'readonly' else {}
+        accessed_by = 'reference' if attrs.get('passed_by') == 'reference' else 'pointer'
+        return _text(parent, 'c_argument', name=name, accessed_by=accessed_by, type='vsc_buffer_t', type_is='class', **extra)
+    if attrs.get('class') == 'data':
+        return _text(parent, 'c_argument', name=name, accessed_by='value', type='vsc_data_t', type_is='class')
+    if 'callback' in attrs:
+        return _text(parent, 'c_argument', name=name, accessed_by='value', type='vsc_dealloc_fn', type_is='callback')
+
+    type_name, type_kind = _type_map(attrs.get('type'))
+    accessed_by = 'pointer' if attrs.get('is_reference') in {'1', 'true'} else 'value'
+    return _text(parent, 'c_argument', name=name, accessed_by=accessed_by, type=type_name, type_is=type_kind)
+
+
+def _buffer_return(parent: ET.Element, attrs: dict[str, str]) -> ET.Element:
+    if attrs.get('class') == 'self':
+        return _text(parent, 'c_return', accessed_by='pointer', type='vsc_buffer_t', type_is='class')
+    if attrs.get('class') == 'data':
+        return _text(parent, 'c_return', accessed_by='value', type='vsc_data_t', type_is='class')
+    if attrs.get('type') == 'byte' and attrs.get('is_reference') in {'1', 'true'}:
+        extra = {'is_const_type': '1'} if attrs.get('access') != 'readwrite' else {}
+        return _text(parent, 'c_return', accessed_by='pointer', type='byte', type_is='primitive', **extra)
+
+    type_name, type_kind = _type_map(attrs.get('type'))
+    return _text(parent, 'c_return', accessed_by='value', type=type_name, type_is=type_kind)
+
+
+def _buffer_public_method(root: ET.Element, name: str, description: str, *, uid: str, args: list[dict[str, dict[str, str]]] | None = None,
+                          return_attrs: dict[str, str] | None = None, code: str | None = None) -> ET.Element:
+    definition = 'public' if code is not None else 'external'
+    method = _text(root, 'c_method', name=name, visibility='public', declaration='public', definition=definition, uid=uid)
+    if args:
+        for arg in args:
+            _buffer_argument(method, arg['attrs'], name=arg['name'])
+    else:
+        _text(method, 'c_argument', type='void', accessed_by='value')
+
+    if return_attrs is None:
+        _text(method, 'c_return', type='void', accessed_by='value')
+    else:
+        _buffer_return(method, return_attrs)
+
+    if code is not None:
+        _text(method, 'c_code', code, type='generated', lang='c')
+
+    _text(method, 'c_modifier', value='VSC_PUBLIC')
+    method.text = _comment_text(description)
+    return method
+
+
+def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
+    project = load_project_common(repo_root)
+    buffer_cls = next(c for c in project.classes if c.name == 'buffer')
+    methods_by_name = {method.name: method for method in buffer_cls.methods}
+    ctors_by_name = {ctor.name: ctor for ctor in buffer_cls.constructors}
+
+    root = ET.Element('c_module', {
+        'lang': 'C',
+        'id': 'buffer',
+        'name': 'vsc_buffer',
+        'class': 'buffer',
+        'scope': 'public',
+        'has_cmakedefine': '0',
+        'uid': 'c_module_buffer',
+        'c_include_file': 'vsc_buffer.h',
+        'c_source_file': 'vsc_buffer.c',
+        'header_file': '../library/common/include/virgil/crypto/common/vsc_buffer.h',
+        'source_file': '../library/common/src/vsc_buffer.c',
+        'once_guard': 'vsc_buffer_h_included',
+    })
+
+    struct = _text(root, 'c_struct', name='vsc_buffer_t', visibility='public', declaration='public', definition='external', uid='direct_buffer_struct_buffer')
+    struct.text = _comment_text("Handle 'buffer' context.")
+
+    private_methods = [
+        ('vsc_buffer_init_ctx', "Perform context specific initialization.\nNote, this method is called automatically when method vsc_buffer_init() is called.\nNote, that context is already zeroed.", [{'name': 'self', 'attrs': {'class': 'self'}}]),
+        ('vsc_buffer_cleanup_ctx', "Release all inner resources.\nNote, this method is called automatically once when class is completely cleaning up.\nNote, that context will be zeroed automatically next this method.", [{'name': 'self', 'attrs': {'class': 'self'}}]),
+        ('vsc_buffer_init_ctx_with_capacity', ctors_by_name['with capacity'].description, [{'name': 'self', 'attrs': {'class': 'self'}}, {'name': 'capacity', 'attrs': {'type': 'size'}}]),
+        ('vsc_buffer_init_ctx_with_data', ctors_by_name['with data'].description, [{'name': 'self', 'attrs': {'class': 'self'}}, {'name': 'data', 'attrs': {'class': 'data'}}]),
+    ]
+    for name, description, args in private_methods:
+        method = _text(root, 'c_method', name=name, visibility='private', declaration='private', definition='external', uid=f'direct_buffer_private_{name}')
+        for arg in args:
+            _buffer_argument(method, arg['attrs'], name=arg['name'])
+        _text(method, 'c_return', type='void', accessed_by='value')
+        _text(method, 'c_modifier', value='static')
+        method.text = _comment_text(description)
+
+    _buffer_public_method(root, 'vsc_buffer_ctx_size', "Return size of 'vsc_buffer_t'.", uid='direct_buffer_ctx_size', return_attrs={'type': 'size'}, code='return sizeof(vsc_buffer_t);')
+    _buffer_public_method(root, 'vsc_buffer_init', 'Perform initialization of pre-allocated context.', uid='direct_buffer_init', args=[{'name': 'self', 'attrs': {'class': 'self'}}], code='VSC_ASSERT_PTR(self);\n\nvsc_zeroize(self, sizeof(vsc_buffer_t));\n\nself->refcnt = 1;\n\nvsc_buffer_init_ctx(self);')
+    _buffer_public_method(root, 'vsc_buffer_cleanup', 'Release all inner resources including class dependencies.', uid='direct_buffer_cleanup', args=[{'name': 'self', 'attrs': {'class': 'self'}}], code='if (self == NULL) {\n    return;\n}\n\nvsc_buffer_cleanup_ctx(self);\n\nvsc_zeroize(self, sizeof(vsc_buffer_t));')
+    _buffer_public_method(root, 'vsc_buffer_new', "Allocate context and perform it's initialization.", uid='direct_buffer_new', return_attrs={'class': 'self'}, code='vsc_buffer_t *self = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));\nVSC_ASSERT_ALLOC(self);\n\nvsc_buffer_init(self);\n\nself->self_dealloc_cb = vsc_dealloc;\n\nreturn self;')
+    _buffer_public_method(root, 'vsc_buffer_init_with_capacity', 'Perform initialization of pre-allocated context.\nAllocate inner buffer of given capacity.', uid='direct_buffer_init_with_capacity', args=[{'name': 'self', 'attrs': {'class': 'self'}}, {'name': 'capacity', 'attrs': {'type': 'size'}}], code='VSC_ASSERT_PTR(self);\n\nvsc_zeroize(self, sizeof(vsc_buffer_t));\n\nself->refcnt = 1;\n\nvsc_buffer_init_ctx_with_capacity(self, capacity);')
+    _buffer_public_method(root, 'vsc_buffer_new_with_capacity', "Allocate class context and perform it's initialization.\nAllocate inner buffer of given capacity.", uid='direct_buffer_new_with_capacity', args=[{'name': 'capacity', 'attrs': {'type': 'size'}}], return_attrs={'class': 'self'}, code='vsc_buffer_t *self = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));\nVSC_ASSERT_ALLOC(self);\n\nvsc_buffer_init_with_capacity(self, capacity);\n\nself->self_dealloc_cb = vsc_dealloc;\n\nreturn self;')
+    _buffer_public_method(root, 'vsc_buffer_init_with_data', 'Perform initialization of pre-allocated context.\nAllocate inner buffer buffer as copy of given data.', uid='direct_buffer_init_with_data', args=[{'name': 'self', 'attrs': {'class': 'self'}}, {'name': 'data', 'attrs': {'class': 'data'}}], code='VSC_ASSERT_PTR(self);\n\nvsc_zeroize(self, sizeof(vsc_buffer_t));\n\nself->refcnt = 1;\n\nvsc_buffer_init_ctx_with_data(self, data);')
+    _buffer_public_method(root, 'vsc_buffer_new_with_data', "Allocate class context and perform it's initialization.\nAllocate inner buffer buffer as copy of given data.", uid='direct_buffer_new_with_data', args=[{'name': 'data', 'attrs': {'class': 'data'}}], return_attrs={'class': 'self'}, code='vsc_buffer_t *self = (vsc_buffer_t *) vsc_alloc(sizeof (vsc_buffer_t));\nVSC_ASSERT_ALLOC(self);\n\nvsc_buffer_init_with_data(self, data);\n\nself->self_dealloc_cb = vsc_dealloc;\n\nreturn self;')
+    _buffer_public_method(root, 'vsc_buffer_delete', 'Release all inner resources and deallocate context if needed.\nIt is safe to call this method even if the context was statically allocated.', uid='direct_buffer_delete', args=[{'name': 'self', 'attrs': {'class': 'self'}}], code='if (self == NULL) {\n    return;\n}\n\nsize_t old_counter = self->refcnt;\nVSC_ASSERT(old_counter != 0);\nsize_t new_counter = old_counter - 1;\n\n#if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)\n//  CAS loop\nwhile (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {\n    old_counter = self->refcnt;\n    VSC_ASSERT(old_counter != 0);\n    new_counter = old_counter - 1;\n}\n#else\nself->refcnt = new_counter;\n#endif\n\nif (new_counter > 0) {\n    return;\n}\n\nvsc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;\n\nvsc_buffer_cleanup(self);\n\nif (self_dealloc_cb != NULL) {\n    self_dealloc_cb(self);\n}')
+    _buffer_public_method(root, 'vsc_buffer_destroy', "Delete given context and nullifies reference.\nThis is a reverse action of the function 'vsc_buffer_new ()'.", uid='direct_buffer_destroy', args=[{'name': 'self_ref', 'attrs': {'class': 'self', 'access': 'readwrite', 'passed_by': 'reference'}}], code='VSC_ASSERT_PTR(self_ref);\n\nvsc_buffer_t *self = *self_ref;\n*self_ref = NULL;\n\nvsc_buffer_delete(self);')
+    _buffer_public_method(root, 'vsc_buffer_shallow_copy', 'Copy given class context by increasing reference counter.', uid='direct_buffer_shallow_copy', args=[{'name': 'self', 'attrs': {'class': 'self'}}], return_attrs={'class': 'self'}, code='VSC_ASSERT_PTR(self);\n\n#if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)\n//  CAS loop\nsize_t old_counter;\nsize_t new_counter;\ndo {\n    old_counter = self->refcnt;\n    new_counter = old_counter + 1;\n} while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));\n#else\n++self->refcnt;\n#endif\n\nreturn self;')
+
+    for method_name in ['is empty', 'is reverse', 'equal', 'secure equal', 'alloc', 'release', 'use', 'take', 'make secure', 'switch reverse mode', 'is full', 'is valid', 'bytes', 'data', 'capacity', 'len', 'unused len', 'begin', 'unused bytes', 'inc used', 'dec used', 'write data', 'append data', 'reset', 'erase']:
+        method_src = methods_by_name[method_name]
+        method = _text(root, 'c_method', name=f"vsc_buffer_{_snake(method_src.name)}", visibility='public', declaration='public', definition='external', uid=f"direct_buffer_method_{_snake(method_src.name)}")
+        self_attrs = {'class': 'self'}
+        if method_src.attrs.get('is_const') in {'1', 'true'}:
+            self_attrs['access'] = 'readonly'
+        _buffer_argument(method, self_attrs, name='self')
+        for arg in method_src.arguments:
+            arg_name = {'dealloc': 'dealloc_cb'}.get(arg.name, _snake(arg.name))
+            _buffer_argument(method, dict(arg.attrs), name=arg_name)
+        if method_src.returns:
+            _buffer_return(method, method_src.returns[0])
+        else:
+            _text(method, 'c_return', type='void', accessed_by='value')
+        _text(method, 'c_modifier', value='VSC_PUBLIC')
+        method.text = _comment_text(method_src.description)
+
+    return root
+
+
+def build_direct_buffer_defs_c_module(repo_root: str | Path = '.') -> ET.Element:
+    project = load_project_common(repo_root)
+    buffer_cls = next(c for c in project.classes if c.name == 'buffer')
+
+    root = ET.Element('c_module', {
+        'lang': 'C',
+        'id': 'buffer_defs',
+        'name': 'vsc_buffer_defs',
+        'class': 'buffer',
+        'scope': 'private',
+        'has_cmakedefine': '0',
+        'uid': 'c_module_buffer_defs',
+        'c_include_file': 'vsc_buffer_defs.h',
+        'c_source_file': 'vsc_buffer_defs.c',
+        'header_file': '../library/common/include/virgil/crypto/common/private/vsc_buffer_defs.h',
+        'source_file': '../library/common/src/vsc_buffer_defs.c',
+        'once_guard': 'vsc_buffer_defs_h_included',
+    })
+
+    struct = _text(root, 'c_struct', name='vsc_buffer_t', visibility='public', declaration='private', definition='public', uid='direct_buffer_defs_struct_buffer')
+    struct.text = _comment_text("Handle 'buffer' context.")
+
+    synthetic_fields = [
+        ('self_dealloc_cb', 'vsc_dealloc_fn', 'callback', 'Function do deallocate self context.'),
+        ('refcnt', 'VSC_ATOMIC size_t', 'primitive', 'Reference counter.'),
+    ]
+    for name, type_name, type_kind, desc in synthetic_fields:
+        field = _text(struct, 'c_property', name=name, accessed_by='value', type=type_name, type_is=type_kind)
+        field.text = _comment_text(desc)
+
+    for prop in buffer_cls.properties:
+        attrs = dict(prop.attrs)
+        field_attrs = {
+            'name': {
+                'bytes_dealloc': 'bytes_dealloc_cb',
+                'is secure': 'is_secure',
+                'is owner': 'is_owner',
+                'is reverse': 'is_reverse',
+            }.get(prop.name, prop.name.replace(' ', '_')),
+            'accessed_by': 'pointer' if attrs.get('is_reference') in {'1', 'true'} else 'value',
+        }
+
+        if 'callback' in attrs:
+            field_attrs['type'] = 'vsc_dealloc_fn'
+            field_attrs['type_is'] = 'callback'
+        else:
+            type_name, type_kind = _type_map(attrs.get('type'))
+            field_attrs['type'] = type_name
+            field_attrs['type_is'] = type_kind
+
+        field = _text(struct, 'c_property', **field_attrs)
+        field.text = _comment_text(prop.description)
+
+    return root
