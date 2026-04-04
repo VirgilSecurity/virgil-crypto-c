@@ -17,6 +17,11 @@ Current implementation:
 
 This is explicitly a **bootstrap implementation**, not the intended final architecture.
 
+It already follows the required preservation contract for C generation:
+
+- model-driven generated block rewriting
+- preservation of existing manual/non-generated file regions
+
 ## Why this exists
 
 It proves several important things early:
@@ -42,6 +47,7 @@ It currently writes 16 files for the `common` project.
 - the new Python bootstrap produces the `common` C header/source tree in a separate destination
 - it preserves the existing non-generated file sections by reusing the checked-in file skeletons
 - it demonstrates a generic pass over resolved `c_module` XML rather than a one-off file copier
+- it can now be applied onto the real `library/common` files temporarily and the `common` CMake target builds successfully
 
 ### Known limitations
 - output is not yet parity-clean against the checked-in `common` library
@@ -55,14 +61,28 @@ It currently writes 16 files for the `common` project.
 
 ## How to run
 
+Generate into a separate tree:
+
 ```bash
 python3 tools/codegen/common_bootstrap.py --project common --out build/new-codegen-common
 ```
 
-Or use:
+Apply directly to the real source tree:
+
+```bash
+python3 tools/codegen/common_bootstrap.py --project common --apply
+```
+
+Verify diff against current checked-in `common`:
 
 ```bash
 bash tools/codegen/verify_common_bootstrap.sh
+```
+
+Apply to the real tree, build `common`, and automatically restore files afterward:
+
+```bash
+bash tools/codegen/build_common_with_new_codegen.sh
 ```
 
 ## Interpretation

@@ -133,13 +133,16 @@ def render_enum(elem: ET.Element) -> str:
     return "\n".join(lines)
 
 
-def render_struct(elem: ET.Element, for_header: bool) -> str:
+def render_struct_forward(elem: ET.Element) -> str:
     comment = emit_comment_block(description_text(elem))
     name = elem.attrib["name"]
-    if elem.attrib.get("definition") == "external" and for_header:
-        return f"{comment}typedef struct {name} {name};"
+    return f"{comment}typedef struct {name} {name};"
 
-    typedef_public = for_header and elem.attrib.get("declaration") == "public" and elem.attrib.get("definition") == "public"
+
+def render_struct_full(elem: ET.Element) -> str:
+    comment = emit_comment_block(description_text(elem))
+    name = elem.attrib["name"]
+    typedef_public = elem.attrib.get("declaration") == "public"
     lines = [comment + (f"typedef struct {name} {{" if typedef_public else f"struct {name} {{")]
     for prop in elem.findall("c_property"):
         prop_comment = emit_comment_block(prop.text)
@@ -162,7 +165,7 @@ def render_variable(elem: ET.Element) -> str:
             initializer = f" = {{\n    {value}\n}}"
         else:
             initializer = f" = {value}"
-    decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None, elem.attrib.get('array') is not None, elem.attrib.get('type_is'))}"
+    decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None, False, elem.attrib.get('type_is'))}"
     if elem.attrib.get("array") == "derived":
         decl += "[]"
     decl += initializer + ";"
@@ -175,8 +178,6 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
     if ret is not None:
         ret_type = c_decl(ret.attrib["type"], "", ret.attrib.get("accessed_by", "value"), ret.attrib.get("is_const_type"), ret.attrib.get("string") is not None, ret.attrib.get("array") is not None, ret.attrib.get("type_is")).strip()
     modifiers = " ".join(m.attrib["value"] for m in elem.findall("c_modifier"))
-    if for_definition and elem.attrib.get("definition") == "private":
-        modifiers = "static"
     parts = [p for p in [modifiers, ret_type] if p]
     header = " ".join(parts)
     args = []
@@ -203,6 +204,13 @@ def indent(text: str, spaces: int) -> str:
     return "\n".join(prefix + line if line else "" for line in text.splitlines())
 
 
+def _append_items(out: list[str], items: list[str]) -> None:
+    for item in items:
+        if item:
+            out.append(item)
+            out.append("")
+
+
 def generate_block(root: ET.Element, for_header: bool) -> str:
     out: list[str] = [
         "//  @generated",
@@ -213,75 +221,32 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
         "",
     ]
 
-    for child in root:
-        tag = child.tag
-        if tag in {"c_license", "c_caution", "cmake_include_file_check"}:
-            continue
-        if tag == "c_include":
-            continue
-        elif tag == "c_alias" and for_header and child.attrib.get("declaration") == "public":
-            out.append(render_alias(child))
-            out.append("")
-        elif tag == "c_code":
-            wanted = "public" if for_header else "private"
-            if child.attrib.get("definition") == wanted:
-                out.append(render_c_code(child))
-                out.append("")
-        elif tag == "c_macroses":
-            wanted = "public" if for_header else "private"
-            if child.attrib.get("definition") == wanted:
-                out.append(render_macroses(child))
-                out.append("")
-        elif tag == "c_macros":
-            wanted = "public" if for_header else "private"
-            if child.attrib.get("definition") == wanted:
-                out.append(render_macros(child))
-                out.append("")
-        elif tag == "c_enum":
-            decl = child.attrib.get("declaration")
-            defi = child.attrib.get("definition")
-            if for_header and decl == "public":
-                out.append(render_enum(child))
-                out.append("")
-            elif (not for_header) and defi == "private":
-                out.append(render_enum(child))
-                out.append("")
-        elif tag == "c_struct":
-            decl = child.attrib.get("declaration")
-            defi = child.attrib.get("definition")
-            if for_header and (decl == "public" or defi == "public"):
-                out.append(render_struct(child, True))
-                out.append("")
-            elif (not for_header) and defi == "private":
-                out.append(render_struct(child, False))
-                out.append("")
-        elif tag == "c_callback":
-            decl = child.attrib.get("declaration")
-            if for_header and decl == "public":
-                out.append(render_callback(child))
-                out.append("")
-            elif (not for_header) and decl == "private":
-                out.append(render_callback(child))
-                out.append("")
-        elif tag == "c_variable":
-            decl = child.attrib.get("declaration")
-            defi = child.attrib.get("definition")
-            if for_header and decl == "public":
-                out.append(render_variable(child))
-                out.append("")
-            elif (not for_header) and (defi != "external"):
-                out.append(render_variable(child))
-                out.append("")
-        elif tag == "c_method":
-            decl = child.attrib.get("declaration")
-            defi = child.attrib.get("definition")
-            if for_header and decl == "public":
-                out.append(render_method(child, False))
-                out.append("")
-            elif (not for_header) and defi != "external":
-                out.append(render_method(child, True))
-                out.append("")
+    children = list(root)
+    if for_header:
+        _append_items(out, [render_alias(c) for c in children if c.tag == 'c_alias' and c.attrib.get('declaration') == 'public'])
+        _append_items(out, [render_c_code(c) for c in children if c.tag == 'c_code' and c.attrib.get('definition') == 'public'])
+        _append_items(out, [render_macroses(c) for c in children if c.tag == 'c_macroses' and c.attrib.get('definition') == 'public'])
+        _append_items(out, [render_macros(c) for c in children if c.tag == 'c_macros' and c.attrib.get('definition') == 'public'])
+        _append_items(out, [render_enum(c) for c in children if c.tag == 'c_enum' and c.attrib.get('declaration') == 'public' and c.attrib.get('definition') == 'public'])
+        _append_items(out, [render_struct_forward(c) for c in children if c.tag == 'c_struct' and c.attrib.get('declaration') == 'public' and c.attrib.get('definition') != 'public'])
+        _append_items(out, [render_callback(c) for c in children if c.tag == 'c_callback' and c.attrib.get('declaration') == 'public'])
+        _append_items(out, [render_struct_full(c) for c in children if c.tag == 'c_struct' and c.attrib.get('definition') == 'public'])
+        _append_items(out, [render_variable(c) for c in children if c.tag == 'c_variable' and c.attrib.get('declaration') == 'public'])
+        _append_items(out, [render_method(c, False) for c in children if c.tag == 'c_method' and c.attrib.get('declaration') == 'public'])
+    else:
+        _append_items(out, [render_alias(c) for c in children if c.tag == 'c_alias' and c.attrib.get('declaration') == 'private'])
+        _append_items(out, [render_c_code(c) for c in children if c.tag == 'c_code' and c.attrib.get('definition') == 'private'])
+        _append_items(out, [render_macroses(c) for c in children if c.tag == 'c_macroses' and c.attrib.get('definition') == 'private'])
+        _append_items(out, [render_macros(c) for c in children if c.tag == 'c_macros' and c.attrib.get('definition') == 'private'])
+        _append_items(out, [render_enum(c) for c in children if c.tag == 'c_enum' and c.attrib.get('definition') == 'private'])
+        _append_items(out, [render_callback(c) for c in children if c.tag == 'c_callback' and c.attrib.get('declaration') == 'private'])
+        _append_items(out, [render_struct_full(c) for c in children if c.tag == 'c_struct' and c.attrib.get('definition') == 'private'])
+        _append_items(out, [render_method(c, False) for c in children if c.tag == 'c_method' and c.attrib.get('declaration') == 'private'])
+        _append_items(out, [render_variable(c) for c in children if c.tag == 'c_variable' and c.attrib.get('definition') != 'external'])
+        _append_items(out, [render_method(c, True) for c in children if c.tag == 'c_method' and c.attrib.get('definition') != 'external' and any(code.attrib.get('type') == 'generated' for code in c.findall('c_code'))])
 
+    while len(out) > 1 and out[-1] == "":
+        out.pop()
     out.extend([
         "// --------------------------------------------------------------------------",
         "//  Generated section end.",
@@ -289,7 +254,7 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
         "// --------------------------------------------------------------------------",
         "//  @end",
     ])
-    return "\n".join(out).rstrip() + "\n"
+    return "\n".join(out) + "\n"
 
 
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path) -> list[Path]:
@@ -317,15 +282,17 @@ def main() -> int:
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--project", default="common")
     parser.add_argument("--out", default="build/new-codegen")
+    parser.add_argument("--apply", action="store_true", help="write directly into repo source tree")
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
-    out_root = (repo_root / args.out).resolve()
+    out_root = repo_root if args.apply else (repo_root / args.out).resolve()
     codegen_root = repo_root / "codegen"
     project_dir = codegen_root / "generated" / args.project
-    if out_root.exists():
-        shutil.rmtree(out_root)
-    out_root.mkdir(parents=True, exist_ok=True)
+    if not args.apply:
+        if out_root.exists():
+            shutil.rmtree(out_root)
+        out_root.mkdir(parents=True, exist_ok=True)
 
     written = []
     for xml_path in sorted(project_dir.glob("c_module_*.xml")):
@@ -333,7 +300,8 @@ def main() -> int:
             continue
         written.extend(render_one(xml_path, repo_root, codegen_root, out_root))
 
-    print(f"generated {len(written)} files into {out_root}")
+    destination = repo_root if args.apply else out_root
+    print(f"generated {len(written)} files into {destination}")
     for path in written:
         print(path.relative_to(repo_root))
     return 0

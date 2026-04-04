@@ -28,7 +28,9 @@ Useful commands:
 
 ```bash
 python3 tools/codegen/common_bootstrap.py --project common --out build/new-codegen-common
+python3 tools/codegen/common_bootstrap.py --project common --apply
 bash tools/codegen/verify_common_bootstrap.sh
+bash tools/codegen/build_common_with_new_codegen.sh
 python3 tools/codegen/inspect_common_source.py
 python3 tools/codegen/inspect_common_source.py --module assert
 python3 tools/codegen/inspect_common_source.py --class-name data
