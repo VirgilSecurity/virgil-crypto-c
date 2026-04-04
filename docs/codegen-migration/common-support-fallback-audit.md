@@ -9,7 +9,7 @@ This audit focuses on support outputs adjacent to the buffer-family migration bo
 - `vsc_common_public.h`
 - `vsc_common_private.h`
 
-It intentionally excludes the primary `vsc_buffer` migration surface, which is tracked separately in `common-buffer-migration-plan.md`.
+It intentionally excludes the primary `vsc_buffer` migration surface, which is now direct and tracked historically in `common-buffer-migration-plan.md`.
 
 ## What the active bootstrap actually does
 
@@ -41,7 +41,7 @@ The checked-in umbrella headers themselves currently contain empty `@generated` 
 
 ## Immediate post-buffer recommendation
 
-Once both `vsc_buffer_defs` and `vsc_buffer` are direct:
+Now that both `vsc_buffer_defs` and `vsc_buffer` are direct:
 
 1. re-check whether the umbrella headers still need any generated behavior at all
 2. if they do, add a tiny direct/project-composition emitter
@@ -51,7 +51,7 @@ The key outcome is to keep these headers from expanding the `buffer` migration s
 
 ## Short answer: what happens right after `buffer_defs` and `buffer`
 
-Immediately after the two core buffer tasks are direct, the next action should be a very small ownership cleanup:
+With the two core buffer tasks now direct, the next action is a very small ownership cleanup:
 
 - verify whether `vsc_common_public.h` and `vsc_common_private.h` need any generated content beyond their static include lists
 - choose one end state explicitly:
