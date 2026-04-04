@@ -7,6 +7,9 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `../codegen-migration-plan.md` — primary migration plan
 - `roadmap.md` — milestone-oriented implementation roadmap
 - `task-breakdown.md` — implementation backlog and execution checklist
+- `initial-task-plan.md` — first implementation stretch
+- `tasks-next.md` — immediate execution queue
+- `resolved-models-inventory.md` — current state of legacy resolved XML artifacts
 - `parity-test-plan.md` — strategy for proving generator compatibility
 - `risk-register.md` — migration risks and mitigations
 - `inventory-template.md` — template for generated output inventory work
