@@ -71,6 +71,9 @@
 | 2026-04-04 21:45 | Step 2 completed | `bash tools/codegen/build_common_with_new_codegen.sh` passed and docs were rechecked against current bootstrap routing |
 | 2026-04-04 21:46 | Step 3 completed | Added explicit post-`common` summary to migration docs |
 | 2026-04-04 21:46 | Task complete | STATUS finalized for delivery |
+| 2026-04-04 21:21 | Agent reply | CG-005 complete. Updated codegen migration docs and task-area context to reflect that the `common` core-entity direct-lowering slice is effectively complete; classified `vsc_common_public.h` and `vsc_ |
+| 2026-04-04 21:21 | Worker iter 1 | done in 286s, tools: 69 |
+| 2026-04-04 21:21 | Task complete | .DONE created |
 
 ---
 
