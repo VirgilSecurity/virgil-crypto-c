@@ -11,13 +11,15 @@ This backlog is written as an execution checklist for the implementation effort.
 - [ ] A5. Capture a clean diff after legacy regeneration
 - [ ] A6. Document current invocation contract for `./codegen.sh`
 
-## Epic B — Resolved model and IR design
+## Epic B — Legacy semantics analysis and IR design
 
 - [ ] B1. Inspect `root.xml`, `meta.xml`, `project.xml`, `type_resolution_map.xml`, `interfaces.xml`
-- [ ] B2. Define the minimum internal IR required by emitters
-- [ ] B3. Decide whether to use dataclasses or Pydantic models for the first pass
-- [ ] B4. Document naming and path normalization rules
-- [ ] B5. Document public/private entity distinctions relevant to emitters
+- [ ] B2. Inspect original XML inputs side-by-side with resolved XML to infer transformation rules
+- [ ] B3. Document current resolved XML coverage, noting that all language paths are available except Python, which currently has issues
+- [ ] B4. Define the minimum internal IR required by emitters
+- [ ] B5. Decide whether to use dataclasses or Pydantic models for the first pass
+- [ ] B6. Document naming and path normalization rules
+- [ ] B7. Document public/private entity distinctions relevant to emitters
 
 ## Epic C — Preservation layer
 
@@ -30,13 +32,16 @@ This backlog is written as an execution checklist for the implementation effort.
 - [ ] C7. Add unit tests for source/body preservation scenarios
 - [ ] C8. Add idempotence tests for preservation logic
 
-## Epic D — Loader and internal APIs
+## Epic D — Original-XML parser, resolver, and internal APIs
 
-- [ ] D1. Implement resolved XML loader for project-level artifacts
-- [ ] D2. Implement loading of C modules, enums, methods, includes, structs, variables
-- [ ] D3. Implement loading of wrapper project/module artifacts
-- [ ] D4. Expose stable Python APIs for emitters
-- [ ] D5. Add fixture-based loader tests
+- [ ] D1. Implement parser for `codegen/main.xml`
+- [ ] D2. Implement parser for original project/model/wrapper XML files
+- [ ] D3. Implement symbol/type/feature resolution into a typed in-memory IR
+- [ ] D4. Implement loading/resolution of C modules, enums, methods, includes, structs, variables
+- [ ] D5. Implement loading/resolution of wrapper project/module artifacts
+- [ ] D6. Add optional loader for legacy resolved XML fixtures used only for comparison/debugging
+- [ ] D7. Expose stable Python APIs for emitters
+- [ ] D8. Add fixture-based parser/resolver tests
 
 ## Epic E — First emitters
 
@@ -81,7 +86,7 @@ This backlog is written as an execution checklist for the implementation effort.
 ## Epic I — Wrapper migration
 
 ### First wrapper
-- [ ] I1. Select first wrapper target (recommended: Python or Go)
+- [ ] I1. Select first wrapper target (recommended: Go first, since Python legacy resolved output currently has known issues)
 - [ ] I2. Implement wrapper project/module loader needs
 - [ ] I3. Implement wrapper project emitter
 - [ ] I4. Implement wrapper source emitter
@@ -113,8 +118,8 @@ This backlog is written as an execution checklist for the implementation effort.
 ## Suggested execution order
 
 1. Epic A
-2. Epic C
-3. Epic B
+2. Epic B
+3. Epic C
 4. Epic D
 5. Epic E
 6. Epic F

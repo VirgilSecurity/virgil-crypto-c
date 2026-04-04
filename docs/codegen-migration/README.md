@@ -17,18 +17,21 @@ This directory contains the working documents for replacing the legacy iMatix GS
 Decision:
 
 - replace GSL with a Python-based generator
-- migrate incrementally
-- start from resolved/intermediate XML compatibility where useful
+- keep original XML models as source of truth
+- use legacy resolved/intermediate XML for analysis, parity, and fixtures only
+- do not make resolved XML a required output of the new generator
 - preserve handwritten-code merge semantics first
 - port C generation before wrappers
 - keep `./codegen.sh` as the stable operator entrypoint during migration
+- design internals so incremental generation can be added later
 
 ## Immediate next actions
 
-1. produce output inventory and golden baseline
-2. implement preservation parser/rewriter
-3. implement resolved-XML loader
-4. prove parity on one small generated surface
+1. snapshot and catalog current resolved XML artifacts, including the known Python gap
+2. produce output inventory and golden baseline
+3. implement preservation parser/rewriter
+4. implement original-XML parser/resolver
+5. prove parity on one small generated surface
 
 ## Definition of done for migration
 

@@ -48,7 +48,14 @@ The generator writes resolved/intermediate artifacts such as:
 - `type_resolution_map.xml`
 - `interfaces.xml`
 
-These are useful migration seams for a compatibility-first rewrite.
+These are useful for reverse engineering, parity validation, and test fixture creation.
+
+Important current status:
+
+- `codegen/generated/` currently contains resolved XML for all language paths except Python
+- Python resolved output is known to have issues for now
+
+The new generator should understand these artifacts, but should not require producing them during normal operation.
 
 ### 4. Handwritten code preservation is critical
 The current generator preserves non-generated and handwritten portions of generated files using `@generated` / `@end` style regions.
@@ -63,19 +70,26 @@ This is the highest-risk behavior to reimplement incorrectly.
 
 ## Recommended strategy
 
-Use a **Python-based incremental rewrite** in two stages.
+Use a **Python-based incremental rewrite** that keeps the original XML models as the source of truth.
 
-### Stage 1 — Compatibility mode
-Build a new generator that consumes the existing resolved/intermediate XML rather than immediately replacing all legacy model-resolution logic.
+### Primary architecture
+The new generator should:
 
-Benefits:
+- parse original XML models directly
+- resolve them into a typed in-memory IR
+- emit final outputs directly
+- avoid writing required resolved/intermediate XML during normal generation
+- support optional debug IR dumps only when needed
 
-- lower risk
-- quicker parity testing
-- avoids reimplementing hidden GSL semantics too early
+### Role of current resolved XML
+Current resolved/intermediate XML should be used to:
 
-### Stage 2 — Full replacement
-After emitters are stable and parity is proven, replace the front-end resolution logic so the new generator reads original XML models directly and GSL can be removed entirely.
+- understand legacy semantics
+- validate the new resolver
+- build test fixtures
+- compare new IR/output behavior against the legacy pipeline
+
+but not as the permanent runtime seam of the new architecture.
 
 ## Recommended target architecture
 
@@ -83,8 +97,14 @@ After emitters are stable and parity is proven, replace the front-end resolution
 tools/codegen/
   cli.py
   loader/
-    raw_models.py
-    resolved_models.py
+    main_config.py
+    model_xml.py
+    legacy_resolved_xml.py      # analysis/debug/test fixtures only
+  resolve/
+    graph.py
+    symbol_table.py
+    type_resolution.py
+    feature_resolution.py
   ir/
     schema.py
     builder.py
@@ -99,6 +119,8 @@ tools/codegen/
       swift.py
       php.py
       wasm.py
+    templates/
+      ...                       # optional Jinja2 templates where helpful
   preserve/
     generated_sections.py
     handwritten_merge.py
@@ -151,16 +173,18 @@ Cons:
 - does not really solve maintainability if codegen still evolves
 
 ### Decision
-Recommended path: **Option 2 first, evolving into Option 1/Plan B**.
+Recommended path: **keep original XML as source, use legacy resolved XML only for understanding and validation**.
 
 In short:
 
-1. keep current XML model inputs initially
+1. keep current XML model inputs as the long-term source of truth
 2. implement a Python generator
-3. use current resolved XML as the first migration seam
-4. port C generation before wrappers
-5. preserve current `@generated` merge behavior
-6. later replace model resolution and remove GSL
+3. study current resolved XML to learn legacy semantics and build fixtures
+4. build a typed in-memory IR instead of emitting resolved XML by default
+5. port C generation before wrappers
+6. preserve current `@generated` merge behavior
+7. design for future incremental generation
+8. later remove GSL once parity is proven
 
 ## Implementation plan
 
@@ -184,12 +208,14 @@ Deliverables:
 - reproducible baseline generation notes
 
 ### Milestone 1 — Reverse-engineer the effective IR
-Document the minimum resolved model needed by the new generator.
+Document the minimum effective model needed by the new generator.
 
 Tasks:
 
 1. inspect resolved artifacts such as `root.xml`, `meta.xml`, `project.xml`, `type_resolution_map.xml`
-2. define schema for:
+2. inspect original XML inputs alongside those artifacts to understand transformation rules
+3. note current resolved-output coverage, including the known Python gap
+4. define schema for:
    - projects
    - modules
    - classes
@@ -223,20 +249,23 @@ Deliverables:
 - `tools/codegen/preserve/handwritten_merge.py`
 - tests for preservation behavior
 
-### Milestone 3 — Build resolved-XML loader
-Load existing resolved/intermediate XML into Python IR.
+### Milestone 3 — Build original-XML parser and resolver
+Parse original XML models and build the new in-memory IR directly.
 
 Tasks:
 
-1. parse resolved XML
+1. parse original XML sources
 2. normalize optional fields and naming
-3. expose stable APIs for emitters
+3. implement project/interface/class/module/enum resolution rules
+4. compare selected resolver outputs against legacy resolved XML fixtures
+5. expose stable APIs for emitters
 
 Deliverables:
 
-- `tools/codegen/loader/resolved_models.py`
+- `tools/codegen/loader/model_xml.py`
+- `tools/codegen/resolve/*.py`
 - `tools/codegen/ir/schema.py`
-- loader tests with sample fixtures
+- parser/resolver tests with sample fixtures
 
 ### Milestone 4 — Port low-risk emitters first
 Start with simple file families.
@@ -454,9 +483,9 @@ Mitigation:
 
 ## Suggested first three tasks when resuming work
 
-1. create generated-output inventory and golden baseline
+1. snapshot and study current resolved XML artifacts, including documenting the Python gap
 2. implement preservation parser/rewriter for `@generated` files
-3. implement resolved-XML loader and generate one simple enum/header file
+3. implement original-XML parser/resolver and validate one simple enum/header path against legacy artifacts
 
 ## Suggested short roadmap
 
@@ -490,8 +519,12 @@ Mitigation:
 
 Proceed with an incremental Python rewrite:
 
-- start from current resolved XML intermediates
+- keep original XML as source of truth
+- use current resolved XML only for analysis, validation, and fixtures
+- implement a typed in-memory IR
 - implement handwritten-code preservation first
 - port C generation before wrappers
+- use Jinja2 selectively where it helps, especially for wrappers/support files
 - preserve `./codegen.sh` as the stable user-facing entrypoint
+- design for future incremental generation
 - remove GSL only after parity is proven

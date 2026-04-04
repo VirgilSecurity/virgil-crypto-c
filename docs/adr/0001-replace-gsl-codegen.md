@@ -36,13 +36,26 @@ Problems with the current approach:
 
 We will replace the GSL-based generator with a Python-based generator.
 
-The migration will be incremental and split into two stages:
+The new generator will:
 
-### Stage 1: Compatibility mode
-The new generator will initially consume resolved/intermediate XML artifacts compatible with the existing pipeline. This reduces migration risk by avoiding immediate reimplementation of all model-resolution semantics.
+- keep the existing XML model files under `codegen/models/` as the source of truth
+- parse and resolve those original XML models directly
+- build a typed in-memory IR rather than writing required intermediate/resolved XML as part of normal generation
+- emit final outputs directly
+- support optional debug IR dumps for diagnostics when needed
+- be designed so incremental generation can be added later
 
-### Stage 2: Full replacement
-After emitter parity is established, the new generator will replace the front-end model loading and resolution logic as well, so the repository no longer depends on GSL.
+The migration will still be incremental, but resolved/intermediate XML from the legacy generator is now treated primarily as:
+
+- a reverse-engineering aid
+- a parity oracle
+- a debugging reference
+
+not as the permanent runtime architecture of the new generator.
+
+### Transitional note
+
+Legacy resolved XML currently exists under `codegen/generated/` for all supported language paths except Python, which is known to have issues at the moment. Those artifacts are useful for analysis and test fixture creation, but the new generator should not depend on re-emitting them during normal operation.
 
 ## Why Python
 
@@ -67,10 +80,9 @@ Accepted as the target direction.
 This provides a good balance between short-term safety and long-term maintainability.
 
 ### Option C: Build a compatibility backend over resolved XML first
-Accepted as the initial migration seam.
+Partially accepted as an analysis and validation technique.
 
-This is not the final architecture, but it is the preferred transition strategy.
-
+Resolved XML remains useful during migration, but it is no longer the preferred permanent runtime seam. The preferred end-state is direct parsing of original XML into a typed in-memory IR.
 ### Option D: Full redesign of the model format and generator all at once
 Rejected for now.
 
@@ -115,12 +127,15 @@ The stable user-facing entrypoint should remain `./codegen.sh` during migration.
 
 The recommended internal module layout is documented in `docs/codegen-migration-plan.md` and `docs/codegen-migration/README.md`.
 
+Jinja2 is acceptable for straightforward emitters such as wrapper files and support/build files. More complex C emitters may still be implemented in Python code first, with templating introduced only where it improves maintainability without obscuring logic.
+
 ## Follow-up work
 
-1. build a generated-output inventory and golden baseline
-2. implement preservation logic for generated/manual sections
-3. implement resolved-XML loader and internal IR
-4. port low-risk emitters first
-5. port C generation before wrappers
-6. cut over `codegen.sh`
-7. remove GSL after parity is proven
+1. study and snapshot existing resolved XML artifacts, including current gaps such as Python
+2. build a generated-output inventory and golden baseline
+3. implement preservation logic for generated/manual sections
+4. implement original-XML parser, resolver, and internal IR
+5. port low-risk emitters first
+6. port C generation before wrappers
+7. cut over `codegen.sh`
+8. remove GSL after parity is proven

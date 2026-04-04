@@ -81,7 +81,8 @@ Do not normalize away changes in:
 
 Maintain fixtures for:
 
-- representative resolved XML inputs
+- representative original XML inputs
+- representative legacy resolved XML artifacts used as semantic reference material
 - representative existing generated files with handwritten content
 - representative expected emitted files
 
@@ -92,6 +93,10 @@ When parity fails:
 1. identify whether the difference is semantic or formatting-only
 2. decide whether the new output or the expectation should change
 3. document intentional deviations before accepting them
+
+## Known current caveat
+
+Legacy resolved XML is currently available for all language paths except Python, which has known issues. Early parity work should therefore prioritize C outputs and a non-Python wrapper target such as Go.
 
 ## Exit gate for cutover
 

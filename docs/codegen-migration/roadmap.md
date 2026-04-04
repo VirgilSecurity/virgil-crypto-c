@@ -15,20 +15,34 @@ Establish a trustworthy reference point for migration.
 - we know what must be reproduced
 - we know which outputs are high-risk because of handwritten code
 
-## Phase 1 — Compatibility seam
+## Phase 1 — Legacy semantics analysis
 
 ### Goal
-Use existing resolved/intermediate XML artifacts as a seam for the first implementation passes.
+Use existing resolved/intermediate XML artifacts to understand the legacy resolver and define the new in-memory IR.
 
 ### Deliverables
 - schema notes for resolved XML
-- Python loader for resolved XML
+- mapping notes from original XML to effective resolved entities
+- documented gaps such as the current Python issue
 - first internal IR representation
 
 ### Exit criteria
-- the new generator can load enough resolved data to drive at least one emitter
+- the team understands enough legacy semantics to implement the new resolver directly from original XML
 
-## Phase 2 — Preservation layer
+## Phase 2 — Original-XML parser and resolver
+
+### Goal
+Build the new parser and resolver directly on top of original XML models.
+
+### Deliverables
+- parser for main/model XML
+- symbol/type/feature resolution logic
+- validation against selected legacy resolved XML artifacts
+
+### Exit criteria
+- the new generator can build enough in-memory IR from original XML to drive at least one emitter
+
+## Phase 3 — Preservation layer
 
 ### Goal
 Reimplement generated/manual section preservation safely.
@@ -41,7 +55,7 @@ Reimplement generated/manual section preservation safely.
 ### Exit criteria
 - no manual content loss in tested scenarios
 
-## Phase 3 — First emitters
+## Phase 4 — First emitters
 
 ### Goal
 Generate a small, low-risk subset of outputs using the new pipeline.
@@ -54,7 +68,7 @@ Generate a small, low-risk subset of outputs using the new pipeline.
 ### Exit criteria
 - file-level parity for a small selected surface
 
-## Phase 4 — C generation parity
+## Phase 5 — C generation parity
 
 ### Goal
 Port core C header and source generation.
@@ -67,7 +81,7 @@ Port core C header and source generation.
 ### Exit criteria
 - selected C outputs match legacy generation closely enough for compile/test validation
 
-## Phase 5 — Support/build generation
+## Phase 6 — Support/build generation
 
 ### Goal
 Port non-C files used by the build and packaging pipeline.
@@ -80,7 +94,7 @@ Port non-C files used by the build and packaging pipeline.
 ### Exit criteria
 - support/build files can be regenerated without relying on GSL emitters
 
-## Phase 6 — Wrapper migration
+## Phase 7 — Wrapper migration
 
 ### Goal
 Port wrapper generation one target at a time.
@@ -93,7 +107,7 @@ Port wrapper generation one target at a time.
 ### Exit criteria
 - each wrapper target has file-level parity and validation gates
 
-## Phase 7 — Cutover
+## Phase 8 — Cutover
 
 ### Goal
 Make the new generator the default path.
@@ -106,7 +120,7 @@ Make the new generator the default path.
 ### Exit criteria
 - day-to-day generation no longer depends on GSL
 
-## Phase 8 — Legacy retirement
+## Phase 9 — Legacy retirement
 
 ### Goal
 Remove the GSL dependency and retire legacy generator assets when safe.

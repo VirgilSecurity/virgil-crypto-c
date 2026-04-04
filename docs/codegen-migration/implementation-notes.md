@@ -11,10 +11,13 @@
 ## Recommended internal layering
 
 ### Loader layer
-Responsible for reading either:
+Responsible primarily for reading original XML model files.
 
-- current resolved/intermediate XML artifacts, or later
-- original XML model files
+A legacy resolved-XML reader may exist, but only for:
+
+- analysis
+- parity/debugging
+- fixture support
 
 ### IR layer
 Responsible for a normalized internal representation suitable for emitters.
@@ -29,13 +32,23 @@ Responsible only for merging generated content into files that may contain manua
 
 For the first pass, prefer:
 
-- explicit Python code emitters over heavy templating
+- explicit Python code emitters over heavy templating for complex C generation
+- Jinja2 selectively for wrappers and support/build files where it keeps structure clear
 - dataclasses first, unless validation needs justify Pydantic immediately
 - test fixtures kept small and representative
 
+## Incremental-generation goal
+
+The new architecture should make incremental generation possible later. That means:
+
+- stable internal entity IDs
+- explicit dependency mapping from source XML to IR nodes to output files
+- deterministic emitters
+- minimal hidden filesystem coupling
+
 ## Future refactor opportunity
 
-Once parity is achieved, the front-end can be replaced so the new system loads original models directly and no longer depends on legacy-generated resolved XML.
+Optional debug IR dumps may be introduced later for diagnostics, but the normal generation path should not require emitting resolved XML artifacts.
 
 ## Guardrails
 
