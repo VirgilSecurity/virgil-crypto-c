@@ -42,10 +42,13 @@ It covers:
 
 ## Current status
 
-The mixed-mode `common` generator now lowers both of these directly from original source models:
+The mixed-mode `common` generator now lowers these directly from original source models or direct source-driven lowering logic:
 
-- `vsc_data`
+- `vsc_library`
 - `vsc_assert`
+- `vsc_memory`
+- `vsc_atomic`
+- `vsc_data`
 
 and falls back to legacy resolved XML for the remaining `common` entities.
 

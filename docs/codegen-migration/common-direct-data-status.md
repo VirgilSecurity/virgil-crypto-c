@@ -40,10 +40,17 @@ This is an incremental migration strategy:
 
 The direct path for `data` is implemented as a first lowering prototype.
 
-It is now wired into the working `common` bootstrap path as a mixed-mode generator:
+It is now wired into the working `common` bootstrap path as a mixed-mode generator.
 
-- `vsc_data` is lowered directly from original source models
-- the remaining `common` entities still fall back to legacy resolved XML
+Current direct-from-source or direct source-driven coverage includes:
+
+- `vsc_library`
+- `vsc_assert`
+- `vsc_memory`
+- `vsc_atomic`
+- `vsc_data`
+
+The remaining `common` entities still falling back to legacy resolved XML are concentrated around buffer-related files and aggregation headers.
 
 This mixed mode still builds the `common` CMake target successfully.
 
@@ -55,13 +62,9 @@ original model -> direct lowering -> emitted C generated block
 
 ## Next step
 
-After `data`, the next best direct target is:
+The next best direct target is now:
 
-- `assert`
+- `buffer`
+- `buffer_defs`
 
-That will exercise:
-
-- macros
-- callbacks
-- generated function bodies inside the source generated block
-- private generated helpers
+Those will exercise the largest remaining `common` migration surface.

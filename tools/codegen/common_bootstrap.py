@@ -11,7 +11,13 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_direct_c import build_direct_assert_c_module, build_direct_data_c_module
+from tools.codegen.common_direct_c import (
+    build_direct_assert_c_module,
+    build_direct_atomic_c_module,
+    build_direct_data_c_module,
+    build_direct_library_c_module,
+    build_direct_memory_c_module,
+)
 
 
 GENERATED_START = "//  @generated"
@@ -267,6 +273,12 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
         root = build_direct_data_c_module(repo_root)
     elif xml_path.name == 'c_module_vsc_assert.xml':
         root = build_direct_assert_c_module(repo_root)
+    elif xml_path.name == 'c_module_vsc_library.xml':
+        root = build_direct_library_c_module(repo_root)
+    elif xml_path.name == 'c_module_vsc_atomic.xml':
+        root = build_direct_atomic_c_module(repo_root)
+    elif xml_path.name == 'c_module_vsc_memory.xml':
+        root = build_direct_memory_c_module(repo_root)
     else:
         root = ET.parse(xml_path).getroot()
     written = []

@@ -64,6 +64,203 @@ def _return_from_source(parent: ET.Element, attrs: dict) -> ET.Element:
     return _text(parent, 'c_return', accessed_by='value', type=t, type_is=kind)
 
 
+def build_direct_library_c_module(repo_root: str | Path = '.') -> ET.Element:
+    project = load_project_common(repo_root)
+    mod = next(m for m in project.modules if m.name == 'library')
+    version = {'major': '0', 'minor': '17', 'patch': '3'}
+
+    root = ET.Element('c_module', {
+        'lang': 'C', 'id': 'library', 'name': 'vsc_library', 'class': '', 'scope': 'public',
+        'has_cmakedefine': '0', 'uid': 'c_module_library', 'c_include_file': 'vsc_library.h',
+        'c_source_file': 'vsc_library.c', 'header_file': '../library/common/include/virgil/crypto/common/vsc_library.h',
+        'source_file': '../library/common/src/vsc_library.c', 'once_guard': 'vsc_library_h_included'
+    })
+    _text(root, 'c_include', file='vsc_library.h', is_system='0', scope='private')
+    _text(root, 'c_include', file='vsc_platform.h', is_system='0', scope='public')
+    for inc in ['stdint.h','stddef.h','string.h','stdlib.h','stdbool.h']:
+        _text(root, 'c_include', file=inc, is_system='1', scope='public')
+
+    alias = _text(root, 'c_alias', name='byte', type='uint8_t', declaration='public')
+    alias.text = _comment_text('Portable representation of the byte.')
+
+    enum = _text(root, 'c_enum', declaration='public', definition='public')
+    const = _text(enum, 'c_constant', name='vsc_POINTER_SIZE', value='sizeof (void *)', definition='public', uid='c_global_constant_pointer_size')
+    const.text = _comment_text('Pointer size in bytes.')
+    enum.text = _comment_text('Public integral constants.')
+
+    macro_entries = [
+        ('VSC_VERSION_MAJOR', f'#define VSC_VERSION_MAJOR {version["major"]}', ''),
+        ('VSC_VERSION_MINOR', f'#define VSC_VERSION_MINOR {version["minor"]}', ''),
+        ('VSC_VERSION_PATCH', f'#define VSC_VERSION_PATCH {version["patch"]}', ''),
+        ('VSC_VERSION_MAKE', '#define VSC_VERSION_MAKE (major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))', ''),
+        ('VSC_VERSION', '#define VSC_VERSION\n        VSC_VERSION_MAKE (\n                VSC_VERSION_MAJOR,\n                VSC_VERSION_MINOR,\n                VSC_VERSION_PATCH)', ''),
+        ('VSC_NODISCARD', '#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)\n#   define VSC_NODISCARD __attribute__ ((warn_unused_result))\n#else\n#   define VSC_NODISCARD\n#endif', ''),
+        ('VSC_NORETURN', '#if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__clang__)\n#   define VSC_NORETURN __attribute__ ((noreturn))\n#else\n#   define VSC_NORETURN\n#endif', ''),
+        ('VSC_CEIL', '#define VSC_CEIL (x,y) (0 == (x) ? 0 : 1 + (((x) - 1) / (y)))', 'Custom implementation of the number ceil algorithm.'),
+        ('VSC_UNUSED', '#define VSC_UNUSED (x) (void)(x)', 'Mark argument or function return value as "unused".'),
+    ]
+    for name, code_text, desc in macro_entries:
+        m = _text(root, 'c_macros', name=name, uid=f'direct_library_{name.lower()}', definition='public', is_method='1' if name == 'VSC_VERSION_MAKE' else '0')
+        _text(m, 'c_code', code_text, lang='c', type='generated')
+        if desc:
+            m.text = _comment_text(desc)
+
+    macs = _text(root, 'c_macroses', definition='public')
+    for name, uid in [('VSC_PUBLIC','c_global_macros_public'),('VSC_PRIVATE','c_global_macros_private'),('VSC_SHARED_LIBRARY','c_global_macros_shared_library'),('VSC_INTERNAL_BUILD','c_global_macros_internal_build')]:
+        _text(macs, 'c_macros', name=name, uid=uid, definition='public', is_method='0')
+    _text(macs, 'c_code', '#if defined(_WIN32) || defined(__CYGWIN__)\n#   if VSC_SHARED_LIBRARY\n#       if defined(VSC_INTERNAL_BUILD)\n#           ifdef __GNUC__\n#               define VSC_PUBLIC __attribute__ ((dllexport))\n#           else\n#               define VSC_PUBLIC __declspec(dllexport)\n#           endif\n#       else\n#           ifdef __GNUC__\n#               define VSC_PUBLIC __attribute__ ((dllimport))\n#           else\n#               define VSC_PUBLIC __declspec(dllimport)\n#           endif\n#       endif\n#   else\n#       define VSC_PUBLIC\n#   endif\n#   define VSC_PRIVATE\n#else\n#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)\n#       define VSC_PUBLIC                 __attribute__ ((visibility ("default")))\n#       define VSC_PRIVATE __attribute__ ((visibility ("hidden")))\n#   else\n#       define VSC_PRIVATE\n#   endif\n#endif', lang='c', type='generated')
+
+    cb = _text(root, 'c_callback', name='vsc_alloc_fn', uid='c_global_callback_alloc', declaration='public')
+    _text(cb, 'c_argument', name='size', accessed_by='value', type='size_t', type_is='primitive')
+    _text(cb, 'c_return', accessed_by='pointer', type='void', type_is='any')
+    cb.text = _comment_text('Generic allocation function type.')
+
+    cb = _text(root, 'c_callback', name='vsc_dealloc_fn', uid='c_global_callback_dealloc', declaration='public')
+    _text(cb, 'c_argument', name='mem', accessed_by='pointer', type='void', type_is='any')
+    _text(cb, 'c_return', type='void', accessed_by='value')
+    cb.text = _comment_text('Generic de-allocation function type.')
+
+    return root
+
+
+def build_direct_memory_c_module(repo_root: str | Path = '.') -> ET.Element:
+    root = ET.Element('c_module', {
+        'lang': 'C', 'id': 'memory', 'name': 'vsc_memory', 'class': '', 'scope': 'public',
+        'has_cmakedefine': '0', 'uid': 'c_module_memory', 'c_include_file': 'vsc_memory.h',
+        'c_source_file': 'vsc_memory.c', 'header_file': '../library/common/include/virgil/crypto/common/vsc_memory.h',
+        'source_file': '../library/common/src/vsc_memory.c', 'once_guard': 'vsc_memory_h_included'
+    })
+    _text(root, 'c_include', file='vsc_memory.h', is_system='0', scope='private')
+    _text(root, 'c_include', file='vsc_library.h', is_system='0', scope='public')
+    _text(root, 'c_include', file='vsc_assert.h', is_system='0', scope='private')
+
+    m = _text(root, 'c_macroses', definition='private')
+    _text(m, 'c_code', '#ifdef VIRGIL_PLATFORM_INCLUDE_STATEMENT\n#   include VIRGIL_PLATFORM_INCLUDE_STATEMENT\n#endif', lang='c', type='generated')
+    m.text = _comment_text('Include external platform header if defined.')
+
+    for name, desc, code_text in [
+        ('VSC_ALLOC_DEFAULT', 'Compile-time configuration of the default alloc function.', '#ifdef VIRGIL_PLATFORM_ALLOC\n#   define VSC_ALLOC_DEFAULT(size) VIRGIL_PLATFORM_ALLOC((size))\n#else\n#   define VSC_ALLOC_DEFAULT(size) calloc(1, (size))\n#endif'),
+        ('VSC_DEALLOC_DEFAULT', 'Compile-time configuration of the default dealloc function.', '#ifdef VIRGIL_PLATFORM_DEALLOC\n#   define VSC_DEALLOC_DEFAULT(mem) VIRGIL_PLATFORM_DEALLOC(mem)\n#else\n#   define VSC_DEALLOC_DEFAULT(mem) free((mem))\n#endif'),
+    ]:
+        mm = _text(root, 'c_macros', name=name, uid=f'direct_memory_{name.lower()}', definition='private', is_method='1')
+        _text(mm, 'c_code', code_text, lang='c', type='generated')
+        mm.text = _comment_text(desc)
+
+    for name, init, desc, typ in [
+        ('inner_alloc', 'vsc_default_alloc', 'Current allocation function.', 'vsc_alloc_fn'),
+        ('inner_dealloc', 'vsc_default_dealloc', 'Current de-allocation function.', 'vsc_dealloc_fn'),
+    ]:
+        v = _text(root, 'c_variable', name=name, uid=f'direct_memory_var_{name}', visibility='public', declaration='private', definition='private', accessed_by='value', type=typ, type_is='callback')
+        _text(v, 'c_value', value=init, accessed_by='value', type=typ, type_is='callback')
+        _text(v, 'c_modifier', value='VSC_PUBLIC')
+        v.text = _comment_text(desc)
+
+    strnstr_code = """/*-
+ * Copyright (c) 2001 Mike Barcroft <mike@FreeBSD.org>
+ * Copyright (c) 1990, 1993
+ *  The Regents of the University of California.  All rights reserved.
+ *
+ * This code is derived from software contributed to Berkeley by
+ * Chris Torek.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *  This product includes software developed by the University of
+ *  California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
+
+char c, sc;
+size_t len;
+
+if ((c = *find++) != '\\0') {
+    len = strlen(find);
+    do {
+        do {
+            if (slen-- < 1 || (sc = *s++) == '\\0') // Fixed by Virgil Security, Inc.
+                return (NULL);
+        } while (sc != c);
+        if (len > slen)
+            return (NULL);
+    } while (strncmp(s, find, len) != 0);
+    s--;
+}
+return ((char *)s);"""
+
+    methods = [
+        ('vsc_default_alloc', [('size', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'accessed_by':'pointer','type':'void','type_is':'any'}, 'return VSC_ALLOC_DEFAULT(size);', ['static'], 'Default allocation function, that is configured during compilation.', 'private', 'private'),
+        ('vsc_default_dealloc', [('mem', {'accessed_by':'pointer','type':'void','type_is':'any'})], {'type':'void','accessed_by':'value'}, 'VSC_DEALLOC_DEFAULT(mem);', ['static'], 'Default de-allocation function, that is configured during compilation.', 'private', 'private'),
+        ('vsc_alloc', [('size', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'accessed_by':'pointer','type':'void','type_is':'any'}, 'return inner_alloc(size);', ['VSC_PUBLIC'], 'Allocate required amount of memory by usging current allocation function.\nReturns NULL if memory allocation fails.', 'public', 'public'),
+        ('vsc_calloc', [('count', {'accessed_by':'value','type':'size_t','type_is':'primitive'}),('size', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'accessed_by':'pointer','type':'void','type_is':'any'}, 'return inner_alloc(count * size);', ['VSC_PUBLIC'], 'Allocate required amount of memory by usging current allocation function.\nReturns NULL if memory allocation fails.', 'public', 'public'),
+        ('vsc_dealloc', [('mem', {'accessed_by':'pointer','type':'void','type_is':'any'})], {'type':'void','accessed_by':'value'}, 'inner_dealloc(mem);', ['VSC_PUBLIC'], 'Deallocate given memory by usging current de-allocation function.', 'public', 'public'),
+        ('vsc_set_allocators', [('alloc_cb', {'accessed_by':'value','type':'vsc_alloc_fn','type_is':'callback'}),('dealloc_cb', {'accessed_by':'value','type':'vsc_dealloc_fn','type_is':'callback'})], {'type':'void','accessed_by':'value'}, 'VSC_ASSERT_PTR(alloc_cb);\nVSC_ASSERT_PTR(dealloc_cb);\n\ninner_alloc = alloc_cb;\ninner_dealloc = dealloc_cb;', ['VSC_PUBLIC'], 'Change current used memory functions in the runtime.', 'public', 'public'),
+        ('vsc_zeroize', [('mem', {'accessed_by':'pointer','type':'void','type_is':'any'}),('size', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'type':'void','accessed_by':'value'}, 'VSC_ASSERT_PTR(mem);\nmemset(mem, 0, size);', ['VSC_PUBLIC'], 'Zeroize memory.\nNote, this function can be reduced by compiler during optimization step.\nFor sensitive data erasing use vsc_erase().', 'public', 'public'),
+        ('vsc_erase', [('mem', {'accessed_by':'pointer','type':'void','type_is':'any'}),('size', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'type':'void','accessed_by':'value'}, 'VSC_ASSERT_PTR(mem);\n\nvolatile uint8_t* p = (uint8_t*)mem;\nwhile (size--) { *p++ = 0; }', ['VSC_PUBLIC'], 'Zeroize memory in a secure manner.\nCompiler can not reduce this function during optimization step.', 'public', 'public'),
+        ('vsc_memory_secure_equal', [('a', {'accessed_by':'pointer','type':'void','type_is':'any','is_const_type':'1'}),('b', {'accessed_by':'pointer','type':'void','type_is':'any','is_const_type':'1'}),('len', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'accessed_by':'value','type':'bool','type_is':'primitive'}, 'VSC_ASSERT_PTR(a);\nVSC_ASSERT_PTR(b);\n\nconst volatile uint8_t *in_a = a;\nconst volatile uint8_t *in_b = b;\nvolatile uint8_t c = 0x00;\n\nfor (size_t i = 0; i < len; ++i) {\n    c |= in_a[i] ^ in_b[i];\n}\n\nreturn c == 0;', ['VSC_PUBLIC'], 'Perform constant-time memory comparison.\nThe time depends on the given length but not on the compared memory.\nReturn true of given memory chunks are equal.', 'public', 'public'),
+        ('vsc_strnstr', [('s', {'accessed_by':'value','type':'char','type_is':'primitive','string':'null_terminated','is_const_type':'1'}),('find', {'accessed_by':'value','type':'char','type_is':'primitive','string':'null_terminated','is_const_type':'1'}),('slen', {'accessed_by':'value','type':'size_t','type_is':'primitive'})], {'accessed_by':'value','type':'char','type_is':'primitive','string':'null_terminated'}, strnstr_code, ['VSC_PUBLIC'], 'Find the first occurrence of find in s, where the search is limited to the\nfirst slen characters of s.', 'public', 'public'),
+    ]
+    for name, args, ret, code_text, modifiers, desc, decl, vis in methods:
+        m = _text(root, 'c_method', name=name, visibility=vis, declaration=decl, definition='private', uid=f'direct_memory_{name}')
+        for arg_name, arg_attrs in args:
+            _text(m, 'c_argument', name=arg_name, **arg_attrs)
+        _text(m, 'c_return', **ret)
+        _text(m, 'c_code', code_text, lang='c', type='generated')
+        for modifier in modifiers:
+            _text(m, 'c_modifier', value=modifier)
+        m.text = _comment_text(desc)
+    return root
+
+
+def build_direct_atomic_c_module(repo_root: str | Path = '.') -> ET.Element:
+    root = ET.Element('c_module', {
+        'lang': 'C', 'id': 'atomic', 'name': 'vsc_atomic', 'class': '', 'scope': 'public',
+        'has_cmakedefine': '0', 'uid': 'c_module_atomic', 'c_include_file': 'vsc_atomic.h',
+        'c_source_file': 'vsc_atomic.c', 'header_file': '../library/common/include/virgil/crypto/common/private/vsc_atomic.h',
+        'source_file': '../library/common/src/vsc_atomic.c', 'once_guard': 'vsc_atomic_h_included'
+    })
+    _text(root, 'c_include', file='vsc_atomic.h', is_system='0', scope='private')
+    _text(root, 'c_include', file='vsc_library.h', is_system='0', scope='public')
+    _text(root, 'c_include', file='stdatomic.h', is_system='1', scope='public', **{'if':'VSC_HAVE_STDATOMIC_H'})
+    _text(root, 'c_code', '#if VSC_MULTI_THREADING && defined(_MSC_VER) && !defined(__INTEL_COMPILER)\n#   pragma intrinsic(_InterlockedCompareExchange)\n    inline bool vsc_atomic_compare_exchange_weak(volatile long *obj, long* expected, long desired) {\n        const long expected_local = *expected;\n        const long old = _InterlockedCompareExchange(obj, desired, expected_local);\n        if (old == expected_local) {\n            return true;\n        } else {\n            *expected = old;\n            return false;\n        }\n    }\n#endif', definition='public')
+    m = _text(root, 'c_macroses', definition='public')
+    _text(m, 'c_macros', name='VSC_ATOMIC', uid='c_class_atomic_macros_atomic', definition='public', is_method='0')
+    _text(m, 'c_macros', name='VSC_ATOMIC_COMPARE_EXCHANGE_WEAK', uid='c_class_atomic_macros_compare_exchange_weak', definition='public', is_method='0')
+    _text(m, 'c_code', '#if VSC_MULTI_THREADING\n#   if VSC_HAVE_STDATOMIC_H && !defined(__STDC_NO_ATOMICS__)\n#       define VSC_ATOMIC _Atomic\n#       define VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak(obj, expected, desired)\n#   elif defined(__GNUC__) || defined(__clang__)\n#       define VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)\n#   elif defined(_MSC_VER) && !defined(__INTEL_COMPILER)\n#       define VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) vsc_atomic_compare_exchange_weak(obj, expected, desired)\n#   else\n#       error "Atomic operations are not suppored for this platform, but CMake option VSC_MULTI_THREADING is ON."\n#   endif\n#   ifndef VSC_ATOMIC\n#       define VSC_ATOMIC\n#   endif\n#else\n#   define VSC_ATOMIC\n#endif', lang='c', type='generated')
+    m = _text(root, 'c_macroses', definition='public')
+    _text(m, 'c_macros', name='VSC_ATOMIC_CRITICAL_SECTION_DECLARE', uid='c_class_atomic_macros_critical_section_declare', definition='public', is_method='0')
+    _text(m, 'c_macros', name='VSC_ATOMIC_CRITICAL_SECTION_BEGIN', uid='c_class_atomic_macros_critical_section_begin', definition='public', is_method='0')
+    _text(m, 'c_macros', name='VSC_ATOMIC_CRITICAL_SECTION_END', uid='c_class_atomic_macros_critical_section_end', definition='public', is_method='0')
+    _text(m, 'c_code', '#if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)\n#   define VSC_ATOMIC_CRITICAL_SECTION_DECLARE(name) static VSC_ATOMIC int is_busy_##name = 0; int is_not_busy_##name = 0;\n#   define VSC_ATOMIC_CRITICAL_SECTION_BEGIN(name)                do { is_not_busy_##name = 0; } while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&is_busy_##name, &is_not_busy_##name, 1))\n#   define VSC_ATOMIC_CRITICAL_SECTION_END(name) do { is_busy_##name = 0; } while(0)\n#else\n#   define VSC_ATOMIC_CRITICAL_SECTION_DECLARE(name) do {} while(0)\n#   define VSC_ATOMIC_CRITICAL_SECTION_BEGIN(name) do {} while(0)\n#   define VSC_ATOMIC_CRITICAL_SECTION_END(name) do {} while(0)\n#endif', lang='c', type='generated')
+    meth = _text(root, 'c_method', name='vsc_atomic_compare_exchange_weak', visibility='public', declaration='external', definition='external', uid='c_class_atomic_method_compare_exchange_weak')
+    _text(meth, 'c_argument', type='void', accessed_by='value')
+    _text(meth, 'c_return', type='void', accessed_by='value')
+    _text(meth, 'c_code', '//  TODO: This is STUB. Implement me.', lang='c', type='stub')
+    _text(meth, 'c_modifier', value='VSC_PUBLIC')
+    return root
+
+
 def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = load_project_common(repo_root)
     mod = next(m for m in project.modules if m.name == 'assert')
