@@ -1,7 +1,7 @@
 # CG-006: Project-Rooted Common Graph Tests & Fixtures — Status
 
 **Current Step:** Step 4: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
@@ -44,9 +44,9 @@
 ---
 
 ### Step 4: Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Document the new test entrypoints and what architecture assumptions they protect
+- [x] Document the new test entrypoints and what architecture assumptions they protect
 
 ---
 
