@@ -1,6 +1,6 @@
 # CG-004: Direct Lowering for vsc_buffer — Status
 
-**Current Step:** Step 2: Wire into bootstrap generation
+**Current Step:** Step 3: Verification and iteration
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -28,15 +28,15 @@
 ---
 
 ### Step 2: Wire into bootstrap generation
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update `tools/codegen/common_bootstrap.py` to use the direct path for `vsc_buffer`
-- [ ] Keep any still-legitimate fallback behavior explicit and narrow
+- [x] Update `tools/codegen/common_bootstrap.py` to use the direct path for `vsc_buffer`
+- [x] Keep any still-legitimate fallback behavior explicit and narrow
 
 ---
 
 ### Step 3: Verification and iteration
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 - [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
@@ -58,6 +58,7 @@
 | # | Type | Step | Verdict | File |
 |---|------|------|---------|------|
 | 1 | Plan | 1 | UNAVAILABLE | reviewer tool unavailable |
+| 2 | Plan | 2 | UNAVAILABLE | reviewer tool unavailable |
 
 ---
 
@@ -79,6 +80,8 @@
 | 2026-04-04 21:08 | Step 1 started | Implement direct lowering |
 | 2026-04-04 21:09 | Step 1 review | Plan review returned UNAVAILABLE; proceeded cautiously |
 | 2026-04-04 21:19 | Step 1 completed | Added direct `vsc_buffer` lowering and verified generated-block preservation with temp render smoke check |
+| 2026-04-04 21:20 | Step 2 review | Plan review returned UNAVAILABLE; proceeded cautiously |
+| 2026-04-04 21:20 | Step 2 completed | Bootstrap now routes `vsc_buffer` through the direct path while leaving other fallback cases untouched |
 
 ---
 
