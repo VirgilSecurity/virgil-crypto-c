@@ -4,7 +4,7 @@ from pathlib import Path
 import unittest
 
 from tests.codegen.project_common_fixtures import PROJECT_COMMON_EXPECTATIONS
-from tools.codegen.common_source import load_project_common, load_project_source
+from tools.codegen.common_source import load_project_common, load_project_source, project_common_path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -18,6 +18,7 @@ class ProjectCommonSourceTest(unittest.TestCase):
         cls.project_from_repo_root = load_project_common(REPO_ROOT)
 
     def test_project_common_loader_starts_from_project_xml_entrypoint(self) -> None:
+        self.assertEqual(PROJECT_COMMON_XML, project_common_path(REPO_ROOT))
         self.assertEqual(str(PROJECT_COMMON_XML), self.project_from_entrypoint.path)
         self.assertEqual(self.project_from_entrypoint.to_dict(), self.project_from_repo_root.to_dict())
 
@@ -27,12 +28,15 @@ class ProjectCommonSourceTest(unittest.TestCase):
 
         self.assertEqual(expected["name"], project.name)
         self.assertEqual(expected["version"], project.version)
-        self.assertEqual(expected["namespace"], project.attrs["namespace"])
-        self.assertEqual(expected["framework"], project.attrs["framework"])
-        self.assertEqual(expected["prefix"], project.attrs["prefix"])
+        self.assertEqual(expected["namespace"], project.namespace)
+        self.assertEqual(expected["framework"], project.framework)
+        self.assertEqual(expected["prefix"], project.prefix)
         self.assertEqual(expected["path"], project.attrs["path"])
         self.assertEqual(expected["work_path"], project.attrs["work_path"])
         self.assertEqual(expected["wrappers"], project.attrs["wrappers"])
+        self.assertEqual(str(REPO_ROOT / "codegen"), project.codegen_root)
+        self.assertEqual(str(REPO_ROOT / "library/common"), project.source_root)
+        self.assertEqual(str(REPO_ROOT / "codegen/generated/common"), project.work_root)
         self.assertEqual(expected["features"], [
             {"name": feature.name, "default": feature.attrs.get("default")}
             for feature in project.feature_refs
@@ -47,7 +51,7 @@ class ProjectCommonSourceTest(unittest.TestCase):
         self.assertEqual(expected_names, [module.name for module in project.modules])
 
         for module_name, facts in PROJECT_COMMON_EXPECTATIONS["module_facts"].items():
-            module = next(module for module in project.modules if module.name == module_name)
+            module = project.module_named(module_name, resolved=True)
             if "requires" in facts:
                 self.assertEqual(facts["requires"], [ref.attrs["module"] for ref in module.requires])
             if "callbacks" in facts:
@@ -66,6 +70,15 @@ class ProjectCommonSourceTest(unittest.TestCase):
                 )
                 for snippet in facts["code_snippets"]:
                     self.assertIn(snippet, rendered_code)
+                self.assertNotIn("&amp;&amp;", rendered_code)
+
+        with self.assertRaises(KeyError):
+            project.module_named("missing", resolved=True)
+
+    def test_project_common_loader_resolves_transitive_module_dependencies(self) -> None:
+        project = self.project_from_entrypoint
+        self.assertEqual(PROJECT_COMMON_EXPECTATIONS["resolved_module_names"], [module.name for module in project.resolved_modules])
+        self.assertEqual(["platform"], [module.name for module in project.dependency_modules])
 
     def test_project_common_loader_resolves_referenced_classes(self) -> None:
         project = self.project_from_entrypoint
@@ -75,10 +88,13 @@ class ProjectCommonSourceTest(unittest.TestCase):
         self.assertEqual(expected_names, [cls.name for cls in project.classes])
 
         for class_name, facts in PROJECT_COMMON_EXPECTATIONS["class_facts"].items():
-            cls = next(loaded_class for loaded_class in project.classes if loaded_class.name == class_name)
+            cls = project.class_named(class_name)
             self.assertEqual(facts["properties"], [prop.name for prop in cls.properties])
             self.assertEqual(facts["constructors"], [ctor.name for ctor in cls.constructors])
             self.assertEqual(facts["methods"], [method.name for method in cls.methods[: len(facts["methods"])]])
+
+        with self.assertRaises(KeyError):
+            project.class_named("missing")
 
 
 if __name__ == "__main__":

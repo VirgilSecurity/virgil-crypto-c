@@ -15,6 +15,7 @@ PROJECT_COMMON_EXPECTATIONS = {
         ],
     },
     "module_names": ["assert", "library", "memory", "atomic"],
+    "resolved_module_names": ["assert", "library", "platform", "memory", "atomic"],
     "class_names": ["data", "buffer"],
     "enum_names": [],
     "module_facts": {
@@ -30,7 +31,11 @@ PROJECT_COMMON_EXPECTATIONS = {
         "atomic": {
             "requires": ["library"],
             "methods": ["compare exchange weak"],
-            "code_snippets": ["_InterlockedCompareExchange", "Atomic operations are not suppored"],
+            "code_snippets": ["_InterlockedCompareExchange", "Atomic operations are not suppored", "&& !defined(__INTEL_COMPILER)"],
+        },
+        "platform": {
+            "macros": ["apple framework"],
+            "code_snippets": ["#cmakedefine01 .(c_global_macros_apple_framework)"],
         },
     },
     "class_facts": {
