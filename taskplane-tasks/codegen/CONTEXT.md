@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-04
 **Status:** Active
-**Next Task ID:** CG-006
+**Next Task ID:** CG-011
 
 ---
 
@@ -21,21 +21,15 @@ Current project scope for Taskplane work:
 
 ## Current State
 
-The `common` generator is already in mixed mode.
+The `common` generator has now completed the remaining buffer-family migration batch and successfully validated the `common` build.
 
-Direct-from-source or direct source-driven coverage currently includes:
+Current next-phase focus:
 
-- `vsc_library`
-- `vsc_assert`
-- `vsc_memory`
-- `vsc_atomic`
-- `vsc_data`
-
-Legacy resolved-XML fallback still remains primarily around:
-
-- `vsc_buffer`
-- `vsc_buffer_defs`
-- aggregation/support headers such as `vsc_common_public.h` and `vsc_common_private.h`
+- regularize the architecture around `project_common.xml` as the top-level source of truth
+- resolve a full `common` project graph before backend lowering
+- build a language-neutral IR first
+- derive the C backend from model metadata instead of project-specific hardcodes
+- keep the current handwritten-code preservation contract for C
 
 The compile gate for this area is:
 
@@ -75,16 +69,16 @@ This script is allowed to apply generated output temporarily into the repo, buil
 
 ## Planned Task Sequence
 
-- `CG-001` — buffer family migration spec and dependency map
-- `CG-002` — direct lowering for `vsc_buffer_defs`
-- `CG-003` — support-file fallback audit and remaining-common plan
-- `CG-004` — direct lowering for `vsc_buffer`
-- `CG-005` — final common status/docs sweep after buffer migration
+- `CG-006` — tests and fixtures for project-rooted `common` graph loading
+- `CG-007` — project-rooted model graph loader for `project_common.xml`
+- `CG-008` — normalized IR from the resolved project graph
+- `CG-009` — model-driven C resolution from IR without hardcoded project metadata
+- `CG-010` — bootstrap integration, preservation validation, and regression docs
 
 ---
 
 ## Technical Debt / Future Work
 
-- Reduce remaining dependence on resolved XML after buffer migration.
-- Consider whether aggregation headers should become direct outputs or remain thin derived/fallback artifacts.
-- Tighten parity/formatting checks after compile-stable direct lowering is complete.
+- Reduce remaining project-specific hardcodes in `tools/codegen/common_direct_c.py`.
+- Make `project_common.xml` and its referenced model graph the explicit entrypoint for `common` generation.
+- Tighten automated tests around graph loading, IR construction, and C resolution from model metadata.

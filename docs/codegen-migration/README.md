@@ -17,6 +17,7 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `inventory-template.md` — template for generated output inventory work
 - `implementation-notes.md` — architecture and coding notes for the new generator
 - `common-buffer-migration-plan.md` — execution map for the remaining `common` buffer-family migration
+- `../adr/0002-project-rooted-codegen-pipeline.md` — project-rooted architecture decision for the next generator phase
 
 ## Summary
 
