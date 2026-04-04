@@ -17,6 +17,7 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `inventory-template.md` — template for generated output inventory work
 - `implementation-notes.md` — architecture and coding notes for the new generator
 - `common-buffer-migration-plan.md` — execution map for the remaining `common` buffer-family migration
+- `common-support-fallback-audit.md` — classification of the remaining `common` umbrella/support outputs after `buffer_defs`
 
 ## Summary
 

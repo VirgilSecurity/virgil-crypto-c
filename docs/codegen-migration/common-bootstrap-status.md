@@ -33,13 +33,12 @@ It proves several important things early:
 
 ## What is currently generated
 
-The bootstrap script currently generates these `common` outputs into `build/new-codegen-common/`:
+The bootstrap script currently generates `common` header/source outputs discovered from resolved `c_module_*.xml` inputs into `build/new-codegen-common/` by rewriting checked-in file skeletons under:
 
-- headers under `library/common/include/...`
-- sources under `library/common/src/...`
-- `vsc_platform.h.in`
+- `library/common/include/...`
+- `library/common/src/...`
 
-It currently writes 16 files for the `common` project.
+Its active direct-routing special cases are currently limited to `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, and `vsc_buffer_defs`.
 
 ## Current status
 
@@ -48,8 +47,9 @@ It currently writes 16 files for the `common` project.
 - it preserves the existing non-generated file sections by reusing the checked-in file skeletons
 - it demonstrates a generic pass over resolved `c_module` XML rather than a one-off file copier
 - it can now be applied onto the real `library/common` files temporarily and the `common` CMake target builds successfully
-- it now directly lowers the foundational `common` entities from original source models or direct source-driven lowering logic: `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, and `vsc_data`
-- the remaining `common` entities still falling back to legacy resolved XML are concentrated around `buffer`, `buffer_defs`, and aggregation headers
+- it now directly lowers the foundational `common` entities from original source models or direct source-driven lowering logic: `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, and `vsc_buffer_defs`
+- the remaining active resolved-XML fallback surface is concentrated around `buffer`
+- the umbrella headers `vsc_common_public.h` and `vsc_common_private.h` remain follow-up support artifacts, but their checked-in generated blocks are currently empty rather than being a meaningful direct-routing surface
 
 ### Known limitations
 - output is not yet parity-clean against the checked-in `common` library

@@ -421,3 +421,59 @@ def build_direct_data_c_module(repo_root: str | Path = '.') -> ET.Element:
         m.text = _comment_text(method.description)
 
     return root
+
+
+def build_direct_buffer_defs_c_module(repo_root: str | Path = '.') -> ET.Element:
+    project = load_project_common(repo_root)
+    buffer_cls = next(c for c in project.classes if c.name == 'buffer')
+
+    root = ET.Element('c_module', {
+        'lang': 'C',
+        'id': 'buffer_defs',
+        'name': 'vsc_buffer_defs',
+        'class': 'buffer',
+        'scope': 'private',
+        'has_cmakedefine': '0',
+        'uid': 'c_module_buffer_defs',
+        'c_include_file': 'vsc_buffer_defs.h',
+        'c_source_file': 'vsc_buffer_defs.c',
+        'header_file': '../library/common/include/virgil/crypto/common/private/vsc_buffer_defs.h',
+        'source_file': '../library/common/src/vsc_buffer_defs.c',
+        'once_guard': 'vsc_buffer_defs_h_included',
+    })
+
+    struct = _text(root, 'c_struct', name='vsc_buffer_t', visibility='public', declaration='private', definition='public', uid='direct_buffer_defs_struct_buffer')
+    struct.text = _comment_text("Handle 'buffer' context.")
+
+    synthetic_fields = [
+        ('self_dealloc_cb', 'vsc_dealloc_fn', 'callback', 'Function do deallocate self context.'),
+        ('refcnt', 'VSC_ATOMIC size_t', 'primitive', 'Reference counter.'),
+    ]
+    for name, type_name, type_kind, desc in synthetic_fields:
+        field = _text(struct, 'c_property', name=name, accessed_by='value', type=type_name, type_is=type_kind)
+        field.text = _comment_text(desc)
+
+    for prop in buffer_cls.properties:
+        attrs = dict(prop.attrs)
+        field_attrs = {
+            'name': {
+                'bytes_dealloc': 'bytes_dealloc_cb',
+                'is secure': 'is_secure',
+                'is owner': 'is_owner',
+                'is reverse': 'is_reverse',
+            }.get(prop.name, prop.name.replace(' ', '_')),
+            'accessed_by': 'pointer' if attrs.get('is_reference') in {'1', 'true'} else 'value',
+        }
+
+        if 'callback' in attrs:
+            field_attrs['type'] = 'vsc_dealloc_fn'
+            field_attrs['type_is'] = 'callback'
+        else:
+            type_name, type_kind = _type_map(attrs.get('type'))
+            field_attrs['type'] = type_name
+            field_attrs['type_is'] = type_kind
+
+        field = _text(struct, 'c_property', **field_attrs)
+        field.text = _comment_text(prop.description)
+
+    return root
