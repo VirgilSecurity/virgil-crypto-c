@@ -21,8 +21,8 @@
 ### Step 1: Audit remaining support files
 **Status:** ⬜ Not Started
 
-- [ ] Classify each remaining support header/output as direct candidate, acceptable fallback, or deferred work
-- [ ] Capture rationale for each classification
+- [x] Classify each remaining support header/output as direct candidate, acceptable fallback, or deferred work
+- [x] Capture rationale for each classification
 
 ---
 
@@ -52,6 +52,8 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| The checked-in `vsc_common_public.h` / `vsc_common_private.h` umbrella headers currently have empty `@generated` blocks, so the active bootstrap does not materially regenerate their include lists today. | Carry into Step 2 docs as an audit finding. | `library/common/include/virgil/crypto/common/vsc_common_public.h`, `library/common/include/virgil/crypto/common/private/vsc_common_private.h` |
+| `tools/codegen/common_bootstrap.py` has direct routing for `vsc_buffer_defs`, but no special-case routing for the umbrella headers; they are only described as fallback in docs/plans. | Use Step 2 to align docs with actual bootstrap behavior. | `tools/codegen/common_bootstrap.py`, `docs/codegen-migration/common-buffer-migration-plan.md` |
 
 ---
 
@@ -74,3 +76,11 @@
 ## Notes
 
 This task keeps the post-buffer migration boundary explicit.
+
+Step 1 working classification:
+- `vsc_common_public.h` — **deferred direct candidate** after `vsc_buffer` is direct; today it is a thin static umbrella include list and not a meaningful migration blocker.
+  - Rationale: its content is project-composition glue, not entity-specific lowering logic, and the checked-in file currently carries an empty generated block.
+- `vsc_common_private.h` — **deferred direct candidate** after `vsc_buffer` is direct; like the public umbrella, it is compile-sensitive but structurally trivial.
+  - Rationale: its only meaningful dependency edge is `vsc_buffer_defs.h`, so deciding its final generation mode is cleaner once `buffer`/`buffer_defs` ownership is fully direct.
+- No additional non-buffer support outputs were found in the active bootstrap path; `vsc_platform.h.in` appears in historical status docs, but current `common_bootstrap.py` only iterates `c_module_*.xml` and contains no dedicated platform/support emitter logic.
+  - Rationale: the audit should stay focused on outputs the active bootstrap really touches, while also flagging stale status language for correction in Step 2.
