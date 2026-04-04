@@ -1,6 +1,6 @@
 # CG-006: Project-Rooted Common Graph Tests & Fixtures — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -36,15 +36,15 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run the new tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run the new tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Document the new test entrypoints and what architecture assumptions they protect
 
