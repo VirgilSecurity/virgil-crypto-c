@@ -1,6 +1,6 @@
 # CG-001: Buffer Family Migration Spec — Status
 
-**Current Step:** Step 2: Document the execution plan
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -28,11 +28,11 @@
 ---
 
 ### Step 2: Document the execution plan
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Add or update docs under `docs/codegen-migration/` describing the remaining migration map
-- [ ] Explicitly sequence `buffer_defs`, `buffer`, and any support-header follow-up
-- [ ] Call out expected verification commands and no-commit constraints for generated `library/common/**` files
+- [x] Add or update docs under `docs/codegen-migration/` describing the remaining migration map
+- [x] Explicitly sequence `buffer_defs`, `buffer`, and any support-header follow-up
+- [x] Call out expected verification commands and no-commit constraints for generated `library/common/**` files
 
 ---
 
