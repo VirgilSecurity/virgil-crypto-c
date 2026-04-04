@@ -16,6 +16,7 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `risk-register.md` — migration risks and mitigations
 - `inventory-template.md` — template for generated output inventory work
 - `implementation-notes.md` — architecture and coding notes for the new generator
+- `common-buffer-migration-plan.md` — execution map for the remaining `common` buffer-family migration
 
 ## Summary
 
