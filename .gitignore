@@ -56,3 +56,6 @@ wrappers/go/pkg/
 
 # pi agent workspace
 .pi/
+
+# Taskplane runtime artifacts (machine-specific, do not commit)
+.worktrees/
