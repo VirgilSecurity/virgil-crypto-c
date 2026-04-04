@@ -83,7 +83,7 @@
     </feature>
 
     <error_message_getter success="0">
-        <require header="mbedtls/config.h"/>
+        <require header="mbedtls/build_info.h"/>
         <require header="mbedtls/error.h"/>
 
         #if defined(MBEDTLS_ERROR_C)
