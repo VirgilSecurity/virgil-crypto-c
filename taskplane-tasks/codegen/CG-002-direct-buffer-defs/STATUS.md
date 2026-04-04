@@ -1,6 +1,6 @@
 # CG-002: Direct Lowering for vsc_buffer_defs — Status
 
-**Current Step:** Step 3: Verify build safety
+**Current Step:** Step 4: Documentation and delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -36,16 +36,16 @@
 ---
 
 ### Step 3: Verify build safety
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
-- [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Confirm no generated `library/common/**` artifacts remain staged for commit
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Confirm no generated `library/common/**` artifacts remain staged for commit
 
 ---
 
 ### Step 4: Documentation and delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update migration docs to reflect direct coverage for `vsc_buffer_defs`
 - [ ] Summarize any parity gaps, shortcuts, or follow-up risks for `vsc_buffer`
@@ -79,6 +79,8 @@
 | 2026-04-04 20:48 | Step 2 started | Wire bootstrap routing |
 | 2026-04-04 20:50 | Step 2 completed | Bootstrap now routes `vsc_buffer_defs` through the direct path |
 | 2026-04-04 20:50 | Step 3 started | Verify build safety |
+| 2026-04-04 20:58 | Step 3 completed | Python compile, build gate, and no-generated-artifact checks passed |
+| 2026-04-04 20:58 | Step 4 started | Documentation and delivery |
 
 ---
 
