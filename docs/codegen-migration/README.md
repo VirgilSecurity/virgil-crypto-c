@@ -16,8 +16,10 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `risk-register.md` — migration risks and mitigations
 - `inventory-template.md` — template for generated output inventory work
 - `implementation-notes.md` — architecture and coding notes for the new generator
-- `common-buffer-migration-plan.md` — execution map for the remaining `common` buffer-family migration
-- `common-support-fallback-audit.md` — classification of the remaining `common` umbrella/support outputs after `buffer_defs`
+- `common-bootstrap-status.md` — current executable status of the mixed-mode `common` bootstrap
+- `common-direct-foundation-status.md` — current direct-coverage boundary for foundational `common` outputs
+- `common-buffer-migration-plan.md` — historical execution map for the completed `common` buffer-family migration
+- `common-support-fallback-audit.md` — final disposition of the `common` umbrella/support headers after the buffer migration
 
 ## Summary
 
@@ -32,13 +34,21 @@ Decision:
 - keep `./codegen.sh` as the stable operator entrypoint during migration
 - design internals so incremental generation can be added later
 
+## Current `common` status
+
+For the current Taskplane slice (`library/common` C generation):
+
+1. the foundational direct-lowering boundary is in place for `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`
+2. the only previously open post-buffer ownership question was the umbrella headers `vsc_common_public.h` and `vsc_common_private.h`
+3. those umbrella headers are now best understood as stable checked-in support headers with empty generated blocks, not as meaningful active resolved-XML fallback surfaces
+4. the compile gate for this slice remains `bash tools/codegen/build_common_with_new_codegen.sh`
+
 ## Immediate next actions
 
-1. snapshot and catalog current resolved XML artifacts, including the known Python gap
-2. produce output inventory and golden baseline
-3. implement preservation parser/rewriter
-4. implement original-XML parser/resolver
-5. prove parity on one small generated surface
+1. keep using `library/common` as the proving ground for parser/resolver and parity work rather than opening a new `common` implementation track
+2. reduce parity/formatting differences in the mixed-mode bootstrap where they still matter for review confidence
+3. carry the direct-from-original-model approach into the next target area after `common`
+4. continue treating legacy resolved XML as reference/fixture material instead of a runtime requirement
 
 ## Definition of done for migration
 

@@ -20,7 +20,7 @@ Current direct coverage already removes legacy resolved-XML dependence for the f
 - `vsc_atomic`
 - `vsc_data`
 
-That now leaves the remaining fallback/ownership cleanup surface concentrated in the thin aggregation headers rather than the core buffer entities.
+That originally left the remaining fallback/ownership cleanup surface concentrated in the thin aggregation headers rather than the core buffer entities; the follow-up sweep in `CG-005` closes that loop by documenting those headers as static checked-in support artifacts.
 
 ## Current migration map
 
@@ -30,7 +30,7 @@ That now leaves the remaining fallback/ownership cleanup surface concentrated in
 | `vsc_buffer_defs.c` | Same effective source as `vsc_buffer_defs.h`. | **Direct** via the same builder, with an intentionally empty generated source block. | Parity risk stays mostly preservation/skeleton-related because the generated body remains empty. |
 | `vsc_buffer.h` | `codegen/models/project_common/class_buffer.xml` plus generator-owned lifecycle naming conventions. | **Direct** via `build_direct_buffer_c_module()` in `tools/codegen/common_direct_c.py`. | Public API declarations now come from the original class model instead of resolved `c_module` XML. |
 | `vsc_buffer.c` | `codegen/models/project_common/class_buffer.xml` plus preserved handwritten implementation outside `@generated` and the synthesized `self_dealloc_cb` / `refcnt` contract from `vsc_buffer_defs`. | **Direct** for the generated lifecycle/refcount block via the same builder; handwritten methods remain preserved from the checked-in file skeleton. | The direct path keeps generated-block replacement narrow and intentionally does not regenerate the large manual body. |
-| `vsc_common_public.h` / `vsc_common_private.h` | Support/aggregation includes derived from project composition. | Not directly owned by a dedicated emitter today; the checked-in files currently carry empty generated blocks. | Thin support artifacts; now the only meaningful follow-up ownership question in this buffer-family area. |
+| `vsc_common_public.h` / `vsc_common_private.h` | Support/aggregation includes derived from project composition. | Not directly owned by a dedicated emitter today; the checked-in files currently carry empty generated blocks. | Thin support artifacts; `CG-005` documents them as stable checked-in umbrella headers rather than as an active buffer-family fallback surface. |
 
 ## Recommended execution order
 
@@ -42,10 +42,10 @@ That now leaves the remaining fallback/ownership cleanup surface concentrated in
    - The generated API declarations in `vsc_buffer.h` and the generated lifecycle/refcount block in `vsc_buffer.c` now come from `class_buffer.xml` through direct lowering.
    - Handwritten code outside `@generated` remains preserved exactly by the existing generated-block replacement strategy.
    - Resolved `c_module_vsc_buffer*.xml` is no longer a runtime requirement for this module.
-3. **Support-header follow-up after both core tasks (`CG-003` and/or `CG-005`)**
-   - Revisit `vsc_common_public.h` and `vsc_common_private.h` once `buffer_defs` and `buffer` are direct.
-   - Treat these as thin include aggregators whose end state can be decided with the smaller migration boundary visible.
-   - Prefer either a tiny direct/project-composition emitter or an explicit decision to keep them as static checked-in umbrella headers; avoid implying a large resolved-XML dependency if the generated blocks stay empty.
+3. **Support-header follow-up after both core tasks (`CG-003` and `CG-005`)** — complete
+   - `CG-003` narrowed the remaining question to the two umbrella headers only.
+   - `CG-005` closes the boundary by documenting `vsc_common_public.h` and `vsc_common_private.h` as static checked-in umbrella headers for this slice.
+   - The result is that no additional core `common` entity migration step remains open in this buffer-family area.
 
 ## Verification and commit-safety expectations
 
@@ -75,5 +75,5 @@ Execution notes:
 
 - `class_buffer.xml` does not spell out the runtime support fields used by ownership/refcount handling, so the direct `vsc_buffer` path must continue to respect the synthesized `self_dealloc_cb` / `refcnt` contract introduced by `vsc_buffer_defs`.
 - Formatting/comment parity for `vsc_buffer` and `vsc_buffer_defs` is compile-safe but intentionally not byte-for-byte identical to legacy resolved output; follow-up work should avoid coupling to exact legacy whitespace while keeping API/layout parity intact.
-- The main ownership question left in this area is whether `vsc_common_public.h` and `vsc_common_private.h` need a tiny direct emitter or should be documented as static checked-in umbrella headers.
+- The former ownership question around `vsc_common_public.h` and `vsc_common_private.h` is now resolved for this slice: they are documented as static checked-in umbrella headers unless a future broader project-composition emitter is introduced.
 - Temporary bootstrap smoke checks can use a dummy `c_module_vsc_buffer.xml` path name because the direct route is name-based; no committed resolved XML fixture is required.

@@ -21,8 +21,8 @@
 ### Step 1: Update status docs
 **Status:** ⬜ Not Started
 
-- [ ] Refresh coverage/status docs under `docs/codegen-migration/`
-- [ ] Update the task-area context if the task sequence or remaining work changed materially
+- [x] Refresh coverage/status docs under `docs/codegen-migration/`
+- [x] Update the task-area context if the task sequence or remaining work changed materially
 
 ---
 

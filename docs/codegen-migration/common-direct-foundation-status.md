@@ -18,12 +18,12 @@ The mixed-mode `common` generator now lowers these directly from original source
 
 There is no longer a core `common` entity in this migration slice that still requires legacy resolved XML fallback at runtime.
 
-Related support headers still not directly owned by a dedicated project-composition emitter are:
+The two umbrella headers adjacent to this work:
 
 - `vsc_common_public.h`
 - `vsc_common_private.h`
 
-These umbrella headers are important migration follow-up items, but in the current checked-in files their `@generated` blocks are empty, so they are better treated as deferred support artifacts than as a large active fallback surface.
+remain important support artifacts, but their checked-in `@generated` blocks are empty. For status tracking, they should now be treated as stable checked-in umbrella headers rather than as active fallback coverage.
 
 ## Why this matters
 
@@ -35,7 +35,7 @@ This means the new generator now directly owns the foundational building blocks 
 - atomic helpers
 - value-type data container
 
-With these direct, the remaining migration surface is no longer the buffer API itself; it is now the much smaller umbrella-header ownership cleanup.
+With these direct, the `common` direct-lowering migration surface for core entities is effectively complete.
 
 ## Compile status
 
@@ -43,4 +43,4 @@ This mixed-mode generator still successfully builds the `common` CMake target us
 
 ## Recommended next step
 
-Decide whether the umbrella headers need a tiny direct emitter or can remain documented static checked-in artifacts, then update the status docs so only real remaining fallback/ownership gaps are described.
+Use this completed `common` slice as the baseline for follow-on parser/resolver and parity work, while keeping the umbrella headers documented as static checked-in support artifacts unless a concrete future need for project-composition generation appears.

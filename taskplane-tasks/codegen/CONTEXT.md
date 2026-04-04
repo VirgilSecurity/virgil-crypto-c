@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-04
 **Status:** Active
-**Next Task ID:** CG-006
+**Next Task ID:** TBD
 
 ---
 
@@ -21,7 +21,7 @@ Current project scope for Taskplane work:
 
 ## Current State
 
-The `common` generator is already in mixed mode.
+The `common` generator remains mixed mode at the whole-bootstrap level, but the current Taskplane `common` entity slice is now effectively closed.
 
 Direct-from-source or direct source-driven coverage currently includes:
 
@@ -30,12 +30,17 @@ Direct-from-source or direct source-driven coverage currently includes:
 - `vsc_memory`
 - `vsc_atomic`
 - `vsc_data`
-
-Legacy resolved-XML fallback still remains primarily around:
-
-- `vsc_buffer`
 - `vsc_buffer_defs`
-- aggregation/support headers such as `vsc_common_public.h` and `vsc_common_private.h`
+- `vsc_buffer`
+
+There is no longer a core `common` entity in this slice that still requires legacy resolved-XML fallback at runtime.
+
+Related support headers:
+
+- `vsc_common_public.h`
+- `vsc_common_private.h`
+
+remain checked-in umbrella headers with empty generated blocks and are now tracked as static support artifacts rather than as active fallback migration work.
 
 The compile gate for this area is:
 
@@ -75,16 +80,18 @@ This script is allowed to apply generated output temporarily into the repo, buil
 
 ## Planned Task Sequence
 
-- `CG-001` — buffer family migration spec and dependency map
-- `CG-002` — direct lowering for `vsc_buffer_defs`
-- `CG-003` — support-file fallback audit and remaining-common plan
-- `CG-004` — direct lowering for `vsc_buffer`
-- `CG-005` — final common status/docs sweep after buffer migration
+- `CG-001` — buffer family migration spec and dependency map ✅
+- `CG-002` — direct lowering for `vsc_buffer_defs` ✅
+- `CG-003` — support-file fallback audit and remaining-common plan ✅
+- `CG-004` — direct lowering for `vsc_buffer` ✅
+- `CG-005` — final common status/docs sweep after buffer migration ✅
+
+No additional `common` core-entity implementation task is currently queued; the next task should either target parity/tooling follow-up or move to the next migration area.
 
 ---
 
 ## Technical Debt / Future Work
 
-- Reduce remaining dependence on resolved XML after buffer migration.
-- Consider whether aggregation headers should become direct outputs or remain thin derived/fallback artifacts.
-- Tighten parity/formatting checks after compile-stable direct lowering is complete.
+- Reduce remaining dependence on resolved XML outside the completed `common` core-entity slice.
+- Add parity/tooling checks that make mixed-mode formatting differences easier to review.
+- Revisit umbrella-header generation only if a broader project-composition emitter is introduced for reasons beyond the completed `common` migration slice.
