@@ -1,6 +1,6 @@
 # CG-001: Buffer Family Migration Spec — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -37,9 +37,9 @@
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Re-read the updated docs to ensure they are internally consistent with the current codebase
+- [x] Re-read the updated docs to ensure they are internally consistent with the current codebase
 
 ---
 
@@ -91,3 +91,4 @@ Step 1 analysis notes:
 - `vsc_buffer.h` is largely generated API surface from the class model, while `vsc_buffer.c` only has its lifecycle/refcount section inside `@generated`; most operational methods remain preserved manual code and constrain the migration plan.
 - Direct-lowering candidates are `vsc_buffer_defs.h` / `vsc_buffer_defs.c` first, then the generated block portions of `vsc_buffer.h` / `vsc_buffer.c`; `vsc_common_public.h` and `vsc_common_private.h` are thin include aggregators that should stay as explicit follow-up support work.
 - Preservation constraints: `vsc_buffer.c` must keep its large handwritten body outside the generated block intact, support headers currently rely on existing file skeletons and include order, and follow-up tasks must continue the no-commit rule for temporary `library/common/**` regeneration.
+- Verification check: re-read `docs/codegen-migration/common-buffer-migration-plan.md` and `docs/codegen-migration/README.md` against `tools/codegen/common_bootstrap.py`, `class_buffer.xml`, and checked-in `library/common` buffer/support files; sequencing and constraints matched the current mixed-mode codebase.
