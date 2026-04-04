@@ -1,6 +1,6 @@
 # CG-007: Project-Rooted Common Graph Loader — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -36,16 +36,16 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run tests from `CG-006`
-- [ ] Run any updated loader tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run tests from `CG-006`
+- [x] Run any updated loader tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update docs if parser or graph-loading realities changed
 - [ ] Summarize what graph facts are now available to the IR layer
