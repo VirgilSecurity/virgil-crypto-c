@@ -1,6 +1,6 @@
 # CG-006: Project-Rooted Common Graph Tests & Fixtures — Status
 
-**Current Step:** Step 1: Define project-rooted expectations
+**Current Step:** Step 2: Implement tests and fixtures
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -19,15 +19,15 @@
 ---
 
 ### Step 1: Define project-rooted expectations
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Identify the minimum expected graph facts that must be discoverable from `project_common.xml`
-- [ ] Cover referenced classes, modules, enums, and project metadata needed by the C backend
+- [x] Identify the minimum expected graph facts that must be discoverable from `project_common.xml`
+- [x] Cover referenced classes, modules, enums, and project metadata needed by the C backend
 
 ---
 
 ### Step 2: Implement tests and fixtures
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Add tests that start from `project_common.xml`
 - [ ] Verify that the loader entrypoint is project-rooted rather than ad hoc per-module
