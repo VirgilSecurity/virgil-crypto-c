@@ -1,6 +1,6 @@
 # CG-008: Common Project Graph to IR — Status
 
-**Current Step:** Step 1: Define or refine the normalized IR
+**Current Step:** Step 2: Implement graph-to-IR lowering
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -19,15 +19,15 @@
 ---
 
 ### Step 1: Define or refine the normalized IR
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Ensure the IR can represent project, modules, classes, enums, methods, constants, and output metadata needed by the C backend
-- [ ] Prefer explicit structured fields over module-specific ad hoc conventions
+- [x] Ensure the IR can represent project, modules, classes, enums, methods, constants, and output metadata needed by the C backend
+- [x] Prefer explicit structured fields over module-specific ad hoc conventions
 
 ---
 
 ### Step 2: Implement graph-to-IR lowering
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Lower the project-rooted graph into the normalized IR
 - [ ] Preserve enough detail to drive naming/file decisions from model metadata
@@ -73,6 +73,7 @@
 | 2026-04-04 22:45 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-04 22:45 | Step 0 started | Preflight |
 | 2026-04-04 22:52 | Preflight inspection | Confirmed current IR is structural only and still leaves project-derived output/naming metadata implicit in `common_direct_c.py` |
+| 2026-04-04 23:02 | IR shape refactor | Added normalized project/entity/output dataclasses plus typed refs/constants/dependency-module coverage in `common_ir.py` |
 
 ---
 

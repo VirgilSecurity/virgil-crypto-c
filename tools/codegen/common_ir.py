@@ -1,14 +1,45 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
+from pathlib import PurePosixPath
 from typing import Any
 
-from tools.codegen.common_source import ClassSource, MethodSource, ModuleSource, ProjectCommonSource
+from tools.codegen.common_source import ClassSource, EnumSource, MethodSource, ModuleSource, ProjectCommonSource
 
 
 @dataclass
 class IRCommented:
     description: str = ""
+
+
+@dataclass
+class IROutputTarget:
+    entity_kind: str
+    entity_name: str
+    c_symbol: str
+    stem: str
+    include_file: str
+    source_file: str
+    header_path: str
+    source_path: str
+    generated_header_path: str
+    generated_source_path: str
+    once_guard: str
+    header_visibility: str = "public"
+    source_visibility: str = "public"
+
+
+@dataclass
+class IRFeature(IRCommented):
+    name: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class IREntityRef(IRCommented):
+    kind: str = ""
+    name: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -53,17 +84,27 @@ class IRCVariable(IRCommented):
 
 
 @dataclass
+class IRCConstant(IRCommented):
+    name: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
 class IRCModule(IRCommented):
     name: str = ""
+    source_path: str = ""
     origin: str = "module"
-    requires: list[dict[str, str]] = field(default_factory=list)
-    c_includes: list[dict[str, str]] = field(default_factory=list)
+    from_area: str | None = None
+    attrs: dict[str, str] = field(default_factory=dict)
+    requires: list[IREntityRef] = field(default_factory=list)
+    c_includes: list[IREntityRef] = field(default_factory=list)
     callbacks: list[IRCMethod] = field(default_factory=list)
     methods: list[IRCMethod] = field(default_factory=list)
     variables: list[IRCVariable] = field(default_factory=list)
     macros: list[IRCMethod] = field(default_factory=list)
     macro_groups: list[IRCMethod] = field(default_factory=list)
     code_blocks: list[dict[str, str]] = field(default_factory=list)
+    output: IROutputTarget | None = None
 
 
 @dataclass
@@ -80,20 +121,24 @@ class IRCStructField(IRCommented):
 
 
 @dataclass
-class IRCStruct(IRCommented):
-    name: str = ""
-    attrs: dict[str, str] = field(default_factory=dict)
-    fields: list[IRCStructField] = field(default_factory=list)
-
-
-@dataclass
 class IRClass(IRCommented):
     name: str = ""
+    source_path: str = ""
     attrs: dict[str, str] = field(default_factory=dict)
     methods: list[IRCMethod] = field(default_factory=list)
     constructors: list[IRCMethod] = field(default_factory=list)
     variables: list[IRCVariable] = field(default_factory=list)
     struct_fields: list[IRCStructField] = field(default_factory=list)
+    output: IROutputTarget | None = None
+
+
+@dataclass
+class IREnum(IRCommented):
+    name: str = ""
+    source_path: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+    constants: list[IRCConstant] = field(default_factory=list)
+    output: IROutputTarget | None = None
 
 
 @dataclass
@@ -101,15 +146,79 @@ class IRProjectCommon:
     name: str
     attrs: dict[str, str] = field(default_factory=dict)
     version: dict[str, str] | None = None
-    features: list[dict[str, Any]] = field(default_factory=list)
-    module_refs: list[dict[str, str]] = field(default_factory=list)
-    class_refs: list[dict[str, str]] = field(default_factory=list)
-    enum_refs: list[dict[str, str]] = field(default_factory=list)
+    namespace: str = ""
+    framework: str = ""
+    prefix: str = ""
+    project_path: str = ""
+    source_root: str = ""
+    work_root: str = ""
+    include_namespace: str = ""
+    generated_namespace: str = ""
+    features: list[IRFeature] = field(default_factory=list)
+    module_refs: list[IREntityRef] = field(default_factory=list)
+    class_refs: list[IREntityRef] = field(default_factory=list)
+    enum_refs: list[IREntityRef] = field(default_factory=list)
     modules: list[IRCModule] = field(default_factory=list)
+    dependency_modules: list[IRCModule] = field(default_factory=list)
+    resolved_modules: list[IRCModule] = field(default_factory=list)
     classes: list[IRClass] = field(default_factory=list)
+    enums: list[IREnum] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def _snake(name: str) -> str:
+    return name.replace(" ", "_")
+
+
+def _project_include_namespace(project: ProjectCommonSource) -> str:
+    namespace_parts = project.namespace.split()
+    return str(PurePosixPath(*namespace_parts)) if namespace_parts else ""
+
+
+def _generated_namespace(project: ProjectCommonSource) -> str:
+    work_root = PurePosixPath(project.attrs.get("work_path", ""))
+    return str(work_root) if str(work_root) != "." else ""
+
+
+def _once_guard(stem: str) -> str:
+    return f"{stem}_h_included"
+
+
+def _build_output(project: ProjectCommonSource, *, entity_kind: str, entity_name: str, attrs: dict[str, str]) -> IROutputTarget:
+    stem = f"{project.prefix}_{_snake(entity_name)}"
+    include_namespace = PurePosixPath(_project_include_namespace(project))
+    source_root = PurePosixPath(project.attrs.get("path", ""))
+    work_root = PurePosixPath(project.attrs.get("work_path", ""))
+
+    header_visibility = "private" if entity_kind == "module" and attrs.get("scope") == "private" else "public"
+    include_dir = include_namespace / ("private" if header_visibility == "private" else "")
+    header_path = str(source_root / "include" / include_dir / f"{stem}.h")
+    source_path = str(source_root / "src" / f"{stem}.c")
+    entity_slug = _snake(entity_name)
+    generated_header_path = str(work_root / f"c_{entity_kind}_{stem}.xml")
+    generated_source_path = str(work_root / f"{entity_kind}_{entity_slug}.xml")
+
+    return IROutputTarget(
+        entity_kind=entity_kind,
+        entity_name=entity_name,
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=_once_guard(stem),
+        header_visibility=header_visibility,
+        source_visibility="public",
+    )
+
+
+def _ref(kind: str, name: str, attrs: dict[str, str], description: str = "") -> IREntityRef:
+    return IREntityRef(kind=kind, name=name, attrs=attrs, description=description)
 
 
 def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> IRCArgument:
@@ -168,62 +277,100 @@ def _variable_to_ir(src) -> IRCVariable:
     )
 
 
-def module_to_ir(src: ModuleSource) -> IRCModule:
+def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> IRCStructField:
+    return IRCStructField(
+        name=name,
+        description=description,
+        type_kind=(
+            "callback" if "callback" in attrs else
+            "class" if "class" in attrs or attrs.get("type") == "self" else
+            "type"
+        ),
+        type_name=attrs.get("type"),
+        class_name=attrs.get("class"),
+        callback=attrs.get("callback"),
+        access=attrs.get("access"),
+        is_reference=attrs.get("is_reference") in {"1", "true"},
+        is_string=(attrs.get("type") == "string"),
+        is_array=False,
+    )
+
+
+def _constant_to_ir(name: str, attrs: dict[str, str], description: str = "") -> IRCConstant:
+    return IRCConstant(name=name, attrs=attrs, description=description)
+
+
+def module_to_ir(project: ProjectCommonSource, src: ModuleSource) -> IRCModule:
     return IRCModule(
         name=src.name,
+        source_path=src.path,
+        origin="module",
+        from_area=src.from_area,
+        attrs={
+            **src.attrs,
+            **({"from": src.from_area} if src.from_area is not None else {}),
+        },
         description=src.description,
-        requires=[r.attrs for r in src.requires],
-        c_includes=[r.attrs for r in src.c_includes],
+        requires=[_ref("require", r.name, r.attrs, r.description) for r in src.requires],
+        c_includes=[_ref("c_include", r.name, r.attrs, r.description) for r in src.c_includes],
         callbacks=[_method_to_ir(c) for c in src.callbacks],
         methods=[_method_to_ir(m) for m in src.methods],
         variables=[_variable_to_ir(v) for v in src.variables],
         macros=[_method_to_ir(m) for m in src.macroses],
         macro_groups=[_method_to_ir(m) for m in src.macro_groups],
         code_blocks=src.code_blocks,
+        output=_build_output(project, entity_kind="module", entity_name=src.name, attrs=src.attrs),
     )
 
 
-def class_to_ir(src: ClassSource) -> IRClass:
-    fields = []
-    for p in src.properties:
-        attrs = p.attrs
-        fields.append(IRCStructField(
-            name=p.name,
-            description=p.description,
-            type_kind=(
-                "callback" if "callback" in attrs else
-                "class" if "class" in attrs or attrs.get("type") == "self" else
-                "type"
-            ),
-            type_name=attrs.get("type"),
-            class_name=attrs.get("class"),
-            callback=attrs.get("callback"),
-            access=attrs.get("access"),
-            is_reference=attrs.get("is_reference") in {"1", "true"},
-            is_string=(attrs.get("type") == "string"),
-            is_array=False,
-        ))
-
+def class_to_ir(project: ProjectCommonSource, src: ClassSource) -> IRClass:
     return IRClass(
         name=src.name,
+        source_path=src.path,
         attrs=src.attrs,
         description=src.description,
         methods=[_method_to_ir(m) for m in src.methods],
         constructors=[_method_to_ir(c) for c in src.constructors],
         variables=[_variable_to_ir(v) for v in src.variables],
-        struct_fields=fields,
+        struct_fields=[_field_from_attrs(p.name, p.attrs, p.description) for p in src.properties],
+        output=_build_output(project, entity_kind="class", entity_name=src.name, attrs=src.attrs),
+    )
+
+
+def enum_to_ir(project: ProjectCommonSource, src: EnumSource) -> IREnum:
+    return IREnum(
+        name=src.name,
+        source_path=src.path,
+        attrs=src.attrs,
+        description=src.description,
+        constants=[_constant_to_ir(c.name, c.attrs, c.description) for c in src.constants],
+        output=_build_output(project, entity_kind="enum", entity_name=src.name, attrs=src.attrs),
     )
 
 
 def project_common_to_ir(project: ProjectCommonSource) -> IRProjectCommon:
+    explicit_module_paths = {module.path for module in project.modules}
+    resolved_modules = [module_to_ir(project, m) for m in project.resolved_modules]
+
     return IRProjectCommon(
         name=project.name,
         attrs=project.attrs,
         version=project.version,
-        features=[{"name": feature.name, "attrs": feature.attrs, "description": feature.description} for feature in project.feature_refs],
-        module_refs=project.module_refs,
-        class_refs=project.class_refs,
-        enum_refs=project.enum_refs,
-        modules=[module_to_ir(m) for m in project.modules],
-        classes=[class_to_ir(c) for c in project.classes],
+        namespace=project.namespace,
+        framework=project.framework,
+        prefix=project.prefix,
+        project_path=project.path,
+        source_root=project.source_root,
+        work_root=project.work_root,
+        include_namespace=_project_include_namespace(project),
+        generated_namespace=_generated_namespace(project),
+        features=[IRFeature(name=feature.name, attrs=feature.attrs, description=feature.description) for feature in project.feature_refs],
+        module_refs=[_ref("module", ref["name"], ref) for ref in project.module_refs],
+        class_refs=[_ref("class", ref["name"], ref) for ref in project.class_refs],
+        enum_refs=[_ref("enum", ref["name"], ref) for ref in project.enum_refs],
+        modules=[module for module in resolved_modules if module.source_path in explicit_module_paths],
+        dependency_modules=[module for module in resolved_modules if module.source_path not in explicit_module_paths],
+        resolved_modules=resolved_modules,
+        classes=[class_to_ir(project, c) for c in project.classes],
+        enums=[enum_to_ir(project, e) for e in project.enums],
     )
