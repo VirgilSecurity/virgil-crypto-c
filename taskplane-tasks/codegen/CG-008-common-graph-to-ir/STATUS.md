@@ -1,52 +1,52 @@
 # CG-008: Common Project Graph to IR — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 4: Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the ADR and inspect the current IR shape
-- [ ] Identify which project-derived metadata is still missing or implicit
+- [x] Read the ADR and inspect the current IR shape
+- [x] Identify which project-derived metadata is still missing or implicit
 
 ---
 
 ### Step 1: Define or refine the normalized IR
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Ensure the IR can represent project, modules, classes, enums, methods, constants, and output metadata needed by the C backend
-- [ ] Prefer explicit structured fields over module-specific ad hoc conventions
+- [x] Ensure the IR can represent project, modules, classes, enums, methods, constants, and output metadata needed by the C backend
+- [x] Prefer explicit structured fields over module-specific ad hoc conventions
 
 ---
 
 ### Step 2: Implement graph-to-IR lowering
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Lower the project-rooted graph into the normalized IR
-- [ ] Preserve enough detail to drive naming/file decisions from model metadata
-- [ ] Add or update tests for the IR construction path
+- [x] Lower the project-rooted graph into the normalized IR
+- [x] Preserve enough detail to drive naming/file decisions from model metadata
+- [x] Add or update tests for the IR construction path
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run IR tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run IR tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Update docs describing the IR and what it now guarantees to backends
+- [x] Update docs describing the IR and what it now guarantees to backends
 
 ---
 
@@ -54,6 +54,9 @@
 
 | # | Type | Step | Verdict | File |
 |---|------|------|---------|------|
+| 1 | plan | 1 | UNAVAILABLE | |
+| 2 | plan | 2 | UNAVAILABLE | |
+| 3 | code | 2 | UNAVAILABLE | |
 
 ---
 
@@ -61,6 +64,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Current `IRProjectCommon` only carries top-level module/class refs plus raw attrs; it omits enums/constants, resolved dependency modules, stable entity/output metadata, and typed project-relative file targeting now hardcoded in `common_direct_c.py`. | Plan to add normalized project/module/class/enum/output records in Step 1-2. | `tools/codegen/common_ir.py`, `tools/codegen/common_direct_c.py` |
 
 ---
 
@@ -69,6 +73,17 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-04 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-04 22:45 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-04 22:45 | Step 0 started | Preflight |
+| 2026-04-04 22:52 | Preflight inspection | Confirmed current IR is structural only and still leaves project-derived output/naming metadata implicit in `common_direct_c.py` |
+| 2026-04-04 23:02 | IR shape refactor | Added normalized project/entity/output dataclasses plus typed refs/constants/dependency-module coverage in `common_ir.py` |
+| 2026-04-04 23:10 | Graph-to-IR lowering | Lowered explicit and transitive project graph nodes into IR with derived C output targets and unittest coverage |
+| 2026-04-04 23:12 | Verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir` passed (9 tests) |
+| 2026-04-04 23:12 | Verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
+| 2026-04-04 23:14 | Docs updated | Recorded the new IR guarantees and output-target expectations in migration notes |
+| 2026-04-04 22:59 | Agent reply | CG-008 completed. Finished all steps, updated STATUS.md to ✅ Complete, added normalized project-rooted IR/output metadata and IR tests, updated migration docs, and committed final delivery as 038dc607 |
+| 2026-04-04 22:59 | Worker iter 1 | done in 819s, tools: 78 |
+| 2026-04-04 22:59 | Task complete | .DONE created |
 
 ---
 
@@ -81,3 +96,7 @@
 ## Notes
 
 This task establishes the model-driven IR layer for the next backend step.
+
+Preflight notes:
+- `project_common_to_ir()` currently emits only explicit project modules/classes, preserving most source attrs as raw dictionaries.
+- Missing or implicit data includes: dependency modules from graph resolution, enum lowering, constant/grouping metadata, entity origins/source paths, and normalized output target fields (`c_include_file`, `header_file`, `source_file`, once-guards, feature/public-private placement) that the C backend currently reconstructs with hardcoded literals.

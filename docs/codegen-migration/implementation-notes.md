@@ -22,6 +22,8 @@ A legacy resolved-XML reader may exist, but only for:
 ### IR layer
 Responsible for a normalized internal representation suitable for emitters.
 
+For the `common` project-rooted path, this now includes explicit project naming/output metadata and per-entity output targets so C backends do not need to reconstruct file placement from ad hoc Python literals.
+
 ### Emitter layer
 Responsible only for turning IR into file content.
 
@@ -43,6 +45,7 @@ The new architecture should make incremental generation possible later. That mea
 
 - stable internal entity IDs
 - explicit dependency mapping from source XML to IR nodes to output files
+- backend-facing output metadata derived once in the IR layer instead of re-derived independently in emitters
 - deterministic emitters
 - minimal hidden filesystem coupling
 

@@ -35,8 +35,12 @@ def main() -> int:
 
     summary = {
         "project": ir.name,
+        "prefix": ir.prefix,
+        "include_namespace": ir.include_namespace,
         "modules": [m.name for m in ir.modules],
+        "dependency_modules": [m.name for m in ir.dependency_modules],
         "classes": [c.name for c in ir.classes],
+        "enums": [e.name for e in ir.enums],
     }
     print(json.dumps(summary, indent=2))
     return 0

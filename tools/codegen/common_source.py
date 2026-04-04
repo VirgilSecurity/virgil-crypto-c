@@ -62,6 +62,7 @@ class ModuleSource:
     name: str
     from_area: str | None = None
     path: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
     description: str = ""
     requires: list[NamedRef] = field(default_factory=list)
     c_includes: list[NamedRef] = field(default_factory=list)
@@ -268,6 +269,7 @@ def load_module_source(path: Path, from_area: str | None = None) -> ModuleSource
         name=root.attrib["name"],
         from_area=from_area,
         path=str(path),
+        attrs=dict(root.attrib),
         description=_description(root),
         requires=[_named_ref("require", e) for e in root.findall("require")],
         c_includes=[_named_ref("c_include", e) for e in root.findall("c_include")],
