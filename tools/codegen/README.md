@@ -32,4 +32,7 @@ bash tools/codegen/verify_common_bootstrap.sh
 python3 tools/codegen/inspect_common_source.py
 python3 tools/codegen/inspect_common_source.py --module assert
 python3 tools/codegen/inspect_common_source.py --class-name data
+python3 tools/codegen/inspect_common_ir.py
+python3 tools/codegen/inspect_common_ir.py --module assert
+python3 tools/codegen/inspect_common_ir.py --class-name data
 ```
