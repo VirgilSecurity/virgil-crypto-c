@@ -81,6 +81,9 @@
 | 2026-04-04 23:12 | Verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir` passed (9 tests) |
 | 2026-04-04 23:12 | Verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
 | 2026-04-04 23:14 | Docs updated | Recorded the new IR guarantees and output-target expectations in migration notes |
+| 2026-04-04 22:59 | Agent reply | CG-008 completed. Finished all steps, updated STATUS.md to ✅ Complete, added normalized project-rooted IR/output metadata and IR tests, updated migration docs, and committed final delivery as 038dc607 |
+| 2026-04-04 22:59 | Worker iter 1 | done in 819s, tools: 78 |
+| 2026-04-04 22:59 | Task complete | .DONE created |
 
 ---
 
