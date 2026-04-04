@@ -1,7 +1,7 @@
 # CG-002: Direct Lowering for vsc_buffer_defs — Status
 
 **Current Step:** Step 4: Documentation and delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
@@ -45,10 +45,10 @@
 ---
 
 ### Step 4: Documentation and delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update migration docs to reflect direct coverage for `vsc_buffer_defs`
-- [ ] Summarize any parity gaps, shortcuts, or follow-up risks for `vsc_buffer`
+- [x] Update migration docs to reflect direct coverage for `vsc_buffer_defs`
+- [x] Summarize any parity gaps, shortcuts, or follow-up risks for `vsc_buffer`
 
 ---
 
@@ -63,6 +63,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `build_common_with_new_codegen.sh` can pass in a clean worktree without exercising `vsc_buffer_defs` routing because `codegen/generated/common/c_module_vsc_buffer*.xml` is absent; a temporary fixture smoke run is useful when validating new direct branches. | Documented as a follow-up verification caveat in migration docs; no committed generated files required. | `docs/codegen-migration/common-buffer-migration-plan.md`, `tools/codegen/common_bootstrap.py` |
 
 ---
 
@@ -81,6 +82,7 @@
 | 2026-04-04 20:50 | Step 3 started | Verify build safety |
 | 2026-04-04 20:58 | Step 3 completed | Python compile, build gate, and no-generated-artifact checks passed |
 | 2026-04-04 20:58 | Step 4 started | Documentation and delivery |
+| 2026-04-04 21:03 | Step 4 completed | Migration docs updated with `vsc_buffer_defs` direct coverage and `vsc_buffer` follow-up risks |
 
 ---
 

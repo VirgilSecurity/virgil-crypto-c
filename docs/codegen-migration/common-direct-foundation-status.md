@@ -11,13 +11,13 @@ The mixed-mode `common` generator now lowers these directly from original source
 - `vsc_memory`
 - `vsc_atomic`
 - `vsc_data`
+- `vsc_buffer_defs`
 
 ## Remaining fallback coverage
 
 The remaining `common` entities still using legacy resolved XML fallback are primarily:
 
 - `vsc_buffer`
-- `vsc_buffer_defs`
 - umbrella/private aggregation headers such as:
   - `vsc_common_public.h`
   - `vsc_common_private.h`
@@ -40,4 +40,4 @@ This mixed-mode generator still successfully builds the `common` CMake target us
 
 ## Recommended next step
 
-Move `buffer` and `buffer_defs` off the legacy resolved fallback, then address the remaining aggregation/support headers as needed.
+Move `buffer` off the legacy resolved fallback next, then address the remaining aggregation/support headers as needed.
