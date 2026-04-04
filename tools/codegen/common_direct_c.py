@@ -70,7 +70,7 @@ def _return_from_source(parent: ET.Element, attrs: dict) -> ET.Element:
 
 def build_direct_library_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    mod = next(m for m in project.modules if m.name == 'library')
+    mod = project.module_named('library')
     version = {'major': '0', 'minor': '17', 'patch': '3'}
 
     root = ET.Element('c_module', {
@@ -267,7 +267,7 @@ def build_direct_atomic_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    mod = next(m for m in project.modules if m.name == 'assert')
+    mod = project.module_named('assert')
 
     root = ET.Element('c_module', {
         'lang': 'C',
@@ -341,7 +341,7 @@ def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 def build_direct_data_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    data_cls = next(c for c in project.classes if c.name == 'data')
+    data_cls = project.class_named('data')
 
     root = ET.Element('c_module', {
         'lang': 'C',
@@ -480,7 +480,7 @@ def _buffer_public_method(root: ET.Element, name: str, description: str, *, uid:
 
 def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    buffer_cls = next(c for c in project.classes if c.name == 'buffer')
+    buffer_cls = project.class_named('buffer')
     methods_by_name = {method.name: method for method in buffer_cls.methods}
     ctors_by_name = {ctor.name: ctor for ctor in buffer_cls.constructors}
 
@@ -550,7 +550,7 @@ def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 def build_direct_buffer_defs_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    buffer_cls = next(c for c in project.classes if c.name == 'buffer')
+    buffer_cls = project.class_named('buffer')
 
     root = ET.Element('c_module', {
         'lang': 'C',

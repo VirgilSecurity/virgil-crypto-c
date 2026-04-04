@@ -1,11 +1,11 @@
 # CG-007: Project-Rooted Common Graph Loader — Status
 
-**Current Step:** Step 2: Clean up loader shape
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** M
 
 ---
@@ -28,15 +28,15 @@
 ---
 
 ### Step 2: Clean up loader shape
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Ensure project metadata needed by later backends is available from the graph
-- [ ] Reduce reliance on per-module/manual lookup patterns where practical
+- [x] Ensure project metadata needed by later backends is available from the graph
+- [x] Reduce reliance on per-module/manual lookup patterns where practical
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run tests from `CG-006`
 - [ ] Run any updated loader tests
@@ -73,6 +73,7 @@
 | 2026-04-04 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-04 22:16 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-04 22:16 | Step 0 started | Preflight |
+| 2026-04-04 22:39 | Worker iter 1 | done in 1367s, tools: 71 |
 
 ---
 

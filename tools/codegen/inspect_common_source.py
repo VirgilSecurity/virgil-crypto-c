@@ -20,15 +20,17 @@ def main() -> int:
 
     project = load_project_source(project_common_path(args.repo_root))
     if args.module:
-        obj = next((m for m in project.modules if m.name == args.module), None)
-        if obj is None:
-            raise SystemExit(f"module not found: {args.module}")
+        try:
+            obj = project.module_named(args.module, resolved=True)
+        except KeyError as exc:
+            raise SystemExit(str(exc)) from exc
         print(json.dumps(obj.__dict__, indent=2, default=lambda o: o.__dict__))
         return 0
     if args.class_name:
-        obj = next((c for c in project.classes if c.name == args.class_name), None)
-        if obj is None:
-            raise SystemExit(f"class not found: {args.class_name}")
+        try:
+            obj = project.class_named(args.class_name)
+        except KeyError as exc:
+            raise SystemExit(str(exc)) from exc
         print(json.dumps(obj.__dict__, indent=2, default=lambda o: o.__dict__))
         return 0
 

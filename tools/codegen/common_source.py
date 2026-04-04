@@ -106,8 +106,11 @@ class ProjectCommonSource:
     name: str
     path: str
     repo_root: str = ""
+    codegen_root: str = ""
     model_root: str = ""
     project_dir: str = ""
+    source_root: str = ""
+    work_root: str = ""
     attrs: dict[str, str] = field(default_factory=dict)
     version: dict[str, str] | None = None
     feature_refs: list[ProjectFeatureSource] = field(default_factory=list)
@@ -119,6 +122,37 @@ class ProjectCommonSource:
     resolved_modules: list[ModuleSource] = field(default_factory=list)
     classes: list[ClassSource] = field(default_factory=list)
     enums: list[EnumSource] = field(default_factory=list)
+
+    @property
+    def namespace(self) -> str:
+        return self.attrs.get("namespace", "")
+
+    @property
+    def framework(self) -> str:
+        return self.attrs.get("framework", "")
+
+    @property
+    def prefix(self) -> str:
+        return self.attrs.get("prefix", "")
+
+    def module_named(self, name: str, *, resolved: bool = False) -> ModuleSource:
+        modules = self.resolved_modules if resolved else self.modules
+        try:
+            return next(module for module in modules if module.name == name)
+        except StopIteration as exc:
+            raise KeyError(f"module not found: {name}") from exc
+
+    def class_named(self, name: str) -> ClassSource:
+        try:
+            return next(cls for cls in self.classes if cls.name == name)
+        except StopIteration as exc:
+            raise KeyError(f"class not found: {name}") from exc
+
+    def enum_named(self, name: str) -> EnumSource:
+        try:
+            return next(enum for enum in self.enums if enum.name == name)
+        except StopIteration as exc:
+            raise KeyError(f"enum not found: {name}") from exc
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -304,16 +338,21 @@ def _load_module_graph(
 def load_project_source(project_path: str | Path) -> ProjectCommonSource:
     project_path = Path(project_path).resolve()
     repo_root = _repo_root_for_project(project_path)
-    model_root = repo_root / "codegen/models"
+    codegen_root = repo_root / "codegen"
+    model_root = codegen_root / "models"
     project_dir = _project_model_dir(project_path)
     root = _parse_legacy_xml(project_path)
+    project_attrs = dict(root.attrib)
     project = ProjectCommonSource(
         name=root.attrib["name"],
         path=str(project_path),
         repo_root=str(repo_root),
+        codegen_root=str(codegen_root),
         model_root=str(model_root),
         project_dir=project_dir,
-        attrs=dict(root.attrib),
+        source_root=str((codegen_root / project_attrs.get("path", "")).resolve()),
+        work_root=str((codegen_root / project_attrs.get("work_path", "")).resolve()),
+        attrs=project_attrs,
         version=(dict(root.find("version").attrib) if root.find("version") is not None else None),
         feature_refs=[
             ProjectFeatureSource(name=e.attrib.get("name", ""), attrs=dict(e.attrib), description=_description(e))
