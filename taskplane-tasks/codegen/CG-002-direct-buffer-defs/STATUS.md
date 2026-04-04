@@ -1,6 +1,6 @@
 # CG-002: Direct Lowering for vsc_buffer_defs — Status
 
-**Current Step:** Step 1: Implement direct lowering
+**Current Step:** Step 2: Wire into bootstrap generation
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -19,16 +19,16 @@
 ---
 
 ### Step 1: Implement direct lowering
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add direct-lowering support for `vsc_buffer_defs` in `tools/codegen/common_direct_c.py`
-- [ ] Keep the implementation aligned with original-model-as-source-of-truth constraints
-- [ ] Avoid introducing a dependency on resolved XML as runtime input for this module
+- [x] Add direct-lowering support for `vsc_buffer_defs` in `tools/codegen/common_direct_c.py`
+- [x] Keep the implementation aligned with original-model-as-source-of-truth constraints
+- [x] Avoid introducing a dependency on resolved XML as runtime input for this module
 
 ---
 
 ### Step 2: Wire into bootstrap generation
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update `tools/codegen/common_bootstrap.py` to route `vsc_buffer_defs` through the new direct path
 - [ ] Preserve existing mixed-mode behavior for any still-unmigrated `common` outputs
@@ -75,6 +75,8 @@
 | 2026-04-04 20:36 | Step 0 started | Preflight |
 | 2026-04-04 20:43 | Step 0 completed | Preflight context and fallback path inspected |
 | 2026-04-04 20:43 | Step 1 started | Implement direct lowering |
+| 2026-04-04 20:48 | Step 1 completed | Added direct source-driven `vsc_buffer_defs` lowering helper |
+| 2026-04-04 20:48 | Step 2 started | Wire bootstrap routing |
 
 ---
 
