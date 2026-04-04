@@ -55,6 +55,7 @@ class ProjectCommonIRTest(unittest.TestCase):
 
         self.assertEqual(["library"], [ref.name for ref in assert_module.requires])
         self.assertEqual("module", assert_module.output.entity_kind)
+        self.assertEqual("module", assert_module.output.c_artifact_kind)
         self.assertEqual("vsc_assert", assert_module.output.c_symbol)
         self.assertEqual("vsc_assert.h", assert_module.output.include_file)
         self.assertEqual("vsc_assert.c", assert_module.output.source_file)
@@ -72,9 +73,11 @@ class ProjectCommonIRTest(unittest.TestCase):
         self.assertEqual("readonly", data_class.struct_fields[0].access)
         self.assertEqual(["data", "from str", "empty"], [ctor.name for ctor in data_class.constructors])
         self.assertEqual("class", data_class.output.entity_kind)
+        self.assertEqual("module", data_class.output.c_artifact_kind)
         self.assertEqual("vsc_data", data_class.output.c_symbol)
         self.assertEqual("../library/common/include/virgil/crypto/common/vsc_data.h", data_class.output.header_path)
         self.assertEqual("generated/common/class_data.xml", data_class.output.generated_source_path)
+        self.assertEqual("generated/common/c_module_vsc_data.xml", data_class.output.generated_header_path)
 
         self.assertEqual(["bytes_dealloc", "bytes", "capacity", "len", "is secure", "is owner", "is reverse"], [field.name for field in buffer_class.struct_fields])
         self.assertEqual("callback", buffer_class.struct_fields[0].type_kind)

@@ -16,6 +16,7 @@ class IRCommented:
 class IROutputTarget:
     entity_kind: str
     entity_name: str
+    c_artifact_kind: str
     c_symbol: str
     stem: str
     include_file: str
@@ -197,12 +198,14 @@ def _build_output(project: ProjectCommonSource, *, entity_kind: str, entity_name
     header_path = str(source_root / "include" / include_dir / f"{stem}.h")
     source_path = str(source_root / "src" / f"{stem}.c")
     entity_slug = _snake(entity_name)
-    generated_header_path = str(work_root / f"c_{entity_kind}_{stem}.xml")
+    c_artifact_kind = "module"
+    generated_header_path = str(work_root / f"c_{c_artifact_kind}_{stem}.xml")
     generated_source_path = str(work_root / f"{entity_kind}_{entity_slug}.xml")
 
     return IROutputTarget(
         entity_kind=entity_kind,
         entity_name=entity_name,
+        c_artifact_kind=c_artifact_kind,
         c_symbol=stem,
         stem=stem,
         include_file=f"{stem}.h",

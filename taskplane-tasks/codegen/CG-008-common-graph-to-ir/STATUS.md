@@ -1,6 +1,6 @@
 # CG-008: Common Project Graph to IR — Status
 
-**Current Step:** Step 2: Implement graph-to-IR lowering
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -27,16 +27,16 @@
 ---
 
 ### Step 2: Implement graph-to-IR lowering
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Lower the project-rooted graph into the normalized IR
-- [ ] Preserve enough detail to drive naming/file decisions from model metadata
-- [ ] Add or update tests for the IR construction path
+- [x] Lower the project-rooted graph into the normalized IR
+- [x] Preserve enough detail to drive naming/file decisions from model metadata
+- [x] Add or update tests for the IR construction path
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run IR tests
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
@@ -74,6 +74,7 @@
 | 2026-04-04 22:45 | Step 0 started | Preflight |
 | 2026-04-04 22:52 | Preflight inspection | Confirmed current IR is structural only and still leaves project-derived output/naming metadata implicit in `common_direct_c.py` |
 | 2026-04-04 23:02 | IR shape refactor | Added normalized project/entity/output dataclasses plus typed refs/constants/dependency-module coverage in `common_ir.py` |
+| 2026-04-04 23:10 | Graph-to-IR lowering | Lowered explicit and transitive project graph nodes into IR with derived C output targets and unittest coverage |
 
 ---
 
