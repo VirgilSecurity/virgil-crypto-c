@@ -1,6 +1,6 @@
 # CG-008: Common Project Graph to IR — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -36,15 +36,15 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run IR tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run IR tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update docs describing the IR and what it now guarantees to backends
 
@@ -75,6 +75,8 @@
 | 2026-04-04 22:52 | Preflight inspection | Confirmed current IR is structural only and still leaves project-derived output/naming metadata implicit in `common_direct_c.py` |
 | 2026-04-04 23:02 | IR shape refactor | Added normalized project/entity/output dataclasses plus typed refs/constants/dependency-module coverage in `common_ir.py` |
 | 2026-04-04 23:10 | Graph-to-IR lowering | Lowered explicit and transitive project graph nodes into IR with derived C output targets and unittest coverage |
+| 2026-04-04 23:12 | Verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir` passed (9 tests) |
+| 2026-04-04 23:12 | Verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
 
 ---
 
