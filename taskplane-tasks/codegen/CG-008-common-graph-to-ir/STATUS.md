@@ -1,7 +1,7 @@
 # CG-008: Common Project Graph to IR — Status
 
 **Current Step:** Step 4: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
@@ -44,9 +44,9 @@
 ---
 
 ### Step 4: Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update docs describing the IR and what it now guarantees to backends
+- [x] Update docs describing the IR and what it now guarantees to backends
 
 ---
 
@@ -54,6 +54,9 @@
 
 | # | Type | Step | Verdict | File |
 |---|------|------|---------|------|
+| 1 | plan | 1 | UNAVAILABLE | |
+| 2 | plan | 2 | UNAVAILABLE | |
+| 3 | code | 2 | UNAVAILABLE | |
 
 ---
 
@@ -77,6 +80,7 @@
 | 2026-04-04 23:10 | Graph-to-IR lowering | Lowered explicit and transitive project graph nodes into IR with derived C output targets and unittest coverage |
 | 2026-04-04 23:12 | Verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir` passed (9 tests) |
 | 2026-04-04 23:12 | Verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
+| 2026-04-04 23:14 | Docs updated | Recorded the new IR guarantees and output-target expectations in migration notes |
 
 ---
 

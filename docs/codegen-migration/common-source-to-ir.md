@@ -25,26 +25,27 @@ This is the architectural direction we want for the final generator.
 
 ## Current scope
 
-The first IR pass currently covers:
+The current project-rooted IR covers:
 
 - project `common`
-- shared modules referenced by `project_common.xml`
+- explicit modules referenced by `project_common.xml`
+- transitive dependency modules reached through `<require module="...">`
 - classes declared in `project_common.xml`
-- enough shape to inspect and reason about:
-  - requires
-  - C includes
-  - callbacks
-  - methods
-  - variables
-  - macros
-  - class properties
-  - constructors
+- enums declared in the project model when present
+- enough normalized shape to inspect and reason about:
+  - project identity (`name`, `namespace`, `framework`, `prefix`)
+  - source/work roots and include namespace
+  - typed feature/module/class/enum refs
+  - module/class/enum source paths and origin metadata
+  - requires and C includes as typed refs instead of raw ad hoc dicts
+  - callbacks, methods, variables, constructors, struct fields, and enum constants
+  - derived C output metadata (`c_symbol`, header/source basenames, include/source paths, generated artifact paths, once guards, visibility)
 
 ## Important limitation
 
-The IR mapping is currently structural, not fully semantic.
+The IR mapping is now structurally normalized and carries the project-derived metadata needed for the next C-backend step, but it is still not a full replacement for every legacy semantic rule.
 
-That means it does **not** yet reproduce all name-resolution and C-lowering rules that the legacy GSL pipeline performs.
+That means it does **not** yet reproduce all code-shape decisions that the legacy GSL pipeline performs.
 
 Examples of deferred work:
 
@@ -75,13 +76,18 @@ python3 tools/codegen/inspect_common_ir.py --module assert
 python3 tools/codegen/inspect_common_ir.py --class-name data
 ```
 
+## Current guarantees for backends
+
+Backends can now rely on the IR to provide:
+
+- the resolved `common` project graph, including transitive dependency modules
+- explicit project naming metadata instead of only raw project attrs
+- per-entity output targeting information derived from project metadata rather than hardcoded per-module literals
+- typed containers for methods, variables, struct fields, and enum constants that preserve source descriptions and attrs for later lowering
+
 ## Progress update
 
-The first direct semantic lowering is now implemented for:
-
-- `data` / `vsc_data`
-
-and is wired into the mixed-mode `common` bootstrap path.
+The project-rooted IR now exists as an explicit stage between the source loader and the direct C backend work.
 
 ## Recommended next step
 
