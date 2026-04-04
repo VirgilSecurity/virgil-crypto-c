@@ -53,3 +53,6 @@ venv*/
 
 # Go wrapper pre-built libs (built locally or by CI)
 wrappers/go/pkg/
+
+# pi agent workspace
+.pi/
