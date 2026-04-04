@@ -50,6 +50,16 @@ For the current Taskplane slice (`library/common` C generation):
 3. carry the direct-from-original-model approach into the next target area after `common`
 4. continue treating legacy resolved XML as reference/fixture material instead of a runtime requirement
 
+## After `common`
+
+For this Taskplane slice, `common` direct lowering is effectively complete.
+
+What remains is smaller cross-cutting migration work rather than another `common` entity port:
+
+- parity and comparison tooling for the mixed-mode bootstrap
+- parser/resolver hardening that can reuse the `common` slice as a reference implementation
+- selection of the next migration target beyond `library/common`
+
 ## Definition of done for migration
 
 The migration is complete when:
