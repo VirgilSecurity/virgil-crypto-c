@@ -72,6 +72,8 @@
 | 2026-04-04 21:01 | Step 2 review | Plan review returned UNAVAILABLE; proceeded cautiously |
 | 2026-04-04 21:03 | Step 2 completed | Added audit doc and aligned migration docs with active bootstrap routing |
 | 2026-04-04 21:04 | Step 3 completed | Documented the immediate post-buffer cleanup decision |
+| 2026-04-04 20:49 | Worker iter 1 | done in 288s, tools: 63 |
+| 2026-04-04 20:49 | Task complete | .DONE created |
 
 ---
 
