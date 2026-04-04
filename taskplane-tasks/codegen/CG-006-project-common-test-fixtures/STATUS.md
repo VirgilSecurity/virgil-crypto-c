@@ -1,6 +1,6 @@
 # CG-006: Project-Rooted Common Graph Tests & Fixtures — Status
 
-**Current Step:** Step 2: Implement tests and fixtures
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -27,16 +27,16 @@
 ---
 
 ### Step 2: Implement tests and fixtures
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add tests that start from `project_common.xml`
-- [ ] Verify that the loader entrypoint is project-rooted rather than ad hoc per-module
-- [ ] Keep fixtures or assertions narrow and maintainable
+- [x] Add tests that start from `project_common.xml`
+- [x] Verify that the loader entrypoint is project-rooted rather than ad hoc per-module
+- [x] Keep fixtures or assertions narrow and maintainable
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run the new tests
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`

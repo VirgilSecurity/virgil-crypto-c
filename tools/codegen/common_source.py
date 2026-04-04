@@ -61,6 +61,8 @@ class ModuleSource:
     variables: list[VariableSource] = field(default_factory=list)
     methods: list[MethodSource] = field(default_factory=list)
     macroses: list[MethodSource] = field(default_factory=list)
+    macro_groups: list[MethodSource] = field(default_factory=list)
+    code_blocks: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -76,12 +78,22 @@ class ClassSource:
 
 
 @dataclass
+class ProjectFeatureSource:
+    name: str
+    attrs: dict[str, str] = field(default_factory=dict)
+    description: str = ""
+
+
+@dataclass
 class ProjectCommonSource:
     name: str
     path: str
     attrs: dict[str, str] = field(default_factory=dict)
+    version: dict[str, str] | None = None
+    feature_refs: list[ProjectFeatureSource] = field(default_factory=list)
     module_refs: list[dict[str, str]] = field(default_factory=list)
     class_refs: list[dict[str, str]] = field(default_factory=list)
+    enum_refs: list[dict[str, str]] = field(default_factory=list)
     modules: list[ModuleSource] = field(default_factory=list)
     classes: list[ClassSource] = field(default_factory=list)
 
@@ -160,6 +172,8 @@ def load_module_source(path: Path, from_area: str | None = None) -> ModuleSource
         variables=[_variable(e) for e in root.findall("variable")],
         methods=[_method_like("method", e) for e in root.findall("method")],
         macroses=[_method_like("macros", e) for e in root.findall("macros")],
+        macro_groups=[_method_like("macroses", e) for e in root.findall("macroses")],
+        code_blocks=[{"attrs": dict(c.attrib), "text": _clean(c.text)} for c in root.findall("code")],
     )
 
 
@@ -177,16 +191,22 @@ def load_class_source(path: Path) -> ClassSource:
     )
 
 
-def load_project_common(repo_root: str | Path = ".") -> ProjectCommonSource:
-    repo_root = Path(repo_root).resolve()
-    project_path = repo_root / "codegen/models/project_common/project_common.xml"
+def load_project_source(project_path: str | Path) -> ProjectCommonSource:
+    project_path = Path(project_path).resolve()
+    repo_root = project_path.parents[3]
     root = _parse_legacy_xml(project_path)
     project = ProjectCommonSource(
         name=root.attrib["name"],
         path=str(project_path),
         attrs=dict(root.attrib),
+        version=(dict(root.find("version").attrib) if root.find("version") is not None else None),
+        feature_refs=[
+            ProjectFeatureSource(name=e.attrib.get("name", ""), attrs=dict(e.attrib), description=_description(e))
+            for e in root.findall("feature")
+        ],
         module_refs=[dict(e.attrib) for e in root.findall("module")],
         class_refs=[dict(e.attrib) for e in root.findall("class")],
+        enum_refs=[dict(e.attrib) for e in root.findall("enum")],
     )
 
     for module_ref in root.findall("module"):
@@ -202,3 +222,9 @@ def load_project_common(repo_root: str | Path = ".") -> ProjectCommonSource:
         project.classes.append(load_class_source(class_path))
 
     return project
+
+
+def load_project_common(repo_root: str | Path = ".") -> ProjectCommonSource:
+    repo_root = Path(repo_root).resolve()
+    project_path = repo_root / "codegen/models/project_common/project_common.xml"
+    return load_project_source(project_path)

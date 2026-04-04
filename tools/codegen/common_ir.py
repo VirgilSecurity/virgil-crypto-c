@@ -62,6 +62,8 @@ class IRCModule(IRCommented):
     methods: list[IRCMethod] = field(default_factory=list)
     variables: list[IRCVariable] = field(default_factory=list)
     macros: list[IRCMethod] = field(default_factory=list)
+    macro_groups: list[IRCMethod] = field(default_factory=list)
+    code_blocks: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -97,6 +99,12 @@ class IRClass(IRCommented):
 @dataclass
 class IRProjectCommon:
     name: str
+    attrs: dict[str, str] = field(default_factory=dict)
+    version: dict[str, str] | None = None
+    features: list[dict[str, Any]] = field(default_factory=list)
+    module_refs: list[dict[str, str]] = field(default_factory=list)
+    class_refs: list[dict[str, str]] = field(default_factory=list)
+    enum_refs: list[dict[str, str]] = field(default_factory=list)
     modules: list[IRCModule] = field(default_factory=list)
     classes: list[IRClass] = field(default_factory=list)
 
@@ -170,6 +178,8 @@ def module_to_ir(src: ModuleSource) -> IRCModule:
         methods=[_method_to_ir(m) for m in src.methods],
         variables=[_variable_to_ir(v) for v in src.variables],
         macros=[_method_to_ir(m) for m in src.macroses],
+        macro_groups=[_method_to_ir(m) for m in src.macro_groups],
+        code_blocks=src.code_blocks,
     )
 
 
@@ -208,6 +218,12 @@ def class_to_ir(src: ClassSource) -> IRClass:
 def project_common_to_ir(project: ProjectCommonSource) -> IRProjectCommon:
     return IRProjectCommon(
         name=project.name,
+        attrs=project.attrs,
+        version=project.version,
+        features=[{"name": feature.name, "attrs": feature.attrs, "description": feature.description} for feature in project.feature_refs],
+        module_refs=project.module_refs,
+        class_refs=project.class_refs,
+        enum_refs=project.enum_refs,
         modules=[module_to_ir(m) for m in project.modules],
         classes=[class_to_ir(c) for c in project.classes],
     )
