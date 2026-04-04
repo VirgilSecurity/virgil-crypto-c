@@ -48,3 +48,15 @@ Once both `vsc_buffer_defs` and `vsc_buffer` are direct:
 3. otherwise, explicitly document them as stable checked-in umbrella headers and remove any stale language that implies meaningful fallback ownership
 
 The key outcome is to keep these headers from expanding the `buffer` migration scope prematurely while still making their end state explicit.
+
+## Short answer: what happens right after `buffer_defs` and `buffer`
+
+Immediately after the two core buffer tasks are direct, the next action should be a very small ownership cleanup:
+
+- verify whether `vsc_common_public.h` and `vsc_common_private.h` need any generated content beyond their static include lists
+- choose one end state explicitly:
+  - **tiny direct emitter** if project-composition generation is still desired, or
+  - **documented static checked-in headers** if the empty generated blocks remain the correct long-term shape
+- update status docs so only real active fallback surfaces are described as fallback
+
+In other words: do **not** open another large migration track after `buffer`; close the boundary by making the umbrella-header ownership explicit and keep the remaining work intentionally tiny.

@@ -1,7 +1,7 @@
 # CG-003: Support-File Fallback Audit — Status
 
-**Current Step:** Step 0: Preflight
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 1
 **Review Counter:** 0
@@ -11,7 +11,7 @@
 ---
 
 ### Step 0: Preflight
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] Review current direct coverage and fallback coverage notes
 - [x] Identify the remaining support/aggregation outputs still not directly owned
@@ -19,7 +19,7 @@
 ---
 
 ### Step 1: Audit remaining support files
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 - [x] Classify each remaining support header/output as direct candidate, acceptable fallback, or deferred work
 - [x] Capture rationale for each classification
@@ -27,7 +27,7 @@
 ---
 
 ### Step 2: Update docs
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 - [x] Write the audit into `docs/codegen-migration/`
 - [x] Ensure the docs are consistent with the actual bootstrap routing in code
@@ -35,9 +35,9 @@
 ---
 
 ### Step 3: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Summarize what should happen immediately after `buffer_defs` and `buffer`
+- [x] Summarize what should happen immediately after `buffer_defs` and `buffer`
 
 ---
 
@@ -45,6 +45,8 @@
 
 | # | Type | Step | Verdict | File |
 |---|------|------|---------|------|
+| 1 | Plan | 1 | UNAVAILABLE | reviewer tool unavailable |
+| 2 | Plan | 2 | UNAVAILABLE | reviewer tool unavailable |
 
 ---
 
@@ -64,6 +66,12 @@
 | 2026-04-04 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-04 20:45 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-04 20:45 | Step 0 started | Preflight |
+| 2026-04-04 20:57 | Step 0 completed | Reviewed direct/fallback notes and identified remaining support outputs |
+| 2026-04-04 20:58 | Step 1 review | Plan review returned UNAVAILABLE; proceeded cautiously |
+| 2026-04-04 20:59 | Step 1 completed | Classified umbrella headers and captured rationale in STATUS |
+| 2026-04-04 21:01 | Step 2 review | Plan review returned UNAVAILABLE; proceeded cautiously |
+| 2026-04-04 21:03 | Step 2 completed | Added audit doc and aligned migration docs with active bootstrap routing |
+| 2026-04-04 21:04 | Step 3 completed | Documented the immediate post-buffer cleanup decision |
 
 ---
 
