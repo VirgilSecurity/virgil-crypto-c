@@ -1,25 +1,25 @@
 # CG-004: Direct Lowering for vsc_buffer — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 1: Implement direct lowering
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** L
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the task-area context and all predecessor-task outputs
-- [ ] Inspect current fallback routing and generated-block behavior for `vsc_buffer`
+- [x] Read the task-area context and all predecessor-task outputs
+- [x] Inspect current fallback routing and generated-block behavior for `vsc_buffer`
 
 ---
 
 ### Step 1: Implement direct lowering
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Add direct-lowering support for `vsc_buffer` in `tools/codegen/common_direct_c.py`
 - [ ] Preserve compatibility with the current generated-block rewriting approach
@@ -72,6 +72,10 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-04 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-04 20:50 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-04 20:50 | Step 0 started | Preflight |
+| 2026-04-04 21:08 | Step 0 completed | Read context/predecessor outputs and inspected `vsc_buffer` fallback/generated-block routing |
+| 2026-04-04 21:08 | Step 1 started | Implement direct lowering |
 
 ---
 
