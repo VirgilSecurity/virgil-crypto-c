@@ -10,6 +10,8 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `initial-task-plan.md` — first implementation stretch
 - `tasks-next.md` — immediate execution queue
 - `resolved-models-inventory.md` — current state of legacy resolved XML artifacts
+- `model-spec-common.md` — pragmatic spec for the `common` source-model subset
+- `model-parser-notes.md` — parser constraints and tolerant parsing notes
 - `parity-test-plan.md` — strategy for proving generator compatibility
 - `risk-register.md` — migration risks and mitigations
 - `inventory-template.md` — template for generated output inventory work
