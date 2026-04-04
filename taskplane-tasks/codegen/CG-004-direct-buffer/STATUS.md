@@ -1,7 +1,7 @@
 # CG-004: Direct Lowering for vsc_buffer — Status
 
 **Current Step:** Step 4: Documentation and delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
@@ -46,10 +46,10 @@
 ---
 
 ### Step 4: Documentation and delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update migration docs and coverage status notes for `vsc_buffer`
-- [ ] Record any remaining gaps, especially around support headers or intentionally retained fallback paths
+- [x] Update migration docs and coverage status notes for `vsc_buffer`
+- [x] Record any remaining gaps, especially around support headers or intentionally retained fallback paths
 
 ---
 
@@ -60,6 +60,7 @@
 | 1 | Plan | 1 | UNAVAILABLE | reviewer tool unavailable |
 | 2 | Plan | 2 | UNAVAILABLE | reviewer tool unavailable |
 | 3 | Plan | 3 | UNAVAILABLE | reviewer tool unavailable |
+| 4 | Code | 1 | UNAVAILABLE | reviewer tool unavailable |
 
 ---
 
@@ -85,6 +86,8 @@
 | 2026-04-04 21:20 | Step 2 completed | Bootstrap now routes `vsc_buffer` through the direct path while leaving other fallback cases untouched |
 | 2026-04-04 21:21 | Step 3 review | Plan review returned UNAVAILABLE; proceeded cautiously |
 | 2026-04-04 21:24 | Step 3 completed | Python compile and `common` build gate passed; no generated `library/common/**` changes remain |
+| 2026-04-04 21:27 | Step 1 code review | Code review returned UNAVAILABLE after implementation commit |
+| 2026-04-04 21:29 | Step 4 completed | Migration docs updated for direct `vsc_buffer` coverage and remaining umbrella-header follow-up |
 
 ---
 

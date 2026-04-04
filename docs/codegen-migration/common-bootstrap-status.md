@@ -38,7 +38,7 @@ The bootstrap script currently generates `common` header/source outputs discover
 - `library/common/include/...`
 - `library/common/src/...`
 
-Its active direct-routing special cases are currently limited to `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, and `vsc_buffer_defs`.
+Its active direct-routing special cases are currently limited to `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`.
 
 ## Current status
 
@@ -47,9 +47,9 @@ Its active direct-routing special cases are currently limited to `vsc_library`, 
 - it preserves the existing non-generated file sections by reusing the checked-in file skeletons
 - it demonstrates a generic pass over resolved `c_module` XML rather than a one-off file copier
 - it can now be applied onto the real `library/common` files temporarily and the `common` CMake target builds successfully
-- it now directly lowers the foundational `common` entities from original source models or direct source-driven lowering logic: `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, and `vsc_buffer_defs`
-- the remaining active resolved-XML fallback surface is concentrated around `buffer`
-- the umbrella headers `vsc_common_public.h` and `vsc_common_private.h` remain follow-up support artifacts, but their checked-in generated blocks are currently empty rather than being a meaningful direct-routing surface
+- it now directly lowers the foundational `common` entities from original source models or direct source-driven lowering logic: `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`
+- the `vsc_buffer` direct path preserves the current generated-block replacement workflow by regenerating only the generated header section and lifecycle/refcount source block while leaving the handwritten source body intact
+- the remaining active fallback/ownership cleanup surface in this area is the umbrella headers `vsc_common_public.h` and `vsc_common_private.h`, whose checked-in generated blocks are currently empty rather than being a meaningful direct-routing surface
 
 ### Known limitations
 - output is not yet parity-clean against the checked-in `common` library
@@ -59,7 +59,7 @@ Its active direct-routing special cases are currently limited to `vsc_library`, 
   - `definitions.cmake`
   - `module.modulemap`
   are not part of this bootstrap yet
-- this bootstrap still reads legacy resolved XML; the final implementation must move to original XML + in-memory IR
+- this bootstrap still reads legacy resolved XML for still-unmigrated outputs; however, the buffer family core (`vsc_buffer_defs` and `vsc_buffer`) now comes from original models/direct synthesis instead of resolved `c_module` XML
 
 ## How to run
 

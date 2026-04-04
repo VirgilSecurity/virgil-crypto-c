@@ -12,12 +12,11 @@ The mixed-mode `common` generator now lowers these directly from original source
 - `vsc_atomic`
 - `vsc_data`
 - `vsc_buffer_defs`
+- `vsc_buffer`
 
 ## Remaining fallback coverage
 
-The remaining `common` entities still using legacy resolved XML fallback are primarily:
-
-- `vsc_buffer`
+There is no longer a core `common` entity in this migration slice that still requires legacy resolved XML fallback at runtime.
 
 Related support headers still not directly owned by a dedicated project-composition emitter are:
 
@@ -36,7 +35,7 @@ This means the new generator now directly owns the foundational building blocks 
 - atomic helpers
 - value-type data container
 
-With these direct, the remaining migration surface is concentrated in the more complex buffer-related API, with the umbrella headers left as a small explicit support-file follow-up.
+With these direct, the remaining migration surface is no longer the buffer API itself; it is now the much smaller umbrella-header ownership cleanup.
 
 ## Compile status
 
@@ -44,4 +43,4 @@ This mixed-mode generator still successfully builds the `common` CMake target us
 
 ## Recommended next step
 
-Move `buffer` off the legacy resolved fallback next, then decide whether the umbrella headers need a tiny direct emitter or can remain documented static checked-in artifacts.
+Decide whether the umbrella headers need a tiny direct emitter or can remain documented static checked-in artifacts, then update the status docs so only real remaining fallback/ownership gaps are described.
