@@ -1,7 +1,7 @@
 # CG-007: Project-Rooted Common Graph Loader — Status
 
 **Current Step:** Step 4: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
@@ -45,10 +45,10 @@
 ---
 
 ### Step 4: Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update docs if parser or graph-loading realities changed
-- [ ] Summarize what graph facts are now available to the IR layer
+- [x] Update docs if parser or graph-loading realities changed
+- [x] Summarize what graph facts are now available to the IR layer
 
 ---
 
