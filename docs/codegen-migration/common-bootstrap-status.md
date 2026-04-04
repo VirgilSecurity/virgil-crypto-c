@@ -49,7 +49,7 @@ Its active direct-routing special cases are currently limited to `vsc_library`, 
 - it can now be applied onto the real `library/common` files temporarily and the `common` CMake target builds successfully
 - it now directly lowers the foundational `common` entities from original source models or direct source-driven lowering logic: `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`
 - the `vsc_buffer` direct path preserves the current generated-block replacement workflow by regenerating only the generated header section and lifecycle/refcount source block while leaving the handwritten source body intact
-- the remaining active fallback/ownership cleanup surface in this area is the umbrella headers `vsc_common_public.h` and `vsc_common_private.h`, whose checked-in generated blocks are currently empty rather than being a meaningful direct-routing surface
+- the previously open umbrella-header follow-up has now been closed in documentation: `vsc_common_public.h` and `vsc_common_private.h` are treated as stable checked-in support headers whose generated blocks are empty, not as meaningful active direct-routing or resolved-XML fallback surfaces
 
 ### Known limitations
 - output is not yet parity-clean against the checked-in `common` library
@@ -59,7 +59,7 @@ Its active direct-routing special cases are currently limited to `vsc_library`, 
   - `definitions.cmake`
   - `module.modulemap`
   are not part of this bootstrap yet
-- this bootstrap still reads legacy resolved XML for still-unmigrated outputs; however, the buffer family core (`vsc_buffer_defs` and `vsc_buffer`) now comes from original models/direct synthesis instead of resolved `c_module` XML
+- this bootstrap still reads legacy resolved XML for any still-unmigrated outputs that may appear in future broader migration work; however, within the current `common` Taskplane slice the foundational entities (`vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`) now come from original models/direct synthesis instead of resolved `c_module` XML
 
 ## How to run
 
@@ -97,7 +97,7 @@ This milestone should be treated as:
 
 ## Next technical steps
 
-1. reduce formatting/signature serialization differences in the bootstrap emitter
-2. add a small comparison harness for selected `common` files
-3. document one or two representative source-model-to-c-module transformations
-4. begin replacing legacy resolved-XML dependence with direct original-XML parsing for the same `common` entities
+1. reduce formatting/signature serialization differences in the bootstrap emitter where they still create review noise
+2. add or tighten comparison/parity checks for selected `common` files
+3. use the now-complete `common` direct-lowering boundary as the reference slice for the next migration area rather than reopening `common` entity implementation work
+4. keep documenting any broader-generator surfaces that still rely on resolved XML so the post-`common` plan stays explicit
