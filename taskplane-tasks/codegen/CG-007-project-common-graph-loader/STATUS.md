@@ -1,6 +1,6 @@
 # CG-007: Project-Rooted Common Graph Loader — Status
 
-**Current Step:** Step 1: Implement project-rooted loading
+**Current Step:** Step 2: Clean up loader shape
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -19,16 +19,16 @@
 ---
 
 ### Step 1: Implement project-rooted loading
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Make `project_common.xml` the explicit loader entrypoint for `common`
-- [ ] Resolve referenced model files and expose a coherent project graph
-- [ ] Preserve tolerant parsing behavior for legacy XML-like code blocks
+- [x] Make `project_common.xml` the explicit loader entrypoint for `common`
+- [x] Resolve referenced model files and expose a coherent project graph
+- [x] Preserve tolerant parsing behavior for legacy XML-like code blocks
 
 ---
 
 ### Step 2: Clean up loader shape
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Ensure project metadata needed by later backends is available from the graph
 - [ ] Reduce reliance on per-module/manual lookup patterns where practical

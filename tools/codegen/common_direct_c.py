@@ -3,7 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
-from tools.codegen.common_source import load_project_common
+from tools.codegen.common_source import load_project_source, project_common_path
+
+
+def _load_common_project(repo_root: str | Path = "."):
+    return load_project_source(project_common_path(repo_root))
 
 
 def _text(parent: ET.Element, tag: str, text: str | None = None, **attrs: str) -> ET.Element:
@@ -65,7 +69,7 @@ def _return_from_source(parent: ET.Element, attrs: dict) -> ET.Element:
 
 
 def build_direct_library_c_module(repo_root: str | Path = '.') -> ET.Element:
-    project = load_project_common(repo_root)
+    project = _load_common_project(repo_root)
     mod = next(m for m in project.modules if m.name == 'library')
     version = {'major': '0', 'minor': '17', 'patch': '3'}
 
@@ -262,7 +266,7 @@ def build_direct_atomic_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 
 def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
-    project = load_project_common(repo_root)
+    project = _load_common_project(repo_root)
     mod = next(m for m in project.modules if m.name == 'assert')
 
     root = ET.Element('c_module', {
@@ -336,7 +340,7 @@ def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 
 def build_direct_data_c_module(repo_root: str | Path = '.') -> ET.Element:
-    project = load_project_common(repo_root)
+    project = _load_common_project(repo_root)
     data_cls = next(c for c in project.classes if c.name == 'data')
 
     root = ET.Element('c_module', {
@@ -475,7 +479,7 @@ def _buffer_public_method(root: ET.Element, name: str, description: str, *, uid:
 
 
 def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
-    project = load_project_common(repo_root)
+    project = _load_common_project(repo_root)
     buffer_cls = next(c for c in project.classes if c.name == 'buffer')
     methods_by_name = {method.name: method for method in buffer_cls.methods}
     ctors_by_name = {ctor.name: ctor for ctor in buffer_cls.constructors}
@@ -545,7 +549,7 @@ def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 
 def build_direct_buffer_defs_c_module(repo_root: str | Path = '.') -> ET.Element:
-    project = load_project_common(repo_root)
+    project = _load_common_project(repo_root)
     buffer_cls = next(c for c in project.classes if c.name == 'buffer')
 
     root = ET.Element('c_module', {
