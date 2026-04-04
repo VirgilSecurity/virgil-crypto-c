@@ -1,6 +1,6 @@
 # CG-002: Direct Lowering for vsc_buffer_defs — Status
 
-**Current Step:** Step 2: Wire into bootstrap generation
+**Current Step:** Step 3: Verify build safety
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -28,15 +28,15 @@
 ---
 
 ### Step 2: Wire into bootstrap generation
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update `tools/codegen/common_bootstrap.py` to route `vsc_buffer_defs` through the new direct path
-- [ ] Preserve existing mixed-mode behavior for any still-unmigrated `common` outputs
+- [x] Update `tools/codegen/common_bootstrap.py` to route `vsc_buffer_defs` through the new direct path
+- [x] Preserve existing mixed-mode behavior for any still-unmigrated `common` outputs
 
 ---
 
 ### Step 3: Verify build safety
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 - [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
@@ -77,6 +77,8 @@
 | 2026-04-04 20:43 | Step 1 started | Implement direct lowering |
 | 2026-04-04 20:48 | Step 1 completed | Added direct source-driven `vsc_buffer_defs` lowering helper |
 | 2026-04-04 20:48 | Step 2 started | Wire bootstrap routing |
+| 2026-04-04 20:50 | Step 2 completed | Bootstrap now routes `vsc_buffer_defs` through the direct path |
+| 2026-04-04 20:50 | Step 3 started | Verify build safety |
 
 ---
 
