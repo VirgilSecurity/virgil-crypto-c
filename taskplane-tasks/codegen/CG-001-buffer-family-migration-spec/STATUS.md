@@ -1,7 +1,7 @@
 # CG-001: Buffer Family Migration Spec — Status
 
 **Current Step:** Step 4: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
@@ -44,9 +44,9 @@
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Summarize recommended next implementation order and notable risks in the task output
+- [x] Summarize recommended next implementation order and notable risks in the task output
 
 ---
 
@@ -85,6 +85,10 @@
 ## Notes
 
 This task prepares the final `common` migration slice so implementation tasks can run with lower ambiguity.
+
+Delivery summary:
+- Recommended implementation order: `CG-002` (`vsc_buffer_defs`) -> `CG-004` (`vsc_buffer`) -> `CG-003`/`CG-005` support-header and final status follow-up.
+- Primary risks: preserving the large handwritten region in `vsc_buffer.c`, reconstructing `buffer_defs` without assuming committed resolved XML inputs exist in-tree, and avoiding accidental commits of temporary regenerated `library/common/**` outputs.
 
 Step 1 analysis notes:
 - `class_buffer.xml` is the only original `common` source model in this family; `buffer_defs` appears to be resolver-derived support output rather than a first-class source-model file.
