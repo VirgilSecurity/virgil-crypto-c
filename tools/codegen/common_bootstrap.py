@@ -43,13 +43,16 @@ def merge_generated_section(existing: str, generated: str) -> str:
     return prefix + generated + suffix
 
 
-def iter_project_xml_paths(project_dir: Path, repo_root: Path) -> list[Path]:
+def iter_project_xml_paths(project_dir: Path, repo_root: Path, *, include_legacy_fallback: bool = False) -> list[Path]:
     direct_paths = {project_dir / name for name in direct_c_renderers(repo_root).keys()}
-    fallback_paths = set(project_dir.glob("c_module_*.xml"))
-    return [
-        path for path in sorted(direct_paths | fallback_paths)
-        if path.exists() and not path.name.endswith("_unresolved.xml")
-    ]
+    if not include_legacy_fallback:
+        return sorted(direct_paths)
+
+    fallback_paths = {
+        path for path in project_dir.glob("c_module_*.xml")
+        if not path.name.endswith("_unresolved.xml")
+    }
+    return sorted(direct_paths | fallback_paths)
 
 
 def description_text(elem: ET.Element) -> str:
@@ -305,6 +308,11 @@ def main() -> int:
     parser.add_argument("--project", default="common")
     parser.add_argument("--out", default="build/new-codegen")
     parser.add_argument("--apply", action="store_true", help="write directly into repo source tree")
+    parser.add_argument(
+        "--legacy-c-modules",
+        action="store_true",
+        help="include resolved c_module XML fallback inputs for migration/parity-only runs",
+    )
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
@@ -317,7 +325,7 @@ def main() -> int:
         out_root.mkdir(parents=True, exist_ok=True)
 
     written = []
-    for xml_path in iter_project_xml_paths(project_dir, repo_root):
+    for xml_path in iter_project_xml_paths(project_dir, repo_root, include_legacy_fallback=args.legacy_c_modules):
         written.extend(render_one(xml_path, repo_root, codegen_root, out_root))
 
     destination = repo_root if args.apply else out_root

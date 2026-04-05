@@ -39,27 +39,41 @@ Decision:
 
 For the current Taskplane slice (`library/common` C generation):
 
-1. the foundational direct-lowering boundary is in place for `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`
-2. the only previously open post-buffer ownership question was the umbrella headers `vsc_common_public.h` and `vsc_common_private.h`
-3. those umbrella headers are now best understood as stable checked-in support headers with empty generated blocks, not as meaningful active resolved-XML fallback surfaces
-4. the compile gate for this slice remains `bash tools/codegen/build_common_with_new_codegen.sh`
+1. the bootstrap architecture is now project-rooted: `codegen/models/project_common/project_common.xml` loads into the source graph, lowers into IR/output targets, and dispatches direct C renderers from that project metadata instead of reconstructing file placement from local bootstrap literals
+2. the foundational direct-lowering boundary is in place for `vsc_library`, `vsc_assert`, `vsc_memory`, `vsc_atomic`, `vsc_data`, `vsc_buffer_defs`, and `vsc_buffer`
+3. legacy resolved `c_module_*.xml` remains allowed only as a fallback/reference path for approved migration and parity roles; it is no longer the intended runtime source for the migrated `common` outputs above
+4. the only previously open post-buffer ownership question was the umbrella headers `vsc_common_public.h` and `vsc_common_private.h`
+5. those umbrella headers are now best understood as stable checked-in support headers with empty generated blocks, not as meaningful active resolved-XML fallback surfaces
+6. the compile gate for this slice remains `bash tools/codegen/build_common_with_new_codegen.sh`
 
 ## Immediate next actions
 
-1. keep using `library/common` as the proving ground for parser/resolver and parity work rather than opening a new `common` implementation track
-2. reduce parity/formatting differences in the mixed-mode bootstrap where they still matter for review confidence
-3. carry the direct-from-original-model approach into the next target area after `common`
-4. continue treating legacy resolved XML as reference/fixture material instead of a runtime requirement
+1. keep using `library/common` as the proving ground for parser/resolver and parity work rather than reopening the now-regularized core `common` C backend
+2. reduce parity/formatting differences in the mixed-mode bootstrap where they still matter for review confidence and regression tooling
+3. port the remaining support/build emitters that still sit outside the direct C backend contract
+4. carry the direct-from-original-model approach into the next target area after `common`
+5. continue treating legacy resolved XML as reference/fixture material instead of a runtime requirement
 
 ## After `common`
 
-For this Taskplane slice, `common` direct lowering is effectively complete.
+For this Taskplane slice, the core `common` C backend regularization work is effectively complete.
 
 What remains is smaller cross-cutting migration work rather than another `common` entity port:
 
 - parity and comparison tooling for the mixed-mode bootstrap
 - parser/resolver hardening that can reuse the `common` slice as a reference implementation
+- support/build file generation that is still outside the direct C backend path
 - selection of the next migration target beyond `library/common`
+
+## Remaining follow-up after `common` C backend regularization
+
+The `common` C backend no longer needs another core entity-porting pass for this migration slice.
+Remaining follow-up is now concentrated in adjacent migration work:
+
+- tighten parity/comparison tooling so mixed-mode bootstrap diffs are easier to review
+- harden parser/resolver behavior using `common` as the reference project-rooted slice
+- port support/build emitters that are still outside the direct C backend path
+- choose and scope the next post-`common` migration target
 
 ## Definition of done for migration
 
