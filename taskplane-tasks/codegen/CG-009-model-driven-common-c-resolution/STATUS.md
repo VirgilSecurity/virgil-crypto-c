@@ -1,6 +1,6 @@
 # CG-009: Model-Driven Common C Resolution — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
@@ -37,17 +37,17 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run the new/updated tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
-- [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Confirm no generated `library/common/**` artifacts remain staged for commit
+- [x] Run the new/updated tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Confirm no generated `library/common/**` artifacts remain staged for commit
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update architecture/migration docs to explain what hardcodes were removed and what static backend logic remains acceptable
 
