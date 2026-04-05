@@ -11,15 +11,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_direct_c import (
-    build_direct_assert_c_module,
-    build_direct_atomic_c_module,
-    build_direct_buffer_c_module,
-    build_direct_buffer_defs_c_module,
-    build_direct_data_c_module,
-    build_direct_library_c_module,
-    build_direct_memory_c_module,
-)
+from tools.codegen.common_direct_c import direct_c_renderers
 
 
 GENERATED_START = "//  @generated"
@@ -271,20 +263,9 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
 
 
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path) -> list[Path]:
-    if xml_path.name == 'c_module_vsc_data.xml':
-        root = build_direct_data_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_assert.xml':
-        root = build_direct_assert_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_library.xml':
-        root = build_direct_library_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_atomic.xml':
-        root = build_direct_atomic_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_memory.xml':
-        root = build_direct_memory_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_buffer.xml':
-        root = build_direct_buffer_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_buffer_defs.xml':
-        root = build_direct_buffer_defs_c_module(repo_root)
+    renderer = direct_c_renderers(repo_root).get(xml_path.name)
+    if renderer is not None:
+        root = renderer(repo_root)
     else:
         root = ET.parse(xml_path).getroot()
     written = []

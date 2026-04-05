@@ -5,7 +5,7 @@
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 4
 **Size:** L
 
 ---
@@ -21,9 +21,9 @@
 ### Step 1: Implement model-driven C resolution
 **Status:** 🟨 In Progress
 
-- [ ] Derive names, output files, prefixes, and related metadata from the resolved project graph / IR
-- [ ] Replace project-specific hardcodes where the model already defines the information
-- [ ] Keep only genuinely static backend/runtime support logic as reusable backend code
+- [x] Derive names, output files, prefixes, and related metadata from the resolved project graph / IR
+- [x] Replace project-specific hardcodes where the model already defines the information
+- [x] Keep only genuinely static backend/runtime support logic as reusable backend code
 
 ---
 
@@ -76,6 +76,11 @@
 | 2026-04-04 23:00 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-04 23:00 | Step 0 started | Preflight |
 | 2026-04-04 23:08 | Preflight reading | Reviewed ADR 0002, CG-008 outputs, project model, IR tests, and current `common_*` generator files to map remaining model-vs-hardcoded boundaries. |
+| 2026-04-04 23:24 | Worker iter 1 | done in 1447s, tools: 50 |
+| 2026-04-04 23:50 | Worker iter 2 | done in 1590s, tools: 28 |
+| 2026-04-04 23:50 | No progress | Iteration 2: 0 new checkboxes (1/3 stall limit) |
+| 2026-04-05 00:15 | Worker iter 3 | done in 1499s, tools: 19 |
+| 2026-04-05 00:15 | No progress | Iteration 3: 0 new checkboxes (2/3 stall limit) |
 
 ---
 
