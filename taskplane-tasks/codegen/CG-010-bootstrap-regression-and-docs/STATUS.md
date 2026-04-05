@@ -1,7 +1,7 @@
 # CG-010: Bootstrap Regression Validation & Docs — Status
 
-**Current Step:** Step 2: Full verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Documentation and delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-05
 **Review Level:** 2
 **Review Counter:** 0
@@ -38,10 +38,10 @@
 ---
 
 ### Step 3: Documentation and delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Refresh migration docs to describe the new project-rooted architecture and current completion state
-- [ ] Summarize any remaining follow-up after the C backend regularization work
+- [x] Refresh migration docs to describe the new project-rooted architecture and current completion state
+- [x] Summarize any remaining follow-up after the C backend regularization work
 
 ---
 
