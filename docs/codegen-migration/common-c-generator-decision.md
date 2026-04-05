@@ -39,12 +39,14 @@ Wrapper generation may still be treated as fully-generated output.
 
 ## Current implementation status
 
-The current `tools/codegen/common_bootstrap.py` already follows this preservation model for `common` by:
+The current `tools/codegen/common_bootstrap.py` follows this preservation model for `common` by:
 
 - reading the existing target file
 - splitting around the `@generated` block
 - regenerating the block
 - writing the rest of the file back unchanged
+
+The bootstrap entrypoint should also resolve direct-rendered XML inputs from the IR-derived renderer map instead of assuming project-specific generated XML basenames in its file scan. Legacy `c_module_*.xml` discovery remains as fallback behavior for non-direct inputs.
 
 ## Long-term implication
 

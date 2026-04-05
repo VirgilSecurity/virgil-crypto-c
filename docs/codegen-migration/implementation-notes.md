@@ -27,8 +27,20 @@ For the `common` project-rooted path, this now includes explicit project naming/
 ### Emitter layer
 Responsible only for turning IR into file content.
 
+For the `common` C backend, project-specific facts should now come from `project_common_to_ir()` / `IROutputTarget` rather than local Python literals. This includes:
+
+- C symbol stems and typedef names
+- include/source basenames and checked-in output paths
+- generated XML basenames used for bootstrap dispatch
+- once guards and visibility metadata
+- project prefix-derived callback/type spellings
+
+Acceptable remaining hardcodes in `common_direct_c.py` are backend-static implementation details that are not modeled today, such as reusable C runtime snippets, macro bodies, and fixed support behavior (`memset`, allocator wiring, atomic/compiler branches, assertion helper bodies).
+
 ### Preservation layer
 Responsible only for merging generated content into files that may contain manual content.
+
+For `common`, keep preservation helpers separate from direct rendering so tests can verify that handwritten prefix/suffix content survives generated-block rewrites unchanged.
 
 ## Early implementation preference
 
@@ -58,3 +70,4 @@ Optional debug IR dumps may be introduced later for diagnostics, but the normal 
 - do not silently accept semantic output differences without documentation
 - do not cut over before preservation tests exist
 - do not port all wrappers simultaneously
+- do not reintroduce project-specific path/name reconstruction in emitters when the IR already exposes the output metadata
