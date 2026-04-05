@@ -11,15 +11,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_direct_c import (
-    build_direct_assert_c_module,
-    build_direct_atomic_c_module,
-    build_direct_buffer_c_module,
-    build_direct_buffer_defs_c_module,
-    build_direct_data_c_module,
-    build_direct_library_c_module,
-    build_direct_memory_c_module,
-)
+from tools.codegen.common_direct_c import direct_c_renderers
 
 
 GENERATED_START = "//  @generated"
@@ -44,6 +36,20 @@ def split_generated_sections(content: str) -> tuple[str, str]:
 
 def ensure_parent(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def merge_generated_section(existing: str, generated: str) -> str:
+    prefix, suffix = split_generated_sections(existing)
+    return prefix + generated + suffix
+
+
+def iter_project_xml_paths(project_dir: Path, repo_root: Path) -> list[Path]:
+    direct_paths = {project_dir / name for name in direct_c_renderers(repo_root).keys()}
+    fallback_paths = set(project_dir.glob("c_module_*.xml"))
+    return [
+        path for path in sorted(direct_paths | fallback_paths)
+        if path.exists() and not path.name.endswith("_unresolved.xml")
+    ]
 
 
 def description_text(elem: ET.Element) -> str:
@@ -271,20 +277,9 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
 
 
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path) -> list[Path]:
-    if xml_path.name == 'c_module_vsc_data.xml':
-        root = build_direct_data_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_assert.xml':
-        root = build_direct_assert_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_library.xml':
-        root = build_direct_library_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_atomic.xml':
-        root = build_direct_atomic_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_memory.xml':
-        root = build_direct_memory_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_buffer.xml':
-        root = build_direct_buffer_c_module(repo_root)
-    elif xml_path.name == 'c_module_vsc_buffer_defs.xml':
-        root = build_direct_buffer_defs_c_module(repo_root)
+    renderer = direct_c_renderers(repo_root).get(xml_path.name)
+    if renderer is not None:
+        root = renderer(repo_root)
     else:
         root = ET.parse(xml_path).getroot()
     written = []
@@ -296,11 +291,10 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
         if not target.exists():
             continue
         existing = target.read_text()
-        prefix, suffix = split_generated_sections(existing)
         generated = generate_block(root, is_header)
         out_path = out_root / target.relative_to(repo_root)
         ensure_parent(out_path)
-        out_path.write_text(prefix + generated + suffix)
+        out_path.write_text(merge_generated_section(existing, generated))
         written.append(out_path)
     return written
 
@@ -323,9 +317,7 @@ def main() -> int:
         out_root.mkdir(parents=True, exist_ok=True)
 
     written = []
-    for xml_path in sorted(project_dir.glob("c_module_*.xml")):
-        if xml_path.name.endswith("_unresolved.xml"):
-            continue
+    for xml_path in iter_project_xml_paths(project_dir, repo_root):
         written.extend(render_one(xml_path, repo_root, codegen_root, out_root))
 
     destination = repo_root if args.apply else out_root
