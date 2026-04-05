@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 
 from tools.codegen.common_direct_c import (
+    _buffer_defs_output,
     _c_module_root_attrs,
     _class_ir,
     _direct_xml_name,
@@ -92,14 +93,24 @@ class CommonDirectCResolutionTest(unittest.TestCase):
 
     def test_bootstrap_renderer_dispatch_uses_ir_generated_xml_names(self) -> None:
         renderers = direct_c_renderers(REPO_ROOT)
+        expected_names = {
+            _direct_xml_name(_module_ir(self.ir, "library").output),
+            _direct_xml_name(_module_ir(self.ir, "assert").output),
+            _direct_xml_name(_module_ir(self.ir, "memory").output),
+            _direct_xml_name(_module_ir(self.ir, "atomic").output),
+            _direct_xml_name(_class_ir(self.ir, "data").output),
+            _direct_xml_name(_class_ir(self.ir, "buffer").output),
+            _direct_xml_name(_buffer_defs_output(self.ir)),
+        }
 
+        self.assertEqual(expected_names, set(renderers))
         self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "library").output)], build_direct_library_c_module)
         self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "assert").output)], build_direct_assert_c_module)
         self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "memory").output)], build_direct_memory_c_module)
         self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "atomic").output)], build_direct_atomic_c_module)
         self.assertIs(renderers[_direct_xml_name(_class_ir(self.ir, "data").output)], build_direct_data_c_module)
         self.assertIs(renderers[_direct_xml_name(_class_ir(self.ir, "buffer").output)], build_direct_buffer_c_module)
-        self.assertIs(renderers["c_module_vsc_buffer_defs.xml"], build_direct_buffer_defs_c_module)
+        self.assertIs(renderers[_direct_xml_name(_buffer_defs_output(self.ir))], build_direct_buffer_defs_c_module)
 
 
 if __name__ == "__main__":

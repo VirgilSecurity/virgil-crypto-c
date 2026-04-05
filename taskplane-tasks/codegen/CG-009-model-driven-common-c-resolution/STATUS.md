@@ -1,11 +1,11 @@
 # CG-009: Model-Driven Common C Resolution — Status
 
-**Current Step:** Step 1: Implement model-driven C resolution
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-04
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 4
+**Iteration:** 6
 **Size:** L
 
 ---
@@ -19,7 +19,7 @@
 ---
 
 ### Step 1: Implement model-driven C resolution
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] Derive names, output files, prefixes, and related metadata from the resolved project graph / IR
 - [x] Replace project-specific hardcodes where the model already defines the information
@@ -28,16 +28,16 @@
 ---
 
 ### Step 2: Preserve current C-generation contract
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Keep handwritten-code preservation behavior intact
-- [ ] Preserve the working `common` build path and generated-block application flow
-- [ ] Add or update tests that protect the no-hardcoded-project-metadata rule
+- [x] Keep handwritten-code preservation behavior intact
+- [x] Preserve the working `common` build path and generated-block application flow
+- [x] Add or update tests that protect the no-hardcoded-project-metadata rule
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run the new/updated tests
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
@@ -81,6 +81,9 @@
 | 2026-04-04 23:50 | No progress | Iteration 2: 0 new checkboxes (1/3 stall limit) |
 | 2026-04-05 00:15 | Worker iter 3 | done in 1499s, tools: 19 |
 | 2026-04-05 00:15 | No progress | Iteration 3: 0 new checkboxes (2/3 stall limit) |
+| 2026-04-05 01:32 | Worker iter 4 | done in 4609s, tools: 68 |
+| 2026-04-05 02:17 | Worker iter 5 | done in 2692s, tools: 0 |
+| 2026-04-05 02:17 | No progress | Iteration 5: 0 new checkboxes (1/3 stall limit) |
 
 ---
 
