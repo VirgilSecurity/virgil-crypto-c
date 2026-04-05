@@ -24,20 +24,31 @@ class CommonBootstrapTest(unittest.TestCase):
             merged,
         )
 
-    def test_iter_project_xml_paths_includes_ir_named_renderers_and_legacy_fallbacks(self) -> None:
+    def test_iter_project_xml_paths_includes_direct_renderer_names_without_disk_xml(self) -> None:
         with TemporaryDirectory() as tmp_dir:
             project_dir = Path(tmp_dir)
-            ir_named = project_dir / "custom_model_named.xml"
+            direct_only = project_dir / "custom_model_named.xml"
+            legacy_named = project_dir / "c_module_legacy.xml"
+            legacy_named.write_text("<c_module />")
+
+            with patch("tools.codegen.common_bootstrap.direct_c_renderers", return_value={direct_only.name: object()}):
+                xml_paths = iter_project_xml_paths(project_dir, REPO_ROOT)
+
+        self.assertEqual([direct_only], xml_paths)
+
+    def test_iter_project_xml_paths_includes_legacy_fallbacks_only_when_requested(self) -> None:
+        with TemporaryDirectory() as tmp_dir:
+            project_dir = Path(tmp_dir)
+            direct_only = project_dir / "custom_model_named.xml"
             legacy_named = project_dir / "c_module_legacy.xml"
             unresolved = project_dir / "c_module_skip_unresolved.xml"
-            ir_named.write_text("<c_module />")
             legacy_named.write_text("<c_module />")
             unresolved.write_text("<c_module />")
 
-            with patch("tools.codegen.common_bootstrap.direct_c_renderers", return_value={ir_named.name: object()}):
-                xml_paths = iter_project_xml_paths(project_dir, REPO_ROOT)
+            with patch("tools.codegen.common_bootstrap.direct_c_renderers", return_value={direct_only.name: object()}):
+                xml_paths = iter_project_xml_paths(project_dir, REPO_ROOT, include_legacy_fallback=True)
 
-        self.assertEqual(sorted([ir_named, legacy_named]), xml_paths)
+        self.assertEqual(sorted([direct_only, legacy_named]), xml_paths)
 
     def test_render_one_preserves_handwritten_content_when_rewriting_generated_blocks(self) -> None:
         with TemporaryDirectory() as tmp_dir:
@@ -54,7 +65,6 @@ class CommonBootstrapTest(unittest.TestCase):
 
             xml_path = codegen_root / "generated/common/custom.xml"
             xml_path.parent.mkdir(parents=True, exist_ok=True)
-            xml_path.write_text("<c_module />")
 
             root = ET.Element(
                 "c_module",
