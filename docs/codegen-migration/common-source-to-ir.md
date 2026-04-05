@@ -91,14 +91,13 @@ The project-rooted IR now exists as an explicit stage between the source loader 
 
 ## Recommended next step
 
-Implement the next semantic lowering rules for:
+The project-rooted IR stage is now established for the `common` proving-ground slice.
 
-1. `assert` module
-2. then the remaining `common` entities
+The next follow-up work should focus on:
 
-Then compare that direct IR against the corresponding legacy resolved artifacts:
+1. tightening parity/comparison tooling for the mixed-mode bootstrap
+2. hardening parser/resolver behavior using `common` as the reference project-rooted slice
+3. porting remaining support/build emitters that still sit outside the direct C backend path
+4. selecting the next migration target beyond `library/common`
 
-- `codegen/generated/common/module_assert.xml`
-- `codegen/generated/common/c_module_vsc_assert.xml`
-- `codegen/generated/common/module_data.xml`
-- `codegen/generated/common/c_module_vsc_data.xml`
+Legacy resolved artifacts remain useful here as parity/reference material, but not as the intended runtime source for the regularized `common` C backend.
