@@ -1,6 +1,6 @@
 # CG-012: Extract Shared Project Graph Loader — Status
 
-**Current Step:** Step 1: Extract shared loader code
+**Current Step:** Step 2: Preserve compatibility and tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -19,16 +19,16 @@
 ---
 
 ### Step 1: Extract shared loader code
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Move generic project-rooted loading logic into shared modules with generic names
-- [ ] Preserve tolerant parsing behavior
-- [ ] Keep project metadata model-driven
+- [x] Move generic project-rooted loading logic into shared modules with generic names
+- [x] Preserve tolerant parsing behavior
+- [x] Keep project metadata model-driven
 
 ---
 
 ### Step 2: Preserve compatibility and tests
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Keep or add thin compatibility adapters only where necessary
 - [ ] Update imports/tests/scripts affected by the extraction
