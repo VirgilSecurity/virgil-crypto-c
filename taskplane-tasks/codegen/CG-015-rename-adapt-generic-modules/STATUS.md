@@ -1,11 +1,11 @@
 # CG-015: Rename and Adapt Generic Modules, Imports, and Docs — Status
 
-**Current Step:** Step 1: Update callers and names
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 4
+**Iteration:** 5
 **Size:** M
 
 ---
@@ -19,7 +19,7 @@
 ---
 
 ### Step 1: Update callers and names
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] Update imports/scripts/tests/docs to prefer the new generic module names
 - [x] Reduce legacy `common_*` modules to thin compatibility adapters or remove them where safe
@@ -28,7 +28,7 @@
 ---
 
 ### Step 2: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
 - [x] Run relevant tests
 - [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
@@ -37,9 +37,9 @@
 ---
 
 ### Step 3: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Update docs to state the new shared module names and compatibility policy
+- [x] Update docs to state the new shared module names and compatibility policy
 
 ---
 
@@ -75,6 +75,9 @@
 | 2026-04-06 19:03 | Step 2 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_c_backend` passed (20 tests) |
 | 2026-04-06 19:03 | Step 2 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
 | 2026-04-06 19:04 | Step 2 build gate | `bash tools/codegen/build_common_with_new_codegen.sh` passed; `common` rebuilt successfully from new codegen outputs |
+| 2026-04-06 19:01 | Worker iter 4 | done in 2009s, tools: 64 |
+| 2026-04-06 19:01 | Step 3 started | Delivery |
+| 2026-04-06 19:12 | Step 3 docs | Updated `docs/codegen-migration/README.md` and `docs/codegen-migration/implementation-notes.md` to document the `project_*` shared module names and the temporary `common_*` compatibility-adapter policy |
 
 ---
 

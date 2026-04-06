@@ -87,9 +87,26 @@ The new architecture should make incremental generation possible later. That mea
 
 Optional debug IR dumps may be introduced later for diagnostics, but the normal generation path should not require emitting resolved XML artifacts.
 
+## Naming and compatibility policy
+
+When shared logic is not specific to `common`, the canonical import path should use the generic `project_*` module names:
+
+- `tools/codegen/project_source.py` for shared loading/parsing
+- `tools/codegen/project_ir.py` for shared lowering/output-target derivation
+- `tools/codegen/project_c_backend.py` for shared C-backend helpers and renderer registration
+
+The `common_*` names are now compatibility surfaces, not the architectural center. They may remain only when they provide one of these migration roles:
+
+- `common_source.py` / `common_ir.py` compatibility exports and `common` convenience entrypoints
+- `common_direct_c.py` handwritten `common` builders plus adapter exports over the shared backend
+- `common_bootstrap.py` the stable `common` CLI/bootstrap wrapper used by current validation flows
+
+As follow-on work touches callers, prefer moving imports to the generic shared modules unless the call site truly needs the `common` compatibility API.
+
 ## Guardrails
 
 - do not silently accept semantic output differences without documentation
 - do not cut over before preservation tests exist
 - do not port all wrappers simultaneously
 - do not reintroduce project-specific path/name reconstruction in emitters when the IR already exposes the output metadata
+- do not let `common_*` compatibility adapters regain ownership of shared loader, IR, or backend behavior
