@@ -18,8 +18,8 @@ from tools.codegen.common_direct_c import (
     build_direct_memory_c_module,
     direct_c_renderers,
 )
-from tools.codegen.common_ir import IROutputTarget, project_common_to_ir
 from tools.codegen.common_source import load_project_common
+from tools.codegen.project_ir import IROutputTarget, project_to_ir
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -29,7 +29,7 @@ class CommonDirectCResolutionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.project = load_project_common(REPO_ROOT)
-        cls.ir = project_common_to_ir(cls.project)
+        cls.ir = project_to_ir(cls.project)
 
     def test_c_module_root_attrs_follow_output_metadata(self) -> None:
         output = IROutputTarget(

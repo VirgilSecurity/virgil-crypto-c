@@ -32,12 +32,20 @@ The shared loader extraction from CG-012 establishes `tools/codegen/project_sour
 ### IR layer
 Responsible for a normalized internal representation suitable for emitters.
 
-For the `common` project-rooted path, this now includes explicit project naming/output metadata and per-entity output targets so C backends do not need to reconstruct file placement from ad hoc Python literals.
+The shared home for this layer is now `tools/codegen/project_ir.py`. It owns:
+
+- generic IR dataclasses for projects, modules, classes, enums, members, and output targets
+- project-agnostic lowering entrypoints such as `project_to_ir()`
+- output-target derivation from `ProjectSource` metadata rather than backend-local literals
+
+For the `common` project-rooted path, this includes explicit project naming/output metadata and per-entity output targets so C backends do not need to reconstruct file placement from ad hoc Python literals.
+
+`tools/codegen/common_ir.py` should remain adapter-only. It may continue to expose compatibility names such as `IRProjectCommon` / `project_common_to_ir()`, but it should delegate to the shared IR implementation instead of owning the logic.
 
 ### Emitter layer
 Responsible only for turning IR into file content.
 
-For the `common` C backend, project-specific facts should now come from `project_common_to_ir()` / `IROutputTarget` rather than local Python literals. This includes:
+For the `common` C backend, project-specific facts should now come from the shared IR layer (`project_to_ir()` / `IROutputTarget`) or the thin `common` adapter over it, rather than local Python literals. This includes:
 
 - C symbol stems and typedef names
 - include/source basenames and checked-in output paths

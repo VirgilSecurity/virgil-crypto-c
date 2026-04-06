@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_ir import project_common_to_ir
+from tools.codegen.project_ir import project_to_ir
 from tools.codegen.project_source import load_named_project_source
 
 
@@ -19,7 +19,7 @@ def main() -> int:
     parser.add_argument("--class-name")
     args = parser.parse_args()
 
-    ir = project_common_to_ir(load_named_project_source("common", args.repo_root))
+    ir = project_to_ir(load_named_project_source("common", args.repo_root))
     if args.module:
         obj = next((m for m in ir.modules if m.name == args.module), None)
         if obj is None:
