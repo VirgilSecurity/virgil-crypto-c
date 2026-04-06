@@ -9,7 +9,7 @@ from tools.codegen.common_direct_c import (
     build_direct_data_c_module,
     direct_c_renderers,
 )
-from tools.codegen.common_source import load_project_common
+from tools.codegen.project_source import load_named_project_source
 from tools.codegen.project_c_backend import (
     DirectRendererSpec,
     argument_from_source,
@@ -29,7 +29,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 class ProjectCBackendTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.project = load_project_common(REPO_ROOT)
+        cls.project = load_named_project_source("common", REPO_ROOT)
         cls.ir = project_to_ir(cls.project)
 
     def test_shared_lowering_helpers_use_ir_class_symbols(self) -> None:

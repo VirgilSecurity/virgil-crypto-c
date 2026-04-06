@@ -48,6 +48,30 @@ For the current Taskplane slice (`library/common` C generation):
 5. those umbrella headers are now best understood as stable checked-in support headers with empty generated blocks, not as meaningful active resolved-XML fallback surfaces
 6. the compile gate for this slice remains `bash tools/codegen/build_common_with_new_codegen.sh`
 
+## Shared module naming and compatibility policy
+
+The shared framework is now presented through generic `project_*` module names instead of `common_*` names whenever code is not inherently tied to the `common` project.
+
+Preferred shared modules:
+
+- `tools/codegen/project_source.py` — shared project/model loading and source-graph helpers
+- `tools/codegen/project_ir.py` — shared project-to-IR lowering and output-target mapping
+- `tools/codegen/project_c_backend.py` — shared C-backend helpers and direct-renderer registration plumbing
+
+Temporary compatibility adapters that remain acceptable during migration:
+
+- `tools/codegen/common_source.py` — `common` convenience wrapper over `project_source.py`
+- `tools/codegen/common_ir.py` — `common` compatibility exports over `project_ir.py`
+- `tools/codegen/common_direct_c.py` — `common` handwritten/direct-builder adapter over `project_c_backend.py`
+- `tools/codegen/common_bootstrap.py` — the current `common`-specific CLI/bootstrap entrypoint
+
+Policy:
+
+- prefer importing shared behavior from the generic `project_*` modules in new or refactored code
+- keep `common_*` modules only where they provide project selection, legacy export names, CLI defaults, or handwritten `common` builders
+- do not move shared parsing, IR shaping, output-target derivation, or backend helper ownership back into `common_*` modules
+- keep the existing `common` validation/build workflow working while these adapters remain in place
+
 ## Immediate next actions
 
 1. treat `common` as the reference implementation for the project-rooted generator framework rather than reopening it as a new entity-porting track

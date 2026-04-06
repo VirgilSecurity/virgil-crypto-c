@@ -4,8 +4,8 @@ from pathlib import Path
 import unittest
 
 from tools.codegen.common_ir import project_common_to_ir
-from tools.codegen.common_source import load_project_common
 from tools.codegen.project_ir import IRProject, project_to_ir
+from tools.codegen.project_source import load_named_project_source
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 class ProjectCommonIRTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.project = load_project_common(REPO_ROOT)
+        cls.project = load_named_project_source("common", REPO_ROOT)
         cls.ir = project_common_to_ir(cls.project)
         cls.shared_ir = project_to_ir(cls.project)
 
