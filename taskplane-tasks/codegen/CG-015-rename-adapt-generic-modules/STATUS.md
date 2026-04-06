@@ -5,7 +5,7 @@
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 2
+**Iteration:** 4
 **Size:** M
 
 ---
@@ -19,11 +19,11 @@
 ---
 
 ### Step 1: Update callers and names
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Update imports/scripts/tests/docs to prefer the new generic module names
-- [ ] Reduce legacy `common_*` modules to thin compatibility adapters or remove them where safe
-- [ ] Keep current `common` workflows working
+- [x] Update imports/scripts/tests/docs to prefer the new generic module names
+- [x] Reduce legacy `common_*` modules to thin compatibility adapters or remove them where safe
+- [x] Keep current `common` workflows working
 
 ---
 
@@ -67,6 +67,11 @@
 | 2026-04-06 15:10 | Step 0 review | Reviewed CG-012 through CG-014 outputs plus shared/adapter module boundaries; confirmed `project_source.py`, `project_ir.py`, and `project_c_backend.py` now own the shared loader/IR/backend responsibilities |
 | 2026-04-06 15:12 | Worker iter 1 | done in 1067s, tools: 24 |
 | 2026-04-06 15:24 | Step 0 adapter boundary | Confirmed `common_source.py`, `common_ir.py`, and `common_direct_c.py` should remain temporary thin `common` compatibility adapters, while `common_bootstrap.py` remains the current `common` CLI/workflow entrypoint |
+| 2026-04-06 17:15 | Worker iter 2 | killed (wall-clock timeout) in 7344s, tools: 34 |
+| 2026-04-06 17:15 | Step 1 started | Update callers and names |
+| 2026-04-06 18:28 | Worker iter 3 | done in 4380s, tools: 7 |
+| 2026-04-06 18:28 | No progress | Iteration 3: 0 new checkboxes (1/3 stall limit) |
+| 2026-04-06 19:01 | Step 1 targeted tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_c_backend` passed (20 tests) |
 
 ---
 

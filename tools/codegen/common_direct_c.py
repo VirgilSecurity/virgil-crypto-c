@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+"""Compatibility adapter for `common`-specific direct C builders over the shared backend."""
+
 from pathlib import Path
 from typing import cast
 import xml.etree.ElementTree as ET
 
-from tools.codegen.common_ir import project_common_to_ir
 from tools.codegen.project_c_backend import (
     DirectRendererSpec,
     argument_from_source,
@@ -24,7 +25,7 @@ from tools.codegen.project_c_backend import (
     text_element,
     type_map,
 )
-from tools.codegen.project_ir import IRProject, IROutputTarget
+from tools.codegen.project_ir import IRProject, IROutputTarget, project_to_ir
 from tools.codegen.project_source import load_named_project_source
 
 
@@ -33,7 +34,7 @@ def _load_common_project(repo_root: str | Path = "."):
 
 
 def _load_common_ir(repo_root: str | Path = ".") -> IRProject:
-    return project_common_to_ir(_load_common_project(repo_root))
+    return project_to_ir(_load_common_project(repo_root))
 
 
 _text = text_element
@@ -49,6 +50,18 @@ _comment_text = comment_text
 _argument_from_source = argument_from_source
 _return_from_source = return_from_source
 _callback_symbol = callback_symbol
+
+
+__all__ = [
+    "build_direct_assert_c_module",
+    "build_direct_atomic_c_module",
+    "build_direct_buffer_c_module",
+    "build_direct_buffer_defs_c_module",
+    "build_direct_data_c_module",
+    "build_direct_library_c_module",
+    "build_direct_memory_c_module",
+    "direct_c_renderers",
+]
 
 
 def _include_file(project_ir: IRProject, *, module_name: str | None = None, class_name: str | None = None) -> str:
@@ -91,7 +104,7 @@ def direct_c_renderers(repo_root: str | Path = ".") -> dict[str, object]:
 
 def build_direct_library_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    project_ir = project_common_to_ir(project)
+    project_ir = project_to_ir(project)
     mod = project.module_named('library')
     output = cast(IROutputTarget, _module_ir(project_ir, 'library').output)
     version = project.version or {'major': '0', 'minor': '0', 'patch': '0'}
@@ -283,7 +296,7 @@ def build_direct_atomic_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    project_ir = project_common_to_ir(project)
+    project_ir = project_to_ir(project)
     mod = project.module_named('assert')
     output = cast(IROutputTarget, _module_ir(project_ir, 'assert').output)
 
@@ -347,7 +360,7 @@ def build_direct_assert_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 def build_direct_data_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    project_ir = project_common_to_ir(project)
+    project_ir = project_to_ir(project)
     data_cls = project.class_named('data')
     output = cast(IROutputTarget, _class_ir(project_ir, 'data').output)
     data_type = _type_symbol(project_ir, 'data')
@@ -482,7 +495,7 @@ def _buffer_public_method(root: ET.Element, name: str, description: str, *, uid:
 
 def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    project_ir = project_common_to_ir(project)
+    project_ir = project_to_ir(project)
     buffer_cls = project.class_named('buffer')
     methods_by_name = {method.name: method for method in buffer_cls.methods}
     ctors_by_name = {ctor.name: ctor for ctor in buffer_cls.constructors}
@@ -544,7 +557,7 @@ def build_direct_buffer_c_module(repo_root: str | Path = '.') -> ET.Element:
 
 def build_direct_buffer_defs_c_module(repo_root: str | Path = '.') -> ET.Element:
     project = _load_common_project(repo_root)
-    project_ir = project_common_to_ir(project)
+    project_ir = project_to_ir(project)
     buffer_cls = project.class_named('buffer')
     output = _buffer_defs_output(project_ir)
 

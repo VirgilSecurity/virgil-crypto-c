@@ -7,7 +7,7 @@ Current scope:
 - reads legacy resolved `c_module_*.xml` for the `common` project
 - regenerates the generated blocks of existing common C headers/sources
 - writes output to a separate destination tree by default
-- includes a first source-model loader for original XML in `project_common` / `shared`
+- uses generic shared modules for source loading (`project_source.py`), IR lowering (`project_ir.py`), and C-backend helpers (`project_c_backend.py`) while keeping `common_*` entrypoints as compatibility adapters
 
 This is a bootstrap step, not the final architecture.
 
@@ -38,3 +38,5 @@ python3 tools/codegen/inspect_common_ir.py
 python3 tools/codegen/inspect_common_ir.py --module assert
 python3 tools/codegen/inspect_common_ir.py --class-name data
 ```
+
+For new shared-core integrations, prefer importing `load_named_project_source()` from `tools.codegen.project_source`, `project_to_ir()` from `tools.codegen.project_ir`, and shared backend helpers from `tools.codegen.project_c_backend`. Keep `common_source.py`, `common_ir.py`, and `common_direct_c.py` only when you specifically need `common` compatibility entrypoints or handwritten `common` direct builders.
