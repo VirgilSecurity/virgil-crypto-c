@@ -1,20 +1,20 @@
 # CG-011: Generic Shared-Codegen Refactor Plan — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the ADRs and current next-phase plan
-- [ ] Inspect the current `common_*` module boundaries
+- [x] Read the ADRs and current next-phase plan
+- [x] Inspect the current `common_*` module boundaries
 
 ---
 
@@ -61,6 +61,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 12:50 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 12:50 | Step 0 started | Preflight |
 
 ---
 
