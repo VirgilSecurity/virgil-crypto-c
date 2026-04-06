@@ -1,25 +1,25 @@
 # CG-014: Extract Shared C Backend — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 1: Extract shared C backend code
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the refactor plan and inspect current C backend boundaries
-- [ ] Confirm which pieces are shared backend behavior versus temporary compatibility adapters
+- [x] Read the refactor plan and inspect current C backend boundaries
+- [x] Confirm which pieces are shared backend behavior versus temporary compatibility adapters
 
 ---
 
 ### Step 1: Extract shared C backend code
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Move generic C lowering/rendering helpers into shared modules with generic names
 - [ ] Keep project metadata model-driven rather than backend-literal-driven
@@ -63,6 +63,8 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `foundation-next-phase-plan.md` defines the shared C backend split: IR navigation, XML helpers, argument/return lowering, and renderer registration should leave `common_direct_c.py`; only handwritten entity builders should remain adapter/project-specific. | Use as the extraction boundary for CG-014 implementation. | `docs/codegen-migration/foundation-next-phase-plan.md`, `tools/codegen/common_direct_c.py` |
+| `common_source.py` and `common_ir.py` are already thin compatibility wrappers over `project_source.py` / `project_ir.py`, while `common_bootstrap.py` and inspect scripts still depend on `common_direct_c.py` for project selection. | Keep `common`-named entrypoints thin; extract shared backend internals under generic modules and preserve wrapper behavior. | `tools/codegen/common_source.py`, `tools/codegen/common_ir.py`, `tools/codegen/common_bootstrap.py`, `tools/codegen/inspect_common_direct.py` |
 
 ---
 
@@ -71,6 +73,11 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 14:23 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 14:23 | Step 0 started | Preflight |
+| 2026-04-06 14:25 | Preflight inspection | Read CG-011 plan, migration docs, and current `common_direct_c.py` helper/builder split |
+| 2026-04-06 14:27 | Step 0 completed | Shared-backend helpers vs thin compatibility adapters confirmed |
+| 2026-04-06 14:27 | Step 1 started | Extract shared C backend code |
 
 ---
 
