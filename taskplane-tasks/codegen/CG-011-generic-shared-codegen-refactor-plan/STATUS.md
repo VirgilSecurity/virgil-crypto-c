@@ -63,6 +63,9 @@
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-06 12:50 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-06 12:50 | Step 0 started | Preflight |
+| 2026-04-06 12:54 | Agent reply | CG-011 completed. Updated docs/codegen-migration/foundation-next-phase-plan.md with refactor boundaries, thin compatibility adapters, import/script/doc implications, concrete sequence, explicit no-mod |
+| 2026-04-06 12:54 | Worker iter 1 | done in 255s, tools: 54 |
+| 2026-04-06 12:54 | Task complete | .DONE created |
 
 ---
 
