@@ -78,6 +78,9 @@
 | 2026-04-06 19:01 | Worker iter 4 | done in 2009s, tools: 64 |
 | 2026-04-06 19:01 | Step 3 started | Delivery |
 | 2026-04-06 19:12 | Step 3 docs | Updated `docs/codegen-migration/README.md` and `docs/codegen-migration/implementation-notes.md` to document the `project_*` shared module names and the temporary `common_*` compatibility-adapter policy |
+| 2026-04-06 19:03 | Agent reply | CG-015 complete. Finished Step 3 delivery docs, updated STATUS.md to ✅ Complete, and committed final changes as 1f918d5d6 (refactor(CG-015): rename shared codegen modules). |
+| 2026-04-06 19:03 | Worker iter 5 | done in 96s, tools: 22 |
+| 2026-04-06 19:03 | Task complete | .DONE created |
 
 ---
 
