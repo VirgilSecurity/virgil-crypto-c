@@ -1,7 +1,7 @@
 # CG-017: Foundation Validation on Shared Project-Rooted Framework — Status
 
-**Current Step:** Step 2: Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
@@ -36,9 +36,9 @@
 ---
 
 ### Step 3: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Document what is now proven on `foundation` before emitter work begins
+- [x] Document what is now proven on `foundation` before emitter work begins
 
 ---
 
@@ -72,6 +72,7 @@
 | 2026-04-06 19:41 | First-slice blocker captured | Logged enum-output routing support in the shared C backend as the remaining gap to resolve before the likely enum-first emitter slice. |
 | 2026-04-06 19:44 | Shared-framework verification tests passed | `python3 -m unittest tests.codegen.test_project_foundation_shared_framework` passed (3 tests). |
 | 2026-04-06 19:44 | Python compile verification passed | `python3 -m py_compile` succeeded for the touched shared codegen modules and the new foundation validation test. |
+| 2026-04-06 19:46 | Delivery docs updated | Added a CG-017 validation-status section to `foundation-next-phase-plan.md` describing what is proven on `foundation` and the remaining enum-routing gap before emitter work. |
 
 ---
 

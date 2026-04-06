@@ -301,6 +301,21 @@ Concretely, the first implementation task after this plan should be:
 2. add the `foundation` generate/build/test harness
 3. migrate enum emission and, if capacity remains, one tiny utility surface such as `error` or `base64`
 
+## Validation status after CG-017
+
+The shared project-rooted framework is now explicitly proven on `project_foundation.xml` at the metadata/loading layer.
+
+What is now validated:
+
+- `load_named_project_source("foundation")` can load the top-level project XML, preserve `foundation` metadata (`vscf`, `VSCFoundation`, `virgil crypto foundation`), and resolve the shared core modules (`assert`, `library`, `memory`, `atomic`) even when local `foundation` modules reference them without repeating `from="shared"`.
+- shared module-graph traversal now skips non-source generated-module requirements such as `buffer defs`, which appear in `foundation` requires but do not have standalone source XML files.
+- shared IR/output-target lowering produces `foundation`-specific include/work roots and `vscf_*` artifact names for modules, classes, and enums without leaking `common` literals into the routed paths.
+- the proof point remains metadata-focused only; no `foundation` emitter ownership was broadened in this task.
+
+Remaining pre-emitter gap carried forward:
+
+- the shared C backend helper in `tools/codegen/project_c_backend.py` still resolves output metadata only for modules/classes, so the likely enum-first emitter slice will need enum-target routing support (or a temporary slice-specific adapter) before implementation begins.
+
 ## Expected outcome
 
 After this phase, the codegen framework should expose generic shared modules rather than `common`-named core modules, and it should be shared across at least two project roots:
