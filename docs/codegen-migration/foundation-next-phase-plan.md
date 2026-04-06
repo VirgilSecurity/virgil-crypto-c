@@ -37,6 +37,74 @@ That includes, where model-defined:
 
 Also, avoid tying backend functionality to specific module names. If behavior is generic, it should be expressed in terms of shared entity kinds, attributes, or IR metadata rather than per-module special cases.
 
+## Refactor boundaries from the current `common_*` modules
+
+### Shared project graph loading
+
+Responsibilities that should move out of `common_source.py` into a generic shared loader layer:
+
+- XML parsing, code-block protection, text cleanup, and description extraction helpers
+- generic source dataclasses for projects, modules, classes, enums, methods, properties, variables, and named references
+- project-root loading from an explicit top-level project XML path
+- recursive module/dependency graph resolution using `from` metadata and model area names
+- generic project/model path derivation from repo-root + project metadata rather than `common` literals
+
+What should remain project-specific is only the convenience entrypoint for locating `project_common.xml`.
+
+### Shared IR and output-target mapping
+
+Responsibilities that should move out of `common_ir.py` into a generic shared IR/output-target layer:
+
+- IR dataclasses for project/entity/output-target structure
+- common source-to-IR lowering for modules, classes, enums, methods, variables, constants, and references
+- include-namespace / generated-namespace derivation from project metadata
+- output-target construction from model-defined prefix, namespace, scope, and work/source roots
+- separation of explicit project modules from dependency-resolved modules
+
+The project-specific residue should be limited to compatibility names such as `project_common_to_ir()` while the actual implementation becomes project-agnostic.
+
+### Shared C backend code
+
+Responsibilities that should move out of `common_direct_c.py` into a generic shared C backend layer:
+
+- helpers that navigate IR (`_module_ir`, `_class_ir`, `_type_symbol`, `_include_file`)
+- XML construction helpers (`_text`, `_c_module_root_attrs`, `_c_module_root`, comment/type helpers)
+- generic argument/return lowering from IR/source attributes into `c_argument` / `c_return`
+- renderer registration and direct-XML dispatch wiring based on output-target metadata
+- reusable backend-static C rendering rules that are intentionally not model data
+
+The remaining project-specific/backend-edge layer should only contain entity implementations that are still handwritten in Python because the model does not yet express them fully (for example the current `library`, `memory`, `atomic`, `assert`, `data`, `buffer`, and `buffer_defs` direct builders).
+
+## Thin compatibility adapters allowed during migration
+
+These `common`-named adapters can remain temporarily while imports are being moved:
+
+- `project_common_path()` as a convenience wrapper over a generic project-path resolver
+- `load_project_common()` and `project_common_to_ir()` as thin pass-through wrappers to shared loader/IR entrypoints
+- `common_bootstrap.py` as a project-specific CLI entrypoint that selects the `common` project and shared backend registry
+- `inspect_common_source.py`, `inspect_common_ir.py`, and `inspect_common_direct.py` as convenience inspection scripts that continue to target the `common` project while shared internals stabilize
+
+Those adapters should stay intentionally thin: project selection, CLI defaults, and compatibility export names only. They should not keep ownership of shared parsing, IR shaping, output-target computation, or backend-lowering logic.
+
+## Import, script, and documentation changes implied by the refactor
+
+### Python imports / modules
+
+- move internal imports away from `tools.codegen.common_source`, `tools.codegen.common_ir`, and `tools.codegen.common_direct_c` for shared responsibilities
+- update `common_bootstrap.py` to import the shared backend registry while remaining the `common`-specific CLI wrapper
+- update the inspect scripts to import shared loader/IR/backend entrypoints or compatibility wrappers, whichever keeps command behavior stable during migration
+
+### Verification / scripts
+
+- keep `bash tools/codegen/build_common_with_new_codegen.sh` as the `common` verification gate, but ensure it only depends on the compatibility bootstrap entrypoint rather than owning shared logic
+- update any py-compile/documented command snippets that currently name only `common_*` modules so they cover the new shared modules plus the retained `common` adapters
+
+### Documentation updates
+
+- revise ADR implementation guidance and migration notes that currently present `common_source.py`, `common_ir.py`, and `common_direct_c.py` as long-term core architecture
+- update `foundation-next-phase-plan.md` and related migration notes so the generic shared modules are the target architecture and `common` becomes the reference adapter/project
+- keep task-area context aligned with the new phase ordering: shared refactor first, then `foundation` validation and emitter work
+
 ## Recommended execution sequence
 
 1. extract shared loader responsibilities from `common_source.py` into generic codegen modules

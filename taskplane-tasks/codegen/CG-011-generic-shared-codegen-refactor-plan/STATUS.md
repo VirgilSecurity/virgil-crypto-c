@@ -1,6 +1,6 @@
 # CG-011: Generic Shared-Codegen Refactor Plan — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 2: Document the plan
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -19,16 +19,16 @@
 ---
 
 ### Step 1: Identify refactor boundaries
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Classify what belongs in shared project graph loading, shared IR/output-targets, and shared C backend code
-- [ ] Identify what can remain as thin compatibility adapters during migration
-- [ ] Identify import/script/doc changes required by the rename/refactor
+- [x] Classify what belongs in shared project graph loading, shared IR/output-targets, and shared C backend code
+- [x] Identify what can remain as thin compatibility adapters during migration
+- [x] Identify import/script/doc changes required by the rename/refactor
 
 ---
 
 ### Step 2: Document the plan
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Write a concise refactor plan with a recommended sequence
 - [ ] Explicitly preserve the rule that shared functionality should not branch on specific module names where metadata already expresses the distinction
