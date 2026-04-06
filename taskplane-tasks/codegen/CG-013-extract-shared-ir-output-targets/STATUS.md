@@ -86,6 +86,8 @@
 | 2026-04-06 14:31 | Step 3 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_bootstrap tests.codegen.test_common_direct_c_resolution` passed (18 tests) |
 | 2026-04-06 14:31 | Step 3 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
 | 2026-04-06 14:34 | Step 4 delivery | Updated migration docs to describe `project_ir.py` as the shared IR/output-target layer and `common_ir.py` as a thin compatibility adapter |
+| 2026-04-06 14:22 | Worker iter 1 | done in 738s, tools: 85 |
+| 2026-04-06 14:22 | Task complete | .DONE created |
 
 ---
 
