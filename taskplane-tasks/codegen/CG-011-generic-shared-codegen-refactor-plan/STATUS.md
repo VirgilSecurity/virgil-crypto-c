@@ -1,44 +1,44 @@
 # CG-011: Generic Shared-Codegen Refactor Plan — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 3: Delivery
+**Status:** ✅ Complete
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the ADRs and current next-phase plan
-- [ ] Inspect the current `common_*` module boundaries
+- [x] Read the ADRs and current next-phase plan
+- [x] Inspect the current `common_*` module boundaries
 
 ---
 
 ### Step 1: Identify refactor boundaries
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Classify what belongs in shared project graph loading, shared IR/output-targets, and shared C backend code
-- [ ] Identify what can remain as thin compatibility adapters during migration
-- [ ] Identify import/script/doc changes required by the rename/refactor
+- [x] Classify what belongs in shared project graph loading, shared IR/output-targets, and shared C backend code
+- [x] Identify what can remain as thin compatibility adapters during migration
+- [x] Identify import/script/doc changes required by the rename/refactor
 
 ---
 
 ### Step 2: Document the plan
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Write a concise refactor plan with a recommended sequence
-- [ ] Explicitly preserve the rule that shared functionality should not branch on specific module names where metadata already expresses the distinction
+- [x] Write a concise refactor plan with a recommended sequence
+- [x] Explicitly preserve the rule that shared functionality should not branch on specific module names where metadata already expresses the distinction
 
 ---
 
 ### Step 3: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Recommend the first extraction step after the planning task
+- [x] Recommend the first extraction step after the planning task
 
 ---
 
@@ -61,6 +61,11 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 12:50 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 12:50 | Step 0 started | Preflight |
+| 2026-04-06 12:54 | Agent reply | CG-011 completed. Updated docs/codegen-migration/foundation-next-phase-plan.md with refactor boundaries, thin compatibility adapters, import/script/doc implications, concrete sequence, explicit no-mod |
+| 2026-04-06 12:54 | Worker iter 1 | done in 255s, tools: 54 |
+| 2026-04-06 12:54 | Task complete | .DONE created |
 
 ---
 
