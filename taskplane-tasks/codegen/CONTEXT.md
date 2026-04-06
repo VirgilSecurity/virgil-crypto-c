@@ -48,6 +48,7 @@ Current next-phase focus:
 - treat `common` as the reference implementation for the project-rooted generator framework
 - generalize that framework so it can load both `project_common.xml` and `project_foundation.xml`
 - keep project names, namespaces, paths, prefixes, and output routing model-driven rather than hardcoded
+- keep backend functionality generic and entity-driven rather than tied to specific module names whenever the model/IR already expresses the needed distinction
 - define `foundation`-specific verification/preservation gates at the validation layer
 - port `foundation` incrementally through the shared C backend
 

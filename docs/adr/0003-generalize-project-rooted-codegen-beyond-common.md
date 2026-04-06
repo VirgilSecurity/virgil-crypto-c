@@ -35,6 +35,9 @@ The universalized framework must:
 - derive output metadata from project/model facts
 - allow project-specific compile gates and preservation rules without re-hardcoding per-project naming logic
 - keep legacy resolved XML as parity/reference material only, not as the intended runtime source for migrated outputs
+- keep backend functionality entity- and metadata-driven rather than tied to specific module names
+
+In other words, project selection may differ (`common`, `foundation`, later others), but the backend logic should not fork into module-name-specific functionality when the same behavior can be derived from the model graph and shared IR.
 
 ### Foundation-first strategy
 
@@ -61,9 +64,10 @@ The universalized framework must:
 ## Implementation guidance
 
 1. Do not fork the architecture into separate `common_*` and `foundation_*` pipelines if the difference is only project metadata.
-2. Add tests that prove shared loader/IR/output-target behavior across at least `common` and `foundation`.
-3. Introduce project-specific verification commands only at the orchestration/build-validation layer, not in core naming/output resolution.
-4. Keep generated/manual preservation semantics explicit for C outputs that are not fully generated.
+2. Do not introduce functionality branches keyed off specific module names when the same rule can be expressed against shared entity kinds, model attributes, or IR metadata.
+3. Add tests that prove shared loader/IR/output-target behavior across at least `common` and `foundation`.
+4. Introduce project-specific verification commands only at the orchestration/build-validation layer, not in core naming/output resolution.
+5. Keep generated/manual preservation semantics explicit for C outputs that are not fully generated.
 
 ## Non-goals
 

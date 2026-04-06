@@ -35,6 +35,8 @@ That includes, where model-defined:
 - file and output placement
 - generated artifact routing
 
+Also, avoid tying backend functionality to specific module names. If behavior is generic, it should be expressed in terms of shared entity kinds, attributes, or IR metadata rather than per-module special cases.
+
 ## Recommended execution sequence
 
 1. add `foundation` project-root tests and inventory
