@@ -21,9 +21,9 @@
 ### Step 1: Inventory `foundation`
 **Status:** ⬜ Not Started
 
-- [ ] Identify the main entity categories in `foundation` (classes, interfaces, implementors, enums, modules)
-- [ ] Identify likely low-risk first slices versus high-risk areas
-- [ ] Record any obvious preservation/build constraints
+- [x] Identify the main entity categories in `foundation` (classes, interfaces, implementors, enums, modules)
+- [x] Identify likely low-risk first slices versus high-risk areas
+- [x] Record any obvious preservation/build constraints
 
 ---
 

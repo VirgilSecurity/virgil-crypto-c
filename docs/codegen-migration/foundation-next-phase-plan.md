@@ -23,6 +23,59 @@ As with `common`, the generator should start from the top-level project model, r
 - project-specific output surfaces beyond the small `common` proving ground
 - a meaningful test of whether naming/path/prefix resolution is truly model-driven
 
+## Inventory snapshot of `project_foundation.xml`
+
+Current top-level inventory from `codegen/models/project_foundation/project_foundation.xml` and its sibling model files:
+
+- **48 classes** — a wide mix of light utility/value objects (`error`, `base64`, `oid`, `pem`, `pem title`) and heavier stateful crypto/session types (`recipient cipher`, `message cipher`, `group session`, `key provider`, `signer`, `verifier`)
+- **34 interfaces** — core algorithm contracts for ciphering, hashes, KDFs, randomness, key material, ASN.1, serialization, and padding
+- **13 implementors** — large implementation families rooted in `mbedtls`, `virgil`, `ed25519`, `post quantum`, `compound key`, `hybrid key`, and serializer/padding helpers
+- **7 enums** — `status`, `asn1 tag`, `alg id`, `oid id`, `recipient cipher decryption state`, `group msg type`, and `cipher state`
+- **4 local modules** — `group session typedefs` plus three `mbedtls bridge *` modules, in addition to shared `common` modules (`assert`, `library`, `memory`, `atomic`)
+
+The surface is not a flat list of peer entities. It clusters into a few clear families:
+
+1. **Leaf/value surfaces** — enums, small utility classes, and constant/typedef style modules with shallow dependency depth.
+2. **Interface-driven algorithm families** — cipher/hash/KDF/random/key interfaces that define broad backend contracts.
+3. **Implementor-heavy crypto backends** — `mbedtls`, `virgil`, post-quantum, hybrid, and compound-key implementations with many cross-references.
+4. **Serialization and wire-format surfaces** — ASN.1, PEM, message-info serializers, and algorithm-info serializers.
+5. **Session / message workflows** — `recipient cipher`, `message cipher`, signer/verifier flows, and `group session*` types including protobuf-backed artifacts.
+
+## Migration-risk segmentation
+
+### Likely low-risk first slices
+
+The best entry slices are the model areas that are structurally simple, heavily self-contained, and easy to verify in isolation:
+
+- **Enums** (`status`, `asn1 tag`, `alg id`, `oid id`, `group msg type`, `cipher state`) — mostly deterministic constant emission with no ownership graph.
+- **Utility/value classes** such as `error`, `base64`, `oid`, and likely `pem title` — shallow dependency surfaces, straightforward signatures, and existing dedicated tests like `test_base64` / `test_pem`.
+- **Simple support modules** like `group session typedefs` and the `mbedtls bridge *` helpers — small API surfaces that mostly exercise module output routing.
+
+These slices are useful because they validate the shared loader + IR + output-target path on real `foundation` metadata without forcing the first emitter task to solve deep dependency injection, crypto implementation wiring, or complex handwritten preservation.
+
+### Medium-risk follow-on slices
+
+- **Serialization helpers** (`alg info`, `message info`, ASN.1 reader/writer helpers, `pem`) because they are still bounded but interact with more generated definitions and internal/public header splits.
+- **List/container-style classes** like `key recipient info list`, `signer info list`, and `verifier list` that add ownership and generated defs/internal header patterns without yet pulling in the heaviest crypto flows.
+
+### High-risk areas to avoid as the first emitter pass
+
+- **Implementor families** (`virgil`, `mbedtls`, `post quantum`, `compound key`, `hybrid key`) because they encode many concrete implementations, dependency properties, constants, and cross-entity requirements.
+- **Stateful crypto workflow classes** such as `recipient cipher`, `message cipher`, `key provider`, `signer`, and `verifier` because they combine interface wiring, buffering, serialization, and crypto defaults.
+- **`group session*` types** because they depend on protobuf artifacts, internal headers, typedef modules, and multi-entity workflow semantics rather than a single isolated output.
+- **Post-quantum and platform-sensitive code paths** because build behavior also depends on feature flags and third-party libraries (`round5`, `falcon`, mbedTLS threading).
+
+## Preservation and build constraints already visible
+
+The `foundation` inventory already exposes constraints that the first emitter task must preserve:
+
+- **Preservation still matters.** Existing `library/foundation/include/**` and `library/foundation/src/**` files contain generated blocks inside checked-in files rather than being throwaway outputs, so the new emitter must continue updating generated sections without clobbering handwritten content around them.
+- **`foundation` is not standalone.** `library/foundation/CMakeLists.txt` requires `vsc::common`, `mbed::crypto`, and the `foundation_pb` sublibrary, so validation must include dependency-aware builds instead of isolated file diffs.
+- **Feature flags change the effective surface.** `multi threading` and `post quantum` are first-class project features in `project_foundation.xml`, and the build links optional `round5` / `falcon` libraries behind CMake feature gates.
+- **Protobuf-backed artifacts are in scope.** `library/foundation/protobuf/` and the `group session*` model family mean some `foundation` outputs depend on generated nanopb/protobuf assets that should be treated as a distinct higher-risk preservation/build boundary.
+- **Internal/public splits are common.** `sources.cmake` references public headers, private headers, internal headers, and `*_defs.c` / `*_internal.c` style outputs, so the shared backend must keep output-target routing model-driven rather than assuming one file pair per entity.
+- **Wrappers and downstream consumers exist, but should remain downstream validation only.** `project_foundation.xml` advertises multiple wrappers, and the repo contains wrapper/benchmark/program consumers of `vsc::foundation`; however, the first migration slice should prove the C library/test surfaces first rather than broadening the implementation scope into wrappers.
+
 ## Architecture rule carried forward
 
 Do not hardcode project-specific metadata in the backend when it is defined by models.
