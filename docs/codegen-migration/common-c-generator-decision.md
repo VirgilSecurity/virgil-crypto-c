@@ -46,7 +46,7 @@ The current `tools/codegen/common_bootstrap.py` follows this preservation model 
 - regenerating the block
 - writing the rest of the file back unchanged
 
-The bootstrap entrypoint should also resolve direct-rendered XML inputs from the IR-derived renderer map instead of assuming project-specific generated XML basenames in its file scan. Legacy `c_module_*.xml` discovery remains as fallback behavior for non-direct inputs.
+The bootstrap entrypoint should also resolve direct-rendered XML inputs from the IR-derived renderer map instead of assuming project-specific generated XML basenames in its file scan. After CG-014, that renderer map is built by the shared `tools/codegen/project_c_backend.py` helpers while `tools/codegen/common_direct_c.py` remains the thin `common` adapter that supplies handwritten builders. Legacy `c_module_*.xml` discovery remains as fallback behavior for non-direct inputs.
 
 ## Long-term implication
 

@@ -1,7 +1,7 @@
 # CG-014: Extract Shared C Backend — Status
 
-**Current Step:** Step 3: Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 4: Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
@@ -37,18 +37,18 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run backend tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
-- [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Run backend tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run `bash tools/codegen/build_common_with_new_codegen.sh`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Update docs to describe the shared C backend layer and any remaining adapter-only code
+- [x] Update docs to describe the shared C backend layer and any remaining adapter-only code
 
 ---
 
@@ -79,6 +79,12 @@
 | 2026-04-06 14:27 | Step 0 completed | Shared-backend helpers vs thin compatibility adapters confirmed |
 | 2026-04-06 14:27 | Step 1 started | Extract shared C backend code |
 | 2026-04-06 14:41 | Worker iter 1 | done in 1085s, tools: 40 |
+| 2026-04-06 14:57 | Step 1 targeted tests | `python3 -m unittest tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap` passed (8 tests) |
+| 2026-04-06 15:00 | Step 2 targeted tests | `python3 -m unittest tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_c_backend` passed (10 tests) |
+| 2026-04-06 15:02 | Step 3 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_bootstrap tests.codegen.test_common_direct_c_resolution tests.codegen.test_project_c_backend` passed (20 tests) |
+| 2026-04-06 15:02 | Step 3 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py tools/codegen/project_c_backend.py` passed |
+| 2026-04-06 15:05 | Step 3 verification build | `bash tools/codegen/build_common_with_new_codegen.sh` passed; generated `common` outputs compiled successfully and were restored afterwards |
+| 2026-04-06 15:07 | Step 4 docs | Documented `project_c_backend.py` as the shared C-backend helper layer and clarified `common_direct_c.py` as the adapter/handwritten-builder layer |
 
 ---
 
