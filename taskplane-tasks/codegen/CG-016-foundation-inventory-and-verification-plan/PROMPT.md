@@ -1,27 +1,26 @@
-# Task: CG-011 — Foundation Inventory and Verification Plan
+# Task: CG-016 — Foundation Inventory and Verification Plan
 
 **Created:** 2026-04-05
 **Size:** S
 
 ## Review Level: 2 (Standard)
 
-**Assessment:** Planning task to scope `foundation` as the next project-rooted target and define its validation gates.
+**Assessment:** Planning task to scope `foundation` as the next target after the shared-framework refactor and define its validation gates.
 **Score:** 3/8 — Blast radius: 1, Pattern novelty: 1, Security: 0, Reversibility: 1
 
 ## Mission
 
-Create the execution map for moving from the completed `common` proving-ground slice into `foundation`.
+Create the execution map for moving from the generic shared-codegen framework into `foundation`.
 
 This task must inventory the `project_foundation.xml` surface, identify the first low-risk migration slice, and define the validation gates needed for `foundation` work.
 
 ## Dependencies
 
-- **None**
+- `CG-015`
 
 ## Context to Read First
 
 - `taskplane-tasks/codegen/CONTEXT.md`
-- `docs/adr/0002-project-rooted-codegen-pipeline.md`
 - `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md`
 - `docs/codegen-migration/foundation-next-phase-plan.md`
 - `codegen/models/project_foundation/project_foundation.xml`
@@ -40,7 +39,7 @@ This task must inventory the `project_foundation.xml` surface, identify the firs
 
 ### Step 0: Preflight
 
-- [ ] Read the ADRs and current next-phase plan
+- [ ] Read the ADR and current next-phase plan
 - [ ] Inspect `project_foundation.xml` and the immediate project model surface
 
 ### Step 1: Inventory `foundation`
@@ -68,12 +67,12 @@ This task must inventory the `project_foundation.xml` surface, identify the firs
 
 - [ ] There is a documented inventory and first-slice recommendation for `foundation`
 - [ ] The validation gates for `foundation` are explicit
-- [ ] The plan reinforces the no-project-hardcodes rule
+- [ ] The plan reinforces the shared-framework/no-hardcodes rule
 
 ## Git Commit Convention
 
-- **Implementation:** `docs(CG-011): plan foundation migration entrypoint`
-- **Checkpoints:** `checkpoint: CG-011 <description>`
+- **Implementation:** `docs(CG-016): plan foundation migration entrypoint`
+- **Checkpoints:** `checkpoint: CG-016 <description>`
 
 ## Do NOT
 

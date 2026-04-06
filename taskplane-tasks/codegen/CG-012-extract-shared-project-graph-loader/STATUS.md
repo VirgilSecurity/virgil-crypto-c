@@ -1,4 +1,4 @@
-# CG-012: Shared Project Graph Loader for Common + Foundation — Status
+# CG-012: Extract Shared Project Graph Loader — Status
 
 **Current Step:** Not Started
 **Status:** 🔵 Ready for Execution
@@ -13,25 +13,26 @@
 ### Step 0: Preflight
 **Status:** ⬜ Not Started
 
-- [ ] Read the ADR and `foundation` inventory output
-- [ ] Identify remaining `common`-specific assumptions in the current loader path
+- [ ] Read the refactor plan and identify the shared loader responsibilities
+- [ ] Confirm the compatibility boundary for `common_source.py`
 
 ---
 
-### Step 1: Generalize project-rooted loading
+### Step 1: Extract shared loader code
 **Status:** ⬜ Not Started
 
-- [ ] Support both `project_common.xml` and `project_foundation.xml` through the same loader architecture
-- [ ] Keep top-level project metadata model-driven
-- [ ] Preserve tolerant parsing behavior for legacy XML-like content
+- [ ] Move generic project-rooted loading logic into shared modules with generic names
+- [ ] Preserve tolerant parsing behavior
+- [ ] Keep project metadata model-driven
 
 ---
 
-### Step 2: Add shared tests
+### Step 2: Preserve compatibility and tests
 **Status:** ⬜ Not Started
 
-- [ ] Add tests proving the loader works for both project roots
-- [ ] Avoid duplicating project-specific logic where shared structure is sufficient
+- [ ] Keep or add thin compatibility adapters only where necessary
+- [ ] Update imports/tests/scripts affected by the extraction
+- [ ] Add tests proving the shared loader path still works for `common`
 
 ---
 
@@ -46,7 +47,7 @@
 ### Step 4: Delivery
 **Status:** ⬜ Not Started
 
-- [ ] Document what is now universal in the loader and what remains project-specific only at the model-data level
+- [ ] Document what moved into the shared loader layer and what remains adapter-only
 
 ---
 

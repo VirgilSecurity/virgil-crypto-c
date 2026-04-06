@@ -1,30 +1,30 @@
-# Task: CG-015 — First Foundation C Slice on Shared Backend
+# Task: CG-019 — First Foundation C Slice and Integration
 
 **Created:** 2026-04-05
 **Size:** L
 
 ## Review Level: 2 (Standard)
 
-**Assessment:** First real `foundation` emitter task on the generalized framework; moderate-to-high risk and should stay tightly scoped.
+**Assessment:** First real `foundation` implementation task on the shared framework; should stay tightly scoped and validation-driven.
 **Score:** 6/8 — Blast radius: 2, Pattern novelty: 2, Security: 0, Reversibility: 2
 
 ## Mission
 
-Implement one low-risk `foundation` C generation slice using the shared project-rooted loader/IR/backend path.
+Implement and integrate one low-risk `foundation` C generation slice using the newly generic shared project-rooted loader/IR/backend path.
 
-The slice should be chosen from the inventory/planning work and should prove that the framework generalization is real, not another `common`-only special case.
+The slice should be chosen from the inventory/planning work and should prove that the generalized framework is real, not another `common`-only special case.
 
 ## Dependencies
 
-- `CG-013`
-- `CG-014`
+- `CG-017`
+- `CG-018`
 
 ## Context to Read First
 
 - `taskplane-tasks/codegen/CONTEXT.md`
 - `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md`
 - `docs/codegen-migration/foundation-next-phase-plan.md`
-- outputs of `CG-011` through `CG-014`
+- outputs of `CG-016` through `CG-018`
 
 ## Environment
 
@@ -41,7 +41,7 @@ The slice should be chosen from the inventory/planning work and should prove tha
 
 ### Step 0: Preflight
 
-- [ ] Read the foundation inventory/gate outputs
+- [ ] Read the `foundation` inventory/gate outputs
 - [ ] Confirm the selected low-risk slice and its acceptance criteria
 
 ### Step 1: Implement the first slice
@@ -56,8 +56,9 @@ The slice should be chosen from the inventory/planning work and should prove tha
 - [ ] Run the documented `foundation` validation gate(s)
 - [ ] Keep generated/manual preservation rules intact where applicable
 
-### Step 3: Delivery
+### Step 3: Integrate and document
 
+- [ ] Integrate the first slice into the shared workflow cleanly
 - [ ] Update docs to record what slice now works and what remains intentionally out of scope
 
 ## Documentation Requirements
@@ -70,11 +71,12 @@ The slice should be chosen from the inventory/planning work and should prove tha
 - [ ] A real `foundation` C slice works through the shared framework
 - [ ] Project metadata is model-driven rather than hardcoded
 - [ ] Tests and validation gates pass
+- [ ] The slice is integrated into the shared workflow cleanly
 
 ## Git Commit Convention
 
-- **Implementation:** `feat(CG-015): add first foundation c slice`
-- **Checkpoints:** `checkpoint: CG-015 <description>`
+- **Implementation:** `feat(CG-019): add first foundation c slice`
+- **Checkpoints:** `checkpoint: CG-019 <description>`
 
 ## Do NOT
 

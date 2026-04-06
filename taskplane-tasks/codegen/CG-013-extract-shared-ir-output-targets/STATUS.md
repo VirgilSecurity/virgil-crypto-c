@@ -1,4 +1,4 @@
-# CG-016: Foundation Bootstrap Integration, Regression, and Docs — Status
+# CG-013: Extract Shared IR and Output Targets — Status
 
 **Current Step:** Not Started
 **Status:** 🔵 Ready for Execution
@@ -13,34 +13,41 @@
 ### Step 0: Preflight
 **Status:** ⬜ Not Started
 
-- [ ] Review predecessor task outputs
-- [ ] Inspect the relevant bootstrap integration points
+- [ ] Read the refactor plan and current IR/output-target docs
+- [ ] Confirm which IR responsibilities should become shared generic modules
 
 ---
 
-### Step 1: Integrate and validate
+### Step 1: Extract shared IR/output-target code
 **Status:** ⬜ Not Started
 
-- [ ] Ensure the first `foundation` slice is integrated into the shared workflow cleanly
-- [ ] Add/update regression tests around the shared project-rooted path
-- [ ] Keep resolved XML limited to approved parity/reference roles
+- [ ] Move generic IR/output-target modeling into shared modules with generic names
+- [ ] Keep naming/path/prefix/output routing model-driven
+- [ ] Avoid turning the shared IR into project-specific branches
 
 ---
 
-### Step 2: Verification
+### Step 2: Preserve compatibility and tests
 **Status:** ⬜ Not Started
 
-- [ ] Run the relevant tests
-- [ ] Run documented `foundation` validation gates
+- [ ] Keep or add thin compatibility adapters only where necessary
+- [ ] Update imports/tests/scripts affected by the extraction
+- [ ] Add tests proving the shared IR path still works for `common`
+
+---
+
+### Step 3: Verification
+**Status:** ⬜ Not Started
+
+- [ ] Run IR tests
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 
 ---
 
-### Step 3: Documentation and delivery
+### Step 4: Delivery
 **Status:** ⬜ Not Started
 
-- [ ] Refresh docs to state what is now shared across `common` and `foundation`
-- [ ] Summarize the next likely `foundation` expansion step
+- [ ] Update docs to describe the shared IR/output-target layer
 
 ---
 

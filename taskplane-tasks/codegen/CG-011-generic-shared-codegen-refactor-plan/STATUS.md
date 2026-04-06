@@ -1,4 +1,4 @@
-# CG-011: Foundation Inventory and Verification Plan — Status
+# CG-011: Generic Shared-Codegen Refactor Plan — Status
 
 **Current Step:** Not Started
 **Status:** 🔵 Ready for Execution
@@ -14,32 +14,31 @@
 **Status:** ⬜ Not Started
 
 - [ ] Read the ADRs and current next-phase plan
-- [ ] Inspect `project_foundation.xml` and the immediate project model surface
+- [ ] Inspect the current `common_*` module boundaries
 
 ---
 
-### Step 1: Inventory `foundation`
+### Step 1: Identify refactor boundaries
 **Status:** ⬜ Not Started
 
-- [ ] Identify the main entity categories in `foundation` (classes, interfaces, implementors, enums, modules)
-- [ ] Identify likely low-risk first slices versus high-risk areas
-- [ ] Record any obvious preservation/build constraints
+- [ ] Classify what belongs in shared project graph loading, shared IR/output-targets, and shared C backend code
+- [ ] Identify what can remain as thin compatibility adapters during migration
+- [ ] Identify import/script/doc changes required by the rename/refactor
 
 ---
 
-### Step 2: Define verification gates
+### Step 2: Document the plan
 **Status:** ⬜ Not Started
 
-- [ ] Document the recommended test/build/verification commands for `foundation`
-- [ ] Call out any missing verification infrastructure that must be added before emitter work
+- [ ] Write a concise refactor plan with a recommended sequence
+- [ ] Explicitly preserve the rule that shared functionality should not branch on specific module names where metadata already expresses the distinction
 
 ---
 
 ### Step 3: Delivery
 **Status:** ⬜ Not Started
 
-- [ ] Produce a concise next-phase plan for `foundation`
-- [ ] Recommend the first implementation slice after the inventory work
+- [ ] Recommend the first extraction step after the planning task
 
 ---
 

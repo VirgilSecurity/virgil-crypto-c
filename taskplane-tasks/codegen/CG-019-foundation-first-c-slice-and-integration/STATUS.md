@@ -1,4 +1,4 @@
-# CG-015: First Foundation C Slice on Shared Backend — Status
+# CG-019: First Foundation C Slice and Integration — Status
 
 **Current Step:** Not Started
 **Status:** 🔵 Ready for Execution
@@ -13,7 +13,7 @@
 ### Step 0: Preflight
 **Status:** ⬜ Not Started
 
-- [ ] Read the foundation inventory/gate outputs
+- [ ] Read the `foundation` inventory/gate outputs
 - [ ] Confirm the selected low-risk slice and its acceptance criteria
 
 ---
@@ -36,9 +36,10 @@
 
 ---
 
-### Step 3: Delivery
+### Step 3: Integrate and document
 **Status:** ⬜ Not Started
 
+- [ ] Integrate the first slice into the shared workflow cleanly
 - [ ] Update docs to record what slice now works and what remains intentionally out of scope
 
 ---

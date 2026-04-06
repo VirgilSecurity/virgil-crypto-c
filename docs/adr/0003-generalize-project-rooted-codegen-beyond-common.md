@@ -17,7 +17,7 @@ The next target should be `foundation`, but the work should not become a second 
 
 ## Decision
 
-The next migration phase will target `foundation` by generalizing the current project-rooted framework rather than adding new `foundation`-specific hardcoded paths.
+The next migration phase will first refactor the currently `common`-named project-rooted framework into generic shared codegen modules, and only then target `foundation` on top of that shared framework rather than adding new `foundation`-specific hardcoded paths.
 
 ### Scope
 
@@ -39,12 +39,25 @@ The universalized framework must:
 
 In other words, project selection may differ (`common`, `foundation`, later others), but the backend logic should not fork into module-name-specific functionality when the same behavior can be derived from the model graph and shared IR.
 
-### Foundation-first strategy
+### Pre-foundation framework refactor
 
-`foundation` should start with:
+Before broad `foundation` work, the current `common_*` implementation modules should be refactored so shared responsibilities live in generic codegen modules rather than project-specific file names.
 
-1. project/root graph loading and tests
-2. generalized IR/output-target support for non-`common` entities
+That means separating and generalizing:
+
+1. project graph loading
+2. shared IR/output-target logic
+3. shared C backend/lowering logic
+4. bootstrap integration points that should be project-agnostic
+
+Thin compatibility adapters may remain temporarily if they help migration, but the core architecture should no longer present itself as `common`-specific where the behavior is shared.
+
+### Foundation-next strategy
+
+After the shared-framework refactor, `foundation` should proceed with:
+
+1. project/root graph loading and tests on the shared loader
+2. generalized IR/output-target support proven across more than one project root
 3. explicit `foundation` verification gates and preservation inventory
 4. a low-risk C emitter pilot before broader foundation coverage
 
@@ -58,7 +71,7 @@ In other words, project selection may differ (`common`, `foundation`, later othe
 
 ### Trade-offs
 
-- some code currently shaped around `common` naming/output assumptions will need another cleanup pass
+- some code currently shaped around `common` naming/output assumptions will need another cleanup/refactor pass before `foundation` work can sit on a truly shared base
 - we should expect discovery work around `foundation`-specific preservation and build surfaces before broad emitter work begins
 
 ## Implementation guidance

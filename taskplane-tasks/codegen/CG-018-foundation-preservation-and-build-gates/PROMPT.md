@@ -1,4 +1,4 @@
-# Task: CG-014 — Foundation Preservation and Build Gates
+# Task: CG-018 — Foundation Preservation and Build Gates
 
 **Created:** 2026-04-05
 **Size:** S
@@ -16,7 +16,7 @@ This includes preservation constraints, recommended test/build commands, and any
 
 ## Dependencies
 
-- `CG-011`
+- `CG-016`
 
 ## Context to Read First
 
@@ -75,8 +75,8 @@ This includes preservation constraints, recommended test/build commands, and any
 
 ## Git Commit Convention
 
-- **Implementation:** `test(CG-014): define foundation verification gates`
-- **Checkpoints:** `checkpoint: CG-014 <description>`
+- **Implementation:** `test(CG-018): define foundation verification gates`
+- **Checkpoints:** `checkpoint: CG-018 <description>`
 
 ## Do NOT
 

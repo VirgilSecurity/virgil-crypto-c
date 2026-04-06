@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-04
 **Status:** Active
-**Next Task ID:** CG-017
+**Next Task ID:** CG-020
 
 ---
 
@@ -46,11 +46,11 @@ remain checked-in umbrella headers with empty generated blocks and are now track
 Current next-phase focus:
 
 - treat `common` as the reference implementation for the project-rooted generator framework
-- generalize that framework so it can load both `project_common.xml` and `project_foundation.xml`
+- refactor the current `common_*` implementation modules into generic shared codegen modules before broad `foundation` work
 - keep project names, namespaces, paths, prefixes, and output routing model-driven rather than hardcoded
 - keep backend functionality generic and entity-driven rather than tied to specific module names whenever the model/IR already expresses the needed distinction
-- define `foundation`-specific verification/preservation gates at the validation layer
-- port `foundation` incrementally through the shared C backend
+- define `foundation`-specific verification/preservation gates only after the shared framework refactor is in place
+- port `foundation` incrementally through the shared C backend after that refactor
 
 The compile gate for this area is:
 
@@ -109,21 +109,27 @@ Completed architecture phase:
 - `CG-009` — model-driven C resolution from IR without hardcoded project metadata ✅
 - `CG-010` — bootstrap integration, preservation validation, and regression docs ✅
 
-Next generalization / foundation phase:
+Next generic-framework refactor phase:
 
-- `CG-011` — foundation project inventory and verification plan
-- `CG-012` — shared project-root graph loader for common + foundation
-- `CG-013` — shared IR/output-target generalization beyond common assumptions
-- `CG-014` — foundation preservation/build gates and tests
-- `CG-015` — first low-risk foundation C emitter slice on shared backend
-- `CG-016` — foundation bootstrap integration, regression validation, and docs
+- `CG-011` — generic shared-codegen refactor plan and module split
+- `CG-012` — extract shared project graph loader from `common_source.py`
+- `CG-013` — extract shared IR/output-targets from `common_ir.py`
+- `CG-014` — extract shared C backend from `common_direct_c.py`
+- `CG-015` — rename/adapt imports, scripts, tests, and docs for generic modules
+
+Then foundation phase:
+
+- `CG-016` — foundation inventory and verification plan
+- `CG-017` — shared framework validation on `project_foundation.xml`
+- `CG-018` — foundation preservation/build gates and tests
+- `CG-019` — first low-risk foundation C emitter slice and integration
 
 ---
 
 ## Technical Debt / Future Work
 
-- Reduce remaining project-specific hardcodes that still assume `common` in shared code paths.
-- Generalize project-root graph loading and IR/output-target logic for `foundation`.
+- Reduce remaining project-specific hardcodes and `common`-named shared-core assumptions in loader/IR/backend code paths.
+- Complete the shared-module refactor before expanding `foundation` emitter coverage.
 - Define and automate `foundation` compile/preservation verification before broad emitter work.
 - Add parity/tooling checks that make mixed-mode bootstrap differences easier to review.
 - Revisit umbrella/support/build generation only where the broader shared framework requires it.

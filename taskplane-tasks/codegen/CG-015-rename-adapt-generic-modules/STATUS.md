@@ -1,4 +1,4 @@
-# CG-013: Shared IR and Output Targets Beyond Common — Status
+# CG-015: Rename and Adapt Generic Modules, Imports, and Docs — Status
 
 **Current Step:** Not Started
 **Status:** 🔵 Ready for Execution
@@ -13,40 +13,33 @@
 ### Step 0: Preflight
 **Status:** ⬜ Not Started
 
-- [ ] Read the ADR and inspect current IR/output-target assumptions
-- [ ] Identify what is still implicitly tied to `common`
+- [ ] Review extracted shared-module outputs from predecessor tasks
+- [ ] Confirm which legacy `common_*` names should remain as temporary adapters, if any
 
 ---
 
-### Step 1: Generalize the IR model
+### Step 1: Update callers and names
 **Status:** ⬜ Not Started
 
-- [ ] Ensure project/entity/output metadata is represented generically enough for `foundation`
-- [ ] Keep naming/path/prefix/output routing model-driven
-- [ ] Avoid turning universal IR into a bag of ad hoc project exceptions
+- [ ] Update imports/scripts/tests/docs to prefer the new generic module names
+- [ ] Reduce legacy `common_*` modules to thin compatibility adapters or remove them where safe
+- [ ] Keep current `common` workflows working
 
 ---
 
-### Step 2: Add shared IR tests
+### Step 2: Verification
 **Status:** ⬜ Not Started
 
-- [ ] Add tests covering both `common` and `foundation` IR/output-target construction
-- [ ] Confirm the IR remains suitable for the C backend
-
----
-
-### Step 3: Verification
-**Status:** ⬜ Not Started
-
-- [ ] Run IR tests
+- [ ] Run relevant tests
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
 
 ---
 
-### Step 4: Delivery
+### Step 3: Delivery
 **Status:** ⬜ Not Started
 
-- [ ] Update docs to describe the shared IR/output-target contract
+- [ ] Update docs to state the new shared module names and compatibility policy
 
 ---
 

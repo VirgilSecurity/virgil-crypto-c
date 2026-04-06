@@ -1,4 +1,4 @@
-# CG-014: Foundation Preservation and Build Gates — Status
+# CG-018: Foundation Preservation and Build Gates — Status
 
 **Current Step:** Not Started
 **Status:** 🔵 Ready for Execution
