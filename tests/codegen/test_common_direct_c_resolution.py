@@ -4,11 +4,6 @@ from pathlib import Path
 import unittest
 
 from tools.codegen.common_direct_c import (
-    _buffer_defs_output,
-    _c_module_root_attrs,
-    _class_ir,
-    _direct_xml_name,
-    _module_ir,
     build_direct_assert_c_module,
     build_direct_atomic_c_module,
     build_direct_buffer_c_module,
@@ -19,6 +14,13 @@ from tools.codegen.common_direct_c import (
     direct_c_renderers,
 )
 from tools.codegen.common_source import load_project_common
+from tools.codegen.project_c_backend import (
+    c_module_root_attrs,
+    class_ir,
+    derived_module_output_from_class,
+    direct_xml_name,
+    module_ir,
+)
 from tools.codegen.project_ir import IROutputTarget, project_to_ir
 
 
@@ -49,7 +51,7 @@ class CommonDirectCResolutionTest(unittest.TestCase):
             source_visibility="public",
         )
 
-        attrs = _c_module_root_attrs(output, entity_id="demo", scope="private", class_name="")
+        attrs = c_module_root_attrs(output, entity_id="demo", scope="private", class_name="")
 
         self.assertEqual("alt_demo", attrs["name"])
         self.assertEqual("alt_demo.h", attrs["c_include_file"])
@@ -61,12 +63,12 @@ class CommonDirectCResolutionTest(unittest.TestCase):
 
     def test_direct_builders_take_root_output_metadata_from_ir(self) -> None:
         cases = [
-            (build_direct_library_c_module(REPO_ROOT), _module_ir(self.ir, "library").output),
-            (build_direct_memory_c_module(REPO_ROOT), _module_ir(self.ir, "memory").output),
-            (build_direct_atomic_c_module(REPO_ROOT), _module_ir(self.ir, "atomic").output),
-            (build_direct_assert_c_module(REPO_ROOT), _module_ir(self.ir, "assert").output),
-            (build_direct_data_c_module(REPO_ROOT), _class_ir(self.ir, "data").output),
-            (build_direct_buffer_c_module(REPO_ROOT), _class_ir(self.ir, "buffer").output),
+            (build_direct_library_c_module(REPO_ROOT), module_ir(self.ir, "library").output),
+            (build_direct_memory_c_module(REPO_ROOT), module_ir(self.ir, "memory").output),
+            (build_direct_atomic_c_module(REPO_ROOT), module_ir(self.ir, "atomic").output),
+            (build_direct_assert_c_module(REPO_ROOT), module_ir(self.ir, "assert").output),
+            (build_direct_data_c_module(REPO_ROOT), class_ir(self.ir, "data").output),
+            (build_direct_buffer_c_module(REPO_ROOT), class_ir(self.ir, "buffer").output),
         ]
 
         for root, output in cases:
@@ -84,33 +86,40 @@ class CommonDirectCResolutionTest(unittest.TestCase):
         data_root = build_direct_data_c_module(REPO_ROOT)
         buffer_defs_root = build_direct_buffer_defs_c_module(REPO_ROOT)
 
-        self.assertEqual(_module_ir(self.ir, "library").output.include_file, memory_root.findall("c_include")[1].attrib["file"])
-        self.assertEqual(_module_ir(self.ir, "assert").output.include_file, memory_root.findall("c_include")[2].attrib["file"])
-        self.assertEqual(_module_ir(self.ir, "library").output.include_file, assert_root.findall("c_include")[1].attrib["file"])
-        self.assertEqual(_module_ir(self.ir, "memory").output.include_file, data_root.findall("c_include")[2].attrib["file"])
-        self.assertEqual(_module_ir(self.ir, "assert").output.include_file, data_root.findall("c_include")[3].attrib["file"])
-        self.assertEqual(f"{_class_ir(self.ir, 'buffer').output.c_symbol}_t", buffer_defs_root.find("c_struct").attrib["name"])
+        self.assertEqual(module_ir(self.ir, "library").output.include_file, memory_root.findall("c_include")[1].attrib["file"])
+        self.assertEqual(module_ir(self.ir, "assert").output.include_file, memory_root.findall("c_include")[2].attrib["file"])
+        self.assertEqual(module_ir(self.ir, "library").output.include_file, assert_root.findall("c_include")[1].attrib["file"])
+        self.assertEqual(module_ir(self.ir, "memory").output.include_file, data_root.findall("c_include")[2].attrib["file"])
+        self.assertEqual(module_ir(self.ir, "assert").output.include_file, data_root.findall("c_include")[3].attrib["file"])
+        self.assertEqual(f"{class_ir(self.ir, 'buffer').output.c_symbol}_t", buffer_defs_root.find("c_struct").attrib["name"])
 
     def test_bootstrap_renderer_dispatch_uses_ir_generated_xml_names(self) -> None:
         renderers = direct_c_renderers(REPO_ROOT)
+        buffer_defs_output = derived_module_output_from_class(
+            class_ir(self.ir, "buffer").output,
+            entity_name="buffer_defs",
+            stem_suffix="defs",
+            generated_source_stem="buffer_defs",
+            header_visibility="private",
+        )
         expected_names = {
-            _direct_xml_name(_module_ir(self.ir, "library").output),
-            _direct_xml_name(_module_ir(self.ir, "assert").output),
-            _direct_xml_name(_module_ir(self.ir, "memory").output),
-            _direct_xml_name(_module_ir(self.ir, "atomic").output),
-            _direct_xml_name(_class_ir(self.ir, "data").output),
-            _direct_xml_name(_class_ir(self.ir, "buffer").output),
-            _direct_xml_name(_buffer_defs_output(self.ir)),
+            direct_xml_name(module_ir(self.ir, "library").output),
+            direct_xml_name(module_ir(self.ir, "assert").output),
+            direct_xml_name(module_ir(self.ir, "memory").output),
+            direct_xml_name(module_ir(self.ir, "atomic").output),
+            direct_xml_name(class_ir(self.ir, "data").output),
+            direct_xml_name(class_ir(self.ir, "buffer").output),
+            direct_xml_name(buffer_defs_output),
         }
 
         self.assertEqual(expected_names, set(renderers))
-        self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "library").output)], build_direct_library_c_module)
-        self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "assert").output)], build_direct_assert_c_module)
-        self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "memory").output)], build_direct_memory_c_module)
-        self.assertIs(renderers[_direct_xml_name(_module_ir(self.ir, "atomic").output)], build_direct_atomic_c_module)
-        self.assertIs(renderers[_direct_xml_name(_class_ir(self.ir, "data").output)], build_direct_data_c_module)
-        self.assertIs(renderers[_direct_xml_name(_class_ir(self.ir, "buffer").output)], build_direct_buffer_c_module)
-        self.assertIs(renderers[_direct_xml_name(_buffer_defs_output(self.ir))], build_direct_buffer_defs_c_module)
+        self.assertIs(renderers[direct_xml_name(module_ir(self.ir, "library").output)], build_direct_library_c_module)
+        self.assertIs(renderers[direct_xml_name(module_ir(self.ir, "assert").output)], build_direct_assert_c_module)
+        self.assertIs(renderers[direct_xml_name(module_ir(self.ir, "memory").output)], build_direct_memory_c_module)
+        self.assertIs(renderers[direct_xml_name(module_ir(self.ir, "atomic").output)], build_direct_atomic_c_module)
+        self.assertIs(renderers[direct_xml_name(class_ir(self.ir, "data").output)], build_direct_data_c_module)
+        self.assertIs(renderers[direct_xml_name(class_ir(self.ir, "buffer").output)], build_direct_buffer_c_module)
+        self.assertIs(renderers[direct_xml_name(buffer_defs_output)], build_direct_buffer_defs_c_module)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # CG-014: Extract Shared C Backend — Status
 
-**Current Step:** Step 2: Preserve compatibility and tests
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -28,16 +28,16 @@
 ---
 
 ### Step 2: Preserve compatibility and tests
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Keep or add thin compatibility adapters only where necessary
-- [ ] Update imports/tests/scripts affected by the extraction
-- [ ] Add tests proving the shared C backend path still works for `common`
+- [x] Keep or add thin compatibility adapters only where necessary
+- [x] Update imports/tests/scripts affected by the extraction
+- [x] Add tests proving the shared C backend path still works for `common`
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run backend tests
 - [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
