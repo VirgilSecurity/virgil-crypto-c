@@ -19,6 +19,16 @@ A legacy resolved-XML reader may exist, but only for:
 - parity/debugging
 - fixture support
 
+The shared loader extraction from CG-012 establishes `tools/codegen/project_source.py` as the generic home for:
+
+- tolerant XML-like parsing helpers, including `<code>` block protection/restoration
+- generic source dataclasses (`ProjectSource`, `ModuleSource`, `ClassSource`, `EnumSource`, etc.)
+- explicit project-entrypoint loading via `load_project_source()` / `load_named_project_source()`
+- project/model path derivation from repo root plus project metadata
+- recursive module graph resolution, including dependency loading via `from` metadata
+
+`tools/codegen/common_source.py` is now adapter-only. It should remain limited to compatibility exports and `common` convenience wrappers such as `project_common_path()` and `load_project_common()`, not ownership of shared parsing or graph-loading behavior.
+
 ### IR layer
 Responsible for a normalized internal representation suitable for emitters.
 

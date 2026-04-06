@@ -5,6 +5,7 @@ import unittest
 
 from tests.codegen.project_common_fixtures import PROJECT_COMMON_EXPECTATIONS
 from tools.codegen.common_source import load_project_common, load_project_source, project_common_path
+from tools.codegen.project_source import load_named_project_source, project_model_path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -18,9 +19,13 @@ class ProjectCommonSourceTest(unittest.TestCase):
         cls.project_from_repo_root = load_project_common(REPO_ROOT)
 
     def test_project_common_loader_starts_from_project_xml_entrypoint(self) -> None:
+        shared_project = load_named_project_source("common", REPO_ROOT)
+
         self.assertEqual(PROJECT_COMMON_XML, project_common_path(REPO_ROOT))
+        self.assertEqual(PROJECT_COMMON_XML, project_model_path("common", REPO_ROOT))
         self.assertEqual(str(PROJECT_COMMON_XML), self.project_from_entrypoint.path)
         self.assertEqual(self.project_from_entrypoint.to_dict(), self.project_from_repo_root.to_dict())
+        self.assertEqual(self.project_from_entrypoint.to_dict(), shared_project.to_dict())
 
     def test_project_common_loader_exposes_project_metadata(self) -> None:
         expected = PROJECT_COMMON_EXPECTATIONS["project"]
