@@ -37,6 +37,8 @@ That includes, where model-defined:
 
 Also, avoid tying backend functionality to specific module names. If behavior is generic, it should be expressed in terms of shared entity kinds, attributes, or IR metadata rather than per-module special cases.
 
+Explicitly: shared functionality must not branch on specific module names when the project metadata, source graph, or IR already expresses the distinction. Module-name checks are only acceptable in thin compatibility adapters or in temporary handwritten builders whose behavior is not yet representable by the shared metadata model.
+
 ## Refactor boundaries from the current `common_*` modules
 
 ### Shared project graph loading
@@ -104,6 +106,16 @@ Those adapters should stay intentionally thin: project selection, CLI defaults, 
 - revise ADR implementation guidance and migration notes that currently present `common_source.py`, `common_ir.py`, and `common_direct_c.py` as long-term core architecture
 - update `foundation-next-phase-plan.md` and related migration notes so the generic shared modules are the target architecture and `common` becomes the reference adapter/project
 - keep task-area context aligned with the new phase ordering: shared refactor first, then `foundation` validation and emitter work
+
+## Concrete refactor plan
+
+1. **Extract the shared loader first.** Move XML parsing, project-root resolution, and dependency-graph loading into generic modules while keeping `project_common_path()` / `load_project_common()` as wrappers.
+2. **Extract shared IR/output-target mapping next.** Re-home source-to-IR dataclasses and output-target computation so both `project_common.xml` and `project_foundation.xml` can flow through the same lowering path.
+3. **Extract shared C-backend helpers before any new project work.** Move IR navigation, argument/return lowering, XML helpers, and renderer-registration plumbing behind generic backend modules.
+4. **Retain only thin `common` adapters.** Keep compatibility wrappers and CLI defaults, but make them delegates to shared internals rather than long-term owners of shared logic.
+5. **Prove the shared framework on `foundation` metadata before broad emitters.** Add project-root loading/tests and inventory checks for `project_foundation.xml` once the shared modules exist.
+6. **Define `foundation` verification gates.** Establish compile/preservation checks before expanding coverage so backend refactors do not get conflated with project-specific build problems.
+7. **Pilot one low-risk `foundation` emitter slice.** Use the shared backend on a small, reviewable `foundation` target before scaling out.
 
 ## Recommended execution sequence
 

@@ -1,6 +1,6 @@
 # CG-011: Generic Shared-Codegen Refactor Plan — Status
 
-**Current Step:** Step 2: Document the plan
+**Current Step:** Step 3: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -28,15 +28,15 @@
 ---
 
 ### Step 2: Document the plan
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Write a concise refactor plan with a recommended sequence
-- [ ] Explicitly preserve the rule that shared functionality should not branch on specific module names where metadata already expresses the distinction
+- [x] Write a concise refactor plan with a recommended sequence
+- [x] Explicitly preserve the rule that shared functionality should not branch on specific module names where metadata already expresses the distinction
 
 ---
 
 ### Step 3: Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Recommend the first extraction step after the planning task
 
