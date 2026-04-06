@@ -85,6 +85,8 @@
 | 2026-04-06 15:02 | Step 3 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py tools/codegen/project_c_backend.py` passed |
 | 2026-04-06 15:05 | Step 3 verification build | `bash tools/codegen/build_common_with_new_codegen.sh` passed; generated `common` outputs compiled successfully and were restored afterwards |
 | 2026-04-06 15:07 | Step 4 docs | Documented `project_c_backend.py` as the shared C-backend helper layer and clarified `common_direct_c.py` as the adapter/handwritten-builder layer |
+| 2026-04-06 14:54 | Worker iter 2 | done in 778s, tools: 77 |
+| 2026-04-06 14:54 | Task complete | .DONE created |
 
 ---
 
