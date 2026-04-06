@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import cast
 import xml.etree.ElementTree as ET
 
-from tools.codegen.common_ir import IRClass, IRCModule, IRProjectCommon, IROutputTarget, project_common_to_ir
+from tools.codegen.common_ir import project_common_to_ir
+from tools.codegen.project_ir import IRClass, IRModule, IRProject, IROutputTarget
 from tools.codegen.project_source import load_named_project_source
 
 
@@ -13,7 +14,7 @@ def _load_common_project(repo_root: str | Path = "."):
     return load_named_project_source("common", repo_root)
 
 
-def _load_common_ir(repo_root: str | Path = ".") -> IRProjectCommon:
+def _load_common_ir(repo_root: str | Path = ".") -> IRProject:
     return project_common_to_ir(_load_common_project(repo_root))
 
 
@@ -28,7 +29,7 @@ def _snake(name: str) -> str:
     return name.replace(' ', '_')
 
 
-def _module_ir(project_ir: IRProjectCommon, name: str) -> IRCModule:
+def _module_ir(project_ir: IRProject, name: str) -> IRModule:
     try:
         return next(module for module in project_ir.resolved_modules if module.name == name)
     except StopIteration as exc:
@@ -36,7 +37,7 @@ def _module_ir(project_ir: IRProjectCommon, name: str) -> IRCModule:
 
 
 
-def _class_ir(project_ir: IRProjectCommon, name: str) -> IRClass:
+def _class_ir(project_ir: IRProject, name: str) -> IRClass:
     try:
         return next(cls for cls in project_ir.classes if cls.name == name)
     except StopIteration as exc:
@@ -44,12 +45,12 @@ def _class_ir(project_ir: IRProjectCommon, name: str) -> IRClass:
 
 
 
-def _type_symbol(project_ir: IRProjectCommon, class_name: str) -> str:
+def _type_symbol(project_ir: IRProject, class_name: str) -> str:
     return f"{_class_ir(project_ir, class_name).output.c_symbol}_t"
 
 
 
-def _include_file(project_ir: IRProjectCommon, *, module_name: str | None = None, class_name: str | None = None) -> str:
+def _include_file(project_ir: IRProject, *, module_name: str | None = None, class_name: str | None = None) -> str:
     if module_name is not None:
         return cast(IROutputTarget, _module_ir(project_ir, module_name).output).include_file
     if class_name is not None:
@@ -58,7 +59,7 @@ def _include_file(project_ir: IRProjectCommon, *, module_name: str | None = None
 
 
 
-def _buffer_defs_output(project_ir: IRProjectCommon) -> IROutputTarget:
+def _buffer_defs_output(project_ir: IRProject) -> IROutputTarget:
     buffer_output = cast(IROutputTarget, _class_ir(project_ir, 'buffer').output)
     stem = f"{buffer_output.c_symbol}_defs"
     header_path = buffer_output.header_path.replace(f"/{buffer_output.include_file}", f"/private/{stem}.h")
@@ -84,7 +85,7 @@ def _buffer_defs_output(project_ir: IRProjectCommon) -> IROutputTarget:
 
 
 
-def _callback_symbol(project_ir: IRProjectCommon, callback_name: str, *, module_name: str | None = None) -> str:
+def _callback_symbol(project_ir: IRProject, callback_name: str, *, module_name: str | None = None) -> str:
     if module_name is None:
         return f"{project_ir.prefix}_{_snake(callback_name)}_fn"
     module = _module_ir(project_ir, module_name)
@@ -155,7 +156,7 @@ def _comment_text(desc: str) -> str:
 
 
 def _argument_from_source(parent: ET.Element, src: dict, *, name: str | None = None,
-                          project_ir: IRProjectCommon | None = None, owner_class: str = 'data') -> ET.Element:
+                          project_ir: IRProject | None = None, owner_class: str = 'data') -> ET.Element:
     attrs = src
     arg_name = name if name is not None else attrs.get('name', '')
     if attrs.get('class') in {'self', 'data'}:
@@ -174,7 +175,7 @@ def _argument_from_source(parent: ET.Element, src: dict, *, name: str | None = N
     return elem
 
 
-def _return_from_source(parent: ET.Element, attrs: dict, *, project_ir: IRProjectCommon | None = None,
+def _return_from_source(parent: ET.Element, attrs: dict, *, project_ir: IRProject | None = None,
                         owner_class: str = 'data') -> ET.Element:
     if attrs.get('class') in {'self', 'data'}:
         resolved_class = owner_class if attrs.get('class') == 'self' else attrs.get('class', owner_class)
@@ -520,7 +521,7 @@ def build_direct_data_c_module(repo_root: str | Path = '.') -> ET.Element:
     return root
 
 
-def _buffer_argument(parent: ET.Element, attrs: dict[str, str], *, name: str, project_ir: IRProjectCommon | None = None) -> ET.Element:
+def _buffer_argument(parent: ET.Element, attrs: dict[str, str], *, name: str, project_ir: IRProject | None = None) -> ET.Element:
     if attrs.get('class') == 'self':
         extra = {'is_const_type': '1'} if attrs.get('access') == 'readonly' else {}
         accessed_by = 'reference' if attrs.get('passed_by') == 'reference' else 'pointer'
@@ -538,7 +539,7 @@ def _buffer_argument(parent: ET.Element, attrs: dict[str, str], *, name: str, pr
     return _text(parent, 'c_argument', name=name, accessed_by=accessed_by, type=type_name, type_is=type_kind)
 
 
-def _buffer_return(parent: ET.Element, attrs: dict[str, str], *, project_ir: IRProjectCommon | None = None) -> ET.Element:
+def _buffer_return(parent: ET.Element, attrs: dict[str, str], *, project_ir: IRProject | None = None) -> ET.Element:
     if attrs.get('class') == 'self':
         type_name = _type_symbol(project_ir, 'buffer') if project_ir is not None else 'vsc_buffer_t'
         return _text(parent, 'c_return', accessed_by='pointer', type=type_name, type_is='class')
@@ -555,7 +556,7 @@ def _buffer_return(parent: ET.Element, attrs: dict[str, str], *, project_ir: IRP
 
 def _buffer_public_method(root: ET.Element, name: str, description: str, *, uid: str, args: list[dict[str, dict[str, str]]] | None = None,
                           return_attrs: dict[str, str] | None = None, code: str | None = None,
-                          project_ir: IRProjectCommon | None = None) -> ET.Element:
+                          project_ir: IRProject | None = None) -> ET.Element:
     definition = 'public' if code is not None else 'external'
     method = _text(root, 'c_method', name=name, visibility='public', declaration='public', definition=definition, uid=uid)
     if args:

@@ -5,6 +5,7 @@ import unittest
 
 from tools.codegen.common_ir import project_common_to_ir
 from tools.codegen.common_source import load_project_common
+from tools.codegen.project_ir import IRProject, project_to_ir
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -15,6 +16,11 @@ class ProjectCommonIRTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.project = load_project_common(REPO_ROOT)
         cls.ir = project_common_to_ir(cls.project)
+        cls.shared_ir = project_to_ir(cls.project)
+
+    def test_common_ir_wrapper_stays_a_thin_adapter_over_shared_ir(self) -> None:
+        self.assertIsInstance(self.shared_ir, IRProject)
+        self.assertEqual(self.shared_ir.to_dict(), self.ir.to_dict())
 
     def test_project_common_ir_exposes_project_and_output_metadata(self) -> None:
         ir = self.ir
