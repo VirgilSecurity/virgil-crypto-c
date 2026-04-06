@@ -8,7 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_source import load_project_source, project_common_path
+from tools.codegen.project_source import load_named_project_source
 
 
 def main() -> int:
@@ -18,7 +18,7 @@ def main() -> int:
     parser.add_argument("--class-name")
     args = parser.parse_args()
 
-    project = load_project_source(project_common_path(args.repo_root))
+    project = load_named_project_source("common", args.repo_root)
     if args.module:
         try:
             obj = project.module_named(args.module, resolved=True)

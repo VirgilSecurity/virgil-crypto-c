@@ -6,11 +6,11 @@ from typing import cast
 import xml.etree.ElementTree as ET
 
 from tools.codegen.common_ir import IRClass, IRCModule, IRProjectCommon, IROutputTarget, project_common_to_ir
-from tools.codegen.common_source import load_project_source, project_common_path
+from tools.codegen.project_source import load_named_project_source
 
 
 def _load_common_project(repo_root: str | Path = "."):
-    return load_project_source(project_common_path(repo_root))
+    return load_named_project_source("common", repo_root)
 
 
 def _load_common_ir(repo_root: str | Path = ".") -> IRProjectCommon:

@@ -4,7 +4,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import PurePosixPath
 from typing import Any
 
-from tools.codegen.common_source import ClassSource, EnumSource, MethodSource, ModuleSource, ProjectCommonSource
+from tools.codegen.project_source import ClassSource, EnumSource, MethodSource, ModuleSource, ProjectSource
 
 
 @dataclass
@@ -173,12 +173,12 @@ def _snake(name: str) -> str:
     return name.replace(" ", "_")
 
 
-def _project_include_namespace(project: ProjectCommonSource) -> str:
+def _project_include_namespace(project: ProjectSource) -> str:
     namespace_parts = project.namespace.split()
     return str(PurePosixPath(*namespace_parts)) if namespace_parts else ""
 
 
-def _generated_namespace(project: ProjectCommonSource) -> str:
+def _generated_namespace(project: ProjectSource) -> str:
     work_root = PurePosixPath(project.attrs.get("work_path", ""))
     return str(work_root) if str(work_root) != "." else ""
 
@@ -187,7 +187,7 @@ def _once_guard(stem: str) -> str:
     return f"{stem}_h_included"
 
 
-def _build_output(project: ProjectCommonSource, *, entity_kind: str, entity_name: str, attrs: dict[str, str]) -> IROutputTarget:
+def _build_output(project: ProjectSource, *, entity_kind: str, entity_name: str, attrs: dict[str, str]) -> IROutputTarget:
     stem = f"{project.prefix}_{_snake(entity_name)}"
     include_namespace = PurePosixPath(_project_include_namespace(project))
     source_root = PurePosixPath(project.attrs.get("path", ""))
@@ -303,7 +303,7 @@ def _constant_to_ir(name: str, attrs: dict[str, str], description: str = "") -> 
     return IRCConstant(name=name, attrs=attrs, description=description)
 
 
-def module_to_ir(project: ProjectCommonSource, src: ModuleSource) -> IRCModule:
+def module_to_ir(project: ProjectSource, src: ModuleSource) -> IRCModule:
     return IRCModule(
         name=src.name,
         source_path=src.path,
@@ -326,7 +326,7 @@ def module_to_ir(project: ProjectCommonSource, src: ModuleSource) -> IRCModule:
     )
 
 
-def class_to_ir(project: ProjectCommonSource, src: ClassSource) -> IRClass:
+def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
     return IRClass(
         name=src.name,
         source_path=src.path,
@@ -340,7 +340,7 @@ def class_to_ir(project: ProjectCommonSource, src: ClassSource) -> IRClass:
     )
 
 
-def enum_to_ir(project: ProjectCommonSource, src: EnumSource) -> IREnum:
+def enum_to_ir(project: ProjectSource, src: EnumSource) -> IREnum:
     return IREnum(
         name=src.name,
         source_path=src.path,
@@ -351,7 +351,7 @@ def enum_to_ir(project: ProjectCommonSource, src: EnumSource) -> IREnum:
     )
 
 
-def project_common_to_ir(project: ProjectCommonSource) -> IRProjectCommon:
+def project_common_to_ir(project: ProjectSource) -> IRProjectCommon:
     explicit_module_paths = {module.path for module in project.modules}
     resolved_modules = [module_to_ir(project, m) for m in project.resolved_modules]
 
