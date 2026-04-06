@@ -1,11 +1,11 @@
 # CG-014: Extract Shared C Backend — Status
 
-**Current Step:** Step 1: Extract shared C backend code
+**Current Step:** Step 2: Preserve compatibility and tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** M
 
 ---
@@ -19,16 +19,16 @@
 ---
 
 ### Step 1: Extract shared C backend code
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Move generic C lowering/rendering helpers into shared modules with generic names
-- [ ] Keep project metadata model-driven rather than backend-literal-driven
-- [ ] Avoid module-name-specific functionality branches where IR metadata already expresses the needed distinction
+- [x] Move generic C lowering/rendering helpers into shared modules with generic names
+- [x] Keep project metadata model-driven rather than backend-literal-driven
+- [x] Avoid module-name-specific functionality branches where IR metadata already expresses the needed distinction
 
 ---
 
 ### Step 2: Preserve compatibility and tests
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Keep or add thin compatibility adapters only where necessary
 - [ ] Update imports/tests/scripts affected by the extraction
@@ -78,6 +78,7 @@
 | 2026-04-06 14:25 | Preflight inspection | Read CG-011 plan, migration docs, and current `common_direct_c.py` helper/builder split |
 | 2026-04-06 14:27 | Step 0 completed | Shared-backend helpers vs thin compatibility adapters confirmed |
 | 2026-04-06 14:27 | Step 1 started | Extract shared C backend code |
+| 2026-04-06 14:41 | Worker iter 1 | done in 1085s, tools: 40 |
 
 ---
 

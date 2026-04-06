@@ -1,12 +1,30 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from pathlib import Path
 from typing import cast
 import xml.etree.ElementTree as ET
 
 from tools.codegen.common_ir import project_common_to_ir
-from tools.codegen.project_ir import IRClass, IRModule, IRProject, IROutputTarget
+from tools.codegen.project_c_backend import (
+    DirectRendererSpec,
+    argument_from_source,
+    callback_symbol,
+    c_module_root,
+    c_module_root_attrs,
+    class_ir,
+    class_type_symbol,
+    comment_text,
+    derived_module_output_from_class,
+    direct_renderer_map,
+    direct_xml_name,
+    include_file_for_entity,
+    module_ir,
+    return_from_source,
+    snake_name,
+    text_element,
+    type_map,
+)
+from tools.codegen.project_ir import IRProject, IROutputTarget
 from tools.codegen.project_source import load_named_project_source
 
 
@@ -18,173 +36,57 @@ def _load_common_ir(repo_root: str | Path = ".") -> IRProject:
     return project_common_to_ir(_load_common_project(repo_root))
 
 
-def _text(parent: ET.Element, tag: str, text: str | None = None, **attrs: str) -> ET.Element:
-    elem = ET.SubElement(parent, tag, {k: v for k, v in attrs.items() if v is not None})
-    if text:
-        elem.text = text
-    return elem
-
-
-def _snake(name: str) -> str:
-    return name.replace(' ', '_')
-
-
-def _module_ir(project_ir: IRProject, name: str) -> IRModule:
-    try:
-        return next(module for module in project_ir.resolved_modules if module.name == name)
-    except StopIteration as exc:
-        raise KeyError(f"module not found in IR: {name}") from exc
-
-
-
-def _class_ir(project_ir: IRProject, name: str) -> IRClass:
-    try:
-        return next(cls for cls in project_ir.classes if cls.name == name)
-    except StopIteration as exc:
-        raise KeyError(f"class not found in IR: {name}") from exc
-
-
-
-def _type_symbol(project_ir: IRProject, class_name: str) -> str:
-    return f"{_class_ir(project_ir, class_name).output.c_symbol}_t"
-
+_text = text_element
+_snake = snake_name
+_module_ir = module_ir
+_class_ir = class_ir
+_type_symbol = class_type_symbol
+_c_module_root_attrs = c_module_root_attrs
+_c_module_root = c_module_root
+_direct_xml_name = direct_xml_name
+_type_map = type_map
+_comment_text = comment_text
+_argument_from_source = argument_from_source
+_return_from_source = return_from_source
+_callback_symbol = callback_symbol
 
 
 def _include_file(project_ir: IRProject, *, module_name: str | None = None, class_name: str | None = None) -> str:
     if module_name is not None:
-        return cast(IROutputTarget, _module_ir(project_ir, module_name).output).include_file
+        return include_file_for_entity(project_ir, entity_kind="module", entity_name=module_name)
     if class_name is not None:
-        return cast(IROutputTarget, _class_ir(project_ir, class_name).output).include_file
+        return include_file_for_entity(project_ir, entity_kind="class", entity_name=class_name)
     raise ValueError("either module_name or class_name must be provided")
 
 
 
 def _buffer_defs_output(project_ir: IRProject) -> IROutputTarget:
-    buffer_output = cast(IROutputTarget, _class_ir(project_ir, 'buffer').output)
-    stem = f"{buffer_output.c_symbol}_defs"
-    header_path = buffer_output.header_path.replace(f"/{buffer_output.include_file}", f"/private/{stem}.h")
-    source_path = buffer_output.source_path.replace(buffer_output.source_file, f"{stem}.c")
-    generated_header_path = buffer_output.generated_header_path.replace(buffer_output.include_file.removesuffix('.h'), stem)
-    generated_source_path = buffer_output.generated_source_path.replace('buffer.xml', 'buffer_defs.xml')
-    return IROutputTarget(
-        entity_kind='module',
-        entity_name='buffer_defs',
-        c_artifact_kind='module',
-        c_symbol=stem,
-        stem=stem,
-        include_file=f'{stem}.h',
-        source_file=f'{stem}.c',
-        header_path=header_path,
-        source_path=source_path,
-        generated_header_path=generated_header_path,
-        generated_source_path=generated_source_path,
-        once_guard=f'{stem}_h_included',
-        header_visibility='private',
-        source_visibility='public',
+    buffer_output = cast(IROutputTarget, _class_ir(project_ir, "buffer").output)
+    return derived_module_output_from_class(
+        buffer_output,
+        entity_name="buffer_defs",
+        stem_suffix="defs",
+        generated_source_stem="buffer_defs",
+        header_visibility="private",
     )
 
 
-
-def _callback_symbol(project_ir: IRProject, callback_name: str, *, module_name: str | None = None) -> str:
-    if module_name is None:
-        return f"{project_ir.prefix}_{_snake(callback_name)}_fn"
-    module = _module_ir(project_ir, module_name)
-    return f"{module.output.c_symbol}_{_snake(callback_name)}_fn"
-
-
-
-def _c_module_root_attrs(output: IROutputTarget, *, entity_id: str, scope: str, class_name: str = "") -> dict[str, str]:
-    return {
-        'lang': 'C',
-        'id': entity_id,
-        'name': output.c_symbol,
-        'class': class_name,
-        'scope': scope,
-        'has_cmakedefine': '0',
-        'uid': f"c_module_{entity_id}",
-        'c_include_file': output.include_file,
-        'c_source_file': output.source_file,
-        'header_file': output.header_path,
-        'source_file': output.source_path,
-        'once_guard': output.once_guard,
-    }
-
-
-
-def _c_module_root(output: IROutputTarget, *, entity_id: str, scope: str, class_name: str = "") -> ET.Element:
-    return ET.Element('c_module', _c_module_root_attrs(output, entity_id=entity_id, scope=scope, class_name=class_name))
-
-
-
-def _direct_xml_name(output: IROutputTarget) -> str:
-    return Path(output.generated_header_path).name
-
-
-
-def direct_c_renderers(repo_root: str | Path = ".") -> dict[str, Callable[[str | Path], ET.Element]]:
-    project_ir = _load_common_ir(repo_root)
-    return {
-        _direct_xml_name(_class_ir(project_ir, 'data').output): build_direct_data_c_module,
-        _direct_xml_name(_module_ir(project_ir, 'assert').output): build_direct_assert_c_module,
-        _direct_xml_name(_module_ir(project_ir, 'library').output): build_direct_library_c_module,
-        _direct_xml_name(_module_ir(project_ir, 'atomic').output): build_direct_atomic_c_module,
-        _direct_xml_name(_module_ir(project_ir, 'memory').output): build_direct_memory_c_module,
-        _direct_xml_name(_class_ir(project_ir, 'buffer').output): build_direct_buffer_c_module,
-        _direct_xml_name(_buffer_defs_output(project_ir)): build_direct_buffer_defs_c_module,
-    }
-
-
-def _type_map(type_name: str | None) -> tuple[str, str]:
-    mapping = {
-        'boolean': ('bool', 'primitive'),
-        'size': ('size_t', 'primitive'),
-        'integer': ('int', 'primitive'),
-        'byte': ('byte', 'primitive'),
-        'char': ('char', 'primitive'),
-        'string': ('char', 'primitive'),
-    }
-    if type_name in mapping:
-        return mapping[type_name]
-    return type_name or 'void', 'primitive'
-
-
-def _comment_text(desc: str) -> str:
-    desc = desc.strip()
-    if not desc:
-        return ''
-    return '\n' + '\n'.join(f'        //  {line}' if line else '        //' for line in desc.splitlines()) + '\n    '
-
-
-def _argument_from_source(parent: ET.Element, src: dict, *, name: str | None = None,
-                          project_ir: IRProject | None = None, owner_class: str = 'data') -> ET.Element:
-    attrs = src
-    arg_name = name if name is not None else attrs.get('name', '')
-    if attrs.get('class') in {'self', 'data'}:
-        resolved_class = owner_class if attrs.get('class') == 'self' else attrs.get('class', owner_class)
-        type_name = _type_symbol(project_ir, resolved_class) if project_ir is not None else 'vsc_data_t'
-        elem = _text(parent, 'c_argument', name=arg_name, accessed_by='value', type=type_name, type_is='class')
-    elif attrs.get('type') == 'string':
-        elem = _text(parent, 'c_argument', name=arg_name, accessed_by='value', type='char', type_is='primitive', string='given', is_const_type='1')
-    else:
-        t, kind = _type_map(attrs.get('type'))
-        extra = {}
-        if attrs.get('type') == 'byte' and attrs.get('_array') == 'given':
-            extra['array'] = 'given'
-            extra['is_const_type'] = '1'
-        elem = _text(parent, 'c_argument', name=arg_name, accessed_by='value', type=t, type_is=kind, **extra)
-    return elem
-
-
-def _return_from_source(parent: ET.Element, attrs: dict, *, project_ir: IRProject | None = None,
-                        owner_class: str = 'data') -> ET.Element:
-    if attrs.get('class') in {'self', 'data'}:
-        resolved_class = owner_class if attrs.get('class') == 'self' else attrs.get('class', owner_class)
-        type_name = _type_symbol(project_ir, resolved_class) if project_ir is not None else 'vsc_data_t'
-        return _text(parent, 'c_return', accessed_by='value', type=type_name, type_is='class')
-    if attrs.get('type') == 'byte' and attrs.get('is_reference') in {'1', 'true'}:
-        return _text(parent, 'c_return', accessed_by='pointer', type='byte', type_is='primitive', is_const_type='1')
-    t, kind = _type_map(attrs.get('type'))
-    return _text(parent, 'c_return', accessed_by='value', type=t, type_is=kind)
+def direct_c_renderers(repo_root: str | Path = ".") -> dict[str, object]:
+    specs = [
+        DirectRendererSpec(entity_kind="class", entity_name="data", renderer=build_direct_data_c_module),
+        DirectRendererSpec(entity_kind="module", entity_name="assert", renderer=build_direct_assert_c_module),
+        DirectRendererSpec(entity_kind="module", entity_name="library", renderer=build_direct_library_c_module),
+        DirectRendererSpec(entity_kind="module", entity_name="atomic", renderer=build_direct_atomic_c_module),
+        DirectRendererSpec(entity_kind="module", entity_name="memory", renderer=build_direct_memory_c_module),
+        DirectRendererSpec(entity_kind="class", entity_name="buffer", renderer=build_direct_buffer_c_module),
+        DirectRendererSpec(
+            entity_kind="class",
+            entity_name="buffer",
+            renderer=build_direct_buffer_defs_c_module,
+            output_resolver=_buffer_defs_output,
+        ),
+    ]
+    return direct_renderer_map(_load_common_ir(repo_root), specs)
 
 
 def build_direct_library_c_module(repo_root: str | Path = '.') -> ET.Element:
