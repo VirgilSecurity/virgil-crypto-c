@@ -1,20 +1,20 @@
 # CG-016: Foundation Inventory and Verification Plan — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Read the ADR and current next-phase plan
-- [ ] Inspect `project_foundation.xml` and the immediate project model surface
+- [x] Read the ADR and current next-phase plan
+- [x] Inspect `project_foundation.xml` and the immediate project model surface
 
 ---
 
@@ -62,6 +62,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 19:03 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 19:03 | Step 0 started | Preflight |
 
 ---
 
