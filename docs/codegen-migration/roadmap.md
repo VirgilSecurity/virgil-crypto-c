@@ -88,7 +88,7 @@ The `common` proving-ground slice has now crossed the architecture regularizatio
 - the executable bootstrap path is project-rooted (`project_common.xml` → source graph → IR/output targets → C backend)
 - direct lowering covers the core `library/common` C entities needed for the compile gate
 - legacy resolved XML is now a fallback/reference input for parity and unmigrated surfaces, not the preferred runtime source for the migrated `common` outputs
-- the remaining work after this checkpoint is primarily parity/tooling cleanup, support/build emission, and choosing the next migration target
+- the next migration step is to generalize this framework for `project_foundation.xml` without reintroducing project-specific hardcodes
 
 ## Phase 6 — Support/build generation
 

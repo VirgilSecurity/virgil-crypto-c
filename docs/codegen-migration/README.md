@@ -20,7 +20,9 @@ This directory contains the working documents for replacing the legacy iMatix GS
 - `common-direct-foundation-status.md` — current direct-coverage boundary for foundational `common` outputs
 - `common-buffer-migration-plan.md` — historical execution map for the completed `common` buffer-family migration
 - `common-support-fallback-audit.md` — final disposition of the `common` umbrella/support headers after the buffer migration
-- `../adr/0002-project-rooted-codegen-pipeline.md` — project-rooted architecture decision for the next generator phase
+- `../adr/0002-project-rooted-codegen-pipeline.md` — project-rooted architecture decision for the `common` generator phase
+- `../adr/0003-generalize-project-rooted-codegen-beyond-common.md` — generalization decision for carrying the framework into `foundation`
+- `foundation-next-phase-plan.md` — plan for moving the project-rooted generator from `common` into `foundation`
 
 ## Summary
 
@@ -48,10 +50,10 @@ For the current Taskplane slice (`library/common` C generation):
 
 ## Immediate next actions
 
-1. keep using `library/common` as the proving ground for parser/resolver and parity work rather than reopening the now-regularized core `common` C backend
-2. reduce parity/formatting differences in the mixed-mode bootstrap where they still matter for review confidence and regression tooling
-3. port the remaining support/build emitters that still sit outside the direct C backend contract
-4. carry the direct-from-original-model approach into the next target area after `common`
+1. treat `common` as the reference implementation for the project-rooted generator framework rather than reopening it as a new entity-porting track
+2. generalize the framework so the same loader/IR/output-target path works for `project_foundation.xml`
+3. define `foundation` verification and preservation gates before broad emitter work
+4. port a low-risk `foundation` C slice using the shared backend
 5. continue treating legacy resolved XML as reference/fixture material instead of a runtime requirement
 
 ## After `common`
