@@ -1,25 +1,25 @@
 # CG-013: Extract Shared IR and Output Targets — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 1: Extract shared IR/output-target code
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the refactor plan and current IR/output-target docs
-- [ ] Confirm which IR responsibilities should become shared generic modules
+- [x] Read the refactor plan and current IR/output-target docs
+- [x] Confirm which IR responsibilities should become shared generic modules
 
 ---
 
 ### Step 1: Extract shared IR/output-target code
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Move generic IR/output-target modeling into shared modules with generic names
 - [ ] Keep naming/path/prefix/output routing model-driven
@@ -62,6 +62,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `common_ir.py` already contains mostly project-generic dataclasses plus output-target derivation; shared extraction should move dataclasses, output-target builder, and `module/class/enum/project -> IR` lowering into a generic module while leaving only `common` convenience wrappers as adapters. | Use as extraction boundary for Step 1; keep project naming/path/prefix/output routing derived from `ProjectSource` metadata rather than backend literals. | `tools/codegen/common_ir.py`, `docs/codegen-migration/common-source-to-ir.md`, `docs/codegen-migration/implementation-notes.md` |
 
 ---
 
@@ -70,6 +71,9 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 14:10 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 14:10 | Step 0 started | Preflight |
+| 2026-04-06 14:15 | Step 0 research | Read CG-011 plan, IR docs, and inspected `common_ir.py`/`common_source.py` boundaries |
 
 ---
 
