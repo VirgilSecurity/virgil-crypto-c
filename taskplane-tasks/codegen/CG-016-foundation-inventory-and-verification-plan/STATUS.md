@@ -30,8 +30,8 @@
 ### Step 2: Define verification gates
 **Status:** ⬜ Not Started
 
-- [ ] Document the recommended test/build/verification commands for `foundation`
-- [ ] Call out any missing verification infrastructure that must be added before emitter work
+- [x] Document the recommended test/build/verification commands for `foundation`
+- [x] Call out any missing verification infrastructure that must be added before emitter work
 
 ---
 
