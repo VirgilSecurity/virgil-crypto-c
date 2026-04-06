@@ -1,6 +1,6 @@
 # CG-013: Extract Shared IR and Output Targets — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -37,15 +37,15 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run IR tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run IR tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update docs to describe the shared IR/output-target layer
 
@@ -83,6 +83,8 @@
 | 2026-04-06 14:28 | Step 2 compatibility | Kept `common_ir.py` as a thin adapter over `project_ir.py`; targeted compatibility tests remained green |
 | 2026-04-06 14:28 | Step 2 import/test updates | Switched affected internal imports and inspection/test code to the shared IR module while preserving `common` compatibility entrypoints |
 | 2026-04-06 14:29 | Step 2 targeted tests | `python3 -m unittest tests.codegen.test_project_common_ir tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_common_source` passed (18 tests), including new shared-IR coverage for `common` |
+| 2026-04-06 14:31 | Step 3 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_bootstrap tests.codegen.test_common_direct_c_resolution` passed (18 tests) |
+| 2026-04-06 14:31 | Step 3 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
 
 ---
 
