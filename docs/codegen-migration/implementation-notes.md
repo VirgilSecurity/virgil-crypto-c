@@ -45,6 +45,8 @@ For the `common` project-rooted path, this includes explicit project naming/outp
 ### Emitter layer
 Responsible only for turning IR into file content.
 
+The shared home for cross-project C-backend helpers is now `tools/codegen/project_c_backend.py`. It owns generic IR navigation, XML construction helpers, argument/return lowering, derived output-target helpers, and renderer-map registration that resolve from `IROutputTarget` metadata instead of `common`-named literals.
+
 For the `common` C backend, project-specific facts should now come from the shared IR layer (`project_to_ir()` / `IROutputTarget`) or the thin `common` adapter over it, rather than local Python literals. This includes:
 
 - C symbol stems and typedef names
@@ -52,6 +54,8 @@ For the `common` C backend, project-specific facts should now come from the shar
 - generated XML basenames used for bootstrap dispatch
 - once guards and visibility metadata
 - project prefix-derived callback/type spellings
+
+`tools/codegen/common_direct_c.py` should remain the `common`-specific adapter and handwritten-builder layer only: direct builder entrypoints for `library`, `memory`, `atomic`, `assert`, `data`, `buffer`, and `buffer_defs`, plus compatibility exports used by the existing bootstrap/tests while the shared backend stabilizes.
 
 Acceptable remaining hardcodes in `common_direct_c.py` are backend-static implementation details that are not modeled today, such as reusable C runtime snippets, macro bodies, and fixed support behavior (`memset`, allocator wiring, atomic/compiler branches, assertion helper bodies).
 

@@ -1,54 +1,54 @@
 # CG-014: Extract Shared C Backend — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 4: Delivery
+**Status:** ✅ Complete
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 2
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the refactor plan and inspect current C backend boundaries
-- [ ] Confirm which pieces are shared backend behavior versus temporary compatibility adapters
+- [x] Read the refactor plan and inspect current C backend boundaries
+- [x] Confirm which pieces are shared backend behavior versus temporary compatibility adapters
 
 ---
 
 ### Step 1: Extract shared C backend code
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Move generic C lowering/rendering helpers into shared modules with generic names
-- [ ] Keep project metadata model-driven rather than backend-literal-driven
-- [ ] Avoid module-name-specific functionality branches where IR metadata already expresses the needed distinction
+- [x] Move generic C lowering/rendering helpers into shared modules with generic names
+- [x] Keep project metadata model-driven rather than backend-literal-driven
+- [x] Avoid module-name-specific functionality branches where IR metadata already expresses the needed distinction
 
 ---
 
 ### Step 2: Preserve compatibility and tests
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Keep or add thin compatibility adapters only where necessary
-- [ ] Update imports/tests/scripts affected by the extraction
-- [ ] Add tests proving the shared C backend path still works for `common`
+- [x] Keep or add thin compatibility adapters only where necessary
+- [x] Update imports/tests/scripts affected by the extraction
+- [x] Add tests proving the shared C backend path still works for `common`
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run backend tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
-- [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Run backend tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run `bash tools/codegen/build_common_with_new_codegen.sh`
 
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Update docs to describe the shared C backend layer and any remaining adapter-only code
+- [x] Update docs to describe the shared C backend layer and any remaining adapter-only code
 
 ---
 
@@ -63,6 +63,8 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `foundation-next-phase-plan.md` defines the shared C backend split: IR navigation, XML helpers, argument/return lowering, and renderer registration should leave `common_direct_c.py`; only handwritten entity builders should remain adapter/project-specific. | Use as the extraction boundary for CG-014 implementation. | `docs/codegen-migration/foundation-next-phase-plan.md`, `tools/codegen/common_direct_c.py` |
+| `common_source.py` and `common_ir.py` are already thin compatibility wrappers over `project_source.py` / `project_ir.py`, while `common_bootstrap.py` and inspect scripts still depend on `common_direct_c.py` for project selection. | Keep `common`-named entrypoints thin; extract shared backend internals under generic modules and preserve wrapper behavior. | `tools/codegen/common_source.py`, `tools/codegen/common_ir.py`, `tools/codegen/common_bootstrap.py`, `tools/codegen/inspect_common_direct.py` |
 
 ---
 
@@ -71,6 +73,20 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 14:23 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 14:23 | Step 0 started | Preflight |
+| 2026-04-06 14:25 | Preflight inspection | Read CG-011 plan, migration docs, and current `common_direct_c.py` helper/builder split |
+| 2026-04-06 14:27 | Step 0 completed | Shared-backend helpers vs thin compatibility adapters confirmed |
+| 2026-04-06 14:27 | Step 1 started | Extract shared C backend code |
+| 2026-04-06 14:41 | Worker iter 1 | done in 1085s, tools: 40 |
+| 2026-04-06 14:57 | Step 1 targeted tests | `python3 -m unittest tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap` passed (8 tests) |
+| 2026-04-06 15:00 | Step 2 targeted tests | `python3 -m unittest tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_c_backend` passed (10 tests) |
+| 2026-04-06 15:02 | Step 3 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_bootstrap tests.codegen.test_common_direct_c_resolution tests.codegen.test_project_c_backend` passed (20 tests) |
+| 2026-04-06 15:02 | Step 3 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py tools/codegen/project_c_backend.py` passed |
+| 2026-04-06 15:05 | Step 3 verification build | `bash tools/codegen/build_common_with_new_codegen.sh` passed; generated `common` outputs compiled successfully and were restored afterwards |
+| 2026-04-06 15:07 | Step 4 docs | Documented `project_c_backend.py` as the shared C-backend helper layer and clarified `common_direct_c.py` as the adapter/handwritten-builder layer |
+| 2026-04-06 14:54 | Worker iter 2 | done in 778s, tools: 77 |
+| 2026-04-06 14:54 | Task complete | .DONE created |
 
 ---
 
