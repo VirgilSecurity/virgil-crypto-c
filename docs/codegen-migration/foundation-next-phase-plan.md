@@ -23,6 +23,59 @@ As with `common`, the generator should start from the top-level project model, r
 - project-specific output surfaces beyond the small `common` proving ground
 - a meaningful test of whether naming/path/prefix resolution is truly model-driven
 
+## Inventory snapshot of `project_foundation.xml`
+
+Current top-level inventory from `codegen/models/project_foundation/project_foundation.xml` and its sibling model files:
+
+- **48 classes** — a wide mix of light utility/value objects (`error`, `base64`, `oid`, `pem`, `pem title`) and heavier stateful crypto/session types (`recipient cipher`, `message cipher`, `group session`, `key provider`, `signer`, `verifier`)
+- **34 interfaces** — core algorithm contracts for ciphering, hashes, KDFs, randomness, key material, ASN.1, serialization, and padding
+- **13 implementors** — large implementation families rooted in `mbedtls`, `virgil`, `ed25519`, `post quantum`, `compound key`, `hybrid key`, and serializer/padding helpers
+- **7 enums** — `status`, `asn1 tag`, `alg id`, `oid id`, `recipient cipher decryption state`, `group msg type`, and `cipher state`
+- **4 local modules** — `group session typedefs` plus three `mbedtls bridge *` modules, in addition to shared `common` modules (`assert`, `library`, `memory`, `atomic`)
+
+The surface is not a flat list of peer entities. It clusters into a few clear families:
+
+1. **Leaf/value surfaces** — enums, small utility classes, and constant/typedef style modules with shallow dependency depth.
+2. **Interface-driven algorithm families** — cipher/hash/KDF/random/key interfaces that define broad backend contracts.
+3. **Implementor-heavy crypto backends** — `mbedtls`, `virgil`, post-quantum, hybrid, and compound-key implementations with many cross-references.
+4. **Serialization and wire-format surfaces** — ASN.1, PEM, message-info serializers, and algorithm-info serializers.
+5. **Session / message workflows** — `recipient cipher`, `message cipher`, signer/verifier flows, and `group session*` types including protobuf-backed artifacts.
+
+## Migration-risk segmentation
+
+### Likely low-risk first slices
+
+The best entry slices are the model areas that are structurally simple, heavily self-contained, and easy to verify in isolation:
+
+- **Enums** (`status`, `asn1 tag`, `alg id`, `oid id`, `group msg type`, `cipher state`) — mostly deterministic constant emission with no ownership graph.
+- **Utility/value classes** such as `error`, `base64`, `oid`, and likely `pem title` — shallow dependency surfaces, straightforward signatures, and existing dedicated tests like `test_base64` / `test_pem`.
+- **Simple support modules** like `group session typedefs` and the `mbedtls bridge *` helpers — small API surfaces that mostly exercise module output routing.
+
+These slices are useful because they validate the shared loader + IR + output-target path on real `foundation` metadata without forcing the first emitter task to solve deep dependency injection, crypto implementation wiring, or complex handwritten preservation.
+
+### Medium-risk follow-on slices
+
+- **Serialization helpers** (`alg info`, `message info`, ASN.1 reader/writer helpers, `pem`) because they are still bounded but interact with more generated definitions and internal/public header splits.
+- **List/container-style classes** like `key recipient info list`, `signer info list`, and `verifier list` that add ownership and generated defs/internal header patterns without yet pulling in the heaviest crypto flows.
+
+### High-risk areas to avoid as the first emitter pass
+
+- **Implementor families** (`virgil`, `mbedtls`, `post quantum`, `compound key`, `hybrid key`) because they encode many concrete implementations, dependency properties, constants, and cross-entity requirements.
+- **Stateful crypto workflow classes** such as `recipient cipher`, `message cipher`, `key provider`, `signer`, and `verifier` because they combine interface wiring, buffering, serialization, and crypto defaults.
+- **`group session*` types** because they depend on protobuf artifacts, internal headers, typedef modules, and multi-entity workflow semantics rather than a single isolated output.
+- **Post-quantum and platform-sensitive code paths** because build behavior also depends on feature flags and third-party libraries (`round5`, `falcon`, mbedTLS threading).
+
+## Preservation and build constraints already visible
+
+The `foundation` inventory already exposes constraints that the first emitter task must preserve:
+
+- **Preservation still matters.** Existing `library/foundation/include/**` and `library/foundation/src/**` files contain generated blocks inside checked-in files rather than being throwaway outputs, so the new emitter must continue updating generated sections without clobbering handwritten content around them.
+- **`foundation` is not standalone.** `library/foundation/CMakeLists.txt` requires `vsc::common`, `mbed::crypto`, and the `foundation_pb` sublibrary, so validation must include dependency-aware builds instead of isolated file diffs.
+- **Feature flags change the effective surface.** `multi threading` and `post quantum` are first-class project features in `project_foundation.xml`, and the build links optional `round5` / `falcon` libraries behind CMake feature gates.
+- **Protobuf-backed artifacts are in scope.** `library/foundation/protobuf/` and the `group session*` model family mean some `foundation` outputs depend on generated nanopb/protobuf assets that should be treated as a distinct higher-risk preservation/build boundary.
+- **Internal/public splits are common.** `sources.cmake` references public headers, private headers, internal headers, and `*_defs.c` / `*_internal.c` style outputs, so the shared backend must keep output-target routing model-driven rather than assuming one file pair per entity.
+- **Wrappers and downstream consumers exist, but should remain downstream validation only.** `project_foundation.xml` advertises multiple wrappers, and the repo contains wrapper/benchmark/program consumers of `vsc::foundation`; however, the first migration slice should prove the C library/test surfaces first rather than broadening the implementation scope into wrappers.
+
 ## Architecture rule carried forward
 
 Do not hardcode project-specific metadata in the backend when it is defined by models.
@@ -128,6 +181,74 @@ Those adapters should stay intentionally thin: project selection, CLI defaults, 
 7. implement one low-risk `foundation` C emitter slice using the shared backend
 8. expand only after the generalized framework proves out
 
+## Recommended verification gates for `foundation`
+
+The first `foundation` emitter work should be gated in layers instead of relying on one broad compile check.
+
+### 1. Shared-framework metadata gate
+
+Before emitting any `foundation` C files, add/keep Python tests that prove the shared project-rooted framework can load and lower `project_foundation.xml` without reintroducing `common` hardcodes.
+
+Recommended command shape:
+
+```bash
+python3 -m unittest \
+  tests.codegen.test_project_common_source \
+  tests.codegen.test_project_common_ir \
+  tests.codegen.test_project_c_backend
+```
+
+That command is only a placeholder for the current shared-framework suite; the concrete follow-up task should extend it with `foundation`-specific assertions once those tests exist.
+
+### 2. Generator smoke gate for the selected slice
+
+For the first migrated slice, run the shared generator only for the chosen `foundation` targets and inspect the resulting diffs in `library/foundation/**`.
+
+Minimum expectation:
+
+- generated sections update only in the intended files
+- no unrelated `library/common/**` changes appear
+- output paths, prefixes, and namespaces come from `project_foundation.xml` / shared IR rather than hardcoded literals
+
+### 3. Build gate
+
+Configure and build the C library and tests with `foundation` enabled:
+
+```bash
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+```
+
+This validates the main `foundation` library plus its `foundation_pb` dependency wiring through CMake.
+
+### 4. Test gate
+
+Run the `foundation` test subset through CTest:
+
+```bash
+cd build && ctest --output-on-failure -R foundation
+```
+
+For the first low-risk slice, targeted executions such as `ctest --output-on-failure -R "(base64|pem|key_info|alg_info)"` are acceptable during development, but the step-completion gate for any emitter task should still include the broader `foundation` test set.
+
+### 5. Feature-sensitive spot checks
+
+Because `features.cmake` contains a large dependency graph and optional multi-threading/post-quantum toggles, explicitly verify at least:
+
+- default feature configuration
+- one build with `VSCF_POST_QUANTUM=OFF` if the migrated slice intersects post-quantum-adjacent outputs
+- one build with multi-threading expectations intact when the slice touches threading-sensitive code paths
+
+## Missing verification infrastructure to add before broad emitter work
+
+Several gates needed for efficient `foundation` migration do not yet exist as dedicated tooling:
+
+1. **No `foundation` equivalent of `tools/codegen/build_common_with_new_codegen.sh`.** There is currently no scripted generate-build-restore loop for `library/foundation`, so the first follow-up should add one before migration broadens beyond a tiny pilot.
+2. **No shared-framework tests that explicitly exercise `project_foundation.xml`.** Current Python codegen tests are still `common`-centric; `CG-017` should add loader/IR/backend assertions for `foundation` metadata.
+3. **No preservation-focused diff harness for `foundation`.** Because `foundation` files mix generated and handwritten code, the migration needs an automated way to detect writes outside generated blocks.
+4. **No narrow slice-selection CLI/documented workflow yet.** A practical emitter task will need a repeatable way to regenerate just the chosen `foundation` entity family rather than broad project output.
+5. **Generated build metadata remains legacy-owned.** Files like `library/foundation/features.cmake` and `library/foundation/sources.cmake` are still marked as fully generated by legacy scripts; broad emitter work should avoid silently taking ownership of them without a dedicated plan.
+
 ## Verification philosophy
 
 Use tests at each layer:
@@ -138,6 +259,15 @@ Use tests at each layer:
 - project-specific build/preservation verification
 
 Do not rely on compile success alone as proof that the architecture is correct.
+
+## Concise next-phase plan after this inventory task
+
+1. **Validate the shared framework on `project_foundation.xml`.** Add loader/IR/backend tests that prove the generic modules can traverse `foundation` metadata without `common`-specific assumptions.
+2. **Add a scripted `foundation` verification loop.** Introduce a `generate -> build -> test -> restore` helper comparable to the existing `common` gate so emitter work has a repeatable safety rail.
+3. **Pilot a tiny low-risk C slice.** Limit the first emitter change to enums plus one or two small utility classes/modules so output-target routing and preservation logic can be proven cheaply.
+4. **Broaden only after the gates pass.** Move next into serializer/list surfaces, and defer implementor-heavy crypto families plus `group session*` until the shared framework and preservation tooling are stable.
+
+This keeps the sequence aligned with ADR 0003: generalize once, verify on a second project root, then grow coverage without reintroducing project hardcodes.
 
 ## Recommended first extraction after this planning task
 
@@ -150,6 +280,26 @@ Why this first:
 - it gives `foundation` an early proof point (`project_foundation.xml` can load through shared code) without yet committing to backend-specific emitter behavior
 
 The first concrete implementation task should therefore extract generic project-graph loading into shared modules while keeping `project_common_path()` / `load_project_common()` as compatibility wrappers.
+
+## Recommended first implementation slice after inventory
+
+Start `foundation` emitter work with **enums plus one small utility/value family**:
+
+- primary candidates: `status`, `asn1 tag`, `alg id`, `oid id`, `group msg type`, `cipher state`
+- optional companion classes/modules once enum emission is stable: `error`, `base64`, `oid`, `pem title`, or `group session typedefs`
+
+Why this slice first:
+
+- it exercises project-rooted loading on real `foundation` entities
+- it verifies prefix/namespace/path routing for `vscf_*` outputs
+- it keeps preservation risk low because the files are comparatively small and test coverage already exists for nearby utility behavior
+- it avoids the deepest dependency trees (`implementor_*`, key hierarchies, protobuf-backed `group session*`, and post-quantum flows)
+
+Concretely, the first implementation task after this plan should be:
+
+1. prove `project_foundation.xml` loads through the shared framework
+2. add the `foundation` generate/build/test harness
+3. migrate enum emission and, if capacity remains, one tiny utility surface such as `error` or `base64`
 
 ## Expected outcome
 
