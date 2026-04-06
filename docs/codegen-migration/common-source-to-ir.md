@@ -4,8 +4,9 @@ This document records the first direct source-model to IR step for the new gener
 
 ## Current implementation artifacts
 
-- source loader: `tools/codegen/common_source.py`
-- IR mapper: `tools/codegen/common_ir.py`
+- source loader: `tools/codegen/common_source.py` (compatibility wrapper over shared loader code)
+- shared IR mapper: `tools/codegen/project_ir.py`
+- `common` IR adapter: `tools/codegen/common_ir.py`
 - inspectors:
   - `tools/codegen/inspect_common_source.py`
   - `tools/codegen/inspect_common_ir.py`
@@ -18,7 +19,8 @@ This step establishes the direct path:
 original common model files
   -> tolerant source loader
   -> normalized source objects
-  -> typed in-memory IR
+  -> shared typed in-memory IR (`project_ir.py`)
+  -> thin `common` compatibility adapter where needed
 ```
 
 This is the architectural direction we want for the final generator.
@@ -76,6 +78,18 @@ python3 tools/codegen/inspect_common_ir.py --module assert
 python3 tools/codegen/inspect_common_ir.py --class-name data
 ```
 
+## Shared IR/output-target layer
+
+The IR/output-target logic is now owned by the generic `tools/codegen/project_ir.py` layer.
+That shared module is responsible for:
+
+- reusable IR dataclasses (`IRProject`, `IRModule`, `IRClass`, `IREnum`, `IROutputTarget`, etc.)
+- generic lowering from `ProjectSource` / `ModuleSource` / `ClassSource` / `EnumSource`
+- output-target derivation from project metadata such as `namespace`, `prefix`, `path`, `work_path`, and entity attrs
+- keeping project names, include paths, generated XML names, and prefix-derived symbols model-driven instead of backend-literal-driven
+
+`tools/codegen/common_ir.py` remains only as a thin compatibility layer exporting the old `common`-named entrypoint (`project_common_to_ir()`) while delegating to the shared `project_to_ir()` implementation.
+
 ## Current guarantees for backends
 
 Backends can now rely on the IR to provide:
@@ -91,7 +105,7 @@ The project-rooted IR now exists as an explicit stage between the source loader 
 
 ## Recommended next step
 
-The project-rooted IR stage is now established for the `common` proving-ground slice.
+The project-rooted IR stage is now established for the `common` proving-ground slice and re-homed into a shared layer that can be reused by later projects.
 
 The next follow-up work should focus on:
 

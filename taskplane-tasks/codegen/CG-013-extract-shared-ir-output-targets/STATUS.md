@@ -1,7 +1,7 @@
 # CG-013: Extract Shared IR and Output Targets — Status
 
 **Current Step:** Step 4: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
@@ -45,9 +45,9 @@
 ---
 
 ### Step 4: Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update docs to describe the shared IR/output-target layer
+- [x] Update docs to describe the shared IR/output-target layer
 
 ---
 
@@ -85,6 +85,7 @@
 | 2026-04-06 14:29 | Step 2 targeted tests | `python3 -m unittest tests.codegen.test_project_common_ir tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_common_source` passed (18 tests), including new shared-IR coverage for `common` |
 | 2026-04-06 14:31 | Step 3 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_bootstrap tests.codegen.test_common_direct_c_resolution` passed (18 tests) |
 | 2026-04-06 14:31 | Step 3 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
+| 2026-04-06 14:34 | Step 4 delivery | Updated migration docs to describe `project_ir.py` as the shared IR/output-target layer and `common_ir.py` as a thin compatibility adapter |
 
 ---
 
