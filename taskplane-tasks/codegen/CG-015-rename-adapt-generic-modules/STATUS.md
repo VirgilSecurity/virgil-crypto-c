@@ -30,9 +30,9 @@
 ### Step 2: Verification
 **Status:** ⬜ Not Started
 
-- [ ] Run relevant tests
-- [ ] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
-- [ ] Run `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Run relevant tests
+- [x] Run `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py`
+- [x] Run `bash tools/codegen/build_common_with_new_codegen.sh`
 
 ---
 
@@ -72,6 +72,9 @@
 | 2026-04-06 18:28 | Worker iter 3 | done in 4380s, tools: 7 |
 | 2026-04-06 18:28 | No progress | Iteration 3: 0 new checkboxes (1/3 stall limit) |
 | 2026-04-06 19:01 | Step 1 targeted tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_c_backend` passed (20 tests) |
+| 2026-04-06 19:03 | Step 2 verification tests | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_direct_c_resolution tests.codegen.test_common_bootstrap tests.codegen.test_project_c_backend` passed (20 tests) |
+| 2026-04-06 19:03 | Step 2 verification compile | `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
+| 2026-04-06 19:04 | Step 2 build gate | `bash tools/codegen/build_common_with_new_codegen.sh` passed; `common` rebuilt successfully from new codegen outputs |
 
 ---
 
