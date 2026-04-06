@@ -1,6 +1,6 @@
 # CG-017: Foundation Validation on Shared Project-Rooted Framework — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Validate shared behavior on `foundation`
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -19,11 +19,11 @@
 ---
 
 ### Step 1: Validate shared behavior on `foundation`
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Add/update tests proving that the shared loader/IR/output-target path works on `project_foundation.xml`
-- [ ] Confirm that project metadata remains model-driven rather than hardcoded
-- [ ] Capture any gaps that block the first emitter slice
+- [x] Add/update tests proving that the shared loader/IR/output-target path works on `project_foundation.xml`
+- [x] Confirm that project metadata remains model-driven rather than hardcoded
+- [x] Capture any gaps that block the first emitter slice
 
 ---
 
@@ -54,7 +54,7 @@
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
 | `load_named_project_source("foundation")` currently fails when local `foundation` modules require shared modules (`library` / `assert`) without explicit `from="shared"`; the shared loader resolves those nested dependencies under `project_foundation/` instead of `shared/`. | Fix in Step 1 while adding shared-framework coverage. | `tools/codegen/project_source.py`; `codegen/models/project_foundation/module_mbedtls_bridge_*.xml` |
-| The first emitter slice will likely target enums, but the shared C backend helper currently resolves output metadata only for modules/classes, so enum-target routing still needs either explicit support or a slice-specific adapter later. | Document as a pre-emitter gap; do not broaden this task into emitter implementation. | `tools/codegen/project_c_backend.py` |
+| The first emitter slice will likely target enums, but the shared C backend helper currently resolves output metadata only for modules/classes, so enum-target routing still needs either explicit support or a slice-specific adapter later. | Captured as the remaining pre-emitter blocker after shared-framework validation; defer the fix to the emitter slice task instead of broadening this validation task. | `tools/codegen/project_c_backend.py` |
 
 ---
 
@@ -67,6 +67,9 @@
 | 2026-04-06 19:10 | Step 0 started | Preflight |
 | 2026-04-06 19:20 | Shared-framework + foundation inventory reviewed | Confirmed shared loader/IR/backend modules from CG-012..016 and identified current foundation loader gap on nested shared-module requires. |
 | 2026-04-06 19:22 | Shared-behavior assertions identified | Foundation validation should prove model-driven project metadata (`vscf`, namespace/framework, roots), shared-module dependency resolution, and foundation-specific output-target routing without `common` literals. |
+| 2026-04-06 19:35 | Foundation shared-framework tests added | Added a dedicated `foundation` shared-framework test file and fixed shared loader recursion for nested shared-module references / non-source generated-module requires. |
+| 2026-04-06 19:40 | Model-driven metadata confirmed | Added assertions that `foundation` output prefixes/namespaces/paths diverge cleanly from `common`, proving shared routing derives from project XML metadata rather than backend literals. |
+| 2026-04-06 19:41 | First-slice blocker captured | Logged enum-output routing support in the shared C backend as the remaining gap to resolve before the likely enum-first emitter slice. |
 
 ---
 
