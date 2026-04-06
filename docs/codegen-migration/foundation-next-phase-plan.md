@@ -139,6 +139,18 @@ Use tests at each layer:
 
 Do not rely on compile success alone as proof that the architecture is correct.
 
+## Recommended first extraction after this planning task
+
+Start with the loader split from `common_source.py`.
+
+Why this first:
+
+- it has the cleanest shared boundary because XML parsing, project-root loading, and dependency graph resolution are already reusable across projects
+- `common_ir.py` and `common_direct_c.py` both depend on loader concepts, so extracting loader primitives first reduces rename churn in the later steps
+- it gives `foundation` an early proof point (`project_foundation.xml` can load through shared code) without yet committing to backend-specific emitter behavior
+
+The first concrete implementation task should therefore extract generic project-graph loading into shared modules while keeping `project_common_path()` / `load_project_common()` as compatibility wrappers.
+
 ## Expected outcome
 
 After this phase, the codegen framework should expose generic shared modules rather than `common`-named core modules, and it should be shared across at least two project roots:
