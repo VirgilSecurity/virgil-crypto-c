@@ -1,6 +1,6 @@
 # CG-017: Foundation Validation on Shared Project-Rooted Framework — Status
 
-**Current Step:** Step 1: Validate shared behavior on `foundation`
+**Current Step:** Step 2: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-06
 **Review Level:** 2
@@ -28,10 +28,10 @@
 ---
 
 ### Step 2: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run the new shared-framework tests
-- [ ] Run `python3 -m py_compile` on the relevant codegen modules
+- [x] Run the new shared-framework tests
+- [x] Run `python3 -m py_compile` on the relevant codegen modules
 
 ---
 
@@ -70,6 +70,8 @@
 | 2026-04-06 19:35 | Foundation shared-framework tests added | Added a dedicated `foundation` shared-framework test file and fixed shared loader recursion for nested shared-module references / non-source generated-module requires. |
 | 2026-04-06 19:40 | Model-driven metadata confirmed | Added assertions that `foundation` output prefixes/namespaces/paths diverge cleanly from `common`, proving shared routing derives from project XML metadata rather than backend literals. |
 | 2026-04-06 19:41 | First-slice blocker captured | Logged enum-output routing support in the shared C backend as the remaining gap to resolve before the likely enum-first emitter slice. |
+| 2026-04-06 19:44 | Shared-framework verification tests passed | `python3 -m unittest tests.codegen.test_project_foundation_shared_framework` passed (3 tests). |
+| 2026-04-06 19:44 | Python compile verification passed | `python3 -m py_compile` succeeded for the touched shared codegen modules and the new foundation validation test. |
 
 ---
 
