@@ -1,7 +1,7 @@
 # CG-012: Extract Shared Project Graph Loader — Status
 
 **Current Step:** Step 4: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
@@ -45,9 +45,9 @@
 ---
 
 ### Step 4: Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Document what moved into the shared loader layer and what remains adapter-only
+- [x] Document what moved into the shared loader layer and what remains adapter-only
 
 ---
 
@@ -74,6 +74,7 @@
 | 2026-04-06 13:22 | Step 0 started | Preflight |
 | 2026-04-06 14:07 | Worker iter 1 | done in 2693s, tools: 59 |
 | 2026-04-06 14:13 | Step 3 verification | `python3 -m unittest tests.codegen.test_project_common_source tests.codegen.test_project_common_ir tests.codegen.test_common_bootstrap tests.codegen.test_common_direct_c_resolution` passed (17 tests); `python3 -m py_compile tools/codegen/common_bootstrap.py tools/codegen/common_direct_c.py tools/codegen/common_source.py tools/codegen/common_ir.py` passed |
+| 2026-04-06 14:14 | Step 4 delivery | Documented shared loader ownership in `docs/codegen-migration/implementation-notes.md`, with `project_source.py` as shared loader layer and `common_source.py` retained as thin compatibility adapter |
 
 ---
 
