@@ -260,6 +260,15 @@ Use tests at each layer:
 
 Do not rely on compile success alone as proof that the architecture is correct.
 
+## Concise next-phase plan after this inventory task
+
+1. **Validate the shared framework on `project_foundation.xml`.** Add loader/IR/backend tests that prove the generic modules can traverse `foundation` metadata without `common`-specific assumptions.
+2. **Add a scripted `foundation` verification loop.** Introduce a `generate -> build -> test -> restore` helper comparable to the existing `common` gate so emitter work has a repeatable safety rail.
+3. **Pilot a tiny low-risk C slice.** Limit the first emitter change to enums plus one or two small utility classes/modules so output-target routing and preservation logic can be proven cheaply.
+4. **Broaden only after the gates pass.** Move next into serializer/list surfaces, and defer implementor-heavy crypto families plus `group session*` until the shared framework and preservation tooling are stable.
+
+This keeps the sequence aligned with ADR 0003: generalize once, verify on a second project root, then grow coverage without reintroducing project hardcodes.
+
 ## Recommended first extraction after this planning task
 
 Start with the loader split from `common_source.py`.
@@ -271,6 +280,26 @@ Why this first:
 - it gives `foundation` an early proof point (`project_foundation.xml` can load through shared code) without yet committing to backend-specific emitter behavior
 
 The first concrete implementation task should therefore extract generic project-graph loading into shared modules while keeping `project_common_path()` / `load_project_common()` as compatibility wrappers.
+
+## Recommended first implementation slice after inventory
+
+Start `foundation` emitter work with **enums plus one small utility/value family**:
+
+- primary candidates: `status`, `asn1 tag`, `alg id`, `oid id`, `group msg type`, `cipher state`
+- optional companion classes/modules once enum emission is stable: `error`, `base64`, `oid`, `pem title`, or `group session typedefs`
+
+Why this slice first:
+
+- it exercises project-rooted loading on real `foundation` entities
+- it verifies prefix/namespace/path routing for `vscf_*` outputs
+- it keeps preservation risk low because the files are comparatively small and test coverage already exists for nearby utility behavior
+- it avoids the deepest dependency trees (`implementor_*`, key hierarchies, protobuf-backed `group session*`, and post-quantum flows)
+
+Concretely, the first implementation task after this plan should be:
+
+1. prove `project_foundation.xml` loads through the shared framework
+2. add the `foundation` generate/build/test harness
+3. migrate enum emission and, if capacity remains, one tiny utility surface such as `error` or `base64`
 
 ## Expected outcome
 
