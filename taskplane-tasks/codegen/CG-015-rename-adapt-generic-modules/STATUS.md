@@ -1,20 +1,20 @@
 # CG-015: Rename and Adapt Generic Modules, Imports, and Docs — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 1: Update callers and names
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-06
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 2
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Review extracted shared-module outputs from predecessor tasks
-- [ ] Confirm which legacy `common_*` names should remain as temporary adapters, if any
+- [x] Review extracted shared-module outputs from predecessor tasks
+- [x] Confirm which legacy `common_*` names should remain as temporary adapters, if any
 
 ---
 
@@ -62,6 +62,11 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-06 14:54 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-06 14:54 | Step 0 started | Preflight |
+| 2026-04-06 15:10 | Step 0 review | Reviewed CG-012 through CG-014 outputs plus shared/adapter module boundaries; confirmed `project_source.py`, `project_ir.py`, and `project_c_backend.py` now own the shared loader/IR/backend responsibilities |
+| 2026-04-06 15:12 | Worker iter 1 | done in 1067s, tools: 24 |
+| 2026-04-06 15:24 | Step 0 adapter boundary | Confirmed `common_source.py`, `common_ir.py`, and `common_direct_c.py` should remain temporary thin `common` compatibility adapters, while `common_bootstrap.py` remains the current `common` CLI/workflow entrypoint |
 
 ---
 
