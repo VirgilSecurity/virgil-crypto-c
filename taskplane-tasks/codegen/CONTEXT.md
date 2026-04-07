@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-04
 **Status:** Active
-**Next Task ID:** CG-020
+**Next Task ID:** CG-022
 
 ---
 
@@ -119,10 +119,15 @@ Next generic-framework refactor phase:
 
 Then foundation phase:
 
-- `CG-016` — foundation inventory and verification plan
-- `CG-017` — shared framework validation on `project_foundation.xml`
-- `CG-018` — foundation preservation/build gates and tests
-- `CG-019` — first low-risk foundation C emitter slice and integration
+- `CG-016` — foundation inventory and verification plan ✅
+- `CG-017` — shared framework validation on `project_foundation.xml` ✅
+- `CG-018` — foundation preservation/build gates and tests ⚠ partial work preserved on `saved/ssiroshtan-CG-018-20260406T092213`
+- `CG-019` — first low-risk foundation C emitter slice and integration ⛔ blocked by `CG-018`
+
+Follow-up recovery phase:
+
+- `CG-020` — finish foundation validation gates from saved work
+- `CG-021` — foundation first C slice after validation gates
 
 ---
 
@@ -130,6 +135,7 @@ Then foundation phase:
 
 - Reduce remaining project-specific hardcodes and `common`-named shared-core assumptions in loader/IR/backend code paths.
 - Complete the shared-module refactor before expanding `foundation` emitter coverage.
+- Finish and normalize the `foundation` validation gate work currently preserved on `saved/ssiroshtan-CG-018-20260406T092213`.
 - Define and automate `foundation` compile/preservation verification before broad emitter work.
 - Add parity/tooling checks that make mixed-mode bootstrap differences easier to review.
 - Revisit umbrella/support/build generation only where the broader shared framework requires it.

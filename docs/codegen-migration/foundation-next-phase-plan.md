@@ -324,3 +324,15 @@ After this phase, the codegen framework should expose generic shared modules rat
 - `project_foundation.xml`
 
 with `common` serving as the first validated reference slice and `foundation` serving as the first proof that the design is universal rather than project-specific.
+
+## Current recovery note
+
+The first `foundation` validation-gate task (`CG-018`) produced useful partial work but did not complete cleanly under orchestration. That partial work was preserved on:
+
+- `saved/ssiroshtan-CG-018-20260406T092213`
+
+The immediate next work should therefore:
+
+1. salvage and minimize the useful validation-gate changes from the saved branch
+2. finish the gate in a clean, executable form
+3. only then resume the first low-risk `foundation` C slice
