@@ -29,8 +29,8 @@
 ### Step 2: Implement minimal validation support
 **Status:** ⬜ Not Started
 
-- [ ] Add any small helper scripts/tests needed for future `foundation` batches
-- [ ] Keep the scope limited to validation infrastructure
+- [x] Add any small helper scripts/tests needed for future `foundation` batches
+- [x] Keep the scope limited to validation infrastructure
 
 ---
 
