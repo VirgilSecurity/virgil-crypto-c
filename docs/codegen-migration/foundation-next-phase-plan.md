@@ -212,7 +212,15 @@ Minimum expectation:
 
 ### 3. Build gate
 
-Configure and build the C library and tests with `foundation` enabled:
+The minimal supported recovery gate is now scripted so follow-up tasks can validate `foundation` without reassembling the saved-branch experiments by hand:
+
+```bash
+bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off
+```
+
+That helper configures a slim Release build with unrelated wrappers/libraries disabled, builds the `foundation` targets plus test executables, and then runs the `foundation`-labeled CTest subset. Use it as the default executable gate until a broader generate-build-restore harness exists.
+
+If you need the raw manual equivalent, configure and build the C library and tests with `foundation` enabled:
 
 ```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -223,7 +231,7 @@ This validates the main `foundation` library plus its `foundation_pb` dependency
 
 ### 4. Test gate
 
-Run the `foundation` test subset through CTest:
+The scripted helper above is the supported path for this recovery checkpoint. Its test phase is equivalent to running the `foundation` test subset through CTest:
 
 ```bash
 cd build && ctest --output-on-failure -R foundation
@@ -243,7 +251,7 @@ Because `features.cmake` contains a large dependency graph and optional multi-th
 
 Several gates needed for efficient `foundation` migration do not yet exist as dedicated tooling:
 
-1. **No `foundation` equivalent of `tools/codegen/build_common_with_new_codegen.sh`.** There is currently no scripted generate-build-restore loop for `library/foundation`, so the first follow-up should add one before migration broadens beyond a tiny pilot.
+1. **Only a minimal validation helper exists today.** `tools/codegen/verify_foundation_validation_gate.sh` now gives us a scripted configure/build/test gate for `foundation`, but there is still no `foundation` equivalent of `tools/codegen/build_common_with_new_codegen.sh` with generate-build-restore behavior. The first broader emitter follow-up should add that before migration expands beyond a tiny pilot.
 2. **No shared-framework tests that explicitly exercise `project_foundation.xml`.** Current Python codegen tests are still `common`-centric; `CG-017` should add loader/IR/backend assertions for `foundation` metadata.
 3. **No preservation-focused diff harness for `foundation`.** Because `foundation` files mix generated and handwritten code, the migration needs an automated way to detect writes outside generated blocks.
 4. **No narrow slice-selection CLI/documented workflow yet.** A practical emitter task will need a repeatable way to regenerate just the chosen `foundation` entity family rather than broad project output.
