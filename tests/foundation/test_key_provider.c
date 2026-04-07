@@ -556,6 +556,7 @@ inner_test__import_private_key__then_export__are_equals(vsc_data_t private_key_d
     vscf_key_provider_destroy(&key_provider);
 }
 
+#if VSCF_POST_QUANTUM && VSCF_ROUND5 && VSCF_FALCON
 static void
 inner_test__import_public_key__expect_status(vsc_data_t public_key_data, vscf_status_t status) {
 
@@ -587,6 +588,7 @@ inner_test__import_private_key__expect_status(vsc_data_t private_key_data, vscf_
     vscf_impl_destroy(&private_key);
     vscf_key_provider_destroy(&key_provider);
 }
+#endif
 
 static void
 inner_test__import_private_key__then_export_public_key__are_equals(

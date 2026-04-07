@@ -135,7 +135,7 @@ Follow-up recovery phase:
 
 - Reduce remaining project-specific hardcodes and `common`-named shared-core assumptions in loader/IR/backend code paths.
 - Complete the shared-module refactor before expanding `foundation` emitter coverage.
-- Finish and normalize the `foundation` validation gate work currently preserved on `saved/ssiroshtan-CG-018-20260406T092213`.
+- Extend the recovered `foundation` validation helper into a full generate-build-restore/preservation harness before broad emitter work.
 - Define and automate `foundation` compile/preservation verification before broad emitter work.
 - Add parity/tooling checks that make mixed-mode bootstrap differences easier to review.
 - Revisit umbrella/support/build generation only where the broader shared framework requires it.

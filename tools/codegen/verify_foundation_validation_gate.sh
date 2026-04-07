@@ -76,13 +76,18 @@ CMAKE_ARGS=(
 )
 
 if [ "$POST_QUANTUM_OFF" -eq 1 ]; then
-  CMAKE_ARGS+=("-DVIRGIL_POST_QUANTUM=OFF")
+  CMAKE_ARGS+=(
+    "-DVIRGIL_POST_QUANTUM=OFF"
+    "-DVSCF_POST_QUANTUM=OFF"
+  )
 fi
 
 cmake "${CMAKE_ARGS[@]}"
-cmake --build "$BUILD_DIR" --target foundation -j"$JOBS"
 
-if [ "$BUILD_ONLY" -eq 0 ]; then
+if [ "$BUILD_ONLY" -eq 1 ]; then
+  cmake --build "$BUILD_DIR" --target foundation -j"$JOBS"
+else
+  cmake --build "$BUILD_DIR" -j"$JOBS"
   ctest --test-dir "$BUILD_DIR" --output-on-failure -L foundation
 fi
 
