@@ -187,18 +187,23 @@ The first `foundation` emitter work should be gated in layers instead of relying
 
 ### 1. Shared-framework metadata gate
 
-Before emitting any `foundation` C files, add/keep Python tests that prove the shared project-rooted framework can load and lower `project_foundation.xml` without reintroducing `common` hardcodes.
+Before emitting any `foundation` C files, keep the shared project-rooted tests green and include the dedicated `foundation` metadata coverage added in `CG-017`.
 
-Recommended command shape:
+Recommended command:
+
+```bash
+python3 -m unittest tests.codegen.test_project_foundation_shared_framework
+```
+
+If a batch also touches shared loader / IR / backend internals, run the broader shared-framework suite alongside it:
 
 ```bash
 python3 -m unittest \
   tests.codegen.test_project_common_source \
   tests.codegen.test_project_common_ir \
-  tests.codegen.test_project_c_backend
+  tests.codegen.test_project_c_backend \
+  tests.codegen.test_project_foundation_shared_framework
 ```
-
-That command is only a placeholder for the current shared-framework suite; the concrete follow-up task should extend it with `foundation`-specific assertions once those tests exist.
 
 ### 2. Generator smoke gate for the selected slice
 
@@ -210,9 +215,9 @@ Minimum expectation:
 - no unrelated `library/common/**` changes appear
 - output paths, prefixes, and namespaces come from `project_foundation.xml` / shared IR rather than hardcoded literals
 
-### 3. Build gate
+### 3. Build + test gate
 
-The minimal supported recovery gate is now scripted so follow-up tasks can validate `foundation` without reassembling the saved-branch experiments by hand:
+The minimal supported gate is now scripted so follow-up tasks can validate `foundation` without reassembling experiments by hand:
 
 ```bash
 bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off
@@ -220,32 +225,43 @@ bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off
 
 That helper configures a slim Release build with unrelated wrappers/libraries disabled, builds the `foundation` targets plus test executables, and then runs the `foundation`-labeled CTest subset. Use it as the default executable gate until a broader generate-build-restore harness exists.
 
-If you need the raw manual equivalent, configure and build the C library and tests with `foundation` enabled:
+For the full default run:
 
 ```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j$(nproc)
+bash tools/codegen/verify_foundation_validation_gate.sh
 ```
 
-This validates the main `foundation` library plus its `foundation_pb` dependency wiring through CMake.
+This helper should:
 
-### 4. Test gate
+- configure a dedicated `build/foundation-gate` tree in `Release`
+- build the `foundation` target so `vsc::foundation_pb` stays in the dependency path
+- discover the `foundation`-labeled tests via `ctest -N -L foundation` and build those concrete test targets before executing CTest
+- run `ctest --output-on-failure -L foundation` so the gate follows the labeled `foundation` test surface instead of relying on name matching
 
-The scripted helper above is the supported path for this recovery checkpoint. Its test phase is equivalent to running the `foundation` test subset through CTest:
+As of 2026-04-07, the helper completes this full sequence successfully with 54/54 `foundation` tests passing.
+
+The helper also supports narrower executions:
 
 ```bash
-cd build && ctest --output-on-failure -R foundation
+bash tools/codegen/verify_foundation_validation_gate.sh --build-only
+bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off
 ```
 
-For the first low-risk slice, targeted executions such as `ctest --output-on-failure -R "(base64|pem|key_info|alg_info)"` are acceptable during development, but the step-completion gate for any emitter task should still include the broader `foundation` test set.
-
-### 5. Feature-sensitive spot checks
+### 4. Feature-sensitive spot checks
 
 Because `features.cmake` contains a large dependency graph and optional multi-threading/post-quantum toggles, explicitly verify at least:
 
-- default feature configuration
-- one build with `VSCF_POST_QUANTUM=OFF` if the migrated slice intersects post-quantum-adjacent outputs
-- one build with multi-threading expectations intact when the slice touches threading-sensitive code paths
+- the default helper run above
+- one helper run with `--post-quantum-off` if the migrated slice intersects post-quantum-adjacent outputs
+- multi-threading-labeled tests remain included in the `foundation` CTest label set when the slice touches threading-sensitive code paths
+
+## Minimal helper work required for this gate
+
+The smallest reliable infrastructure slice is:
+
+1. add `tools/codegen/verify_foundation_validation_gate.sh` as the documented `foundation` build/test entrypoint
+2. label the existing `tests/foundation` CTest registrations with `foundation` so the helper can use `ctest -L foundation` deterministically
+3. keep broader preservation diff tooling out of this task; document it as follow-on work once emitter ownership begins
 
 ## Missing verification infrastructure to add before broad emitter work
 

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Validation-only helper for foundation build/test gates.
+# This task does not take ownership of generation/apply/restore flows yet.
+
+
 ROOT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 JOBS_DEFAULT="$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"
 BUILD_DIR=""
@@ -15,7 +19,7 @@ Usage: bash tools/codegen/verify_foundation_validation_gate.sh [options]
 Options:
   --build-dir <path>     Explicit CMake build directory.
   --build-only           Configure and build, but skip CTest.
-  --post-quantum-off     Configure with -DVIRGIL_POST_QUANTUM=OFF.
+  --post-quantum-off     Configure with -DVIRGIL_POST_QUANTUM=OFF and -DVSCF_POST_QUANTUM=OFF.
   --jobs <n>             Parallel build jobs (default: detected CPU count or 4).
 EOF
 }
@@ -83,11 +87,23 @@ if [ "$POST_QUANTUM_OFF" -eq 1 ]; then
 fi
 
 cmake "${CMAKE_ARGS[@]}"
+cmake --build "$BUILD_DIR" --target foundation -j"$JOBS"
 
-if [ "$BUILD_ONLY" -eq 1 ]; then
-  cmake --build "$BUILD_DIR" --target foundation -j"$JOBS"
-else
-  cmake --build "$BUILD_DIR" -j"$JOBS"
+if [ "$BUILD_ONLY" -eq 0 ]; then
+  FOUNDATION_TEST_TARGETS=()
+  while IFS= read -r test_target; do
+    FOUNDATION_TEST_TARGETS+=("$test_target")
+  done < <(
+    ctest --test-dir "$BUILD_DIR" -N -L foundation 2>/dev/null \
+      | sed -E -n 's/^[[:space:]]*Test[[:space:]]*#[0-9]+:[[:space:]]*//p'
+  )
+
+  if [ "${#FOUNDATION_TEST_TARGETS[@]}" -eq 0 ]; then
+    echo "No foundation-labeled tests were discovered in $BUILD_DIR" >&2
+    exit 1
+  fi
+
+  cmake --build "$BUILD_DIR" --target "${FOUNDATION_TEST_TARGETS[@]}" -j"$JOBS"
   ctest --test-dir "$BUILD_DIR" --output-on-failure -L foundation
 fi
 
