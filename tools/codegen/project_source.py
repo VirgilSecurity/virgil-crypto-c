@@ -313,6 +313,7 @@ def _load_module_graph(
     project_dir: str,
     module_name: str,
     from_area: str | None,
+    explicit_module_areas: dict[str, str | None],
     resolved_modules: dict[str, ModuleSource],
 ) -> ModuleSource:
     area = "shared" if from_area == "shared" else (from_area or project_dir)
@@ -326,11 +327,26 @@ def _load_module_graph(
 
     dependency_area = from_area or project_dir
     for require in module.requires:
+        module_name = require.attrs.get("module")
+        if not module_name:
+            continue
+
+        nested_from_area = require.attrs.get("from")
+        if nested_from_area is None and module_name in explicit_module_areas:
+            nested_from_area = explicit_module_areas[module_name]
+        if nested_from_area is None:
+            nested_from_area = dependency_area
+
+        nested_area = "shared" if nested_from_area == "shared" else (nested_from_area or project_dir)
+        if not _model_path(repo_root, nested_area, "module", module_name).exists():
+            continue
+
         _load_module_graph(
             repo_root=repo_root,
             project_dir=project_dir,
-            module_name=require.name,
-            from_area=require.attrs.get("from", dependency_area),
+            module_name=module_name,
+            from_area=nested_from_area,
+            explicit_module_areas=explicit_module_areas,
             resolved_modules=resolved_modules,
         )
 
@@ -367,6 +383,7 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
 
     resolved_modules: dict[str, ModuleSource] = {}
     explicit_module_names = {module_ref["name"] for module_ref in project.module_refs}
+    explicit_module_areas = {module_ref["name"]: module_ref.get("from") for module_ref in project.module_refs}
 
     for module_ref in project.module_refs:
         project.modules.append(
@@ -375,6 +392,7 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
                 project_dir=project_dir,
                 module_name=module_ref["name"],
                 from_area=module_ref.get("from"),
+                explicit_module_areas=explicit_module_areas,
                 resolved_modules=resolved_modules,
             )
         )
