@@ -1,25 +1,25 @@
 # CG-019: First Foundation C Slice and Integration — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-05
+**Current Step:** Step 1: Implement the first slice
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-07
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** L
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Read the `foundation` inventory/gate outputs
-- [ ] Confirm the selected low-risk slice and its acceptance criteria
+- [x] Read the `foundation` inventory/gate outputs
+- [x] Confirm the selected low-risk slice and its acceptance criteria
 
 ---
 
 ### Step 1: Implement the first slice
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Route the selected `foundation` slice through the shared project-rooted loader/IR/backend path
 - [ ] Keep project-specific naming/output routing model-driven
@@ -55,6 +55,8 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Selected first slice: `foundation` enum emission (`status`, `asn1 tag`, `alg id`, `oid id`, `group msg type`, `cipher state`, plus private-scope `recipient cipher decryption state`) because CG-016 recommended enums as the lowest-risk pilot and CG-017 already identified enum output-target routing as the remaining shared-backend gap. | Treat enum routing through the shared loader/IR/backend path as the implementation target for this task. | `docs/codegen-migration/foundation-next-phase-plan.md`; `taskplane-tasks/codegen/CG-017-foundation-shared-framework-validation/STATUS.md`; `codegen/models/project_foundation/enum_*.xml` |
+| Acceptance criteria for the slice: generator must route `vscf_*` enum outputs from model metadata without `foundation` hardcodes, limit writes to intended enum header/source surfaces, and pass the documented `foundation` metadata + validation gates. | Use targeted shared-framework tests plus `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` as the minimum executable proof. | `docs/codegen-migration/foundation-next-phase-plan.md`; `tools/codegen/verify_foundation_validation_gate.sh` |
 
 ---
 
@@ -63,6 +65,11 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-05 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-07 22:36 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-07 22:36 | Step 0 started | Preflight |
+| 2026-04-07 22:45 | Selected enum-first foundation slice | Chose `foundation` enum emission as the first low-risk slice and captured acceptance criteria around shared model-driven routing plus validation gates. |
+| 2026-04-07 22:46 | Step 0 completed | Preflight outputs reviewed; enum-first slice selected as the implementation target. |
+| 2026-04-07 22:46 | Step 1 started | Implement the first slice |
 
 ---
 
