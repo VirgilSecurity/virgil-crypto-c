@@ -5,7 +5,7 @@
 **Last Updated:** 2026-04-07
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** S
 
 ---
@@ -21,8 +21,8 @@
 ### Step 1: Define gates
 **Status:** 🟨 In Progress
 
-- [ ] Document the recommended verification commands for `foundation`
-- [ ] Identify any minimal helper script/test work needed to run those checks reliably
+- [x] Document the recommended verification commands for `foundation`
+- [x] Identify any minimal helper script/test work needed to run those checks reliably
 
 ---
 
@@ -74,6 +74,7 @@
 | 2026-04-07 14:49 | Step 0 started | Preflight |
 | 2026-04-07 14:55 | Inspected `foundation` surfaces | Confirmed dependency-aware library build plus dedicated unit/fuzzy test CMake targets already exist. |
 | 2026-04-07 14:57 | Classified output ownership | Marked `include/src` as preservation-sensitive partial outputs and `sources.cmake` / `features.cmake` as fully generated boundaries. |
+| 2026-04-07 16:52 | Worker iter 1 | killed (wall-clock timeout) in 7402s, tools: 46 |
 
 ---
 
