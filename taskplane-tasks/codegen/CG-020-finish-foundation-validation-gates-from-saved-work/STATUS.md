@@ -1,7 +1,7 @@
 # CG-020: Finish Foundation Validation Gates from Saved Work — Status
 
 **Current Step:** Step 3: Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-07
 **Review Level:** 2
 **Review Counter:** 0
@@ -37,9 +37,9 @@
 ---
 
 ### Step 3: Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Summarize what was salvaged from the saved branch and what was intentionally left out
+- [x] Summarize what was salvaged from the saved branch and what was intentionally left out
 
 ---
 
@@ -58,6 +58,7 @@
 | The mission and plan docs consistently frame `foundation` gating as executable configure/build/test confidence and preservation safety; no requirement calls for formatting-only cleanup. Recovery scope should therefore stay on a runnable validation path and avoid stylistic churn. | Treat formatting as out of scope unless directly required for the gate script or test labels to run. | `taskplane-tasks/codegen/CG-020-finish-foundation-validation-gates-from-saved-work/PROMPT.md`, `docs/codegen-migration/foundation-next-phase-plan.md` |
 | The concise supported validation path is now `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off`, which uses the recovered helper to configure a slim Release build, build `foundation`, and run the `foundation`-labeled CTest subset without relying on the failed batch history. | Document this helper as the default recovery gate; leave broader generate-build-restore preservation automation for follow-up work. | `tools/codegen/verify_foundation_validation_gate.sh`, `docs/codegen-migration/foundation-next-phase-plan.md`, `taskplane-tasks/codegen/CONTEXT.md` |
 | The final recovery result is intentionally narrow: keep the saved helper script, the `foundation` CTest labels that make `ctest -L foundation` work, and the post-quantum guard needed for the slimmed validation build; do not replay the saved task-state artifacts or expand into emitter work. | Future workers can understand the landed scope directly from this task status instead of reconstructing the failed batch chronology. | `taskplane-tasks/codegen/CG-020-finish-foundation-validation-gates-from-saved-work/STATUS.md`, `tests/foundation/CMakeLists.txt`, `tests/foundation/test_key_provider.c` |
+| Delivery summary: salvaged from the saved branch were the executable validation helper pattern and the stable `foundation` CTest labeling; intentionally left out were the saved task-state files, speculative generator/polish changes, and any expansion into emitter or preservation-harness work beyond the minimal runnable gate. | Treat `CG-020` as a narrow recovery checkpoint and defer broader automation to `CG-021` or later follow-up tasks. | `saved/ssiroshtan-CG-018-20260406T092213`, `tools/codegen/verify_foundation_validation_gate.sh`, `docs/codegen-migration/foundation-next-phase-plan.md` |
 
 ---
 
@@ -83,6 +84,7 @@
 | 2026-04-07 21:47 | Full validation gate verification | `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` completed successfully; the minimal supported gate now configures, builds, and runs the `foundation`-labeled CTest subset (54/54 passed) in the slimmed post-quantum-off configuration. |
 | 2026-04-07 21:50 | Documentation normalized | Updated the migration plan, task context, and this status file to point future work at the recovered helper script as the supported minimal `foundation` validation path. |
 | 2026-04-07 21:52 | Recovery scope clarified | Recorded the intentionally narrow landed scope in STATUS so the final state is understandable without replaying the failed `CG-018` batch history. |
+| 2026-04-07 21:58 | Delivery summary recorded | Captured exactly what was salvaged from the saved branch versus what was intentionally left out so the handoff is self-contained. |
 
 ---
 
