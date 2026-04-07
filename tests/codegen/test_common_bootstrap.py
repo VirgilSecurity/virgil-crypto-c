@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
-from tools.codegen.common_bootstrap import iter_project_xml_paths, merge_generated_section, render_one
+from tools.codegen.common_bootstrap import iter_project_xml_paths, merge_generated_section, render_enum, render_one
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -35,6 +35,22 @@ class CommonBootstrapTest(unittest.TestCase):
                 xml_paths = iter_project_xml_paths(project_dir, REPO_ROOT)
 
         self.assertEqual([direct_only], xml_paths)
+
+    def test_render_enum_supports_named_typedef_and_implicit_values(self) -> None:
+        enum = ET.Element("c_enum", name="demo_enum_t", typedef_name="demo_enum_t")
+        ET.SubElement(enum, "c_constant", name="DEMO_FIRST", value="7")
+        ET.SubElement(enum, "c_constant", name="DEMO_SECOND")
+
+        rendered = render_enum(enum)
+
+        self.assertEqual(
+            "enum demo_enum_t {\n"
+            "    DEMO_FIRST = 7,\n"
+            "    DEMO_SECOND\n"
+            "};\n"
+            "typedef enum demo_enum_t demo_enum_t;",
+            rendered,
+        )
 
     def test_iter_project_xml_paths_includes_legacy_fallbacks_only_when_requested(self) -> None:
         with TemporaryDirectory() as tmp_dir:
