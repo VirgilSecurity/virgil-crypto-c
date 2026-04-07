@@ -1,7 +1,7 @@
 # CG-018: Foundation Preservation and Build Gates — Status
 
-**Current Step:** Step 3: Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 4: Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-07
 **Review Level:** 2
 **Review Counter:** 0
@@ -43,9 +43,9 @@
 ---
 
 ### Step 4: Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Update docs to make the `foundation` validation path explicit
+- [x] Update docs to make the `foundation` validation path explicit
 
 ---
 
@@ -80,6 +80,7 @@
 | 2026-04-07 18:52 | Step 3 started | Verification |
 | 2026-04-07 19:12 | Ran foundation validation helper | `bash tools/codegen/verify_foundation_validation_gate.sh` configured and built `foundation`, then `ctest -L foundation` failed because the labeled `tests/foundation` executables were not built into the gate tree. |
 | 2026-04-07 19:43 | Repaired and re-ran foundation validation helper | Updated the helper to discover/build the `foundation`-labeled test targets before `ctest`; the documented command now passes with 54/54 `foundation` tests green in `build/foundation-gate`. |
+| 2026-04-07 19:50 | Updated migration docs | Made the `foundation` validation path explicit in `foundation-next-phase-plan.md`, including the helper's test-target discovery/build step and the passing 54/54 verification result. |
 
 ---
 

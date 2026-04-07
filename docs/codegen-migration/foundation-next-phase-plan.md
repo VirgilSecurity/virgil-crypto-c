@@ -227,7 +227,10 @@ This helper should:
 
 - configure a dedicated `build/foundation-gate` tree in `Release`
 - build the `foundation` target so `vsc::foundation_pb` stays in the dependency path
+- discover the `foundation`-labeled tests via `ctest -N -L foundation` and build those concrete test targets before executing CTest
 - run `ctest --output-on-failure -L foundation` so the gate follows the labeled `foundation` test surface instead of relying on name matching
+
+As of 2026-04-07, the documented helper does complete this full sequence successfully in the lane worktree: `bash tools/codegen/verify_foundation_validation_gate.sh` finished with 54/54 `foundation` tests passing in `build/foundation-gate`.
 
 During development, the helper should also support narrower executions:
 
