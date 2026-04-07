@@ -85,6 +85,10 @@
 | 2026-04-07 21:50 | Documentation normalized | Updated the migration plan, task context, and this status file to point future work at the recovered helper script as the supported minimal `foundation` validation path. |
 | 2026-04-07 21:52 | Recovery scope clarified | Recorded the intentionally narrow landed scope in STATUS so the final state is understandable without replaying the failed `CG-018` batch history. |
 | 2026-04-07 21:58 | Delivery summary recorded | Captured exactly what was salvaged from the saved branch versus what was intentionally left out so the handoff is self-contained. |
+| 2026-04-07 21:25 | Agent reply | Received steering for CG-020. I’ll keep scope minimal: verify the executable foundation gate, make only concise documentation updates, checkpoint STATUS immediately after each completed item, and stop |
+| 2026-04-07 21:25 | Agent reply | CG-020 complete. Minimal scope delivered: recovered `tools/codegen/verify_foundation_validation_gate.sh`, kept the `foundation` CTest-label path, documented `bash tools/codegen/verify_foundation_valid |
+| 2026-04-07 21:25 | Worker iter 5 | done in 254s, tools: 34 |
+| 2026-04-07 21:25 | Task complete | .DONE created |
 
 ---
 
