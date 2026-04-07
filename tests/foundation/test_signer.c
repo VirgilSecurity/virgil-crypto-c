@@ -40,8 +40,8 @@
 
 
 #define TEST_DEPENDENCIES_AVAILABLE                                                                                    \
-    (VSCF_SIGNER && VSCF_VERIFIER && VSCF_SHA384 && VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY &&               \
-            VSCF_RSA && VSCF_ED25519)
+    (VSCF_SIGNER && VSCF_VERIFIER && VSCF_SHA384 && VSCF_KEY_PROVIDER && VSCF_KEY && VSCF_PRIVATE_KEY && VSCF_RSA &&   \
+            VSCF_ED25519)
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_alg.h"

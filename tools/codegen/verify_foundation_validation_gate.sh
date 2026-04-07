@@ -77,6 +77,20 @@ cmake "${CMAKE_ARGS[@]}"
 cmake --build "$BUILD_DIR" --target foundation -j"$JOBS"
 
 if [ "$BUILD_ONLY" -eq 0 ]; then
+  FOUNDATION_TEST_TARGETS=()
+  while IFS= read -r test_target; do
+    FOUNDATION_TEST_TARGETS+=("$test_target")
+  done < <(
+    ctest --test-dir "$BUILD_DIR" -N -L foundation 2>/dev/null \
+      | sed -E -n 's/^[[:space:]]*Test[[:space:]]*#[0-9]+:[[:space:]]*//p'
+  )
+
+  if [ "${#FOUNDATION_TEST_TARGETS[@]}" -eq 0 ]; then
+    echo "No foundation-labeled tests were discovered in $BUILD_DIR" >&2
+    exit 1
+  fi
+
+  cmake --build "$BUILD_DIR" --target "${FOUNDATION_TEST_TARGETS[@]}" -j"$JOBS"
   ctest --test-dir "$BUILD_DIR" --output-on-failure -L foundation
 fi
 
