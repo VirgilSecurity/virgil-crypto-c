@@ -1,7 +1,7 @@
 # CG-035: Render Implementation Main Module and Defs Module — Status
 
-**Current Step:** Step 4: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -61,10 +61,10 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -79,6 +79,10 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| IRCArgument missing enum_name/interface_name fields | Fixed — added fields to IR and parsing | project_ir.py |
+| IRCStructField missing enum_name/array_kind/library fields | Fixed — added fields to IR | project_ir.py |
+| Source parser missing array_length_constant capture | Fixed — extended _attrs_with_child_shapes | project_source.py |
+| Implementation lifecycle differs from class lifecycle (info field, no dealloc_cb, proxy shallow_copy) | Separate impl lifecycle generators added | project_c_backend.py |
 
 ---
 
