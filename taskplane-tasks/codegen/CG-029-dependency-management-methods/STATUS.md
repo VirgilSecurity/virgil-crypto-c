@@ -1,6 +1,6 @@
 # CG-029: Generate Dependency Management Methods from Class IR — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Generate dependency struct fields
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -21,25 +21,23 @@
 ---
 
 ### Step 1: Generate dependency struct fields
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on exact field naming/type patterns from resolved XML
-
-- [ ] Add dependency struct field rendering
-- [ ] Correct naming convention
-- [ ] Foundation ecies struct verified
+- [ ] Add dependency property rendering in _render_reference_class_support or render_class_c_module — each dep becomes a c_property on the struct with type=vscf_impl_t for interface deps, or the class type for class deps
+- [ ] Add interface include (impl header) for interface deps; ensure dependency includes cover the impl_t type
+- [ ] Verify ecies struct fields match reference (random, cipher, mac, kdf, ephemeral_key)
 
 ---
 
 ### Step 2: Generate use/take/release methods
 **Status:** ⬜ Not Started
 
-> ⚠️ Hydrate: Expand based on method body patterns from c_dependency.gsl
-
-- [ ] use_X method generation
-- [ ] take_X method generation
-- [ ] release_X method generation
-- [ ] ecies methods match resolved XML
+- [ ] Implement _render_dependency_methods() generating use/take/release for each dependency
+- [ ] use_X body: ASSERT_PTR(self), ASSERT_PTR(dep), assert(self->dep==NULL), is_implemented check for interface deps, self->dep = impl_shallow_copy(dep)
+- [ ] take_X body: same asserts + check, self->dep = dep (direct assign, no copy). Only for interface/class/impl deps
+- [ ] release_X body: ASSERT_PTR(self), impl_destroy(&self->dep) for interface deps or class_destroy for class deps
+- [ ] Wire into _render_reference_class_support after lifecycle methods
+- [ ] Verify ecies methods match reference
 
 ---
 
