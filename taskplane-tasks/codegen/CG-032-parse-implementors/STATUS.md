@@ -1,7 +1,7 @@
 # CG-032: Parse Implementors and Implementations into Source and IR — Status
 
-**Current Step:** Step 4: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 1
 **Review Counter:** 0
@@ -62,10 +62,10 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -80,6 +80,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Implementor ref name vs file name mismatch | Noted — ref "ed25519" maps to file with name="ed25519 pk" | codegen/models/project_foundation/ |
 
 ---
 
