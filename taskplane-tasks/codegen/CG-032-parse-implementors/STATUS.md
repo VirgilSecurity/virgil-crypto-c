@@ -1,6 +1,6 @@
 # CG-032: Parse Implementors and Implementations into Source and IR — Status
 
-**Current Step:** Step 2: Add IRImplementation to project_ir.py
+**Current Step:** Step 3: Add test coverage
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -40,17 +40,15 @@
 ---
 
 ### Step 3: Add test coverage
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-> ⚠️ Hydrate: Expand based on exact implementation counts and binding details discovered
-
-- [ ] Foundation has 13 implementors
-- [ ] mbedtls implementations correct
-- [ ] sha256 interface bindings correct
-- [ ] Implementation properties/methods/requirements parsed
-- [ ] IRImplementation output targets correct
-- [ ] Total 53 implementations
-- [ ] Common has zero implementors
+- [x] Foundation has 13 implementors
+- [x] mbedtls implementations correct
+- [x] sha256 interface bindings correct
+- [x] Implementation properties/methods/requirements parsed
+- [x] IRImplementation output targets correct
+- [x] Total 53 implementations
+- [x] Common has zero implementors
 
 ---
 
