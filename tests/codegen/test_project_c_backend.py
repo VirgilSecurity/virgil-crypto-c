@@ -5,8 +5,12 @@ import unittest
 import xml.etree.ElementTree as ET
 
 from tools.codegen.common_direct_c import (
+    build_direct_assert_c_module,
+    build_direct_atomic_c_module,
     build_direct_buffer_defs_c_module,
     build_direct_data_c_module,
+    build_direct_library_c_module,
+    build_direct_memory_c_module,
     direct_c_renderers,
 )
 from tools.codegen.project_source import load_named_project_source
@@ -19,8 +23,10 @@ from tools.codegen.project_c_backend import (
     direct_renderer_map,
     direct_xml_name,
     enum_ir,
+    module_ir,
     render_class_c_module,
     render_enum_c_module,
+    render_module_c_module,
     return_from_source,
 )
 from tools.codegen.project_ir import IRConstant, IREnum, IROutputTarget, IRProject, project_to_ir
@@ -124,6 +130,42 @@ class ProjectCBackendTest(unittest.TestCase):
         self.assertEqual([field.attrib["name"] for field in fields], ["bytes", "len"])
         self.assertEqual("given", fields[0].attrib["array"])
         self.assertEqual("1", fields[0].attrib["is_const_type"])
+
+    def test_render_module_c_module_matches_common_adapter_outputs_for_shared_modules(self) -> None:
+        cases = [
+            ("library", build_direct_library_c_module),
+            ("memory", build_direct_memory_c_module),
+            ("assert", build_direct_assert_c_module),
+            ("atomic", build_direct_atomic_c_module),
+        ]
+
+        for module_name, adapter in cases:
+            with self.subTest(module=module_name):
+                generic = render_module_c_module(self.ir, module_ir(self.ir, module_name))
+                via_adapter = adapter(REPO_ROOT)
+                self.assertEqual(ET.tostring(via_adapter), ET.tostring(generic))
+
+    def test_render_module_c_module_derives_aliases_constants_and_macro_group_members_from_ir(self) -> None:
+        root = render_module_c_module(self.ir, module_ir(self.ir, "library"))
+
+        alias = root.find("c_alias")
+        self.assertIsNotNone(alias)
+        self.assertEqual("byte", alias.attrib["name"])
+        self.assertEqual("uint8_t", alias.attrib["type"])
+
+        enum_elem = root.find("c_enum")
+        self.assertIsNotNone(enum_elem)
+        constant = enum_elem.find("c_constant")
+        self.assertIsNotNone(constant)
+        self.assertEqual("VSC_POINTER_SIZE", constant.attrib["name"])
+        self.assertEqual("sizeof (void *)", constant.attrib["value"])
+
+        macro_groups = root.findall("c_macroses")
+        self.assertTrue(macro_groups)
+        self.assertEqual(
+            [macro.attrib["name"] for macro in macro_groups[0].findall("c_macros")],
+            ["VSC_PUBLIC", "VSC_PRIVATE", "VSC_SHARED_LIBRARY", "VSC_INTERNAL_BUILD"],
+        )
 
     def test_render_enum_c_module_preserves_foundation_enum_metadata_from_ir(self) -> None:
         foundation_ir = project_to_ir(load_named_project_source("foundation", REPO_ROOT))

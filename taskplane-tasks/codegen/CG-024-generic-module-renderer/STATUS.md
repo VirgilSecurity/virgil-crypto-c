@@ -1,6 +1,6 @@
 # CG-024: Generic Module Renderer — Status
 
-**Current Step:** Step 2: Tests
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -21,12 +21,12 @@
 - [x] Reclassify static runtime code
 
 ### Step 2: Tests
-**Status:** 🟨 In Progress
-- [ ] Tests for `common` modules through generic renderer
-- [ ] No regressions
+**Status:** ✅ Complete
+- [x] Tests for `common` modules through generic renderer
+- [x] No regressions
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] py_compile
 - [ ] build_common_with_new_codegen.sh
 
