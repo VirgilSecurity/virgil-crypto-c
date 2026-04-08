@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-04
 **Status:** Active
-**Next Task ID:** CG-027
+**Next Task ID:** CG-031
 
 ---
 
@@ -136,6 +136,13 @@ Universal codegen refactor phase:
 - `CG-024` — generic module renderer in shared C backend
 - `CG-025` — auto-discovery of renderable entities from IR
 - `CG-026` — eliminate per-project builder files and registry
+
+Lifecycle generation rules phase (ADR 0004 follow-up: replace .cfrag with parametric generation):
+
+- `CG-027` — parse class dependencies into source and IR
+- `CG-028` — generate lifecycle method bodies from class IR (depends on CG-027)
+- `CG-029` — generate dependency management methods: use/take/release (depends on CG-028)
+- `CG-030` — verify lifecycle parity and remove cfrag files (depends on CG-029)
 
 ---
 

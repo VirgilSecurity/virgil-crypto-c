@@ -1,0 +1,92 @@
+# CG-030: Verify Lifecycle Generation and Remove cfrag Files — Status
+
+**Current Step:** Not Started
+**Status:** 🔵 Ready for Execution
+**Last Updated:** 2026-04-08
+**Review Level:** 1
+**Review Counter:** 0
+**Iteration:** 0
+**Size:** S
+
+---
+
+### Step 0: Preflight
+**Status:** ⬜ Not Started
+
+- [ ] CG-028 and CG-029 complete
+- [ ] Build gate passes
+- [ ] Cfrag files still exist
+
+---
+
+### Step 1: Verify parity
+**Status:** ⬜ Not Started
+
+- [ ] Verification script/test written
+- [ ] All 10 lifecycle method bodies match cfrag content
+- [ ] Targeted test confirms parity
+
+---
+
+### Step 2: Remove cfrag files and extra_methods
+**Status:** ⬜ Not Started
+
+- [ ] extra_methods removed from common_bootstrap.py
+- [ ] _SUPPORT_DIR removed if unused
+- [ ] ClassMethodSpec import removed if unused
+- [ ] All cfrag files deleted
+- [ ] Empty directories cleaned up
+- [ ] ClassMethodSpec/load_support_code cleanup evaluated
+
+---
+
+### Step 3: Testing & Verification
+**Status:** ⬜ Not Started
+
+- [ ] Python compile check passes
+- [ ] Build gate passes
+- [ ] Buffer output byte-identical
+- [ ] All failures fixed
+
+---
+
+### Step 4: Documentation & Delivery
+**Status:** ⬜ Not Started
+
+- [ ] ADR 0004 follow-up marked completed
+- [ ] CONTEXT.md updated
+- [ ] Discoveries logged
+
+---
+
+## Reviews
+
+| # | Type | Step | Verdict | File |
+|---|------|------|---------|------|
+
+---
+
+## Discoveries
+
+| Discovery | Disposition | Location |
+|-----------|-------------|----------|
+
+---
+
+## Execution Log
+
+| Timestamp | Action | Outcome |
+|-----------|--------|---------|
+| 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+
+---
+
+## Blockers
+
+*None*
+
+---
+
+## Notes
+
+*Reserved for execution notes*
