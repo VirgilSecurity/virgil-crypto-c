@@ -1,21 +1,21 @@
 # CG-024: Generic Module Renderer — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-07
+**Current Step:** Step 1: Implement generic module renderer
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** L
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
-- [ ] Identify model-derivable vs static runtime module builders
+**Status:** ✅ Complete
+- [x] Identify model-derivable vs static runtime module builders
 
 ### Step 1: Implement generic module renderer
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Add generic `render_module_c_module` to shared backend
 - [ ] Derive macros/methods/variables/callbacks from IR
 - [ ] Reclassify static runtime code
@@ -32,8 +32,17 @@
 
 ---
 
+## Notes
+
+- 2026-04-08 preflight classification:
+  - Model-derivable from shared module IR: `library`, `memory`, `assert`, and `atomic` because `project_ir.IRCModule` already carries includes, requires, callbacks, variables, methods, macros, macro groups, and top-level code blocks sourced from `codegen/models/shared/module_*.xml`.
+  - Static checked-in runtime support that should stay outside a generic module renderer: handwritten buffer runtime `.cfrag` support under `tools/codegen/support/common_runtime/buffer/` and other future platform/runtime C shims that are not represented as module/class IR.
+  - Migration target for Step 1: remove the module-specific Python builders from `common_direct_c.py` and teach `project_c_backend.py` to emit module C XML directly from `IRCModule` content.
+
 ## Execution Log
 
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-07 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 12:23 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 12:23 | Step 0 started | Preflight |
