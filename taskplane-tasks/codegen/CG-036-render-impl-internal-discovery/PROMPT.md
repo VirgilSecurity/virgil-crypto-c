@@ -64,7 +64,7 @@ Resolved XML reference: `codegen/generated/foundation/c_module_vscf_sha256_inter
 
 ### Step 0: Preflight
 
-- [ ] CG-034 and CG-035 complete
+- [ ] CG-033 and CG-035 complete
 - [ ] Study resolved XML for `vscf_sha256_internal` — understand variable, method, and include patterns
 - [ ] Study how API table variables are initialized (function pointer assignments)
 - [ ] Study `impl_info` variable structure

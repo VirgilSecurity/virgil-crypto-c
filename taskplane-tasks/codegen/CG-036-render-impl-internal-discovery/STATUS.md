@@ -13,7 +13,7 @@
 ### Step 0: Preflight
 **Status:** ⬜ Not Started
 
-- [ ] CG-034 and CG-035 complete
+- [ ] CG-033 and CG-035 complete
 - [ ] vscf_sha256_internal resolved XML studied
 - [ ] API table initialization pattern understood
 - [ ] impl_info structure understood
