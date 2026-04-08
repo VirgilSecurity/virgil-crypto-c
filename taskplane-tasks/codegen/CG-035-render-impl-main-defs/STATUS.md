@@ -1,6 +1,6 @@
 # CG-035: Render Implementation Main Module and Defs Module — Status
 
-**Current Step:** Step 1: Implement render_implementation_defs_c_module()
+**Current Step:** Step 2: Implement render_implementation_c_module()
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -31,16 +31,10 @@
 ---
 
 ### Step 2: Implement render_implementation_c_module()
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on exact method patterns from resolved XML
-
-- [ ] render_implementation_c_module() implemented
-- [ ] Lifecycle methods with bodies
-- [ ] impl_size/impl/impl_const cast helpers
-- [ ] Interface method stubs
-- [ ] Implementation-specific methods
-- [ ] Correct includes
+- [ ] Implement render_implementation_c_module() with: lifecycle methods (impl-specific bodies), impl_size/impl/impl_const, interface method stubs, init_ctx/cleanup_ctx, interface binding constants, and correct includes
+- [ ] Implementation-specific methods from model (if any)
 
 ---
 
