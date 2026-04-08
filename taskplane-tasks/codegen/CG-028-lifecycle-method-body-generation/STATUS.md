@@ -1,27 +1,27 @@
 # CG-028: Generate Lifecycle Method Bodies from Class IR — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 1: Implement lifecycle body generation helpers
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CG-027 complete: IRClass has dependencies
-- [ ] _render_reference_class_support() understood
-- [ ] GSL lifecycle functions studied
-- [ ] Cfrag files read as verification targets
+- [x] CG-027 complete: IRClass has dependencies
+- [x] _render_reference_class_support() understood
+- [x] GSL lifecycle functions studied
+- [x] Cfrag files read as verification targets
 
 ---
 
 ### Step 1: Implement lifecycle body generation helpers
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 > ⚠️ Hydrate: Expand based on specific naming patterns discovered when reading project_c_backend.py helper functions
 
@@ -78,6 +78,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 14:57 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 14:57 | Step 0 started | Preflight |
 
 ---
 
