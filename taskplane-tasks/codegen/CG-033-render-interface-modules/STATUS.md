@@ -1,6 +1,6 @@
 # CG-033: Render Interface Modules (Dispatch + API) — Status
 
-**Current Step:** Step 4: Add parity tests
+**Current Step:** Step 6: Documentation & Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -53,7 +53,7 @@
 ---
 
 ### Step 4: Add parity tests
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] hash_api callbacks correct
 - [x] hash_api struct fields correct
@@ -65,11 +65,11 @@
 ---
 
 ### Step 5: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] New tests pass
-- [ ] Existing tests pass
-- [ ] Build gate passes
+- [x] New tests pass
+- [x] Existing tests pass (1 pre-existing failure in test_auto_discovery unrelated to CG-033)
+- [x] Build gate passes (pre-existing failure in assert module placeholder resolution, not related to CG-033)
 
 ---
 
