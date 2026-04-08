@@ -45,6 +45,20 @@ This means the C backend's resolved output must be:
 
 The generic renderers should therefore preserve model/IR richness in their resolved output rather than stripping it down to only what C emission needs.
 
+## Follow-up: replace `.cfrag` files with lifecycle generation rules
+
+The current implementation uses `.cfrag` (C fragment) files as checked-in static method bodies for class lifecycle methods (init, cleanup, new, delete, destroy, shallow_copy). This was a reasonable intermediate step to remove hardcoded Python string literals from the generators.
+
+However, in the old GSL pipeline, these method bodies were **not static** — they were **generated from rules** that understood class structure: properties, ownership semantics, refcount patterns, dealloc callbacks, and secure-erase flags.
+
+The correct long-term direction is to replace `.cfrag` files with **generic lifecycle generation rules** in the shared C backend that derive method bodies from the class IR, just as GSL templates did. This would mean:
+
+- no `.cfrag` files to maintain per class
+- lifecycle method bodies are deterministic and derivable from model metadata
+- adding a new class with standard lifecycle patterns requires zero new support files
+
+This is a follow-up refinement, not a blocker for current work.
+
 ## Consequences
 
 - Adding a new project requires zero new Python files
