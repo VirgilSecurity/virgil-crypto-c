@@ -75,6 +75,8 @@
 | 2026-04-08 01:21 | Preservation boundary confirmed | Verified with `git status --short` after the slice smoke/gate reruns that no `library/foundation/**` generated/manual files were left modified; only this task's STATUS checkpoint remained dirty. |
 | 2026-04-08 01:23 | Shared workflow integration finalized | With the shared project direct-renderer registry in place, `common_bootstrap.py --project foundation` now discovers the enum pilot through the same centralized workflow used for project selection rather than hardcoded bootstrap branches. |
 | 2026-04-08 01:25 | Migration docs updated | Updated `foundation-next-phase-plan.md` and `implementation-notes.md` to document the shared project direct-renderer registry, the still-intentional enum-only `foundation` slice scope, and the verified smoke/validation commands that now keep the pilot integrated cleanly. |
+| 2026-04-08 00:52 | Worker iter 1 | done in 463s, tools: 72 |
+| 2026-04-08 00:52 | Task complete | .DONE created |
 
 ---
 
