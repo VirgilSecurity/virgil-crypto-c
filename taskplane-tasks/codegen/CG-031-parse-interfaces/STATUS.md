@@ -1,6 +1,6 @@
 # CG-031: Parse Interfaces into Source and IR — Status
 
-**Current Step:** Step 2: Add IRInterface to project_ir.py
+**Current Step:** Step 3: Add test coverage
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -30,12 +30,12 @@
 ---
 
 ### Step 2: Add IRInterface to project_ir.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] IRInterface dataclass created
-- [ ] interfaces field added to IRProject
-- [ ] InterfaceSource → IRInterface mapping
-- [ ] IROutputTarget computed for interfaces
+- [x] IRInterface dataclass created
+- [x] interfaces field added to IRProject
+- [x] InterfaceSource → IRInterface mapping
+- [x] IROutputTarget computed for interfaces
 
 ---
 
