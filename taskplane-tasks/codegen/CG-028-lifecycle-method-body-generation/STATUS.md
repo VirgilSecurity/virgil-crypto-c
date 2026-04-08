@@ -1,7 +1,7 @@
 # CG-028: Generate Lifecycle Method Bodies from Class IR — Status
 
 **Current Step:** Step 4: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -54,10 +54,10 @@
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed (no update needed — internal codegen changes only)
 
 ---
 
@@ -72,6 +72,9 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Buffer extra_methods override lifecycle methods via overridden_method_names; cfrag files still used for buffer until CG-030 removes them | Expected behavior | common_bootstrap.py |
+| _render_ir_method resolves definition from 'external' to visibility when code is provided | Key behavior | project_c_backend.py:1242 |
+| All 15 auto-discovery tests pass with lifecycle body generation changes | Verified | test_auto_discovery.py |
 
 ---
 
