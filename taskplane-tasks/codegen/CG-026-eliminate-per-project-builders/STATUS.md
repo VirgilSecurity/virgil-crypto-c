@@ -1,6 +1,6 @@
 # CG-026: Eliminate Per-Project Builder Files — Status
 
-**Current Step:** Step 2: Update imports and tests
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -22,12 +22,12 @@
 - [x] Update common_bootstrap.py to use discover_renderers directly instead of project_direct_registry
 
 ### Step 2: Update imports and tests
-**Status:** 🟨 In Progress
-- [ ] Fix imports
-- [ ] Update tests/docs/scripts
+**Status:** ✅ Complete
+- [x] Fix imports
+- [x] Update tests/docs/scripts
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] py_compile
 - [ ] build_common_with_new_codegen.sh
 - [ ] verify_foundation_validation_gate.sh --post-quantum-off

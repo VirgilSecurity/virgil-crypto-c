@@ -8,7 +8,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_direct_c import build_direct_data_c_module
+from tools.codegen.common_bootstrap import build_direct_data_c_module
 
 
 def elem_to_dict(elem: ET.Element):

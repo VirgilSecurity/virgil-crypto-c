@@ -39,4 +39,4 @@ python3 tools/codegen/inspect_common_ir.py --module assert
 python3 tools/codegen/inspect_common_ir.py --class-name data
 ```
 
-For new shared-core integrations, prefer importing `load_named_project_source()` from `tools.codegen.project_source`, `project_to_ir()` from `tools.codegen.project_ir`, and shared backend helpers from `tools.codegen.project_c_backend`. Keep `common_source.py`, `common_ir.py`, and `common_direct_c.py` only when you specifically need `common` compatibility entrypoints or handwritten `common` direct builders.
+For new shared-core integrations, prefer importing `load_named_project_source()` from `tools.codegen.project_source`, `project_to_ir()` from `tools.codegen.project_ir`, and shared backend helpers from `tools.codegen.project_c_backend`. The bootstrap entry point `common_bootstrap.py` contains both the rendering pipeline and common-specific custom overrides (e.g. buffer runtime methods). Adding a new project requires zero new Python files — just register the project name in `common_bootstrap._SUPPORTED_PROJECTS`.

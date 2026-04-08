@@ -16,7 +16,7 @@ from tools.codegen.project_c_backend import (
 )
 from tools.codegen.project_ir import IROutputTarget, project_to_ir
 from tools.codegen.project_source import load_named_project_source
-from tools.codegen.project_direct_registry import direct_c_renderers_for_project
+from tools.codegen.common_bootstrap import direct_c_renderers_for_project
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
