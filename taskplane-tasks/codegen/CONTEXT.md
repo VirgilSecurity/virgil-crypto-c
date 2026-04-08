@@ -4,6 +4,8 @@
 **Status:** Active
 **Next Task ID:** CG-037
 
+> **Note:** CG-034 was merged into CG-033. Task IDs CG-034 is retired.
+
 ---
 
 ## Ownership
@@ -150,12 +152,12 @@ All `.cfrag` files removed. Lifecycle method bodies (init, cleanup, new, delete,
 
 Interface and implementor rendering phase:
 
-- `CG-031` — parse interfaces into source and IR
-- `CG-032` — parse implementors/implementations into source and IR (depends on CG-031)
-- `CG-033` — render interface public dispatch module (depends on CG-031) ‖ parallel with CG-034
-- `CG-034` — render interface API module / vtable struct + callbacks (depends on CG-031) ‖ parallel with CG-033
+- `CG-031` — parse interfaces into source and IR ✅
+- `CG-032` — parse implementors/implementations into source and IR (depends on CG-031) ✅
+- `CG-033` — render interface modules: dispatch + API (depends on CG-031)
+- ~~`CG-034`~~ — merged into CG-033
 - `CG-035` — render implementation main + defs module (depends on CG-032, CG-033)
-- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-034, CG-035)
+- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-033, CG-035)
 
 ---
 

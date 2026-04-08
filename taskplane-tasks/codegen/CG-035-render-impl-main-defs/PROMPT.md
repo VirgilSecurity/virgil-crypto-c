@@ -42,7 +42,7 @@ Resolved XML references: `codegen/generated/foundation/c_module_vscf_sha256.xml`
 ## Dependencies
 
 - **Task:** CG-032 (implementations must be in IR)
-- **Task:** CG-033 (interface dispatch module must exist — implementations reference interface types)
+- **Task:** CG-033 (interface modules must exist — implementations reference interface types)
 
 ## Context to Read First
 

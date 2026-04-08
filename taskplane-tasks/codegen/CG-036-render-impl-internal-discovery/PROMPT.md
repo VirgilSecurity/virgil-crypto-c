@@ -36,7 +36,7 @@ Resolved XML reference: `codegen/generated/foundation/c_module_vscf_sha256_inter
 
 ## Dependencies
 
-- **Task:** CG-034 (interface API module must exist — internal module references API types)
+- **Task:** CG-033 (interface modules must exist — internal module references API types)
 - **Task:** CG-035 (implementation main + defs modules must exist — internal module references implementation functions)
 
 ## Context to Read First
