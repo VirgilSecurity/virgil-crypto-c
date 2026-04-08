@@ -63,6 +63,7 @@ class ProjectFoundationSharedFrameworkTest(unittest.TestCase):
         group_typedefs = next(module for module in ir.modules if module.name == "group session typedefs")
         error_class = next(cls for cls in ir.classes if cls.name == "error")
         status_enum = next(enum for enum in ir.enums if enum.name == "status")
+        recipient_state_enum = next(enum for enum in ir.enums if enum.name == "recipient cipher decryption state")
 
         self.assertEqual("vscf_group_session_typedefs", group_typedefs.output.c_symbol)
         self.assertEqual("../library/foundation/include/virgil/crypto/foundation/vscf_group_session_typedefs.h", group_typedefs.output.header_path)
@@ -76,7 +77,15 @@ class ProjectFoundationSharedFrameworkTest(unittest.TestCase):
         self.assertEqual("../library/foundation/include/virgil/crypto/foundation/vscf_status.h", status_enum.output.header_path)
         self.assertEqual("generated/foundation/enum_status.xml", status_enum.output.generated_source_path)
 
-        for output in [group_typedefs.output, error_class.output, status_enum.output]:
+        self.assertEqual("vscf_recipient_cipher_decryption_state", recipient_state_enum.output.c_symbol)
+        self.assertEqual(
+            "../library/foundation/include/virgil/crypto/foundation/private/vscf_recipient_cipher_decryption_state.h",
+            recipient_state_enum.output.header_path,
+        )
+        self.assertEqual("generated/foundation/enum_recipient_cipher_decryption_state.xml", recipient_state_enum.output.generated_source_path)
+        self.assertEqual("private", recipient_state_enum.output.header_visibility)
+
+        for output in [group_typedefs.output, error_class.output, status_enum.output, recipient_state_enum.output]:
             assert output is not None
             self.assertTrue(output.c_symbol.startswith("vscf_"))
             self.assertIn("foundation", output.header_path)

@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_direct_c import direct_c_renderers
+from tools.codegen.project_direct_registry import direct_c_renderers_for_project, supported_projects
 
 
 GENERATED_START = "//  @generated"
@@ -43,8 +43,13 @@ def merge_generated_section(existing: str, generated: str) -> str:
     return prefix + generated + suffix
 
 
-def iter_project_xml_paths(project_dir: Path, repo_root: Path, *, include_legacy_fallback: bool = False) -> list[Path]:
-    direct_paths = {project_dir / name for name in direct_c_renderers(repo_root).keys()}
+def direct_c_renderers(repo_root: Path, project: str = "common") -> dict[str, object]:
+    return direct_c_renderers_for_project(project, repo_root)
+
+
+
+def iter_project_xml_paths(project_dir: Path, repo_root: Path, *, project: str = "common", include_legacy_fallback: bool = False) -> list[Path]:
+    direct_paths = {project_dir / name for name in direct_c_renderers(repo_root, project).keys()}
     if not include_legacy_fallback:
         return sorted(direct_paths)
 
@@ -143,15 +148,23 @@ def render_callback(elem: ET.Element) -> str:
 
 def render_enum(elem: ET.Element) -> str:
     comment = emit_comment_block(description_text(elem))
-    lines = [comment + "enum {"]
+    enum_name = elem.attrib.get("name")
+    typedef_name = elem.attrib.get("typedef_name")
+    header = f"enum {enum_name} {{" if enum_name else "enum {"
+    lines = [comment + header]
     constants = elem.findall("c_constant")
     for i, const in enumerate(constants):
         const_comment = emit_comment_block(const.text)
         if const_comment:
             lines.append(indent(const_comment.rstrip("\n"), 4))
+        value = const.attrib.get("value")
+        assignment = f" = {value}" if value is not None else ""
         comma = "," if i < len(constants) - 1 else ""
-        lines.append(f"    {const.attrib['name']} = {const.attrib['value']}{comma}")
+        lines.append(f"    {const.attrib['name']}{assignment}{comma}")
     lines.append("};")
+    if typedef_name:
+        enum_ref = f"enum {enum_name}" if enum_name else "enum"
+        lines.append(f"typedef {enum_ref} {typedef_name};")
     return "\n".join(lines)
 
 
@@ -279,8 +292,8 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
     return "\n".join(out) + "\n"
 
 
-def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path) -> list[Path]:
-    renderer = direct_c_renderers(repo_root).get(xml_path.name)
+def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path, *, project: str = "common") -> list[Path]:
+    renderer = direct_c_renderers(repo_root, project).get(xml_path.name)
     if renderer is not None:
         root = renderer(repo_root)
     else:
@@ -305,7 +318,7 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
-    parser.add_argument("--project", default="common")
+    parser.add_argument("--project", default="common", choices=supported_projects())
     parser.add_argument("--out", default="build/new-codegen")
     parser.add_argument("--apply", action="store_true", help="write directly into repo source tree")
     parser.add_argument(
@@ -325,8 +338,13 @@ def main() -> int:
         out_root.mkdir(parents=True, exist_ok=True)
 
     written = []
-    for xml_path in iter_project_xml_paths(project_dir, repo_root, include_legacy_fallback=args.legacy_c_modules):
-        written.extend(render_one(xml_path, repo_root, codegen_root, out_root))
+    for xml_path in iter_project_xml_paths(
+        project_dir,
+        repo_root,
+        project=args.project,
+        include_legacy_fallback=args.legacy_c_modules,
+    ):
+        written.extend(render_one(xml_path, repo_root, codegen_root, out_root, project=args.project))
 
     destination = repo_root if args.apply else out_root
     print(f"generated {len(written)} files into {destination}")

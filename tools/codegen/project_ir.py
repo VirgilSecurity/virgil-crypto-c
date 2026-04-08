@@ -202,7 +202,7 @@ def build_output_target(project: ProjectSource, *, entity_kind: str, entity_name
     source_root = PurePosixPath(project.attrs.get("path", ""))
     work_root = PurePosixPath(project.attrs.get("work_path", ""))
 
-    header_visibility = "private" if entity_kind == "module" and attrs.get("scope") == "private" else "public"
+    header_visibility = "private" if attrs.get("scope") == "private" else "public"
     include_dir = include_namespace / ("private" if header_visibility == "private" else "")
     header_path = str(source_root / "include" / include_dir / f"{stem}.h")
     source_path = str(source_root / "src" / f"{stem}.c")

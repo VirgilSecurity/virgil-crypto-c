@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import cast
 import xml.etree.ElementTree as ET
 
-from tools.codegen.project_ir import IRClass, IRModule, IRProject, IROutputTarget
+from tools.codegen.project_ir import IRClass, IREnum, IRModule, IRProject, IROutputTarget
 
 
 DirectCRenderer = Callable[[str | Path], ET.Element]
@@ -48,11 +48,21 @@ def class_ir(project_ir: IRProject, name: str) -> IRClass:
 
 
 
+def enum_ir(project_ir: IRProject, name: str) -> IREnum:
+    try:
+        return next(enum for enum in project_ir.enums if enum.name == name)
+    except StopIteration as exc:
+        raise KeyError(f"enum not found in IR: {name}") from exc
+
+
+
 def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) -> IROutputTarget:
     if entity_kind == "module":
         return cast(IROutputTarget, module_ir(project_ir, entity_name).output)
     if entity_kind == "class":
         return cast(IROutputTarget, class_ir(project_ir, entity_name).output)
+    if entity_kind == "enum":
+        return cast(IROutputTarget, enum_ir(project_ir, entity_name).output)
     raise ValueError(f"unsupported C backend entity kind: {entity_kind}")
 
 
