@@ -52,6 +52,13 @@ class VariableSource:
 
 
 @dataclass
+class DependencySource:
+    name: str
+    attrs: dict[str, str] = field(default_factory=dict)
+    description: str = ""
+
+
+@dataclass
 class ConstantSource:
     name: str
     attrs: dict[str, str] = field(default_factory=dict)
@@ -94,6 +101,7 @@ class ClassSource:
     variables: list[VariableSource] = field(default_factory=list)
     methods: list[MethodSource] = field(default_factory=list)
     constructors: list[MethodSource] = field(default_factory=list)
+    dependencies: list[DependencySource] = field(default_factory=list)
 
 
 @dataclass
@@ -315,6 +323,14 @@ def load_module_source(path: Path, from_area: str | None = None) -> ModuleSource
     )
 
 
+def _dependency(elem: ET.Element) -> DependencySource:
+    return DependencySource(
+        name=elem.attrib.get("name", ""),
+        attrs=dict(elem.attrib),
+        description=_description(elem),
+    )
+
+
 def load_class_source(path: Path) -> ClassSource:
     root = _parse_legacy_xml(path)
     return ClassSource(
@@ -326,6 +342,7 @@ def load_class_source(path: Path) -> ClassSource:
         variables=[_variable(e) for e in root.findall("variable")],
         methods=[_method_like("method", e) for e in root.findall("method")],
         constructors=[_method_like("constructor", e) for e in root.findall("constructor")],
+        dependencies=[_dependency(e) for e in root.findall("dependency")],
     )
 
 

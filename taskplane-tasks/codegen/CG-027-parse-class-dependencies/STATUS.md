@@ -1,6 +1,6 @@
 # CG-027: Parse Class Dependencies into Source and IR — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Add DependencySource to project_source.py
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -20,12 +20,12 @@
 ---
 
 ### Step 1: Add DependencySource to project_source.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Create `DependencySource` dataclass
-- [ ] Parse `<dependency>` elements in `load_class_source()`
-- [ ] Add `dependencies` field to `ClassSource`
-- [ ] Verify with quick import/load test
+- [x] Create `DependencySource` dataclass
+- [x] Parse `<dependency>` elements in `load_class_source()`
+- [x] Add `dependencies` field to `ClassSource`
+- [x] Verify with quick import/load test
 
 ---
 
