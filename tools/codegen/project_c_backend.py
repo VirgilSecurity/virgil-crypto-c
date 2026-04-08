@@ -594,6 +594,378 @@ def render_interface_api_c_module(
     return root
 
 
+
+def render_interface_c_module(
+    project_ir: IRProject,
+    iface: IRInterface,
+    *,
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render the public dispatch module for an interface.
+
+    Produces:
+    - Forward declaration of API struct
+    - Dispatch methods (stateful and static) calling through the vtable
+    - Constant getter methods
+    - Utility methods: _api(), _is_implemented(), _api_tag()
+    - Inherited API getter methods
+    """
+    iface_output = cast(IROutputTarget, iface.output)
+    api_output = interface_api_output(iface_output)
+    prefix = project_ir.prefix
+    api_struct_name = _interface_api_struct_symbol(iface_output)
+    api_var_name = f"{snake_name(iface.name)}_api"
+
+    root = c_module_root(
+        iface_output,
+        entity_id=snake_name(iface.name),
+        scope="public",
+        class_name=iface_output.c_symbol,
+    )
+
+    # --- includes ---
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_impl.h", is_system="0", scope="public")
+
+    for inherited_name in iface.inherits:
+        inherited_output = entity_output(project_ir, entity_kind="interface", entity_name=inherited_name)
+        text_element(root, "c_include", file=inherited_output.include_file, is_system="0", scope="public")
+
+    _add_interface_type_includes(root, iface, project_ir=project_ir)
+
+    text_element(root, "c_include", file=f"{prefix}_api.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_assert.h", is_system="0", scope="private")
+    text_element(root, "c_include", file=api_output.include_file, is_system="0", scope="private")
+
+    # --- forward declaration of API struct ---
+    text_element(
+        root,
+        "c_struct",
+        name=api_struct_name,
+        declaration="public",
+        definition="external",
+    )
+
+    # --- dispatch methods ---
+    for method in iface.methods:
+        _render_dispatch_method(root, method, iface=iface, project_ir=project_ir,
+                                fallback_projects=fallback_projects)
+
+    # --- constant getter methods ---
+    for constant in iface.constants:
+        _render_constant_getter(root, constant, iface=iface, project_ir=project_ir)
+
+    # --- _api() utility ---
+    _render_api_method(root, iface=iface, project_ir=project_ir)
+
+    # --- inherited API getter methods ---
+    for inherited_name in iface.inherits:
+        _render_inherited_api_getter(root, inherited_name, iface=iface, project_ir=project_ir)
+
+    # --- _is_implemented() ---
+    _render_is_implemented_method(root, iface=iface, project_ir=project_ir)
+
+    # --- _api_tag() ---
+    _render_api_tag_method(root, iface=iface, project_ir=project_ir)
+
+    return root
+
+
+def _render_dispatch_method(
+    parent: ET.Element,
+    method: IRCMethod,
+    *,
+    iface: IRInterface,
+    project_ir: IRProject,
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render a single dispatch method (stateful or static) with vtable call body."""
+    iface_output = cast(IROutputTarget, iface.output)
+    prefix = project_ir.prefix
+    is_static = method.attrs.get("is_static") in {"1", "true"}
+    is_const = method.attrs.get("is_const") in {"1", "true"}
+    visibility = method.attrs.get("visibility", "public")
+    api_struct_name = _interface_api_struct_symbol(iface_output)
+    api_var_name = f"{snake_name(iface.name)}_api"
+    method_symbol = f"{iface_output.c_symbol}_{snake_name(method.name)}"
+    cb_field = f"{snake_name(method.name)}_cb"
+
+    method_attrs: dict[str, str] = {
+        "name": method_symbol,
+        "declaration": "public" if visibility == "public" else "private",
+    }
+    if visibility == "private":
+        method_attrs["visibility"] = "private"
+
+    method_elem = text_element(parent, "c_method", **method_attrs)
+
+    desc = method.description.strip() if method.description else ""
+    if desc:
+        method_elem.text = comment_text(desc)
+
+    # Arguments
+    if is_static:
+        # Static methods take api struct as first arg
+        text_element(
+            method_elem, "c_argument",
+            name=api_var_name,
+            type=api_struct_name,
+            type_is="class",
+            accessed_by="pointer",
+            is_const_type="1",
+        )
+    else:
+        # Non-static methods take impl as first arg
+        impl_type = f"{prefix}_impl_t"
+        if is_const:
+            text_element(method_elem, "c_argument", name="impl", accessed_by="pointer", type=impl_type, type_is="class", is_const_type="1")
+        else:
+            text_element(method_elem, "c_argument", name="impl", accessed_by="pointer", type=impl_type, type_is="class")
+
+    for arg in method.arguments:
+        _interface_argument_from_source(method_elem, _method_arg_dict(arg), project_ir=project_ir, fallback_projects=fallback_projects)
+
+    # Return type
+    if method.returns:
+        _interface_callback_return(method_elem, method.returns[0], project_ir=project_ir)
+    else:
+        text_element(method_elem, "c_return", type="void", accessed_by="value")
+
+    # Method body (c_code)
+    has_return = bool(method.returns) and not all(
+        getattr(r, "type_name", None) in {"nothing", None} and getattr(r, "class_name", None) is None and _method_arg_dict(r).get("enum") is None
+        for r in method.returns
+    )
+    return_prefix = "return " if has_return else ""
+
+    # Build argument list for callback call
+    arg_names: list[str] = []
+    if not is_static:
+        arg_names.append("impl")
+    for arg in method.arguments:
+        arg_names.append(_method_arg_dict(arg).get("name", ""))
+
+    args_str = ", ".join(arg_names)
+
+    if is_static:
+        body_lines = [
+            f"{prefix.upper()}_ASSERT_PTR ({api_var_name});",
+            "",
+            f"{prefix.upper()}_ASSERT_PTR ({api_var_name}->{cb_field});",
+            f"{return_prefix}{api_var_name}->{cb_field} ({args_str});",
+        ]
+    else:
+        body_lines = [
+            f"const {api_struct_name} *{api_var_name} = {iface_output.c_symbol}_api(impl);",
+            f"{prefix.upper()}_ASSERT_PTR ({api_var_name});",
+            "",
+            f"{prefix.upper()}_ASSERT_PTR ({api_var_name}->{cb_field});",
+            f"{return_prefix}{api_var_name}->{cb_field} ({args_str});",
+        ]
+
+    code_text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="stub").text = code_text
+
+    return method_elem
+
+
+def _render_constant_getter(
+    parent: ET.Element,
+    constant: IRCConstant,
+    *,
+    iface: IRInterface,
+    project_ir: IRProject,
+) -> ET.Element:
+    """Render a constant getter method."""
+    iface_output = cast(IROutputTarget, iface.output)
+    prefix = project_ir.prefix
+    api_struct_name = _interface_api_struct_symbol(iface_output)
+    api_var_name = f"{snake_name(iface.name)}_api"
+    method_symbol = f"{iface_output.c_symbol}_{snake_name(constant.name)}"
+    field_name = snake_name(constant.name)
+
+    method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    method_elem.text = comment_text(f"Returns constant '{constant.name}'.")
+
+    # API struct argument
+    text_element(
+        method_elem, "c_argument",
+        name=api_var_name,
+        type=api_struct_name,
+        type_is="class",
+        accessed_by="pointer",
+        is_const_type="1",
+    )
+
+    # Return type
+    const_type = constant.attrs.get("type", "size")
+    rendered_type, type_is = type_map(const_type)
+    text_element(method_elem, "c_return", type=rendered_type, type_is=type_is, accessed_by="value")
+
+    # Body
+    body_lines = [
+        f"{prefix.upper()}_ASSERT_PTR ({api_var_name});",
+        "",
+        f"return {api_var_name}->{field_name};",
+    ]
+    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+
+    return method_elem
+
+
+def _render_api_method(
+    parent: ET.Element,
+    *,
+    iface: IRInterface,
+    project_ir: IRProject,
+) -> ET.Element:
+    """Render the _api() utility method."""
+    iface_output = cast(IROutputTarget, iface.output)
+    prefix = project_ir.prefix
+    api_struct_name = _interface_api_struct_symbol(iface_output)
+    api_tag = f"{prefix}_api_tag_{snake_name(iface.name).upper()}"
+    method_symbol = f"{iface_output.c_symbol}_api"
+
+    method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public", is_const="1")
+    method_elem.text = comment_text(f"Return {iface.name} API, or NULL if it is not implemented.")
+
+    # impl argument
+    impl_type = f"{prefix}_impl_t"
+    text_element(method_elem, "c_argument", name="impl", accessed_by="pointer", type=impl_type, type_is="class", is_const_type="1")
+
+    # Return type
+    text_element(method_elem, "c_return", type=api_struct_name, type_is="class", accessed_by="pointer", is_const_type="1")
+
+    # Body
+    body_lines = [
+        f"{prefix.upper()}_ASSERT_PTR (impl);",
+        "",
+        f"const {prefix}_api_t *api = {prefix}_impl_api(impl, {api_tag});",
+        f"return (const {api_struct_name} *) api;",
+    ]
+    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+
+    return method_elem
+
+
+def _render_inherited_api_getter(
+    parent: ET.Element,
+    inherited_name: str,
+    *,
+    iface: IRInterface,
+    project_ir: IRProject,
+) -> ET.Element:
+    """Render an inherited API getter method (e.g. cipher_encrypt_api)."""
+    iface_output = cast(IROutputTarget, iface.output)
+    prefix = project_ir.prefix
+    api_struct_name = _interface_api_struct_symbol(iface_output)
+    api_var_name = f"{snake_name(iface.name)}_api"
+    inherited_output = entity_output(project_ir, entity_kind="interface", entity_name=inherited_name)
+    inherited_api_type = _interface_api_struct_symbol(inherited_output)
+    field_name = f"{snake_name(inherited_name)}_api"
+    method_symbol = f"{iface_output.c_symbol}_{field_name}"
+
+    method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    method_elem.text = comment_text(f"Return {inherited_name} API.")
+
+    # API struct argument
+    text_element(
+        method_elem, "c_argument",
+        name=api_var_name,
+        type=api_struct_name,
+        type_is="class",
+        accessed_by="pointer",
+        is_const_type="1",
+    )
+
+    # Return
+    text_element(method_elem, "c_return", type=inherited_api_type, type_is="class", accessed_by="pointer", is_const_type="1")
+
+    # Body
+    body_lines = [
+        f"{prefix.upper()}_ASSERT_PTR ({api_var_name});",
+        "",
+        f"return {api_var_name}->{field_name};",
+    ]
+    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+
+    return method_elem
+
+
+def _render_is_implemented_method(
+    parent: ET.Element,
+    *,
+    iface: IRInterface,
+    project_ir: IRProject,
+) -> ET.Element:
+    """Render the _is_implemented() utility method."""
+    iface_output = cast(IROutputTarget, iface.output)
+    prefix = project_ir.prefix
+    api_tag = f"{prefix}_api_tag_{snake_name(iface.name).upper()}"
+    method_symbol = f"{iface_output.c_symbol}_is_implemented"
+
+    method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public", is_const="1")
+    method_elem.text = comment_text(f"Check if given object implements interface '{iface.name}'.")
+
+    # impl argument
+    impl_type = f"{prefix}_impl_t"
+    text_element(method_elem, "c_argument", name="impl", accessed_by="pointer", type=impl_type, type_is="class", is_const_type="1")
+
+    # Return
+    text_element(method_elem, "c_return", type="bool", type_is="primitive", accessed_by="value")
+
+    # Body
+    body_lines = [
+        f"{prefix.upper()}_ASSERT_PTR (impl);",
+        "",
+        f"return {prefix}_impl_api(impl, {api_tag}) != NULL;",
+    ]
+    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+
+    return method_elem
+
+
+def _render_api_tag_method(
+    parent: ET.Element,
+    *,
+    iface: IRInterface,
+    project_ir: IRProject,
+) -> ET.Element:
+    """Render the _api_tag() utility method."""
+    iface_output = cast(IROutputTarget, iface.output)
+    prefix = project_ir.prefix
+    api_struct_name = _interface_api_struct_symbol(iface_output)
+    api_var_name = f"{snake_name(iface.name)}_api"
+    method_symbol = f"{iface_output.c_symbol}_api_tag"
+
+    method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    method_elem.text = comment_text("Returns interface unique identifier.")
+
+    # API struct argument
+    text_element(
+        method_elem, "c_argument",
+        name=api_var_name,
+        type=api_struct_name,
+        type_is="class",
+        accessed_by="pointer",
+        is_const_type="1",
+    )
+
+    # Return
+    text_element(method_elem, "c_return", type=f"{prefix}_api_tag_t", type_is="enum", accessed_by="value")
+
+    # Body
+    body_lines = [
+        f"{prefix.upper()}_ASSERT_PTR ({api_var_name});",
+        "",
+        f"return {api_var_name}->api_tag;",
+    ]
+    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+
+    return method_elem
+
+
+
 _PLACEHOLDER_RE = re.compile(r"\.(\([^)]+\))")
 
 

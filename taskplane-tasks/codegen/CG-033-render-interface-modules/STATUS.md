@@ -1,6 +1,6 @@
 # CG-033: Render Interface Modules (Dispatch + API) — Status
 
-**Current Step:** Step 2: Implement render_interface_api_c_module()
+**Current Step:** Step 3: Implement render_interface_c_module()
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -30,24 +30,24 @@
 ---
 
 ### Step 2: Implement render_interface_api_c_module()
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] render_interface_api_c_module() implemented
 - [x] Callback typedefs
 - [x] API struct with fields
 - [x] Inherited API references
-- [ ] Committed
+- [x] Committed
 
 ---
 
 ### Step 3: Implement render_interface_c_module()
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Scaffold (root, includes, struct decl)
-- [ ] Dispatch method generation with bodies
-- [ ] Constant getter generation
-- [ ] _api(), _is_implemented(), _api_tag() utilities
-- [ ] Inherited method/constant flattening
+- [x] Scaffold (root, includes, struct decl)
+- [x] Dispatch method generation with bodies
+- [x] Constant getter generation
+- [x] _api(), _is_implemented(), _api_tag() utilities
+- [x] Inherited method/constant flattening
 - [ ] Committed
 
 ---
