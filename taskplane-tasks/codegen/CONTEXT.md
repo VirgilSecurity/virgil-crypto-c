@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-08
 **Status:** Active
-**Next Task ID:** CG-031
+**Next Task ID:** CG-037
 
 ---
 
@@ -146,6 +146,15 @@ All `.cfrag` files removed. Lifecycle method bodies (init, cleanup, new, delete,
 - `CG-028` — generate lifecycle method bodies from class IR (depends on CG-027)
 - `CG-029` — generate dependency management methods: use/take/release (depends on CG-028)
 - `CG-030` — verify lifecycle parity and remove cfrag files (depends on CG-029) ✅
+
+Interface and implementor rendering phase:
+
+- `CG-031` — parse interfaces into source and IR
+- `CG-032` — parse implementors/implementations into source and IR (depends on CG-031)
+- `CG-033` — render interface public dispatch module (depends on CG-031) ‖ parallel with CG-034
+- `CG-034` — render interface API module / vtable struct + callbacks (depends on CG-031) ‖ parallel with CG-033
+- `CG-035` — render implementation main + defs module (depends on CG-032, CG-033)
+- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-034, CG-035)
 
 ---
 
