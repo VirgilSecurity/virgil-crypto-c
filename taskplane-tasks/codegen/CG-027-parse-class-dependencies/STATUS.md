@@ -1,6 +1,6 @@
 # CG-027: Parse Class Dependencies into Source and IR — Status
 
-**Current Step:** Step 3: Add test coverage
+**Current Step:** Step 4: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -49,11 +49,11 @@
 ---
 
 ### Step 4: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Full test suite passing
-- [ ] Build gate passes
-- [ ] All failures fixed
+- [x] Full test suite passing
+- [x] Build gate passes
+- [x] All failures fixed
 
 ---
 
