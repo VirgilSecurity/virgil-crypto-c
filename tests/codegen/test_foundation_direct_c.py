@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 from tools.codegen.common_bootstrap import iter_project_xml_paths, main, render_one
-from tools.codegen.foundation_direct_c import direct_c_renderers
+from tools.codegen.project_direct_registry import direct_c_renderers_for_project
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -15,7 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 class FoundationDirectCTest(unittest.TestCase):
     def test_foundation_direct_renderer_registry_exposes_enum_slice(self) -> None:
-        renderers = direct_c_renderers(REPO_ROOT)
+        renderers = direct_c_renderers_for_project("foundation", REPO_ROOT)
 
         self.assertEqual(
             {

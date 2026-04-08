@@ -169,6 +169,64 @@ def direct_renderer_map(project_ir: IRProject, specs: list[DirectRendererSpec]) 
 
 
 
+def doc_comment(text: str) -> str:
+    text = text.strip()
+    if not text:
+        return ""
+    lines = ["//"]
+    lines.extend(f"//  {line}" if line else "//" for line in text.splitlines())
+    lines.append("//")
+    return "\n".join(lines)
+
+
+
+def enum_type_name(enum_output: IROutputTarget) -> str:
+    return f"{enum_output.c_symbol}_t"
+
+
+
+def enum_constant_name(enum_output: IROutputTarget, constant_name: str) -> str:
+    return f"{enum_output.c_symbol}_{snake_name(constant_name).upper()}"
+
+
+
+def render_enum_c_module(project_ir: IRProject, enum: IREnum) -> ET.Element:
+    del project_ir
+
+    enum_output = cast(IROutputTarget, enum.output)
+    root = c_module_root(
+        enum_output,
+        entity_id=snake_name(enum.name),
+        scope=enum.attrs.get("scope", "public"),
+    )
+
+    enum_elem = text_element(
+        root,
+        "c_enum",
+        declaration="public",
+        definition="public",
+        name=enum_type_name(enum_output),
+        typedef_name=enum_type_name(enum_output),
+    )
+    if enum.description:
+        enum_elem.text = doc_comment(enum.description)
+
+    for constant in enum.constants:
+        attrs = {
+            "name": enum_constant_name(enum_output, constant.name),
+            "definition": "public",
+        }
+        value = constant.attrs.get("value")
+        if value is not None:
+            attrs["value"] = value
+        const_elem = text_element(enum_elem, "c_constant", **attrs)
+        if constant.description:
+            const_elem.text = doc_comment(constant.description)
+
+    return root
+
+
+
 def type_map(type_name: str | None) -> tuple[str, str]:
     mapping = {
         "boolean": ("bool", "primitive"),
