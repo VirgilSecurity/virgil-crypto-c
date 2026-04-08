@@ -1,62 +1,80 @@
 from __future__ import annotations
 
-"""Shared registry for project-specific direct C renderer adapters."""
+"""Shared registry for project-specific direct C renderer adapters.
+
+Entity discovery is fully automatic — the IR is walked to find all enums,
+modules, and classes.  Per-project *custom overrides* (e.g. special buffer
+rendering for ``common``) are merged on top so that entities with bespoke
+renderers still work.
+"""
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
-from tools.codegen.project_c_backend import direct_xml_name, render_enum_c_module
+from tools.codegen.project_c_backend import (
+    DirectCRenderer,
+    discover_renderers,
+)
 from tools.codegen.project_ir import project_to_ir
 from tools.codegen.project_source import load_named_project_source
 
 
-DirectRendererFactory = Callable[[str | Path], dict[str, object]]
+CustomOverrideFactory = Callable[[str | Path], dict[str, DirectCRenderer]]
 
 
 
-def _common_renderers(repo_root: str | Path = ".") -> dict[str, object]:
-    from tools.codegen.common_direct_c import direct_c_renderers
+def _common_custom_overrides(repo_root: str | Path = ".") -> dict[str, DirectCRenderer]:
+    from tools.codegen.common_direct_c import custom_renderer_overrides
 
-    return direct_c_renderers(repo_root)
+    return custom_renderer_overrides(repo_root)
 
 
 
-def _noop_renderers(repo_root: str | Path = ".") -> dict[str, object]:
+def _noop_overrides(repo_root: str | Path = ".") -> dict[str, DirectCRenderer]:
     del repo_root
     return {}
 
 
-_PROJECT_DIRECT_RENDERERS: dict[str, DirectRendererFactory] = {
-    "common": _common_renderers,
-    "foundation": _noop_renderers,
+_PROJECT_CUSTOM_OVERRIDES: dict[str, CustomOverrideFactory] = {
+    "common": _common_custom_overrides,
+    "foundation": _noop_overrides,
 }
 
 
 
 def supported_projects() -> tuple[str, ...]:
-    return tuple(sorted(_PROJECT_DIRECT_RENDERERS))
+    return tuple(sorted(_PROJECT_CUSTOM_OVERRIDES))
 
 
 
-def _shared_enum_renderers(project: str, repo_root: str | Path = ".") -> dict[str, object]:
-    project_ir = project_to_ir(load_named_project_source(project, repo_root))
-    return {
-        direct_xml_name(enum.output): (
-            lambda _repo_root, project_ir=project_ir, enum=enum: render_enum_c_module(project_ir, enum)
-        )
-        for enum in project_ir.enums
-    }
+def direct_c_renderers_for_project(
+    project: str,
+    repo_root: str | Path = ".",
+    *,
+    entity_kinds: set[str] | None = None,
+) -> dict[str, object]:
+    """Build the complete renderer map for *project* via IR auto-discovery.
 
-
-
-def direct_c_renderers_for_project(project: str, repo_root: str | Path = ".") -> dict[str, object]:
-    try:
-        factory = _PROJECT_DIRECT_RENDERERS[project]
-    except KeyError as exc:
+    Parameters
+    ----------
+    project:
+        Project name (e.g. ``"common"``, ``"foundation"``).
+    repo_root:
+        Repository root path used to locate XML models.
+    entity_kinds:
+        Optional filter forwarded to :func:`discover_renderers`.
+    """
+    if project not in _PROJECT_CUSTOM_OVERRIDES:
         raise ValueError(
             f"unsupported project '{project}'; expected one of: {', '.join(supported_projects())}"
-        ) from exc
-    return {
-        **factory(repo_root),
-        **_shared_enum_renderers(project, repo_root),
-    }
+        )
+
+    project_ir = project_to_ir(load_named_project_source(project, repo_root))
+    custom_overrides = _PROJECT_CUSTOM_OVERRIDES[project](repo_root)
+
+    return discover_renderers(
+        project_ir,
+        entity_kinds=entity_kinds,
+        custom_overrides=custom_overrides,
+    )

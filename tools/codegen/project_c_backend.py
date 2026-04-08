@@ -192,6 +192,69 @@ def direct_renderer_map(project_ir: IRProject, specs: list[DirectRendererSpec]) 
 
 
 
+def discover_renderers(
+    project_ir: IRProject,
+    *,
+    entity_kinds: set[str] | None = None,
+    custom_overrides: dict[str, DirectCRenderer] | None = None,
+) -> dict[str, DirectCRenderer]:
+    """Walk the project IR and build a complete renderer map for all renderable entities.
+
+    Parameters
+    ----------
+    project_ir:
+        The fully-resolved project IR.
+    entity_kinds:
+        Optional filter.  When provided only entities whose kind is in the set
+        are included (e.g. ``{"enum"}`` or ``{"module", "class"}``).
+        When *None* (the default) all supported kinds are discovered.
+    custom_overrides:
+        A ``{xml_name: renderer}`` dict of custom renderers that replace the
+        default IR-driven renderer for the corresponding output file.
+    """
+    overrides = custom_overrides or {}
+    renderers: dict[str, DirectCRenderer] = {}
+    include_all = entity_kinds is None
+
+    if include_all or "enum" in entity_kinds:  # type: ignore[operator]
+        for enum in project_ir.enums:
+            xml_name = direct_xml_name(cast(IROutputTarget, enum.output))
+            if xml_name in overrides:
+                renderers[xml_name] = overrides[xml_name]
+            else:
+                renderers[xml_name] = (
+                    lambda _repo_root, _pir=project_ir, _e=enum: render_enum_c_module(_pir, _e)
+                )
+
+    if include_all or "module" in entity_kinds:  # type: ignore[operator]
+        for module in project_ir.modules:
+            xml_name = direct_xml_name(cast(IROutputTarget, module.output))
+            if xml_name in overrides:
+                renderers[xml_name] = overrides[xml_name]
+            else:
+                renderers[xml_name] = (
+                    lambda _repo_root, _pir=project_ir, _m=module: render_module_c_module(_pir, _m)
+                )
+
+    if include_all or "class" in entity_kinds:  # type: ignore[operator]
+        for cls in project_ir.classes:
+            xml_name = direct_xml_name(cast(IROutputTarget, cls.output))
+            if xml_name in overrides:
+                renderers[xml_name] = overrides[xml_name]
+            else:
+                renderers[xml_name] = (
+                    lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
+                )
+
+    # Include any overrides whose keys don't correspond to an IR entity
+    # (e.g. derived outputs like buffer_defs).
+    for xml_name, renderer in overrides.items():
+        if xml_name not in renderers:
+            renderers[xml_name] = renderer
+
+    return renderers
+
+
 def doc_comment(text: str) -> str:
     text = text.strip()
     if not text:

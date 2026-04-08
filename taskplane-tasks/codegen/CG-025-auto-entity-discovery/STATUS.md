@@ -15,11 +15,11 @@
 - [x] Inspect current entity listing/registration
 
 ### Step 1: Implement auto-discovery
-**Status:** 🟨 In Progress
-- [ ] Add `discover_renderers()` to `project_c_backend.py` that walks IR and builds renderer map for all entity kinds (enums, modules, classes)
-- [ ] Update `project_direct_registry.py` to use auto-discovery instead of only enum-specific discovery, merging with per-project custom overrides
-- [ ] Update `common_direct_c.py` to export only custom overrides (buffer, data, etc.) not a full hardcoded list
-- [ ] Support optional entity-kind filtering parameter
+**Status:** ✅ Complete
+- [x] Add `discover_renderers()` to `project_c_backend.py` that walks IR and builds renderer map for all entity kinds (enums, modules, classes)
+- [x] Update `project_direct_registry.py` to use auto-discovery instead of only enum-specific discovery, merging with per-project custom overrides
+- [x] Update `common_direct_c.py` to export only custom overrides (buffer, data, etc.) not a full hardcoded list
+- [x] Support optional entity-kind filtering parameter
 
 ### Step 2: Tests
 **Status:** ⬜ Not Started

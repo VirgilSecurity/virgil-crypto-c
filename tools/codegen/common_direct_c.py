@@ -67,6 +67,7 @@ __all__ = [
     "build_direct_data_c_module",
     "build_direct_library_c_module",
     "build_direct_memory_c_module",
+    "custom_renderer_overrides",
     "direct_c_renderers",
 ]
 
@@ -91,7 +92,14 @@ def _buffer_defs_output(project_ir: IRProject) -> IROutputTarget:
     )
 
 
-def direct_c_renderers(repo_root: str | Path = ".") -> dict[str, object]:
+def custom_renderer_overrides(repo_root: str | Path = ".") -> dict[str, object]:
+    """Return custom renderers that override the default IR-driven discovery.
+
+    These are entities whose rendering requires bespoke logic beyond what the
+    generic ``render_module_c_module`` / ``render_class_c_module`` produce.
+    The returned dict is keyed by XML output filename.
+    """
+    project_ir = _load_common_ir(repo_root)
     specs = [
         DirectRendererSpec(entity_kind="class", entity_name="data", renderer=build_direct_data_c_module),
         DirectRendererSpec(entity_kind="module", entity_name="assert", renderer=build_direct_assert_c_module),
@@ -106,7 +114,14 @@ def direct_c_renderers(repo_root: str | Path = ".") -> dict[str, object]:
             output_resolver=_buffer_defs_output,
         ),
     ]
-    return direct_renderer_map(_load_common_ir(repo_root), specs)
+    return direct_renderer_map(project_ir, specs)
+
+
+def direct_c_renderers(repo_root: str | Path = ".") -> dict[str, object]:
+    """Legacy entry point — returns the full renderer map via auto-discovery."""
+    from tools.codegen.project_direct_registry import direct_c_renderers_for_project
+
+    return direct_c_renderers_for_project("common", repo_root)
 
 
 def build_direct_library_c_module(repo_root: str | Path = '.') -> ET.Element:
