@@ -17,8 +17,9 @@
 
 ### Step 1: Remove per-project files
 **Status:** 🟨 In Progress
-- [ ] Delete per-project builder files
-- [ ] Update bootstrap to use shared backend
+- [ ] Move custom_renderer_overrides from common_direct_c.py into project_c_backend.py or a new inline location in common_bootstrap.py
+- [ ] Delete common_direct_c.py, foundation_direct_c.py, project_direct_registry.py
+- [ ] Update common_bootstrap.py to use discover_renderers directly instead of project_direct_registry
 
 ### Step 2: Update imports and tests
 **Status:** ⬜ Not Started
