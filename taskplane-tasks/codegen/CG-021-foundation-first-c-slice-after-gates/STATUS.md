@@ -1,6 +1,6 @@
 # CG-021: Foundation First C Slice After Validation Gates — Status
 
-**Current Step:** Step 2: Add tests and validation
+**Current Step:** Step 3: Integrate and document
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -28,11 +28,11 @@
 ---
 
 ### Step 2: Add tests and validation
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Add or update tests covering the selected `foundation` slice
-- [ ] Run the finalized `foundation` validation gate(s)
-- [ ] Keep generated/manual preservation rules intact where applicable
+- [x] Add or update tests covering the selected `foundation` slice
+- [x] Run the finalized `foundation` validation gate(s)
+- [x] Keep generated/manual preservation rules intact where applicable
 
 ---
 
@@ -70,6 +70,9 @@
 | 2026-04-08 01:02 | Shared project routing integrated | Replaced the bootstrap's ad-hoc `common`/`foundation` branching with a shared project direct-renderer registry so the active enum slice continues flowing through the shared loader/IR/backend path while project selection is centralized and testable. |
 | 2026-04-08 01:06 | Model-driven routing regression added | Added registry-level tests that compare the `foundation` enum slice renderer keys against shared IR-derived output targets, confirming file naming/output routing still comes from project metadata rather than bootstrap literals. |
 | 2026-04-08 01:07 | Backend hardcode surface reduced | Moved project selection into a thin shared registry and made unknown projects fail explicitly, so the shared bootstrap/backend path no longer needs `foundation`-specific import branches or silent fallback behavior. |
+| 2026-04-08 01:08 | Targeted slice tests updated | Added shared-registry regressions in `tests.codegen.test_common_bootstrap` and `tests.codegen.test_project_direct_registry`, then ran `python3 -m unittest tests.codegen.test_common_bootstrap tests.codegen.test_foundation_direct_c tests.codegen.test_project_direct_registry tests.codegen.test_project_c_backend` successfully (16 tests). |
+| 2026-04-08 01:20 | Finalized foundation gates rerun | `bash tools/codegen/verify_foundation_enum_slice.sh` and `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` both completed successfully; the validation gate finished with 54/54 `foundation` tests passing. |
+| 2026-04-08 01:21 | Preservation boundary confirmed | Verified with `git status --short` after the slice smoke/gate reruns that no `library/foundation/**` generated/manual files were left modified; only this task's STATUS checkpoint remained dirty. |
 
 ---
 
