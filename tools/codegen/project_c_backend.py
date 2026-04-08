@@ -369,6 +369,57 @@ def discover_renderers(
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
 
+    if include_all or "interface" in entity_kinds:  # type: ignore[operator]
+        for iface in project_ir.interfaces:
+            iface_output = cast(IROutputTarget, iface.output)
+            # Dispatch module
+            dispatch_xml = direct_xml_name(iface_output)
+            if dispatch_xml in overrides:
+                renderers[dispatch_xml] = overrides[dispatch_xml]
+            else:
+                renderers[dispatch_xml] = (
+                    lambda _repo_root, _pir=project_ir, _i=iface: render_interface_c_module(_pir, _i)
+                )
+            # API module
+            api_out = interface_api_output(iface_output)
+            api_xml = direct_xml_name(api_out)
+            if api_xml in overrides:
+                renderers[api_xml] = overrides[api_xml]
+            else:
+                renderers[api_xml] = (
+                    lambda _repo_root, _pir=project_ir, _i=iface: render_interface_api_c_module(_pir, _i)
+                )
+
+    if include_all or "implementation" in entity_kinds:  # type: ignore[operator]
+        for impl in project_ir.implementations:
+            impl_output = cast(IROutputTarget, impl.output)
+            # Main module
+            main_xml = direct_xml_name(impl_output)
+            if main_xml in overrides:
+                renderers[main_xml] = overrides[main_xml]
+            else:
+                renderers[main_xml] = (
+                    lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_c_module(_pir, _im)
+                )
+            # Defs module
+            defs_out = implementation_defs_output(impl_output)
+            defs_xml = direct_xml_name(defs_out)
+            if defs_xml in overrides:
+                renderers[defs_xml] = overrides[defs_xml]
+            else:
+                renderers[defs_xml] = (
+                    lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_defs_c_module(_pir, _im)
+                )
+            # Internal module
+            internal_out = implementation_internal_output(impl_output)
+            internal_xml = direct_xml_name(internal_out)
+            if internal_xml in overrides:
+                renderers[internal_xml] = overrides[internal_xml]
+            else:
+                renderers[internal_xml] = (
+                    lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_internal_c_module(_pir, _im)
+                )
+
     # Include any overrides whose keys don't correspond to an IR entity
     # (e.g. derived outputs like buffer_defs).
     for xml_name, renderer in overrides.items():

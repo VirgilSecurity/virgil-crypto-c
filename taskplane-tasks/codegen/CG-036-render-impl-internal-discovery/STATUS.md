@@ -1,6 +1,6 @@
 # CG-036: Render Implementation Internal Module and Extend Auto-Discovery — Status
 
-**Current Step:** Step 1: Implement render_implementation_internal_c_module()
+**Current Step:** Step 2: Extend auto-discovery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -36,13 +36,13 @@
 ---
 
 ### Step 2: Extend auto-discovery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] discover_renderers handles entity_kinds={"interface"}
-- [ ] discover_renderers handles entity_kinds={"implementation"}
-- [ ] Interface → 2 renderers (dispatch + api)
-- [ ] Implementation → 3 renderers (main + defs + internal)
-- [ ] Default discovery includes all kinds
+- [x] discover_renderers handles entity_kinds={"interface"}
+- [x] discover_renderers handles entity_kinds={"implementation"}
+- [x] Interface → 2 renderers (dispatch + api)
+- [x] Implementation → 3 renderers (main + defs + internal)
+- [x] Default discovery includes all kinds
 
 ---
 
