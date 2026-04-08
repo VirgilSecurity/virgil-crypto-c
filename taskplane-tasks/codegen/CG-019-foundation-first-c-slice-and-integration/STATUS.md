@@ -1,6 +1,6 @@
 # CG-019: First Foundation C Slice and Integration — Status
 
-**Current Step:** Step 2: Add tests and validation
+**Current Step:** Step 3: Integrate and document
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-07
 **Review Level:** 2
@@ -28,16 +28,16 @@
 ---
 
 ### Step 2: Add tests and validation
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add or update tests covering the selected `foundation` slice
-- [ ] Run the documented `foundation` validation gate(s)
-- [ ] Keep generated/manual preservation rules intact where applicable
+- [x] Add or update tests covering the selected `foundation` slice
+- [x] Run the documented `foundation` validation gate(s)
+- [x] Keep generated/manual preservation rules intact where applicable
 
 ---
 
 ### Step 3: Integrate and document
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Integrate the first slice into the shared workflow cleanly
 - [ ] Update docs to record what slice now works and what remains intentionally out of scope
@@ -59,6 +59,7 @@
 | Acceptance criteria for the slice: generator must route `vscf_*` enum outputs from model metadata without `foundation` hardcodes, limit writes to intended enum header/source surfaces, and pass the documented `foundation` metadata + validation gates. | Use targeted shared-framework tests plus `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` as the minimum executable proof. | `docs/codegen-migration/foundation-next-phase-plan.md`; `tools/codegen/verify_foundation_validation_gate.sh` |
 | Private-scope enum routing needed one shared IR fix: enum output targets must honor `scope="private"` just like modules, otherwise `recipient cipher decryption state` incorrectly routes into the public include tree. | Fixed generically in shared IR/output-target mapping and covered in `foundation` shared-framework tests. | `tools/codegen/project_ir.py`; `tests/codegen/test_project_foundation_shared_framework.py` |
 | The new `foundation` adapter hardcodes only the slice membership (which enums to pilot), while symbols, typedef names, generated XML keys, include paths, and private/public placement all come from shared IR/backend helpers. | Keep the adapter thin and metadata-driven; avoid introducing `vscf`/`foundation` path literals into shared backend code. | `tools/codegen/foundation_direct_c.py`; `tools/codegen/project_c_backend.py`; `tools/codegen/common_bootstrap.py` |
+| The first cold `verify_foundation_validation_gate.sh --post-quantum-off` run can exceed a short orchestration timeout because it bootstraps protobuf and mbedTLS dependencies before the actual `foundation` build/test pass. | Treat the initial timeout as environment warm-up; the rerun passed and should be faster in subsequent iterations using the populated build tree. | `build/foundation-gate-pq-off`; `tools/codegen/verify_foundation_validation_gate.sh` |
 
 ---
 
@@ -77,6 +78,11 @@
 | 2026-04-07 23:03 | Shared backend remained generic | Limited `foundation`-specific code to the enum slice adapter and kept shared loader/IR/backend changes generic (`enum` entity support + private-scope routing). |
 | 2026-04-07 23:03 | Step 1 completed | First `foundation` enum slice routed through the shared framework without adding project-specific backend metadata. |
 | 2026-04-07 23:03 | Step 2 started | Add tests and validation |
+| 2026-04-07 23:04 | Added slice coverage tests | Added `foundation` enum direct-renderer/bootstrap tests plus shared-framework assertions for private enum routing and shared enum-output support. |
+| 2026-04-07 23:33 | Validation gates passed | `python3 -m unittest tests.codegen.test_project_foundation_shared_framework tests.codegen.test_project_c_backend tests.codegen.test_common_bootstrap tests.codegen.test_foundation_direct_c` passed (13 tests); `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` passed with 54/54 `foundation` tests green after the initial dependency-population timeout on the first cold run. |
+| 2026-04-07 23:34 | Preservation scope confirmed | The out-tree smoke run emitted only the 14 selected enum header/source files, and merge-preservation tests still cover handwritten-content retention around generated blocks. |
+| 2026-04-07 23:34 | Step 2 completed | Slice coverage, smoke generation, and the documented `foundation` validation gate all passed. |
+| 2026-04-07 23:34 | Step 3 started | Integrate and document |
 
 ---
 
