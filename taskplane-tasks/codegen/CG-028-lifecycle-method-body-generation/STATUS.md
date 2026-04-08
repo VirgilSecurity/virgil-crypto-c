@@ -23,11 +23,13 @@
 ### Step 1: Implement lifecycle body generation helpers
 **Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on specific naming patterns discovered when reading project_c_backend.py helper functions
+> Hydrated based on code analysis.
+> Naming: `_class_runtime_symbol(project_ir, cls, suffix)` for method names, `class_type_symbol(project_ir, class_name)` for struct type, `project_ir.prefix` for global prefixes.
+> Dependencies: IRDependency has `name` field; release symbol is `{class_symbol}_release_{snake_name(dep.name)}`.
+> Buffer has no dependencies; ecies has 5.
 
-- [ ] Implement body generation helpers for all 8 lifecycle method types
-- [ ] Each helper produces correct C code matching GSL template output
-- [ ] Targeted test: buffer lifecycle bodies match cfrag content
+- [ ] Implement 8 lifecycle body generation helpers (_lifecycle_init_body through _lifecycle_constructor_new_body)
+- [ ] Verify buffer lifecycle bodies match cfrag content by comparison
 
 ---
 
