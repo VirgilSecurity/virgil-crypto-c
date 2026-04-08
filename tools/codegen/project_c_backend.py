@@ -2589,6 +2589,670 @@ def render_implementation_defs_c_module(
     return root
 
 
+def _impl_lifecycle_init_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> str:
+    """Generate the body for the implementation init() method."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    prefix_upper = project_ir.prefix.upper()
+    init_ctx = f"{impl_output.c_symbol}_init_ctx"
+    return (
+        f"{prefix_upper}_ASSERT_PTR(self);\n"
+        f"\n"
+        f"{project_ir.prefix}_zeroize(self, sizeof({struct_type}));\n"
+        f"\n"
+        f"self->info = &info;\n"
+        f"self->refcnt = 1;\n"
+        f"\n"
+        f"{init_ctx}(self);"
+    )
+
+
+def _impl_lifecycle_cleanup_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> str:
+    """Generate the body for the implementation cleanup() method."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    cleanup_ctx = f"{impl_output.c_symbol}_cleanup_ctx"
+    return (
+        f"if (self == NULL) {{\n"
+        f"    return;\n"
+        f"}}\n"
+        f"\n"
+        f"{cleanup_ctx}(self);\n"
+        f"\n"
+        f"{project_ir.prefix}_zeroize(self, sizeof({struct_type}));"
+    )
+
+
+def _impl_lifecycle_new_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> str:
+    """Generate the body for the implementation new() method."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    prefix_upper = project_ir.prefix.upper()
+    init_method = f"{impl_output.c_symbol}_init"
+    return (
+        f"{struct_type} *self = ({struct_type} *) {project_ir.prefix}_alloc(sizeof ({struct_type}));\n"
+        f"{prefix_upper}_ASSERT_ALLOC(self);\n"
+        f"\n"
+        f"{init_method}(self);\n"
+        f"\n"
+        f"return self;"
+    )
+
+
+def _impl_lifecycle_delete_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> str:
+    """Generate the body for the implementation delete() method."""
+    impl_output = cast(IROutputTarget, impl.output)
+    prefix_upper = project_ir.prefix.upper()
+    cleanup_method = f"{impl_output.c_symbol}_cleanup"
+    return (
+        f"if (self == NULL) {{\n"
+        f"    return;\n"
+        f"}}\n"
+        f"\n"
+        f"size_t old_counter = self->refcnt;\n"
+        f"{prefix_upper}_ASSERT(old_counter != 0);\n"
+        f"size_t new_counter = old_counter - 1;\n"
+        f"\n"
+        f"#if defined({prefix_upper}_ATOMIC_COMPARE_EXCHANGE_WEAK)\n"
+        f"//  CAS loop\n"
+        f"while (!{prefix_upper}_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {{\n"
+        f"    old_counter = self->refcnt;\n"
+        f"    {prefix_upper}_ASSERT(old_counter != 0);\n"
+        f"    new_counter = old_counter - 1;\n"
+        f"}}\n"
+        f"#else\n"
+        f"self->refcnt = new_counter;\n"
+        f"#endif\n"
+        f"\n"
+        f"if (new_counter > 0) {{\n"
+        f"    return;\n"
+        f"}}\n"
+        f"\n"
+        f"{cleanup_method}(self);\n"
+        f"\n"
+        f"{project_ir.prefix}_dealloc(self);"
+    )
+
+
+def _impl_lifecycle_destroy_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> str:
+    """Generate the body for the implementation destroy() method."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    prefix_upper = project_ir.prefix.upper()
+    delete_method = f"{impl_output.c_symbol}_delete"
+    return (
+        f"{prefix_upper}_ASSERT_PTR(self_ref);\n"
+        f"\n"
+        f"{struct_type} *self = *self_ref;\n"
+        f"*self_ref = NULL;\n"
+        f"\n"
+        f"{delete_method}(self);"
+    )
+
+
+def _impl_lifecycle_shallow_copy_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> str:
+    """Generate the body for the implementation shallow_copy() method."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    return (
+        f"// Proxy to the parent implementation.\n"
+        f"return ({struct_type} *){project_ir.prefix}_impl_shallow_copy(({project_ir.prefix}_impl_t *)self);"
+    )
+
+
+def _render_impl_method(
+    parent: ET.Element,
+    *,
+    name: str,
+    description: str,
+    impl: IRImplementation,
+    project_ir: IRProject,
+    arguments: list[dict[str, str]] | None = None,
+    return_type: str | None = None,
+    return_class: str | None = None,
+    return_is_const: bool = False,
+    code: str | None = None,
+    code_type: str = "generated",
+    visibility: str = "public",
+    declaration: str = "public",
+    definition: str = "external",
+    modifiers: tuple[str, ...] = (),
+    attributes: tuple[str, ...] = (),
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render a method element for an implementation module."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    prefix_upper = project_ir.prefix.upper()
+    impl_snake = snake_name(impl.name)
+
+    method = text_element(
+        parent,
+        "c_method",
+        name=name,
+        visibility=visibility,
+        declaration=declaration,
+        definition=definition,
+        uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}",
+    )
+
+    # Attributes (e.g. VSCF_NODISCARD)
+    for attr_val in attributes:
+        text_element(method, "c_attribute", value=attr_val)
+
+    # Arguments
+    if arguments is not None:
+        for arg in arguments:
+            arg_name = arg.get("name", "")
+            if arg.get("is_self"):
+                extra: dict[str, str] = {}
+                if arg.get("is_const"):
+                    extra["is_const_type"] = "1"
+                accessed_by = "reference" if arg.get("passed_by") == "reference" else "pointer"
+                text_element(
+                    method, "c_argument",
+                    name=arg_name,
+                    accessed_by=accessed_by,
+                    type=struct_type,
+                    type_is="class",
+                    uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}_argument_{snake_name(arg_name)}",
+                    **extra,
+                )
+            elif arg.get("class"):
+                cls_name = arg["class"]
+                try:
+                    type_sym = _resolve_class_type_symbol(
+                        project_ir, cls_name, fallback_projects=fallback_projects
+                    )
+                except KeyError:
+                    type_sym = f"{project_ir.prefix}_{snake_name(cls_name)}_t"
+                extra = {}
+                if arg.get("is_const"):
+                    extra["is_const_type"] = "1"
+                text_element(
+                    method, "c_argument",
+                    name=arg_name,
+                    accessed_by=arg.get("accessed_by", "pointer"),
+                    type=type_sym,
+                    type_is="class",
+                    uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}_argument_{snake_name(arg_name)}",
+                    **extra,
+                )
+            elif arg.get("type"):
+                rendered_type, kind = type_map(arg.get("type"))
+                text_element(
+                    method, "c_argument",
+                    name=arg_name,
+                    accessed_by=arg.get("accessed_by", "value"),
+                    type=rendered_type,
+                    type_is=kind,
+                    uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}_argument_{snake_name(arg_name)}",
+                )
+            else:
+                text_element(method, "c_argument", type="void", accessed_by="value")
+    else:
+        text_element(method, "c_argument", type="void", accessed_by="value")
+
+    # Return
+    if return_type:
+        if return_type == "status":
+            # Status is a project-specific enum type
+            rendered_type = f"{project_ir.prefix}_status_t"
+            kind = "primitive"
+        elif return_type.startswith("enum:"):
+            # Resolved enum type
+            enum_name = return_type[5:]
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+            kind = "primitive"
+        else:
+            rendered_type, kind = type_map(return_type)
+        extra = {}
+        if return_is_const:
+            extra["is_const_type"] = "1"
+        text_element(method, "c_return", accessed_by="value", type=rendered_type, type_is=kind, **extra)
+    elif return_class:
+        if return_class == "self_impl":
+            type_sym = struct_type
+        elif return_class == "impl":
+            type_sym = f"{project_ir.prefix}_impl_t"
+        else:
+            try:
+                type_sym = _resolve_class_type_symbol(
+                    project_ir, return_class, fallback_projects=fallback_projects
+                )
+            except KeyError:
+                type_sym = f"{project_ir.prefix}_{snake_name(return_class)}_t"
+        extra = {}
+        if return_is_const:
+            extra["is_const_type"] = "1"
+        text_element(method, "c_return", accessed_by="pointer", type=type_sym, type_is="class", **extra)
+    else:
+        text_element(method, "c_return", type="void", accessed_by="value")
+
+    # Code
+    if code is not None:
+        text_element(method, "c_code", code, type=code_type, lang="c")
+
+    # Modifiers
+    if not modifiers:
+        modifiers = (f"{prefix_upper}_PUBLIC",) if visibility == "public" else (f"{prefix_upper}_PRIVATE",)
+    for mod in modifiers:
+        text_element(method, "c_modifier", value=mod)
+
+    if description:
+        method.text = comment_text(description)
+
+    return method
+
+
+def _render_impl_interface_methods(
+    parent: ET.Element,
+    *,
+    impl: IRImplementation,
+    project_ir: IRProject,
+    fallback_projects: list[IRProject] | None = None,
+) -> None:
+    """Render interface method stubs for all bound interfaces."""
+    impl_output = cast(IROutputTarget, impl.output)
+
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+        except KeyError:
+            continue
+
+        for method in iface.methods:
+            method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
+            is_static = method.attrs.get("is_static") == "1"
+
+            # Build argument list
+            args: list[dict[str, str]] = []
+            if not is_static:
+                # Non-static methods get self as first arg
+                is_const_self = method.attrs.get("is_const") == "1"
+                args.append({"name": "self", "is_self": "1", **({
+                    "is_const": "1"} if is_const_self else {})})
+
+            for arg in method.arguments:
+                arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
+                if arg.class_name:
+                    arg_dict["class"] = arg.class_name
+                    if arg.access == "readonly":
+                        arg_dict["is_const"] = "1"
+                    arg_dict["accessed_by"] = "value" if arg.kind == "value" else "pointer"
+                elif arg.interface_name:
+                    # Interface arguments are passed as impl_t pointers
+                    arg_dict["class"] = "impl"
+                    if arg.access == "readonly":
+                        arg_dict["is_const"] = "1"
+                    arg_dict["accessed_by"] = "pointer"
+                elif arg.type_name:
+                    arg_dict["type"] = arg.type_name
+                    arg_dict["accessed_by"] = "value"
+                args.append(arg_dict)
+
+            # Return type
+            ret_type = None
+            ret_class = None
+            ret_is_const = False
+            attrs_list: tuple[str, ...] = ()
+            if method.returns:
+                ret = method.returns[0]
+                if ret.enum_name:
+                    # Enum return — resolve to C type name
+                    ret_type = f"enum:{ret.enum_name}"
+                elif ret.interface_name:
+                    # Interface return — returns impl_t pointer
+                    ret_class = "impl"
+                elif ret.class_name:
+                    ret_class = ret.class_name
+                elif ret.type_name:
+                    ret_type = ret.type_name
+
+            # Check for NODISCARD / status return
+            if method.returns and method.returns[0].enum_name == "status":
+                attrs_list = (f"{project_ir.prefix.upper()}_NODISCARD",)
+                ret_type = "status"
+
+            _render_impl_method(
+                parent,
+                name=method_name,
+                description=method.description or f"Implementation of the {iface.name} interface method.",
+                impl=impl,
+                project_ir=project_ir,
+                arguments=args if args else None,
+                return_type=ret_type,
+                return_class=ret_class,
+                return_is_const=ret_is_const,
+                code="//  TODO: This is STUB. Implement me.",
+                code_type="stub",
+                visibility="public",
+                declaration="public",
+                definition="private",
+                attributes=attrs_list,
+                fallback_projects=fallback_projects,
+            )
+
+
+def render_implementation_c_module(
+    project_ir: IRProject,
+    impl: IRImplementation,
+    *,
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render the main module for an implementation.
+
+    Produces:
+    - Interface binding constants (enum)
+    - Struct declaration (definition is in defs module)
+    - Lifecycle methods: init, cleanup, new, delete, destroy, shallow_copy
+    - impl_size, impl, impl_const cast helpers
+    - init_ctx, cleanup_ctx stubs
+    - Interface method implementation stubs
+    """
+    impl_output = cast(IROutputTarget, impl.output)
+    defs_output = implementation_defs_output(impl_output)
+    internal_output = implementation_internal_output(impl_output)
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    impl_snake = snake_name(impl.name)
+    struct_type = f"{impl_output.c_symbol}_t"
+
+    root = c_module_root(
+        impl_output,
+        entity_id=impl_snake,
+        scope="public",
+    )
+    root.set("feature", f"{prefix_upper}_{impl_snake.upper()}")
+
+    # --- includes ---
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_assert.h", is_system="0", scope="private")
+    text_element(root, "c_include", file=f"{prefix}_memory.h", is_system="0", scope="private")
+
+    # Library header includes (context scope — for the struct type in implementation)
+    for req in impl.requirements:
+        if req.kind == "header":
+            text_element(root, "c_include", file=req.name, is_system="1", scope="context")
+
+    # Interface/impl requirement includes
+    for req in impl.requirements:
+        if req.kind == "interface":
+            try:
+                iface_out = entity_output(project_ir, entity_kind="interface", entity_name=req.name)
+                text_element(root, "c_include", file=iface_out.include_file, is_system="0", scope="private")
+            except (KeyError, ValueError):
+                pass
+        elif req.kind == "impl":
+            # Requirement for another implementation (e.g. simple_alg_info)
+            try:
+                impl_out = entity_output(project_ir, entity_kind="implementation", entity_name=req.name)
+                text_element(root, "c_include", file=impl_out.include_file, is_system="0", scope="private")
+            except (KeyError, ValueError):
+                pass
+
+    # Defs and internal headers
+    text_element(root, "c_include", file=defs_output.include_file, is_system="0", scope="private")
+    text_element(root, "c_include", file=internal_output.include_file, is_system="0", scope="private")
+
+    # --- Interface binding constants (as enum) ---
+    all_constants = []
+    for binding in impl.interface_bindings:
+        for const in binding.constants:
+            const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
+            all_constants.append((const_symbol, const.value, const.description))
+
+    if all_constants:
+        enum_elem = text_element(
+            root,
+            "c_enum",
+            declaration="public",
+            definition="public",
+        )
+        for const_symbol, value, desc in all_constants:
+            const_elem = text_element(
+                enum_elem,
+                "c_constant",
+                name=const_symbol,
+                value=value,
+                definition="public",
+                uid=f"c_class_{impl_snake}_constant_{snake_name(const_symbol.removeprefix(impl_output.c_symbol + '_').lower())}",
+            )
+            if desc:
+                const_elem.text = comment_text(desc)
+        enum_elem.text = comment_text("Public integral constants.")
+
+    # --- Struct declaration (definition is external / in defs module) ---
+    struct_elem = text_element(
+        root,
+        "c_struct",
+        name=struct_type,
+        visibility="public",
+        declaration="public",
+        definition="external",
+        uid=f"c_class_{impl_snake}_struct_{impl_snake}",
+    )
+    # Re-declare struct properties for the declaration (same as defs)
+    info_prop = text_element(
+        struct_elem, "c_property",
+        name="info", accessed_by="pointer",
+        type=f"{prefix}_impl_info_t", type_is="class", is_const_type="1",
+        uid=f"c_class_{impl_snake}_struct_{impl_snake}_property_info",
+    )
+    info_prop.text = comment_text("Compile-time known information about this implementation.")
+    refcnt_prop = text_element(
+        struct_elem, "c_property",
+        name="refcnt", accessed_by="value",
+        type=f"{prefix_upper}_ATOMIC size_t", type_is="primitive",
+        uid=f"c_class_{impl_snake}_struct_{impl_snake}_property_refcnt",
+    )
+    refcnt_prop.text = comment_text("Reference counter.")
+    for prop in impl.properties:
+        prop_attrs = _resolve_impl_property_type(
+            prop, project_ir=project_ir, impl=impl, fallback_projects=fallback_projects
+        )
+        prop_name = prop_attrs.pop("name")
+        uid = f"c_class_{impl_snake}_struct_{impl_snake}_property_{prop_name}"
+        prop_elem = text_element(struct_elem, "c_property", name=prop_name, uid=uid, **prop_attrs)
+        prop_elem.text = comment_text("Implementation specific context.")
+    struct_elem.text = comment_text("Handles implementation details.")
+
+    # --- impl_size method ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_impl_size",
+        description=f"Return size of '{struct_type}' type.",
+        impl=impl, project_ir=project_ir,
+        return_type="size",
+        code=f"return sizeof ({struct_type});",
+    )
+
+    # --- impl() cast method ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_impl",
+        description="Cast to the 'vscf_impl_t' type.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        return_class="impl",
+        code=f"{prefix_upper}_ASSERT_PTR(self);\nreturn ({prefix}_impl_t *)(self);",
+        fallback_projects=fallback_projects,
+    )
+
+    # --- impl_const() cast method ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_impl_const",
+        description="Cast to the const 'vscf_impl_t' type.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1", "is_const": "1"}],
+        return_class="impl",
+        return_is_const=True,
+        code=f"{prefix_upper}_ASSERT_PTR(self);\nreturn (const {prefix}_impl_t *)(self);",
+        fallback_projects=fallback_projects,
+    )
+
+    # --- Lifecycle methods ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_init",
+        description="Perform initialization of preallocated implementation context.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code=_impl_lifecycle_init_body(project_ir, impl),
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_cleanup",
+        description="Cleanup implementation context and release dependencies.\nThis is a reverse action of the function '{}_init()'.".format(impl_output.c_symbol),
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code=_impl_lifecycle_cleanup_body(project_ir, impl),
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_new",
+        description="Allocate implementation context and perform it's initialization.\nPostcondition: check memory allocation result.",
+        impl=impl, project_ir=project_ir,
+        return_class="self_impl",
+        code=_impl_lifecycle_new_body(project_ir, impl),
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_delete",
+        description="Delete given implementation context and it's dependencies.\nThis is a reverse action of the function '{}_new()'.".format(impl_output.c_symbol),
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code=_impl_lifecycle_delete_body(project_ir, impl),
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_destroy",
+        description="Destroy given implementation context and it's dependencies.\nThis is a reverse action of the function '{}_new()'.\nGiven reference is nullified.".format(impl_output.c_symbol),
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self_ref", "is_self": "1", "passed_by": "reference"}],
+        code=_impl_lifecycle_destroy_body(project_ir, impl),
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_shallow_copy",
+        description="Copy given implementation context by increasing reference counter.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        return_class="self_impl",
+        code=_impl_lifecycle_shallow_copy_body(project_ir, impl),
+    )
+
+    # --- init_ctx / cleanup_ctx stubs ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_init_ctx",
+        description="Provides initialization of the implementation specific context.\n"
+                    f"Note, this method is called automatically when method {impl_output.c_symbol}_init() is called.\n"
+                    "Note, that context is already zeroed.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code="//  TODO: This is STUB. Implement me.",
+        code_type="stub",
+        visibility="private",
+        declaration="external",
+        definition="private",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_cleanup_ctx",
+        description="Release resources of the implementation specific context.\n"
+                    "Note, this method is called automatically once when class is completely cleaning up.\n"
+                    "Note, that context will be zeroed automatically next this method.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code="//  TODO: This is STUB. Implement me.",
+        code_type="stub",
+        visibility="private",
+        declaration="external",
+        definition="private",
+    )
+
+    # --- Interface method implementations ---
+    _render_impl_interface_methods(
+        root, impl=impl, project_ir=project_ir, fallback_projects=fallback_projects
+    )
+
+    # --- Implementation-specific methods ---
+    for method in impl.methods:
+        method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
+        method_vis = method.attrs.get("visibility", method.attrs.get("scope", "private"))
+        if method_vis == "internal":
+            method_vis = "private"
+        method_decl = method.attrs.get("declaration", "private")
+
+        args: list[dict[str, str]] = []
+        is_static = method.attrs.get("is_static") == "1"
+        is_const_self = method.attrs.get("is_const") == "1"
+        if not is_static:
+            args.append({"name": "self", "is_self": "1", **(
+                {"is_const": "1"} if is_const_self else {})})
+
+        for arg in method.arguments:
+            arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
+            if arg.class_name:
+                arg_dict["class"] = arg.class_name
+                if arg.access == "readonly":
+                    arg_dict["is_const"] = "1"
+            elif arg.interface_name:
+                arg_dict["class"] = "impl"
+                if arg.access == "readonly":
+                    arg_dict["is_const"] = "1"
+            elif arg.type_name:
+                arg_dict["type"] = arg.type_name
+            args.append(arg_dict)
+
+        ret_type = None
+        ret_class = None
+        if method.returns:
+            ret = method.returns[0]
+            if ret.enum_name:
+                ret_type = f"enum:{ret.enum_name}"
+            elif ret.interface_name:
+                ret_class = "impl"
+            elif ret.class_name:
+                ret_class = ret.class_name
+            elif ret.type_name:
+                ret_type = ret.type_name
+
+        _render_impl_method(
+            root,
+            name=method_name,
+            description=method.description or "",
+            impl=impl,
+            project_ir=project_ir,
+            arguments=args if args else None,
+            return_type=ret_type,
+            return_class=ret_class,
+            code="//  TODO: This is STUB. Implement me.",
+            code_type="stub",
+            visibility=method_vis,
+            declaration=method_decl,
+            definition="private",
+            fallback_projects=fallback_projects,
+        )
+
+    root.text = comment_text(f"This module contains '{impl.name}' implementation.")
+
+    return root
+
+
 def type_map(type_name: str | None) -> tuple[str, str]:
     mapping = {
         "boolean": ("bool", "primitive"),
