@@ -1,21 +1,21 @@
 # CG-033: Render Interface Modules (Dispatch + API) — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 1: Add interface helper utilities
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CG-031 complete
-- [ ] Resolved XML for hash_api and hash studied
-- [ ] Naming conventions identified
+- [x] CG-031 complete
+- [x] Resolved XML for hash_api and hash studied
+- [x] Naming conventions identified
 
 ---
 
@@ -100,6 +100,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created (restructured from failed CG-033/CG-034 split) |
+| 2026-04-08 22:40 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 22:40 | Step 0 started | Preflight |
 
 ---
 
