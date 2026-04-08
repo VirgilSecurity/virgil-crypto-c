@@ -45,6 +45,11 @@ Related support headers:
 
 remain checked-in umbrella headers with empty generated blocks and are now tracked as static support artifacts rather than as active fallback migration work.
 
+Interface and implementation rendering is now complete. The `project_c_backend.py` module can render:
+- Interface dispatch modules (public API) and API struct modules (private)
+- Implementation main modules, defs modules (struct definition), and internal modules (vtable init, impl_info)
+- Auto-discovery (`discover_renderers`) covers all 5 entity kinds: module, class, enum, interface, implementation
+
 Current next-phase focus:
 
 - treat `common` as the reference implementation for the project-rooted generator framework
@@ -158,8 +163,8 @@ Interface and implementor rendering phase:
 - `CG-032` — parse implementors/implementations into source and IR (depends on CG-031) ✅
 - `CG-033` — render interface modules: dispatch + API (depends on CG-031) ✅
 - ~~`CG-034`~~ — merged into CG-033
-- `CG-035` — render implementation main + defs module (depends on CG-032, CG-033)
-- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-033, CG-035)
+- `CG-035` — render implementation main + defs module (depends on CG-032, CG-033) ✅
+- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-033, CG-035) ✅
 
 ---
 
