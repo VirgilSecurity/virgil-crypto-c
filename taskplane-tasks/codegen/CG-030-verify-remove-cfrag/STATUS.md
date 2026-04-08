@@ -1,6 +1,6 @@
 # CG-030: Verify Lifecycle Generation and Remove cfrag Files — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Verify parity
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -20,11 +20,11 @@
 ---
 
 ### Step 1: Verify parity
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Verification script/test written
-- [ ] All 10 lifecycle method bodies match cfrag content
-- [ ] Targeted test confirms parity
+- [x] Verification script/test written
+- [x] All 10 lifecycle method bodies match cfrag content
+- [x] Targeted test confirms parity
 
 ---
 
