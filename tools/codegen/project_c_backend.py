@@ -1025,6 +1025,204 @@ def _render_ctx_size_method(parent: ET.Element, *, project_ir: IRProject, cls: I
 
 
 
+# ---------------------------------------------------------------------------
+#   Lifecycle method body generation helpers.
+# ---------------------------------------------------------------------------
+
+def _lifecycle_init_body(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> str:
+    """Generate the body for the init() lifecycle method."""
+    struct_type = class_type_symbol(project_ir, cls.name)
+    init_ctx = _class_runtime_symbol(project_ir, cls, "init_ctx")
+    return (
+        f"VSC_ASSERT_PTR(self);\n"
+        f"\n"
+        f"vsc_zeroize(self, sizeof({struct_type}));\n"
+        f"\n"
+        f"self->refcnt = 1;\n"
+        f"\n"
+        f"{init_ctx}(self);"
+    )
+
+
+def _lifecycle_cleanup_body(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> str:
+    """Generate the body for the cleanup() lifecycle method."""
+    struct_type = class_type_symbol(project_ir, cls.name)
+    cleanup_ctx = _class_runtime_symbol(project_ir, cls, "cleanup_ctx")
+    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+
+    lines = [
+        "if (self == NULL) {",
+        "    return;",
+        "}",
+        "",
+        f"{cleanup_ctx}(self);",
+    ]
+
+    # Release each dependency
+    for dep in cls.dependencies:
+        release_method = f"{class_symbol}_release_{snake_name(dep.name)}"  
+        lines.append("")
+        lines.append(f"{release_method}(self);")
+
+    lines.append("")
+    lines.append(f"vsc_zeroize(self, sizeof({struct_type}));")
+
+    return "\n".join(lines)
+
+
+def _lifecycle_new_body(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> str:
+    """Generate the body for the new() lifecycle method."""
+    struct_type = class_type_symbol(project_ir, cls.name)
+    init_method = _class_runtime_symbol(project_ir, cls, "init")
+    return (
+        f"{struct_type} *self = ({struct_type} *) vsc_alloc(sizeof ({struct_type}));\n"
+        f"VSC_ASSERT_ALLOC(self);\n"
+        f"\n"
+        f"{init_method}(self);\n"
+        f"\n"
+        f"self->self_dealloc_cb = vsc_dealloc;\n"
+        f"\n"
+        f"return self;"
+    )
+
+
+def _lifecycle_delete_body(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> str:
+    """Generate the body for the delete() lifecycle method."""
+    prefix_upper = project_ir.prefix.upper()
+    cleanup_method = _class_runtime_symbol(project_ir, cls, "cleanup")
+    return (
+        f"if (self == NULL) {{\n"
+        f"    return;\n"
+        f"}}\n"
+        f"\n"
+        f"size_t old_counter = self->refcnt;\n"
+        f"{prefix_upper}_ASSERT(old_counter != 0);\n"
+        f"size_t new_counter = old_counter - 1;\n"
+        f"\n"
+        f"#if defined({prefix_upper}_ATOMIC_COMPARE_EXCHANGE_WEAK)\n"
+        f"//  CAS loop\n"
+        f"while (!{prefix_upper}_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {{\n"
+        f"    old_counter = self->refcnt;\n"
+        f"    {prefix_upper}_ASSERT(old_counter != 0);\n"
+        f"    new_counter = old_counter - 1;\n"
+        f"}}\n"
+        f"#else\n"
+        f"self->refcnt = new_counter;\n"
+        f"#endif\n"
+        f"\n"
+        f"if (new_counter > 0) {{\n"
+        f"    return;\n"
+        f"}}\n"
+        f"\n"
+        f"{project_ir.prefix}_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;\n"
+        f"\n"
+        f"{cleanup_method}(self);\n"
+        f"\n"
+        f"if (self_dealloc_cb != NULL) {{\n"
+        f"    self_dealloc_cb(self);\n"
+        f"}}"
+    )
+
+
+def _lifecycle_destroy_body(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> str:
+    """Generate the body for the destroy() lifecycle method."""
+    prefix_upper = project_ir.prefix.upper()
+    struct_type = class_type_symbol(project_ir, cls.name)
+    delete_method = _class_runtime_symbol(project_ir, cls, "delete")
+    return (
+        f"{prefix_upper}_ASSERT_PTR(self_ref);\n"
+        f"\n"
+        f"{struct_type} *self = *self_ref;\n"
+        f"*self_ref = NULL;\n"
+        f"\n"
+        f"{delete_method}(self);"
+    )
+
+
+def _lifecycle_shallow_copy_body(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> str:
+    """Generate the body for the shallow_copy() lifecycle method."""
+    prefix_upper = project_ir.prefix.upper()
+    return (
+        f"{prefix_upper}_ASSERT_PTR(self);\n"
+        f"\n"
+        f"#if defined({prefix_upper}_ATOMIC_COMPARE_EXCHANGE_WEAK)\n"
+        f"//  CAS loop\n"
+        f"size_t old_counter;\n"
+        f"size_t new_counter;\n"
+        f"do {{\n"
+        f"    old_counter = self->refcnt;\n"
+        f"    new_counter = old_counter + 1;\n"
+        f"}} while (!{prefix_upper}_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));\n"
+        f"#else\n"
+        f"++self->refcnt;\n"
+        f"#endif\n"
+        f"\n"
+        f"return self;"
+    )
+
+
+def _lifecycle_constructor_init_body(
+    project_ir: IRProject,
+    cls: IRClass,
+    ctor_name: str,
+    ctor_arg_names: list[str],
+) -> str:
+    """Generate the body for the init_with_X() constructor lifecycle method."""
+    prefix_upper = project_ir.prefix.upper()
+    struct_type = class_type_symbol(project_ir, cls.name)
+    init_ctx_method = _class_runtime_symbol(project_ir, cls, f"init_ctx_with_{_reference_ctor_suffix(ctor_name)}")
+    proxy_args = ", ".join(["self"] + ctor_arg_names)
+    return (
+        f"{prefix_upper}_ASSERT_PTR(self);\n"
+        f"\n"
+        f"vsc_zeroize(self, sizeof({struct_type}));\n"
+        f"\n"
+        f"self->refcnt = 1;\n"
+        f"\n"
+        f"{init_ctx_method}({proxy_args});"
+    )
+
+
+def _lifecycle_constructor_new_body(
+    project_ir: IRProject,
+    cls: IRClass,
+    ctor_name: str,
+    ctor_arg_names: list[str],
+) -> str:
+    """Generate the body for the new_with_X() constructor lifecycle method."""
+    struct_type = class_type_symbol(project_ir, cls.name)
+    init_method = class_constructor_symbol(project_ir, cls, ctor_name)
+    proxy_args = ", ".join(["self"] + ctor_arg_names)
+    return (
+        f"{struct_type} *self = ({struct_type} *) vsc_alloc(sizeof ({struct_type}));\n"
+        f"VSC_ASSERT_ALLOC(self);\n"
+        f"\n"
+        f"{init_method}({proxy_args});\n"
+        f"\n"
+        f"self->self_dealloc_cb = vsc_dealloc;\n"
+        f"\n"
+        f"return self;"
+    )
+
+
 def _render_ir_method(
     parent: ET.Element,
     *,

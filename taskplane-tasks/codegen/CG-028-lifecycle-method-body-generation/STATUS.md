@@ -1,6 +1,6 @@
 # CG-028: Generate Lifecycle Method Bodies from Class IR — Status
 
-**Current Step:** Step 1: Implement lifecycle body generation helpers
+**Current Step:** Step 2: Integrate into _render_reference_class_support
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -21,20 +21,20 @@
 ---
 
 ### Step 1: Implement lifecycle body generation helpers
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 > Hydrated based on code analysis.
 > Naming: `_class_runtime_symbol(project_ir, cls, suffix)` for method names, `class_type_symbol(project_ir, class_name)` for struct type, `project_ir.prefix` for global prefixes.
 > Dependencies: IRDependency has `name` field; release symbol is `{class_symbol}_release_{snake_name(dep.name)}`.
 > Buffer has no dependencies; ecies has 5.
 
-- [ ] Implement 8 lifecycle body generation helpers (_lifecycle_init_body through _lifecycle_constructor_new_body)
-- [ ] Verify buffer lifecycle bodies match cfrag content by comparison
+- [x] Implement 8 lifecycle body generation helpers (_lifecycle_init_body through _lifecycle_constructor_new_body)
+- [x] Verify buffer lifecycle bodies match cfrag content by comparison
 
 ---
 
 ### Step 2: Integrate into _render_reference_class_support
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Lifecycle methods rendered with code bodies
 - [ ] Constructor variants rendered with code bodies
