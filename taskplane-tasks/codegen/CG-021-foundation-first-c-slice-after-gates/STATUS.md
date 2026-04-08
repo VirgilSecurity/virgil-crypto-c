@@ -1,7 +1,7 @@
 # CG-021: Foundation First C Slice After Validation Gates — Status
 
 **Current Step:** Step 3: Integrate and document
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -37,10 +37,10 @@
 ---
 
 ### Step 3: Integrate and document
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Integrate the first slice into the shared workflow cleanly
-- [ ] Update docs to record what slice now works and what remains intentionally out of scope
+- [x] Integrate the first slice into the shared workflow cleanly
+- [x] Update docs to record what slice now works and what remains intentionally out of scope
 
 ---
 
@@ -73,6 +73,8 @@
 | 2026-04-08 01:08 | Targeted slice tests updated | Added shared-registry regressions in `tests.codegen.test_common_bootstrap` and `tests.codegen.test_project_direct_registry`, then ran `python3 -m unittest tests.codegen.test_common_bootstrap tests.codegen.test_foundation_direct_c tests.codegen.test_project_direct_registry tests.codegen.test_project_c_backend` successfully (16 tests). |
 | 2026-04-08 01:20 | Finalized foundation gates rerun | `bash tools/codegen/verify_foundation_enum_slice.sh` and `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` both completed successfully; the validation gate finished with 54/54 `foundation` tests passing. |
 | 2026-04-08 01:21 | Preservation boundary confirmed | Verified with `git status --short` after the slice smoke/gate reruns that no `library/foundation/**` generated/manual files were left modified; only this task's STATUS checkpoint remained dirty. |
+| 2026-04-08 01:23 | Shared workflow integration finalized | With the shared project direct-renderer registry in place, `common_bootstrap.py --project foundation` now discovers the enum pilot through the same centralized workflow used for project selection rather than hardcoded bootstrap branches. |
+| 2026-04-08 01:25 | Migration docs updated | Updated `foundation-next-phase-plan.md` and `implementation-notes.md` to document the shared project direct-renderer registry, the still-intentional enum-only `foundation` slice scope, and the verified smoke/validation commands that now keep the pilot integrated cleanly. |
 
 ---
 

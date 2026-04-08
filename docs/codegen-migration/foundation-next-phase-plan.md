@@ -340,17 +340,18 @@ Remaining pre-emitter gap carried forward:
 
 - the shared C backend helper in `tools/codegen/project_c_backend.py` still resolves output metadata only for modules/classes, so the likely enum-first emitter slice will need enum-target routing support (or a temporary slice-specific adapter) before implementation begins.
 
-## Implementation status after CG-019
+## Implementation status after CG-021
 
-`CG-019` completed the first real `foundation` emitter slice on top of the shared workflow.
+`CG-019` established the first real `foundation` emitter slice, and `CG-021` cleaned up its shared-workflow integration after the validation-gate recovery landed.
 
 What now works:
 
 - the shared bootstrap entrypoint can regenerate the first `foundation` slice via `python3 tools/codegen/common_bootstrap.py --project foundation ...` without reintroducing `foundation`-specific output-routing literals into the shared backend
+- project selection for direct-renderer slices now flows through the shared `tools/codegen/project_direct_registry.py` module, so `common_bootstrap.py` no longer needs ad-hoc `common`/`foundation` import branches to discover the enum pilot
 - the pilot slice is intentionally limited to enum emission: `status`, `asn1 tag`, `alg id`, `oid id`, `group msg type`, `cipher state`, plus the private-scope `recipient cipher decryption state`
 - enum output placement, prefixes, typedef names, generated XML dispatch names, and public/private include routing all come from `project_foundation.xml` metadata and shared IR/backend helpers
 - a repeatable out-tree smoke workflow now exists through `bash tools/codegen/verify_foundation_enum_slice.sh`, which confirms the shared bootstrap emits only the expected 14 header/source surfaces for this enum slice
-- the executable validation gate remains `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` (or the full default variant), which passed with 54/54 labeled `foundation` tests green during this task
+- the executable validation gate remains `bash tools/codegen/verify_foundation_validation_gate.sh --post-quantum-off` (or the full default variant), and `CG-021` revalidated it together with `bash tools/codegen/verify_foundation_enum_slice.sh`; the validation gate completed with 54/54 labeled `foundation` tests green and left no checked-in `library/foundation/**` files modified
 
 What remains intentionally out of scope for this pilot:
 
