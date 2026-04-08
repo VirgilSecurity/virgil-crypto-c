@@ -1,22 +1,22 @@
 # CG-029: Generate Dependency Management Methods from Class IR — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CG-028 complete
-- [ ] c_dependency.gsl methods studied
-- [ ] Resolved XML for ecies studied
-- [ ] Dependency struct field patterns understood
+- [x] CG-028 complete
+- [x] c_dependency.gsl methods studied
+- [x] Resolved XML for ecies studied
+- [x] Dependency struct field patterns understood
 
 ---
 
@@ -90,6 +90,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 15:06 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 15:06 | Step 0 started | Preflight |
 
 ---
 
