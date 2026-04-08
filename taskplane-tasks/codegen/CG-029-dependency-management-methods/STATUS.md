@@ -5,7 +5,7 @@
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** M
 
 ---
@@ -21,11 +21,11 @@
 ---
 
 ### Step 1: Generate dependency struct fields
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add dependency property rendering in _render_reference_class_support or render_class_c_module — each dep becomes a c_property on the struct with type=vscf_impl_t for interface deps, or the class type for class deps
-- [ ] Add interface include (impl header) for interface deps; ensure dependency includes cover the impl_t type
-- [ ] Verify ecies struct fields match reference (random, cipher, mac, kdf, ephemeral_key)
+- [x] Add dependency property rendering in _render_reference_class_support or render_class_c_module — each dep becomes a c_property on the struct with type=vscf_impl_t for interface deps, or the class type for class deps
+- [x] Add interface include (impl header) for interface deps; ensure dependency includes cover the impl_t type
+- [x] Verify ecies struct fields match reference (random, cipher, mac, kdf, ephemeral_key)
 
 ---
 
@@ -90,6 +90,7 @@
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-08 15:06 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-08 15:06 | Step 0 started | Preflight |
+| 2026-04-08 15:36 | Worker iter 1 | done in 1838s, tools: 94 |
 
 ---
 
