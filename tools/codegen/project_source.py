@@ -320,6 +320,8 @@ def _attrs_with_child_shapes(elem: ET.Element) -> dict[str, str]:
     array = elem.find("array")
     if array is not None and array.attrib.get("length"):
         attrs["array"] = array.attrib["length"]
+        if array.attrib.get("length_constant"):
+            attrs["array_length_constant"] = array.attrib["length_constant"]
     string = elem.find("string")
     if string is not None and string.attrib.get("length"):
         attrs["string"] = string.attrib["length"]

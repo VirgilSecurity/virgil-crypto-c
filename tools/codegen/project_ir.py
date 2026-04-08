@@ -58,6 +58,8 @@ class IRCArgument(IRCommented):
     is_reference: bool = False
     is_string: bool = False
     is_array: bool = False
+    enum_name: str | None = None
+    interface_name: str | None = None
 
 
 @dataclass
@@ -142,6 +144,10 @@ class IRCStructField(IRCommented):
     is_reference: bool = False
     is_string: bool = False
     is_array: bool = False
+    enum_name: str | None = None
+    array_kind: str | None = None
+    array_length_constant: str | None = None
+    library: str | None = None
 
 
 @dataclass
@@ -315,6 +321,8 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         kind=(
             "callback" if "callback" in attrs else
             "class" if "class" in attrs or attrs.get("type") == "self" else
+            "interface" if "interface" in attrs else
+            "enum" if "enum" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
@@ -324,6 +332,8 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         is_reference=attrs.get("is_reference") in {"1", "true"},
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
         is_array=attrs.get("array") == "given",
+        enum_name=attrs.get("enum"),
+        interface_name=attrs.get("interface"),
     )
 
 
@@ -372,6 +382,7 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         type_kind=(
             "callback" if "callback" in attrs else
             "class" if "class" in attrs or attrs.get("type") == "self" else
+            "enum" if "enum" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
@@ -381,6 +392,10 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         is_reference=attrs.get("is_reference") in {"1", "true"},
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
         is_array=attrs.get("array") == "given",
+        enum_name=attrs.get("enum"),
+        array_kind=attrs.get("array"),
+        array_length_constant=attrs.get("array_length_constant"),
+        library=attrs.get("library"),
     )
 
 
