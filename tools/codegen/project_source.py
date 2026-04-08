@@ -217,18 +217,30 @@ def _named_ref(kind: str, elem: ET.Element) -> NamedRef:
     return NamedRef(kind=kind, name=name, attrs=dict(elem.attrib), description=_description(elem))
 
 
+def _attrs_with_child_shapes(elem: ET.Element) -> dict[str, str]:
+    attrs = dict(elem.attrib)
+    array = elem.find("array")
+    if array is not None and array.attrib.get("length"):
+        attrs["array"] = array.attrib["length"]
+    string = elem.find("string")
+    if string is not None and string.attrib.get("length"):
+        attrs["string"] = string.attrib["length"]
+    return attrs
+
+
+
 def _argument(elem: ET.Element) -> ArgumentSource:
-    return ArgumentSource(name=elem.attrib.get("name", ""), attrs=dict(elem.attrib), description=_description(elem))
+    return ArgumentSource(name=elem.attrib.get("name", ""), attrs=_attrs_with_child_shapes(elem), description=_description(elem))
 
 
 def _method_like(kind: str, elem: ET.Element) -> MethodSource:
     return MethodSource(
         kind=kind,
         name=elem.attrib.get("name", ""),
-        attrs=dict(elem.attrib),
+        attrs=_attrs_with_child_shapes(elem),
         description=_description(elem),
         arguments=[_argument(a) for a in elem.findall("argument")],
-        returns=[dict(r.attrib) for r in elem.findall("return")],
+        returns=[_attrs_with_child_shapes(r) for r in elem.findall("return")],
         code_blocks=[{"attrs": dict(c.attrib), "text": _clean(c.text)} for c in elem.findall("code")],
     )
 
@@ -237,7 +249,7 @@ def _variable(elem: ET.Element) -> VariableSource:
     value = elem.find("value")
     return VariableSource(
         name=elem.attrib.get("name", ""),
-        attrs=dict(elem.attrib),
+        attrs=_attrs_with_child_shapes(elem),
         description=_description(elem),
         value=(dict(value.attrib) if value is not None else None),
     )
@@ -289,7 +301,7 @@ def load_class_source(path: Path) -> ClassSource:
         path=str(path),
         attrs=dict(root.attrib),
         description=_description(root),
-        properties=[PropertySource(name=e.attrib.get("name", ""), attrs=dict(e.attrib), description=_description(e)) for e in root.findall("property")],
+        properties=[PropertySource(name=e.attrib.get("name", ""), attrs=_attrs_with_child_shapes(e), description=_description(e)) for e in root.findall("property")],
         variables=[_variable(e) for e in root.findall("variable")],
         methods=[_method_like("method", e) for e in root.findall("method")],
         constructors=[_method_like("constructor", e) for e in root.findall("constructor")],

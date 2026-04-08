@@ -247,8 +247,8 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         class_name=attrs.get("class"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},
-        is_string=(attrs.get("type") == "string"),
-        is_array=False,
+        is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
+        is_array=attrs.get("array") == "given",
     )
 
 
@@ -303,8 +303,8 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         callback=attrs.get("callback"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},
-        is_string=(attrs.get("type") == "string"),
-        is_array=False,
+        is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
+        is_array=attrs.get("array") == "given",
     )
 
 

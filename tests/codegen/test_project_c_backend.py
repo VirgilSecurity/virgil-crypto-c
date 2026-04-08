@@ -19,6 +19,7 @@ from tools.codegen.project_c_backend import (
     direct_renderer_map,
     direct_xml_name,
     enum_ir,
+    render_class_c_module,
     render_enum_c_module,
     return_from_source,
 )
@@ -107,6 +108,22 @@ class ProjectCBackendTest(unittest.TestCase):
         self.assertEqual("vsc_demo_mode_FAST_PATH", constants[0].attrib["name"])
         self.assertEqual("7", constants[0].attrib["value"])
         self.assertEqual("vsc_demo_mode_SLOW_PATH", constants[1].attrib["name"])
+
+    def test_render_class_c_module_derives_data_shape_from_ir(self) -> None:
+        root = render_class_c_module(self.ir, class_ir(self.ir, "data"))
+
+        self.assertEqual("vsc_data", root.attrib["name"])
+        self.assertEqual(
+            [include.attrib["file"] for include in root.findall("c_include") if include.attrib["scope"] == "public"],
+            ["vsc_library.h", "vsc_data.h"],
+        )
+        struct = root.find("c_struct")
+        self.assertIsNotNone(struct)
+        self.assertEqual("public", struct.attrib["definition"])
+        fields = struct.findall("c_property")
+        self.assertEqual([field.attrib["name"] for field in fields], ["bytes", "len"])
+        self.assertEqual("given", fields[0].attrib["array"])
+        self.assertEqual("1", fields[0].attrib["is_const_type"])
 
     def test_render_enum_c_module_preserves_foundation_enum_metadata_from_ir(self) -> None:
         foundation_ir = project_to_ir(load_named_project_source("foundation", REPO_ROOT))

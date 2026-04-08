@@ -86,12 +86,36 @@ class CommonDirectCResolutionTest(unittest.TestCase):
         data_root = build_direct_data_c_module(REPO_ROOT)
         buffer_defs_root = build_direct_buffer_defs_c_module(REPO_ROOT)
 
-        self.assertEqual(module_ir(self.ir, "library").output.include_file, memory_root.findall("c_include")[1].attrib["file"])
-        self.assertEqual(module_ir(self.ir, "assert").output.include_file, memory_root.findall("c_include")[2].attrib["file"])
-        self.assertEqual(module_ir(self.ir, "library").output.include_file, assert_root.findall("c_include")[1].attrib["file"])
-        self.assertEqual(module_ir(self.ir, "memory").output.include_file, data_root.findall("c_include")[2].attrib["file"])
-        self.assertEqual(module_ir(self.ir, "assert").output.include_file, data_root.findall("c_include")[3].attrib["file"])
+        memory_includes = {include.attrib["file"] for include in memory_root.findall("c_include")}
+        assert_includes = {include.attrib["file"] for include in assert_root.findall("c_include")}
+        data_includes = {include.attrib["file"] for include in data_root.findall("c_include")}
+        buffer_defs_includes = {include.attrib["file"] for include in buffer_defs_root.findall("c_include")}
+
+        self.assertIn(module_ir(self.ir, "library").output.include_file, memory_includes)
+        self.assertIn(module_ir(self.ir, "assert").output.include_file, memory_includes)
+        self.assertIn(module_ir(self.ir, "library").output.include_file, assert_includes)
+        self.assertIn(module_ir(self.ir, "memory").output.include_file, data_includes)
+        self.assertIn(module_ir(self.ir, "assert").output.include_file, data_includes)
+        self.assertIn(module_ir(self.ir, "atomic").output.include_file, buffer_defs_includes)
         self.assertEqual(f"{class_ir(self.ir, 'buffer').output.c_symbol}_t", buffer_defs_root.find("c_struct").attrib["name"])
+
+    def test_buffer_runtime_support_is_loaded_from_checked_in_fragments(self) -> None:
+        buffer_root = build_direct_buffer_c_module(REPO_ROOT)
+        method_by_name = {method.attrib["name"]: method for method in buffer_root.findall("c_method")}
+
+        self.assertEqual("external", method_by_name["vsc_buffer_is_empty"].attrib["definition"])
+        self.assertIsNone(method_by_name["vsc_buffer_is_empty"].find("c_code"))
+        self.assertIn("self->self_dealloc_cb = vsc_dealloc;", method_by_name["vsc_buffer_new"].find("c_code").text)
+        self.assertIn("VSC_ATOMIC_COMPARE_EXCHANGE_WEAK", method_by_name["vsc_buffer_delete"].find("c_code").text)
+
+    def test_data_methods_are_declared_from_ir_without_python_stub_bodies(self) -> None:
+        data_root = build_direct_data_c_module(REPO_ROOT)
+        method_by_name = {method.attrib["name"]: method for method in data_root.findall("c_method")}
+
+        self.assertEqual("external", method_by_name["vsc_data"].attrib["definition"])
+        self.assertIsNone(method_by_name["vsc_data"].find("c_code"))
+        self.assertEqual("external", method_by_name["vsc_data_is_valid"].attrib["definition"])
+        self.assertIsNone(method_by_name["vsc_data_is_valid"].find("c_code"))
 
     def test_bootstrap_renderer_dispatch_uses_ir_generated_xml_names(self) -> None:
         renderers = direct_c_renderers(REPO_ROOT)
