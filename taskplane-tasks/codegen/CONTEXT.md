@@ -79,6 +79,7 @@ This script is allowed to apply generated output temporarily into the repo, buil
 | Foundation status | `docs/codegen-migration/common-direct-foundation-status.md` |
 | Test: class dependencies | `tools/codegen/test_class_dependencies.py` |
 | Test: interface parsing | `tools/codegen/test_interface_parsing.py` |
+| Test: interface rendering | `tools/codegen/test_interface_rendering.py` |
 | Architecture ADR | `docs/adr/0002-project-rooted-codegen-pipeline.md` |
 | Generalization ADR | `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md` |
 | Next-phase plan | `docs/codegen-migration/foundation-next-phase-plan.md` |
@@ -154,7 +155,7 @@ Interface and implementor rendering phase:
 
 - `CG-031` — parse interfaces into source and IR ✅
 - `CG-032` — parse implementors/implementations into source and IR (depends on CG-031) ✅
-- `CG-033` — render interface modules: dispatch + API (depends on CG-031)
+- `CG-033` — render interface modules: dispatch + API (depends on CG-031) ✅
 - ~~`CG-034`~~ — merged into CG-033
 - `CG-035` — render implementation main + defs module (depends on CG-032, CG-033)
 - `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-033, CG-035)

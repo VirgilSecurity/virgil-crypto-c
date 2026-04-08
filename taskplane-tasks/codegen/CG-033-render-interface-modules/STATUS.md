@@ -1,7 +1,7 @@
 # CG-033: Render Interface Modules (Dispatch + API) — Status
 
 **Current Step:** Step 6: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -74,10 +74,10 @@
 ---
 
 ### Step 6: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -92,6 +92,8 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Cross-project class resolution needed for interface callbacks (e.g. `data`/`buffer` from common used in foundation interfaces) | Handled via `fallback_projects` parameter and `_resolve_class_type_symbol` helper | `project_c_backend.py` |
+| Pre-existing build gate failure: unresolved module placeholder `(c_global_macros_have_assert_h)` in `render_module_c_module` for `assert` module | Out of scope, pre-existing | `project_c_backend.py:1091` |
 
 ---
 
