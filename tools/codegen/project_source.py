@@ -32,6 +32,7 @@ class MethodSource:
     description: str = ""
     arguments: list[ArgumentSource] = field(default_factory=list)
     returns: list[dict[str, str]] = field(default_factory=list)
+    members: list[NamedRef] = field(default_factory=list)
     code_blocks: list[dict[str, str]] = field(default_factory=list)
 
 
@@ -58,6 +59,13 @@ class ConstantSource:
 
 
 @dataclass
+class AliasSource:
+    name: str
+    attrs: dict[str, str] = field(default_factory=dict)
+    description: str = ""
+
+
+@dataclass
 class ModuleSource:
     name: str
     from_area: str | None = None
@@ -66,11 +74,13 @@ class ModuleSource:
     description: str = ""
     requires: list[NamedRef] = field(default_factory=list)
     c_includes: list[NamedRef] = field(default_factory=list)
+    aliases: list[AliasSource] = field(default_factory=list)
     callbacks: list[MethodSource] = field(default_factory=list)
     variables: list[VariableSource] = field(default_factory=list)
     methods: list[MethodSource] = field(default_factory=list)
     macroses: list[MethodSource] = field(default_factory=list)
     macro_groups: list[MethodSource] = field(default_factory=list)
+    constants: list[ConstantSource] = field(default_factory=list)
     code_blocks: list[dict[str, str]] = field(default_factory=list)
 
 
@@ -241,6 +251,7 @@ def _method_like(kind: str, elem: ET.Element) -> MethodSource:
         description=_description(elem),
         arguments=[_argument(a) for a in elem.findall("argument")],
         returns=[_attrs_with_child_shapes(r) for r in elem.findall("return")],
+        members=[_named_ref("macros", e) for e in elem.findall("macros")],
         code_blocks=[{"attrs": dict(c.attrib), "text": _clean(c.text)} for c in elem.findall("code")],
     )
 
@@ -257,6 +268,14 @@ def _variable(elem: ET.Element) -> VariableSource:
 
 def _constant(elem: ET.Element) -> ConstantSource:
     return ConstantSource(
+        name=elem.attrib.get("name", ""),
+        attrs=dict(elem.attrib),
+        description=_description(elem),
+    )
+
+
+def _alias(elem: ET.Element) -> AliasSource:
+    return AliasSource(
         name=elem.attrib.get("name", ""),
         attrs=dict(elem.attrib),
         description=_description(elem),
@@ -285,11 +304,13 @@ def load_module_source(path: Path, from_area: str | None = None) -> ModuleSource
         description=_description(root),
         requires=[_named_ref("require", e) for e in root.findall("require")],
         c_includes=[_named_ref("c_include", e) for e in root.findall("c_include")],
+        aliases=[_alias(e) for e in root.findall("c_alias")],
         callbacks=[_method_like("callback", e) for e in root.findall("callback")],
         variables=[_variable(e) for e in root.findall("variable")],
         methods=[_method_like("method", e) for e in root.findall("method")],
         macroses=[_method_like("macros", e) for e in root.findall("macros")],
         macro_groups=[_method_like("macroses", e) for e in root.findall("macroses")],
+        constants=[_constant(e) for e in root.findall("constant")],
         code_blocks=[{"attrs": dict(c.attrib), "text": _clean(c.text)} for c in root.findall("code")],
     )
 

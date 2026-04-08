@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
+import re
 from typing import cast
 import xml.etree.ElementTree as ET
 
@@ -244,6 +245,330 @@ def render_enum_c_module(project_ir: IRProject, enum: IREnum) -> ET.Element:
         const_elem = text_element(enum_elem, "c_constant", **attrs)
         if constant.description:
             const_elem.text = doc_comment(constant.description)
+
+    return root
+
+
+_PLACEHOLDER_RE = re.compile(r"\.\(([^)]+)\)")
+
+
+def _module_member_owner(module: IRModule, attrs: dict[str, str], *, kind: str) -> str:
+    if kind == "variable":
+        return f"class_{snake_name(module.name)}"
+    owner = attrs.get("of_class")
+    if owner == "global":
+        return "global"
+    if owner:
+        return f"class_{snake_name(owner)}"
+    if module.attrs.get("of_class") == "global":
+        return "global"
+    return f"class_{snake_name(module.name)}"
+
+
+def _module_method_symbol(project_ir: IRProject, module: IRModule, method: object) -> str:
+    attrs = getattr(method, "attrs")
+    owner = attrs.get("of_class")
+    base = project_ir.prefix if owner == "global" or (owner is None and module.attrs.get("of_class") == "global") else module.output.c_symbol
+    if owner and owner != "global":
+        base = f"{project_ir.prefix}_{snake_name(owner)}"
+    return f"{base}_{snake_name(getattr(method, 'name'))}"
+
+
+def _module_macro_symbol(project_ir: IRProject, module: IRModule, macro: object) -> str:
+    return _module_method_symbol(project_ir, module, macro).upper()
+
+
+def _module_callback_symbol(project_ir: IRProject, module: IRModule, callback: object) -> str:
+    attrs = getattr(callback, "attrs")
+    if attrs.get("of_class") == "global" or (attrs.get("of_class") is None and module.attrs.get("of_class") == "global"):
+        return callback_symbol(project_ir, getattr(callback, "name"))
+    return callback_symbol(project_ir, getattr(callback, "name"), module_name=module.name)
+
+
+def _module_constant_symbol(project_ir: IRProject, module: IRModule, constant: object) -> str:
+    owner = getattr(constant, "attrs", {}).get("of_class")
+    base = project_ir.prefix if owner == "global" or (owner is None and module.attrs.get("of_class") == "global") else module.output.c_symbol
+    if owner and owner != "global":
+        base = f"{project_ir.prefix}_{snake_name(owner)}"
+    return f"{base}_{snake_name(getattr(constant, 'name')).upper()}".upper()
+
+
+def _module_member_uid(module: IRModule, attrs: dict[str, str], *, kind: str, name: str) -> str:
+    return f"c_{_module_member_owner(module, attrs, kind=kind)}_{kind}_{snake_name(name)}"
+
+
+def _module_placeholder_map(project_ir: IRProject) -> dict[str, str]:
+    placeholders = {
+        f"project_version_{part}": (project_ir.version or {}).get(part, "0")
+        for part in ("major", "minor", "patch")
+    }
+    for module in project_ir.resolved_modules:
+        placeholders[f"module_{snake_name(module.name)}"] = cast(IROutputTarget, module.output).c_symbol
+        for alias in module.aliases:
+            placeholders[_module_member_uid(module, alias.attrs, kind="alias", name=alias.name)] = alias.attrs.get("name", alias.name)
+        for constant in module.constants:
+            placeholders[_module_member_uid(module, constant.attrs, kind="constant", name=constant.name)] = _module_constant_symbol(project_ir, module, constant)
+        for callback in module.callbacks:
+            token = _module_member_uid(module, callback.attrs, kind="callback", name=callback.name)
+            placeholders[token] = _module_callback_symbol(project_ir, module, callback)
+            placeholders[token.removeprefix("c_")] = placeholders[token]
+        for variable in module.variables:
+            token = _module_member_uid(module, variable.attrs, kind="variable", name=variable.name)
+            placeholders[token] = c_identifier(variable.name, callback=variable.callback is not None)
+        for method in module.methods:
+            token = _module_member_uid(module, method.attrs, kind="method", name=method.name)
+            placeholders[token] = _module_method_symbol(project_ir, module, method)
+            placeholders[token.removeprefix("c_")] = placeholders[token]
+        for macro in [*module.macros, *module.macro_groups]:
+            token = _module_member_uid(module, macro.attrs, kind="macros", name=macro.name)
+            placeholders[token] = _module_macro_symbol(project_ir, module, macro)
+            placeholders[token.removeprefix("c_")] = placeholders[token]
+        for group in module.macro_groups:
+            for member in group.members:
+                token = _module_member_uid(module, member.attrs, kind="macros", name=member.name)
+                placeholders[token] = _module_macro_symbol(project_ir, module, type("MacroRef", (), {"name": member.name, "attrs": member.attrs})())
+                placeholders[token.removeprefix("c_")] = placeholders[token]
+    return placeholders
+
+
+def _resolve_module_placeholders(text: str | None, placeholders: dict[str, str], *, project_prefix: str, args: tuple[object, ...] = ()) -> str | None:
+    if text is None:
+        return None
+    arg_map = {
+        f"_argument_{snake_name(getattr(arg, 'name', '') if not isinstance(arg, dict) else arg.get('name', ''))}": c_identifier(
+            getattr(arg, 'name', '') if not isinstance(arg, dict) else arg.get('name', ''),
+            callback=(getattr(arg, 'callback', None) if not isinstance(arg, dict) else arg.get('callback')) is not None,
+        )
+        for arg in args
+        if (getattr(arg, 'name', '') if not isinstance(arg, dict) else arg.get('name'))
+    }
+
+    def repl(match: re.Match[str]) -> str:
+        token = match.group(1)
+        if token in arg_map:
+            return arg_map[token]
+        if token in placeholders:
+            return placeholders[token]
+        if token.startswith("c_global_macros_"):
+            return f"{project_prefix.upper()}_{token.removeprefix('c_global_macros_').upper()}"
+        raise ValueError(f"unresolved module placeholder: {token}")
+
+    return _PLACEHOLDER_RE.sub(repl, text)
+
+
+def _module_callback_name_from_ref(project_ir: IRProject, module: IRModule, callback_ref: str | None) -> str:
+    callback_name = callback_name_from_ref(callback_ref)
+    if callback_ref and "global_callback_" in callback_ref:
+        return callback_symbol(project_ir, callback_name)
+    return callback_symbol(project_ir, callback_name, module_name=module.name)
+
+
+def _module_argument_from_source(parent: ET.Element, src: dict[str, str], *, project_ir: IRProject, module: IRModule) -> ET.Element:
+    attrs = dict(src)
+    if attrs.get("callback") is not None:
+        return text_element(
+            parent,
+            "c_argument",
+            name=c_identifier(attrs.get("name", ""), callback=True),
+            accessed_by="value",
+            type=_module_callback_name_from_ref(project_ir, module, attrs.get("callback")),
+            type_is="callback",
+        )
+    if attrs.get("class") == "any":
+        return text_element(
+            parent,
+            "c_argument",
+            name=attrs.get("name", ""),
+            accessed_by="pointer",
+            type="void",
+            type_is="any",
+        )
+    return argument_from_source(parent, attrs, name=attrs.get("name"), project_ir=project_ir, owner_class="data")
+
+
+def _module_return_from_source(parent: ET.Element, src: dict[str, str], *, project_ir: IRProject, module: IRModule) -> ET.Element:
+    attrs = dict(src)
+    if attrs.get("callback") is not None:
+        return text_element(
+            parent,
+            "c_return",
+            accessed_by="value",
+            type=_module_callback_name_from_ref(project_ir, module, attrs.get("callback")),
+            type_is="callback",
+        )
+    if attrs.get("class") == "any":
+        return text_element(parent, "c_return", accessed_by="pointer", type="void", type_is="any")
+    return return_from_source(parent, attrs, project_ir=project_ir, owner_class="data")
+
+
+def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Element:
+    output = cast(IROutputTarget, module.output)
+    placeholders = _module_placeholder_map(project_ir)
+    root = c_module_root(output, entity_id=snake_name(module.name), scope=module.attrs.get("scope", "public"))
+    root.set("has_cmakedefine", module.attrs.get("has_cmakedefine", "0"))
+
+    text_element(root, "c_include", file=output.include_file, is_system="0", scope="private")
+    for include in module.c_includes:
+        include_attrs = dict(include.attrs)
+        include_attrs["file"] = _resolve_module_placeholders(include_attrs.get("file") or include.name, placeholders, project_prefix=project_ir.prefix) or ""
+        if "if" in include_attrs:
+            include_attrs["if"] = _resolve_module_placeholders(include_attrs["if"], placeholders, project_prefix=project_ir.prefix) or ""
+        include_attrs.setdefault("scope", "public")
+        text_element(root, "c_include", **include_attrs)
+    for require in module.requires:
+        text_element(
+            root,
+            "c_include",
+            file=include_file_for_entity(project_ir, entity_kind="module", entity_name=require.name),
+            is_system="0",
+            scope=require.attrs.get("scope", "public"),
+        )
+
+    for alias in module.aliases:
+        alias_elem = text_element(root, "c_alias", name=alias.name, type=alias.attrs.get("type", "void"), declaration=alias.attrs.get("declaration", "public"))
+        if alias.description:
+            alias_elem.text = comment_text(alias.description)
+
+    if module.constants:
+        enum_elem = text_element(root, "c_enum", declaration="public", definition="public")
+        if module.constants[0].description:
+            enum_elem.text = comment_text("Public integral constants.")
+        for constant in module.constants:
+            const_elem = text_element(
+                enum_elem,
+                "c_constant",
+                name=_module_constant_symbol(project_ir, module, constant),
+                value=_resolve_module_placeholders(constant.attrs.get("value"), placeholders, project_prefix=project_ir.prefix) or "",
+                definition=constant.attrs.get("definition", "public"),
+                uid=_module_member_uid(module, constant.attrs, kind="constant", name=constant.name),
+            )
+            if constant.description:
+                const_elem.text = comment_text(constant.description)
+
+    for callback in module.callbacks:
+        callback_elem = text_element(
+            root,
+            "c_callback",
+            name=_module_callback_symbol(project_ir, module, callback),
+            uid=_module_member_uid(module, callback.attrs, kind="callback", name=callback.name),
+            declaration=callback.declaration or callback.attrs.get("declaration", "public"),
+        )
+        for argument in callback.arguments:
+            _module_argument_from_source(callback_elem, _method_arg_dict(argument), project_ir=project_ir, module=module)
+        if callback.returns:
+            _module_return_from_source(callback_elem, _method_arg_dict(callback.returns[0]), project_ir=project_ir, module=module)
+        else:
+            text_element(callback_elem, "c_return", type="void", accessed_by="value")
+        if callback.attrs.get("noreturn") in {"1", "true"}:
+            text_element(callback_elem, "c_modifier", value="VSC_NORETURN")
+        if callback.description:
+            callback_elem.text = comment_text(callback.description)
+
+    for variable in module.variables:
+        callback_ref = variable.callback
+        variable_attrs: dict[str, str] = {
+            "name": c_identifier(variable.name, callback=callback_ref is not None),
+            "uid": _module_member_uid(module, variable.attrs, kind="variable", name=variable.name),
+            "visibility": variable.visibility or "public",
+            "declaration": variable.declaration or "private",
+            "definition": variable.definition or "private",
+        }
+        if callback_ref is not None:
+            variable_attrs.update({"accessed_by": "value", "type": _module_callback_name_from_ref(project_ir, module, callback_ref), "type_is": "callback"})
+        elif variable.class_name is not None:
+            resolved_class = variable.class_name
+            variable_attrs.update({"accessed_by": "value", "type": class_type_symbol(project_ir, resolved_class), "type_is": "class"})
+        else:
+            rendered_type, kind = type_map(variable.type_name)
+            variable_attrs.update({"accessed_by": "value", "type": rendered_type, "type_is": kind})
+            if variable.attrs.get("array") == "derived":
+                variable_attrs["array"] = "derived"
+            if variable.type_name == "byte" and variable.access != "readwrite":
+                variable_attrs["is_const_type"] = "1"
+        variable_elem = text_element(root, "c_variable", **variable_attrs)
+        if variable.value is not None:
+            text_element(
+                variable_elem,
+                "c_value",
+                value=_resolve_module_placeholders(variable.value.get("value"), placeholders, project_prefix=project_ir.prefix) or "",
+                accessed_by="value",
+                type=variable_attrs["type"],
+                type_is=variable_attrs["type_is"],
+            )
+        if variable_attrs["visibility"] == "public":
+            text_element(variable_elem, "c_modifier", value="VSC_PUBLIC")
+        if variable.description:
+            variable_elem.text = comment_text(variable.description)
+
+    for macro in module.macros:
+        macro_elem = text_element(
+            root,
+            "c_macros",
+            name=_module_macro_symbol(project_ir, module, macro),
+            uid=_module_member_uid(module, macro.attrs, kind="macros", name=macro.name),
+            definition=macro.definition or macro.attrs.get("definition", "public"),
+            is_method=macro.attrs.get("is_method", "0"),
+        )
+        code = _resolve_module_placeholders(macro.code_blocks[0]["text"] if macro.code_blocks else None, placeholders, project_prefix=project_ir.prefix)
+        if code is not None:
+            text_element(macro_elem, "c_code", code, lang="c", type="generated")
+        if macro.description:
+            macro_elem.text = comment_text(macro.description)
+
+    for group in module.macro_groups:
+        group_elem = text_element(root, "c_macroses", definition=group.definition or group.attrs.get("definition", "public"))
+        for nested in group.members:
+            text_element(
+                group_elem,
+                "c_macros",
+                name=_module_macro_symbol(project_ir, module, type("MacroRef", (), {"name": nested.name, "attrs": nested.attrs})()),
+                uid=_module_member_uid(module, nested.attrs, kind="macros", name=nested.name),
+                definition=group.definition or group.attrs.get("definition", "public"),
+                is_method=nested.attrs.get("is_method", "0"),
+            )
+        code = _resolve_module_placeholders(group.code_blocks[0]["text"] if group.code_blocks else None, placeholders, project_prefix=project_ir.prefix)
+        if code is not None:
+            text_element(group_elem, "c_code", code, lang="c", type="generated")
+        if group.description:
+            group_elem.text = comment_text(group.description)
+
+    for method in module.methods:
+        code = _resolve_module_placeholders(method.code_blocks[0]["text"] if method.code_blocks else None, placeholders, project_prefix=project_ir.prefix, args=tuple(method.arguments))
+        visibility = method.visibility or method.attrs.get("visibility", "public")
+        declaration = method.declaration or method.attrs.get("declaration", "public")
+        definition = method.definition or method.attrs.get("definition", ("private" if code is not None else "external"))
+        method_elem = text_element(
+            root,
+            "c_method",
+            name=_module_method_symbol(project_ir, module, method),
+            visibility=visibility,
+            declaration=declaration,
+            definition=definition,
+            uid=_module_member_uid(module, method.attrs, kind="method", name=method.name),
+        )
+        if method.arguments:
+            for argument in method.arguments:
+                _module_argument_from_source(method_elem, _method_arg_dict(argument), project_ir=project_ir, module=module)
+        else:
+            text_element(method_elem, "c_argument", type="void", accessed_by="value")
+        if method.returns:
+            _module_return_from_source(method_elem, _method_arg_dict(method.returns[0]), project_ir=project_ir, module=module)
+        else:
+            text_element(method_elem, "c_return", type="void", accessed_by="value")
+        if code is not None:
+            text_element(method_elem, "c_code", code, type="generated", lang="c")
+        if visibility == "public":
+            text_element(method_elem, "c_modifier", value="VSC_PUBLIC")
+        elif visibility == "private":
+            text_element(method_elem, "c_modifier", value="static")
+        if method.attrs.get("noreturn") in {"1", "true"}:
+            text_element(method_elem, "c_modifier", value="VSC_NORETURN")
+        if method.description:
+            method_elem.text = comment_text(method.description)
+
+    for code_block in module.code_blocks:
+        attrs = {key: (_resolve_module_placeholders(value, placeholders, project_prefix=project_ir.prefix) or "") for key, value in code_block["attrs"].items()}
+        text_element(root, "c_code", _resolve_module_placeholders(code_block["text"], placeholders, project_prefix=project_ir.prefix), **attrs)
 
     return root
 

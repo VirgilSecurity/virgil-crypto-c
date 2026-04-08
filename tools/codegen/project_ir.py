@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import PurePosixPath
 from typing import Any
 
-from tools.codegen.project_source import ClassSource, EnumSource, MethodSource, ModuleSource, ProjectSource
+from tools.codegen.project_source import AliasSource, ClassSource, EnumSource, MethodSource, ModuleSource, ProjectSource
 
 
 @dataclass
@@ -66,6 +66,7 @@ class IRCMethod(IRCommented):
     attrs: dict[str, str] = field(default_factory=dict)
     arguments: list[IRCArgument] = field(default_factory=list)
     returns: list[IRCArgument] = field(default_factory=list)
+    members: list[IREntityRef] = field(default_factory=list)
     code_blocks: list[dict[str, str]] = field(default_factory=list)
 
 
@@ -91,6 +92,12 @@ class IRCConstant(IRCommented):
 
 
 @dataclass
+class IRCAlias(IRCommented):
+    name: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
 class IRCModule(IRCommented):
     name: str = ""
     source_path: str = ""
@@ -99,11 +106,13 @@ class IRCModule(IRCommented):
     attrs: dict[str, str] = field(default_factory=dict)
     requires: list[IREntityRef] = field(default_factory=list)
     c_includes: list[IREntityRef] = field(default_factory=list)
+    aliases: list[IRCAlias] = field(default_factory=list)
     callbacks: list[IRCMethod] = field(default_factory=list)
     methods: list[IRCMethod] = field(default_factory=list)
     variables: list[IRCVariable] = field(default_factory=list)
     macros: list[IRCMethod] = field(default_factory=list)
     macro_groups: list[IRCMethod] = field(default_factory=list)
+    constants: list[IRCConstant] = field(default_factory=list)
     code_blocks: list[dict[str, str]] = field(default_factory=list)
     output: IROutputTarget | None = None
 
@@ -174,6 +183,7 @@ IRArgument = IRCArgument
 IRMethod = IRCMethod
 IRVariable = IRCVariable
 IRConstant = IRCConstant
+IRAlias = IRCAlias
 IRModule = IRCModule
 IRStructField = IRCStructField
 
@@ -263,6 +273,7 @@ def _method_to_ir(src: MethodSource) -> IRCMethod:
         description=src.description,
         arguments=[_arg_from_attrs(a.name, a.attrs, a.description) for a in src.arguments],
         returns=[_arg_from_attrs("return", r) for r in src.returns],
+        members=[_ref(m.kind, m.name, m.attrs, m.description) for m in src.members],
         code_blocks=src.code_blocks,
     )
 
@@ -312,6 +323,10 @@ def _constant_to_ir(name: str, attrs: dict[str, str], description: str = "") -> 
     return IRCConstant(name=name, attrs=attrs, description=description)
 
 
+def _alias_to_ir(name: str, attrs: dict[str, str], description: str = "") -> IRCAlias:
+    return IRCAlias(name=name, attrs=attrs, description=description)
+
+
 def module_to_ir(project: ProjectSource, src: ModuleSource) -> IRCModule:
     return IRCModule(
         name=src.name,
@@ -325,11 +340,13 @@ def module_to_ir(project: ProjectSource, src: ModuleSource) -> IRCModule:
         description=src.description,
         requires=[_ref("require", r.name, r.attrs, r.description) for r in src.requires],
         c_includes=[_ref("c_include", r.name, r.attrs, r.description) for r in src.c_includes],
+        aliases=[_alias_to_ir(a.name, a.attrs, a.description) for a in src.aliases],
         callbacks=[_method_to_ir(c) for c in src.callbacks],
         methods=[_method_to_ir(m) for m in src.methods],
         variables=[_variable_to_ir(v) for v in src.variables],
         macros=[_method_to_ir(m) for m in src.macroses],
         macro_groups=[_method_to_ir(m) for m in src.macro_groups],
+        constants=[_constant_to_ir(c.name, c.attrs, c.description) for c in src.constants],
         code_blocks=src.code_blocks,
         output=build_output_target(project, entity_kind="module", entity_name=src.name, attrs=src.attrs),
     )
