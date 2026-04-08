@@ -1,6 +1,6 @@
 # CG-035: Render Implementation Main Module and Defs Module — Status
 
-**Current Step:** Step 2: Implement render_implementation_c_module()
+**Current Step:** Step 3: Add parity tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -39,15 +39,15 @@
 ---
 
 ### Step 3: Add parity tests
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] sha256 lifecycle methods present
-- [ ] sha256 interface method implementations present
-- [ ] sha256 impl_size/impl/impl_const present
-- [ ] sha256 includes match reference
-- [ ] sha256_defs struct correct
-- [ ] sha256_defs library include correct
-- [ ] aes256_gcm defs multiple properties
+- [x] sha256 lifecycle methods present
+- [x] sha256 interface method implementations present
+- [x] sha256 impl_size/impl/impl_const present
+- [x] sha256 includes match reference
+- [x] sha256_defs struct correct
+- [x] sha256_defs library include correct
+- [x] aes256_gcm defs multiple properties
 
 ---
 
