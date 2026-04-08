@@ -1,6 +1,6 @@
 # CG-023: Generic Class Renderer — Status
 
-**Current Step:** Step 1: Implement generic class renderer
+**Current Step:** Step 2: Tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -15,13 +15,13 @@
 - [x] Identify model-derivable vs static runtime class builders
 
 ### Step 1: Implement generic class renderer
-**Status:** ⬜ Not Started
-- [ ] Add generic `render_class_c_module` to shared backend
-- [ ] Derive struct/methods/constants from IR
-- [ ] Reclassify static runtime code
+**Status:** ✅ Complete
+- [x] Add generic `render_class_c_module` to shared backend
+- [x] Derive struct/methods/constants from IR
+- [x] Reclassify static runtime code
 
 ### Step 2: Tests
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Tests for `common` classes through generic renderer
 - [ ] No regressions
 

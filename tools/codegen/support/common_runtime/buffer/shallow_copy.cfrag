@@ -1,0 +1,15 @@
+VSC_ASSERT_PTR(self);
+
+#if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
+//  CAS loop
+size_t old_counter;
+size_t new_counter;
+do {
+    old_counter = self->refcnt;
+    new_counter = old_counter + 1;
+} while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter));
+#else
+++self->refcnt;
+#endif
+
+return self;

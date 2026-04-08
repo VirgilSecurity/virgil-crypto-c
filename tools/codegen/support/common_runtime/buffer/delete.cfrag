@@ -1,0 +1,30 @@
+if (self == NULL) {
+    return;
+}
+
+size_t old_counter = self->refcnt;
+VSC_ASSERT(old_counter != 0);
+size_t new_counter = old_counter - 1;
+
+#if defined(VSC_ATOMIC_COMPARE_EXCHANGE_WEAK)
+//  CAS loop
+while (!VSC_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+    old_counter = self->refcnt;
+    VSC_ASSERT(old_counter != 0);
+    new_counter = old_counter - 1;
+}
+#else
+self->refcnt = new_counter;
+#endif
+
+if (new_counter > 0) {
+    return;
+}
+
+vsc_dealloc_fn self_dealloc_cb = self->self_dealloc_cb;
+
+vsc_buffer_cleanup(self);
+
+if (self_dealloc_cb != NULL) {
+    self_dealloc_cb(self);
+}
