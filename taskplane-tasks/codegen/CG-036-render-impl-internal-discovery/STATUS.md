@@ -1,6 +1,6 @@
 # CG-036: Render Implementation Internal Module and Extend Auto-Discovery — Status
 
-**Current Step:** Step 2: Extend auto-discovery
+**Current Step:** Step 3: Add parity and discovery tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -47,17 +47,17 @@
 ---
 
 ### Step 3: Add parity and discovery tests
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] sha256_internal api table variables
-- [ ] sha256_internal impl_info variable
-- [ ] sha256_internal includes match
-- [ ] sha256_internal init/cleanup present
-- [ ] hash api table function pointers correct
-- [ ] Foundation interface discovery count
-- [ ] Foundation implementation discovery count
-- [ ] Full discovery covers all kinds
-- [ ] Common discovery unchanged
+- [x] sha256_internal api table variables
+- [x] sha256_internal impl_info variable
+- [x] sha256_internal includes match
+- [x] sha256_internal init/cleanup present
+- [x] hash api table function pointers correct
+- [x] Foundation interface discovery count
+- [x] Foundation implementation discovery count
+- [x] Full discovery covers all kinds
+- [x] Common discovery unchanged
 
 ---
 

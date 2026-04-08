@@ -1,4 +1,4 @@
-"""Tests for CG-035 — render implementation main + defs modules."""
+"""Tests for CG-035/CG-036 — render implementation main, defs, and internal modules."""
 
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ from tools.codegen.project_c_backend import (
     implementation_defs_output,
     render_implementation_c_module,
     render_implementation_defs_c_module,
+    render_implementation_internal_c_module,
 )
 from tools.codegen.project_ir import IROutputTarget, IRProject, project_to_ir
 from tools.codegen.project_source import load_named_project_source
@@ -229,6 +230,110 @@ class TestAes256GcmDefsModule(unittest.TestCase):
         includes = self.root.findall(".//c_include")
         include_files = {inc.get("file") for inc in includes}
         self.assertIn("mbedtls/cipher.h", include_files)
+
+
+class TestSha256InternalModule(unittest.TestCase):
+    """Test render_implementation_internal_c_module for 'sha256'."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.pir, cls.fallbacks = _load_foundation_ir()
+        cls.impl = implementation_ir(cls.pir, "sha256")
+        cls.root = render_implementation_internal_c_module(cls.pir, cls.impl, fallback_projects=cls.fallbacks)
+
+    def test_api_table_variables_present(self) -> None:
+        """sha256 implements alg and hash — should have alg_api and hash_api variables."""
+        variables = self.root.findall("c_variable")
+        var_names = {v.get("name") for v in variables}
+        self.assertIn("alg_api", var_names)
+        self.assertIn("hash_api", var_names)
+
+    def test_impl_info_variable_present(self) -> None:
+        variables = self.root.findall("c_variable")
+        info = next((v for v in variables if v.get("name") == "info"), None)
+        self.assertIsNotNone(info)
+        self.assertEqual(info.get("type"), "vscf_impl_info_t")
+        self.assertEqual(info.get("is_const_type"), "1")
+
+    def test_includes_match_reference(self) -> None:
+        includes = self.root.findall("c_include")
+        include_files = {inc.get("file") for inc in includes}
+        expected = {
+            "vscf_sha256_internal.h",
+            "vscf_library.h",
+            "vscf_memory.h",
+            "vscf_assert.h",
+            "vscf_sha256.h",
+            "vscf_sha256_defs.h",
+            "vscf_alg.h",
+            "vscf_alg_api.h",
+            "vscf_hash.h",
+            "vscf_hash_api.h",
+        }
+        self.assertEqual(include_files, expected)
+
+    def test_init_cleanup_methods_present(self) -> None:
+        methods = self.root.findall("c_method")
+        names = {m.get("name") for m in methods}
+        self.assertIn("vscf_sha256_init", names)
+        self.assertIn("vscf_sha256_cleanup", names)
+        self.assertIn("vscf_sha256_init_ctx", names)
+        self.assertIn("vscf_sha256_cleanup_ctx", names)
+
+    def test_hash_api_table_function_pointers(self) -> None:
+        """The hash_api variable should contain function pointer values for sha256's methods."""
+        variables = self.root.findall("c_variable")
+        hash_api = next(v for v in variables if v.get("name") == "hash_api")
+        values = hash_api.findall("c_value")
+        value_names = [v.get("value") for v in values]
+        # Should contain all hash method implementations
+        self.assertIn("vscf_sha256_hash", value_names)
+        self.assertIn("vscf_sha256_start", value_names)
+        self.assertIn("vscf_sha256_update", value_names)
+        self.assertIn("vscf_sha256_finish", value_names)
+        # And the constants
+        self.assertIn("vscf_sha256_DIGEST_LEN", value_names)
+        self.assertIn("vscf_sha256_BLOCK_LEN", value_names)
+
+    def test_scope_is_internal(self) -> None:
+        self.assertEqual(self.root.get("scope"), "internal")
+
+    def test_find_api_method_present(self) -> None:
+        methods = self.root.findall("c_method")
+        find_api = next((m for m in methods if m.get("name") == "vscf_sha256_find_api"), None)
+        self.assertIsNotNone(find_api)
+        self.assertEqual(find_api.get("declaration"), "private")
+        self.assertEqual(find_api.get("definition"), "private")
+        modifiers = [m.get("value") for m in find_api.findall("c_modifier")]
+        self.assertIn("static", modifiers)
+
+    def test_find_api_code_has_switch_cases(self) -> None:
+        methods = self.root.findall("c_method")
+        find_api = next(m for m in methods if m.get("name") == "vscf_sha256_find_api")
+        code = find_api.find("c_code")
+        self.assertIn("vscf_api_tag_ALG", code.text)
+        self.assertIn("vscf_api_tag_HASH", code.text)
+        self.assertIn("&alg_api", code.text)
+        self.assertIn("&hash_api", code.text)
+
+    def test_lifecycle_methods_definition_private(self) -> None:
+        """In the internal module, lifecycle methods have definition=private."""
+        methods = self.root.findall("c_method")
+        for name in ("vscf_sha256_init", "vscf_sha256_cleanup", "vscf_sha256_new",
+                     "vscf_sha256_delete", "vscf_sha256_destroy", "vscf_sha256_shallow_copy"):
+            m = next(m for m in methods if m.get("name") == name)
+            self.assertEqual(m.get("definition"), "private", f"{name} should have definition=private")
+            self.assertEqual(m.get("declaration"), "external", f"{name} should have declaration=external")
+
+    def test_impl_info_values(self) -> None:
+        variables = self.root.findall("c_variable")
+        info = next(v for v in variables if v.get("name") == "info")
+        values = info.findall("c_value")
+        value_names = [v.get("value") for v in values]
+        self.assertEqual(value_names[0], "vscf_impl_tag_SHA256")
+        self.assertEqual(value_names[1], "vscf_sha256_find_api")
+        self.assertEqual(value_names[2], "vscf_sha256_cleanup")
+        self.assertEqual(value_names[3], "vscf_sha256_delete")
 
 
 if __name__ == "__main__":

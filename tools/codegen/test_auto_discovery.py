@@ -1,4 +1,4 @@
-"""Tests for CG-025 — auto-discovery of renderable entities from IR."""
+"""Tests for CG-025/CG-036 — auto-discovery of renderable entities from IR."""
 
 from __future__ import annotations
 
@@ -10,6 +10,9 @@ from tools.codegen.project_c_backend import (
     DirectCRenderer,
     discover_renderers,
     direct_xml_name,
+    implementation_defs_output,
+    implementation_internal_output,
+    interface_api_output,
     render_enum_c_module,
     render_module_c_module,
     render_class_c_module,
@@ -60,9 +63,14 @@ class TestDiscoverRenderersCommon(unittest.TestCase):
         self.assertEqual(discovered_names, expected_enums)
 
     def test_full_discovery_covers_all_entities(self) -> None:
+        """Common project has no interfaces or implementations."""
         renderers = discover_renderers(self.project_ir)
         total_expected = len(self.project_ir.modules) + len(self.project_ir.classes) + len(self.project_ir.enums)
         self.assertEqual(len(renderers), total_expected)
+
+    def test_common_has_no_interfaces_or_implementations(self) -> None:
+        self.assertEqual(len(self.project_ir.interfaces), 0)
+        self.assertEqual(len(self.project_ir.implementations), 0)
 
     def test_custom_overrides_replace_default(self) -> None:
         sentinel_called = []
@@ -107,9 +115,25 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
             self.assertIn(xml, renderers, f"enum '{enum.name}' not discovered")
         self.assertEqual(len(renderers), len(self.project_ir.enums))
 
-    def test_discovers_modules_and_classes(self) -> None:
+    def test_discovers_interfaces(self) -> None:
+        renderers = discover_renderers(self.project_ir, entity_kinds={"interface"})
+        # Each interface produces 2 renderers (dispatch + api)
+        self.assertEqual(len(renderers), len(self.project_ir.interfaces) * 2)
+
+    def test_discovers_implementations(self) -> None:
+        renderers = discover_renderers(self.project_ir, entity_kinds={"implementation"})
+        # Each implementation produces 3 renderers (main + defs + internal)
+        self.assertEqual(len(renderers), len(self.project_ir.implementations) * 3)
+
+    def test_full_discovery_covers_all_entities(self) -> None:
         renderers = discover_renderers(self.project_ir)
-        total = len(self.project_ir.modules) + len(self.project_ir.classes) + len(self.project_ir.enums)
+        total = (
+            len(self.project_ir.modules)
+            + len(self.project_ir.classes)
+            + len(self.project_ir.enums)
+            + len(self.project_ir.interfaces) * 2
+            + len(self.project_ir.implementations) * 3
+        )
         self.assertEqual(len(renderers), total)
 
     def test_full_discovery_has_expected_enum_count(self) -> None:
