@@ -11,7 +11,7 @@
 ---
 
 ### Step 0: Preflight
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Required files exist
 - [x] Understand ClassSource and IRClass structures
@@ -20,7 +20,7 @@
 ---
 
 ### Step 1: Add DependencySource to project_source.py
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Create `DependencySource` dataclass
 - [x] Parse `<dependency>` elements in `load_class_source()`
@@ -30,7 +30,7 @@
 ---
 
 ### Step 2: Add IRDependency to project_ir.py
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Create `IRDependency` dataclass
 - [x] Add `dependencies` field to `IRClass`
@@ -40,7 +40,7 @@
 ---
 
 ### Step 3: Add test coverage
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Test: foundation ecies has expected dependencies
 - [x] Test: common buffer has zero dependencies
@@ -49,7 +49,7 @@
 ---
 
 ### Step 4: Testing & Verification
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Full test suite passing
 - [x] Build gate passes
@@ -58,7 +58,7 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] CONTEXT.md updated if needed
 - [x] Discoveries logged
@@ -87,6 +87,8 @@
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-08 14:49 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-08 14:49 | Step 0 started | Preflight |
+| 2026-04-08 14:56 | Worker iter 1 | done in 408s, tools: 51 |
+| 2026-04-08 14:56 | Task complete | .DONE created |
 
 ---
 
