@@ -1,6 +1,6 @@
 # CG-035: Render Implementation Main Module and Defs Module — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Implement render_implementation_defs_c_module()
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -22,14 +22,11 @@
 ---
 
 ### Step 1: Implement render_implementation_defs_c_module()
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on exact struct/property patterns from resolved XML
-
-- [ ] render_implementation_defs_c_module() implemented
-- [ ] Struct with impl_t base + properties
-- [ ] External library type includes
-- [ ] Property types handled
+- [ ] Add implementation_ir() helper + entity_output support for implementations
+- [ ] Implement render_implementation_defs_c_module() with struct (info/refcnt base + properties), library includes, correct property type mapping (class/byte-array/primitive)
+- [ ] Add implementation_defs_output() helper for deriving defs output target
 
 ---
 
