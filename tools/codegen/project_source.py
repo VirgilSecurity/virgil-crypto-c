@@ -114,6 +114,59 @@ class EnumSource:
 
 
 @dataclass
+class InterfaceBindingConstantSource:
+    name: str
+    value: str
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class InterfaceBindingSource:
+    name: str
+    constants: list[InterfaceBindingConstantSource] = field(default_factory=list)
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class RequirementSource:
+    attrs: dict[str, str] = field(default_factory=dict)
+    description: str = ""
+
+    @property
+    def kind(self) -> str:
+        for key in ("library", "header", "interface", "impl", "class", "enum", "module", "feature"):
+            if key in self.attrs:
+                return key
+        return "unknown"
+
+    @property
+    def name(self) -> str:
+        return self.attrs.get(self.kind, "")
+
+
+@dataclass
+class ImplementationSource:
+    name: str
+    description: str = ""
+    interface_bindings: list[InterfaceBindingSource] = field(default_factory=list)
+    properties: list[PropertySource] = field(default_factory=list)
+    methods: list[MethodSource] = field(default_factory=list)
+    constructors: list[MethodSource] = field(default_factory=list)
+    dependencies: list[DependencySource] = field(default_factory=list)
+    requirements: list[RequirementSource] = field(default_factory=list)
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class ImplementorSource:
+    name: str
+    path: str = ""
+    implementations: list[ImplementationSource] = field(default_factory=list)
+    attrs: dict[str, str] = field(default_factory=dict)
+    description: str = ""
+
+
+@dataclass
 class InterfaceSource:
     name: str
     path: str = ""
@@ -148,12 +201,14 @@ class ProjectSource:
     class_refs: list[dict[str, str]] = field(default_factory=list)
     enum_refs: list[dict[str, str]] = field(default_factory=list)
     interface_refs: list[dict[str, str]] = field(default_factory=list)
+    implementor_refs: list[dict[str, str]] = field(default_factory=list)
     modules: list[ModuleSource] = field(default_factory=list)
     dependency_modules: list[ModuleSource] = field(default_factory=list)
     resolved_modules: list[ModuleSource] = field(default_factory=list)
     classes: list[ClassSource] = field(default_factory=list)
     enums: list[EnumSource] = field(default_factory=list)
     interfaces: list[InterfaceSource] = field(default_factory=list)
+    implementors: list[ImplementorSource] = field(default_factory=list)
 
     @property
     def namespace(self) -> str:
@@ -185,6 +240,12 @@ class ProjectSource:
             return next(iface for iface in self.interfaces if iface.name == name)
         except StopIteration as exc:
             raise KeyError(f"interface not found: {name}") from exc
+
+    def implementor_named(self, name: str) -> ImplementorSource:
+        try:
+            return next(imp for imp in self.implementors if imp.name == name)
+        except StopIteration as exc:
+            raise KeyError(f"implementor not found: {name}") from exc
 
     def enum_named(self, name: str) -> EnumSource:
         try:
@@ -378,6 +439,54 @@ def load_interface_source(path: Path) -> InterfaceSource:
     )
 
 
+def _interface_binding(elem: ET.Element) -> InterfaceBindingSource:
+    constants = [
+        InterfaceBindingConstantSource(
+            name=c.attrib.get("name", ""),
+            value=c.attrib.get("value", ""),
+            attrs=dict(c.attrib),
+        )
+        for c in elem.findall("constant")
+    ]
+    return InterfaceBindingSource(
+        name=elem.attrib.get("name", ""),
+        constants=constants,
+        attrs=dict(elem.attrib),
+    )
+
+
+def _requirement(elem: ET.Element) -> RequirementSource:
+    return RequirementSource(
+        attrs=dict(elem.attrib),
+        description=_description(elem),
+    )
+
+
+def _implementation(elem: ET.Element) -> ImplementationSource:
+    return ImplementationSource(
+        name=elem.attrib.get("name", ""),
+        description=_description(elem),
+        interface_bindings=[_interface_binding(e) for e in elem.findall("interface")],
+        properties=[PropertySource(name=e.attrib.get("name", ""), attrs=_attrs_with_child_shapes(e), description=_description(e)) for e in elem.findall("property")],
+        methods=[_method_like("method", e) for e in elem.findall("method")],
+        constructors=[_method_like("constructor", e) for e in elem.findall("constructor")],
+        dependencies=[_dependency(e) for e in elem.findall("dependency")],
+        requirements=[_requirement(e) for e in elem.findall("require")],
+        attrs=dict(elem.attrib),
+    )
+
+
+def load_implementor_source(path: Path) -> ImplementorSource:
+    root = _parse_legacy_xml(path)
+    return ImplementorSource(
+        name=root.attrib.get("name", ""),
+        path=str(path),
+        implementations=[_implementation(e) for e in root.findall("implementation")],
+        attrs=dict(root.attrib),
+        description=_description(root),
+    )
+
+
 def load_enum_source(path: Path) -> EnumSource:
     root = _parse_legacy_xml(path)
     return EnumSource(
@@ -462,6 +571,7 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         class_refs=[dict(e.attrib) for e in root.findall("class")],
         enum_refs=[dict(e.attrib) for e in root.findall("enum")],
         interface_refs=[dict(e.attrib) for e in root.findall("interface")],
+        implementor_refs=[dict(e.attrib) for e in root.findall("implementor")],
     )
 
     resolved_modules: dict[str, ModuleSource] = {}
@@ -496,6 +606,11 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         interface_area = interface_ref.get("from") or project_dir
         interface_path = _model_path(repo_root, interface_area, "interface", interface_ref["name"])
         project.interfaces.append(load_interface_source(interface_path))
+
+    for implementor_ref in project.implementor_refs:
+        implementor_area = implementor_ref.get("from") or project_dir
+        implementor_path = _model_path(repo_root, implementor_area, "implementor", implementor_ref["name"])
+        project.implementors.append(load_implementor_source(implementor_path))
 
     return project
 

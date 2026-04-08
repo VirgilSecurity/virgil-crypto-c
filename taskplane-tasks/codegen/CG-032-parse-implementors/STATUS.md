@@ -1,6 +1,6 @@
 # CG-032: Parse Implementors and Implementations into Source and IR — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Add ImplementorSource/ImplementationSource
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -20,12 +20,12 @@
 ---
 
 ### Step 1: Add ImplementorSource/ImplementationSource
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] ImplementationSource and ImplementorSource dataclasses
-- [ ] load_implementor_source() function
-- [ ] load_project_source() updated for implementor refs
-- [ ] implementor_refs and implementors on ProjectSource
+- [x] ImplementationSource and ImplementorSource dataclasses
+- [x] load_implementor_source() function
+- [x] load_project_source() updated for implementor refs
+- [x] implementor_refs and implementors on ProjectSource
 
 ---
 
