@@ -1,6 +1,6 @@
 # CG-032: Parse Implementors and Implementations into Source and IR — Status
 
-**Current Step:** Step 1: Add ImplementorSource/ImplementationSource
+**Current Step:** Step 2: Add IRImplementation to project_ir.py
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -30,12 +30,12 @@
 ---
 
 ### Step 2: Add IRImplementation to project_ir.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] IRInterfaceBinding and IRImplementation dataclasses
-- [ ] implementations field on IRProject
-- [ ] Source → IR mapping
-- [ ] IROutputTarget computed
+- [x] IRInterfaceBinding and IRImplementation dataclasses
+- [x] implementations field on IRProject
+- [x] Source → IR mapping
+- [x] IROutputTarget computed
 
 ---
 

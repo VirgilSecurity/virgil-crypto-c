@@ -4,7 +4,11 @@ from dataclasses import asdict, dataclass, field
 from pathlib import PurePosixPath
 from typing import Any
 
-from tools.codegen.project_source import AliasSource, ClassSource, DependencySource, EnumSource, InterfaceSource, MethodSource, ModuleSource, ProjectSource
+from tools.codegen.project_source import (
+    AliasSource, ClassSource, DependencySource, EnumSource,
+    ImplementationSource, ImplementorSource, InterfaceSource,
+    MethodSource, ModuleSource, ProjectSource,
+)
 
 
 @dataclass
@@ -163,6 +167,42 @@ class IREnum(IRCommented):
 
 
 @dataclass
+class IRInterfaceBindingConstant(IRCommented):
+    name: str = ""
+    value: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class IRInterfaceBinding(IRCommented):
+    name: str = ""
+    constants: list[IRInterfaceBindingConstant] = field(default_factory=list)
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class IRRequirement(IRCommented):
+    kind: str = ""
+    name: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
+class IRImplementation(IRCommented):
+    name: str = ""
+    implementor_name: str = ""
+    source_path: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+    interface_bindings: list[IRInterfaceBinding] = field(default_factory=list)
+    properties: list[IRCStructField] = field(default_factory=list)
+    methods: list[IRCMethod] = field(default_factory=list)
+    constructors: list[IRCMethod] = field(default_factory=list)
+    dependencies: list[IRDependency] = field(default_factory=list)
+    requirements: list[IRRequirement] = field(default_factory=list)
+    output: IROutputTarget | None = None
+
+
+@dataclass
 class IRInterface(IRCommented):
     name: str = ""
     source_path: str = ""
@@ -197,6 +237,7 @@ class IRProject:
     classes: list[IRClass] = field(default_factory=list)
     enums: list[IREnum] = field(default_factory=list)
     interfaces: list[IRInterface] = field(default_factory=list)
+    implementations: list[IRImplementation] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -437,6 +478,36 @@ def enum_to_ir(project: ProjectSource, src: EnumSource) -> IREnum:
     )
 
 
+def implementation_to_ir(project: ProjectSource, src: ImplementationSource, implementor: ImplementorSource) -> IRImplementation:
+    return IRImplementation(
+        name=src.name,
+        implementor_name=implementor.name,
+        source_path=implementor.path,
+        attrs=src.attrs,
+        description=src.description,
+        interface_bindings=[
+            IRInterfaceBinding(
+                name=b.name,
+                constants=[
+                    IRInterfaceBindingConstant(name=c.name, value=c.value, attrs=c.attrs)
+                    for c in b.constants
+                ],
+                attrs=b.attrs,
+            )
+            for b in src.interface_bindings
+        ],
+        properties=[_field_from_attrs(p.name, p.attrs, p.description) for p in src.properties],
+        methods=[_method_to_ir(m) for m in src.methods],
+        constructors=[_method_to_ir(c) for c in src.constructors],
+        dependencies=[_dependency_to_ir(d) for d in src.dependencies],
+        requirements=[
+            IRRequirement(kind=r.kind, name=r.name, attrs=r.attrs, description=r.description)
+            for r in src.requirements
+        ],
+        output=build_output_target(project, entity_kind="implementation", entity_name=src.name, attrs=src.attrs),
+    )
+
+
 def project_to_ir(project: ProjectSource) -> IRProject:
     explicit_module_paths = {module.path for module in project.modules}
     resolved_modules = [module_to_ir(project, m) for m in project.resolved_modules]
@@ -464,4 +535,9 @@ def project_to_ir(project: ProjectSource) -> IRProject:
         classes=[class_to_ir(project, c) for c in project.classes],
         enums=[enum_to_ir(project, e) for e in project.enums],
         interfaces=[interface_to_ir(project, i) for i in project.interfaces],
+        implementations=[
+            implementation_to_ir(project, impl, implementor)
+            for implementor in project.implementors
+            for impl in implementor.implementations
+        ],
     )
