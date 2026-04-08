@@ -1,6 +1,6 @@
 # CG-033: Render Interface Modules (Dispatch + API) — Status
 
-**Current Step:** Step 1: Add interface helper utilities
+**Current Step:** Step 2: Implement render_interface_api_c_module()
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -20,17 +20,17 @@
 ---
 
 ### Step 1: Add interface helper utilities
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] interface_ir() lookup
 - [x] entity_output() extended for interface
 - [x] interface_api_output() helper
-- [ ] Committed
+- [x] Committed
 
 ---
 
 ### Step 2: Implement render_interface_api_c_module()
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] render_interface_api_c_module() implemented
 - [ ] Callback typedefs
