@@ -265,13 +265,20 @@ def _module_member_owner(module: IRModule, attrs: dict[str, str], *, kind: str) 
     return f"class_{snake_name(module.name)}"
 
 
+def _append_symbol(base: str, member_name: str) -> str:
+    suffix = snake_name(member_name)
+    if base.endswith(f"_{suffix}"):
+        return base
+    return f"{base}_{suffix}"
+
+
 def _module_method_symbol(project_ir: IRProject, module: IRModule, method: object) -> str:
     attrs = getattr(method, "attrs")
     owner = attrs.get("of_class")
     base = project_ir.prefix if owner == "global" or (owner is None and module.attrs.get("of_class") == "global") else module.output.c_symbol
     if owner and owner != "global":
         base = f"{project_ir.prefix}_{snake_name(owner)}"
-    return f"{base}_{snake_name(getattr(method, 'name'))}"
+    return _append_symbol(base, getattr(method, 'name'))
 
 
 def _module_macro_symbol(project_ir: IRProject, module: IRModule, macro: object) -> str:
@@ -290,7 +297,7 @@ def _module_constant_symbol(project_ir: IRProject, module: IRModule, constant: o
     base = project_ir.prefix if owner == "global" or (owner is None and module.attrs.get("of_class") == "global") else module.output.c_symbol
     if owner and owner != "global":
         base = f"{project_ir.prefix}_{snake_name(owner)}"
-    return f"{base}_{snake_name(getattr(constant, 'name')).upper()}".upper()
+    return _append_symbol(base, getattr(constant, 'name')).upper()
 
 
 def _module_member_uid(module: IRModule, attrs: dict[str, str], *, kind: str, name: str) -> str:
@@ -314,7 +321,7 @@ def _module_placeholder_map(project_ir: IRProject) -> dict[str, str]:
             placeholders[token.removeprefix("c_")] = placeholders[token]
         for variable in module.variables:
             token = _module_member_uid(module, variable.attrs, kind="variable", name=variable.name)
-            placeholders[token] = c_identifier(variable.name, callback=variable.callback is not None)
+            placeholders[token] = c_identifier(variable.name)
         for method in module.methods:
             token = _module_member_uid(module, method.attrs, kind="method", name=method.name)
             placeholders[token] = _module_method_symbol(project_ir, module, method)
@@ -329,6 +336,19 @@ def _module_placeholder_map(project_ir: IRProject) -> dict[str, str]:
                 placeholders[token] = _module_macro_symbol(project_ir, module, type("MacroRef", (), {"name": member.name, "attrs": member.attrs})())
                 placeholders[token.removeprefix("c_")] = placeholders[token]
     return placeholders
+
+
+def _normalize_c_escapes(text: str) -> str:
+    return text.replace("'\\\\0'", "'\\0'").replace("'\\\\\\\\'", "'\\\\'")
+
+
+def _prepare_macro_code(code: str | None) -> str | None:
+    if code is None:
+        return None
+    lines = code.splitlines()
+    if lines and lines[0].lstrip().startswith("#define") and len(lines) > 1:
+        return "\n".join(line.rstrip().removesuffix("\\").rstrip() for line in lines)
+    return code
 
 
 def _resolve_module_placeholders(text: str | None, placeholders: dict[str, str], *, project_prefix: str, args: tuple[object, ...] = ()) -> str | None:
@@ -353,7 +373,7 @@ def _resolve_module_placeholders(text: str | None, placeholders: dict[str, str],
             return f"{project_prefix.upper()}_{token.removeprefix('c_global_macros_').upper()}"
         raise ValueError(f"unresolved module placeholder: {token}")
 
-    return _PLACEHOLDER_RE.sub(repl, text)
+    return _normalize_c_escapes(_PLACEHOLDER_RE.sub(repl, text))
 
 
 def _module_callback_name_from_ref(project_ir: IRProject, module: IRModule, callback_ref: str | None) -> str:
@@ -375,6 +395,7 @@ def _module_argument_from_source(parent: ET.Element, src: dict[str, str], *, pro
             type_is="callback",
         )
     if attrs.get("class") == "any":
+        extra = {"is_const_type": "1"} if attrs.get("access") not in {"readwrite", "writeonly"} else {}
         return text_element(
             parent,
             "c_argument",
@@ -382,6 +403,7 @@ def _module_argument_from_source(parent: ET.Element, src: dict[str, str], *, pro
             accessed_by="pointer",
             type="void",
             type_is="any",
+            **extra,
         )
     return argument_from_source(parent, attrs, name=attrs.get("name"), project_ir=project_ir, owner_class="data")
 
@@ -398,6 +420,9 @@ def _module_return_from_source(parent: ET.Element, src: dict[str, str], *, proje
         )
     if attrs.get("class") == "any":
         return text_element(parent, "c_return", accessed_by="pointer", type="void", type_is="any")
+    if attrs.get("type") == "string":
+        extra = {"is_const_type": "1"} if attrs.get("access") != "readwrite" else {}
+        return text_element(parent, "c_return", accessed_by="value", type="char", type_is="primitive", string="null_terminated", **extra)
     return return_from_source(parent, attrs, project_ir=project_ir, owner_class="data")
 
 
@@ -467,7 +492,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
     for variable in module.variables:
         callback_ref = variable.callback
         variable_attrs: dict[str, str] = {
-            "name": c_identifier(variable.name, callback=callback_ref is not None),
+            "name": c_identifier(variable.name),
             "uid": _module_member_uid(module, variable.attrs, kind="variable", name=variable.name),
             "visibility": variable.visibility or "public",
             "declaration": variable.declaration or "private",
@@ -509,7 +534,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
             definition=macro.definition or macro.attrs.get("definition", "public"),
             is_method=macro.attrs.get("is_method", "0"),
         )
-        code = _resolve_module_placeholders(macro.code_blocks[0]["text"] if macro.code_blocks else None, placeholders, project_prefix=project_ir.prefix)
+        code = _prepare_macro_code(_resolve_module_placeholders(macro.code_blocks[0]["text"] if macro.code_blocks else None, placeholders, project_prefix=project_ir.prefix))
         if code is not None:
             text_element(macro_elem, "c_code", code, lang="c", type="generated")
         if macro.description:
@@ -526,7 +551,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
                 definition=group.definition or group.attrs.get("definition", "public"),
                 is_method=nested.attrs.get("is_method", "0"),
             )
-        code = _resolve_module_placeholders(group.code_blocks[0]["text"] if group.code_blocks else None, placeholders, project_prefix=project_ir.prefix)
+        code = _prepare_macro_code(_resolve_module_placeholders(group.code_blocks[0]["text"] if group.code_blocks else None, placeholders, project_prefix=project_ir.prefix))
         if code is not None:
             text_element(group_elem, "c_code", code, lang="c", type="generated")
         if group.description:

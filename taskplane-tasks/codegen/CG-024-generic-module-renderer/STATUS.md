@@ -1,11 +1,11 @@
 # CG-024: Generic Module Renderer — Status
 
 **Current Step:** Step 3: Verification
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** L
 
 ---
@@ -26,9 +26,9 @@
 - [x] No regressions
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
-- [ ] py_compile
-- [ ] build_common_with_new_codegen.sh
+**Status:** ✅ Complete
+- [x] py_compile
+- [x] build_common_with_new_codegen.sh
 
 ---
 
@@ -47,3 +47,4 @@
 | 2026-04-07 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-08 12:23 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-08 12:23 | Step 0 started | Preflight |
+| 2026-04-08 13:01 | Worker iter 1 | done in 2294s, tools: 166 |

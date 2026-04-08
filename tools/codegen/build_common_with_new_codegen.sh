@@ -18,6 +18,7 @@ if [ ! -f "${BUILD_DIR}/CMakeCache.txt" ]; then
 fi
 
 python3 "${ROOT_DIR}/tools/codegen/common_bootstrap.py" --repo-root "${ROOT_DIR}" --project common --apply
-cmake --build "${BUILD_DIR}" --target common -j4
+cmake --build "${BUILD_DIR}" --target common_clangformat -- -j4
+cmake --build "${BUILD_DIR}" --target common -- -j1
 
 echo "common built successfully using new codegen outputs"
