@@ -1,23 +1,23 @@
 # CG-036: Render Implementation Internal Module and Extend Auto-Discovery — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 2
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CG-033 and CG-035 complete
-- [ ] vscf_sha256_internal resolved XML studied
-- [ ] API table initialization pattern understood
-- [ ] impl_info structure understood
-- [ ] discover_renderers implementation reviewed
+- [x] CG-033 and CG-035 complete
+- [x] vscf_sha256_internal resolved XML studied
+- [x] API table initialization pattern understood
+- [x] impl_info structure understood
+- [x] discover_renderers implementation reviewed
 
 ---
 
@@ -97,6 +97,9 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 23:45 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 23:45 | Step 0 started | Preflight |
+| 2026-04-08 23:49 | Worker iter 1 | done in 205s, tools: 29 |
 
 ---
 
