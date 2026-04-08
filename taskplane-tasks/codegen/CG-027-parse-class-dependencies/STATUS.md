@@ -1,21 +1,21 @@
 # CG-027: Parse Class Dependencies into Source and IR — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Required files exist
-- [ ] Understand ClassSource and IRClass structures
-- [ ] Study `<dependency>` elements in foundation models
+- [x] Required files exist
+- [x] Understand ClassSource and IRClass structures
+- [x] Study `<dependency>` elements in foundation models
 
 ---
 
@@ -84,6 +84,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 14:49 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 14:49 | Step 0 started | Preflight |
 
 ---
 
