@@ -1,7 +1,7 @@
 # CG-026: Eliminate Per-Project Builder Files — Status
 
 **Current Step:** Step 3: Verification
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -27,11 +27,11 @@
 - [x] Update tests/docs/scripts
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
-- [ ] py_compile
-- [ ] build_common_with_new_codegen.sh
-- [ ] verify_foundation_validation_gate.sh --post-quantum-off
-- [ ] All codegen tests
+**Status:** ✅ Complete
+- [x] py_compile
+- [x] build_common_with_new_codegen.sh
+- [x] verify_foundation_validation_gate.sh --post-quantum-off
+- [x] All codegen tests
 
 ---
 
