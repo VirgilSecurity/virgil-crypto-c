@@ -114,6 +114,17 @@ class EnumSource:
 
 
 @dataclass
+class InterfaceSource:
+    name: str
+    path: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+    description: str = ""
+    methods: list[MethodSource] = field(default_factory=list)
+    constants: list[ConstantSource] = field(default_factory=list)
+    inherits: list[str] = field(default_factory=list)
+
+
+@dataclass
 class ProjectFeatureSource:
     name: str
     attrs: dict[str, str] = field(default_factory=dict)
@@ -136,11 +147,13 @@ class ProjectSource:
     module_refs: list[dict[str, str]] = field(default_factory=list)
     class_refs: list[dict[str, str]] = field(default_factory=list)
     enum_refs: list[dict[str, str]] = field(default_factory=list)
+    interface_refs: list[dict[str, str]] = field(default_factory=list)
     modules: list[ModuleSource] = field(default_factory=list)
     dependency_modules: list[ModuleSource] = field(default_factory=list)
     resolved_modules: list[ModuleSource] = field(default_factory=list)
     classes: list[ClassSource] = field(default_factory=list)
     enums: list[EnumSource] = field(default_factory=list)
+    interfaces: list[InterfaceSource] = field(default_factory=list)
 
     @property
     def namespace(self) -> str:
@@ -166,6 +179,12 @@ class ProjectSource:
             return next(cls for cls in self.classes if cls.name == name)
         except StopIteration as exc:
             raise KeyError(f"class not found: {name}") from exc
+
+    def interface_named(self, name: str) -> InterfaceSource:
+        try:
+            return next(iface for iface in self.interfaces if iface.name == name)
+        except StopIteration as exc:
+            raise KeyError(f"interface not found: {name}") from exc
 
     def enum_named(self, name: str) -> EnumSource:
         try:
@@ -346,6 +365,19 @@ def load_class_source(path: Path) -> ClassSource:
     )
 
 
+def load_interface_source(path: Path) -> InterfaceSource:
+    root = _parse_legacy_xml(path)
+    return InterfaceSource(
+        name=root.attrib["name"],
+        path=str(path),
+        attrs=dict(root.attrib),
+        description=_description(root),
+        methods=[_method_like("method", e) for e in root.findall("method")],
+        constants=[_constant(e) for e in root.findall("constant")],
+        inherits=[e.attrib["interface"] for e in root.findall("inherit") if "interface" in e.attrib],
+    )
+
+
 def load_enum_source(path: Path) -> EnumSource:
     root = _parse_legacy_xml(path)
     return EnumSource(
@@ -429,6 +461,7 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         module_refs=[dict(e.attrib) for e in root.findall("module")],
         class_refs=[dict(e.attrib) for e in root.findall("class")],
         enum_refs=[dict(e.attrib) for e in root.findall("enum")],
+        interface_refs=[dict(e.attrib) for e in root.findall("interface")],
     )
 
     resolved_modules: dict[str, ModuleSource] = {}
@@ -458,6 +491,11 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         enum_area = enum_ref.get("from") or project_dir
         enum_path = _model_path(repo_root, enum_area, "enum", enum_ref["name"])
         project.enums.append(load_enum_source(enum_path))
+
+    for interface_ref in project.interface_refs:
+        interface_area = interface_ref.get("from") or project_dir
+        interface_path = _model_path(repo_root, interface_area, "interface", interface_ref["name"])
+        project.interfaces.append(load_interface_source(interface_path))
 
     return project
 

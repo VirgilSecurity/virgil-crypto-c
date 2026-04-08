@@ -1,6 +1,6 @@
 # CG-031: Parse Interfaces into Source and IR — Status
 
-**Current Step:** Step 1: Add InterfaceSource to project_source.py
+**Current Step:** Step 2: Add IRInterface to project_ir.py
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -20,12 +20,12 @@
 ---
 
 ### Step 1: Add InterfaceSource to project_source.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] InterfaceSource dataclass created
-- [ ] load_interface_source() function created
-- [ ] load_project_source() updated for interface refs
-- [ ] interface_refs and interfaces added to ProjectSource
+- [x] InterfaceSource dataclass created
+- [x] load_interface_source() function created
+- [x] load_project_source() updated for interface refs
+- [x] interface_refs and interfaces added to ProjectSource
 
 ---
 
