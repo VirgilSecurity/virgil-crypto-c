@@ -1,6 +1,6 @@
 # CG-025: Auto-Discovery of Renderable Entities — Status
 
-**Current Step:** Step 1: Implement auto-discovery
+**Current Step:** Step 2: Tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -22,9 +22,9 @@
 - [x] Support optional entity-kind filtering parameter
 
 ### Step 2: Tests
-**Status:** ⬜ Not Started
-- [ ] Auto-discovery tests for `common` and `foundation`
-- [ ] No regressions
+**Status:** ✅ Complete
+- [x] Auto-discovery tests for `common` and `foundation`
+- [x] No regressions
 
 ### Step 3: Verification
 **Status:** ⬜ Not Started
