@@ -2956,6 +2956,422 @@ def _render_impl_interface_methods(
             )
 
 
+def render_implementation_internal_c_module(
+    project_ir: IRProject,
+    impl: IRImplementation,
+    *,
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render the internal module for an implementation.
+
+    Produces:
+    - Static API table variables — one per implemented interface, each populated
+      with function pointers to the concrete implementations
+    - The ``impl_info`` variable — describes the implementation
+    - Lifecycle methods (init, cleanup, new, delete, destroy, shallow_copy)
+      with ``definition="private"`` (the definitions live here)
+    - The ``find_api`` static method
+    - init_ctx / cleanup_ctx with ``declaration="public"`` / ``definition="external"``
+    """
+    impl_output = cast(IROutputTarget, impl.output)
+    internal_output = implementation_internal_output(impl_output)
+    defs_output = implementation_defs_output(impl_output)
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    impl_snake = snake_name(impl.name)
+    struct_type = f"{impl_output.c_symbol}_t"
+
+    root = c_module_root(
+        internal_output,
+        entity_id=f"{impl_snake} internal",
+        scope="internal",
+    )
+    root.set("feature", f"{prefix_upper}_{impl_snake.upper()}")
+
+    # --- includes ---
+    # Self-include (private)
+    text_element(root, "c_include", file=internal_output.include_file, is_system="0", scope="private")
+    # Standard library / utility includes
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_memory.h", is_system="0", scope="private")
+    text_element(root, "c_include", file=f"{prefix}_assert.h", is_system="0", scope="private")
+    # Implementation's own header and defs header
+    text_element(root, "c_include", file=impl_output.include_file, is_system="0", scope="public")
+    text_element(root, "c_include", file=defs_output.include_file, is_system="0", scope="private")
+
+    # Interface dispatch + api headers for each bound interface (and its ancestors)
+    seen_iface_includes: set[str] = set()
+    for binding in impl.interface_bindings:
+        _add_interface_includes_recursive(
+            root, binding.name, project_ir=project_ir, seen=seen_iface_includes,
+        )
+
+    # --- API table variables (one per bound interface) ---
+    api_var_names: list[tuple[str, str]] = []  # (iface_name, var_name)
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+        except KeyError:
+            continue
+        iface_output = cast(IROutputTarget, iface.output)
+        var_name = f"{snake_name(binding.name)}_api"
+        api_tag = f"{prefix}_api_tag_{snake_name(binding.name).upper()}"
+        impl_tag = f"{prefix}_impl_tag_{impl_snake.upper()}"
+        api_type = _interface_api_struct_symbol(iface_output)
+
+        var_elem = text_element(
+            root,
+            "c_variable",
+            name=var_name,
+            uid=f"c_class_{impl_snake}_variable_{var_name}",
+            visibility="public",
+            declaration="private",
+            definition="private",
+            accessed_by="value",
+            type=api_type,
+            type_is="class",
+            is_const_type="1",
+        )
+
+        # api_tag value
+        val = text_element(
+            var_elem, "c_value",
+            value=api_tag, accessed_by="value",
+            type=f"{prefix}_api_tag_t", type_is="primitive",
+        )
+        val.text = comment_text(
+            f"API's unique identifier, MUST be first in the structure.\n"
+            f"For interface '{binding.name}' MUST be equal to the  '{api_tag}'."
+        )
+
+        # impl_tag value
+        val = text_element(
+            var_elem, "c_value",
+            value=impl_tag, accessed_by="value",
+            type=f"{prefix}_impl_tag_t", type_is="primitive",
+        )
+        val.text = comment_text("Implementation unique identifier, MUST be second in the structure.")
+
+        # Inherited API pointers
+        for inherited_name in iface.inherits:
+            inherited_var_name = f"{snake_name(inherited_name)}_api"
+            try:
+                inherited_iface_output = entity_output(project_ir, entity_kind="interface", entity_name=inherited_name)
+                inherited_api_type = _interface_api_struct_symbol(inherited_iface_output)
+            except (KeyError, ValueError):
+                inherited_api_type = f"{prefix}_{snake_name(inherited_name)}_api_t"
+            val = text_element(
+                var_elem, "c_value",
+                value=inherited_var_name, accessed_by="pointer",
+                type=inherited_api_type, type_is="class",
+                is_const_type="1",
+            )
+            val.text = comment_text(f"Link to the inherited interface API '{inherited_name}'.")
+
+        # Method callback function pointers
+        for method in iface.methods:
+            fn_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
+            cb_type = _interface_callback_symbol(iface_output, method.name)
+            val = text_element(
+                var_elem, "c_value",
+                value=fn_name, accessed_by="value",
+                type=cb_type, type_is="callback",
+            )
+            # Add c_cast child element
+            text_element(
+                val, "c_cast",
+                accessed_by="value",
+                type=cb_type, type_is="callback",
+            )
+            desc = method.description.strip() if method.description else ""
+            if desc:
+                val.text = comment_text(desc)
+
+        # Constant values from interface binding
+        for const in binding.constants:
+            const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
+            # Determine the type from the interface constant definition
+            iface_const = next(
+                (c for c in iface.constants if c.name == const.name), None
+            )
+            const_c_type = "size_t"
+            const_type_is = "primitive"
+            if iface_const:
+                const_c_type, const_type_is = type_map(iface_const.attrs.get("type", "size"))
+            val = text_element(
+                var_elem, "c_value",
+                value=const_symbol, accessed_by="value",
+                type=const_c_type, type_is=const_type_is,
+            )
+            desc = ""
+            if iface_const and iface_const.description:
+                desc = iface_const.description.strip()
+            if desc:
+                val.text = comment_text(desc)
+
+        # Modifier
+        text_element(var_elem, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+        var_elem.text = comment_text(f"Configuration of the interface API '{binding.name} api'.")
+        api_var_names.append((binding.name, var_name))
+
+    # --- impl_info variable ---
+    info_elem = text_element(
+        root,
+        "c_variable",
+        name="info",
+        uid=f"c_class_{impl_snake}_variable_info",
+        visibility="public",
+        declaration="private",
+        definition="private",
+        accessed_by="value",
+        type=f"{prefix}_impl_info_t",
+        type_is="class",
+        is_const_type="1",
+    )
+    # impl_tag
+    val = text_element(
+        info_elem, "c_value",
+        value=f"{prefix}_impl_tag_{impl_snake.upper()}",
+        accessed_by="value",
+        type=f"{prefix}_impl_tag_t", type_is="primitive",
+    )
+    val.text = comment_text("Implementation unique identifier, MUST be first in the structure.")
+    # find_api callback
+    val = text_element(
+        info_elem, "c_value",
+        value=f"{impl_output.c_symbol}_find_api",
+        accessed_by="value",
+        type=f"{prefix}_impl_find_api_fn", type_is="callback",
+    )
+    val.text = comment_text(
+        "Callback that returns API of the requested interface if implemented, otherwise - NULL.\n"
+        "MUST be second in the structure."
+    )
+    # cleanup callback
+    val = text_element(
+        info_elem, "c_value",
+        value=f"{impl_output.c_symbol}_cleanup",
+        accessed_by="value",
+        type=f"{prefix}_impl_cleanup_fn", type_is="callback",
+    )
+    text_element(
+        val, "c_cast",
+        accessed_by="value",
+        type=f"{prefix}_impl_cleanup_fn", type_is="callback",
+    )
+    val.text = comment_text("Release acquired inner resources.")
+    # delete callback
+    val = text_element(
+        info_elem, "c_value",
+        value=f"{impl_output.c_symbol}_delete",
+        accessed_by="value",
+        type=f"{prefix}_impl_delete_fn", type_is="callback",
+    )
+    text_element(
+        val, "c_cast",
+        accessed_by="value",
+        type=f"{prefix}_impl_delete_fn", type_is="callback",
+    )
+    val.text = comment_text("Self destruction, according to destruction policy.")
+    text_element(info_elem, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+    info_elem.text = comment_text(f"Compile-time known information about '{impl.name}' implementation.")
+
+    # --- Lifecycle methods (definition="private", declaration="external") ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_init",
+        description="Perform initialization of preallocated implementation context.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code=_impl_lifecycle_init_body(project_ir, impl),
+        declaration="external",
+        definition="private",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_cleanup",
+        description="Cleanup implementation context and release dependencies.\n"
+                    f"This is a reverse action of the function '{impl_output.c_symbol}_init()'.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code=_impl_lifecycle_cleanup_body(project_ir, impl),
+        declaration="external",
+        definition="private",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_new",
+        description="Allocate implementation context and perform it's initialization.\n"
+                    "Postcondition: check memory allocation result.",
+        impl=impl, project_ir=project_ir,
+        return_class="self_impl",
+        code=_impl_lifecycle_new_body(project_ir, impl),
+        declaration="external",
+        definition="private",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_delete",
+        description="Delete given implementation context and it's dependencies.\n"
+                    f"This is a reverse action of the function '{impl_output.c_symbol}_new()'.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code=_impl_lifecycle_delete_body(project_ir, impl),
+        declaration="external",
+        definition="private",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_destroy",
+        description="Destroy given implementation context and it's dependencies.\n"
+                    f"This is a reverse action of the function '{impl_output.c_symbol}_new()'.\n"
+                    "Given reference is nullified.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self_ref", "is_self": "1", "passed_by": "reference"}],
+        code=_impl_lifecycle_destroy_body(project_ir, impl),
+        declaration="external",
+        definition="private",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_shallow_copy",
+        description="Copy given implementation context by increasing reference counter.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        return_class="self_impl",
+        code=_impl_lifecycle_shallow_copy_body(project_ir, impl),
+        declaration="external",
+        definition="private",
+    )
+
+    # --- init_ctx / cleanup_ctx (declaration="public", definition="external") ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_init_ctx",
+        description="Provides initialization of the implementation specific context.\n"
+                    f"Note, this method is called automatically when method {impl_output.c_symbol}_init() is called.\n"
+                    "Note, that context is already zeroed.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code="//  TODO: This is STUB. Implement me.",
+        code_type="stub",
+        visibility="private",
+        declaration="public",
+        definition="external",
+    )
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_cleanup_ctx",
+        description="Release resources of the implementation specific context.\n"
+                    "Note, this method is called automatically once when class is completely cleaning up.\n"
+                    "Note, that context will be zeroed automatically next this method.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        code="//  TODO: This is STUB. Implement me.",
+        code_type="stub",
+        visibility="private",
+        declaration="public",
+        definition="external",
+    )
+
+    # --- impl_size method ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_impl_size",
+        description=f"Return size of '{struct_type}' type.",
+        impl=impl, project_ir=project_ir,
+        return_type="size",
+        code=f"return sizeof ({struct_type});",
+        declaration="external",
+        definition="private",
+    )
+
+    # --- impl() cast method ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_impl",
+        description="Cast to the 'vscf_impl_t' type.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1"}],
+        return_class="impl",
+        code=f"{prefix_upper}_ASSERT_PTR(self);\nreturn ({prefix}_impl_t *)(self);",
+        declaration="external",
+        definition="private",
+        fallback_projects=fallback_projects,
+    )
+
+    # --- impl_const() cast method ---
+    _render_impl_method(
+        root, name=f"{impl_output.c_symbol}_impl_const",
+        description="Cast to the const 'vscf_impl_t' type.",
+        impl=impl, project_ir=project_ir,
+        arguments=[{"name": "self", "is_self": "1", "is_const": "1"}],
+        return_class="impl",
+        return_is_const=True,
+        code=f"{prefix_upper}_ASSERT_PTR(self);\nreturn (const {prefix}_impl_t *)(self);",
+        declaration="external",
+        definition="private",
+        fallback_projects=fallback_projects,
+    )
+
+    # --- find_api static method ---
+    switch_cases = []
+    for iface_name, var_name in sorted(api_var_names, key=lambda x: snake_name(x[0]).upper()):
+        tag = f"{prefix}_api_tag_{snake_name(iface_name).upper()}"
+        switch_cases.append(
+            f"case {tag}:\n"
+            f"    return (const {prefix}_api_t *){' ' * 17}&{var_name};"
+        )
+    find_api_body = (
+        "switch(api_tag) {\n"
+        + "\n".join(f"    {case}" for case in switch_cases)
+        + "\n    default:\n        return NULL;\n}"
+    )
+    find_api = text_element(
+        root,
+        "c_method",
+        name=f"{impl_output.c_symbol}_find_api",
+        visibility="public",
+        declaration="private",
+        definition="private",
+        uid=f"c_class_{impl_snake}_method_find_api",
+    )
+    text_element(
+        find_api, "c_argument",
+        name="api_tag", accessed_by="value",
+        type=f"{prefix}_api_tag_t", type_is="primitive",
+        uid=f"c_class_{impl_snake}_method_find_api_argument_api_tag",
+    )
+    text_element(
+        find_api, "c_return",
+        accessed_by="pointer",
+        type=f"{prefix}_api_t", type_is="class",
+        is_const_type="1",
+    )
+    text_element(find_api, "c_code", find_api_body, type="generated", lang="c")
+    text_element(find_api, "c_modifier", value="static")
+
+    root.text = comment_text(
+        "This module contains logic for interface/implementation architecture.\n"
+        "Do not use this module in any part of the code."
+    )
+
+    return root
+
+
+def _add_interface_includes_recursive(
+    root: ET.Element,
+    iface_name: str,
+    *,
+    project_ir: IRProject,
+    seen: set[str],
+) -> None:
+    """Add dispatch + api includes for an interface and all its ancestors."""
+    if iface_name in seen:
+        return
+    seen.add(iface_name)
+    try:
+        iface = interface_ir(project_ir, iface_name)
+    except KeyError:
+        return
+    iface_output = cast(IROutputTarget, iface.output)
+    api_output = interface_api_output(iface_output)
+    text_element(root, "c_include", file=iface_output.include_file, is_system="0", scope="private")
+    text_element(root, "c_include", file=api_output.include_file, is_system="0", scope="private")
+    for inherited_name in iface.inherits:
+        _add_interface_includes_recursive(root, inherited_name, project_ir=project_ir, seen=seen)
+
+
 def render_implementation_c_module(
     project_ir: IRProject,
     impl: IRImplementation,
