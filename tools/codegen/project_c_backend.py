@@ -7,7 +7,7 @@ import re
 from typing import cast
 import xml.etree.ElementTree as ET
 
-from tools.codegen.project_ir import IRClass, IRDependency, IREnum, IRModule, IRProject, IROutputTarget
+from tools.codegen.project_ir import IRClass, IRDependency, IREnum, IRInterface, IRModule, IRProject, IROutputTarget
 
 
 DirectCRenderer = Callable[[str | Path], ET.Element]
@@ -65,6 +65,14 @@ def enum_ir(project_ir: IRProject, name: str) -> IREnum:
 
 
 
+def interface_ir(project_ir: IRProject, name: str) -> IRInterface:
+    try:
+        return next(iface for iface in project_ir.interfaces if iface.name == name)
+    except StopIteration as exc:
+        raise KeyError(f"interface not found in IR: {name}") from exc
+
+
+
 def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) -> IROutputTarget:
     if entity_kind == "module":
         return cast(IROutputTarget, module_ir(project_ir, entity_name).output)
@@ -72,6 +80,8 @@ def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) 
         return cast(IROutputTarget, class_ir(project_ir, entity_name).output)
     if entity_kind == "enum":
         return cast(IROutputTarget, enum_ir(project_ir, entity_name).output)
+    if entity_kind == "interface":
+        return cast(IROutputTarget, interface_ir(project_ir, entity_name).output)
     raise ValueError(f"unsupported C backend entity kind: {entity_kind}")
 
 
@@ -122,6 +132,45 @@ def derived_module_output_from_class(
         generated_source_path=generated_source_path,
         once_guard=f"{stem}_h_included",
         header_visibility=header_visibility,
+        source_visibility="public",
+    )
+
+
+
+def interface_api_output(iface_output: IROutputTarget) -> IROutputTarget:
+    """Derive the API module output target from an interface's output target.
+
+    The API module lives under the ``private`` include directory and uses
+    the ``<prefix>_<iface>_api`` stem convention.
+    """
+    stem = f"{iface_output.c_symbol}_api"
+    header_path = iface_output.header_path.replace(
+        f"/{iface_output.include_file}",
+        f"/private/{stem}.h",
+    )
+    source_path = iface_output.source_path.replace(iface_output.source_file, f"{stem}.c")
+    generated_header_path = iface_output.generated_header_path.replace(
+        iface_output.include_file.removesuffix(".h"),
+        stem,
+    )
+    generated_source_path = iface_output.generated_source_path.replace(
+        Path(iface_output.generated_source_path).stem,
+        f"interface_{snake_name(iface_output.entity_name)}_api",
+    )
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=f"{iface_output.entity_name} api",
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility="private",
         source_visibility="public",
     )
 

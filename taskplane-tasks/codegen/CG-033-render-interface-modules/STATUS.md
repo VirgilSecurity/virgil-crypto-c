@@ -20,11 +20,11 @@
 ---
 
 ### Step 1: Add interface helper utilities
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] interface_ir() lookup
-- [ ] entity_output() extended for interface
-- [ ] interface_api_output() helper
+- [x] interface_ir() lookup
+- [x] entity_output() extended for interface
+- [x] interface_api_output() helper
 - [ ] Committed
 
 ---
