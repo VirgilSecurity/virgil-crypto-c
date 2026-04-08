@@ -1,7 +1,7 @@
 # CG-023: Generic Class Renderer — Status
 
-**Current Step:** Step 2: Tests
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Verification
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -26,9 +26,9 @@
 - [x] No regressions
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
-- [ ] py_compile
-- [ ] build_common_with_new_codegen.sh
+**Status:** ✅ Complete
+- [x] py_compile
+- [x] build_common_with_new_codegen.sh
 
 ---
 
@@ -40,6 +40,7 @@
 | 2026-04-08 01:11 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-08 01:11 | Step 0 started | Preflight |
 | 2026-04-08 01:25 | Preflight classification completed | `data` struct/method signatures and `buffer_defs` struct fields are IR-derivable; `buffer`/`memory` handwritten method bodies remain static runtime support to reclassify out of Python builders |
+| 2026-04-08 02:20 | Step 3 verification passed | `python3 -m py_compile tools/codegen/*.py` and `bash tools/codegen/build_common_with_new_codegen.sh` succeeded |
 
 ## Notes
 

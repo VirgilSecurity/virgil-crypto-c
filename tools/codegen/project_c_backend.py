@@ -517,7 +517,8 @@ def _method_arg_dict(arg: object) -> dict[str, str]:
     if getattr(arg, "is_array", False):
         attrs["_array"] = "given"
     name = getattr(arg, "name", "")
-    return {"name": name, **attrs}
+    rendered_name = name if name == "return" else c_identifier(name, callback=getattr(arg, "callback", None) is not None)
+    return {"name": rendered_name, **attrs}
 
 
 
@@ -627,13 +628,14 @@ def _render_ir_method(
     code: str | None = None,
     uid: str | None = None,
 ) -> ET.Element:
+    resolved_definition = visibility if code is not None and definition == "external" else definition
     method = text_element(
         parent,
         "c_method",
         name=name,
         visibility=visibility,
         declaration=declaration,
-        definition=definition,
+        definition=resolved_definition,
         uid=uid or f"direct_{snake_name(owner_class)}_{snake_name(name)}",
     )
     if arguments:
