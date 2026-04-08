@@ -21,12 +21,12 @@
 - [x] Reclassify static runtime code
 
 ### Step 2: Tests
-**Status:** 🟨 In Progress
-- [ ] Tests for `common` classes through generic renderer
-- [ ] No regressions
+**Status:** ✅ Complete
+- [x] Tests for `common` classes through generic renderer
+- [x] No regressions
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] py_compile
 - [ ] build_common_with_new_codegen.sh
 
