@@ -1,21 +1,21 @@
 # CG-032: Parse Implementors and Implementations into Source and IR — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CG-031 complete
-- [ ] Implementor model XML studied
-- [ ] GSL implementation/implementor studied
+- [x] CG-031 complete
+- [x] Implementor model XML studied
+- [x] GSL implementation/implementor studied
 
 ---
 
@@ -90,6 +90,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 19:20 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 19:20 | Step 0 started | Preflight |
 
 ---
 
