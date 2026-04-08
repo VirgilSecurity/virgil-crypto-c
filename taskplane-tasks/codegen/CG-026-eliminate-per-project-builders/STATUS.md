@@ -1,22 +1,22 @@
 # CG-026: Eliminate Per-Project Builder Files — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-07
+**Current Step:** Step 1: Remove per-project files
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
-- [ ] Confirm generic backend handles all entity kinds
-- [ ] Confirm auto-discovery works
+**Status:** ✅ Complete
+- [x] Confirm generic backend handles all entity kinds
+- [x] Confirm auto-discovery works
 
 ### Step 1: Remove per-project files
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Delete per-project builder files
 - [ ] Update bootstrap to use shared backend
 
@@ -39,3 +39,5 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-07 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 13:11 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 13:11 | Step 0 started | Preflight |
