@@ -1,6 +1,6 @@
 # CG-033: Render Interface Modules (Dispatch + API) — Status
 
-**Current Step:** Step 3: Implement render_interface_c_module()
+**Current Step:** Step 4: Add parity tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -41,26 +41,26 @@
 ---
 
 ### Step 3: Implement render_interface_c_module()
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] Scaffold (root, includes, struct decl)
 - [x] Dispatch method generation with bodies
 - [x] Constant getter generation
 - [x] _api(), _is_implemented(), _api_tag() utilities
 - [x] Inherited method/constant flattening
-- [ ] Committed
+- [x] Committed
 
 ---
 
 ### Step 4: Add parity tests
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] hash_api callbacks correct
-- [ ] hash_api struct fields correct
-- [ ] hash dispatch method count correct
-- [ ] hash dispatch bodies have vtable calls
-- [ ] cipher dispatch has inherited methods
-- [ ] Includes correct
+- [x] hash_api callbacks correct
+- [x] hash_api struct fields correct
+- [x] hash dispatch method count correct
+- [x] hash dispatch bodies have vtable calls
+- [x] cipher dispatch has inherited methods
+- [x] Includes correct
 
 ---
 
