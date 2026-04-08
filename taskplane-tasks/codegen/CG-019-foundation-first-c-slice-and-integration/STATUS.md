@@ -1,11 +1,11 @@
 # CG-019: First Foundation C Slice and Integration — Status
 
 **Current Step:** Step 3: Integrate and document
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-07
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** L
 
 ---
@@ -37,10 +37,10 @@
 ---
 
 ### Step 3: Integrate and document
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Integrate the first slice into the shared workflow cleanly
-- [ ] Update docs to record what slice now works and what remains intentionally out of scope
+- [x] Integrate the first slice into the shared workflow cleanly
+- [x] Update docs to record what slice now works and what remains intentionally out of scope
 
 ---
 
@@ -83,6 +83,10 @@
 | 2026-04-07 23:34 | Preservation scope confirmed | The out-tree smoke run emitted only the 14 selected enum header/source files, and merge-preservation tests still cover handwritten-content retention around generated blocks. |
 | 2026-04-07 23:34 | Step 2 completed | Slice coverage, smoke generation, and the documented `foundation` validation gate all passed. |
 | 2026-04-07 23:34 | Step 3 started | Integrate and document |
+| 2026-04-08 00:39 | Worker iter 1 | killed (wall-clock timeout) in 7400s, tools: 120 |
+| 2026-04-08 01:05 | Shared workflow integration added | Added `tools/codegen/verify_foundation_enum_slice.sh` plus a bootstrap CLI regression test so the enum slice can be regenerated through `common_bootstrap.py --project foundation` as a repeatable shared-workflow smoke check. |
+| 2026-04-08 01:12 | Integration docs updated | Recorded the completed enum pilot workflow, the supported validation/smoke commands, and the intentionally deferred broader `foundation` work in the migration notes. |
+| 2026-04-08 01:12 | Step 3 completed | Shared workflow integration and scope documentation finished; all task steps are now complete. |
 
 ---
 

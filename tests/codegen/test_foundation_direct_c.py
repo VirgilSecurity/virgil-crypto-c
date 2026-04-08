@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import io
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
-from tools.codegen.common_bootstrap import iter_project_xml_paths, render_one
+from tools.codegen.common_bootstrap import iter_project_xml_paths, main, render_one
 from tools.codegen.foundation_direct_c import direct_c_renderers
 
 
@@ -71,6 +73,53 @@ class FoundationDirectCTest(unittest.TestCase):
             ],
             xml_paths,
         )
+
+    def test_shared_bootstrap_cli_generates_only_foundation_enum_slice_into_out_tree(self) -> None:
+        expected = {
+            "library/foundation/include/virgil/crypto/foundation/private/vscf_recipient_cipher_decryption_state.h",
+            "library/foundation/include/virgil/crypto/foundation/vscf_alg_id.h",
+            "library/foundation/include/virgil/crypto/foundation/vscf_asn1_tag.h",
+            "library/foundation/include/virgil/crypto/foundation/vscf_cipher_state.h",
+            "library/foundation/include/virgil/crypto/foundation/vscf_group_msg_type.h",
+            "library/foundation/include/virgil/crypto/foundation/vscf_oid_id.h",
+            "library/foundation/include/virgil/crypto/foundation/vscf_status.h",
+            "library/foundation/src/vscf_alg_id.c",
+            "library/foundation/src/vscf_asn1_tag.c",
+            "library/foundation/src/vscf_cipher_state.c",
+            "library/foundation/src/vscf_group_msg_type.c",
+            "library/foundation/src/vscf_oid_id.c",
+            "library/foundation/src/vscf_recipient_cipher_decryption_state.c",
+            "library/foundation/src/vscf_status.c",
+        }
+
+        build_root = REPO_ROOT / "build"
+        build_root.mkdir(exist_ok=True)
+
+        with TemporaryDirectory(dir=build_root) as tmp_dir:
+            out_dir = Path(tmp_dir).resolve() / "foundation-enums"
+            stdout = io.StringIO()
+            argv = [
+                "common_bootstrap.py",
+                "--repo-root",
+                str(REPO_ROOT),
+                "--project",
+                "foundation",
+                "--out",
+                str(out_dir),
+            ]
+
+            with patch("sys.argv", argv), patch("sys.stdout", stdout):
+                exit_code = main()
+
+            self.assertEqual(0, exit_code)
+            generated_files = {
+                str(path.relative_to(out_dir)).replace("\\", "/")
+                for path in out_dir.rglob("*")
+                if path.is_file()
+            }
+
+        self.assertEqual(expected, generated_files)
+        self.assertIn("generated 14 files into", stdout.getvalue())
 
 
 if __name__ == "__main__":

@@ -75,9 +75,9 @@ Policy:
 ## Immediate next actions
 
 1. treat `common` as the reference implementation for the project-rooted generator framework rather than reopening it as a new entity-porting track
-2. generalize the framework so the same loader/IR/output-target path works for `project_foundation.xml`
-3. define `foundation` verification and preservation gates before broad emitter work
-4. port a low-risk `foundation` C slice using the shared backend
+2. use the completed `foundation` enum pilot as the reference pattern for cross-project shared-backend work
+3. add a broader `foundation` generate/apply/build/restore harness before expanding emitter ownership beyond the pilot slice
+4. extend `foundation` coverage incrementally from the enum slice into the next low-risk utility/value family
 5. continue treating legacy resolved XML as reference/fixture material instead of a runtime requirement
 
 ## After `common`

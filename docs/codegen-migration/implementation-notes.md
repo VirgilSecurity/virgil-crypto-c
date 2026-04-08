@@ -99,7 +99,12 @@ The `common_*` names are now compatibility surfaces, not the architectural cente
 
 - `common_source.py` / `common_ir.py` compatibility exports and `common` convenience entrypoints
 - `common_direct_c.py` handwritten `common` builders plus adapter exports over the shared backend
-- `common_bootstrap.py` the stable `common` CLI/bootstrap wrapper used by current validation flows
+- `common_bootstrap.py` the stable shared CLI/bootstrap entrypoint used by current validation flows (`--project common` for the existing `common` path and `--project foundation` for the current enum-only `foundation` pilot)
+
+Project-specific direct-renderer adapters remain acceptable when they only define slice membership and renderer construction over shared IR/backend helpers. The current examples are:
+
+- `common_direct_c.py` for the migrated `common` handwritten builders
+- `foundation_direct_c.py` for the enum-only `foundation` pilot slice
 
 As follow-on work touches callers, prefer moving imports to the generic shared modules unless the call site truly needs the `common` compatibility API.
 
