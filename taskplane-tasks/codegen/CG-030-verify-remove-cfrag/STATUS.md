@@ -1,7 +1,7 @@
 # CG-030: Verify Lifecycle Generation and Remove cfrag Files — Status
 
-**Current Step:** Step 3: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 4: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 1
 **Review Counter:** 0
@@ -51,11 +51,11 @@
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] ADR 0004 follow-up marked completed
-- [ ] CONTEXT.md updated
-- [ ] Discoveries logged
+- [x] ADR 0004 follow-up marked completed
+- [x] CONTEXT.md updated
+- [x] Discoveries logged
 
 ---
 
@@ -70,6 +70,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `overridden_method_names` param in `_render_reference_class_support` was dead code after removing extra_methods | Removed | `project_c_backend.py` |
 
 ---
 

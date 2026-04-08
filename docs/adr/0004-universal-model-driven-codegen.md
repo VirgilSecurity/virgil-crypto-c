@@ -45,19 +45,17 @@ This means the C backend's resolved output must be:
 
 The generic renderers should therefore preserve model/IR richness in their resolved output rather than stripping it down to only what C emission needs.
 
-## Follow-up: replace `.cfrag` files with lifecycle generation rules
+## Follow-up: replace `.cfrag` files with lifecycle generation rules — ✅ Completed
 
-The current implementation uses `.cfrag` (C fragment) files as checked-in static method bodies for class lifecycle methods (init, cleanup, new, delete, destroy, shallow_copy). This was a reasonable intermediate step to remove hardcoded Python string literals from the generators.
+> **Completed:** 2026-04-08 via CG-028, CG-029, CG-030.
 
-However, in the old GSL pipeline, these method bodies were **not static** — they were **generated from rules** that understood class structure: properties, ownership semantics, refcount patterns, dealloc callbacks, and secure-erase flags.
+The `.cfrag` files have been replaced by generic lifecycle generation rules in `project_c_backend.py`. The shared C backend now derives all lifecycle method bodies (init, cleanup, new, delete, destroy, shallow_copy, constructor variants, dependency management) from the class IR. No `.cfrag` files remain; the `support/` directory has been removed.
 
-The correct long-term direction is to replace `.cfrag` files with **generic lifecycle generation rules** in the shared C backend that derive method bodies from the class IR, just as GSL templates did. This would mean:
-
-- no `.cfrag` files to maintain per class
-- lifecycle method bodies are deterministic and derivable from model metadata
-- adding a new class with standard lifecycle patterns requires zero new support files
-
-This is a follow-up refinement, not a blocker for current work.
+What was delivered:
+- Generic lifecycle body generators (`_lifecycle_init_body`, `_lifecycle_cleanup_body`, etc.) in `project_c_backend.py`
+- Dependency management method generation (`use_*`, `take_*`, `release_*`) from class IR
+- Removal of `ClassMethodSpec`, `load_support_code`, and `extra_methods` override mechanism
+- Byte-identical output verified against the previous cfrag-based generation
 
 ## Consequences
 

@@ -1,6 +1,6 @@
 # Codegen — Context
 
-**Last Updated:** 2026-04-04
+**Last Updated:** 2026-04-08
 **Status:** Active
 **Next Task ID:** CG-031
 
@@ -138,12 +138,14 @@ Universal codegen refactor phase:
 - `CG-025` — auto-discovery of renderable entities from IR
 - `CG-026` — eliminate per-project builder files and registry
 
-Lifecycle generation rules phase (ADR 0004 follow-up: replace .cfrag with parametric generation):
+Lifecycle generation rules phase (ADR 0004 follow-up: replace .cfrag with parametric generation) — **COMPLETE**:
+
+All `.cfrag` files removed. Lifecycle method bodies (init, cleanup, new, delete, destroy, shallow_copy, constructor variants) and dependency management methods (use/take/release) are now generated from class IR by generic rules in `project_c_backend.py`. The `ClassMethodSpec`, `load_support_code`, and `extra_methods` override mechanism have been removed. The `tools/codegen/support/` directory no longer exists.
 
 - `CG-027` — parse class dependencies into source and IR
 - `CG-028` — generate lifecycle method bodies from class IR (depends on CG-027)
 - `CG-029` — generate dependency management methods: use/take/release (depends on CG-028)
-- `CG-030` — verify lifecycle parity and remove cfrag files (depends on CG-029)
+- `CG-030` — verify lifecycle parity and remove cfrag files (depends on CG-029) ✅
 
 ---
 
