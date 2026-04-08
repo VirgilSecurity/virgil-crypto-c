@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-04
 **Status:** Active
-**Next Task ID:** CG-022
+**Next Task ID:** CG-027
 
 ---
 
@@ -126,8 +126,16 @@ Then foundation phase:
 
 Follow-up recovery phase:
 
-- `CG-020` — finish foundation validation gates from saved work
-- `CG-021` — foundation first C slice after validation gates
+- `CG-020` — finish foundation validation gates from saved work ✅
+- `CG-021` — foundation first C slice after validation gates ✅
+
+Universal codegen refactor phase:
+
+- `CG-022` — generic enum renderer in shared C backend
+- `CG-023` — generic class renderer in shared C backend
+- `CG-024` — generic module renderer in shared C backend
+- `CG-025` — auto-discovery of renderable entities from IR
+- `CG-026` — eliminate per-project builder files and registry
 
 ---
 
