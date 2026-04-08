@@ -104,6 +104,8 @@
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created (restructured from failed CG-033/CG-034 split) |
 | 2026-04-08 22:40 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-08 22:40 | Step 0 started | Preflight |
+| 2026-04-08 22:58 | Worker iter 1 | done in 1071s, tools: 171 |
+| 2026-04-08 22:58 | Task complete | .DONE created |
 
 ---
 
