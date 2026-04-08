@@ -155,3 +155,4 @@ Lifecycle generation rules phase (ADR 0004 follow-up: replace .cfrag with parame
 - Define and automate `foundation` compile/preservation verification before broad emitter work.
 - Add parity/tooling checks that make mixed-mode bootstrap differences easier to review.
 - Revisit umbrella/support/build generation only where the broader shared framework requires it.
+- `_class_dependency_includes` in `project_c_backend.py` fails when rendering foundation classes that reference `common` project classes (e.g. `data`, `buffer`). Cross-project class resolution needs a multi-project-aware lookup. (discovered during CG-029)

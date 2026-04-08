@@ -1,7 +1,7 @@
 # CG-029: Generate Dependency Management Methods from Class IR — Status
 
-**Current Step:** Step 4: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 2
 **Review Counter:** 0
@@ -62,10 +62,10 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -80,6 +80,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Cross-project class references in `_class_dependency_includes` fail for classes like `data` and `buffer` when rendering foundation classes (ecies) because those classes belong to `common` project | Tech debt — not in scope for CG-029 | `tools/codegen/project_c_backend.py:_class_dependency_includes` |
 
 ---
 
