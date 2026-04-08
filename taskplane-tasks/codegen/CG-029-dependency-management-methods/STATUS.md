@@ -1,6 +1,6 @@
 # CG-029: Generate Dependency Management Methods from Class IR — Status
 
-**Current Step:** Step 3: Generate observer hook stubs
+**Current Step:** Step 4: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -42,11 +42,11 @@
 ---
 
 ### Step 3: Generate observer hook stubs
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Observer hooks generated conditionally
-- [ ] Verified against resolved XML
-- [ ] Targeted tests pass
+- [x] Observer hooks generated conditionally
+- [x] Verified against resolved XML
+- [x] Targeted tests pass
 
 ---
 
