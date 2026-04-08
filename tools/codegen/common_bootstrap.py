@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from tools.codegen.common_direct_c import direct_c_renderers as common_direct_c_renderers
+from tools.codegen.project_direct_registry import direct_c_renderers_for_project, supported_projects
 
 
 GENERATED_START = "//  @generated"
@@ -44,13 +44,7 @@ def merge_generated_section(existing: str, generated: str) -> str:
 
 
 def direct_c_renderers(repo_root: Path, project: str = "common") -> dict[str, object]:
-    if project == "common":
-        return common_direct_c_renderers(repo_root)
-    if project == "foundation":
-        from tools.codegen.foundation_direct_c import direct_c_renderers as foundation_direct_c_renderers
-
-        return foundation_direct_c_renderers(repo_root)
-    return {}
+    return direct_c_renderers_for_project(project, repo_root)
 
 
 
@@ -324,7 +318,7 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
-    parser.add_argument("--project", default="common")
+    parser.add_argument("--project", default="common", choices=supported_projects())
     parser.add_argument("--out", default="build/new-codegen")
     parser.add_argument("--apply", action="store_true", help="write directly into repo source tree")
     parser.add_argument(
