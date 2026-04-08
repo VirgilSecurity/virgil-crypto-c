@@ -1,6 +1,6 @@
 # CG-027: Parse Class Dependencies into Source and IR — Status
 
-**Current Step:** Step 2: Add IRDependency to project_ir.py
+**Current Step:** Step 3: Add test coverage
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -40,11 +40,11 @@
 ---
 
 ### Step 3: Add test coverage
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Test: foundation ecies has expected dependencies
-- [ ] Test: common buffer has zero dependencies
-- [ ] Test: has_observers attribute parsed correctly
+- [x] Test: foundation ecies has expected dependencies
+- [x] Test: common buffer has zero dependencies
+- [x] Test: has_observers attribute parsed correctly
 
 ---
 
