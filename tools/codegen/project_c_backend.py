@@ -7,7 +7,7 @@ import re
 from typing import cast
 import xml.etree.ElementTree as ET
 
-from tools.codegen.project_ir import IRClass, IRDependency, IREnum, IRInterface, IRModule, IRProject, IROutputTarget
+from tools.codegen.project_ir import IRClass, IRCStructField, IRDependency, IREnum, IRImplementation, IRInterface, IRModule, IRProject, IROutputTarget
 
 
 DirectCRenderer = Callable[[str | Path], ET.Element]
@@ -73,6 +73,14 @@ def interface_ir(project_ir: IRProject, name: str) -> IRInterface:
 
 
 
+def implementation_ir(project_ir: IRProject, name: str) -> IRImplementation:
+    try:
+        return next(impl for impl in project_ir.implementations if impl.name == name)
+    except StopIteration as exc:
+        raise KeyError(f"implementation not found in IR: {name}") from exc
+
+
+
 def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) -> IROutputTarget:
     if entity_kind == "module":
         return cast(IROutputTarget, module_ir(project_ir, entity_name).output)
@@ -82,6 +90,8 @@ def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) 
         return cast(IROutputTarget, enum_ir(project_ir, entity_name).output)
     if entity_kind == "interface":
         return cast(IROutputTarget, interface_ir(project_ir, entity_name).output)
+    if entity_kind == "implementation":
+        return cast(IROutputTarget, implementation_ir(project_ir, entity_name).output)
     raise ValueError(f"unsupported C backend entity kind: {entity_kind}")
 
 
@@ -160,6 +170,84 @@ def interface_api_output(iface_output: IROutputTarget) -> IROutputTarget:
     return IROutputTarget(
         entity_kind="module",
         entity_name=f"{iface_output.entity_name} api",
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility="private",
+        source_visibility="public",
+    )
+
+
+
+def implementation_defs_output(impl_output: IROutputTarget) -> IROutputTarget:
+    """Derive the defs module output target from an implementation's output target.
+
+    The defs module lives under the ``private`` include directory and uses
+    the ``<prefix>_<impl>_defs`` stem convention.
+    """
+    stem = f"{impl_output.c_symbol}_defs"
+    header_path = impl_output.header_path.replace(
+        f"/{impl_output.include_file}",
+        f"/private/{stem}.h",
+    )
+    source_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.c")
+    generated_header_path = impl_output.generated_header_path.replace(
+        impl_output.include_file.removesuffix(".h"),
+        stem,
+    )
+    generated_source_path = impl_output.generated_source_path.replace(
+        Path(impl_output.generated_source_path).stem,
+        f"implementation_{snake_name(impl_output.entity_name)}_defs",
+    )
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=f"{impl_output.entity_name} defs",
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility="private",
+        source_visibility="public",
+    )
+
+
+
+def implementation_internal_output(impl_output: IROutputTarget) -> IROutputTarget:
+    """Derive the internal module output target from an implementation's output target.
+
+    The internal module lives under the ``private`` include directory and uses
+    the ``<prefix>_<impl>_internal`` stem convention.
+    """
+    stem = f"{impl_output.c_symbol}_internal"
+    header_path = impl_output.header_path.replace(
+        f"/{impl_output.include_file}",
+        f"/private/{stem}.h",
+    )
+    source_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.c")
+    generated_header_path = impl_output.generated_header_path.replace(
+        impl_output.include_file.removesuffix(".h"),
+        stem,
+    )
+    generated_source_path = impl_output.generated_source_path.replace(
+        Path(impl_output.generated_source_path).stem,
+        f"implementation_{snake_name(impl_output.entity_name)}_internal",
+    )
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=f"{impl_output.entity_name} internal",
         c_artifact_kind="module",
         c_symbol=stem,
         stem=stem,
@@ -2310,6 +2398,195 @@ def _render_reference_class_support(
             code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
         )
 
+
+
+# ---------------------------------------------------------------------------
+#   Implementation rendering
+# ---------------------------------------------------------------------------
+
+
+def _resolve_impl_property_type(
+    prop: IRCStructField,
+    *,
+    project_ir: IRProject,
+    impl: IRImplementation,
+    fallback_projects: list[IRProject] | None = None,
+) -> dict[str, str]:
+    """Resolve an implementation property to its C struct field attributes.
+
+    Returns a dict of attributes suitable for a ``c_property`` XML element.
+    """
+    impl_output = cast(IROutputTarget, impl.output)
+    attrs: dict[str, str] = {"name": snake_name(prop.name)}
+
+    if prop.enum_name is not None:
+        # Enum property → resolve to the enum type symbol
+        enum_name = prop.enum_name
+        # Handle cross-module enum references (e.g. "impl/tag")
+        if "/" in enum_name:
+            parts = enum_name.split("/")
+            enum_name = " ".join(parts)
+        try:
+            enum_output = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+            type_sym = f"{enum_output.c_symbol}_t"
+        except (KeyError, ValueError):
+            type_sym = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+        attrs.update({
+            "type": type_sym,
+            "type_is": "primitive",
+            "accessed_by": "value",
+        })
+    elif prop.class_name is not None:
+        # Class property — could be external library type or project class
+        if prop.library:
+            # External library type (e.g. mbedtls_sha256_context) — use as-is
+            attrs.update({
+                "type": prop.class_name,
+                "type_is": "class",
+                "accessed_by": "pointer" if prop.is_reference else "value",
+            })
+        else:
+            # Project class (e.g. buffer → vsc_buffer_t)
+            try:
+                type_sym = _resolve_class_type_symbol(
+                    project_ir, prop.class_name, fallback_projects=fallback_projects
+                )
+            except KeyError:
+                type_sym = f"{project_ir.prefix}_{snake_name(prop.class_name)}_t"
+            attrs.update({
+                "type": type_sym,
+                "type_is": "class",
+                "accessed_by": "pointer" if not prop.is_reference else "pointer",
+            })
+            # Project classes are always accessed by pointer in struct properties
+            attrs["accessed_by"] = "pointer"
+    else:
+        # Primitive type (byte, size, etc.)
+        rendered_type, kind = type_map(prop.type_name)
+        attrs.update({
+            "type": rendered_type,
+            "type_is": kind,
+            "accessed_by": "value",
+        })
+
+    # Handle fixed-length array properties
+    if prop.array_kind == "fixed" and prop.array_length_constant:
+        attrs["array"] = "fixed"
+        # Resolve length_constant: extract constant name from GSL uid reference
+        length_ref = prop.array_length_constant
+        if length_ref.startswith(".") and "_constant_" in length_ref:
+            const_part = length_ref.split("_constant_", 1)[1].rstrip(")")
+            attrs["length"] = f"{impl_output.c_symbol}_{const_part.upper()}"
+        else:
+            attrs["length"] = length_ref
+
+    return attrs
+
+
+def _impl_binding_constant_symbol(impl_output: IROutputTarget, constant_name: str) -> str:
+    """Return the C constant symbol for an interface binding constant."""
+    return f"{impl_output.c_symbol}_{snake_name(constant_name).upper()}"
+
+
+def render_implementation_defs_c_module(
+    project_ir: IRProject,
+    impl: IRImplementation,
+    *,
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render the defs module for an implementation.
+
+    The defs module defines the implementation struct with the ``vscf_impl_t``
+    base fields (info + refcnt) followed by the implementation-specific
+    properties.
+    """
+    impl_output = cast(IROutputTarget, impl.output)
+    defs_output = implementation_defs_output(impl_output)
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+
+    root = c_module_root(
+        defs_output,
+        entity_id=f"{snake_name(impl.name)}_defs",
+        scope="private",
+    )
+    root.set("feature", f"{prefix_upper}_{snake_name(impl.name).upper()}")
+
+    # Standard includes
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_impl_private.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=impl_output.include_file, is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_atomic.h", is_system="0", scope="public")
+
+    # Library header includes (from requirements)
+    for req in impl.requirements:
+        if req.kind == "header":
+            text_element(root, "c_include", file=req.name, is_system="1", scope="public")
+
+    # Struct definition
+    struct_name = f"{impl_output.c_symbol}_t"
+    struct_elem = text_element(
+        root,
+        "c_struct",
+        name=struct_name,
+        visibility="public",
+        declaration="external",
+        definition="public",
+        uid=f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}",
+    )
+
+    # Base fields: info (pointer to impl_info_t) and refcnt
+    info_prop = text_element(
+        struct_elem,
+        "c_property",
+        name="info",
+        accessed_by="pointer",
+        type=f"{prefix}_impl_info_t",
+        type_is="class",
+        is_const_type="1",
+        uid=f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}_property_info",
+    )
+    info_prop.text = comment_text("Compile-time known information about this implementation.")
+
+    refcnt_prop = text_element(
+        struct_elem,
+        "c_property",
+        name="refcnt",
+        accessed_by="value",
+        type=f"{prefix_upper}_ATOMIC size_t",
+        type_is="primitive",
+        uid=f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}_property_refcnt",
+    )
+    refcnt_prop.text = comment_text("Reference counter.")
+
+    # Implementation-specific properties
+    for prop in impl.properties:
+        prop_attrs = _resolve_impl_property_type(
+            prop, project_ir=project_ir, impl=impl, fallback_projects=fallback_projects
+        )
+        prop_name = prop_attrs.pop("name")
+        uid = f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}_property_{prop_name}"
+        prop_elem = text_element(
+            struct_elem,
+            "c_property",
+            name=prop_name,
+            uid=uid,
+            **prop_attrs,
+        )
+        prop_elem.text = comment_text("Implementation specific context.")
+
+    struct_elem.text = (struct_elem.text or "") + "\n" + doc_comment(
+        "Handles implementation details."
+    ) + "\n    "
+
+    root.text = (root.text or "") + "\n" + doc_comment(
+        f"Types of the '{impl.name}' implementation.\n"
+        f"This types SHOULD NOT be used directly.\n"
+        f"The only purpose of including this module is to place implementation\n"
+        f"object in the stack memory."
+    ) + "\n"
+
+    return root
 
 
 def type_map(type_name: str | None) -> tuple[str, str]:
