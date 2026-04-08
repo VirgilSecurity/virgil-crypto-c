@@ -1,6 +1,6 @@
 # CG-031: Parse Interfaces into Source and IR — Status
 
-**Current Step:** Step 3: Add test coverage
+**Current Step:** Step 4: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -40,15 +40,15 @@
 ---
 
 ### Step 3: Add test coverage
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Foundation has expected interface count
-- [ ] interface_hash methods and constants correct
-- [ ] interface_cipher inheritance correct
-- [ ] interface_random methods correct
-- [ ] Common has zero interfaces
-- [ ] IRInterface output targets correct
-- [ ] Interface method arguments/returns correct
+- [x] Foundation has expected interface count
+- [x] interface_hash methods and constants correct
+- [x] interface_cipher inheritance correct
+- [x] interface_random methods correct
+- [x] Common has zero interfaces
+- [x] IRInterface output targets correct
+- [x] Interface method arguments/returns correct
 
 ---
 
