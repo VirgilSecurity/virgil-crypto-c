@@ -1,6 +1,6 @@
 # CG-029: Generate Dependency Management Methods from Class IR — Status
 
-**Current Step:** Step 1: Generate dependency struct fields
+**Current Step:** Step 3: Generate observer hook stubs
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -30,14 +30,14 @@
 ---
 
 ### Step 2: Generate use/take/release methods
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Implement _render_dependency_methods() generating use/take/release for each dependency
-- [ ] use_X body: ASSERT_PTR(self), ASSERT_PTR(dep), assert(self->dep==NULL), is_implemented check for interface deps, self->dep = impl_shallow_copy(dep)
-- [ ] take_X body: same asserts + check, self->dep = dep (direct assign, no copy). Only for interface/class/impl deps
-- [ ] release_X body: ASSERT_PTR(self), impl_destroy(&self->dep) for interface deps or class_destroy for class deps
-- [ ] Wire into _render_reference_class_support after lifecycle methods
-- [ ] Verify ecies methods match reference
+- [x] Implement _render_dependency_methods() generating use/take/release for each dependency
+- [x] use_X body: ASSERT_PTR(self), ASSERT_PTR(dep), assert(self->dep==NULL), is_implemented check for interface deps, self->dep = impl_shallow_copy(dep)
+- [x] take_X body: same asserts + check, self->dep = dep (direct assign, no copy). Only for interface/class/impl deps
+- [x] release_X body: ASSERT_PTR(self), impl_destroy(&self->dep) for interface deps or class_destroy for class deps
+- [x] Wire into _render_reference_class_support after lifecycle methods
+- [x] Verify ecies methods match reference
 
 ---
 
