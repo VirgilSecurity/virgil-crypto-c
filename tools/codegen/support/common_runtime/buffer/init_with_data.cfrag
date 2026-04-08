@@ -1,7 +1,0 @@
-VSC_ASSERT_PTR(self);
-
-vsc_zeroize(self, sizeof(vsc_buffer_t));
-
-self->refcnt = 1;
-
-vsc_buffer_init_ctx_with_data(self, data);

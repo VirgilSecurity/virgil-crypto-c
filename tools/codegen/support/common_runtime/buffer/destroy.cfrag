@@ -1,6 +1,0 @@
-VSC_ASSERT_PTR(self_ref);
-
-vsc_buffer_t *self = *self_ref;
-*self_ref = NULL;
-
-vsc_buffer_delete(self);

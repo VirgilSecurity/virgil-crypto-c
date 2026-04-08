@@ -13,7 +13,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from tools.codegen.project_c_backend import (
     ClassFieldSpec,
-    ClassMethodSpec,
     DirectCRenderer,
     DirectRendererSpec,
     argument_from_source,
@@ -43,7 +42,6 @@ from tools.codegen.project_source import load_named_project_source
 GENERATED_START = "//  @generated"
 GENERATED_END = "//  @end"
 
-_SUPPORT_DIR = Path(__file__).resolve().parent / "support" / "common_runtime"
 
 
 # ---------------------------------------------------------------------------
@@ -197,19 +195,6 @@ def build_direct_buffer_c_module(repo_root: str | Path = ".") -> ET.Element:
     project_ir = _load_common_ir(repo_root)
     buffer_cls = _class_ir(project_ir, "buffer")
 
-    runtime_methods = (
-        ClassMethodSpec(name="vsc_buffer_init", description="Perform initialization of pre-allocated context.", arguments=({"name": "self", "class": "self"},), code_path=_SUPPORT_DIR / "buffer" / "init.cfrag", uid="direct_buffer_init"),
-        ClassMethodSpec(name="vsc_buffer_cleanup", description="Release all inner resources including class dependencies.", arguments=({"name": "self", "class": "self"},), code_path=_SUPPORT_DIR / "buffer" / "cleanup.cfrag", uid="direct_buffer_cleanup"),
-        ClassMethodSpec(name="vsc_buffer_new", description="Allocate context and perform it's initialization.", return_attrs={"class": "self"}, code_path=_SUPPORT_DIR / "buffer" / "new.cfrag", uid="direct_buffer_new"),
-        ClassMethodSpec(name="vsc_buffer_init_with_capacity", description="Perform initialization of pre-allocated context.\nAllocate inner buffer of given capacity.", arguments=({"name": "self", "class": "self"}, {"name": "capacity", "type": "size"}), code_path=_SUPPORT_DIR / "buffer" / "init_with_capacity.cfrag", uid="direct_buffer_init_with_capacity"),
-        ClassMethodSpec(name="vsc_buffer_new_with_capacity", description="Allocate class context and perform it's initialization.\nAllocate inner buffer of given capacity.", arguments=({"name": "capacity", "type": "size"},), return_attrs={"class": "self"}, code_path=_SUPPORT_DIR / "buffer" / "new_with_capacity.cfrag", uid="direct_buffer_new_with_capacity"),
-        ClassMethodSpec(name="vsc_buffer_init_with_data", description="Perform initialization of pre-allocated context.\nAllocate inner buffer buffer as copy of given data.", arguments=({"name": "self", "class": "self"}, {"name": "data", "class": "data"}), code_path=_SUPPORT_DIR / "buffer" / "init_with_data.cfrag", uid="direct_buffer_init_with_data"),
-        ClassMethodSpec(name="vsc_buffer_new_with_data", description="Allocate class context and perform it's initialization.\nAllocate inner buffer buffer as copy of given data.", arguments=({"name": "data", "class": "data"},), return_attrs={"class": "self"}, code_path=_SUPPORT_DIR / "buffer" / "new_with_data.cfrag", uid="direct_buffer_new_with_data"),
-        ClassMethodSpec(name="vsc_buffer_delete", description="Release all inner resources and deallocate context if needed.\nIt is safe to call this method even if the context was statically allocated.", arguments=({"name": "self", "class": "self"},), code_path=_SUPPORT_DIR / "buffer" / "delete.cfrag", uid="direct_buffer_delete"),
-        ClassMethodSpec(name="vsc_buffer_destroy", description="Delete given context and nullifies reference.\nThis is a reverse action of the function 'vsc_buffer_new ()'.", arguments=({"name": "self_ref", "class": "self", "access": "readwrite", "passed_by": "reference"},), code_path=_SUPPORT_DIR / "buffer" / "destroy.cfrag", uid="direct_buffer_destroy"),
-        ClassMethodSpec(name="vsc_buffer_shallow_copy", description="Copy given class context by increasing reference counter.", arguments=({"name": "self", "class": "self"},), return_attrs={"class": "self"}, code_path=_SUPPORT_DIR / "buffer" / "shallow_copy.cfrag", uid="direct_buffer_shallow_copy"),
-    )
-
     return render_class_c_module(
         project_ir,
         buffer_cls,
@@ -219,7 +204,6 @@ def build_direct_buffer_c_module(repo_root: str | Path = ".") -> ET.Element:
             _include_file(project_ir, module_name="assert"),
             _buffer_defs_output(project_ir).include_file,
         ],
-        extra_methods=runtime_methods,
     )
 
 

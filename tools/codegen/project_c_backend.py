@@ -29,20 +29,6 @@ class ClassFieldSpec:
     description: str = ""
 
 
-@dataclass(frozen=True)
-class ClassMethodSpec:
-    name: str
-    description: str
-    arguments: tuple[dict[str, str], ...] = ()
-    return_attrs: dict[str, str] | None = None
-    visibility: str = "public"
-    declaration: str = "public"
-    definition: str = "external"
-    modifiers: tuple[str, ...] = ("VSC_PUBLIC",)
-    code: str | None = None
-    code_path: str | Path | None = None
-    uid: str | None = None
-
 
 def text_element(parent: ET.Element, tag: str, text: str | None = None, **attrs: str) -> ET.Element:
     elem = ET.SubElement(parent, tag, {k: v for k, v in attrs.items() if v is not None})
@@ -678,13 +664,6 @@ def callback_name_from_ref(callback_ref: str | None) -> str:
 
 
 
-def load_support_code(code: str | None = None, code_path: str | Path | None = None) -> str | None:
-    if code is not None:
-        return code
-    if code_path is None:
-        return None
-    return Path(code_path).read_text(encoding="utf-8").rstrip("\n")
-
 
 
 def class_method_symbol(project_ir: IRProject, cls: IRClass, method_name: str) -> str:
@@ -826,7 +805,6 @@ def render_class_c_module(
     struct_declaration: str | None = None,
     struct_definition: str | None = None,
     extra_struct_fields: tuple[ClassFieldSpec, ...] = (),
-    extra_methods: tuple[ClassMethodSpec, ...] = (),
     include_own_header_public: bool = True,
     generate_ctx_size: bool = True,
     render_variables: bool = True,
@@ -940,7 +918,7 @@ def render_class_c_module(
             root,
             project_ir=project_ir,
             cls=cls,
-            overridden_method_names={method.name for method in extra_methods},
+
         )
 
     if render_methods:
@@ -964,23 +942,6 @@ def render_class_c_module(
                 project_ir=project_ir,
                 uid=f"direct_{snake_name(cls.name)}_method_{snake_name(method.name)}",
             )
-
-    for method in extra_methods:
-        _render_ir_method(
-            root,
-            name=method.name,
-            description=method.description,
-            arguments=method.arguments,
-            return_attrs=method.return_attrs,
-            visibility=method.visibility,
-            declaration=method.declaration,
-            definition=method.definition,
-            modifiers=method.modifiers,
-            code=load_support_code(method.code, method.code_path),
-            owner_class=cls.name,
-            project_ir=project_ir,
-            uid=method.uid,
-        )
 
     return root
 
@@ -1594,9 +1555,7 @@ def _render_reference_class_support(
     *,
     project_ir: IRProject,
     cls: IRClass,
-    overridden_method_names: set[str] | None = None,
 ) -> None:
-    overridden_method_names = overridden_method_names or set()
     ctor_by_name = {ctor.name: ctor for ctor in cls.constructors}
     for name, description, arguments in [
         (
@@ -1650,8 +1609,7 @@ def _render_reference_class_support(
         (_class_runtime_symbol(project_ir, cls, "destroy"), "Delete given context and nullifies reference.\nThis is a reverse action of the function 'new ()'.", ({"name": "self_ref", "class": "self", "access": "readwrite", "passed_by": "reference"},), {"type": "void"}, _lifecycle_destroy_body(project_ir, cls)),
         (_class_runtime_symbol(project_ir, cls, "shallow_copy"), "Copy given class context by increasing reference counter.", ({"name": "self", "class": "self"},), {"class": "self"}, _lifecycle_shallow_copy_body(project_ir, cls)),
     ]:
-        if name not in overridden_method_names:
-            _render_ir_method(parent, name=name, description=description, arguments=arguments, return_attrs=return_attrs, project_ir=project_ir, owner_class=cls.name, code=body)
+        _render_ir_method(parent, name=name, description=description, arguments=arguments, return_attrs=return_attrs, project_ir=project_ir, owner_class=cls.name, code=body)
 
     # Dependency management methods: use/take/release (+ observer hooks).
     _render_dependency_methods(parent, project_ir=project_ir, cls=cls)
@@ -1661,30 +1619,28 @@ def _render_reference_class_support(
         ctor_arg_names = [_method_arg_dict(arg)["name"] for arg in ctor.arguments]
         init_name = class_constructor_symbol(project_ir, cls, ctor.name)
         new_name = _class_new_constructor_symbol(project_ir, cls, ctor.name)
-        if init_name not in overridden_method_names:
-            _render_ir_method(
-                parent,
-                name=init_name,
-                description=f"Perform initialization of pre-allocated context.\n{ctor.description}",
-                arguments=({"name": "self", "class": "self"}, *args),
-                return_attrs={"type": "void"},
-                project_ir=project_ir,
-                owner_class=cls.name,
-                uid=f"direct_{snake_name(cls.name)}_init_with_{snake_name(ctor.name)}",
-                code=_lifecycle_constructor_init_body(project_ir, cls, ctor.name, ctor_arg_names),
-            )
-        if new_name not in overridden_method_names:
-            _render_ir_method(
-                parent,
-                name=new_name,
-                description=f"Allocate class context and perform it's initialization.\n{ctor.description}",
-                arguments=args,
-                return_attrs={"class": "self"},
-                project_ir=project_ir,
-                owner_class=cls.name,
-                uid=f"direct_{snake_name(cls.name)}_new_with_{snake_name(ctor.name)}",
-                code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
-            )
+        _render_ir_method(
+            parent,
+            name=init_name,
+            description=f"Perform initialization of pre-allocated context.\n{ctor.description}",
+            arguments=({"name": "self", "class": "self"}, *args),
+            return_attrs={"type": "void"},
+            project_ir=project_ir,
+            owner_class=cls.name,
+            uid=f"direct_{snake_name(cls.name)}_init_with_{snake_name(ctor.name)}",
+            code=_lifecycle_constructor_init_body(project_ir, cls, ctor.name, ctor_arg_names),
+        )
+        _render_ir_method(
+            parent,
+            name=new_name,
+            description=f"Allocate class context and perform it's initialization.\n{ctor.description}",
+            arguments=args,
+            return_attrs={"class": "self"},
+            project_ir=project_ir,
+            owner_class=cls.name,
+            uid=f"direct_{snake_name(cls.name)}_new_with_{snake_name(ctor.name)}",
+            code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
+        )
 
 
 

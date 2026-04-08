@@ -1,6 +1,6 @@
 # CG-030: Verify Lifecycle Generation and Remove cfrag Files — Status
 
-**Current Step:** Step 1: Verify parity
+**Current Step:** Step 2: Remove cfrag files and extra_methods
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -29,14 +29,14 @@
 ---
 
 ### Step 2: Remove cfrag files and extra_methods
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] extra_methods removed from common_bootstrap.py
-- [ ] _SUPPORT_DIR removed if unused
-- [ ] ClassMethodSpec import removed if unused
-- [ ] All cfrag files deleted
-- [ ] Empty directories cleaned up
-- [ ] ClassMethodSpec/load_support_code cleanup evaluated
+- [x] extra_methods removed from common_bootstrap.py
+- [x] _SUPPORT_DIR removed if unused
+- [x] ClassMethodSpec import removed if unused
+- [x] All cfrag files deleted
+- [x] Empty directories cleaned up
+- [x] ClassMethodSpec/load_support_code cleanup evaluated (removed both + overridden_method_names param)
 
 ---
 
