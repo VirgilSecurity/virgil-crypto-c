@@ -1,71 +1,71 @@
 # CG-031: Parse Interfaces into Source and IR — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Required files exist
-- [ ] Interface model XML studied
-- [ ] interface.gsl studied
+- [x] Required files exist
+- [x] Interface model XML studied
+- [x] interface.gsl studied
 
 ---
 
 ### Step 1: Add InterfaceSource to project_source.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] InterfaceSource dataclass created
-- [ ] load_interface_source() function created
-- [ ] load_project_source() updated for interface refs
-- [ ] interface_refs and interfaces added to ProjectSource
+- [x] InterfaceSource dataclass created
+- [x] load_interface_source() function created
+- [x] load_project_source() updated for interface refs
+- [x] interface_refs and interfaces added to ProjectSource
 
 ---
 
 ### Step 2: Add IRInterface to project_ir.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] IRInterface dataclass created
-- [ ] interfaces field added to IRProject
-- [ ] InterfaceSource → IRInterface mapping
-- [ ] IROutputTarget computed for interfaces
+- [x] IRInterface dataclass created
+- [x] interfaces field added to IRProject
+- [x] InterfaceSource → IRInterface mapping
+- [x] IROutputTarget computed for interfaces
 
 ---
 
 ### Step 3: Add test coverage
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Foundation has expected interface count
-- [ ] interface_hash methods and constants correct
-- [ ] interface_cipher inheritance correct
-- [ ] interface_random methods correct
-- [ ] Common has zero interfaces
-- [ ] IRInterface output targets correct
-- [ ] Interface method arguments/returns correct
+- [x] Foundation has expected interface count
+- [x] interface_hash methods and constants correct
+- [x] interface_cipher inheritance correct
+- [x] interface_random methods correct
+- [x] Common has zero interfaces
+- [x] IRInterface output targets correct
+- [x] Interface method arguments/returns correct
 
 ---
 
 ### Step 4: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] New tests pass
-- [ ] Existing tests pass
-- [ ] Build gate passes
+- [x] New tests pass
+- [x] Existing tests pass
+- [x] Build gate passes
 
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -80,6 +80,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Foundation has exactly 33 interfaces, 34 XML files (interface_error_context exists but is not in project XML — it's only referenced via class models) | Noted | codegen/models/project_foundation/ |
 
 ---
 
@@ -88,6 +89,10 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-08 18:49 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-08 18:49 | Step 0 started | Preflight |
+| 2026-04-08 18:58 | Worker iter 1 | done in 529s, tools: 57 |
+| 2026-04-08 18:58 | Task complete | .DONE created |
 
 ---
 

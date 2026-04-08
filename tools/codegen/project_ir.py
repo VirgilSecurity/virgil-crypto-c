@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import PurePosixPath
 from typing import Any
 
-from tools.codegen.project_source import AliasSource, ClassSource, DependencySource, EnumSource, MethodSource, ModuleSource, ProjectSource
+from tools.codegen.project_source import AliasSource, ClassSource, DependencySource, EnumSource, InterfaceSource, MethodSource, ModuleSource, ProjectSource
 
 
 @dataclass
@@ -163,6 +163,17 @@ class IREnum(IRCommented):
 
 
 @dataclass
+class IRInterface(IRCommented):
+    name: str = ""
+    source_path: str = ""
+    attrs: dict[str, str] = field(default_factory=dict)
+    methods: list[IRCMethod] = field(default_factory=list)
+    constants: list[IRCConstant] = field(default_factory=list)
+    inherits: list[str] = field(default_factory=list)
+    output: IROutputTarget | None = None
+
+
+@dataclass
 class IRProject:
     name: str
     attrs: dict[str, str] = field(default_factory=dict)
@@ -182,8 +193,10 @@ class IRProject:
     modules: list[IRCModule] = field(default_factory=list)
     dependency_modules: list[IRCModule] = field(default_factory=list)
     resolved_modules: list[IRCModule] = field(default_factory=list)
+    interface_refs: list[IREntityRef] = field(default_factory=list)
     classes: list[IRClass] = field(default_factory=list)
     enums: list[IREnum] = field(default_factory=list)
+    interfaces: list[IRInterface] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -400,6 +413,19 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
     )
 
 
+def interface_to_ir(project: ProjectSource, src: InterfaceSource) -> IRInterface:
+    return IRInterface(
+        name=src.name,
+        source_path=src.path,
+        attrs=src.attrs,
+        description=src.description,
+        methods=[_method_to_ir(m) for m in src.methods],
+        constants=[_constant_to_ir(c.name, c.attrs, c.description) for c in src.constants],
+        inherits=list(src.inherits),
+        output=build_output_target(project, entity_kind="interface", entity_name=src.name, attrs=src.attrs),
+    )
+
+
 def enum_to_ir(project: ProjectSource, src: EnumSource) -> IREnum:
     return IREnum(
         name=src.name,
@@ -431,9 +457,11 @@ def project_to_ir(project: ProjectSource) -> IRProject:
         module_refs=[_ref("module", ref["name"], ref) for ref in project.module_refs],
         class_refs=[_ref("class", ref["name"], ref) for ref in project.class_refs],
         enum_refs=[_ref("enum", ref["name"], ref) for ref in project.enum_refs],
+        interface_refs=[_ref("interface", ref["name"], ref) for ref in project.interface_refs],
         modules=[module for module in resolved_modules if module.source_path in explicit_module_paths],
         dependency_modules=[module for module in resolved_modules if module.source_path not in explicit_module_paths],
         resolved_modules=resolved_modules,
         classes=[class_to_ir(project, c) for c in project.classes],
         enums=[enum_to_ir(project, e) for e in project.enums],
+        interfaces=[interface_to_ir(project, i) for i in project.interfaces],
     )
