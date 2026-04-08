@@ -1,6 +1,6 @@
 # CG-027: Parse Class Dependencies into Source and IR — Status
 
-**Current Step:** Step 1: Add DependencySource to project_source.py
+**Current Step:** Step 2: Add IRDependency to project_ir.py
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 1
@@ -30,12 +30,12 @@
 ---
 
 ### Step 2: Add IRDependency to project_ir.py
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Create `IRDependency` dataclass
-- [ ] Add `dependencies` field to `IRClass`
-- [ ] Update IR mapping from source
-- [ ] Verify: foundation ecies dependencies appear in IR
+- [x] Create `IRDependency` dataclass
+- [x] Add `dependencies` field to `IRClass`
+- [x] Update IR mapping from source
+- [x] Verify: foundation ecies dependencies appear in IR
 
 ---
 

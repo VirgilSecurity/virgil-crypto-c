@@ -4,7 +4,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import PurePosixPath
 from typing import Any
 
-from tools.codegen.project_source import AliasSource, ClassSource, EnumSource, MethodSource, ModuleSource, ProjectSource
+from tools.codegen.project_source import AliasSource, ClassSource, DependencySource, EnumSource, MethodSource, ModuleSource, ProjectSource
 
 
 @dataclass
@@ -118,6 +118,16 @@ class IRCModule(IRCommented):
 
 
 @dataclass
+class IRDependency(IRCommented):
+    name: str = ""
+    type_kind: str = "interface"
+    type_name: str = ""
+    has_observers: bool = False
+    is_observers_return_status: bool = False
+    attrs: dict[str, str] = field(default_factory=dict)
+
+
+@dataclass
 class IRCStructField(IRCommented):
     name: str = ""
     type_kind: str = "type"
@@ -139,6 +149,7 @@ class IRClass(IRCommented):
     constructors: list[IRCMethod] = field(default_factory=list)
     variables: list[IRCVariable] = field(default_factory=list)
     struct_fields: list[IRCStructField] = field(default_factory=list)
+    dependencies: list[IRDependency] = field(default_factory=list)
     output: IROutputTarget | None = None
 
 
@@ -352,6 +363,28 @@ def module_to_ir(project: ProjectSource, src: ModuleSource) -> IRCModule:
     )
 
 
+def _dependency_to_ir(src: DependencySource) -> IRDependency:
+    attrs = src.attrs
+    if "class" in attrs:
+        type_kind = "class"
+        type_name = attrs["class"]
+    elif "impl" in attrs:
+        type_kind = "impl"
+        type_name = attrs["impl"]
+    else:
+        type_kind = "interface"
+        type_name = attrs.get("interface", "")
+    return IRDependency(
+        name=src.name,
+        description=src.description,
+        type_kind=type_kind,
+        type_name=type_name,
+        has_observers=attrs.get("has_observers") in {"1", "true"},
+        is_observers_return_status=attrs.get("is_observers_return_status") in {"1", "true"},
+        attrs=attrs,
+    )
+
+
 def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
     return IRClass(
         name=src.name,
@@ -362,6 +395,7 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
         constructors=[_method_to_ir(c) for c in src.constructors],
         variables=[_variable_to_ir(v) for v in src.variables],
         struct_fields=[_field_from_attrs(p.name, p.attrs, p.description) for p in src.properties],
+        dependencies=[_dependency_to_ir(d) for d in src.dependencies],
         output=build_output_target(project, entity_kind="class", entity_name=src.name, attrs=src.attrs),
     )
 
