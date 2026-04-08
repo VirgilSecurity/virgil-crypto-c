@@ -1,6 +1,6 @@
 # CG-022: Generic Enum Renderer — Status
 
-**Current Step:** Step 2: Tests
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -21,12 +21,12 @@
 - [x] Remove enum code from per-project files
 
 ### Step 2: Tests
-**Status:** 🟨 In Progress
-- [ ] Tests for both `common` and `foundation` enums
-- [ ] No regressions
+**Status:** ✅ Complete
+- [x] Tests for both `common` and `foundation` enums
+- [x] No regressions
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] py_compile
 - [ ] build_common_with_new_codegen.sh
 
@@ -43,3 +43,5 @@
 | 2026-04-08 01:06 | Step 1 started | Generic enum renderer |
 | 2026-04-08 01:14 | Step 1 completed | Shared enum renderer added; foundation adapter reduced to stub |
 | 2026-04-08 01:14 | Step 2 started | Tests |
+| 2026-04-08 01:16 | Step 2 completed | 18 targeted codegen tests passed with shared enum renderer coverage |
+| 2026-04-08 01:16 | Step 3 started | Verification |
