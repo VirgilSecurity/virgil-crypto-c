@@ -75,6 +75,7 @@ This script is allowed to apply generated output temporarily into the repo, buil
 | Migration overview | `docs/codegen-migration/README.md` |
 | Roadmap | `docs/codegen-migration/roadmap.md` |
 | Foundation status | `docs/codegen-migration/common-direct-foundation-status.md` |
+| Test: class dependencies | `tools/codegen/test_class_dependencies.py` |
 | Architecture ADR | `docs/adr/0002-project-rooted-codegen-pipeline.md` |
 | Generalization ADR | `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md` |
 | Next-phase plan | `docs/codegen-migration/foundation-next-phase-plan.md` |

@@ -1,7 +1,7 @@
 # CG-027: Parse Class Dependencies into Source and IR — Status
 
-**Current Step:** Step 4: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-08
 **Review Level:** 1
 **Review Counter:** 0
@@ -58,10 +58,10 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] CONTEXT.md updated if needed
-- [ ] Discoveries logged
+- [x] CONTEXT.md updated if needed
+- [x] Discoveries logged
 
 ---
 
@@ -76,6 +76,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| No `impl` or `access` attrs found on any `<dependency>` in models; `project` attr exists on phe deps | Noted — `project` attr preserved in raw attrs dict | `codegen/models/` |
 
 ---
 
