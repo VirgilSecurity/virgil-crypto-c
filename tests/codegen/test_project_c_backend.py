@@ -18,9 +18,11 @@ from tools.codegen.project_c_backend import (
     derived_module_output_from_class,
     direct_renderer_map,
     direct_xml_name,
+    enum_ir,
+    render_enum_c_module,
     return_from_source,
 )
-from tools.codegen.project_ir import project_to_ir
+from tools.codegen.project_ir import IRConstant, IREnum, IROutputTarget, IRProject, project_to_ir
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -67,6 +69,61 @@ class ProjectCBackendTest(unittest.TestCase):
 
         self.assertIs(shared_renderers[direct_xml_name(class_ir(self.ir, "data").output)], adapter_renderers[direct_xml_name(class_ir(self.ir, "data").output)])
         self.assertIs(shared_renderers[direct_xml_name(buffer_defs_output)], adapter_renderers[direct_xml_name(buffer_defs_output)])
+
+    def test_render_enum_c_module_derives_common_names_from_ir_output(self) -> None:
+        project_ir = IRProject(name="common", prefix="vsc")
+        demo_enum = IREnum(
+            name="demo mode",
+            attrs={"scope": "public"},
+            description="Common demo enum.",
+            constants=[
+                IRConstant(name="fast path", attrs={"value": "7"}, description="Fast path constant."),
+                IRConstant(name="slow path", attrs={}),
+            ],
+            output=IROutputTarget(
+                entity_kind="enum",
+                entity_name="demo mode",
+                c_artifact_kind="module",
+                c_symbol="vsc_demo_mode",
+                stem="vsc_demo_mode",
+                include_file="vsc_demo_mode.h",
+                source_file="vsc_demo_mode.c",
+                header_path="library/common/include/vsc_demo_mode.h",
+                source_path="library/common/src/vsc_demo_mode.c",
+                generated_header_path="generated/common/c_module_vsc_demo_mode.xml",
+                generated_source_path="generated/common/enum_demo_mode.xml",
+                once_guard="vsc_demo_mode_h_included",
+            ),
+        )
+
+        root = render_enum_c_module(project_ir, demo_enum)
+
+        self.assertEqual("vsc_demo_mode", root.attrib["name"])
+        self.assertEqual("library/common/include/vsc_demo_mode.h", root.attrib["header_file"])
+        enum_elem = root.find("c_enum")
+        self.assertIsNotNone(enum_elem)
+        self.assertEqual("vsc_demo_mode_t", enum_elem.attrib["name"])
+        constants = enum_elem.findall("c_constant")
+        self.assertEqual("vsc_demo_mode_FAST_PATH", constants[0].attrib["name"])
+        self.assertEqual("7", constants[0].attrib["value"])
+        self.assertEqual("vsc_demo_mode_SLOW_PATH", constants[1].attrib["name"])
+
+    def test_render_enum_c_module_preserves_foundation_enum_metadata_from_ir(self) -> None:
+        foundation_ir = project_to_ir(load_named_project_source("foundation", REPO_ROOT))
+        root = render_enum_c_module(foundation_ir, enum_ir(foundation_ir, "recipient cipher decryption state"))
+
+        self.assertEqual("private", root.attrib["scope"])
+        self.assertEqual(
+            "../library/foundation/include/virgil/crypto/foundation/private/vscf_recipient_cipher_decryption_state.h",
+            root.attrib["header_file"],
+        )
+        self.assertEqual("vscf_recipient_cipher_decryption_state.h", root.attrib["c_include_file"])
+        enum_elem = root.find("c_enum")
+        self.assertIsNotNone(enum_elem)
+        self.assertEqual("vscf_recipient_cipher_decryption_state_t", enum_elem.attrib["typedef_name"])
+        constants = enum_elem.findall("c_constant")
+        self.assertEqual("vscf_recipient_cipher_decryption_state_WAITING_MESSAGE_INFO", constants[0].attrib["name"])
+        self.assertEqual("0", constants[0].attrib["value"])
 
 
 if __name__ == "__main__":

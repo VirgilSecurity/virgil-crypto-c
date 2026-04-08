@@ -20,7 +20,7 @@ class ProjectDirectRegistryTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unsupported project 'unknown'"):
             direct_c_renderers_for_project("unknown", REPO_ROOT)
 
-    def test_direct_c_renderers_for_project_loads_foundation_adapter(self) -> None:
+    def test_direct_c_renderers_for_project_loads_generic_foundation_enum_renderers(self) -> None:
         renderers = direct_c_renderers_for_project("foundation", REPO_ROOT)
 
         self.assertIn("c_module_vscf_alg_id.xml", renderers)
@@ -30,20 +30,7 @@ class ProjectDirectRegistryTest(unittest.TestCase):
         project = load_named_project_source("foundation", REPO_ROOT)
         ir = project_to_ir(project)
         renderers = direct_c_renderers_for_project("foundation", REPO_ROOT)
-        selected = {
-            "status",
-            "asn1 tag",
-            "alg id",
-            "oid id",
-            "recipient cipher decryption state",
-            "group msg type",
-            "cipher state",
-        }
-        expected = {
-            direct_xml_name(enum.output)
-            for enum in ir.enums
-            if enum.name in selected
-        }
+        expected = {direct_xml_name(enum.output) for enum in ir.enums}
 
         self.assertEqual(expected, set(renderers))
 
