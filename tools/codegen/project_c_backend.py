@@ -966,7 +966,7 @@ def _render_api_tag_method(
 
 
 
-_PLACEHOLDER_RE = re.compile(r"\.(\([^)]+\))")
+_PLACEHOLDER_RE = re.compile(r"\.\(([^)]+)\)")
 
 
 def _module_member_owner(module: IRModule, attrs: dict[str, str], *, kind: str) -> str:
