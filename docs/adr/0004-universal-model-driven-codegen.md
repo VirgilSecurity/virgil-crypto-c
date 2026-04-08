@@ -34,9 +34,22 @@ Eliminate per-project builder files. The shared C backend must render any entity
 - Handwritten C preservation contract for partially-generated files
 - Per-project build/test verification scripts at the validation layer only
 
+### Important downstream constraint: wrappers
+
+The resolved C modules, enums, and classes produced by the C backend are not terminal outputs — they will also serve as input for wrapper generation (Go, Java, Swift, PHP, Python, WASM).
+
+This means the C backend's resolved output must be:
+- structurally complete enough for wrapper backends to consume
+- stable in shape so wrapper backends can rely on the resolved C representation
+- not lossy — model information needed by wrappers (e.g. method signatures, type metadata, enum constants, class relationships) must survive C resolution even if the C emitter doesn't use every detail
+
+The generic renderers should therefore preserve model/IR richness in their resolved output rather than stripping it down to only what C emission needs.
+
 ## Consequences
 
 - Adding a new project requires zero new Python files
 - The C backend becomes testable against any project's IR
 - Rendering correctness is auditable against the model
 - Some current hardcoded `common` builders will need to be reclassified as either generic renderers or static support code
+- Resolved C output serves double duty: C file emission + wrapper backend input
+- Wrapper backends can be added later against the same resolved representation without re-resolving from source models
