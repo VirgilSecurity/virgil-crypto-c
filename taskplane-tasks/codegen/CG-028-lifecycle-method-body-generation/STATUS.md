@@ -1,6 +1,6 @@
 # CG-028: Generate Lifecycle Method Bodies from Class IR — Status
 
-**Current Step:** Step 2: Integrate into _render_reference_class_support
+**Current Step:** Step 3: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -34,17 +34,17 @@
 ---
 
 ### Step 2: Integrate into _render_reference_class_support
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Lifecycle methods rendered with code bodies
-- [ ] Constructor variants rendered with code bodies
-- [ ] Buffer XML output matches cfrag-based reference
-- [ ] Foundation class XML has correct lifecycle bodies
+- [x] Lifecycle methods rendered with code bodies
+- [x] Constructor variants rendered with code bodies
+- [x] Buffer XML output matches cfrag-based reference
+- [x] Foundation class XML has correct lifecycle bodies
 
 ---
 
 ### Step 3: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Python compile check passes
 - [ ] Build gate passes

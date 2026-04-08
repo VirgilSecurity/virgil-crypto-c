@@ -1321,19 +1321,20 @@ def _render_reference_class_support(
             uid=f"direct_{snake_name(cls.name)}_private_init_ctx_with_{_reference_ctor_suffix(ctor.name)}",
         )
 
-    for name, description, arguments, return_attrs in [
-        (_class_runtime_symbol(project_ir, cls, "init"), "Perform initialization of pre-allocated context.", ({"name": "self", "class": "self"},), {"type": "void"}),
-        (_class_runtime_symbol(project_ir, cls, "cleanup"), "Release all inner resources including class dependencies.", ({"name": "self", "class": "self"},), {"type": "void"}),
-        (_class_runtime_symbol(project_ir, cls, "new"), "Allocate context and perform it's initialization.", (), {"class": "self"}),
-        (_class_runtime_symbol(project_ir, cls, "delete"), "Release all inner resources and deallocate context if needed.\nIt is safe to call this method even if the context was statically allocated.", ({"name": "self", "class": "self"},), {"type": "void"}),
-        (_class_runtime_symbol(project_ir, cls, "destroy"), "Delete given context and nullifies reference.\nThis is a reverse action of the function 'new ()'.", ({"name": "self_ref", "class": "self", "access": "readwrite", "passed_by": "reference"},), {"type": "void"}),
-        (_class_runtime_symbol(project_ir, cls, "shallow_copy"), "Copy given class context by increasing reference counter.", ({"name": "self", "class": "self"},), {"class": "self"}),
+    for name, description, arguments, return_attrs, body in [
+        (_class_runtime_symbol(project_ir, cls, "init"), "Perform initialization of pre-allocated context.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_init_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "cleanup"), "Release all inner resources including class dependencies.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_cleanup_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "new"), "Allocate context and perform it's initialization.", (), {"class": "self"}, _lifecycle_new_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "delete"), "Release all inner resources and deallocate context if needed.\nIt is safe to call this method even if the context was statically allocated.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_delete_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "destroy"), "Delete given context and nullifies reference.\nThis is a reverse action of the function 'new ()'.", ({"name": "self_ref", "class": "self", "access": "readwrite", "passed_by": "reference"},), {"type": "void"}, _lifecycle_destroy_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "shallow_copy"), "Copy given class context by increasing reference counter.", ({"name": "self", "class": "self"},), {"class": "self"}, _lifecycle_shallow_copy_body(project_ir, cls)),
     ]:
         if name not in overridden_method_names:
-            _render_ir_method(parent, name=name, description=description, arguments=arguments, return_attrs=return_attrs, project_ir=project_ir, owner_class=cls.name)
+            _render_ir_method(parent, name=name, description=description, arguments=arguments, return_attrs=return_attrs, project_ir=project_ir, owner_class=cls.name, code=body)
 
     for ctor in cls.constructors:
         args = tuple(_method_arg_dict(arg) for arg in ctor.arguments)
+        ctor_arg_names = [_method_arg_dict(arg)["name"] for arg in ctor.arguments]
         init_name = class_constructor_symbol(project_ir, cls, ctor.name)
         new_name = _class_new_constructor_symbol(project_ir, cls, ctor.name)
         if init_name not in overridden_method_names:
@@ -1346,6 +1347,7 @@ def _render_reference_class_support(
                 project_ir=project_ir,
                 owner_class=cls.name,
                 uid=f"direct_{snake_name(cls.name)}_init_with_{snake_name(ctor.name)}",
+                code=_lifecycle_constructor_init_body(project_ir, cls, ctor.name, ctor_arg_names),
             )
         if new_name not in overridden_method_names:
             _render_ir_method(
@@ -1357,6 +1359,7 @@ def _render_reference_class_support(
                 project_ir=project_ir,
                 owner_class=cls.name,
                 uid=f"direct_{snake_name(cls.name)}_new_with_{snake_name(ctor.name)}",
+                code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
             )
 
 
