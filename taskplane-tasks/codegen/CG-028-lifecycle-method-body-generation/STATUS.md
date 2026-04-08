@@ -1,6 +1,6 @@
 # CG-028: Generate Lifecycle Method Bodies from Class IR — Status
 
-**Current Step:** Step 3: Testing & Verification
+**Current Step:** Step 4: Documentation & Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-08
 **Review Level:** 2
@@ -44,17 +44,17 @@
 ---
 
 ### Step 3: Testing & Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Python compile check passes
-- [ ] Build gate passes
-- [ ] Buffer lifecycle matches cfrag exactly
-- [ ] All failures fixed
+- [x] Python compile check passes
+- [x] Build gate passes
+- [x] Buffer lifecycle matches cfrag exactly (verified in Step 2)
+- [x] All failures fixed (no failures)
 
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Discoveries logged
 - [ ] CONTEXT.md updated if needed
