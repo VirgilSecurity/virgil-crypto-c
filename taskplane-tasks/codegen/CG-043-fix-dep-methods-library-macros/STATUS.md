@@ -1,6 +1,6 @@
 # CG-043: Fix Dependency Methods + Library Macros — Status
 
-**Current Step:** Step 1: Fix dependency methods
+**Current Step:** Step 2: Fix library assert macros
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 1
@@ -17,10 +17,10 @@
 - [x] CG-029 dependency rendering understood
 
 ### Step 1: Fix dependency methods
-**Status:** ⬜ Not Started
-- [ ] Dependency rendering called in impl main
-- [ ] curve25519.h verified
-- [ ] Committed
+**Status:** ✅ Complete
+- [x] Dependency rendering called in impl main
+- [x] curve25519.h verified
+- [x] Committed
 
 ### Step 2: Fix library assert macros
 **Status:** ⬜ Not Started

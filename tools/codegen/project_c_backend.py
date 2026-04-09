@@ -2768,12 +2768,14 @@ def _lifecycle_constructor_new_body(
 
 def _dependency_use_body(
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
     dep: "IRDependency",
+    *,
+    entity_kind: str = "class",
 ) -> str:
     """Generate the body for the use_X() dependency method."""
     prefix_upper = project_ir.prefix.upper()
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     dep_field = snake_name(dep.name)
     shallow_copy = _dependency_shallow_copy_call(project_ir, dep)
     is_impl_check = _dependency_is_implemented_check(project_ir, dep)
@@ -2801,12 +2803,14 @@ def _dependency_use_body(
 
 def _dependency_take_body(
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
     dep: "IRDependency",
+    *,
+    entity_kind: str = "class",
 ) -> str:
     """Generate the body for the take_X() dependency method."""
     prefix_upper = project_ir.prefix.upper()
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     dep_field = snake_name(dep.name)
     is_impl_check = _dependency_is_implemented_check(project_ir, dep)
 
@@ -2833,12 +2837,14 @@ def _dependency_take_body(
 
 def _dependency_release_body(
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
     dep: "IRDependency",
+    *,
+    entity_kind: str = "class",
 ) -> str:
     """Generate the body for the release_X() dependency method."""
     prefix_upper = project_ir.prefix.upper()
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     dep_field = snake_name(dep.name)
     destroy = _dependency_destroy_call(project_ir, dep)
 
@@ -2866,6 +2872,7 @@ def _render_dependency_method_element(
     owner_class: str,
     project_ir: IRProject,
     uid: str,
+    owner_entity_kind: str = "class",
 ) -> ET.Element:
     """Render a dependency use/take method with a typed dependency argument.
 
@@ -2874,7 +2881,7 @@ def _render_dependency_method_element(
     (e.g. ``vscf_impl_t``) that must appear as ``type_is='class'``
     and ``accessed_by='pointer'`` in the generated XML.
     """
-    class_type = class_type_symbol(project_ir, owner_class)
+    class_type = f"{entity_output(project_ir, entity_kind=owner_entity_kind, entity_name=owner_class).c_symbol}_t"
     method = text_element(
         parent,
         "c_method",
@@ -2903,18 +2910,83 @@ def _render_dependency_method_element(
     return method
 
 
+def _render_dep_observer_method(
+    parent: ET.Element,
+    *,
+    name: str,
+    description: str,
+    return_attrs: dict[str, str] | None,
+    project_ir: IRProject,
+    owner_name: str,
+    entity_kind: str = "class",
+    code: str = "// TODO: This is STUB. Implement me.",
+    uid: str = "",
+) -> None:
+    """Render observer hook (did_setup/did_release) for a dependency.
+
+    Uses ``_render_ir_method`` for classes and direct XML construction for
+    implementations, avoiding the class-only lookup in ``argument_from_source``.
+    """
+    if entity_kind == "class":
+        _render_ir_method(
+            parent,
+            name=name,
+            description=description,
+            arguments=({"name": "self", "class": "self"},),
+            return_attrs=return_attrs,
+            project_ir=project_ir,
+            owner_class=owner_name,
+            visibility="private",
+            declaration="private",
+            definition="private",
+            modifiers=("static",),
+            code=code,
+            uid=uid,
+        )
+    else:
+        owner_type = f"{entity_output(project_ir, entity_kind=entity_kind, entity_name=owner_name).c_symbol}_t"
+        method = text_element(
+            parent,
+            "c_method",
+            name=name,
+            visibility="private",
+            declaration="private",
+            definition="private",
+            uid=uid,
+        )
+        text_element(method, "c_argument", name="self", accessed_by="pointer", type=owner_type, type_is="class")
+        if return_attrs is None or return_attrs.get("type") == "void":
+            text_element(method, "c_return", accessed_by="value", type="void")
+        elif return_attrs.get("enum"):
+            enum_name = return_attrs["enum"]
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+            text_element(method, "c_return", accessed_by="value", type=rendered_type, type_is="primitive")
+        else:
+            rendered_type, kind = type_map(return_attrs.get("type"))
+            text_element(method, "c_return", accessed_by="value", type=rendered_type, type_is=kind)
+        text_element(method, "c_code", code, type="generated", lang="c")
+        text_element(method, "c_modifier", value="static")
+        if description:
+            method.text = comment_text(description)
+
+
 def _render_dependency_methods(
     parent: ET.Element,
     *,
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
+    entity_kind: str = "class",
 ) -> None:
-    """Render use/take/release methods for each class dependency.
+    """Render use/take/release methods for each class/implementation dependency.
 
     Also renders did_setup/did_release observer hooks for dependencies
     that have ``has_observers`` set.
     """
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     class_snake = snake_name(cls.name)
 
     for dep in cls.dependencies:
@@ -2930,35 +3002,27 @@ def _render_dependency_methods(
             if dep.is_observers_return_status:
                 did_setup_return = {"type": "status", "enum": "status"}
                 did_setup_code = "// TODO: This is STUB. Implement me.\nreturn vscf_status_SUCCESS;"
-            _render_ir_method(
+            _render_dep_observer_method(
                 parent,
                 name=did_setup_name,
                 description=f"This method is called when {dep.type_kind} '{dep.type_name}' was setup.",
-                arguments=({"name": "self", "class": "self"},),
                 return_attrs=did_setup_return,
                 project_ir=project_ir,
-                owner_class=cls.name,
-                visibility="private",
-                declaration="private",
-                definition="private",
-                modifiers=("static",),
+                owner_name=cls.name,
+                entity_kind=entity_kind,
                 code=did_setup_code,
                 uid=f"direct_{class_snake}_did_setup_{dep_field}",
             )
             # did_release
             did_release_name = f"{class_symbol}_did_release_{dep_field}"
-            _render_ir_method(
+            _render_dep_observer_method(
                 parent,
                 name=did_release_name,
                 description=f"This method is called when {dep.type_kind} '{dep.type_name}' was released.",
-                arguments=({"name": "self", "class": "self"},),
                 return_attrs={"type": "void"},
                 project_ir=project_ir,
-                owner_class=cls.name,
-                visibility="private",
-                declaration="private",
-                definition="private",
-                modifiers=("static",),
+                owner_name=cls.name,
+                entity_kind=entity_kind,
                 code="// TODO: This is STUB. Implement me.",
                 uid=f"direct_{class_snake}_did_release_{dep_field}",
             )
@@ -2975,10 +3039,11 @@ def _render_dependency_methods(
             dep_arg_name=dep_field,
             dep_arg_type=dep_type,
             return_type=use_return_type,
-            code=_dependency_use_body(project_ir, cls, dep),
+            code=_dependency_use_body(project_ir, cls, dep, entity_kind=entity_kind),
             owner_class=cls.name,
             project_ir=project_ir,
             uid=f"direct_{class_snake}_use_{dep_field}",
+            owner_entity_kind=entity_kind,
         )
 
         # --- take_X (only for interface/class/impl deps) ---
@@ -2994,24 +3059,48 @@ def _render_dependency_methods(
                 dep_arg_name=dep_field,
                 dep_arg_type=dep_type,
                 return_type=take_return_type,
-                code=_dependency_take_body(project_ir, cls, dep),
+                code=_dependency_take_body(project_ir, cls, dep, entity_kind=entity_kind),
                 owner_class=cls.name,
                 project_ir=project_ir,
                 uid=f"direct_{class_snake}_take_{dep_field}",
+                owner_entity_kind=entity_kind,
             )
 
         # --- release_X ---
-        _render_ir_method(
-            parent,
-            name=f"{class_symbol}_release_{dep_field}",
-            description=f"Release dependency to the {dep.type_kind} '{dep.type_name}'.",
-            arguments=({"name": "self", "class": "self"},),
-            return_attrs={"type": "void"},
-            project_ir=project_ir,
-            owner_class=cls.name,
-            code=_dependency_release_body(project_ir, cls, dep),
-            uid=f"direct_{class_snake}_release_{dep_field}",
-        )
+        release_code = _dependency_release_body(project_ir, cls, dep, entity_kind=entity_kind)
+        release_name = f"{class_symbol}_release_{dep_field}"
+        release_desc = f"Release dependency to the {dep.type_kind} '{dep.type_name}'."
+        if entity_kind == "class":
+            _render_ir_method(
+                parent,
+                name=release_name,
+                description=release_desc,
+                arguments=({"name": "self", "class": "self"},),
+                return_attrs={"type": "void"},
+                project_ir=project_ir,
+                owner_class=cls.name,
+                code=release_code,
+                uid=f"direct_{class_snake}_release_{dep_field}",
+            )
+        else:
+            # For implementations, build release method directly to avoid
+            # class_type_symbol lookup which only handles classes.
+            owner_type = f"{entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol}_t"
+            method = text_element(
+                parent,
+                "c_method",
+                name=release_name,
+                visibility="public",
+                declaration="public",
+                definition="public",
+                uid=f"direct_{class_snake}_release_{dep_field}",
+            )
+            text_element(method, "c_argument", name="self", accessed_by="pointer", type=owner_type, type_is="class")
+            text_element(method, "c_return", accessed_by="value", type="void")
+            text_element(method, "c_code", release_code, type="generated", lang="c")
+            text_element(method, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
+            if release_desc:
+                method.text = comment_text(release_desc)
 
 
 def _render_ir_method(
@@ -4430,6 +4519,10 @@ def render_implementation_c_module(
         declaration="external",
         definition="private",
     )
+
+    # --- Dependency management methods: use/take/release ---
+    if impl.dependencies:
+        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
 
     # --- Interface method implementations ---
     _render_impl_interface_methods(
