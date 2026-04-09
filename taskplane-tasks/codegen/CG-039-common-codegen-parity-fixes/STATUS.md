@@ -55,9 +55,9 @@
 ### Step 3: Testing & Verification
 **Status:** 🟨 In Progress
 
-- [ ] --verify common shows 0 non-generated warnings
-- [ ] All Python tests pass
-- [ ] Build gate passes
+- [x] --verify common shows 0 non-generated warnings
+- [x] All Python tests pass (159 tests OK)
+- [x] Build gate passes (common built + verify 0 diffs)
 
 ---
 
