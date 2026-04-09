@@ -93,40 +93,38 @@ typedef struct vscf_key_cipher_api_t vscf_key_cipher_api_t;
 //  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_key_cipher_can_encrypt(const vscf_impl_t *impl, const vscf_impl_t *public_key, size_t data_len);
+vscf_key_cipher_can_encrypt(const vscf_impl_t *impl, void public_key, size_t data_len);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_key_cipher_encrypted_len(const vscf_impl_t *impl, const vscf_impl_t *public_key, size_t data_len);
+vscf_key_cipher_encrypted_len(const vscf_impl_t *impl, void public_key, size_t data_len);
 
 //
 //  Encrypt data with a given public key.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_key_cipher_encrypt(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
+vscf_key_cipher_encrypt(const vscf_impl_t *impl, void public_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Check if algorithm can decrypt data with a given key.
 //  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_key_cipher_can_decrypt(const vscf_impl_t *impl, const vscf_impl_t *private_key, size_t data_len);
+vscf_key_cipher_can_decrypt(const vscf_impl_t *impl, void private_key, size_t data_len);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_key_cipher_decrypted_len(const vscf_impl_t *impl, const vscf_impl_t *private_key, size_t data_len);
+vscf_key_cipher_decrypted_len(const vscf_impl_t *impl, void private_key, size_t data_len);
 
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_key_cipher_decrypt(const vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
+vscf_key_cipher_decrypt(const vscf_impl_t *impl, void private_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Return key cipher API, or NULL if it is not implemented.

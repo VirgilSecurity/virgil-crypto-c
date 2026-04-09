@@ -68,6 +68,13 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Process buffered encryption/decryption to ensure that data size is
+//  multiple of the block size of the cipher.
+//
+VSCF_PRIVATE void
+vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t *data, vsc_buffer_t *out);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

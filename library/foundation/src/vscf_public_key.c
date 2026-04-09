@@ -64,51 +64,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Return public key API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_public_key_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_PUBLIC_KEY);
-    return (const vscf_public_key_api_t *) api;
-}
-
-//
-//  Return key API.
-//
-VSCF_PUBLIC const vscf_key_api_t *
-vscf_public_key_key_api(const vscf_public_key_api_t *public_key_api) {
-
-    VSCF_ASSERT_PTR (public_key_api);
-
-    return public_key_api->key_api;
-}
-
-//
-//  Check if given object implements interface 'public key'.
-//
-VSCF_PUBLIC bool
-vscf_public_key_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_PUBLIC_KEY) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_public_key_api_tag(const vscf_public_key_api_t *public_key_api) {
-
-    VSCF_ASSERT_PTR (public_key_api);
-
-    return public_key_api->api_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

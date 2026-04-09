@@ -78,17 +78,15 @@
 //
 //  Deserialize PKCS#8 Private Key by using internal ASN.1 reader.
 //
-static vscf_raw_private_key_t *
-vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_asn1_deserializer_t *self,
-        size_t seq_left_len, int version, vscf_error_t *error);
+VSCF_PRIVATE void
+vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error);
 
 //
 //  Deserialize SEC1 Private Key by using internal ASN.1 reader.
 //  Argument "alg info" can be NULL.
 //
-static vscf_raw_private_key_t *
-vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len,
-        int version, vscf_impl_t *alg_info, vscf_error_t *error);
+VSCF_PRIVATE void
+vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_impl_t *alg_info, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

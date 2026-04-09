@@ -147,30 +147,17 @@ VSCF_PUBLIC vscf_fake_random_t *
 vscf_fake_random_shallow_copy(vscf_fake_random_t *self);
 
 //
-//  Configure random number generator to generate sequence filled with given byte.
-//
-VSCF_PUBLIC void
-vscf_fake_random_setup_source_byte(vscf_fake_random_t *self, byte byte_source);
-
-//
-//  Configure random number generator to generate random sequence from given data.
-//  Note, that given data is used as circular source.
-//
-VSCF_PUBLIC void
-vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_source);
-
-//
 //  Generate random bytes.
 //  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_random(const vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
+vscf_fake_random_random(const vscf_fake_random_t *self, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_reseed(vscf_fake_random_t *self) VSCF_NODISCARD;
+vscf_fake_random_reseed(vscf_fake_random_t *self);
 
 //
 //  Defines that implemented source is strong.
@@ -182,7 +169,20 @@ vscf_fake_random_is_strong(vscf_fake_random_t *self);
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_fake_random_gather(vscf_fake_random_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_fake_random_gather(vscf_fake_random_t *self, size_t len, vsc_buffer_t *out);
+
+//
+//  Configure random number generator to generate sequence filled with given byte.
+//
+VSCF_PRIVATE void
+vscf_fake_random_setup_source_byte(vscf_fake_random_t *self, byte byte_source);
+
+//
+//  Configure random number generator to generate random sequence from given data.
+//  Note, that given data is used as circular source.
+//
+VSCF_PRIVATE void
+vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t *data_source);
 
 
 // --------------------------------------------------------------------------

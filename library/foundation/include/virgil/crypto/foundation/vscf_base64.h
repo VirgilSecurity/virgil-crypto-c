@@ -82,29 +82,78 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Handle 'base64' context.
+//
+typedef struct vscf_base64_t vscf_base64_t;
+
+//
+//  Return size of 'vscf_base64_t'.
+//
+VSCF_PUBLIC size_t
+vscf_base64_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_base64_init(vscf_base64_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_base64_cleanup(vscf_base64_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_base64_t *
+vscf_base64_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCF_PUBLIC void
+vscf_base64_delete(vscf_base64_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_base64_new ()'.
+//
+VSCF_PUBLIC void
+vscf_base64_destroy(vscf_base64_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_base64_t *
+vscf_base64_shallow_copy(vscf_base64_t *self);
+
+//
 //  Calculate length in bytes required to hold an encoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_encoded_len(size_t data_len);
+vscf_base64_encoded_len(vscf_base64_t *self, size_t data_len);
 
 //
 //  Encode given data to the base64 format.
 //  Note, written buffer is NOT null-terminated.
 //
 VSCF_PUBLIC void
-vscf_base64_encode(vsc_data_t data, vsc_buffer_t *str);
+vscf_base64_encode(vscf_base64_t *self, vsc_data_t data, vsc_buffer_t str);
 
 //
 //  Calculate length in bytes required to hold a decoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_decoded_len(size_t str_len);
+vscf_base64_decoded_len(vscf_base64_t *self, size_t str_len);
 
 //
 //  Decode given data from the base64 format.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_base64_decode(vsc_data_t str, vsc_buffer_t *data) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_base64_decode(vscf_base64_t *self, vsc_data_t str, vsc_buffer_t data);
 
 
 // --------------------------------------------------------------------------

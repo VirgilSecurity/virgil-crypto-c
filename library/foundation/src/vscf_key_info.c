@@ -82,7 +82,7 @@ vscf_key_info_cleanup_ctx(vscf_key_info_t *self);
 //  Build key information based on the generic algorithm information.
 //
 static void
-vscf_key_info_init_ctx_with_alg_info(vscf_key_info_t *self, const vscf_impl_t *alg_info);
+vscf_key_info_init_ctx_with_alg_info(vscf_key_info_t *self, void alg_info);
 
 //
 //  Return size of 'vscf_key_info_t'.
@@ -99,9 +99,9 @@ vscf_key_info_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_key_info_init(vscf_key_info_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_info_t));
+    vsc_zeroize(self, sizeof(vscf_key_info_t));
 
     self->refcnt = 1;
 
@@ -120,7 +120,7 @@ vscf_key_info_cleanup(vscf_key_info_t *self) {
 
     vscf_key_info_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_info_t));
+    vsc_zeroize(self, sizeof(vscf_key_info_t));
 }
 
 //
@@ -129,12 +129,12 @@ vscf_key_info_cleanup(vscf_key_info_t *self) {
 VSCF_PUBLIC vscf_key_info_t *
 vscf_key_info_new(void) {
 
-    vscf_key_info_t *self = (vscf_key_info_t *) vscf_alloc(sizeof (vscf_key_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_key_info_t *self = (vscf_key_info_t *) vsc_alloc(sizeof (vscf_key_info_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_key_info_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
@@ -144,11 +144,11 @@ vscf_key_info_new(void) {
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC void
-vscf_key_info_init_with_alg_info(vscf_key_info_t *self, const vscf_impl_t *alg_info) {
+vscf_key_info_init_with_alg_info(vscf_key_info_t *self, void alg_info) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_info_t));
+    vsc_zeroize(self, sizeof(vscf_key_info_t));
 
     self->refcnt = 1;
 
@@ -160,14 +160,14 @@ vscf_key_info_init_with_alg_info(vscf_key_info_t *self, const vscf_impl_t *alg_i
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC vscf_key_info_t *
-vscf_key_info_new_with_alg_info(const vscf_impl_t *alg_info) {
+vscf_key_info_new_with_alg_info(void alg_info) {
 
-    vscf_key_info_t *self = (vscf_key_info_t *) vscf_alloc(sizeof (vscf_key_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_key_info_t *self = (vscf_key_info_t *) vsc_alloc(sizeof (vscf_key_info_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_key_info_init_with_alg_info(self, alg_info);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

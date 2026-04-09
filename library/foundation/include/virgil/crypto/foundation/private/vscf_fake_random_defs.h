@@ -96,18 +96,6 @@ struct vscf_fake_random_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    vsc_buffer_t *data_source;
-    //
-    //  Implementation specific context.
-    //
-    byte byte_source;
-    //
-    //  Implementation specific context.
-    //
-    size_t pos;
 };
 
 

@@ -99,10 +99,6 @@ struct vscf_random_padding_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
     //  Implementation specific context.
     //
     vscf_tail_filter_t *tail_filter;

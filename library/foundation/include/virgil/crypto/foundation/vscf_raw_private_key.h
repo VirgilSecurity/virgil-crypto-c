@@ -149,95 +149,6 @@ VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_raw_private_key_shallow_copy(vscf_raw_private_key_t *self);
 
 //
-//  Perform initialization of pre-allocated context.
-//  Creates raw key defined with data and algorithm.
-//  Note, data is copied.
-//
-VSCF_PRIVATE void
-vscf_raw_private_key_init_with_data(vscf_raw_private_key_t *self, vsc_data_t key_data, vscf_impl_t **alg_info_ref);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Creates raw key defined with data and algorithm.
-//  Note, data is copied.
-//
-VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_raw_private_key_new_with_data(vsc_data_t key_data, vscf_impl_t **alg_info_ref);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Creates raw key defined with buffer and algorithm.
-//  Note, data is not copied.
-//
-VSCF_PRIVATE void
-vscf_raw_private_key_init_with_buffer(vscf_raw_private_key_t *self, vsc_buffer_t **key_data_ref,
-        vscf_impl_t **alg_info_ref);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Creates raw key defined with buffer and algorithm.
-//  Note, data is not copied.
-//
-VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_raw_private_key_new_with_buffer(vsc_buffer_t **key_data_ref, vscf_impl_t **alg_info_ref);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Creates raw key defined another raw key and new impl tag.
-//  Note, data is not copied, but new instance of key is created.s
-//
-VSCF_PRIVATE void
-vscf_raw_private_key_init_with_redefined_impl_tag(vscf_raw_private_key_t *self, const vscf_raw_private_key_t *other,
-        vscf_impl_tag_t impl_tag);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Creates raw key defined another raw key and new impl tag.
-//  Note, data is not copied, but new instance of key is created.s
-//
-VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_raw_private_key_new_with_redefined_impl_tag(const vscf_raw_private_key_t *other, vscf_impl_tag_t impl_tag);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Creates a fully defined raw key.
-//
-VSCF_PRIVATE void
-vscf_raw_private_key_init_with_members(vscf_raw_private_key_t *self, vsc_data_t key_data, const vscf_impl_t *alg_info,
-        vscf_impl_tag_t impl_tag);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Creates a fully defined raw key.
-//
-VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_raw_private_key_new_with_members(vsc_data_t key_data, const vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag);
-
-//
-//  Return key data.
-//
-VSCF_PUBLIC vsc_data_t
-vscf_raw_private_key_data(const vscf_raw_private_key_t *self);
-
-//
-//  Return true if private key contains public key.
-//
-VSCF_PUBLIC bool
-vscf_raw_private_key_has_public_key(const vscf_raw_private_key_t *self);
-
-//
-//  Setup public key related to the private key.
-//
-VSCF_PUBLIC void
-vscf_raw_private_key_set_public_key(vscf_raw_private_key_t *self, vscf_raw_public_key_t **raw_public_key_ref);
-
-//
-//  Return public key related to the private key.
-//
-VSCF_PUBLIC const vscf_raw_public_key_t *
-vscf_raw_private_key_get_public_key(const vscf_raw_private_key_t *self);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -246,7 +157,7 @@ vscf_raw_private_key_alg_id(const vscf_raw_private_key_t *self);
 //
 //  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_raw_private_key_alg_info(const vscf_raw_private_key_t *self);
 
 //
@@ -264,7 +175,7 @@ vscf_raw_private_key_bitlen(const vscf_raw_private_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PRIVATE vscf_impl_tag_t
+VSCF_PUBLIC vscf_impl/tag_t
 vscf_raw_private_key_impl_tag(const vscf_raw_private_key_t *self);
 
 //
@@ -279,6 +190,30 @@ vscf_raw_private_key_is_valid(const vscf_raw_private_key_t *self);
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_raw_private_key_extract_public_key(const vscf_raw_private_key_t *self);
+
+//
+//  Return key data.
+//
+VSCF_PRIVATE vsc_data_t *
+vscf_raw_private_key_data(const vscf_raw_private_key_t *self);
+
+//
+//  Return true if private key contains public key.
+//
+VSCF_PRIVATE bool
+vscf_raw_private_key_has_public_key(const vscf_raw_private_key_t *self);
+
+//
+//  Setup public key related to the private key.
+//
+VSCF_PRIVATE void
+vscf_raw_private_key_set_public_key(vscf_raw_private_key_t *self, void);
+
+//
+//  Return public key related to the private key.
+//
+VSCF_PRIVATE void
+vscf_raw_private_key_get_public_key(const vscf_raw_private_key_t *self);
 
 
 // --------------------------------------------------------------------------

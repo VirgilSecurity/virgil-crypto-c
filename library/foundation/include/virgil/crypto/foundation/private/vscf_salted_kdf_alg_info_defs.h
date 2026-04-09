@@ -105,7 +105,7 @@ struct vscf_salted_kdf_alg_info_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *hash_alg_info;
+    void hash_alg_info;
     //
     //  Implementation specific context.
     //

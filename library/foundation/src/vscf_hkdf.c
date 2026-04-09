@@ -72,13 +72,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Private integral constants.
-//
-enum {
-    vscf_hkdf_HASH_COUNTER_MAX = 255
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -94,7 +94,7 @@ struct vscf_rsa_public_key_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *alg_info;
+    void alg_info;
     //
     //  Implementation specific context.
     //

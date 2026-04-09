@@ -71,82 +71,18 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  This method is called when interface 'asn1 writer' was setup.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_serializer_did_setup_asn1_writer(vscf_pkcs8_serializer_t *self);
-
-//
-//  This method is called when interface 'asn1 writer' was released.
-//
-VSCF_PRIVATE void
-vscf_pkcs8_serializer_did_release_asn1_writer(vscf_pkcs8_serializer_t *self);
-
 static const vscf_api_t *
 vscf_pkcs8_serializer_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'key serializer api'.
 //
-static const vscf_key_serializer_api_t key_serializer_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_serializer' MUST be equal to the 'vscf_api_tag_KEY_SERIALIZER'.
-    //
-    vscf_api_tag_KEY_SERIALIZER,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_PKCS8_SERIALIZER,
-    //
-    //  Calculate buffer size enough to hold serialized public key.
-    //
-    //  Precondition: public key must be exportable.
-    //
-    (vscf_key_serializer_api_serialized_public_key_len_fn)vscf_pkcs8_serializer_serialized_public_key_len,
-    //
-    //  Serialize given public key to an interchangeable format.
-    //
-    //  Precondition: public key must be exportable.
-    //
-    (vscf_key_serializer_api_serialize_public_key_fn)vscf_pkcs8_serializer_serialize_public_key,
-    //
-    //  Calculate buffer size enough to hold serialized private key.
-    //
-    //  Precondition: private key must be exportable.
-    //
-    (vscf_key_serializer_api_serialized_private_key_len_fn)vscf_pkcs8_serializer_serialized_private_key_len,
-    //
-    //  Serialize given private key to an interchangeable format.
-    //
-    //  Precondition: private key must be exportable.
-    //
-    (vscf_key_serializer_api_serialize_private_key_fn)vscf_pkcs8_serializer_serialize_private_key
-};
+static const vscf_key_serializer_api_t key_serializer_api = vscf_api_tag_KEY_SERIALIZER;
 
 //
 //  Compile-time known information about 'pkcs8 serializer' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_PKCS8_SERIALIZER,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_pkcs8_serializer_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_pkcs8_serializer_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_pkcs8_serializer_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_PKCS8_SERIALIZER;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -174,8 +110,6 @@ vscf_pkcs8_serializer_cleanup(vscf_pkcs8_serializer_t *self) {
     if (self == NULL) {
         return;
     }
-
-    vscf_pkcs8_serializer_release_asn1_writer(self);
 
     vscf_pkcs8_serializer_cleanup_ctx(self);
 
@@ -287,60 +221,12 @@ vscf_pkcs8_serializer_impl_const(const vscf_pkcs8_serializer_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
-
-    vscf_pkcs8_serializer_did_setup_asn1_writer(self);
-}
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_take_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = asn1_writer;
-
-    vscf_pkcs8_serializer_did_setup_asn1_writer(self);
-}
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_writer);
-
-    vscf_pkcs8_serializer_did_release_asn1_writer(self);
-}
-
 static const vscf_api_t *
 vscf_pkcs8_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY_SERIALIZER:
-            return (const vscf_api_t *) &key_serializer_api;
+        return (const vscf_api_t *)                 &key_serializer_api;
         default:
             return NULL;
     }

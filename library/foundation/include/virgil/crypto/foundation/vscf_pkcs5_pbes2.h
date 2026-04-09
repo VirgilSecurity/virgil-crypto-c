@@ -148,50 +148,6 @@ VSCF_PUBLIC vscf_pkcs5_pbes2_t *
 vscf_pkcs5_pbes2_shallow_copy(vscf_pkcs5_pbes2_t *self);
 
 //
-//  Setup dependency to the interface 'salted kdf' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf);
-
-//
-//  Setup dependency to the interface 'salted kdf' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf);
-
-//
-//  Release dependency to the interface 'salted kdf'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self);
-
-//
-//  Setup dependency to the interface 'cipher' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher);
-
-//
-//  Setup dependency to the interface 'cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher);
-
-//
-//  Release dependency to the interface 'cipher'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self);
-
-//
-//  Configure cipher with a new password.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t pwd);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -207,13 +163,13 @@ vscf_pkcs5_pbes2_produce_alg_info(const vscf_pkcs5_pbes2_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_pkcs5_pbes2_restore_alg_info(vscf_pkcs5_pbes2_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_pkcs5_pbes2_encrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t *data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
@@ -231,13 +187,19 @@ vscf_pkcs5_pbes2_precise_encrypted_len(const vscf_pkcs5_pbes2_t *self, size_t da
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t *data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
 vscf_pkcs5_pbes2_decrypted_len(const vscf_pkcs5_pbes2_t *self, size_t data_len);
+
+//
+//  Configure cipher with a new password.
+//
+VSCF_PRIVATE void
+vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t *pwd);
 
 
 // --------------------------------------------------------------------------

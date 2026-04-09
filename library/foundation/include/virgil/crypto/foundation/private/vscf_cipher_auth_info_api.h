@@ -78,7 +78,7 @@ extern "C" {
 struct vscf_cipher_auth_info_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_auth_info' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH_INFO'.
+    //  For interface 'cipher auth info' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH_INFO'.
     //
     vscf_api_tag_t api_tag;
     //

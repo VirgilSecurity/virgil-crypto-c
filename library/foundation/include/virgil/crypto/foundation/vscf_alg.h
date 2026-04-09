@@ -89,14 +89,14 @@ vscf_alg_alg_id(const vscf_impl_t *impl);
 //
 //  Produce object with algorithm information and configuration parameters.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC void
 vscf_alg_produce_alg_info(const vscf_impl_t *impl);
 
 //
 //  Restore algorithm configuration from the given object.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
+vscf_alg_restore_alg_info(vscf_impl_t *impl, void alg_info);
 
 //
 //  Return alg API, or NULL if it is not implemented.

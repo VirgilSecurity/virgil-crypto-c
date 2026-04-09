@@ -75,117 +75,28 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  This method is called when interface 'hash' was setup.
-//
-VSCF_PRIVATE void
-vscf_hkdf_did_setup_hash(vscf_hkdf_t *self);
-
-//
-//  This method is called when interface 'hash' was released.
-//
-VSCF_PRIVATE void
-vscf_hkdf_did_release_hash(vscf_hkdf_t *self);
-
 static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag);
 
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
-    //
-    vscf_api_tag_ALG,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HKDF,
-    //
-    //  Provide algorithm identificator.
-    //
-    (vscf_alg_api_alg_id_fn)vscf_hkdf_alg_id,
-    //
-    //  Produce object with algorithm information and configuration parameters.
-    //
-    (vscf_alg_api_produce_alg_info_fn)vscf_hkdf_produce_alg_info,
-    //
-    //  Restore algorithm configuration from the given object.
-    //
-    (vscf_alg_api_restore_alg_info_fn)vscf_hkdf_restore_alg_info
-};
+static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
 
 //
 //  Configuration of the interface API 'kdf api'.
 //
-static const vscf_kdf_api_t kdf_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
-    //
-    vscf_api_tag_KDF,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HKDF,
-    //
-    //  Derive key of the requested length from the given data.
-    //
-    (vscf_kdf_api_derive_fn)vscf_hkdf_derive
-};
+static const vscf_kdf_api_t kdf_api = vscf_api_tag_KDF;
 
 //
 //  Configuration of the interface API 'salted kdf api'.
 //
-static const vscf_salted_kdf_api_t salted_kdf_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'salted_kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
-    //
-    vscf_api_tag_SALTED_KDF,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HKDF,
-    //
-    //  Link to the inherited interface API 'kdf'.
-    //
-    &kdf_api,
-    //
-    //  Prepare algorithm to derive new key.
-    //
-    (vscf_salted_kdf_api_reset_fn)vscf_hkdf_reset,
-    //
-    //  Setup application specific information (optional).
-    //  Can be empty.
-    //
-    (vscf_salted_kdf_api_set_info_fn)vscf_hkdf_set_info
-};
+static const vscf_salted_kdf_api_t salted_kdf_api = vscf_api_tag_SALTED_KDF;
 
 //
 //  Compile-time known information about 'hkdf' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_HKDF,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_hkdf_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_hkdf_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_hkdf_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_HKDF;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -213,8 +124,6 @@ vscf_hkdf_cleanup(vscf_hkdf_t *self) {
     if (self == NULL) {
         return;
     }
-
-    vscf_hkdf_release_hash(self);
 
     vscf_hkdf_cleanup_ctx(self);
 
@@ -326,64 +235,16 @@ vscf_hkdf_impl_const(const vscf_hkdf_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_hkdf_use_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = vscf_impl_shallow_copy(hash);
-
-    vscf_hkdf_did_setup_hash(self);
-}
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_hkdf_take_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = hash;
-
-    vscf_hkdf_did_setup_hash(self);
-}
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_hkdf_release_hash(vscf_hkdf_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->hash);
-
-    vscf_hkdf_did_release_hash(self);
-}
-
 static const vscf_api_t *
 vscf_hkdf_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_KDF:
-            return (const vscf_api_t *) &kdf_api;
+        return (const vscf_api_t *)                 &kdf_api;
         case vscf_api_tag_SALTED_KDF:
-            return (const vscf_api_t *) &salted_kdf_api;
+        return (const vscf_api_t *)                 &salted_kdf_api;
         default:
             return NULL;
     }

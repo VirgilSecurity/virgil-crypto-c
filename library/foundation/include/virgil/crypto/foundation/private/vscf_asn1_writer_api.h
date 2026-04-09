@@ -84,16 +84,16 @@ extern "C" {
 //
 //  Callback. Reset all internal states and prepare to new ASN.1 writing operations.
 //
-typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, byte *out, size_t out_len);
+typedef void (*vscf_asn1_writer_api_reset_fn)(vscf_impl_t *impl, const byte *out, size_t out_len);
 
 //
 //  Callback. Finalize writing and forbid further operations.
 //
-//          Note, that ASN.1 structure is always written to the buffer end, and
-//          if argument "do not adjust" is false, then data is moved to the
-//          beginning, otherwise - data is left at the buffer end.
+//  Note, that ASN.1 structure is always written to the buffer end, and
+//  if argument "do not adjust" is false, then data is moved to the
+//  beginning, otherwise - data is left at the buffer end.
 //
-//          Returns length of the written bytes.
+//  Returns length of the written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_finish_fn)(vscf_impl_t *impl, bool do_not_adjust);
 
@@ -129,91 +129,91 @@ typedef vscf_status_t (*vscf_asn1_writer_api_status_fn)(const vscf_impl_t *impl)
 
 //
 //  Callback. Move writing position backward for the given length.
-//          Return current writing position.
+//  Return current writing position.
 //
 typedef byte * (*vscf_asn1_writer_api_reserve_fn)(vscf_impl_t *impl, size_t len);
 
 //
 //  Callback. Write ASN.1 tag.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_tag_fn)(vscf_impl_t *impl, int tag);
 
 //
 //  Callback. Write context-specific ASN.1 tag.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_context_tag_fn)(vscf_impl_t *impl, int tag, size_t len);
 
 //
 //  Callback. Write length of the following data.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_len_fn)(vscf_impl_t *impl, size_t len);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_int_fn)(vscf_impl_t *impl, int value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_int8_fn)(vscf_impl_t *impl, int8_t value);
+typedef size_t (*vscf_asn1_writer_api_write_int8_fn)(vscf_impl_t *impl, int value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_int16_fn)(vscf_impl_t *impl, int16_t value);
+typedef size_t (*vscf_asn1_writer_api_write_int16_fn)(vscf_impl_t *impl, int value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_int32_fn)(vscf_impl_t *impl, int32_t value);
+typedef size_t (*vscf_asn1_writer_api_write_int32_fn)(vscf_impl_t *impl, int value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_int64_fn)(vscf_impl_t *impl, int64_t value);
+typedef size_t (*vscf_asn1_writer_api_write_int64_fn)(vscf_impl_t *impl, int value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_uint_fn)(vscf_impl_t *impl, unsigned int value);
+typedef size_t (*vscf_asn1_writer_api_write_uint_fn)(vscf_impl_t *impl, unsigned value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_uint8_fn)(vscf_impl_t *impl, uint8_t value);
+typedef size_t (*vscf_asn1_writer_api_write_uint8_fn)(vscf_impl_t *impl, unsigned value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_uint16_fn)(vscf_impl_t *impl, uint16_t value);
+typedef size_t (*vscf_asn1_writer_api_write_uint16_fn)(vscf_impl_t *impl, unsigned value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_uint32_fn)(vscf_impl_t *impl, uint32_t value);
+typedef size_t (*vscf_asn1_writer_api_write_uint32_fn)(vscf_impl_t *impl, unsigned value);
 
 //
 //  Callback. Write ASN.1 type: INTEGER.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
-typedef size_t (*vscf_asn1_writer_api_write_uint64_fn)(vscf_impl_t *impl, uint64_t value);
+typedef size_t (*vscf_asn1_writer_api_write_uint64_fn)(vscf_impl_t *impl, unsigned value);
 
 //
 //  Callback. Write ASN.1 type: BOOLEAN.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_bool_fn)(vscf_impl_t *impl, bool value);
 
@@ -224,45 +224,45 @@ typedef size_t (*vscf_asn1_writer_api_write_null_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Write ASN.1 type: OCTET STRING.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_octet_str_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Write ASN.1 type: BIT STRING with all zero unused bits.
 //
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_octet_str_as_bitstring_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Write raw data directly to the ASN.1 structure.
-//          Return count of written bytes.
-//          Note, use this method carefully.
+//  Return count of written bytes.
+//  Note, use this method carefully.
 //
 typedef size_t (*vscf_asn1_writer_api_write_data_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Callback. Write ASN.1 type: UTF8String.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_utf8_str_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Write ASN.1 type: OID.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_oid_fn)(vscf_impl_t *impl, vsc_data_t value);
 
 //
 //  Callback. Mark previously written data of given length as ASN.1 type: SEQUENCE.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_sequence_fn)(vscf_impl_t *impl, size_t len);
 
 //
 //  Callback. Mark previously written data of given length as ASN.1 type: SET.
-//          Return count of written bytes.
+//  Return count of written bytes.
 //
 typedef size_t (*vscf_asn1_writer_api_write_set_fn)(vscf_impl_t *impl, size_t len);
 
@@ -272,7 +272,7 @@ typedef size_t (*vscf_asn1_writer_api_write_set_fn)(vscf_impl_t *impl, size_t le
 struct vscf_asn1_writer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'asn1_writer' MUST be equal to the 'vscf_api_tag_ASN1_WRITER'.
+    //  For interface 'asn1 writer' MUST be equal to the 'vscf_api_tag_ASN1_WRITER'.
     //
     vscf_api_tag_t api_tag;
     //

@@ -139,12 +139,6 @@ VSCF_PUBLIC vscf_ecc_public_key_t *
 vscf_ecc_public_key_shallow_copy(vscf_ecc_public_key_t *self);
 
 //
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_ecc_public_key_public_key_api(void);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -153,7 +147,7 @@ vscf_ecc_public_key_alg_id(const vscf_ecc_public_key_t *self);
 //
 //  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_ecc_public_key_alg_info(const vscf_ecc_public_key_t *self);
 
 //
@@ -171,7 +165,7 @@ vscf_ecc_public_key_bitlen(const vscf_ecc_public_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PRIVATE vscf_impl_tag_t
+VSCF_PUBLIC vscf_impl/tag_t
 vscf_ecc_public_key_impl_tag(const vscf_ecc_public_key_t *self);
 
 //

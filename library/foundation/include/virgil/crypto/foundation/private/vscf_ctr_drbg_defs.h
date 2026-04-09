@@ -92,14 +92,6 @@ struct vscf_ctr_drbg_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'entropy source'.
-    //
-    vscf_impl_t *entropy_source;
-    //
-    //  Implementation specific context.
-    //
-    mbedtls_ctr_drbg_context ctx;
 };
 
 

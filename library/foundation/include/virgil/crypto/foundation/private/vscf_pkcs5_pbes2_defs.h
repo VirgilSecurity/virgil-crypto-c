@@ -98,14 +98,6 @@ struct vscf_pkcs5_pbes2_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'salted kdf'.
-    //
-    vscf_impl_t *kdf;
-    //
-    //  Dependency to the interface 'cipher'.
-    //
-    vscf_impl_t *cipher;
-    //
     //  Implementation specific context.
     //
     vsc_buffer_t *password;

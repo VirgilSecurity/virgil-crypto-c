@@ -93,9 +93,8 @@ typedef struct vscf_auth_encrypt_api_t vscf_auth_encrypt_api_t;
 //  Encrypt given data.
 //  If 'tag' is not given, then it will written to the 'enc'.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_auth_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out,
-        vsc_buffer_t *tag) VSCF_NODISCARD;
+VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
+vscf_auth_encrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out, vsc_buffer_t *tag);
 
 //
 //  Calculate required buffer length to hold the authenticated encrypted data.

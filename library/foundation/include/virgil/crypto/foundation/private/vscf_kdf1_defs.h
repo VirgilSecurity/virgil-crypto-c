@@ -89,10 +89,6 @@ struct vscf_kdf1_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *hash;
 };
 
 

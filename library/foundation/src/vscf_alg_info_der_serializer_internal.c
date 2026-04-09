@@ -77,48 +77,12 @@ vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg info serializer api'.
 //
-static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
-    //
-    vscf_api_tag_ALG_INFO_SERIALIZER,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
-    //
-    //  Return buffer size enough to hold serialized algorithm.
-    //
-    (vscf_alg_info_serializer_api_serialized_len_fn)vscf_alg_info_der_serializer_serialized_len,
-    //
-    //  Serialize algorithm info to buffer class.
-    //
-    (vscf_alg_info_serializer_api_serialize_fn)vscf_alg_info_der_serializer_serialize
-};
+static const vscf_alg_info_serializer_api_t alg_info_serializer_api = vscf_api_tag_ALG_INFO_SERIALIZER;
 
 //
 //  Compile-time known information about 'alg info der serializer' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_ALG_INFO_DER_SERIALIZER,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_alg_info_der_serializer_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_alg_info_der_serializer_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_alg_info_der_serializer_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_ALG_INFO_DER_SERIALIZER;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -132,6 +96,8 @@ vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_alg_info_der_serializer_init_ctx(self);
 }
 
 //
@@ -145,7 +111,7 @@ vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *self) {
         return;
     }
 
-    vscf_alg_info_der_serializer_release_asn1_writer(self);
+    vscf_alg_info_der_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_alg_info_der_serializer_t));
 }
@@ -255,54 +221,12 @@ vscf_alg_info_der_serializer_impl_const(const vscf_alg_info_der_serializer_t *se
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
-}
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = asn1_writer;
-}
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_writer);
-}
-
 static const vscf_api_t *
 vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO_SERIALIZER:
-            return (const vscf_api_t *) &alg_info_serializer_api;
+        return (const vscf_api_t *)                 &alg_info_serializer_api;
         default:
             return NULL;
     }

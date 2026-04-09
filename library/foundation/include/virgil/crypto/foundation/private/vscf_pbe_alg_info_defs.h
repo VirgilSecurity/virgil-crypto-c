@@ -97,11 +97,11 @@ struct vscf_pbe_alg_info_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *kdf_alg_info;
+    void kdf_alg_info;
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *cipher_alg_info;
+    void cipher_alg_info;
 };
 
 

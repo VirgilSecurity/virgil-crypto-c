@@ -71,19 +71,9 @@
 // --------------------------------------------------------------------------
 
 //
-//  Private integral constants.
-//
-enum {
-    //
-    //  The maximum length of the entropy requested at once.
-    //
-    vscf_seed_entropy_source_GATHER_LEN_MAX = 48
-};
-
-//
 //  Current source is exhausted and must be refreshed.
 //
-static void
+VSCF_PRIVATE void
 vscf_seed_entropy_source_move_forward(vscf_seed_entropy_source_t *self);
 
 

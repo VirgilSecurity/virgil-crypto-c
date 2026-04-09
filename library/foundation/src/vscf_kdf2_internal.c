@@ -79,71 +79,17 @@ vscf_kdf2_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
-    //
-    vscf_api_tag_ALG,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_KDF2,
-    //
-    //  Provide algorithm identificator.
-    //
-    (vscf_alg_api_alg_id_fn)vscf_kdf2_alg_id,
-    //
-    //  Produce object with algorithm information and configuration parameters.
-    //
-    (vscf_alg_api_produce_alg_info_fn)vscf_kdf2_produce_alg_info,
-    //
-    //  Restore algorithm configuration from the given object.
-    //
-    (vscf_alg_api_restore_alg_info_fn)vscf_kdf2_restore_alg_info
-};
+static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
 
 //
 //  Configuration of the interface API 'kdf api'.
 //
-static const vscf_kdf_api_t kdf_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
-    //
-    vscf_api_tag_KDF,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_KDF2,
-    //
-    //  Derive key of the requested length from the given data.
-    //
-    (vscf_kdf_api_derive_fn)vscf_kdf2_derive
-};
+static const vscf_kdf_api_t kdf_api = vscf_api_tag_KDF;
 
 //
 //  Compile-time known information about 'kdf2' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_KDF2,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_kdf2_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_kdf2_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_kdf2_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_KDF2;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -157,6 +103,8 @@ vscf_kdf2_init(vscf_kdf2_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_kdf2_init_ctx(self);
 }
 
 //
@@ -170,7 +118,7 @@ vscf_kdf2_cleanup(vscf_kdf2_t *self) {
         return;
     }
 
-    vscf_kdf2_release_hash(self);
+    vscf_kdf2_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_kdf2_t));
 }
@@ -280,56 +228,14 @@ vscf_kdf2_impl_const(const vscf_kdf2_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_kdf2_use_hash(vscf_kdf2_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = vscf_impl_shallow_copy(hash);
-}
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_kdf2_take_hash(vscf_kdf2_t *self, vscf_impl_t *hash) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hash);
-    VSCF_ASSERT(self->hash == NULL);
-
-    VSCF_ASSERT(vscf_hash_is_implemented(hash));
-
-    self->hash = hash;
-}
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_kdf2_release_hash(vscf_kdf2_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->hash);
-}
-
 static const vscf_api_t *
 vscf_kdf2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_KDF:
-            return (const vscf_api_t *) &kdf_api;
+        return (const vscf_api_t *)                 &kdf_api;
         default:
             return NULL;
     }

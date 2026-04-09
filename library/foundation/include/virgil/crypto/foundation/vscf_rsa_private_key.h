@@ -139,42 +139,6 @@ VSCF_PUBLIC vscf_rsa_private_key_t *
 vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *self);
 
 //
-//  Import public key from the raw binary format.
-//
-//  RSAPrivateKey ::= SEQUENCE {
-//       version Version,
-//       modulus INTEGER, -- n
-//       publicExponent INTEGER, -- e
-//       privateExponent INTEGER, -- d
-//       prime1 INTEGER, -- p
-//       prime2 INTEGER, -- q
-//       exponent1 INTEGER, -- d mod (p-1)
-//       exponent2 INTEGER, -- d mod (q-1)
-//       coefficient INTEGER -- (inverse of q) mod p
-//   }
-//
-VSCF_PRIVATE vscf_status_t
-vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private_key_t *raw_private_key) VSCF_NODISCARD;
-
-//
-//  Export public key in the raw binary format.
-//
-//  RSAPrivateKey ::= SEQUENCE {
-//       version Version,
-//       modulus INTEGER, -- n
-//       publicExponent INTEGER, -- e
-//       privateExponent INTEGER, -- d
-//       prime1 INTEGER, -- p
-//       prime2 INTEGER, -- q
-//       exponent1 INTEGER, -- d mod (p-1)
-//       exponent2 INTEGER, -- d mod (q-1)
-//       coefficient INTEGER -- (inverse of q) mod p
-//   }
-//
-VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_rsa_private_key_export(const vscf_rsa_private_key_t *self);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -183,7 +147,7 @@ vscf_rsa_private_key_alg_id(const vscf_rsa_private_key_t *self);
 //
 //  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_private_key_alg_info(const vscf_rsa_private_key_t *self);
 
 //
@@ -201,7 +165,7 @@ vscf_rsa_private_key_bitlen(const vscf_rsa_private_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PRIVATE vscf_impl_tag_t
+VSCF_PUBLIC vscf_impl/tag_t
 vscf_rsa_private_key_impl_tag(const vscf_rsa_private_key_t *self);
 
 //
@@ -216,6 +180,42 @@ vscf_rsa_private_key_is_valid(const vscf_rsa_private_key_t *self);
 //
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self);
+
+//
+//  Import public key from the raw binary format.
+//
+//  RSAPrivateKey ::= SEQUENCE {
+//       version Version,
+//       modulus INTEGER, -- n
+//       publicExponent INTEGER, -- e
+//       privateExponent INTEGER, -- d
+//       prime1 INTEGER, -- p
+//       prime2 INTEGER, -- q
+//       exponent1 INTEGER, -- d mod (p-1)
+//       exponent2 INTEGER, -- d mod (q-1)
+//       coefficient INTEGER -- (inverse of q) mod p
+//   }
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, void);
+
+//
+//  Export public key in the raw binary format.
+//
+//  RSAPrivateKey ::= SEQUENCE {
+//       version Version,
+//       modulus INTEGER, -- n
+//       publicExponent INTEGER, -- e
+//       privateExponent INTEGER, -- d
+//       prime1 INTEGER, -- p
+//       prime2 INTEGER, -- q
+//       exponent1 INTEGER, -- d mod (p-1)
+//       exponent2 INTEGER, -- d mod (q-1)
+//       coefficient INTEGER -- (inverse of q) mod p
+//   }
+//
+VSCF_PRIVATE void
+vscf_rsa_private_key_export(const vscf_rsa_private_key_t *self);
 
 
 // --------------------------------------------------------------------------

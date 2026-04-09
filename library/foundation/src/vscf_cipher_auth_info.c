@@ -58,51 +58,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Returns constant 'auth tag len'.
-//
-VSCF_PUBLIC size_t
-vscf_cipher_auth_info_auth_tag_len(const vscf_cipher_auth_info_api_t *cipher_auth_info_api) {
-
-    VSCF_ASSERT_PTR (cipher_auth_info_api);
-
-    return cipher_auth_info_api->auth_tag_len;
-}
-
-//
-//  Return cipher auth info API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_cipher_auth_info_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_CIPHER_AUTH_INFO);
-    return (const vscf_cipher_auth_info_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'cipher auth info'.
-//
-VSCF_PUBLIC bool
-vscf_cipher_auth_info_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_CIPHER_AUTH_INFO) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_cipher_auth_info_api_tag(const vscf_cipher_auth_info_api_t *cipher_auth_info_api) {
-
-    VSCF_ASSERT_PTR (cipher_auth_info_api);
-
-    return cipher_auth_info_api->api_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -97,11 +97,11 @@ struct vscf_compound_key_alg_info_t {
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *cipher_alg_info;
+    void cipher_alg_info;
     //
     //  Implementation specific context.
     //
-    vscf_impl_t *signer_alg_info;
+    void signer_alg_info;
 };
 
 
