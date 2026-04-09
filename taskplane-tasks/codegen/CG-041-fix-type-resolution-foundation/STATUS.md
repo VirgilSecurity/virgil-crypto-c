@@ -1,23 +1,23 @@
 # CG-041: Fix Type Resolution for Foundation Entities — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 1: Fix defs rendering (C1, C2, C3)
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
-- [ ] Issues confirmed via diff
-- [ ] Renderers read
-- [ ] argument/return_from_source understood
+**Status:** ✅ Complete
+- [x] Issues confirmed via diff
+- [x] Renderers read
+- [x] argument/return_from_source understood
 
 ### Step 1: Fix defs rendering (C1, C2, C3)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Dependency struct fields (C1)
 - [ ] Interface properties → impl_t * (C2)
 - [ ] Fixed-size arrays (C3)
@@ -63,6 +63,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-09 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-09 13:23 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-09 13:23 | Step 0 started | Preflight |
 
 ## Blockers
 *None*
