@@ -86,6 +86,7 @@ This script is allowed to apply generated output temporarily into the repo, buil
 | Test: interface parsing | `tools/codegen/test_interface_parsing.py` |
 | Test: interface rendering | `tools/codegen/test_interface_rendering.py` |
 | Test: implementation rendering | `tools/codegen/test_impl_rendering.py` |
+| Test: type resolution | `tools/codegen/test_type_resolution.py` |
 | Architecture ADR | `docs/adr/0002-project-rooted-codegen-pipeline.md` |
 | Generalization ADR | `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md` |
 | Next-phase plan | `docs/codegen-migration/foundation-next-phase-plan.md` |
@@ -168,7 +169,7 @@ Interface and implementor rendering phase:
 
 Foundation codegen completion phase:
 
-- `CG-037` — fix cross-project and external type resolution (3 bugs, 10 skipped modules)
+- `CG-037` — fix cross-project and external type resolution (3 bugs, 10 skipped modules) ✅
 - `CG-038` — render impl infrastructure modules: api, impl, impl_private (depends on CG-037) ✅
 
 ---

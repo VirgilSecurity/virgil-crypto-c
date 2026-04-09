@@ -1303,13 +1303,69 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         include_attrs.setdefault("scope", "public")
         text_element(root, "c_include", **include_attrs)
     for require in module.requires:
-        text_element(
-            root,
-            "c_include",
-            file=include_file_for_entity(project_ir, entity_kind="module", entity_name=require.name),
-            is_system="0",
-            scope=require.attrs.get("scope", "public"),
-        )
+        req_attrs = require.attrs
+        scope = req_attrs.get("scope", "public")
+        if req_attrs.get("header"):
+            # Direct header include (e.g. <require header="mbedtls/entropy.h"/>)
+            text_element(root, "c_include", file=req_attrs["header"], is_system="0", scope=scope)
+        elif req_attrs.get("module"):
+            # Module require — resolve include via IR
+            try:
+                inc_file = include_file_for_entity(project_ir, entity_kind="module", entity_name=req_attrs["module"])
+            except KeyError:
+                # Derived module (e.g. "buffer defs") not in IR — construct include file from convention
+                target_prefix = project_ir.prefix
+                if req_attrs.get("project"):
+                    # Cross-project require — use target project's prefix
+                    for fp in getattr(project_ir, 'fallback_projects', []):
+                        if getattr(fp, 'name', '') == req_attrs["project"]:
+                            target_prefix = fp.prefix
+                            break
+                inc_file = f"{target_prefix}_{snake_name(req_attrs['module'])}.h"
+            text_element(
+                root,
+                "c_include",
+                file=inc_file,
+                is_system="0",
+                scope=scope,
+            )
+        elif req_attrs.get("class"):
+            # Class require — resolve include via IR (skip if not found, e.g. framework types like "impl")
+            try:
+                text_element(
+                    root,
+                    "c_include",
+                    file=include_file_for_entity(project_ir, entity_kind="class", entity_name=req_attrs["class"]),
+                    is_system="0",
+                    scope=scope,
+                )
+            except KeyError:
+                pass  # Framework type not in IR (e.g. "impl") — skip
+        elif req_attrs.get("interface"):
+            # Interface require
+            try:
+                text_element(
+                    root,
+                    "c_include",
+                    file=include_file_for_entity(project_ir, entity_kind="interface", entity_name=req_attrs["interface"]),
+                    is_system="0",
+                    scope=scope,
+                )
+            except KeyError:
+                pass  # Interface not in IR — skip
+        elif req_attrs.get("enum"):
+            # Enum require
+            try:
+                text_element(
+                    root,
+                    "c_include",
+                    file=include_file_for_entity(project_ir, entity_kind="enum", entity_name=req_attrs["enum"]),
+                    is_system="0",
+                    scope=scope,
+                )
+            except KeyError:
+                pass
+        # Skip library-only requires and unknown kinds gracefully
 
     for alias in module.aliases:
         alias_elem = text_element(root, "c_alias", name=alias.name, type=alias.attrs.get("type", "void"), declaration=alias.attrs.get("declaration", "public"))
@@ -1765,7 +1821,7 @@ def render_class_c_module(
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
     attrs: dict[str, str] = {}
-    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access")):
+    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library")):
         value = getattr(arg, attr_name, None)
         if value is not None:
             attrs[key] = value
@@ -3764,13 +3820,26 @@ def argument_from_source(
     arg_name = name if name is not None else attrs.get("name", "")
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        type_name = class_type_symbol(project_ir, cast(str, resolved_class)) if project_ir is not None else "vsc_data_t"
+        extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
+        # Handle const prefix in class name
+        resolved_class_str = cast(str, resolved_class)
+        if resolved_class_str.startswith("const "):
+            resolved_class_str = resolved_class_str[len("const "):]
+            extra["is_const_type"] = "1"
+        if attrs.get("library") and attrs.get("class") != "self":
+            # External or internal library type — use name as-is without IR lookup
+            type_name = resolved_class_str
+        else:
+            type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
         accessed_by = "value"
         if attrs.get("class") == "self" and attrs.get("passed_by") == "reference":
             accessed_by = "reference"
         elif attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
             accessed_by = "pointer"
-        extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
+        elif attrs.get("library") and attrs.get("is_reference") not in {"1", "true"} and attrs.get("class") != "self":
+            accessed_by = "value"
+        elif attrs.get("library") and attrs.get("class") != "self":
+            accessed_by = "pointer"
         return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("callback") is not None:
         callback_type = callback_symbol(project_ir, callback_name_from_ref(attrs.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"
@@ -3807,11 +3876,23 @@ def return_from_source(
 ) -> ET.Element:
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        type_name = class_type_symbol(project_ir, cast(str, resolved_class)) if project_ir is not None else "vsc_data_t"
+        extra = {}
+        # Handle const prefix in class name
+        resolved_class_str = cast(str, resolved_class)
+        if resolved_class_str.startswith("const "):
+            resolved_class_str = resolved_class_str[len("const "):]
+            extra["is_const_type"] = "1"
+        if attrs.get("library") and attrs.get("class") != "self":
+            # External or internal library type — use name as-is without IR lookup
+            type_name = resolved_class_str
+        else:
+            type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
         accessed_by = "value"
         if attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
             accessed_by = "pointer"
-        return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class")
+        elif attrs.get("library") and attrs.get("is_reference") in {"1", "true"} and attrs.get("class") != "self":
+            accessed_by = "pointer"
+        return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"}:
         extra = {"is_const_type": "1"} if attrs.get("access") != "readwrite" else {}
         return text_element(parent, "c_return", accessed_by="pointer", type="byte", type_is="primitive", **extra)

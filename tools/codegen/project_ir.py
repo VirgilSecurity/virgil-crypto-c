@@ -60,6 +60,7 @@ class IRCArgument(IRCommented):
     is_array: bool = False
     enum_name: str | None = None
     interface_name: str | None = None
+    library: str | None = None
 
 
 @dataclass
@@ -335,6 +336,7 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         is_array=attrs.get("array") == "given",
         enum_name=attrs.get("enum"),
         interface_name=attrs.get("interface"),
+        library=attrs.get("library"),
     )
 
 
