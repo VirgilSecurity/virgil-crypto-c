@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-08
 **Status:** Active
-**Next Task ID:** CG-038
+**Next Task ID:** CG-039
 
 > **Note:** CG-034 was merged into CG-033. Task IDs CG-034 is retired.
 
@@ -164,7 +164,12 @@ Interface and implementor rendering phase:
 - `CG-033` — render interface modules: dispatch + API (depends on CG-031) ✅
 - ~~`CG-034`~~ — merged into CG-033
 - `CG-035` — render implementation main + defs module (depends on CG-032, CG-033) ✅
-- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-033, CG-035) ✅
+- `CG-036` — render implementation internal module + extend auto-discovery (depends on CG-033, CG-035)
+
+Foundation codegen completion phase:
+
+- `CG-037` — fix cross-project and external type resolution (3 bugs, 10 skipped modules)
+- `CG-038` — render impl infrastructure modules: api, impl, impl_private (depends on CG-037) ✅
 
 ---
 
