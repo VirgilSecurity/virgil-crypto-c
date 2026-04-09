@@ -20,7 +20,7 @@
 ---
 
 ### Step 1: Fix backend rendering issues
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] Method ordering fixed (constructors before delete/destroy/shallow_copy)
 - [x] Destroy description uses full function name
@@ -35,7 +35,7 @@
 ---
 
 ### Step 2: Fix C emitter rendering issues
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 > ⚠️ Hydrate: Expand based on exact code locations identified in Step 0
 
@@ -53,7 +53,7 @@
 ---
 
 ### Step 3: Testing & Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] --verify common shows 0 non-generated warnings
 - [x] All Python tests pass (159 tests OK)
