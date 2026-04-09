@@ -1,4 +1,4 @@
-# Task: CG-039 - Fix Common Project Codegen Parity Issues
+# Task: CG-039 - Fix Codegen Parity Issues (Common + Foundation Prefix)
 
 **Created:** 2026-04-08
 **Size:** M
@@ -20,7 +20,7 @@ taskplane-tasks/codegen/CG-039-common-codegen-parity-fixes/
 
 ## Mission
 
-Achieve zero-diff parity between new codegen output and legacy GSL output for the `common` project. Running `bash tools/codegen/new_codegen.sh --verify common` currently shows 8 files with differences outside generated blocks. After this task, the diff check step should report 0 non-generated changes (clang-format whitespace-only changes are acceptable).
+Achieve zero-diff parity between new codegen output and legacy GSL output for the `common` project, and fix the foundation project prefix bug. Running `bash tools/codegen/new_codegen.sh --verify common` currently shows 8 files with differences outside generated blocks. After this task, the diff check step should report 0 non-generated changes (clang-format whitespace-only changes are acceptable).
 
 ### Issue inventory (from `--verify` diff output):
 
@@ -76,6 +76,11 @@ Achieve zero-diff parity between new codegen output and legacy GSL output for th
 - Root cause: the C emitter's `generate_block()` doesn't match trailing whitespace
 - Fix: ensure generated output preserves original trailing whitespace pattern
 
+**10. Hardcoded `VSC_PUBLIC` / `VSC_NORETURN` instead of project-prefixed** (86 foundation files)
+- Foundation should use `VSCF_PUBLIC`, `VSCF_NORETURN` etc., but 86 files get `VSC_PUBLIC`
+- Root cause: multiple places in `project_c_backend.py` hardcode `"VSC_PUBLIC"` and `"VSC_NORETURN"` instead of deriving from `project_ir.prefix.upper()` + `"_PUBLIC"`. Affected lines include: module renderer (~2014, 2018, 2413, 2434, 2772), class renderer default modifiers (~2902), variable rendering (~1952)
+- Fix: replace all hardcoded `"VSC_PUBLIC"` / `"VSC_NORETURN"` with `f"{project_ir.prefix.upper()}_PUBLIC"` / `f"{project_ir.prefix.upper()}_NORETURN"`. The `project_ir` is available in all rendering functions. The `_render_ir_method` default `modifiers=("VSC_PUBLIC",)` must become project-aware.
+
 ## Dependencies
 
 - **None**
@@ -109,11 +114,12 @@ Achieve zero-diff parity between new codegen output and legacy GSL output for th
 
 ### Step 1: Fix backend rendering issues (project_c_backend.py)
 
-Issues 6, 7, 8 are in the backend:
+Issues 6, 7, 8, 10 are in the backend:
 
 - [ ] Fix method ordering: emit constructor variants (init_with_X, new_with_X) between `new` and `delete` in `_render_reference_class_support()`
 - [ ] Fix destroy description: use `{prefix}_{class}_new ()` instead of bare `new ()`
 - [ ] Fix init_ctx/cleanup_ctx descriptions: use fully-qualified method names
+- [ ] Fix hardcoded `VSC_PUBLIC`/`VSC_NORETURN`: replace with `f"{project_ir.prefix.upper()}_PUBLIC"` etc. in all rendering functions (module renderer, class renderer, variable rendering, `_render_ir_method` default modifiers)
 - [ ] Commit
 
 **Artifacts:**
@@ -159,7 +165,8 @@ Issues 1, 2, 3, 4, 5, 9 are in the emitter:
 ## Completion Criteria
 
 - [ ] `bash tools/codegen/new_codegen.sh --verify common` shows 0 warnings about changes outside generated blocks
-- [ ] All 9 parity issues resolved
+- [ ] Foundation files use `VSCF_PUBLIC` not `VSC_PUBLIC` (verify: `grep -r 'VSC_PUBLIC' build/new-codegen/library/foundation/ | grep -v VSCF_ | wc -l` returns 0)
+- [ ] All 10 parity issues resolved
 - [ ] Common build + tests pass
 - [ ] All Python tests pass
 
@@ -176,7 +183,7 @@ Issues 1, 2, 3, 4, 5, 9 are in the emitter:
 - Skip tests
 - Modify library/common source files — only modify codegen tools
 - Commit without the task ID prefix
-- Fix foundation-specific issues — this task is common-only
+- Fix foundation-specific issues beyond the prefix bug
 
 ---
 

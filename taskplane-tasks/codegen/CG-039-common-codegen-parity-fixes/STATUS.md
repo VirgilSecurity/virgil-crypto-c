@@ -25,6 +25,7 @@
 - [ ] Method ordering fixed (constructors before delete/destroy/shallow_copy)
 - [ ] Destroy description uses full function name
 - [ ] init_ctx/cleanup_ctx descriptions use full names
+- [ ] Hardcoded VSC_PUBLIC/VSC_NORETURN replaced with project-prefixed
 - [ ] Committed
 
 ---
