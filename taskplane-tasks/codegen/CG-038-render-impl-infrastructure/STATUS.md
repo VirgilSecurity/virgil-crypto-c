@@ -1,7 +1,7 @@
 # CG-038: Render Impl Infrastructure Modules — Status
 
-**Current Step:** Step 5: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 6: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
@@ -71,10 +71,10 @@
 ---
 
 ### Step 6: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated
+- [x] Discoveries logged
+- [x] CONTEXT.md updated
 
 ---
 
@@ -89,6 +89,10 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Foundation has 33 interfaces, 53 implementations (not 34 as PROMPT stated) | Expected — count varies with models | project_c_backend.py |
+| Resolved XML files in `codegen/generated/foundation/` do not exist in this worktree | Used library C source files as reference instead | library/foundation/ |
+| `_impl_infra_output` needed relative paths from `project_ir.attrs` not absolute `source_root` | Fixed to use `attrs["path"]` | project_c_backend.py |
+| `test_auto_discovery.py` count assertion needed update for 4 new infra modules | Fixed to account for infra_count | test_auto_discovery.py |
 
 ---
 

@@ -49,6 +49,7 @@ Interface and implementation rendering is now complete. The `project_c_backend.p
 - Interface dispatch modules (public API) and API struct modules (private)
 - Implementation main modules, defs modules (struct definition), and internal modules (vtable init, impl_info)
 - Auto-discovery (`discover_renderers`) covers all 5 entity kinds: module, class, enum, interface, implementation
+- Project-global impl infrastructure modules (api, api_private, impl, impl_private) are auto-registered when a project has interfaces or implementations
 
 Current next-phase focus:
 
@@ -87,6 +88,7 @@ This script is allowed to apply generated output temporarily into the repo, buil
 | Test: interface rendering | `tools/codegen/test_interface_rendering.py` |
 | Test: implementation rendering | `tools/codegen/test_impl_rendering.py` |
 | Test: type resolution | `tools/codegen/test_type_resolution.py` |
+| Test: impl infrastructure | `tools/codegen/test_impl_infra_rendering.py` |
 | Architecture ADR | `docs/adr/0002-project-rooted-codegen-pipeline.md` |
 | Generalization ADR | `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md` |
 | Next-phase plan | `docs/codegen-migration/foundation-next-phase-plan.md` |
