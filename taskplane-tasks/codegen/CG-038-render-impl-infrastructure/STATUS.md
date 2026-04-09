@@ -1,6 +1,6 @@
 # CG-038: Render Impl Infrastructure Modules — Status
 
-**Current Step:** Step 1: Render api + api_private modules
+**Current Step:** Step 4: Add parity tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -21,43 +21,43 @@
 ---
 
 ### Step 1: Render api + api_private modules
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] render_api_c_module implemented
 - [x] render_api_private_c_module implemented
 - [x] Registered in discovery
-- [ ] Committed
+- [x] Committed
 
 ---
 
 ### Step 2: Render impl module
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] render_impl_c_module implemented
-- [ ] impl_tag enum correct
-- [ ] Dispatch method bodies correct
-- [ ] Registered in discovery
-- [ ] Committed
+- [x] render_impl_c_module implemented
+- [x] impl_tag enum correct
+- [x] Dispatch method bodies correct
+- [x] Registered in discovery
+- [x] Committed
 
 ---
 
 ### Step 3: Render impl_private module
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] render_impl_private_c_module implemented
-- [ ] Registered in discovery
-- [ ] Committed
+- [x] render_impl_private_c_module implemented
+- [x] Registered in discovery
+- [x] Committed
 
 ---
 
 ### Step 4: Add parity tests
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] api_tag enum correct
-- [ ] impl_tag enum correct
-- [ ] Dispatch methods present
-- [ ] impl_private structs correct
-- [ ] Common unaffected
+- [x] api_tag enum correct
+- [x] impl_tag enum correct
+- [x] Dispatch methods present
+- [x] impl_private structs correct
+- [x] Common unaffected
 
 ---
 
