@@ -1,7 +1,7 @@
 # CG-039: Fix Common Project Codegen Parity Issues — Status
 
-**Current Step:** Step 1: Fix backend rendering issues
-**Status:** 🟡 In Progress
+**Current Step:** Step 4: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
@@ -62,10 +62,10 @@
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -80,6 +80,12 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| XML models use double-backslash escaping (\\\\n for \\n, \\\\0 for \\0). New _normalize_c_escapes handles general de-escaping. | Fixed | project_c_backend.py:_normalize_c_escapes |
+| Method code blocks in XML have backslash-continuation lines that GSL joined. New _join_continuation_lines handles this. | Fixed | project_c_backend.py:_join_continuation_lines |
+| XML model code text has extra whitespace (double spaces) that GSL normalized. Fixed with _normalize_code_whitespace for method code and _fix_macro_paren_spacing for macros. | Fixed | project_c_backend.py |
+| Macro continuation backslashes need column-alignment to match legacy. render_c_code now pads to max content width. | Fixed | common_bootstrap.py:render_c_code |
+| Multi-line macros with internal continuation (wrapped function calls) need line joining in _prepare_macro_code. | Fixed | project_c_backend.py:_prepare_macro_code |
+| verify script awk filter for outside-generated changes is unreliable when @generated markers are unchanged (appear as context, not diff lines). Zero-diff gate is the true verification. | Noted | tools/codegen/new_codegen.sh |
 
 ---
 

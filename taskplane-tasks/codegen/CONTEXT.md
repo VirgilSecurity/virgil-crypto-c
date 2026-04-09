@@ -173,7 +173,7 @@ Foundation codegen completion phase:
 
 - `CG-037` — fix cross-project and external type resolution (3 bugs, 10 skipped modules) ✅
 - `CG-038` — render impl infrastructure modules: api, impl, impl_private (depends on CG-037)
-- `CG-039` — fix common project codegen parity (9 issues → zero-diff gate) ✅
+- `CG-039` — fix common project codegen parity (10+ issues → zero-diff gate, foundation prefix fix) ✅
 
 ---
 
