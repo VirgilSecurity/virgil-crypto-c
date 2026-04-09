@@ -1016,6 +1016,13 @@ def _interface_api_struct_symbol(iface_output: IROutputTarget) -> str:
     return f"{iface_output.c_symbol}_api_t"
 
 
+def _interface_dispatch_symbol(iface_output: IROutputTarget, iface_name: str, method_name: str) -> str:
+    """Return the dispatch method symbol, deduplicating when method name == interface name."""
+    if snake_name(method_name) == snake_name(iface_name):
+        return iface_output.c_symbol
+    return f"{iface_output.c_symbol}_{snake_name(method_name)}"
+
+
 def _interface_callback_return(
     parent: ET.Element,
     ret: object,
@@ -1356,7 +1363,7 @@ def _render_dispatch_method(
     visibility = method.attrs.get("visibility", "public")
     api_struct_name = _interface_api_struct_symbol(iface_output)
     api_var_name = f"{snake_name(iface.name)}_api"
-    method_symbol = f"{iface_output.c_symbol}_{snake_name(method.name)}"
+    method_symbol = _interface_dispatch_symbol(iface_output, iface.name, method.name)
     cb_field = f"{snake_name(method.name)}_cb"
 
     method_attrs: dict[str, str] = {
@@ -1367,6 +1374,15 @@ def _render_dispatch_method(
         method_attrs["visibility"] = "private"
 
     method_elem = text_element(parent, "c_method", **method_attrs)
+
+    # Add PUBLIC modifier
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
+
+    # Add NODISCARD modifier for status-returning methods
+    if method.returns:
+        ret_dict = _method_arg_dict(method.returns[0])
+        if ret_dict.get("enum") == "status":
+            text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_NODISCARD")
 
     desc = method.description.strip() if method.description else ""
     if desc:
@@ -1454,6 +1470,7 @@ def _render_constant_getter(
     field_name = snake_name(constant.name)
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Returns constant '{constant.name}'.")
 
     # API struct argument
@@ -1496,6 +1513,7 @@ def _render_api_method(
     method_symbol = f"{iface_output.c_symbol}_api"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public", is_const="1")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Return {iface.name} API, or NULL if it is not implemented.")
 
     # impl argument
@@ -1535,6 +1553,7 @@ def _render_inherited_api_getter(
     method_symbol = f"{iface_output.c_symbol}_{field_name}"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Return {inherited_name} API.")
 
     # API struct argument
@@ -1574,6 +1593,7 @@ def _render_is_implemented_method(
     method_symbol = f"{iface_output.c_symbol}_is_implemented"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public", is_const="1")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Check if given object implements interface '{iface.name}'.")
 
     # impl argument
@@ -1608,6 +1628,7 @@ def _render_api_tag_method(
     method_symbol = f"{iface_output.c_symbol}_api_tag"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text("Returns interface unique identifier.")
 
     # API struct argument
