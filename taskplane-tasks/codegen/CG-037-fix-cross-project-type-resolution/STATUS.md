@@ -1,22 +1,22 @@
 # CG-037: Fix Cross-Project and External Type Resolution — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-08
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Reproduce 10 failures with foundation codegen
-- [ ] argument_from_source/return_from_source understood
-- [ ] Module require rendering loop understood
-- [ ] Impl defs library handling confirmed
+- [x] Reproduce 10 failures with foundation codegen
+- [x] argument_from_source/return_from_source understood
+- [x] Module require rendering loop understood
+- [x] Impl defs library handling confirmed
 
 ---
 
@@ -89,6 +89,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-09 00:46 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-09 00:46 | Step 0 started | Preflight |
 
 ---
 
