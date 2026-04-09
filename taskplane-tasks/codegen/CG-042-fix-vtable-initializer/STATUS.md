@@ -1,6 +1,6 @@
 # CG-042: Fix Vtable Struct Initializer in Internal Modules — Status
 
-**Current Step:** Step 1: Fix C emitter multi-value struct initializers
+**Current Step:** Step 4: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -22,18 +22,18 @@
 - [x] Committed
 
 ### Step 2: Fix backend API table variable emission
-**Status:** ⬜ Not Started
-- [ ] Multi-value c_values for API tables
-- [ ] impl_info variable emission
-- [ ] Committed
+**Status:** ✅ Done
+- [x] Multi-value c_values for API tables (verified already correct from CG-040)
+- [x] impl_info variable emission (verified already correct from CG-040)
+- [x] Committed (no backend changes needed)
 
 ### Step 3: Generate find_api method
-**Status:** ⬜ Not Started
-- [ ] find_api with switch/case
-- [ ] Committed
+**Status:** ✅ Done
+- [x] find_api with switch/case (verified already generated from CG-040)
+- [x] Committed (no changes needed)
 
 ### Step 4: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] All tests pass
 - [ ] Common build gate passes
 - [ ] sha256_internal.c correct
