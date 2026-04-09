@@ -1,6 +1,6 @@
 # CG-037: Fix Cross-Project and External Type Resolution — Status
 
-**Current Step:** Step 1: Fix external library type resolution
+**Current Step:** Step 2: Fix module require rendering
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -21,22 +21,22 @@
 ---
 
 ### Step 1: Fix external library type resolution
-**Status:** 🟨 In Progress
+**Status:** ✅ Done
 
 - [x] argument_from_source handles library attribute
 - [x] return_from_source handles library attribute
 - [x] const prefix stripping
 - [x] brainkey/mbedtls_ecp/simple_swu fixed
-- [ ] Committed
+- [x] Committed
 
 ---
 
 ### Step 2: Fix module require rendering
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Require kind dispatch implemented
-- [ ] module/class/interface/header handled
-- [ ] mbedtls_bridge modules fixed
+- [x] Require kind dispatch implemented
+- [x] module/class/interface/header handled
+- [x] mbedtls_bridge modules fixed
 - [ ] Committed
 
 ---
