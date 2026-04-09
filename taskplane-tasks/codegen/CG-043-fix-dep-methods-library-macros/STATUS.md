@@ -1,20 +1,20 @@
 # CG-043: Fix Dependency Methods + Library Macros — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 1: Fix dependency methods
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
-- [ ] Dep methods missing confirmed
-- [ ] Library macros missing confirmed
-- [ ] CG-029 dependency rendering understood
+**Status:** ✅ Complete
+- [x] Dep methods missing confirmed
+- [x] Library macros missing confirmed
+- [x] CG-029 dependency rendering understood
 
 ### Step 1: Fix dependency methods
 **Status:** ⬜ Not Started
@@ -51,6 +51,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-09 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-09 13:35 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-09 13:35 | Step 0 started | Preflight |
 
 ## Blockers
 *None*
