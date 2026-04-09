@@ -1,6 +1,6 @@
 # CG-037: Fix Cross-Project and External Type Resolution — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Fix external library type resolution
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -21,12 +21,12 @@
 ---
 
 ### Step 1: Fix external library type resolution
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] argument_from_source handles library attribute
-- [ ] return_from_source handles library attribute
-- [ ] const prefix stripping
-- [ ] brainkey/mbedtls_ecp/simple_swu fixed
+- [x] argument_from_source handles library attribute
+- [x] return_from_source handles library attribute
+- [x] const prefix stripping
+- [x] brainkey/mbedtls_ecp/simple_swu fixed
 - [ ] Committed
 
 ---

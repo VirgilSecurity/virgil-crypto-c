@@ -1765,7 +1765,7 @@ def render_class_c_module(
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
     attrs: dict[str, str] = {}
-    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access")):
+    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library")):
         value = getattr(arg, attr_name, None)
         if value is not None:
             attrs[key] = value
@@ -3764,13 +3764,26 @@ def argument_from_source(
     arg_name = name if name is not None else attrs.get("name", "")
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        type_name = class_type_symbol(project_ir, cast(str, resolved_class)) if project_ir is not None else "vsc_data_t"
+        extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
+        # Handle const prefix in class name
+        resolved_class_str = cast(str, resolved_class)
+        if resolved_class_str.startswith("const "):
+            resolved_class_str = resolved_class_str[len("const "):]
+            extra["is_const_type"] = "1"
+        if attrs.get("library") and attrs.get("class") != "self":
+            # External or internal library type — use name as-is without IR lookup
+            type_name = resolved_class_str
+        else:
+            type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
         accessed_by = "value"
         if attrs.get("class") == "self" and attrs.get("passed_by") == "reference":
             accessed_by = "reference"
         elif attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
             accessed_by = "pointer"
-        extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
+        elif attrs.get("library") and attrs.get("is_reference") not in {"1", "true"} and attrs.get("class") != "self":
+            accessed_by = "value"
+        elif attrs.get("library") and attrs.get("class") != "self":
+            accessed_by = "pointer"
         return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("callback") is not None:
         callback_type = callback_symbol(project_ir, callback_name_from_ref(attrs.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"
@@ -3807,11 +3820,23 @@ def return_from_source(
 ) -> ET.Element:
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        type_name = class_type_symbol(project_ir, cast(str, resolved_class)) if project_ir is not None else "vsc_data_t"
+        extra = {}
+        # Handle const prefix in class name
+        resolved_class_str = cast(str, resolved_class)
+        if resolved_class_str.startswith("const "):
+            resolved_class_str = resolved_class_str[len("const "):]
+            extra["is_const_type"] = "1"
+        if attrs.get("library") and attrs.get("class") != "self":
+            # External or internal library type — use name as-is without IR lookup
+            type_name = resolved_class_str
+        else:
+            type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
         accessed_by = "value"
         if attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
             accessed_by = "pointer"
-        return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class")
+        elif attrs.get("library") and attrs.get("is_reference") in {"1", "true"} and attrs.get("class") != "self":
+            accessed_by = "pointer"
+        return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"}:
         extra = {"is_const_type": "1"} if attrs.get("access") != "readwrite" else {}
         return text_element(parent, "c_return", accessed_by="pointer", type="byte", type_is="primitive", **extra)
