@@ -20,12 +20,16 @@
 ---
 
 ### Step 1: Fix backend rendering issues
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Method ordering fixed (constructors before delete/destroy/shallow_copy)
 - [ ] Destroy description uses full function name
 - [ ] init_ctx/cleanup_ctx descriptions use full names
 - [ ] Hardcoded VSC_PUBLIC/VSC_NORETURN replaced with project-prefixed
+- [ ] Placeholder resolution in method descriptions (issue 1)
+- [ ] Escape normalization: `\\n`→`\n`, continuation line joining (vsc_assert.c issues)
+- [ ] Constant name casing: use mixed case `vsc_POINTER_SIZE` not all-upper (issue 3)
+- [ ] Macro name-paren spacing: collapse space after placeholder in `#define` (issue 2)
 - [ ] Committed
 
 ---
