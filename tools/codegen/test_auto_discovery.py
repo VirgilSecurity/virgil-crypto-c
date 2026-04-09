@@ -127,12 +127,16 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
 
     def test_full_discovery_covers_all_entities(self) -> None:
         renderers = discover_renderers(self.project_ir)
+        # Project-global impl infrastructure modules (api, api_private,
+        # impl, impl_private) are added when interfaces/implementations exist.
+        infra_count = 4 if (self.project_ir.interfaces or self.project_ir.implementations) else 0
         total = (
             len(self.project_ir.modules)
             + len(self.project_ir.classes)
             + len(self.project_ir.enums)
             + len(self.project_ir.interfaces) * 2
             + len(self.project_ir.implementations) * 3
+            + infra_count
         )
         self.assertEqual(len(renderers), total)
 

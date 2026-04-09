@@ -932,7 +932,9 @@ def discover_renderers(
                 )
 
     # --- project-global impl infrastructure modules ---
-    _register_impl_infra_renderers(project_ir, renderers, overrides)
+    # Only registered during full discovery (no entity_kinds filter)
+    if include_all:
+        _register_impl_infra_renderers(project_ir, renderers, overrides)
 
     # Include any overrides whose keys don't correspond to an IR entity
     # (e.g. derived outputs like buffer_defs).
