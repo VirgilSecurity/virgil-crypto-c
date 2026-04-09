@@ -1314,16 +1314,22 @@ def render_interface_c_module(
     text_element(root, "c_include", file=api_output.include_file, is_system="0", scope="private")
 
     # --- forward declaration of API struct ---
-    text_element(
+    fwd_struct = text_element(
         root,
         "c_struct",
         name=api_struct_name,
         declaration="public",
         definition="external",
     )
+    fwd_struct.text = comment_text(f"Contains API requirements of the interface '{iface.name}'.")
 
-    # --- dispatch methods ---
-    for method in iface.methods:
+    # --- dispatch methods: non-static first, then static ---
+    non_static_methods = [m for m in iface.methods if m.attrs.get("is_static") not in {"1", "true"}]
+    static_methods = [m for m in iface.methods if m.attrs.get("is_static") in {"1", "true"}]
+    for method in non_static_methods:
+        _render_dispatch_method(root, method, iface=iface, project_ir=project_ir,
+                                fallback_projects=fallback_projects)
+    for method in static_methods:
         _render_dispatch_method(root, method, iface=iface, project_ir=project_ir,
                                 fallback_projects=fallback_projects)
 
