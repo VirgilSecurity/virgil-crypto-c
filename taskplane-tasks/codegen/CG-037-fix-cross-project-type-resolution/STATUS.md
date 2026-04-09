@@ -1,7 +1,7 @@
 # CG-037: Fix Cross-Project and External Type Resolution — Status
 
-**Current Step:** Step 4: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
@@ -63,10 +63,10 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Discoveries logged
-- [ ] CONTEXT.md updated if needed
+- [x] Discoveries logged
+- [x] CONTEXT.md updated if needed
 
 ---
 
@@ -81,6 +81,9 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| IRCArgument was missing `library` field — had to add it to both the dataclass and _arg_from_attrs parser | Fixed in project_ir.py | project_ir.py:63, 341 |
+| _method_arg_dict was not forwarding the `library` attribute from IR args to dicts | Fixed in project_c_backend.py | project_c_backend.py:1770 |
+| Cross-project module requires (e.g. `buffer defs` from `common`) need fallback include path construction when derived module not in IR | Fixed with convention-based fallback | project_c_backend.py:1318 |
 
 ---
 
