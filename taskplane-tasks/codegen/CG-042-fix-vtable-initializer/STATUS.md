@@ -1,6 +1,6 @@
 # CG-042: Fix Vtable Struct Initializer in Internal Modules — Status
 
-**Current Step:** Step 4: Testing & Verification
+**Current Step:** Step 5: Documentation & Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -33,13 +33,13 @@
 - [x] Committed (no changes needed)
 
 ### Step 4: Testing & Verification
-**Status:** 🟨 In Progress
-- [ ] All tests pass
-- [ ] Common build gate passes
-- [ ] sha256_internal.c correct
+**Status:** ✅ Done
+- [x] All tests pass (159 tests OK)
+- [x] Common build gate passes
+- [x] sha256_internal.c correct (verified struct initializers match legacy)
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Discoveries logged
 
 ---
