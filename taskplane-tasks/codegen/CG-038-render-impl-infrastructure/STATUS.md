@@ -1,6 +1,6 @@
 # CG-038: Render Impl Infrastructure Modules — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Render api + api_private modules
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -21,11 +21,11 @@
 ---
 
 ### Step 1: Render api + api_private modules
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] render_api_c_module implemented
-- [ ] render_api_private_c_module implemented
-- [ ] Registered in discovery
+- [x] render_api_c_module implemented
+- [x] render_api_private_c_module implemented
+- [x] Registered in discovery
 - [ ] Committed
 
 ---

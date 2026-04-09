@@ -321,6 +321,511 @@ def direct_renderer_map(project_ir: IRProject, specs: list[DirectRendererSpec]) 
 
 
 
+# ---------------------------------------------------------------------------
+# Project-global impl infrastructure output targets
+# ---------------------------------------------------------------------------
+
+def _impl_infra_output(
+    project_ir: IRProject,
+    *,
+    entity_name: str,
+    scope: str = "public",
+) -> IROutputTarget:
+    """Build an :class:`IROutputTarget` for a project-global impl infrastructure module.
+
+    These modules (api, api_private, impl, impl_private) don't correspond to
+    any model-level entity; they are *derived* from the full set of interfaces
+    and implementations in the project.
+    """
+    prefix = project_ir.prefix
+    stem = f"{prefix}_{snake_name(entity_name)}"
+    include_namespace = project_ir.include_namespace
+    # Use the relative path (from project attrs) so header_path/source_path
+    # match the pattern used by build_output_target in project_ir.py.
+    source_root = project_ir.attrs.get("path", project_ir.source_root).rstrip("/")
+    work_root = project_ir.attrs.get("work_path", project_ir.work_root).rstrip("/")
+    header_visibility = "private" if scope == "private" else "public"
+    include_dir = f"{include_namespace}/private" if header_visibility == "private" else include_namespace
+    header_path = f"{source_root}/include/{include_dir}/{stem}.h"
+    source_path = f"{source_root}/src/{stem}.c"
+    generated_header_path = f"{work_root}/c_module_{stem}.xml"
+    generated_source_path = f"{work_root}/module_{snake_name(entity_name)}.xml"
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=entity_name,
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility=header_visibility,
+        source_visibility="public",
+    )
+
+
+# ---------------------------------------------------------------------------
+# Render: api module (api_tag enum + api_t forward declaration)
+# ---------------------------------------------------------------------------
+
+def render_api_c_module(project_ir: IRProject) -> ET.Element:
+    """Render the project-global ``api`` module.
+
+    Contains:
+    - ``api_tag`` enum — one constant per interface (alphabetical), with
+      BEGIN=0 and END sentinels.
+    - ``api_t`` forward-declared struct.
+    """
+    output = _impl_infra_output(project_ir, entity_name="api")
+    root = c_module_root(output, entity_id="api", scope="public", class_name="api")
+    prefix = project_ir.prefix
+
+    # --- require: library -----------------------------------------------
+    text_element(root, "c_include", file=include_file_for_entity(project_ir, entity_kind="module", entity_name="library"))
+
+    # --- api_tag enum ---------------------------------------------------
+    iface_names = sorted(i.name for i in project_ir.interfaces)
+    enum_sym = f"{prefix}_api_tag"
+    enum_el = text_element(root, "c_enum", name=f"{enum_sym}_t", typedef_name=f"{enum_sym}_t", declaration="public", definition="public")
+    enum_el.text = "\nEnumerates all possible interfaces within crypto library.\n"
+
+    text_element(enum_el, "c_constant", name=f"{enum_sym}_BEGIN", value="0")
+    for iname in iface_names:
+        tag = snake_name(iname).upper()
+        text_element(enum_el, "c_constant", name=f"{enum_sym}_{tag}")
+    text_element(enum_el, "c_constant", name=f"{enum_sym}_END")
+
+    # --- api_t forward declaration -------------------------------------
+    struct_el = text_element(root, "c_struct", name=f"{prefix}_api_t", declaration="public", definition="external")
+    struct_el.text = "\nGeneric type for any 'API' object.\n"
+
+    return root
+
+
+# ---------------------------------------------------------------------------
+# Render: api_private module (api_t struct definition)
+# ---------------------------------------------------------------------------
+
+def render_api_private_c_module(project_ir: IRProject) -> ET.Element:
+    """Render the project-global ``api_private`` module.
+
+    Contains the *definition* of ``api_t`` — the base struct for all
+    interface API structs, with ``api_tag`` and ``impl_tag`` fields.
+    """
+    output = _impl_infra_output(project_ir, entity_name="api_private", scope="private")
+    root = c_module_root(output, entity_id="api_private", scope="private", class_name="api")
+    prefix = project_ir.prefix
+
+    # --- includes -------------------------------------------------------
+    text_element(root, "c_include", file=f"{prefix}_library.h")
+    text_element(root, "c_include", file=f"{prefix}_api.h")
+    text_element(root, "c_include", file=f"{prefix}_impl.h")
+
+    # --- api_t full struct definition -----------------------------------
+    struct_el = text_element(
+        root, "c_struct",
+        name=f"{prefix}_api_t",
+        declaration="external",
+        definition="public",
+    )
+    struct_el.text = (
+        "\nThis structure contains common part of any 'API' interface structure.\n"
+        "It is used for runtime type casting and checking.\n"
+    )
+    prop1 = text_element(struct_el, "c_property", name="api_tag", type=f"{prefix}_api_tag_t", accessed_by="value", type_is="enum")
+    prop1.text = "\nInterface unique identifier.\n"
+    prop2 = text_element(struct_el, "c_property", name="impl_tag", type=f"{prefix}_impl_tag_t", accessed_by="value", type_is="enum")
+    prop2.text = "\nImplementation unique identifier.\n"
+
+    return root
+
+
+# ---------------------------------------------------------------------------
+# Render: impl module (impl_tag enum + dispatch methods)
+# ---------------------------------------------------------------------------
+
+def render_impl_c_module(project_ir: IRProject) -> ET.Element:
+    """Render the project-global ``impl`` module.
+
+    Contains:
+    - ``impl_tag`` enum — one constant per implementation (alphabetical),
+      with BEGIN=0 and END sentinels.
+    - ``impl_t`` forward-declared struct.
+    - Dispatch methods: api, tag, cleanup, delete, destroy, shallow_copy,
+      shallow_copy_const.
+    """
+    output = _impl_infra_output(project_ir, entity_name="impl")
+    root = c_module_root(output, entity_id="impl", scope="public", class_name="impl")
+    prefix = project_ir.prefix
+    PREFIX = prefix.upper()
+
+    # --- public includes ------------------------------------------------
+    text_element(root, "c_include", file=f"{prefix}_library.h")
+    text_element(root, "c_include", file=f"{prefix}_api.h")
+
+    # --- private includes (source-only) ---------------------------------
+    for inc in (f"{prefix}_api_private.h", f"{prefix}_impl_private.h", f"{prefix}_assert.h", f"{prefix}_atomic.h"):
+        text_element(root, "c_include", file=inc, scope="private")
+
+    # --- impl_tag enum --------------------------------------------------
+    impl_names = sorted(i.name for i in project_ir.implementations)
+    enum_sym = f"{prefix}_impl_tag"
+    enum_el = text_element(root, "c_enum", name=f"{enum_sym}_t", typedef_name=f"{enum_sym}_t", declaration="public", definition="public")
+    enum_el.text = "\nEnumerates all possible implementations within crypto library.\n"
+
+    text_element(enum_el, "c_constant", name=f"{enum_sym}_BEGIN", value="0")
+    for iname in impl_names:
+        tag = snake_name(iname).upper()
+        text_element(enum_el, "c_constant", name=f"{enum_sym}_{tag}")
+    text_element(enum_el, "c_constant", name=f"{enum_sym}_END")
+
+    # --- impl_t forward declaration ------------------------------------
+    struct_el = text_element(root, "c_struct", name=f"{prefix}_impl_t", declaration="public", definition="external")
+    struct_el.text = "\nGeneric type for any 'implementation'.\n"
+
+    # --- dispatch method: api ------------------------------------------
+    _impl_dispatch_api(root, prefix, PREFIX)
+    # --- dispatch method: tag ------------------------------------------
+    _impl_dispatch_tag(root, prefix, PREFIX)
+    # --- dispatch method: cleanup --------------------------------------
+    _impl_dispatch_cleanup(root, prefix, PREFIX)
+    # --- dispatch method: delete ---------------------------------------
+    _impl_dispatch_delete(root, prefix, PREFIX)
+    # --- dispatch method: destroy --------------------------------------
+    _impl_dispatch_destroy(root, prefix, PREFIX)
+    # --- dispatch method: shallow_copy ---------------------------------
+    _impl_dispatch_shallow_copy(root, prefix, PREFIX)
+    # --- dispatch method: shallow_copy_const ---------------------------
+    _impl_dispatch_shallow_copy_const(root, prefix, PREFIX)
+
+    return root
+
+
+def _impl_method(root: ET.Element, *, name: str, uid: str, description: str,
+                 args: list[tuple[str, str, str]], return_attrs: dict[str, str] | None = None,
+                 code: str, visibility: str = "public", prefix: str = "") -> ET.Element:
+    """Helper to add a dispatch method element to the impl module."""
+    definition = "public"
+    declaration = "public"
+    method = text_element(
+        root, "c_method",
+        name=name,
+        visibility=visibility,
+        declaration=declaration,
+        definition=definition,
+        uid=uid,
+    )
+    method.text = f"\n{description}\n"
+    for arg_name, arg_type, arg_accessed_by in args:
+        extra: dict[str, str] = {}
+        if arg_type.endswith("_t") and "tag" in arg_type:
+            extra["type_is"] = "enum"
+        elif arg_type.endswith("_t"):
+            extra["type_is"] = "class"
+        if "const" in arg_type:
+            actual_type = arg_type.replace("const ", "")
+            extra["is_const_type"] = "1"
+            extra["type_is"] = "class"
+            text_element(method, "c_argument", name=arg_name, type=actual_type, accessed_by=arg_accessed_by, **extra)
+        else:
+            text_element(method, "c_argument", name=arg_name, type=arg_type, accessed_by=arg_accessed_by, **extra)
+    if return_attrs is not None:
+        ret_extra: dict[str, str] = {}
+        ret_type = return_attrs["type"]
+        if "const" in ret_type:
+            ret_type = ret_type.replace("const ", "")
+            ret_extra["is_const_type"] = "1"
+        if ret_type.endswith("_t") and "tag" in ret_type:
+            ret_extra["type_is"] = "enum"
+        elif ret_type.endswith("_t"):
+            ret_extra["type_is"] = "class"
+        text_element(method, "c_return", type=ret_type, accessed_by=return_attrs.get("accessed_by", "value"), **ret_extra)
+    else:
+        text_element(method, "c_return", type="void", accessed_by="value")
+    text_element(method, "c_code", code, type="generated", lang="c")
+    text_element(method, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
+    return method
+
+
+def _impl_dispatch_api(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_api",
+        uid=f"c_module_{prefix}_impl_method_api",
+        description=(
+            "Return 'API' object that is fulfiled with a meta information\n"
+            "specific to the given implementation object.\n"
+            "Or NULL if object does not implement requested 'API'."
+        ),
+        args=[
+            ("impl", f"const {prefix}_impl_t", "pointer"),
+            ("api_tag", f"{prefix}_api_tag_t", "value"),
+        ],
+        return_attrs={"type": f"const {prefix}_api_t", "accessed_by": "pointer"},
+        code=(
+            f"{PREFIX}_ASSERT_PTR(impl);\n"
+            f"{PREFIX}_ASSERT_PTR(impl->info);\n"
+            f"\n"
+            f"if (impl->info->find_api_cb == NULL) {{\n"
+            f"    return NULL;\n"
+            f"}}\n"
+            f"\n"
+            f"return impl->info->find_api_cb(api_tag);"
+        ),
+        prefix=prefix,
+    )
+
+
+def _impl_dispatch_tag(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_tag",
+        uid=f"c_module_{prefix}_impl_method_tag",
+        description="Return unique 'Implementation TAG'.",
+        args=[
+            ("impl", f"const {prefix}_impl_t", "pointer"),
+        ],
+        return_attrs={"type": f"{prefix}_impl_tag_t", "accessed_by": "value"},
+        code=(
+            f"{PREFIX}_ASSERT_PTR (impl);\n"
+            f"{PREFIX}_ASSERT_PTR (impl->info);\n"
+            f"\n"
+            f"return impl->info->impl_tag;"
+        ),
+        prefix=prefix,
+    )
+
+
+def _impl_dispatch_cleanup(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_cleanup",
+        uid=f"c_module_{prefix}_impl_method_cleanup",
+        description="Cleanup implementation object and it's dependencies.",
+        args=[
+            ("impl", f"{prefix}_impl_t", "pointer"),
+        ],
+        code=(
+            f"{PREFIX}_ASSERT_PTR (impl);\n"
+            f"{PREFIX}_ASSERT_PTR (impl->info);\n"
+            f"{PREFIX}_ASSERT_PTR (impl->info->self_cleanup_cb);\n"
+            f"\n"
+            f"impl->info->self_cleanup_cb (impl);"
+        ),
+        prefix=prefix,
+    )
+
+
+def _impl_dispatch_delete(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_delete",
+        uid=f"c_module_{prefix}_impl_method_delete",
+        description="Delete implementation object and it's dependencies.",
+        args=[
+            ("impl", f"{prefix}_impl_t", "pointer"),
+        ],
+        code=(
+            f"if (impl) {{\n"
+            f"    {PREFIX}_ASSERT_PTR (impl->info);\n"
+            f"    {PREFIX}_ASSERT_PTR (impl->info->self_delete_cb);\n"
+            f"    impl->info->self_delete_cb (impl);\n"
+            f"}}"
+        ),
+        prefix=prefix,
+    )
+
+
+def _impl_dispatch_destroy(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_destroy",
+        uid=f"c_module_{prefix}_impl_method_destroy",
+        description="Destroy implementation object and it's dependencies.",
+        args=[
+            ("impl_ref", f"{prefix}_impl_t", "reference"),
+        ],
+        code=(
+            f"{PREFIX}_ASSERT_PTR (impl_ref);\n"
+            f"\n"
+            f"{prefix}_impl_t* impl = *impl_ref;\n"
+            f"*impl_ref = NULL;\n"
+            f"\n"
+            f"{prefix}_impl_delete (impl);"
+        ),
+        prefix=prefix,
+    )
+
+
+def _impl_dispatch_shallow_copy(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_shallow_copy",
+        uid=f"c_module_{prefix}_impl_method_shallow_copy",
+        description="Copy implementation object by increasing reference counter.",
+        args=[
+            ("impl", f"{prefix}_impl_t", "pointer"),
+        ],
+        return_attrs={"type": f"{prefix}_impl_t", "accessed_by": "pointer"},
+        code=(
+            f"{PREFIX}_ASSERT_PTR (impl);\n"
+            f"\n"
+            f"#if defined({PREFIX}_ATOMIC_COMPARE_EXCHANGE_WEAK)\n"
+            f"//  CAS loop\n"
+            f"size_t old_counter;\n"
+            f"size_t new_counter;\n"
+            f"do {{\n"
+            f"    old_counter = impl->refcnt;\n"
+            f"    new_counter = old_counter + 1;\n"
+            f"}} while (!{PREFIX}_ATOMIC_COMPARE_EXCHANGE_WEAK(&impl->refcnt, &old_counter, new_counter));\n"
+            f"#else\n"
+            f"++impl->refcnt;\n"
+            f"#endif\n"
+            f"\n"
+            f"return impl;"
+        ),
+        prefix=prefix,
+    )
+
+
+def _impl_dispatch_shallow_copy_const(root: ET.Element, prefix: str, PREFIX: str) -> None:
+    _impl_method(
+        root,
+        name=f"{prefix}_impl_shallow_copy_const",
+        uid=f"c_module_{prefix}_impl_method_shallow_copy_const",
+        description=(
+            "Copy implementation object by increasing reference counter.\n"
+            "Reference counter is internally synchronized, so constness is presumed."
+        ),
+        args=[
+            ("impl", f"const {prefix}_impl_t", "pointer"),
+        ],
+        return_attrs={"type": f"const {prefix}_impl_t", "accessed_by": "pointer"},
+        code=f"return {prefix}_impl_shallow_copy(({prefix}_impl_t *)impl);",
+        prefix=prefix,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Render: impl_private module (callback typedefs + impl_info_t + impl_t)
+# ---------------------------------------------------------------------------
+
+def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
+    """Render the project-global ``impl_private`` module.
+
+    Contains:
+    - Callback typedefs: cleanup_fn, delete_fn, find_api_fn.
+    - ``impl_info_t`` struct — holds impl_tag, find_api, cleanup, delete callbacks.
+    - ``impl_t`` struct definition — impl_info pointer + refcount.
+    """
+    output = _impl_infra_output(project_ir, entity_name="impl_private", scope="private")
+    root = c_module_root(output, entity_id="impl_private", scope="private", class_name="impl")
+    prefix = project_ir.prefix
+    PREFIX = prefix.upper()
+
+    # --- includes -------------------------------------------------------
+    text_element(root, "c_include", file=f"{prefix}_library.h")
+    text_element(root, "c_include", file=f"{prefix}_impl.h")
+    text_element(root, "c_include", file=f"{prefix}_atomic.h")
+    text_element(root, "c_include", file=f"{prefix}_api.h")
+
+    # --- callback: cleanup_fn -------------------------------------------
+    cb_cleanup = text_element(root, "c_callback", name=f"{prefix}_impl_cleanup_fn", declaration="public")
+    cb_cleanup.text = "\nCallback type for cleanup action.\n"
+    text_element(cb_cleanup, "c_argument", name="impl", type=f"{prefix}_impl_t", accessed_by="pointer", type_is="class")
+    text_element(cb_cleanup, "c_return", type="void", accessed_by="value")
+
+    # --- callback: delete_fn --------------------------------------------
+    cb_delete = text_element(root, "c_callback", name=f"{prefix}_impl_delete_fn", declaration="public")
+    cb_delete.text = "\nCallback type for delete action.\n"
+    text_element(cb_delete, "c_argument", name="impl", type=f"{prefix}_impl_t", accessed_by="pointer", type_is="class")
+    text_element(cb_delete, "c_return", type="void", accessed_by="value")
+
+    # --- callback: find_api_fn ------------------------------------------
+    cb_find = text_element(root, "c_callback", name=f"{prefix}_impl_find_api_fn", declaration="public")
+    cb_find.text = (
+        "\nReturns API of the requested interface if implemented,\n"
+        "otherwise - NULL.\n"
+    )
+    text_element(cb_find, "c_argument", name="api_tag", type=f"{prefix}_api_tag_t", accessed_by="value", type_is="enum")
+    text_element(cb_find, "c_return", type=f"{prefix}_api_t", accessed_by="pointer", is_const_type="1", type_is="class")
+
+    # --- struct: impl_info_t --------------------------------------------
+    info_struct = text_element(
+        root, "c_struct",
+        name=f"{prefix}_impl_info_t",
+        declaration="public",
+        definition="public",
+    )
+    info_struct.text = "\nContains common properties for any 'API' implementation object.\n"
+    p1 = text_element(info_struct, "c_property", name="impl_tag", type=f"{prefix}_impl_tag_t", accessed_by="value", type_is="enum")
+    p1.text = "\nImplementation unique identifier, MUST be first in the structure.\n"
+    p2 = text_element(info_struct, "c_property", name="find_api_cb", type=f"{prefix}_impl_find_api_fn", accessed_by="value", type_is="callback")
+    p2.text = (
+        "\nCallback that returns API of the requested interface if implemented, otherwise - NULL.\n"
+        "MUST be second in the structure.\n"
+    )
+    p3 = text_element(info_struct, "c_property", name="self_cleanup_cb", type=f"{prefix}_impl_cleanup_fn", accessed_by="value", type_is="callback")
+    p3.text = "\nRelease acquired inner resources.\n"
+    p4 = text_element(info_struct, "c_property", name="self_delete_cb", type=f"{prefix}_impl_delete_fn", accessed_by="value", type_is="callback")
+    p4.text = "\nSelf destruction, according to destruction policy.\n"
+
+    # --- struct: impl_t definition --------------------------------------
+    impl_struct = text_element(
+        root, "c_struct",
+        name=f"{prefix}_impl_t",
+        declaration="external",
+        definition="public",
+    )
+    impl_struct.text = (
+        "\nContains header of any 'API' implementation structure.\n"
+        "It is used for runtime type casting and checking.\n"
+    )
+    ip1 = text_element(impl_struct, "c_property", name="info", type=f"const {prefix}_impl_info_t", accessed_by="pointer", is_const_type="1", type_is="class")
+    ip1.text = "\nCompile-time known information.\n"
+    ip2 = text_element(impl_struct, "c_property", name="refcnt", type=f"{PREFIX}_ATOMIC size_t", accessed_by="value")
+    ip2.text = "\nReference counter.\n"
+
+    return root
+
+
+# ---------------------------------------------------------------------------
+# Impl infrastructure: registration in discover_renderers
+# ---------------------------------------------------------------------------
+
+def _register_impl_infra_renderers(
+    project_ir: IRProject,
+    renderers: dict[str, DirectCRenderer],
+    overrides: dict[str, DirectCRenderer],
+) -> None:
+    """Add renderers for api, api_private, impl, impl_private modules.
+
+    Only applicable when the project has interfaces or implementations.
+    """
+    if not project_ir.interfaces and not project_ir.implementations:
+        return
+
+    specs: list[tuple[str, str, Callable[[IRProject], ET.Element]]] = [
+        ("api", "public", render_api_c_module),
+        ("api_private", "private", render_api_private_c_module),
+        ("impl", "public", render_impl_c_module),
+        ("impl_private", "private", render_impl_private_c_module),
+    ]
+    for entity_name, scope, render_fn in specs:
+        output = _impl_infra_output(project_ir, entity_name=entity_name, scope=scope)
+        xml_name = direct_xml_name(output)
+        if xml_name in overrides:
+            renderers[xml_name] = overrides[xml_name]
+        else:
+            renderers[xml_name] = (
+                lambda _repo_root, _pir=project_ir, _fn=render_fn: _fn(_pir)
+            )
+
+
 def discover_renderers(
     project_ir: IRProject,
     *,
@@ -425,6 +930,9 @@ def discover_renderers(
                 renderers[internal_xml] = (
                     lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_internal_c_module(_pir, _im)
                 )
+
+    # --- project-global impl infrastructure modules ---
+    _register_impl_infra_renderers(project_ir, renderers, overrides)
 
     # Include any overrides whose keys don't correspond to an IR entity
     # (e.g. derived outputs like buffer_defs).
