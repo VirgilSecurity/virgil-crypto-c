@@ -17,9 +17,9 @@
 - [x] Bug confirmed
 
 ### Step 1: Fix C emitter multi-value struct initializers
-**Status:** 🟨 In Progress
-- [ ] render_variable() collects all c_value children, renders multi-value struct initializer with c_cast wrapping and per-value comments
-- [ ] Committed
+**Status:** ✅ Done
+- [x] render_variable() collects all c_value children, renders multi-value struct initializer with c_cast wrapping and per-value comments
+- [x] Committed
 
 ### Step 2: Fix backend API table variable emission
 **Status:** ⬜ Not Started

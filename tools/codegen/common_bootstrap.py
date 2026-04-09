@@ -518,19 +518,57 @@ def render_struct_full(elem: ET.Element) -> str:
     return "\n".join(lines)
 
 
+def _render_c_value(cval: ET.Element) -> str:
+    """Render a single c_value element, applying c_cast if present."""
+    value = cval.attrib["value"]
+    cast_elem = cval.find("c_cast")
+    if cast_elem is not None:
+        cast_type = cast_elem.attrib["type"]
+        value = f"({cast_type}){value}"
+    return value
+
+
+def _render_c_value_comment(cval: ET.Element) -> str:
+    """Render the comment block for a c_value (indented for struct initializer)."""
+    text = description_text(cval)
+    if not text:
+        return ""
+    lines: list[str] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("//"):
+            # Already a comment line — normalize indentation
+            lines.append(f"    {stripped}")
+        elif stripped:
+            lines.append(f"    //  {stripped}")
+        else:
+            lines.append("    //")
+    return "\n".join(lines) + "\n"
+
+
 def render_variable(elem: ET.Element) -> str:
     comment = emit_comment_block(description_text(elem))
     storage = "static " if elem.attrib.get("definition") == "private" else ""
-    cval = elem.find("c_value")
+    cvals = elem.findall("c_value")
     initializer = ""
-    if cval is not None:
-        value = cval.attrib["value"]
-        if elem.attrib.get("array") == "derived":
-            initializer = f" = {{\n    {value}\n}}"
-        else:
-            initializer = f" = {value}"
+    is_array = elem.attrib.get("array") == "derived"
+    if len(cvals) > 1 or (len(cvals) == 1 and is_array):
+        # Struct or array initializer with braces
+        parts: list[str] = []
+        for i, cval in enumerate(cvals):
+            val_comment = _render_c_value_comment(cval)
+            val_str = _render_c_value(cval)
+            # Add comma after every value except the last
+            if i < len(cvals) - 1:
+                val_str += ","
+            part = f"{val_comment}    {val_str}"
+            parts.append(part)
+        inner = "\n".join(parts)
+        initializer = f" = {{\n{inner}\n}}"
+    elif len(cvals) == 1:
+        initializer = f" = {_render_c_value(cvals[0])}"
     decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None, False, elem.attrib.get('type_is'))}"
-    if elem.attrib.get("array") == "derived":
+    if is_array:
         decl += "[]"
     decl += initializer + ";"
     return f"{comment}{decl}"
