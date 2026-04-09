@@ -104,7 +104,7 @@ class TestHashDispatchModule(unittest.TestCase):
         methods = self.root.findall(".//c_method")
         names = {m.get("name") for m in methods}
         expected = {
-            "vscf_hash_hash",      # static dispatch
+            "vscf_hash",           # static dispatch (deduplicated: method name == iface name)
             "vscf_hash_start",     # stateful dispatch
             "vscf_hash_update",    # stateful dispatch
             "vscf_hash_finish",    # stateful dispatch
@@ -134,7 +134,7 @@ class TestHashDispatchModule(unittest.TestCase):
     def test_static_method_body_no_vtable_lookup(self) -> None:
         """Static methods take api struct directly, no vtable lookup."""
         methods = self.root.findall(".//c_method")
-        hash_m = next(m for m in methods if m.get("name") == "vscf_hash_hash")
+        hash_m = next(m for m in methods if m.get("name") == "vscf_hash")
         code_text = hash_m.find("c_code").text
         self.assertNotIn("vscf_hash_api(impl)", code_text)
         self.assertIn("hash_api->hash_cb", code_text)
