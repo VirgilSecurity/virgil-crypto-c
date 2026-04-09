@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-08
 **Status:** Active
-**Next Task ID:** CG-040
+**Next Task ID:** CG-045
 
 > **Note:** CG-034 was merged into CG-033. Task IDs CG-034 is retired.
 
@@ -174,6 +174,14 @@ Foundation codegen completion phase:
 - `CG-037` — fix cross-project and external type resolution (3 bugs, 10 skipped modules) ✅
 - `CG-038` — render impl infrastructure modules: api, impl, impl_private (depends on CG-037)
 - `CG-039` — fix common project codegen parity (10+ issues → zero-diff gate, foundation prefix fix) ✅
+
+Foundation codegen parity phase:
+
+- `CG-040` — fix interface API + dispatch rendering (11 issues: struct decl/def, modifiers, buffer/data types)
+- `CG-041` — fix type resolution (10 issues: interface→impl_t, enum returns, arrays, const) ‖ parallel with CG-040
+- `CG-042` — fix vtable struct initializer in internal modules (depends on CG-040)
+- `CG-043` — fix dependency methods + library macros ‖ parallel with CG-040/041
+- `CG-044` — foundation codegen full verification: build + test gate (depends on CG-040-043)
 
 ---
 
