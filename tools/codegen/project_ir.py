@@ -244,6 +244,7 @@ class IRProject:
     enums: list[IREnum] = field(default_factory=list)
     interfaces: list[IRInterface] = field(default_factory=list)
     implementations: list[IRImplementation] = field(default_factory=list)
+    fallback_projects: list[Any] = field(default_factory=list, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

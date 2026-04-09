@@ -82,17 +82,23 @@ def implementation_ir(project_ir: IRProject, name: str) -> IRImplementation:
 
 
 def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) -> IROutputTarget:
-    if entity_kind == "module":
-        return cast(IROutputTarget, module_ir(project_ir, entity_name).output)
-    if entity_kind == "class":
-        return cast(IROutputTarget, class_ir(project_ir, entity_name).output)
-    if entity_kind == "enum":
-        return cast(IROutputTarget, enum_ir(project_ir, entity_name).output)
-    if entity_kind == "interface":
-        return cast(IROutputTarget, interface_ir(project_ir, entity_name).output)
-    if entity_kind == "implementation":
-        return cast(IROutputTarget, implementation_ir(project_ir, entity_name).output)
-    raise ValueError(f"unsupported C backend entity kind: {entity_kind}")
+    projects = [project_ir, *getattr(project_ir, 'fallback_projects', [])]
+    lookup_fns = {
+        "module": lambda pir: cast(IROutputTarget, module_ir(pir, entity_name).output),
+        "class": lambda pir: cast(IROutputTarget, class_ir(pir, entity_name).output),
+        "enum": lambda pir: cast(IROutputTarget, enum_ir(pir, entity_name).output),
+        "interface": lambda pir: cast(IROutputTarget, interface_ir(pir, entity_name).output),
+        "implementation": lambda pir: cast(IROutputTarget, implementation_ir(pir, entity_name).output),
+    }
+    fn = lookup_fns.get(entity_kind)
+    if fn is None:
+        raise ValueError(f"unsupported C backend entity kind: {entity_kind}")
+    for pir in projects:
+        try:
+            return fn(pir)
+        except (KeyError, StopIteration):
+            continue
+    raise KeyError(f"{entity_kind} not found in IR: {entity_name}")
 
 
 
@@ -1570,7 +1576,10 @@ def _class_dependency_includes(project_ir: IRProject, cls: IRClass) -> list[str]
     def add_include(class_name: str | None) -> None:
         if not class_name or class_name == "self" or class_name == cls.name:
             return
-        include = include_file_for_entity(project_ir, entity_kind="class", entity_name=class_name)
+        try:
+            include = include_file_for_entity(project_ir, entity_kind="class", entity_name=class_name)
+        except KeyError:
+            return
         if include not in seen:
             seen.add(include)
             includes.append(include)

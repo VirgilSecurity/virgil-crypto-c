@@ -281,6 +281,11 @@ def direct_c_renderers_for_project(
 
     project_ir = project_to_ir(load_named_project_source(project, repo_root))
 
+    # Cross-project fallback: foundation needs common types (e.g. data, buffer)
+    if project != "common":
+        common_ir = project_to_ir(load_named_project_source("common", repo_root))
+        project_ir.fallback_projects = [common_ir]
+
     # Only common has custom overrides; other projects use pure auto-discovery
     custom_overrides: dict[str, DirectCRenderer] = {}
     if project == "common":
@@ -616,19 +621,27 @@ def main() -> int:
         out_root.mkdir(parents=True, exist_ok=True)
 
     written = []
+    skipped = []
     for xml_path in iter_project_xml_paths(
         project_dir,
         repo_root,
         project=args.project,
         include_legacy_fallback=args.legacy_c_modules,
     ):
-        written.extend(render_one(xml_path, repo_root, codegen_root, out_root, project=args.project))
+        try:
+            written.extend(render_one(xml_path, repo_root, codegen_root, out_root, project=args.project))
+        except Exception as exc:
+            skipped.append((xml_path.name, str(exc)))
 
     destination = repo_root if args.apply else out_root
     print(f"generated {len(written)} files into {destination}")
     for path in written:
         print(path.relative_to(repo_root))
-    return 0
+    if skipped:
+        print(f"\nskipped {len(skipped)} module(s) due to errors:")
+        for name, err in skipped:
+            print(f"  {name}: {err}")
+    return 1 if skipped else 0
 
 
 if __name__ == "__main__":
