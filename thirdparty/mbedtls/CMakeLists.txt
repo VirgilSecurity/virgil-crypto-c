@@ -95,6 +95,8 @@ ExternalProject_Add(mbedtls-ext
             https://github.com/Mbed-TLS/mbedtls
         GIT_TAG
             v3.6.5
+        GIT_SHALLOW
+            TRUE
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "${MBEDTLS_C_FLAGS}"
