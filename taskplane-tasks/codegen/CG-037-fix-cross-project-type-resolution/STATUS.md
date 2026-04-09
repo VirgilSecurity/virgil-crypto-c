@@ -11,7 +11,7 @@
 ---
 
 ### Step 0: Preflight
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Reproduce 10 failures with foundation codegen
 - [x] argument_from_source/return_from_source understood
@@ -21,7 +21,7 @@
 ---
 
 ### Step 1: Fix external library type resolution
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] argument_from_source handles library attribute
 - [x] return_from_source handles library attribute
@@ -32,7 +32,7 @@
 ---
 
 ### Step 2: Fix module require rendering
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Require kind dispatch implemented
 - [x] module/class/interface/header handled
@@ -42,7 +42,7 @@
 ---
 
 ### Step 3: Add tests
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] brainkey_client rendering test
 - [x] message_cipher rendering test
@@ -53,7 +53,7 @@
 ---
 
 ### Step 4: Testing & Verification
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] New tests pass
 - [x] All tests pass
@@ -63,7 +63,7 @@
 ---
 
 ### Step 5: Documentation & Delivery
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Discoveries logged
 - [x] CONTEXT.md updated if needed
@@ -94,6 +94,8 @@
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-09 00:46 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-09 00:46 | Step 0 started | Preflight |
+| 2026-04-09 00:57 | Worker iter 1 | done in 676s, tools: 108 |
+| 2026-04-09 00:57 | Task complete | .DONE created |
 
 ---
 
