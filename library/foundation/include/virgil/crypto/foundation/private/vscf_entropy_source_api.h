@@ -97,7 +97,7 @@ typedef vscf_status_t (*vscf_entropy_source_api_gather_fn)(vscf_impl_t *impl, si
 struct vscf_entropy_source_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
+    //  For interface 'entropy source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
     //
     vscf_api_tag_t api_tag;
     //

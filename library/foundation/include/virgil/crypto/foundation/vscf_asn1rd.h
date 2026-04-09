@@ -148,7 +148,7 @@ vscf_asn1rd_shallow_copy(vscf_asn1rd_t *self);
 //  Reset all internal states and prepare to new ASN.1 reading operations.
 //
 VSCF_PUBLIC void
-vscf_asn1rd_reset(vscf_asn1rd_t *self, vsc_data_t data);
+vscf_asn1rd_reset(vscf_asn1rd_t *self, vsc_data_t *data);
 
 //
 //  Return length in bytes how many bytes are left for reading.
@@ -166,7 +166,7 @@ vscf_asn1rd_has_error(const vscf_asn1rd_t *self);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_asn1rd_status(const vscf_asn1rd_t *self) VSCF_NODISCARD;
+vscf_asn1rd_status(const vscf_asn1rd_t *self);
 
 //
 //  Get tag of the current ASN.1 element.
@@ -210,55 +210,55 @@ vscf_asn1rd_read_int(vscf_asn1rd_t *self);
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int8_t
+VSCF_PUBLIC int
 vscf_asn1rd_read_int8(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int16_t
+VSCF_PUBLIC int
 vscf_asn1rd_read_int16(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int32_t
+VSCF_PUBLIC int
 vscf_asn1rd_read_int32(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int64_t
+VSCF_PUBLIC int
 vscf_asn1rd_read_int64(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC unsigned int
+VSCF_PUBLIC unsigned
 vscf_asn1rd_read_uint(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC uint8_t
+VSCF_PUBLIC unsigned
 vscf_asn1rd_read_uint8(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC uint16_t
+VSCF_PUBLIC unsigned
 vscf_asn1rd_read_uint16(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC uint32_t
+VSCF_PUBLIC unsigned
 vscf_asn1rd_read_uint32(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC uint64_t
+VSCF_PUBLIC unsigned
 vscf_asn1rd_read_uint64(vscf_asn1rd_t *self);
 
 //
@@ -283,31 +283,31 @@ vscf_asn1rd_read_null_optional(vscf_asn1rd_t *self);
 //
 //  Read ASN.1 type: OCTET STRING.
 //
-VSCF_PUBLIC vsc_data_t
+VSCF_PUBLIC vsc_data_t *
 vscf_asn1rd_read_octet_str(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: BIT STRING.
 //
-VSCF_PUBLIC vsc_data_t
+VSCF_PUBLIC vsc_data_t *
 vscf_asn1rd_read_bitstring_as_octet_str(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: UTF8String.
 //
-VSCF_PUBLIC vsc_data_t
+VSCF_PUBLIC vsc_data_t *
 vscf_asn1rd_read_utf8_str(vscf_asn1rd_t *self);
 
 //
 //  Read ASN.1 type: OID.
 //
-VSCF_PUBLIC vsc_data_t
+VSCF_PUBLIC vsc_data_t *
 vscf_asn1rd_read_oid(vscf_asn1rd_t *self);
 
 //
 //  Read raw data of given length.
 //
-VSCF_PUBLIC vsc_data_t
+VSCF_PUBLIC vsc_data_t *
 vscf_asn1rd_read_data(vscf_asn1rd_t *self, size_t len);
 
 //

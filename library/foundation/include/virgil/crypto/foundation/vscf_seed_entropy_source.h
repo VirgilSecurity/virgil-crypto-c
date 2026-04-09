@@ -147,12 +147,6 @@ VSCF_PUBLIC vscf_seed_entropy_source_t *
 vscf_seed_entropy_source_shallow_copy(vscf_seed_entropy_source_t *self);
 
 //
-//  Set a new seed as an entropy source.
-//
-VSCF_PUBLIC void
-vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t seed);
-
-//
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
@@ -162,7 +156,13 @@ vscf_seed_entropy_source_is_strong(vscf_seed_entropy_source_t *self);
 //  Gather entropy of the requested length.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out);
+
+//
+//  Set a new seed as an entropy source.
+//
+VSCF_PRIVATE void
+vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t *seed);
 
 
 // --------------------------------------------------------------------------

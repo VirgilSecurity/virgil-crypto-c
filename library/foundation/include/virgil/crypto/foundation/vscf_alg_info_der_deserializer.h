@@ -145,28 +145,15 @@ VSCF_PUBLIC vscf_alg_info_der_deserializer_t *
 vscf_alg_info_der_deserializer_shallow_copy(vscf_alg_info_der_deserializer_t *self);
 
 //
-//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//  Deserialize algorithm from the data.
 //
-VSCF_PUBLIC void
-vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader);
-
-//
-//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader);
-
-//
-//  Release dependency to the interface 'asn1 reader'.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t *data, vscf_error_t *error);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *self);
 
 //
@@ -174,15 +161,8 @@ vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PRIVATE vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserializer_t *self, vscf_error_t *error);
-
-//
-//  Deserialize algorithm from the data.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t data,
-        vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

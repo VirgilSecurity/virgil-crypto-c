@@ -138,60 +138,6 @@ VSCF_PUBLIC vscf_compound_public_key_t *
 vscf_compound_public_key_shallow_copy(vscf_compound_public_key_t *self);
 
 //
-//  Perform initialization of pre-allocated context.
-//  Create a compound public key with a cipher public key and
-//  a signer public key.
-//
-VSCF_PRIVATE void
-vscf_compound_public_key_init_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create a compound public key with a cipher public key and
-//  a signer public key.
-//
-VSCF_PRIVATE vscf_compound_public_key_t *
-vscf_compound_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key,
-        const vscf_impl_t *signer_key);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create a compound public key with a cipher public key and
-//  a signer public key.
-//
-VSCF_PRIVATE void
-vscf_compound_public_key_init_with_keys_disown(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create a compound public key with a cipher public key and
-//  a signer public key.
-//
-VSCF_PRIVATE vscf_compound_public_key_t *
-vscf_compound_public_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref,
-        vscf_impl_t **signer_key_ref);
-
-//
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_compound_public_key_public_key_api(void);
-
-//
-//  Return a cipher public key suitable for initial encryption.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_public_key_cipher_key(const vscf_compound_public_key_t *self);
-
-//
-//  Return public key suitable for verifying.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_public_key_signer_key(const vscf_compound_public_key_t *self);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -200,7 +146,7 @@ vscf_compound_public_key_alg_id(const vscf_compound_public_key_t *self);
 //
 //  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC vscf_impl_t *
 vscf_compound_public_key_alg_info(const vscf_compound_public_key_t *self);
 
 //
@@ -218,7 +164,7 @@ vscf_compound_public_key_bitlen(const vscf_compound_public_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PRIVATE vscf_impl_tag_t
+VSCF_PUBLIC vscf_impl/tag_t
 vscf_compound_public_key_impl_tag(const vscf_compound_public_key_t *self);
 
 //
@@ -227,6 +173,18 @@ vscf_compound_public_key_impl_tag(const vscf_compound_public_key_t *self);
 //
 VSCF_PUBLIC bool
 vscf_compound_public_key_is_valid(const vscf_compound_public_key_t *self);
+
+//
+//  Return a cipher public key suitable for initial encryption.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_compound_public_key_cipher_key(const vscf_compound_public_key_t *self);
+
+//
+//  Return public key suitable for verifying.
+//
+VSCF_PRIVATE vscf_impl_t *
+vscf_compound_public_key_signer_key(const vscf_compound_public_key_t *self);
 
 
 // --------------------------------------------------------------------------

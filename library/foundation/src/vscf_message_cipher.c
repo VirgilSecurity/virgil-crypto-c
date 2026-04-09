@@ -93,20 +93,6 @@ vscf_message_cipher_init_ctx(vscf_message_cipher_t *self);
 static void
 vscf_message_cipher_cleanup_ctx(vscf_message_cipher_t *self);
 
-static void
-vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt);
-
-static vscf_status_t
-vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
-
-static vscf_status_t
-vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
-
 //
 //  Return size of 'vscf_message_cipher_t'.
 //
@@ -122,9 +108,9 @@ vscf_message_cipher_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_message_cipher_init(vscf_message_cipher_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_message_cipher_t));
+    vsc_zeroize(self, sizeof(vscf_message_cipher_t));
 
     self->refcnt = 1;
 
@@ -143,7 +129,7 @@ vscf_message_cipher_cleanup(vscf_message_cipher_t *self) {
 
     vscf_message_cipher_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_message_cipher_t));
+    vsc_zeroize(self, sizeof(vscf_message_cipher_t));
 }
 
 //
@@ -152,12 +138,12 @@ vscf_message_cipher_cleanup(vscf_message_cipher_t *self) {
 VSCF_PUBLIC vscf_message_cipher_t *
 vscf_message_cipher_new(void) {
 
-    vscf_message_cipher_t *self = (vscf_message_cipher_t *) vscf_alloc(sizeof (vscf_message_cipher_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_message_cipher_t *self = (vscf_message_cipher_t *) vsc_alloc(sizeof (vscf_message_cipher_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_message_cipher_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

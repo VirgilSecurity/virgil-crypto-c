@@ -92,326 +92,52 @@ vscf_aes256_gcm_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
-    //
-    vscf_api_tag_ALG,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Provide algorithm identificator.
-    //
-    (vscf_alg_api_alg_id_fn)vscf_aes256_gcm_alg_id,
-    //
-    //  Produce object with algorithm information and configuration parameters.
-    //
-    (vscf_alg_api_produce_alg_info_fn)vscf_aes256_gcm_produce_alg_info,
-    //
-    //  Restore algorithm configuration from the given object.
-    //
-    (vscf_alg_api_restore_alg_info_fn)vscf_aes256_gcm_restore_alg_info
-};
+static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
 
 //
 //  Configuration of the interface API 'encrypt api'.
 //
-static const vscf_encrypt_api_t encrypt_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
-    //
-    vscf_api_tag_ENCRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Encrypt given data.
-    //
-    (vscf_encrypt_api_encrypt_fn)vscf_aes256_gcm_encrypt,
-    //
-    //  Calculate required buffer length to hold the encrypted data.
-    //
-    (vscf_encrypt_api_encrypted_len_fn)vscf_aes256_gcm_encrypted_len,
-    //
-    //  Precise length calculation of encrypted data.
-    //
-    (vscf_encrypt_api_precise_encrypted_len_fn)vscf_aes256_gcm_precise_encrypted_len
-};
+static const vscf_encrypt_api_t encrypt_api = vscf_api_tag_ENCRYPT;
 
 //
 //  Configuration of the interface API 'decrypt api'.
 //
-static const vscf_decrypt_api_t decrypt_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
-    //
-    vscf_api_tag_DECRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Decrypt given data.
-    //
-    (vscf_decrypt_api_decrypt_fn)vscf_aes256_gcm_decrypt,
-    //
-    //  Calculate required buffer length to hold the decrypted data.
-    //
-    (vscf_decrypt_api_decrypted_len_fn)vscf_aes256_gcm_decrypted_len
-};
+static const vscf_decrypt_api_t decrypt_api = vscf_api_tag_DECRYPT;
 
 //
 //  Configuration of the interface API 'cipher info api'.
 //
-static const vscf_cipher_info_api_t cipher_info_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vscf_api_tag_CIPHER_INFO'.
-    //
-    vscf_api_tag_CIPHER_INFO,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    //
-    vscf_aes256_gcm_NONCE_LEN,
-    //
-    //  Cipher key length in bytes.
-    //
-    vscf_aes256_gcm_KEY_LEN,
-    //
-    //  Cipher key length in bits.
-    //
-    vscf_aes256_gcm_KEY_BITLEN,
-    //
-    //  Cipher block length in bytes.
-    //
-    vscf_aes256_gcm_BLOCK_LEN
-};
+static const vscf_cipher_info_api_t cipher_info_api = vscf_api_tag_CIPHER_INFO;
 
 //
 //  Configuration of the interface API 'cipher api'.
 //
-static const vscf_cipher_api_t cipher_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
-    //
-    vscf_api_tag_CIPHER,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Link to the inherited interface API 'encrypt'.
-    //
-    &encrypt_api,
-    //
-    //  Link to the inherited interface API 'decrypt'.
-    //
-    &decrypt_api,
-    //
-    //  Link to the inherited interface API 'cipher info'.
-    //
-    &cipher_info_api,
-    //
-    //  Setup IV or nonce.
-    //
-    (vscf_cipher_api_set_nonce_fn)vscf_aes256_gcm_set_nonce,
-    //
-    //  Set cipher encryption / decryption key.
-    //
-    (vscf_cipher_api_set_key_fn)vscf_aes256_gcm_set_key,
-    //
-    //  Return cipher's current state.
-    //
-    (vscf_cipher_api_state_fn)vscf_aes256_gcm_state,
-    //
-    //  Start sequential encryption.
-    //
-    (vscf_cipher_api_start_encryption_fn)vscf_aes256_gcm_start_encryption,
-    //
-    //  Start sequential decryption.
-    //
-    (vscf_cipher_api_start_decryption_fn)vscf_aes256_gcm_start_decryption,
-    //
-    //  Process encryption or decryption of the given data chunk.
-    //
-    (vscf_cipher_api_update_fn)vscf_aes256_gcm_update,
-    //
-    //  Return buffer length required to hold an output of the methods
-    //  "update" or "finish" in an current mode.
-    //  Pass zero length to define buffer length of the method "finish".
-    //
-    (vscf_cipher_api_out_len_fn)vscf_aes256_gcm_out_len,
-    //
-    //  Return buffer length required to hold an output of the methods
-    //  "update" or "finish" in an encryption mode.
-    //  Pass zero length to define buffer length of the method "finish".
-    //
-    (vscf_cipher_api_encrypted_out_len_fn)vscf_aes256_gcm_encrypted_out_len,
-    //
-    //  Return buffer length required to hold an output of the methods
-    //  "update" or "finish" in an decryption mode.
-    //  Pass zero length to define buffer length of the method "finish".
-    //
-    (vscf_cipher_api_decrypted_out_len_fn)vscf_aes256_gcm_decrypted_out_len,
-    //
-    //  Accomplish encryption or decryption process.
-    //
-    (vscf_cipher_api_finish_fn)vscf_aes256_gcm_finish
-};
+static const vscf_cipher_api_t cipher_api = vscf_api_tag_CIPHER;
 
 //
 //  Configuration of the interface API 'cipher auth info api'.
 //
-static const vscf_cipher_auth_info_api_t cipher_auth_info_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_auth_info' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH_INFO'.
-    //
-    vscf_api_tag_CIPHER_AUTH_INFO,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Defines authentication tag length in bytes.
-    //
-    vscf_aes256_gcm_AUTH_TAG_LEN
-};
+static const vscf_cipher_auth_info_api_t cipher_auth_info_api = vscf_api_tag_CIPHER_AUTH_INFO;
 
 //
 //  Configuration of the interface API 'auth encrypt api'.
 //
-static const vscf_auth_encrypt_api_t auth_encrypt_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'auth_encrypt' MUST be equal to the 'vscf_api_tag_AUTH_ENCRYPT'.
-    //
-    vscf_api_tag_AUTH_ENCRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Link to the inherited interface API 'cipher auth info'.
-    //
-    &cipher_auth_info_api,
-    //
-    //  Encrypt given data.
-    //  If 'tag' is not given, then it will written to the 'enc'.
-    //
-    (vscf_auth_encrypt_api_auth_encrypt_fn)vscf_aes256_gcm_auth_encrypt,
-    //
-    //  Calculate required buffer length to hold the authenticated encrypted data.
-    //
-    (vscf_auth_encrypt_api_auth_encrypted_len_fn)vscf_aes256_gcm_auth_encrypted_len
-};
+static const vscf_auth_encrypt_api_t auth_encrypt_api = vscf_api_tag_AUTH_ENCRYPT;
 
 //
 //  Configuration of the interface API 'auth decrypt api'.
 //
-static const vscf_auth_decrypt_api_t auth_decrypt_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'auth_decrypt' MUST be equal to the 'vscf_api_tag_AUTH_DECRYPT'.
-    //
-    vscf_api_tag_AUTH_DECRYPT,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Link to the inherited interface API 'cipher auth info'.
-    //
-    &cipher_auth_info_api,
-    //
-    //  Decrypt given data.
-    //  If 'tag' is not given, then it will be taken from the 'enc'.
-    //
-    (vscf_auth_decrypt_api_auth_decrypt_fn)vscf_aes256_gcm_auth_decrypt,
-    //
-    //  Calculate required buffer length to hold the authenticated decrypted data.
-    //
-    (vscf_auth_decrypt_api_auth_decrypted_len_fn)vscf_aes256_gcm_auth_decrypted_len
-};
+static const vscf_auth_decrypt_api_t auth_decrypt_api = vscf_api_tag_AUTH_DECRYPT;
 
 //
 //  Configuration of the interface API 'cipher auth api'.
 //
-static const vscf_cipher_auth_api_t cipher_auth_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_auth' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH'.
-    //
-    vscf_api_tag_CIPHER_AUTH,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Link to the inherited interface API 'cipher'.
-    //
-    &cipher_api,
-    //
-    //  Link to the inherited interface API 'auth encrypt'.
-    //
-    &auth_encrypt_api,
-    //
-    //  Link to the inherited interface API 'auth decrypt'.
-    //
-    &auth_decrypt_api,
-    //
-    //  Set additional data for for AEAD ciphers.
-    //
-    (vscf_cipher_auth_api_set_auth_data_fn)vscf_aes256_gcm_set_auth_data,
-    //
-    //  Accomplish an authenticated encryption and place tag separately.
-    //
-    //  Note, if authentication tag should be added to an encrypted data,
-    //  method "finish" can be used.
-    //
-    (vscf_cipher_auth_api_finish_auth_encryption_fn)vscf_aes256_gcm_finish_auth_encryption,
-    //
-    //  Accomplish an authenticated decryption with explicitly given tag.
-    //
-    //  Note, if authentication tag is a part of an encrypted data then,
-    //  method "finish" can be used for simplicity.
-    //
-    (vscf_cipher_auth_api_finish_auth_decryption_fn)vscf_aes256_gcm_finish_auth_decryption
-};
+static const vscf_cipher_auth_api_t cipher_auth_api = vscf_api_tag_CIPHER_AUTH;
 
 //
 //  Compile-time known information about 'aes256 gcm' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_AES256_GCM,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_aes256_gcm_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_aes256_gcm_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_aes256_gcm_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_AES256_GCM;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -522,24 +248,6 @@ vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self) {
 }
 
 //
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_gcm_cipher_info_api(void) {
-
-    return &cipher_info_api;
-}
-
-//
-//  Returns instance of the implemented interface 'cipher auth info'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_aes256_gcm_cipher_auth_info_api(void) {
-
-    return &cipher_auth_info_api;
-}
-
-//
 //  Return size of 'vscf_aes256_gcm_t' type.
 //
 VSCF_PUBLIC size_t
@@ -573,23 +281,23 @@ vscf_aes256_gcm_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_AUTH_DECRYPT:
-            return (const vscf_api_t *) &auth_decrypt_api;
+        return (const vscf_api_t *)                 &auth_decrypt_api;
         case vscf_api_tag_AUTH_ENCRYPT:
-            return (const vscf_api_t *) &auth_encrypt_api;
+        return (const vscf_api_t *)                 &auth_encrypt_api;
         case vscf_api_tag_CIPHER:
-            return (const vscf_api_t *) &cipher_api;
+        return (const vscf_api_t *)                 &cipher_api;
         case vscf_api_tag_CIPHER_AUTH:
-            return (const vscf_api_t *) &cipher_auth_api;
+        return (const vscf_api_t *)                 &cipher_auth_api;
         case vscf_api_tag_CIPHER_AUTH_INFO:
-            return (const vscf_api_t *) &cipher_auth_info_api;
+        return (const vscf_api_t *)                 &cipher_auth_info_api;
         case vscf_api_tag_CIPHER_INFO:
-            return (const vscf_api_t *) &cipher_info_api;
+        return (const vscf_api_t *)                 &cipher_info_api;
         case vscf_api_tag_DECRYPT:
-            return (const vscf_api_t *) &decrypt_api;
+        return (const vscf_api_t *)                 &decrypt_api;
         case vscf_api_tag_ENCRYPT:
-            return (const vscf_api_t *) &encrypt_api;
+        return (const vscf_api_t *)                 &encrypt_api;
         default:
             return NULL;
     }

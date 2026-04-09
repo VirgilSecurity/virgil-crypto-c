@@ -77,84 +77,17 @@ vscf_hybrid_public_key_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'key api'.
 //
-static const vscf_key_api_t key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key' MUST be equal to the 'vscf_api_tag_KEY'.
-    //
-    vscf_api_tag_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HYBRID_PUBLIC_KEY,
-    //
-    //  Algorithm identifier the key belongs to.
-    //
-    (vscf_key_api_alg_id_fn)vscf_hybrid_public_key_alg_id,
-    //
-    //  Return algorithm information that can be used for serialization.
-    //
-    (vscf_key_api_alg_info_fn)vscf_hybrid_public_key_alg_info,
-    //
-    //  Length of the key in bytes.
-    //
-    (vscf_key_api_len_fn)vscf_hybrid_public_key_len,
-    //
-    //  Length of the key in bits.
-    //
-    (vscf_key_api_bitlen_fn)vscf_hybrid_public_key_bitlen,
-    //
-    //  Return tag of an associated algorithm that can handle this key.
-    //
-    (vscf_key_api_impl_tag_fn)vscf_hybrid_public_key_impl_tag,
-    //
-    //  Check that key is valid.
-    //  Note, this operation can be slow.
-    //
-    (vscf_key_api_is_valid_fn)vscf_hybrid_public_key_is_valid
-};
+static const vscf_key_api_t key_api = vscf_api_tag_KEY;
 
 //
 //  Configuration of the interface API 'public key api'.
 //
-static const vscf_public_key_api_t public_key_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
-    //
-    vscf_api_tag_PUBLIC_KEY,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_HYBRID_PUBLIC_KEY,
-    //
-    //  Link to the inherited interface API 'key'.
-    //
-    &key_api
-};
+static const vscf_public_key_api_t public_key_api = vscf_api_tag_PUBLIC_KEY;
 
 //
 //  Compile-time known information about 'hybrid public key' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_HYBRID_PUBLIC_KEY,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_hybrid_public_key_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_hybrid_public_key_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_hybrid_public_key_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_HYBRID_PUBLIC_KEY;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -265,89 +198,6 @@ vscf_hybrid_public_key_shallow_copy(vscf_hybrid_public_key_t *self) {
 }
 
 //
-//  Perform initialization of pre-allocated context.
-//  Create a hybrid public key with 2 public keys.
-//
-//  Note, keys ownership is kept.
-//
-VSCF_PRIVATE void
-vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *first_key, const vscf_impl_t *second_key) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_hybrid_public_key_t));
-
-    self->info = &info;
-    self->refcnt = 1;
-
-    vscf_hybrid_public_key_init_ctx_with_keys(self, alg_info_ref, first_key, second_key);
-}
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create a hybrid public key with 2 public keys.
-//
-//  Note, keys ownership is kept.
-//
-VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *first_key,
-        const vscf_impl_t *second_key) {
-
-    vscf_hybrid_public_key_t *self = vscf_hybrid_public_key_new();
-
-    vscf_hybrid_public_key_init_with_keys(self, alg_info_ref, first_key, second_key);
-
-    return self;
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create a hybrid public key with 2 public keys.
-//
-//  Note, keys ownership is transferred.
-//
-VSCF_PRIVATE void
-vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_hybrid_public_key_t));
-
-    self->info = &info;
-    self->refcnt = 1;
-
-    vscf_hybrid_public_key_init_ctx_with_keys_disown(self, alg_info, first_key_ref, second_key_ref);
-}
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create a hybrid public key with 2 public keys.
-//
-//  Note, keys ownership is transferred.
-//
-VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **first_key_ref,
-        vscf_impl_t **second_key_ref) {
-
-    vscf_hybrid_public_key_t *self = vscf_hybrid_public_key_new();
-
-    vscf_hybrid_public_key_init_with_keys_disown(self, alg_info, first_key_ref, second_key_ref);
-
-    return self;
-}
-
-//
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_hybrid_public_key_public_key_api(void) {
-
-    return &public_key_api;
-}
-
-//
 //  Return size of 'vscf_hybrid_public_key_t' type.
 //
 VSCF_PUBLIC size_t
@@ -381,9 +231,9 @@ vscf_hybrid_public_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY:
-            return (const vscf_api_t *) &key_api;
+        return (const vscf_api_t *)                 &key_api;
         case vscf_api_tag_PUBLIC_KEY:
-            return (const vscf_api_t *) &public_key_api;
+        return (const vscf_api_t *)                 &public_key_api;
         default:
             return NULL;
     }

@@ -90,25 +90,10 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    //
-    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    //
     vscf_aes256_gcm_NONCE_LEN = 12,
-    //
-    //  Cipher key length in bytes.
-    //
     vscf_aes256_gcm_KEY_LEN = 32,
-    //
-    //  Cipher key length in bits.
-    //
     vscf_aes256_gcm_KEY_BITLEN = 256,
-    //
-    //  Cipher block length in bytes.
-    //
     vscf_aes256_gcm_BLOCK_LEN = 16,
-    //
-    //  Defines authentication tag length in bytes.
-    //
     vscf_aes256_gcm_AUTH_TAG_LEN = 16
 };
 
@@ -177,18 +162,6 @@ VSCF_PUBLIC vscf_aes256_gcm_t *
 vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self);
 
 //
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_gcm_cipher_info_api(void);
-
-//
-//  Returns instance of the implemented interface 'cipher auth info'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_aes256_gcm_cipher_auth_info_api(void);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -204,13 +177,13 @@ vscf_aes256_gcm_produce_alg_info(const vscf_aes256_gcm_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_restore_alg_info(vscf_aes256_gcm_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_aes256_gcm_restore_alg_info(vscf_aes256_gcm_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_aes256_gcm_encrypt(vscf_aes256_gcm_t *self, vsc_data_t *data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
@@ -228,7 +201,7 @@ vscf_aes256_gcm_precise_encrypted_len(const vscf_aes256_gcm_t *self, size_t data
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t *data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
@@ -240,18 +213,18 @@ vscf_aes256_gcm_decrypted_len(const vscf_aes256_gcm_t *self, size_t data_len);
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce);
+vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t *nonce);
 
 //
 //  Set cipher encryption / decryption key.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_set_key(vscf_aes256_gcm_t *self, vsc_data_t key);
+vscf_aes256_gcm_set_key(vscf_aes256_gcm_t *self, vsc_data_t *key);
 
 //
 //  Return cipher's current state.
 //
-VSCF_PRIVATE vscf_cipher_state_t
+VSCF_PUBLIC vscf_cipher_state_t
 vscf_aes256_gcm_state(const vscf_aes256_gcm_t *self);
 
 //
@@ -270,7 +243,7 @@ vscf_aes256_gcm_start_decryption(vscf_aes256_gcm_t *self);
 //  Process encryption or decryption of the given data chunk.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_update(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out);
+vscf_aes256_gcm_update(vscf_aes256_gcm_t *self, vsc_data_t *data, vsc_buffer_t *out);
 
 //
 //  Return buffer length required to hold an output of the methods
@@ -300,15 +273,14 @@ vscf_aes256_gcm_decrypted_out_len(const vscf_aes256_gcm_t *self, size_t data_len
 //  Accomplish encryption or decryption process.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out);
 
 //
 //  Encrypt given data.
 //  If 'tag' is not given, then it will written to the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out,
-        vsc_buffer_t *tag) VSCF_NODISCARD;
+vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t *data, vsc_data_t *auth_data, vsc_buffer_t *out, vsc_buffer_t *tag);
 
 //
 //  Calculate required buffer length to hold the authenticated encrypted data.
@@ -321,8 +293,7 @@ vscf_aes256_gcm_auth_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_le
 //  If 'tag' is not given, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t *data, vsc_data_t *auth_data, vsc_data_t *tag, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the authenticated decrypted data.
@@ -334,7 +305,7 @@ vscf_aes256_gcm_auth_decrypted_len(const vscf_aes256_gcm_t *self, size_t data_le
 //  Set additional data for for AEAD ciphers.
 //
 VSCF_PUBLIC void
-vscf_aes256_gcm_set_auth_data(vscf_aes256_gcm_t *self, vsc_data_t auth_data);
+vscf_aes256_gcm_set_auth_data(vscf_aes256_gcm_t *self, vsc_data_t *auth_data);
 
 //
 //  Accomplish an authenticated encryption and place tag separately.
@@ -343,7 +314,7 @@ vscf_aes256_gcm_set_auth_data(vscf_aes256_gcm_t *self, vsc_data_t auth_data);
 //  method "finish" can be used.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *out, vsc_buffer_t *tag) VSCF_NODISCARD;
+vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *out, vsc_buffer_t *tag);
 
 //
 //  Accomplish an authenticated decryption with explicitly given tag.
@@ -352,7 +323,7 @@ vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *ou
 //  method "finish" can be used for simplicity.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_finish_auth_decryption(vscf_aes256_gcm_t *self, vsc_data_t tag, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_aes256_gcm_finish_auth_decryption(vscf_aes256_gcm_t *self, vsc_data_t *tag, vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

@@ -76,7 +76,7 @@ extern "C" {
 //
 //  Callback. Extract public key from the private key.
 //
-typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_impl_t *impl);
+typedef void (*vscf_private_key_api_extract_public_key_fn)(const vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'private key'.
@@ -84,7 +84,7 @@ typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_i
 struct vscf_private_key_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
+    //  For interface 'private key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_t api_tag;
     //

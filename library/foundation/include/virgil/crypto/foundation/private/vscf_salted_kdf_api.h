@@ -88,7 +88,7 @@ typedef void (*vscf_salted_kdf_api_reset_fn)(vscf_impl_t *impl, vsc_data_t salt,
 
 //
 //  Callback. Setup application specific information (optional).
-//          Can be empty.
+//  Can be empty.
 //
 typedef void (*vscf_salted_kdf_api_set_info_fn)(vscf_impl_t *impl, vsc_data_t info);
 
@@ -98,7 +98,7 @@ typedef void (*vscf_salted_kdf_api_set_info_fn)(vscf_impl_t *impl, vsc_data_t in
 struct vscf_salted_kdf_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'salted_kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
+    //  For interface 'salted kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
     //
     vscf_api_tag_t api_tag;
     //

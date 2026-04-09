@@ -87,20 +87,17 @@ extern "C" {
 //
 //  Callback. Return buffer size enough to hold serialized message info footer.
 //
-typedef size_t (*vscf_message_info_footer_serializer_api_serialized_footer_len_fn)(vscf_impl_t *impl,
-        const vscf_message_info_footer_t *message_info_footer);
+typedef size_t (*vscf_message_info_footer_serializer_api_serialized_footer_len_fn)(vscf_impl_t *impl, vscf_message_info_footer_t *message_info_footer);
 
 //
 //  Callback. Serialize class "message info footer".
 //
-typedef void (*vscf_message_info_footer_serializer_api_serialize_footer_fn)(vscf_impl_t *impl,
-        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+typedef void (*vscf_message_info_footer_serializer_api_serialize_footer_fn)(vscf_impl_t *impl, vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
 
 //
 //  Callback. Deserialize class "message info footer".
 //
-typedef vscf_message_info_footer_t * (*vscf_message_info_footer_serializer_api_deserialize_footer_fn)(
-        vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
+typedef vscf_message_info_footer_t (*vscf_message_info_footer_serializer_api_deserialize_footer_fn)(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'message info footer serializer'.
@@ -108,7 +105,7 @@ typedef vscf_message_info_footer_t * (*vscf_message_info_footer_serializer_api_d
 struct vscf_message_info_footer_serializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'message_info_footer_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
+    //  For interface 'message info footer serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //

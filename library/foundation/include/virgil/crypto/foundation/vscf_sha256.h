@@ -87,13 +87,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    //
-    //  Length of the digest (hashing output) in bytes.
-    //
     vscf_sha256_DIGEST_LEN = 32,
-    //
-    //  Block length of the digest function in bytes.
-    //
     vscf_sha256_BLOCK_LEN = 64
 };
 
@@ -177,13 +171,13 @@ vscf_sha256_produce_alg_info(const vscf_sha256_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sha256_restore_alg_info(vscf_sha256_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_sha256_restore_alg_info(vscf_sha256_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha256_hash(vsc_data_t data, vsc_buffer_t *digest);
+vscf_sha256_hash(vsc_data_t *data, vsc_buffer_t *digest);
 
 //
 //  Start a new hashing.
@@ -195,7 +189,7 @@ vscf_sha256_start(vscf_sha256_t *self);
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha256_update(vscf_sha256_t *self, vsc_data_t data);
+vscf_sha256_update(vscf_sha256_t *self, vsc_data_t *data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).

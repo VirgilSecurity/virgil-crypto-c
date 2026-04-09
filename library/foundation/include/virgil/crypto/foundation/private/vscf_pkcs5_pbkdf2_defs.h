@@ -98,10 +98,6 @@ struct vscf_pkcs5_pbkdf2_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'mac'.
-    //
-    vscf_impl_t *hmac;
-    //
     //  Implementation specific context.
     //
     vsc_buffer_t *salt;

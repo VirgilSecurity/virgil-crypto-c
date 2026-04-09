@@ -84,8 +84,7 @@ extern "C" {
 //
 //  Callback. Deserialize algorithm from the data.
 //
-typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
-        vscf_error_t *error);
+typedef void (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'alg info deserializer'.
@@ -93,7 +92,7 @@ typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl
 struct vscf_alg_info_deserializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_deserializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_DESERIALIZER'.
+    //  For interface 'alg info deserializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_DESERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //

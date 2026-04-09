@@ -148,25 +148,6 @@ VSCF_PUBLIC vscf_hkdf_t *
 vscf_hkdf_shallow_copy(vscf_hkdf_t *self);
 
 //
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_hkdf_use_hash(vscf_hkdf_t *self, vscf_impl_t *hash);
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_hkdf_take_hash(vscf_hkdf_t *self, vscf_impl_t *hash);
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_hkdf_release_hash(vscf_hkdf_t *self);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -182,26 +163,38 @@ vscf_hkdf_produce_alg_info(const vscf_hkdf_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_hkdf_derive(vscf_hkdf_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
+vscf_hkdf_derive(vscf_hkdf_t *self, vsc_data_t *data, size_t key_len, vsc_buffer_t *key);
 
 //
 //  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_hkdf_reset(vscf_hkdf_t *self, vsc_data_t salt, size_t iteration_count);
+vscf_hkdf_reset(vscf_hkdf_t *self, vsc_data_t *salt, size_t iteration_count);
 
 //
 //  Setup application specific information (optional).
 //  Can be empty.
 //
 VSCF_PUBLIC void
-vscf_hkdf_set_info(vscf_hkdf_t *self, vsc_data_t info);
+vscf_hkdf_set_info(vscf_hkdf_t *self, vsc_data_t *info);
+
+//
+//  Extracts fixed-length pseudorandom key from keying material.
+//
+VSCF_PRIVATE void
+vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t *data, vsc_data_t *salt, vsc_buffer_t *pr_key);
+
+//
+//  Expands the pseudorandom key to the desired length.
+//
+VSCF_PRIVATE void
+vscf_hkdf_expand(vscf_hkdf_t *self, vsc_data_t *pr_key, vsc_data_t *info, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

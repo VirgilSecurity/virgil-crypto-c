@@ -72,10 +72,8 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  This structure contains common part of any 'API' interface structure.
-//  It is used for runtime type casting and checking.
-//
+This structure contains common part of any 'API' interface structure.
+It is used for runtime type casting and checking.
 struct vscf_api_t {
     //
     //  Interface unique identifier.

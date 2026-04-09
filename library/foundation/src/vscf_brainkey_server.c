@@ -79,12 +79,6 @@ vscf_brainkey_server_init_ctx(vscf_brainkey_server_t *self);
 static void
 vscf_brainkey_server_cleanup_ctx(vscf_brainkey_server_t *self);
 
-static mbedtls_ecp_group *
-vscf_brainkey_server_get_op_group(vscf_brainkey_server_t *self);
-
-static void
-vscf_brainkey_server_free_op_group(mbedtls_ecp_group *op_group);
-
 //
 //  Return size of 'vscf_brainkey_server_t'.
 //
@@ -100,9 +94,9 @@ vscf_brainkey_server_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_brainkey_server_init(vscf_brainkey_server_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_brainkey_server_t));
+    vsc_zeroize(self, sizeof(vscf_brainkey_server_t));
 
     self->refcnt = 1;
 
@@ -122,9 +116,10 @@ vscf_brainkey_server_cleanup(vscf_brainkey_server_t *self) {
     vscf_brainkey_server_cleanup_ctx(self);
 
     vscf_brainkey_server_release_random(self);
+
     vscf_brainkey_server_release_operation_random(self);
 
-    vscf_zeroize(self, sizeof(vscf_brainkey_server_t));
+    vsc_zeroize(self, sizeof(vscf_brainkey_server_t));
 }
 
 //
@@ -133,12 +128,12 @@ vscf_brainkey_server_cleanup(vscf_brainkey_server_t *self) {
 VSCF_PUBLIC vscf_brainkey_server_t *
 vscf_brainkey_server_new(void) {
 
-    vscf_brainkey_server_t *self = (vscf_brainkey_server_t *) vscf_alloc(sizeof (vscf_brainkey_server_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_brainkey_server_t *self = (vscf_brainkey_server_t *) vsc_alloc(sizeof (vscf_brainkey_server_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_brainkey_server_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

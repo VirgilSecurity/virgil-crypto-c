@@ -93,13 +93,13 @@ typedef struct vscf_message_info_serializer_api_t vscf_message_info_serializer_a
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_serializer_serialized_len(vscf_impl_t *impl, const vscf_message_info_t *message_info);
+vscf_message_info_serializer_serialized_len(vscf_impl_t *impl, vscf_message_info_t *message_info);
 
 //
 //  Serialize class "message info".
 //
 VSCF_PUBLIC void
-vscf_message_info_serializer_serialize(vscf_impl_t *impl, const vscf_message_info_t *message_info, vsc_buffer_t *out);
+vscf_message_info_serializer_serialize(vscf_impl_t *impl, vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
 //  Read message info prefix from the given data, and if it is valid,
@@ -114,7 +114,7 @@ vscf_message_info_serializer_read_prefix(vscf_impl_t *impl, vsc_data_t data);
 //
 //  Deserialize class "message info".
 //
-VSCF_PUBLIC vscf_message_info_t *
+VSCF_PUBLIC vscf_message_info_t
 vscf_message_info_serializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //

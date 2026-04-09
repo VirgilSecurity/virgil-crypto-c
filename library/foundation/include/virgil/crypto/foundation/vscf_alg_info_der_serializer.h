@@ -144,28 +144,21 @@ VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self);
 
 //
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//  Return buffer size enough to hold serialized algorithm.
 //
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, vscf_impl_t *alg_info);
 
 //
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//  Serialize algorithm info to buffer class.
 //
 VSCF_PUBLIC void
-vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self);
 
 //
@@ -173,21 +166,8 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
 //
-VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
-
-//
-//  Return buffer size enough to hold serialized algorithm.
-//
-VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
-
-//
-//  Serialize algorithm info to buffer class.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info,
-        vsc_buffer_t *out);
+VSCF_PRIVATE size_t
+vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------

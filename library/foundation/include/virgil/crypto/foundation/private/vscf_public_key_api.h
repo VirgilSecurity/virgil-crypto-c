@@ -79,7 +79,7 @@ extern "C" {
 struct vscf_public_key_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
+    //  For interface 'public key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_t api_tag;
     //

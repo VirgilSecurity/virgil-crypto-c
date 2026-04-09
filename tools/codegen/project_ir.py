@@ -140,6 +140,7 @@ class IRCStructField(IRCommented):
     type_kind: str = "type"
     type_name: str | None = None
     class_name: str | None = None
+    interface_name: str | None = None
     callback: str | None = None
     access: str | None = None
     is_reference: bool = False
@@ -221,6 +222,22 @@ class IRInterface(IRCommented):
 
 
 @dataclass
+class IRLibraryErrorMessageGetter:
+    """IR representation of an error_message_getter."""
+    success_value: str = ""
+    code: str = ""
+    header_requires: list[str] = field(default_factory=list)
+
+
+@dataclass
+class IRLibraryRequire:
+    """IR representation of a project-level library requirement."""
+    kind: str = ""  # 'project' or 'library'
+    name: str = ""
+    error_message_getter: "IRLibraryErrorMessageGetter | None" = None
+
+
+@dataclass
 class IRProject:
     name: str
     attrs: dict[str, str] = field(default_factory=dict)
@@ -245,6 +262,8 @@ class IRProject:
     enums: list[IREnum] = field(default_factory=list)
     interfaces: list[IRInterface] = field(default_factory=list)
     implementations: list[IRImplementation] = field(default_factory=list)
+    library_requires: list[IRLibraryRequire] = field(default_factory=list)
+    error_message_getter: IRLibraryErrorMessageGetter | None = None
     fallback_projects: list[Any] = field(default_factory=list, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
@@ -385,11 +404,13 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         type_kind=(
             "callback" if "callback" in attrs else
             "class" if "class" in attrs or attrs.get("type") == "self" else
+            "interface" if "interface" in attrs else
             "enum" if "enum" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
         class_name=attrs.get("class"),
+        interface_name=attrs.get("interface"),
         callback=attrs.get("callback"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},
@@ -558,4 +579,27 @@ def project_to_ir(project: ProjectSource) -> IRProject:
             for implementor in project.implementors
             for impl in implementor.implementations
         ],
+        library_requires=[
+            IRLibraryRequire(
+                kind=lr.kind,
+                name=lr.name,
+                error_message_getter=(
+                    IRLibraryErrorMessageGetter(
+                        success_value=lr.error_message_getter.success_value,
+                        header_requires=list(lr.error_message_getter.header_requires),
+                        code=lr.error_message_getter.code,
+                    )
+                    if lr.error_message_getter else None
+                ),
+            )
+            for lr in project.library_requires
+        ],
+        error_message_getter=(
+            IRLibraryErrorMessageGetter(
+                success_value=project.error_message_getter.success_value,
+                header_requires=list(project.error_message_getter.header_requires),
+                code=project.error_message_getter.code,
+            )
+            if project.error_message_getter else None
+        ),
     )

@@ -1016,6 +1016,13 @@ def _interface_api_struct_symbol(iface_output: IROutputTarget) -> str:
     return f"{iface_output.c_symbol}_api_t"
 
 
+def _interface_dispatch_symbol(iface_output: IROutputTarget, iface_name: str, method_name: str) -> str:
+    """Return the dispatch method symbol, deduplicating when method name == interface name."""
+    if snake_name(method_name) == snake_name(iface_name):
+        return iface_output.c_symbol
+    return f"{iface_output.c_symbol}_{snake_name(method_name)}"
+
+
 def _interface_callback_return(
     parent: ET.Element,
     ret: object,
@@ -1087,13 +1094,27 @@ def _interface_argument_from_source(
     fallback_projects: list[IRProject] | None = None,
 ) -> ET.Element:
     """Render an argument for an interface callback, handling cross-project classes."""
+    if fallback_projects is None:
+        fallback_projects = getattr(project_ir, 'fallback_projects', [])
     cls_name = src.get("class")
     if cls_name is not None:
         try:
             type_symbol = _resolve_class_type_symbol(project_ir, cls_name, fallback_projects=fallback_projects)
         except KeyError:
             type_symbol = f"{project_ir.prefix}_{snake_name(cls_name)}_t"
+        # Determine accessed_by: value types (like data) are passed by value,
+        # non-value types (like buffer) are passed by pointer.
         accessed_by = "value"
+        is_value_type = False
+        for pir in [project_ir] + (fallback_projects or []):
+            try:
+                cls = class_ir(pir, cls_name)
+                is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+                break
+            except (KeyError, StopIteration):
+                continue
+        if not is_value_type:
+            accessed_by = "pointer"
         extra: dict[str, str] = {}
         if src.get("access") == "readonly":
             extra["is_const_type"] = "1"
@@ -1173,8 +1194,8 @@ def render_interface_api_c_module(
         root,
         "c_struct",
         name=api_struct_name,
-        declaration="public",
-        definition="external",
+        declaration="external",
+        definition="public",
     )
     struct_elem.text = comment_text(f"Contains API requirements of the interface '{iface.name}'.")
 
@@ -1293,16 +1314,22 @@ def render_interface_c_module(
     text_element(root, "c_include", file=api_output.include_file, is_system="0", scope="private")
 
     # --- forward declaration of API struct ---
-    text_element(
+    fwd_struct = text_element(
         root,
         "c_struct",
         name=api_struct_name,
         declaration="public",
         definition="external",
     )
+    fwd_struct.text = comment_text(f"Contains API requirements of the interface '{iface.name}'.")
 
-    # --- dispatch methods ---
-    for method in iface.methods:
+    # --- dispatch methods: non-static first, then static ---
+    non_static_methods = [m for m in iface.methods if m.attrs.get("is_static") not in {"1", "true"}]
+    static_methods = [m for m in iface.methods if m.attrs.get("is_static") in {"1", "true"}]
+    for method in non_static_methods:
+        _render_dispatch_method(root, method, iface=iface, project_ir=project_ir,
+                                fallback_projects=fallback_projects)
+    for method in static_methods:
         _render_dispatch_method(root, method, iface=iface, project_ir=project_ir,
                                 fallback_projects=fallback_projects)
 
@@ -1342,7 +1369,7 @@ def _render_dispatch_method(
     visibility = method.attrs.get("visibility", "public")
     api_struct_name = _interface_api_struct_symbol(iface_output)
     api_var_name = f"{snake_name(iface.name)}_api"
-    method_symbol = f"{iface_output.c_symbol}_{snake_name(method.name)}"
+    method_symbol = _interface_dispatch_symbol(iface_output, iface.name, method.name)
     cb_field = f"{snake_name(method.name)}_cb"
 
     method_attrs: dict[str, str] = {
@@ -1353,6 +1380,15 @@ def _render_dispatch_method(
         method_attrs["visibility"] = "private"
 
     method_elem = text_element(parent, "c_method", **method_attrs)
+
+    # Add PUBLIC modifier
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
+
+    # Add NODISCARD modifier for status-returning methods
+    if method.returns:
+        ret_dict = _method_arg_dict(method.returns[0])
+        if ret_dict.get("enum") == "status":
+            text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_NODISCARD")
 
     desc = method.description.strip() if method.description else ""
     if desc:
@@ -1440,6 +1476,7 @@ def _render_constant_getter(
     field_name = snake_name(constant.name)
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Returns constant '{constant.name}'.")
 
     # API struct argument
@@ -1482,6 +1519,7 @@ def _render_api_method(
     method_symbol = f"{iface_output.c_symbol}_api"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public", is_const="1")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Return {iface.name} API, or NULL if it is not implemented.")
 
     # impl argument
@@ -1521,6 +1559,7 @@ def _render_inherited_api_getter(
     method_symbol = f"{iface_output.c_symbol}_{field_name}"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Return {inherited_name} API.")
 
     # API struct argument
@@ -1560,6 +1599,7 @@ def _render_is_implemented_method(
     method_symbol = f"{iface_output.c_symbol}_is_implemented"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public", is_const="1")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text(f"Check if given object implements interface '{iface.name}'.")
 
     # impl argument
@@ -1594,6 +1634,7 @@ def _render_api_tag_method(
     method_symbol = f"{iface_output.c_symbol}_api_tag"
 
     method_elem = text_element(parent, "c_method", name=method_symbol, declaration="public")
+    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
     method_elem.text = comment_text("Returns interface unique identifier.")
 
     # API struct argument
@@ -2109,8 +2150,114 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         attrs = {key: (_resolve_module_placeholders(value, placeholders, project_prefix=project_ir.prefix) or "") for key, value in code_block["attrs"].items()}
         text_element(root, "c_code", _resolve_module_placeholders(code_block["text"], placeholders, project_prefix=project_ir.prefix), **attrs)
 
+    # --- Library-specific assert macros ---
+    if module.name == "assert" and project_ir.library_requires:
+        _render_library_assert_macros(root, project_ir=project_ir)
+
     return root
 
+
+
+def _render_library_assert_macros(
+    parent: ET.Element,
+    *,
+    project_ir: IRProject,
+) -> None:
+    """Render library-specific assert macros for each library requirement.
+
+    For each ``<require library="X" feature="library"/>`` or
+    ``<require project="X" feature="library"/>`` in the project,
+    generates:
+      - A method: trigger_unhandled_error_of_{kind}_{name}
+      - A macro: ASSERT_{KIND}_{NAME}_UNHANDLED_ERROR
+      - A macro: ASSERT_{KIND}_{NAME}_SUCCESS
+    """
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    assert_trigger = f"{prefix}_assert_trigger"
+    assert_macro = f"{prefix_upper}_ASSERT"
+
+    for lib_req in project_ir.library_requires:
+        emg = lib_req.error_message_getter
+        if emg is None:
+            continue
+
+        kind_id = snake_name(lib_req.kind)
+        name_id = snake_name(lib_req.name)
+        kind_name_upper = f"{kind_id.upper()}_{name_id.upper()}"
+
+        # Add header includes for the error message getter
+        for header in emg.header_requires:
+            text_element(parent, "c_include", file=header, is_system="1", scope="private")
+
+        # --- Trigger method ---
+        trigger_method_name = f"{prefix}_assert_trigger_unhandled_error_of_{kind_id}_{name_id}"
+        trigger_code = emg.code + f"\n{assert_trigger}(error_message, file, line);"
+
+        method_elem = text_element(
+            parent,
+            "c_method",
+            name=trigger_method_name,
+            visibility="private",
+            declaration="private",
+            definition="private",
+            uid=f"c_class_assert_method_trigger_unhandled_error_of_{kind_id}_{name_id}",
+        )
+        text_element(method_elem, "c_argument", name="error", accessed_by="value", type="int", type_is="primitive")
+        text_element(method_elem, "c_argument", name="file", accessed_by="value", type="char", type_is="primitive", string="given", is_const_type="1")
+        text_element(method_elem, "c_argument", name="line", accessed_by="value", type="int", type_is="primitive")
+        text_element(method_elem, "c_return", accessed_by="value", type="void")
+        text_element(method_elem, "c_code", trigger_code, type="generated", lang="c")
+        text_element(method_elem, "c_modifier", value="static")
+        method_elem.text = comment_text(
+            f"Tell assertion handler that error of {lib_req.kind} '{lib_req.name}' is not handled."
+        )
+
+        # --- UNHANDLED_ERROR macro ---
+        unhandled_macro_name = f"{prefix_upper}_ASSERT_{kind_name_upper}_UNHANDLED_ERROR"
+        unhandled_code = (
+            f"#define {unhandled_macro_name}(error) \\"
+            f"\n    do {{ \\"
+            f"\n        {assert_macro}((error) != {emg.success_value}); \\"
+            f"\n        {trigger_method_name}((int)(error), {prefix_upper}_FILE_PATH_OR_NAME, __LINE__); \\"
+            f"\n    }} while (0)"
+        )
+        macro_elem = text_element(
+            parent,
+            "c_macros",
+            name=unhandled_macro_name,
+            uid=f"c_class_assert_macros_{kind_id}_{name_id}_unhandled_error",
+            definition="public",
+            is_method="1",
+        )
+        text_element(macro_elem, "c_code", unhandled_code, lang="c", type="generated")
+        macro_elem.text = comment_text(
+            f"This macros can be used as {lib_req.kind} '{lib_req.name}' error handling post-condition."
+        )
+
+        # --- SUCCESS macro ---
+        success_macro_name = f"{prefix_upper}_ASSERT_{kind_name_upper}_SUCCESS"
+        success_code = (
+            f"#define {success_macro_name}(status) \\"
+            f"\n    do {{ \\"
+            f"\n        if ((status) != {emg.success_value}) {{ \\"
+            f"\n            {unhandled_macro_name}(status); \\"
+            f"\n        }} \\"
+            f"\n    }} while (0)"
+        )
+        success_elem = text_element(
+            parent,
+            "c_macros",
+            name=success_macro_name,
+            uid=f"c_class_assert_macros_{kind_id}_{name_id}_success",
+            definition="public",
+            is_method="1",
+        )
+        text_element(success_elem, "c_code", success_code, lang="c", type="generated")
+        success_elem.text = comment_text(
+            f"This macros can be used to ensure that {lib_req.kind} '{lib_req.name}' operation "
+            f"returns success status code."
+        )
 
 
 def c_identifier(name: str, *, callback: bool = False) -> str:
@@ -2417,7 +2564,7 @@ def render_class_c_module(
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
     attrs: dict[str, str] = {}
-    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library")):
+    for attr_name, key in (("class_name", "class"), ("interface_name", "interface"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library"), ("enum_name", "enum")):
         value = getattr(arg, attr_name, None)
         if value is not None:
             attrs[key] = value
@@ -2727,12 +2874,14 @@ def _lifecycle_constructor_new_body(
 
 def _dependency_use_body(
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
     dep: "IRDependency",
+    *,
+    entity_kind: str = "class",
 ) -> str:
     """Generate the body for the use_X() dependency method."""
     prefix_upper = project_ir.prefix.upper()
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     dep_field = snake_name(dep.name)
     shallow_copy = _dependency_shallow_copy_call(project_ir, dep)
     is_impl_check = _dependency_is_implemented_check(project_ir, dep)
@@ -2760,12 +2909,14 @@ def _dependency_use_body(
 
 def _dependency_take_body(
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
     dep: "IRDependency",
+    *,
+    entity_kind: str = "class",
 ) -> str:
     """Generate the body for the take_X() dependency method."""
     prefix_upper = project_ir.prefix.upper()
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     dep_field = snake_name(dep.name)
     is_impl_check = _dependency_is_implemented_check(project_ir, dep)
 
@@ -2792,12 +2943,14 @@ def _dependency_take_body(
 
 def _dependency_release_body(
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
     dep: "IRDependency",
+    *,
+    entity_kind: str = "class",
 ) -> str:
     """Generate the body for the release_X() dependency method."""
     prefix_upper = project_ir.prefix.upper()
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     dep_field = snake_name(dep.name)
     destroy = _dependency_destroy_call(project_ir, dep)
 
@@ -2825,6 +2978,7 @@ def _render_dependency_method_element(
     owner_class: str,
     project_ir: IRProject,
     uid: str,
+    owner_entity_kind: str = "class",
 ) -> ET.Element:
     """Render a dependency use/take method with a typed dependency argument.
 
@@ -2833,7 +2987,7 @@ def _render_dependency_method_element(
     (e.g. ``vscf_impl_t``) that must appear as ``type_is='class'``
     and ``accessed_by='pointer'`` in the generated XML.
     """
-    class_type = class_type_symbol(project_ir, owner_class)
+    class_type = f"{entity_output(project_ir, entity_kind=owner_entity_kind, entity_name=owner_class).c_symbol}_t"
     method = text_element(
         parent,
         "c_method",
@@ -2862,18 +3016,83 @@ def _render_dependency_method_element(
     return method
 
 
+def _render_dep_observer_method(
+    parent: ET.Element,
+    *,
+    name: str,
+    description: str,
+    return_attrs: dict[str, str] | None,
+    project_ir: IRProject,
+    owner_name: str,
+    entity_kind: str = "class",
+    code: str = "// TODO: This is STUB. Implement me.",
+    uid: str = "",
+) -> None:
+    """Render observer hook (did_setup/did_release) for a dependency.
+
+    Uses ``_render_ir_method`` for classes and direct XML construction for
+    implementations, avoiding the class-only lookup in ``argument_from_source``.
+    """
+    if entity_kind == "class":
+        _render_ir_method(
+            parent,
+            name=name,
+            description=description,
+            arguments=({"name": "self", "class": "self"},),
+            return_attrs=return_attrs,
+            project_ir=project_ir,
+            owner_class=owner_name,
+            visibility="private",
+            declaration="private",
+            definition="private",
+            modifiers=("static",),
+            code=code,
+            uid=uid,
+        )
+    else:
+        owner_type = f"{entity_output(project_ir, entity_kind=entity_kind, entity_name=owner_name).c_symbol}_t"
+        method = text_element(
+            parent,
+            "c_method",
+            name=name,
+            visibility="private",
+            declaration="private",
+            definition="private",
+            uid=uid,
+        )
+        text_element(method, "c_argument", name="self", accessed_by="pointer", type=owner_type, type_is="class")
+        if return_attrs is None or return_attrs.get("type") == "void":
+            text_element(method, "c_return", accessed_by="value", type="void")
+        elif return_attrs.get("enum"):
+            enum_name = return_attrs["enum"]
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+            text_element(method, "c_return", accessed_by="value", type=rendered_type, type_is="primitive")
+        else:
+            rendered_type, kind = type_map(return_attrs.get("type"))
+            text_element(method, "c_return", accessed_by="value", type=rendered_type, type_is=kind)
+        text_element(method, "c_code", code, type="generated", lang="c")
+        text_element(method, "c_modifier", value="static")
+        if description:
+            method.text = comment_text(description)
+
+
 def _render_dependency_methods(
     parent: ET.Element,
     *,
     project_ir: IRProject,
-    cls: IRClass,
+    cls: IRClass | IRImplementation,
+    entity_kind: str = "class",
 ) -> None:
-    """Render use/take/release methods for each class dependency.
+    """Render use/take/release methods for each class/implementation dependency.
 
     Also renders did_setup/did_release observer hooks for dependencies
     that have ``has_observers`` set.
     """
-    class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
+    class_symbol = entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol
     class_snake = snake_name(cls.name)
 
     for dep in cls.dependencies:
@@ -2889,35 +3108,27 @@ def _render_dependency_methods(
             if dep.is_observers_return_status:
                 did_setup_return = {"type": "status", "enum": "status"}
                 did_setup_code = "// TODO: This is STUB. Implement me.\nreturn vscf_status_SUCCESS;"
-            _render_ir_method(
+            _render_dep_observer_method(
                 parent,
                 name=did_setup_name,
                 description=f"This method is called when {dep.type_kind} '{dep.type_name}' was setup.",
-                arguments=({"name": "self", "class": "self"},),
                 return_attrs=did_setup_return,
                 project_ir=project_ir,
-                owner_class=cls.name,
-                visibility="private",
-                declaration="private",
-                definition="private",
-                modifiers=("static",),
+                owner_name=cls.name,
+                entity_kind=entity_kind,
                 code=did_setup_code,
                 uid=f"direct_{class_snake}_did_setup_{dep_field}",
             )
             # did_release
             did_release_name = f"{class_symbol}_did_release_{dep_field}"
-            _render_ir_method(
+            _render_dep_observer_method(
                 parent,
                 name=did_release_name,
                 description=f"This method is called when {dep.type_kind} '{dep.type_name}' was released.",
-                arguments=({"name": "self", "class": "self"},),
                 return_attrs={"type": "void"},
                 project_ir=project_ir,
-                owner_class=cls.name,
-                visibility="private",
-                declaration="private",
-                definition="private",
-                modifiers=("static",),
+                owner_name=cls.name,
+                entity_kind=entity_kind,
                 code="// TODO: This is STUB. Implement me.",
                 uid=f"direct_{class_snake}_did_release_{dep_field}",
             )
@@ -2934,10 +3145,11 @@ def _render_dependency_methods(
             dep_arg_name=dep_field,
             dep_arg_type=dep_type,
             return_type=use_return_type,
-            code=_dependency_use_body(project_ir, cls, dep),
+            code=_dependency_use_body(project_ir, cls, dep, entity_kind=entity_kind),
             owner_class=cls.name,
             project_ir=project_ir,
             uid=f"direct_{class_snake}_use_{dep_field}",
+            owner_entity_kind=entity_kind,
         )
 
         # --- take_X (only for interface/class/impl deps) ---
@@ -2953,24 +3165,48 @@ def _render_dependency_methods(
                 dep_arg_name=dep_field,
                 dep_arg_type=dep_type,
                 return_type=take_return_type,
-                code=_dependency_take_body(project_ir, cls, dep),
+                code=_dependency_take_body(project_ir, cls, dep, entity_kind=entity_kind),
                 owner_class=cls.name,
                 project_ir=project_ir,
                 uid=f"direct_{class_snake}_take_{dep_field}",
+                owner_entity_kind=entity_kind,
             )
 
         # --- release_X ---
-        _render_ir_method(
-            parent,
-            name=f"{class_symbol}_release_{dep_field}",
-            description=f"Release dependency to the {dep.type_kind} '{dep.type_name}'.",
-            arguments=({"name": "self", "class": "self"},),
-            return_attrs={"type": "void"},
-            project_ir=project_ir,
-            owner_class=cls.name,
-            code=_dependency_release_body(project_ir, cls, dep),
-            uid=f"direct_{class_snake}_release_{dep_field}",
-        )
+        release_code = _dependency_release_body(project_ir, cls, dep, entity_kind=entity_kind)
+        release_name = f"{class_symbol}_release_{dep_field}"
+        release_desc = f"Release dependency to the {dep.type_kind} '{dep.type_name}'."
+        if entity_kind == "class":
+            _render_ir_method(
+                parent,
+                name=release_name,
+                description=release_desc,
+                arguments=({"name": "self", "class": "self"},),
+                return_attrs={"type": "void"},
+                project_ir=project_ir,
+                owner_class=cls.name,
+                code=release_code,
+                uid=f"direct_{class_snake}_release_{dep_field}",
+            )
+        else:
+            # For implementations, build release method directly to avoid
+            # class_type_symbol lookup which only handles classes.
+            owner_type = f"{entity_output(project_ir, entity_kind=entity_kind, entity_name=cls.name).c_symbol}_t"
+            method = text_element(
+                parent,
+                "c_method",
+                name=release_name,
+                visibility="public",
+                declaration="public",
+                definition="public",
+                uid=f"direct_{class_snake}_release_{dep_field}",
+            )
+            text_element(method, "c_argument", name="self", accessed_by="pointer", type=owner_type, type_is="class")
+            text_element(method, "c_return", accessed_by="value", type="void")
+            text_element(method, "c_code", release_code, type="generated", lang="c")
+            text_element(method, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
+            if release_desc:
+                method.text = comment_text(release_desc)
 
 
 def _render_ir_method(
@@ -3142,7 +3378,14 @@ def _resolve_impl_property_type(
     impl_output = cast(IROutputTarget, impl.output)
     attrs: dict[str, str] = {"name": snake_name(prop.name)}
 
-    if prop.enum_name is not None:
+    if prop.interface_name is not None:
+        # Interface property → resolve to {prefix}_impl_t pointer
+        attrs.update({
+            "type": f"{project_ir.prefix}_impl_t",
+            "type_is": "class",
+            "accessed_by": "pointer",
+        })
+    elif prop.enum_name is not None:
         # Enum property → resolve to the enum type symbol
         enum_name = prop.enum_name
         # Handle cross-module enum references (e.g. "impl/tag")
@@ -3297,6 +3540,21 @@ def render_implementation_defs_c_module(
             **prop_attrs,
         )
         prop_elem.text = comment_text("Implementation specific context.")
+
+    # Dependency fields — each dependency becomes a {prefix}_impl_t pointer
+    for dep in impl.dependencies:
+        dep_name = snake_name(dep.name)
+        dep_uid = f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}_property_{dep_name}"
+        dep_elem = text_element(
+            struct_elem,
+            "c_property",
+            name=dep_name,
+            accessed_by="pointer",
+            type=f"{prefix}_impl_t",
+            type_is="class",
+            uid=dep_uid,
+        )
+        dep_elem.text = comment_text(dep.description or f"Dependency '{dep.name}'.")
 
     struct_elem.text = (struct_elem.text or "") + "\n" + doc_comment(
         "Handles implementation details."
@@ -3624,7 +3882,28 @@ def _render_impl_interface_methods(
                     arg_dict["class"] = arg.class_name
                     if arg.access == "readonly":
                         arg_dict["is_const"] = "1"
-                    arg_dict["accessed_by"] = "value" if arg.kind == "value" else "pointer"
+                    # Determine accessed_by: value types (data) passed by value
+                    if arg.kind == "value":
+                        arg_dict["accessed_by"] = "value"
+                    else:
+                        # Check if the class is a value type via IR lookup
+                        is_value = False
+                        for fp in (fallback_projects or []):
+                            try:
+                                cls = class_ir(fp, arg.class_name)
+                                if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                    is_value = True
+                                break
+                            except KeyError:
+                                pass
+                        if not is_value:
+                            try:
+                                cls = class_ir(project_ir, arg.class_name)
+                                if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                    is_value = True
+                            except KeyError:
+                                pass
+                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
                 elif arg.interface_name:
                     # Interface arguments are passed as impl_t pointers
                     arg_dict["class"] = "impl"
@@ -4157,11 +4436,22 @@ def render_implementation_c_module(
     text_element(root, "c_include", file=internal_output.include_file, is_system="0", scope="private")
 
     # --- Interface binding constants (as enum) ---
+    # Build a lookup of interface constant descriptions for enrichment (D7)
+    _iface_const_descs: dict[str, dict[str, str]] = {}
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+            _iface_const_descs[binding.name] = {c.name: c.description for c in iface.constants}
+        except KeyError:
+            _iface_const_descs[binding.name] = {}
+
     all_constants = []
     for binding in impl.interface_bindings:
+        iface_descs = _iface_const_descs.get(binding.name, {})
         for const in binding.constants:
             const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
-            all_constants.append((const_symbol, const.value, const.description))
+            desc = const.description or iface_descs.get(const.name, "")
+            all_constants.append((const_symbol, const.value, desc))
 
     if all_constants:
         enum_elem = text_element(
@@ -4216,6 +4506,19 @@ def render_implementation_c_module(
         uid = f"c_class_{impl_snake}_struct_{impl_snake}_property_{prop_name}"
         prop_elem = text_element(struct_elem, "c_property", name=prop_name, uid=uid, **prop_attrs)
         prop_elem.text = comment_text("Implementation specific context.")
+    # Dependency fields (same as defs)
+    for dep in impl.dependencies:
+        dep_name = snake_name(dep.name)
+        dep_uid = f"c_class_{impl_snake}_struct_{impl_snake}_property_{dep_name}"
+        dep_elem = text_element(
+            struct_elem, "c_property",
+            name=dep_name,
+            accessed_by="pointer",
+            type=f"{prefix}_impl_t",
+            type_is="class",
+            uid=dep_uid,
+        )
+        dep_elem.text = comment_text(dep.description or f"Dependency '{dep.name}'.")
     struct_elem.text = comment_text("Handles implementation details.")
 
     # --- impl_size method ---
@@ -4323,6 +4626,10 @@ def render_implementation_c_module(
         definition="private",
     )
 
+    # --- Dependency management methods: use/take/release ---
+    if impl.dependencies:
+        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
+
     # --- Interface method implementations ---
     _render_impl_interface_methods(
         root, impl=impl, project_ir=project_ir, fallback_projects=fallback_projects
@@ -4349,10 +4656,29 @@ def render_implementation_c_module(
                 arg_dict["class"] = arg.class_name
                 if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
+                # Determine accessed_by: value types (data) passed by value
+                is_value = False
+                for fp in (fallback_projects or []):
+                    try:
+                        cls = class_ir(fp, arg.class_name)
+                        if cls.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                        break
+                    except KeyError:
+                        pass
+                if not is_value:
+                    try:
+                        cls = class_ir(project_ir, arg.class_name)
+                        if cls.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                    except KeyError:
+                        pass
+                arg_dict["accessed_by"] = "value" if is_value else "pointer"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
                 if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
+                arg_dict["accessed_by"] = "pointer"
             elif arg.type_name:
                 arg_dict["type"] = arg.type_name
             args.append(arg_dict)
@@ -4428,6 +4754,14 @@ def argument_from_source(
 ) -> ET.Element:
     attrs = src
     arg_name = name if name is not None else attrs.get("name", "")
+    if attrs.get("interface") is not None:
+        # Interface-typed argument → resolve to {prefix}_impl_t pointer
+        prefix = project_ir.prefix if project_ir is not None else "vscf"
+        type_name = f"{prefix}_impl_t"
+        extra: dict[str, str] = {}
+        if attrs.get("access") == "readonly":
+            extra["is_const_type"] = "1"
+        return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
         extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
@@ -4484,6 +4818,22 @@ def return_from_source(
     project_ir: IRProject | None = None,
     owner_class: str = "data",
 ) -> ET.Element:
+    if attrs.get("interface") is not None:
+        # Interface return → {prefix}_impl_t pointer
+        prefix = project_ir.prefix if project_ir is not None else "vscf"
+        return text_element(parent, "c_return", accessed_by="pointer", type=f"{prefix}_impl_t", type_is="class")
+    if attrs.get("enum") is not None:
+        # Enum return → resolve to enum type
+        enum_name = attrs["enum"]
+        if project_ir is not None:
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+        else:
+            rendered_type = f"vscf_{snake_name(enum_name)}_t"
+        return text_element(parent, "c_return", accessed_by="value", type=rendered_type, type_is="primitive")
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
         extra = {}

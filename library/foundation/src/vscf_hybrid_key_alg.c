@@ -93,8 +93,8 @@
 //
 //  Derive cipher key and nonce and configure the given cipher.
 //
-static void
-vscf_hybrid_key_alg_config_cipher(vscf_impl_t *cipher, vscf_impl_t *hash, vsc_data_t shared_key);
+VSCF_PRIVATE void
+vscf_hybrid_key_alg_config_cipher(vscf_impl_t *cipher, vscf_impl_t *hash, vsc_data_t *shared_key);
 
 
 // --------------------------------------------------------------------------

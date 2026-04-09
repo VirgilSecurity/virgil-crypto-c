@@ -87,13 +87,7 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
-    //
-    //  Length of the digest (hashing output) in bytes.
-    //
     vscf_sha512_DIGEST_LEN = 64,
-    //
-    //  Block length of the digest function in bytes.
-    //
     vscf_sha512_BLOCK_LEN = 128
 };
 
@@ -177,13 +171,13 @@ vscf_sha512_produce_alg_info(const vscf_sha512_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_sha512_restore_alg_info(vscf_sha512_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
+vscf_sha512_restore_alg_info(vscf_sha512_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha512_hash(vsc_data_t data, vsc_buffer_t *digest);
+vscf_sha512_hash(vsc_data_t *data, vsc_buffer_t *digest);
 
 //
 //  Start a new hashing.
@@ -195,7 +189,7 @@ vscf_sha512_start(vscf_sha512_t *self);
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha512_update(vscf_sha512_t *self, vsc_data_t data);
+vscf_sha512_update(vscf_sha512_t *self, vsc_data_t *data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).

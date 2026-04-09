@@ -81,46 +81,95 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Handle 'oid' context.
+//
+typedef struct vscf_oid_t vscf_oid_t;
+
+//
+//  Return size of 'vscf_oid_t'.
+//
+VSCF_PUBLIC size_t
+vscf_oid_ctx_size(void);
+
+//
+//  Perform initialization of pre-allocated context.
+//
+VSCF_PUBLIC void
+vscf_oid_init(vscf_oid_t *self);
+
+//
+//  Release all inner resources including class dependencies.
+//
+VSCF_PUBLIC void
+vscf_oid_cleanup(vscf_oid_t *self);
+
+//
+//  Allocate context and perform it's initialization.
+//
+VSCF_PUBLIC vscf_oid_t *
+vscf_oid_new(void);
+
+//
+//  Release all inner resources and deallocate context if needed.
+//  It is safe to call this method even if the context was statically allocated.
+//
+VSCF_PUBLIC void
+vscf_oid_delete(vscf_oid_t *self);
+
+//
+//  Delete given context and nullifies reference.
+//  This is a reverse action of the function 'vscf_oid_new ()'.
+//
+VSCF_PUBLIC void
+vscf_oid_destroy(vscf_oid_t **self_ref);
+
+//
+//  Copy given class context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_oid_t *
+vscf_oid_shallow_copy(vscf_oid_t *self);
+
+//
 //  Return OID for given algorithm identifier.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_oid_from_alg_id(vscf_alg_id_t alg_id);
+vscf_oid_from_alg_id(vscf_oid_t *self, void alg_id);
 
 //
 //  Return algorithm identifier for given OID.
 //
-VSCF_PUBLIC vscf_alg_id_t
-vscf_oid_to_alg_id(vsc_data_t oid);
+VSCF_PUBLIC void
+vscf_oid_to_alg_id(vscf_oid_t *self, vsc_data_t oid);
 
 //
 //  Return OID for a given identifier.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_oid_from_id(vscf_oid_id_t oid_id);
+vscf_oid_from_id(vscf_oid_t *self, void oid_id);
 
 //
 //  Return identifier for a given OID.
 //
-VSCF_PUBLIC vscf_oid_id_t
-vscf_oid_to_id(vsc_data_t oid);
+VSCF_PUBLIC void
+vscf_oid_to_id(vscf_oid_t *self, vsc_data_t oid);
 
 //
 //  Map oid identifier to the algorithm identifier.
 //
-VSCF_PUBLIC vscf_alg_id_t
-vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id);
+VSCF_PUBLIC void
+vscf_oid_id_to_alg_id(vscf_oid_t *self, void oid_id);
 
 //
 //  Return true if given OIDs are equal.
 //
 VSCF_PUBLIC bool
-vscf_oid_equal(vsc_data_t lhs, vsc_data_t rhs);
+vscf_oid_equal(vscf_oid_t *self, vsc_data_t lhs, vsc_data_t rhs);
 
 //
 //  Return string representation of the given OID.
 //
-VSCF_PRIVATE void
-vscf_oid_to_string(vsc_data_t oid, char str[64]);
+VSCF_PUBLIC void
+vscf_oid_to_string(vscf_oid_t *self, vsc_data_t oid, const char *str);
 
 
 // --------------------------------------------------------------------------

@@ -92,11 +92,11 @@ struct vscf_asn1rd_t {
     //
     //  Implementation specific context.
     //
-    byte *curr;
+    byte curr;
     //
     //  Implementation specific context.
     //
-    const byte *end;
+    byte end;
     //
     //  Implementation specific context.
     //

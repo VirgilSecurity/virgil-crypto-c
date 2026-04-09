@@ -88,18 +88,6 @@ static void
 vscf_padding_cipher_cleanup_ctx(vscf_padding_cipher_t *self);
 
 //
-//  Reset buffer. Ensures capacity is enough.
-//
-static void
-vscf_padding_cipher_reset_buffer(vsc_buffer_t *buffer, size_t capacity);
-
-static vscf_status_t
-vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
-
-static vscf_status_t
-vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
-
-//
 //  Return size of 'vscf_padding_cipher_t'.
 //
 VSCF_PUBLIC size_t
@@ -114,9 +102,9 @@ vscf_padding_cipher_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_padding_cipher_init(vscf_padding_cipher_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_padding_cipher_t));
+    vsc_zeroize(self, sizeof(vscf_padding_cipher_t));
 
     self->refcnt = 1;
 
@@ -136,9 +124,10 @@ vscf_padding_cipher_cleanup(vscf_padding_cipher_t *self) {
     vscf_padding_cipher_cleanup_ctx(self);
 
     vscf_padding_cipher_release_cipher(self);
+
     vscf_padding_cipher_release_padding(self);
 
-    vscf_zeroize(self, sizeof(vscf_padding_cipher_t));
+    vsc_zeroize(self, sizeof(vscf_padding_cipher_t));
 }
 
 //
@@ -147,12 +136,12 @@ vscf_padding_cipher_cleanup(vscf_padding_cipher_t *self) {
 VSCF_PUBLIC vscf_padding_cipher_t *
 vscf_padding_cipher_new(void) {
 
-    vscf_padding_cipher_t *self = (vscf_padding_cipher_t *) vscf_alloc(sizeof (vscf_padding_cipher_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_padding_cipher_t *self = (vscf_padding_cipher_t *) vsc_alloc(sizeof (vscf_padding_cipher_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_padding_cipher_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
