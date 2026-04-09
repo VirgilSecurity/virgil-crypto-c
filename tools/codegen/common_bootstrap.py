@@ -385,18 +385,52 @@ def render_include(elem: ET.Element) -> str:
 
 
 def render_alias(elem: ET.Element) -> str:
-    comment = emit_comment_block(description_text(elem))
-    return f"{comment}typedef {elem.attrib['type']} {elem.attrib['name']};"
+    name = elem.attrib['name']
+    type_name = elem.attrib['type']
+    comment = description_text(elem)
+    # Special case: 'byte' typedef gets a BYTE_DEFINED guard (legacy GSL behavior)
+    if name == 'byte':
+        guard_name = f"{name.upper()}_DEFINED"
+        lines = [f"#ifndef {guard_name}", f"#define {guard_name}"]
+        # Extract the raw description, unwrapping all //  prefixes
+        raw_desc = comment.strip()
+        desc_lines = []
+        for dl in raw_desc.splitlines():
+            dl = dl.strip()
+            if dl == '//':
+                continue
+            # Strip ALL '//  ' prefixes (comment_text adds one, model may add another)
+            while dl.startswith('//  '):
+                dl = dl[4:]
+            while dl.startswith('//'):
+                dl = dl[2:].lstrip()
+            if dl:
+                desc_lines.append(dl)
+        for dl in desc_lines:
+            lines.append(f"    //  {dl}")
+        lines.append(f"    typedef {type_name} {name};")
+        lines.append(f"#endif // {guard_name}")
+        return "\n".join(lines)
+    rendered_comment = emit_comment_block(comment)
+    return f"{rendered_comment}typedef {type_name} {name};"
 
 
 def render_c_code(elem: ET.Element) -> str:
     code = norm_text(elem.text)
     lines = code.splitlines()
     if lines and lines[0].lstrip().startswith("#define") and len(lines) > 1:
+        # Find the max content width for column-aligned backslash continuation
+        content_widths = []
+        for idx, line in enumerate(lines):
+            if idx < len(lines) - 1 and line.strip():
+                content_widths.append(len(line.rstrip()))
+        align_col = max(content_widths) + 1 if content_widths else 70
         rendered: list[str] = []
         for idx, line in enumerate(lines):
             if idx < len(lines) - 1 and line.strip():
-                rendered.append(line.rstrip() + " \\")
+                stripped = line.rstrip()
+                padding = max(1, align_col - len(stripped))
+                rendered.append(stripped + ' ' * padding + '\\')
             else:
                 rendered.append(line)
         return "\n".join(rendered)
@@ -461,14 +495,26 @@ def render_struct_full(elem: ET.Element) -> str:
     comment = emit_comment_block(description_text(elem))
     name = elem.attrib["name"]
     typedef_public = elem.attrib.get("declaration") == "public"
-    lines = [comment + (f"typedef struct {name} {{" if typedef_public else f"struct {name} {{")]
+    definition_public = elem.attrib.get("definition") == "public"
+    # Legacy pattern: for public declaration + public definition, use two-line typedef
+    if typedef_public and definition_public:
+        lines = [comment + f"typedef struct {name} {name};", f"struct {name} {{"]
+    elif typedef_public:
+        lines = [comment + f"typedef struct {name} {{"]
+    else:
+        lines = [comment + f"struct {name} {{"]
     for prop in elem.findall("c_property"):
         prop_comment = emit_comment_block(prop.text)
         if prop_comment:
             lines.append(indent(prop_comment.rstrip("\n"), 4))
         decl = f"{c_decl(prop.attrib['type'], prop.attrib['name'], prop.attrib.get('accessed_by', 'value'), prop.attrib.get('is_const_type'), prop.attrib.get('string') is not None, prop.attrib.get('array') is not None, prop.attrib.get('type_is'))};"
         lines.append(f"    {decl}")
-    lines.append(f"}} {name};" if typedef_public else "};")
+    if typedef_public and definition_public:
+        lines.append("};")
+    elif typedef_public:
+        lines.append(f"}} {name};")
+    else:
+        lines.append("};")
     return "\n".join(lines)
 
 
@@ -565,6 +611,8 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
 
     while len(out) > 1 and out[-1] == "":
         out.pop()
+    # Ensure exactly 2 trailing blank lines before section end markers (matches legacy)
+    out.extend(["", ""])
     out.extend([
         "// --------------------------------------------------------------------------",
         "//  Generated section end.",

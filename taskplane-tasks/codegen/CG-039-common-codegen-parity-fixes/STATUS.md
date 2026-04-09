@@ -39,18 +39,21 @@
 
 > ⚠️ Hydrate: Expand based on exact code locations identified in Step 0
 
-- [ ] Placeholder resolution in descriptions
-- [ ] Macro name-paren spacing
-- [ ] Constant name casing
-- [ ] Byte typedef guard
-- [ ] Struct typedef pattern
-- [ ] Trailing blank lines
-- [ ] Committed
+- [x] Placeholder resolution in descriptions (done in Step 1)
+- [x] Macro name-paren spacing (done in Step 1)
+- [x] Constant name casing (done in Step 1)
+- [x] Byte typedef guard (render_alias → emit BYTE_DEFINED guard)
+- [x] Struct typedef pattern (render_struct_full → two-line pattern)
+- [x] Trailing blank lines (generate_block → preserve 2 trailing blanks)
+- [x] Macro continuation alignment (render_c_code → column-align backslashes)
+- [x] Extra whitespace normalization in code text (VSC_PUBLIC/ATOMIC spacing)
+- [x] BSD license text whitespace in vsc_memory.c
+- [x] Committed
 
 ---
 
 ### Step 3: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] --verify common shows 0 non-generated warnings
 - [ ] All Python tests pass

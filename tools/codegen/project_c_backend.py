@@ -1721,6 +1721,20 @@ def _normalize_c_escapes(text: str) -> str:
     return text.replace('\\\\', '\\')
 
 
+def _normalize_code_whitespace(text: str) -> str:
+    """Normalize multiple spaces to single in code text (preserving leading indent)."""
+    import re
+    lines = text.splitlines()
+    result = []
+    for line in lines:
+        stripped = line.lstrip()
+        indent_part = line[:len(line) - len(stripped)]
+        # Collapse multiple spaces to single in the content part
+        normalized = re.sub(r'  +', ' ', stripped)
+        result.append(indent_part + normalized)
+    return '\n'.join(result)
+
+
 def _join_continuation_lines(text: str) -> str:
     """Join lines ending with backslash continuation (for non-macro code blocks).
 
@@ -1735,9 +1749,32 @@ def _join_continuation_lines(text: str) -> str:
 
 
 def _fix_macro_paren_spacing(code: str) -> str:
-    """Collapse '#define NAME (' to '#define NAME(' for function-like macros."""
+    """Collapse '#define NAME (' to '#define NAME(' for function-like macros.
+    Also normalizes multiple spaces in #define lines."""
     import re
-    return re.sub(r'(#\s*define\s+\w+)\s+\(', r'\1(', code)
+    # Collapse space between macro name and ( for function-like macros
+    code = re.sub(r'(#\s*define\s+\w+)\s+\(', r'\1(', code)
+    # Normalize multiple spaces to single space in #define expansion (after name/params)
+    lines = code.splitlines()
+    result = []
+    for line in lines:
+        stripped = line.lstrip()
+        if stripped.startswith('#') and 'define' in stripped:
+            indent_part = line[:len(line) - len(stripped)]
+            # Collapse multiple spaces in the #define line (outside of string literals)
+            # Simple approach: collapse runs of 2+ spaces to single space after the macro name/params
+            match = re.match(r'(#\s*define\s+\S+)(.*)', stripped)
+            if match:
+                macro_head = match.group(1)
+                macro_body = match.group(2)
+                # Collapse multiple spaces in body
+                macro_body = re.sub(r'  +', ' ', macro_body)
+                result.append(indent_part + macro_head + macro_body)
+            else:
+                result.append(line)
+        else:
+            result.append(line)
+    return '\n'.join(result)
 
 
 def _prepare_macro_code(code: str | None) -> str | None:
@@ -1746,7 +1783,25 @@ def _prepare_macro_code(code: str | None) -> str | None:
     code = _fix_macro_paren_spacing(code)
     lines = code.splitlines()
     if lines and lines[0].lstrip().startswith("#define") and len(lines) > 1:
-        return "\n".join(line.rstrip().removesuffix("\\").rstrip() for line in lines)
+        # Strip trailing backslash continuation from each line
+        stripped = [line.rstrip().removesuffix("\\").rstrip() for line in lines]
+        # Join continuation lines: if a line ended with \ in the original,
+        # and the next line has MORE indentation, join them (it's a wrapped call)
+        merged: list[str] = []
+        i = 0
+        while i < len(stripped):
+            current = stripped[i]
+            # Check if original line had continuation and next line has deeper indent
+            while (i < len(lines) - 1 and
+                   lines[i].rstrip().endswith('\\') and
+                   i + 1 < len(stripped) and
+                   len(stripped[i + 1]) - len(stripped[i + 1].lstrip()) >
+                   len(current.split('\n')[-1]) - len(current.split('\n')[-1].lstrip())):
+                i += 1
+                current = current.rstrip() + ' ' + stripped[i].lstrip()
+            merged.append(current)
+            i += 1
+        return "\n".join(merged)
     return code
 
 
@@ -2016,6 +2071,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         code = _resolve_module_placeholders(method.code_blocks[0]["text"] if method.code_blocks else None, placeholders, project_prefix=project_ir.prefix, args=tuple(method.arguments))
         if code is not None:
             code = _join_continuation_lines(code)
+            code = _normalize_code_whitespace(code)
         visibility = method.visibility or method.attrs.get("visibility", "public")
         declaration = method.declaration or method.attrs.get("declaration", "public")
         definition = method.definition or method.attrs.get("definition", ("private" if code is not None else "external"))
