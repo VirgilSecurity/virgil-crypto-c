@@ -185,6 +185,22 @@ class ProjectFeatureSource:
 
 
 @dataclass
+class LibraryErrorMessageGetter:
+    """Parsed ``<error_message_getter>`` from a project or external library."""
+    success_value: str = "0"
+    header_requires: list[str] = field(default_factory=list)
+    code: str = ""
+
+
+@dataclass
+class LibraryRequireSource:
+    """A project-level ``<require ... feature='library'>`` entry."""
+    kind: str = ""  # 'project' or 'library'
+    name: str = ""
+    error_message_getter: LibraryErrorMessageGetter | None = None
+
+
+@dataclass
 class ProjectSource:
     name: str
     path: str
@@ -209,6 +225,8 @@ class ProjectSource:
     enums: list[EnumSource] = field(default_factory=list)
     interfaces: list[InterfaceSource] = field(default_factory=list)
     implementors: list[ImplementorSource] = field(default_factory=list)
+    library_requires: list[LibraryRequireSource] = field(default_factory=list)
+    error_message_getter: LibraryErrorMessageGetter | None = None
 
     @property
     def namespace(self) -> str:
@@ -258,6 +276,41 @@ class ProjectSource:
 
 
 CODE_BLOCK_PATTERN = re.compile(r'(<code(?:\s[^>]*)?>)(.*?)(</code>)', flags=re.DOTALL)
+
+
+def _parse_error_message_getter(elem: ET.Element) -> LibraryErrorMessageGetter:
+    """Parse an ``<error_message_getter>`` element."""
+    success_value = elem.attrib.get("success", "0")
+    header_requires = [
+        req.attrib["header"]
+        for req in elem.findall("require")
+        if "header" in req.attrib
+    ]
+    # The C code may be in elem.text or in the tail of the last child element.
+    # In XML, text after child elements goes into the child's tail.
+    code_text = elem.text or ""
+    children = list(elem)
+    if children:
+        # Code is typically in the tail of the last child
+        last_child = children[-1]
+        code_text = last_child.tail or ""
+    # Normalize: strip leading/trailing whitespace, dedent
+    lines = code_text.splitlines()
+    # Remove empty leading/trailing lines
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    while lines and not lines[-1].strip():
+        lines.pop()
+    if lines:
+        # Find minimum indentation
+        min_indent = min((len(line) - len(line.lstrip()) for line in lines if line.strip()), default=0)
+        lines = [line[min_indent:] for line in lines]
+    code = "\n".join(lines)
+    return LibraryErrorMessageGetter(
+        success_value=success_value,
+        header_requires=header_requires,
+        code=code,
+    )
 
 
 def project_model_path(project_name: str, repo_root: str | Path = ".") -> Path:
@@ -613,6 +666,40 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         implementor_area = implementor_ref.get("from") or project_dir
         implementor_path = _model_path(repo_root, implementor_area, "implementor", implementor_ref["name"])
         project.implementors.append(load_implementor_source(implementor_path))
+
+    # --- Parse project-level library requirements ---
+    for req_elem in root.findall("require"):
+        if req_elem.attrib.get("feature") != "library":
+            continue
+        lib_req = LibraryRequireSource()
+        if "library" in req_elem.attrib:
+            lib_req.kind = "library"
+            lib_req.name = req_elem.attrib["library"]
+            # Load external library XML for error_message_getter
+            lib_path = codegen_root / "models" / "external" / f"library_{lib_req.name}.xml"
+            if lib_path.exists():
+                lib_root = _parse_legacy_xml(lib_path)
+                emg = lib_root.find("error_message_getter")
+                if emg is not None:
+                    lib_req.error_message_getter = _parse_error_message_getter(emg)
+        elif "project" in req_elem.attrib:
+            lib_req.kind = "project"
+            lib_req.name = req_elem.attrib["project"]
+            # Load the referenced project's error_message_getter
+            try:
+                ref_project_path = project_model_path(lib_req.name, repo_root)
+                ref_root = _parse_legacy_xml(ref_project_path)
+                emg = ref_root.find("error_message_getter")
+                if emg is not None:
+                    lib_req.error_message_getter = _parse_error_message_getter(emg)
+            except FileNotFoundError:
+                pass
+        project.library_requires.append(lib_req)
+
+    # --- Parse project's own error_message_getter ---
+    emg_elem = root.find("error_message_getter")
+    if emg_elem is not None:
+        project.error_message_getter = _parse_error_message_getter(emg_elem)
 
     return project
 

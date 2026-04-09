@@ -1,6 +1,6 @@
 # CG-043: Fix Dependency Methods + Library Macros — Status
 
-**Current Step:** Step 2: Fix library assert macros
+**Current Step:** Step 3: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 1
@@ -23,10 +23,10 @@
 - [x] Committed
 
 ### Step 2: Fix library assert macros
-**Status:** ⬜ Not Started
-- [ ] Legacy assert module studied
-- [ ] Library macros generated
-- [ ] Committed
+**Status:** ✅ Complete
+- [x] Legacy assert module studied
+- [x] Library macros generated
+- [x] Committed
 
 ### Step 3: Testing & Verification
 **Status:** ⬜ Not Started

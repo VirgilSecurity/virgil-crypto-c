@@ -2150,8 +2150,114 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         attrs = {key: (_resolve_module_placeholders(value, placeholders, project_prefix=project_ir.prefix) or "") for key, value in code_block["attrs"].items()}
         text_element(root, "c_code", _resolve_module_placeholders(code_block["text"], placeholders, project_prefix=project_ir.prefix), **attrs)
 
+    # --- Library-specific assert macros ---
+    if module.name == "assert" and project_ir.library_requires:
+        _render_library_assert_macros(root, project_ir=project_ir)
+
     return root
 
+
+
+def _render_library_assert_macros(
+    parent: ET.Element,
+    *,
+    project_ir: IRProject,
+) -> None:
+    """Render library-specific assert macros for each library requirement.
+
+    For each ``<require library="X" feature="library"/>`` or
+    ``<require project="X" feature="library"/>`` in the project,
+    generates:
+      - A method: trigger_unhandled_error_of_{kind}_{name}
+      - A macro: ASSERT_{KIND}_{NAME}_UNHANDLED_ERROR
+      - A macro: ASSERT_{KIND}_{NAME}_SUCCESS
+    """
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    assert_trigger = f"{prefix}_assert_trigger"
+    assert_macro = f"{prefix_upper}_ASSERT"
+
+    for lib_req in project_ir.library_requires:
+        emg = lib_req.error_message_getter
+        if emg is None:
+            continue
+
+        kind_id = snake_name(lib_req.kind)
+        name_id = snake_name(lib_req.name)
+        kind_name_upper = f"{kind_id.upper()}_{name_id.upper()}"
+
+        # Add header includes for the error message getter
+        for header in emg.header_requires:
+            text_element(parent, "c_include", file=header, is_system="1", scope="private")
+
+        # --- Trigger method ---
+        trigger_method_name = f"{prefix}_assert_trigger_unhandled_error_of_{kind_id}_{name_id}"
+        trigger_code = emg.code + f"\n{assert_trigger}(error_message, file, line);"
+
+        method_elem = text_element(
+            parent,
+            "c_method",
+            name=trigger_method_name,
+            visibility="private",
+            declaration="private",
+            definition="private",
+            uid=f"c_class_assert_method_trigger_unhandled_error_of_{kind_id}_{name_id}",
+        )
+        text_element(method_elem, "c_argument", name="error", accessed_by="value", type="int", type_is="primitive")
+        text_element(method_elem, "c_argument", name="file", accessed_by="value", type="char", type_is="primitive", string="given", is_const_type="1")
+        text_element(method_elem, "c_argument", name="line", accessed_by="value", type="int", type_is="primitive")
+        text_element(method_elem, "c_return", accessed_by="value", type="void")
+        text_element(method_elem, "c_code", trigger_code, type="generated", lang="c")
+        text_element(method_elem, "c_modifier", value="static")
+        method_elem.text = comment_text(
+            f"Tell assertion handler that error of {lib_req.kind} '{lib_req.name}' is not handled."
+        )
+
+        # --- UNHANDLED_ERROR macro ---
+        unhandled_macro_name = f"{prefix_upper}_ASSERT_{kind_name_upper}_UNHANDLED_ERROR"
+        unhandled_code = (
+            f"#define {unhandled_macro_name}(error) \\"
+            f"\n    do {{ \\"
+            f"\n        {assert_macro}((error) != {emg.success_value}); \\"
+            f"\n        {trigger_method_name}((int)(error), {prefix_upper}_FILE_PATH_OR_NAME, __LINE__); \\"
+            f"\n    }} while (0)"
+        )
+        macro_elem = text_element(
+            parent,
+            "c_macros",
+            name=unhandled_macro_name,
+            uid=f"c_class_assert_macros_{kind_id}_{name_id}_unhandled_error",
+            definition="public",
+            is_method="1",
+        )
+        text_element(macro_elem, "c_code", unhandled_code, lang="c", type="generated")
+        macro_elem.text = comment_text(
+            f"This macros can be used as {lib_req.kind} '{lib_req.name}' error handling post-condition."
+        )
+
+        # --- SUCCESS macro ---
+        success_macro_name = f"{prefix_upper}_ASSERT_{kind_name_upper}_SUCCESS"
+        success_code = (
+            f"#define {success_macro_name}(status) \\"
+            f"\n    do {{ \\"
+            f"\n        if ((status) != {emg.success_value}) {{ \\"
+            f"\n            {unhandled_macro_name}(status); \\"
+            f"\n        }} \\"
+            f"\n    }} while (0)"
+        )
+        success_elem = text_element(
+            parent,
+            "c_macros",
+            name=success_macro_name,
+            uid=f"c_class_assert_macros_{kind_id}_{name_id}_success",
+            definition="public",
+            is_method="1",
+        )
+        text_element(success_elem, "c_code", success_code, lang="c", type="generated")
+        success_elem.text = comment_text(
+            f"This macros can be used to ensure that {lib_req.kind} '{lib_req.name}' operation "
+            f"returns success status code."
+        )
 
 
 def c_identifier(name: str, *, callback: bool = False) -> str:
