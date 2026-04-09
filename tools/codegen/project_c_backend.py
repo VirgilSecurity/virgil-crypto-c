@@ -1669,7 +1669,11 @@ def _module_constant_symbol(project_ir: IRProject, module: IRModule, constant: o
     base = project_ir.prefix if owner == "global" or (owner is None and module.attrs.get("of_class") == "global") else module.output.c_symbol
     if owner and owner != "global":
         base = f"{project_ir.prefix}_{snake_name(owner)}"
-    return _append_symbol(base, getattr(constant, 'name')).upper()
+    # Use mixed case: preserve prefix case, uppercase only the name part
+    suffix = snake_name(getattr(constant, 'name')).upper()
+    if base.endswith(f"_{suffix.lower()}"):
+        return base[:-len(suffix)] + suffix
+    return f"{base}_{suffix}"
 
 
 def _module_member_uid(module: IRModule, attrs: dict[str, str], *, kind: str, name: str) -> str:
@@ -1711,12 +1715,35 @@ def _module_placeholder_map(project_ir: IRProject) -> dict[str, str]:
 
 
 def _normalize_c_escapes(text: str) -> str:
-    return text.replace("'\\\\0'", "'\\0'").replace("'\\\\\\\\'", "'\\\\'")
+    # Un-double backslash escapes from XML model notation.
+    # XML models use doubled backslashes (e.g. \\n for C's \n, \\0 for \0).
+    # Replace all double-backslash sequences with single backslash.
+    return text.replace('\\\\', '\\')
+
+
+def _join_continuation_lines(text: str) -> str:
+    """Join lines ending with backslash continuation (for non-macro code blocks).
+
+    Collapses 'text \\ \n  next' into 'text next' preserving exactly one space.
+    """
+    import re
+    # Replace: optional-space, backslash, newline, leading-whitespace → single space
+    result = re.sub(r'\s*\\\n\s*', ' ', text)
+    # Fix cases where the join created space after ( or before )
+    result = re.sub(r'\(\s+', '(', result)
+    return result
+
+
+def _fix_macro_paren_spacing(code: str) -> str:
+    """Collapse '#define NAME (' to '#define NAME(' for function-like macros."""
+    import re
+    return re.sub(r'(#\s*define\s+\w+)\s+\(', r'\1(', code)
 
 
 def _prepare_macro_code(code: str | None) -> str | None:
     if code is None:
         return None
+    code = _fix_macro_paren_spacing(code)
     lines = code.splitlines()
     if lines and lines[0].lstrip().startswith("#define") and len(lines) > 1:
         return "\n".join(line.rstrip().removesuffix("\\").rstrip() for line in lines)
@@ -1913,7 +1940,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         else:
             text_element(callback_elem, "c_return", type="void", accessed_by="value")
         if callback.attrs.get("noreturn") in {"1", "true"}:
-            text_element(callback_elem, "c_modifier", value="VSC_NORETURN")
+            text_element(callback_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_NORETURN")
         if callback.description:
             callback_elem.text = comment_text(callback.description)
 
@@ -1949,7 +1976,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
                 type_is=variable_attrs["type_is"],
             )
         if variable_attrs["visibility"] == "public":
-            text_element(variable_elem, "c_modifier", value="VSC_PUBLIC")
+            text_element(variable_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
         if variable.description:
             variable_elem.text = comment_text(variable.description)
 
@@ -1987,6 +2014,8 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
 
     for method in module.methods:
         code = _resolve_module_placeholders(method.code_blocks[0]["text"] if method.code_blocks else None, placeholders, project_prefix=project_ir.prefix, args=tuple(method.arguments))
+        if code is not None:
+            code = _join_continuation_lines(code)
         visibility = method.visibility or method.attrs.get("visibility", "public")
         declaration = method.declaration or method.attrs.get("declaration", "public")
         definition = method.definition or method.attrs.get("definition", ("private" if code is not None else "external"))
@@ -2011,13 +2040,14 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         if code is not None:
             text_element(method_elem, "c_code", code, type="generated", lang="c")
         if visibility == "public":
-            text_element(method_elem, "c_modifier", value="VSC_PUBLIC")
+            text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
         elif visibility == "private":
             text_element(method_elem, "c_modifier", value="static")
         if method.attrs.get("noreturn") in {"1", "true"}:
-            text_element(method_elem, "c_modifier", value="VSC_NORETURN")
+            text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_NORETURN")
         if method.description:
-            method_elem.text = comment_text(method.description)
+            resolved_desc = _resolve_module_placeholders(method.description, placeholders, project_prefix=project_ir.prefix) or method.description
+            method_elem.text = comment_text(resolved_desc)
 
     for code_block in module.code_blocks:
         attrs = {key: (_resolve_module_placeholders(value, placeholders, project_prefix=project_ir.prefix) or "") for key, value in code_block["attrs"].items()}
@@ -2410,7 +2440,7 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
     if getattr(variable, "value", None) is not None:
         value = cast(dict[str, str], getattr(variable, "value"))
         text_element(var_elem, "c_value", value=value["value"], accessed_by="value", type=variable_attrs["type"], type_is=variable_attrs["type_is"])
-    for modifier in ["VSC_PUBLIC"] if variable_attrs["visibility"] == "public" else []:
+    for modifier in [f"{project_ir.prefix.upper()}_PUBLIC"] if variable_attrs["visibility"] == "public" else []:
         text_element(var_elem, "c_modifier", value=modifier)
     if getattr(variable, "description", ""):
         var_elem.text = comment_text(getattr(variable, "description"))
@@ -2431,7 +2461,7 @@ def _render_ctx_size_method(parent: ET.Element, *, project_ir: IRProject, cls: I
     text_element(method, "c_argument", type="void", accessed_by="value")
     text_element(method, "c_return", accessed_by="value", type="size_t", type_is="primitive")
     text_element(method, "c_code", f"return sizeof({class_type_symbol(project_ir, cls.name)});", lang="c", type="generated")
-    text_element(method, "c_modifier", value="VSC_PUBLIC")
+    text_element(method, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
     method.text = comment_text(f"Return size of '{class_type_symbol(project_ir, cls.name)}'.")
     return method
 
@@ -2769,7 +2799,7 @@ def _render_dependency_method_element(
     # code
     text_element(method, "c_code", code, type="generated", lang="c")
     # modifier
-    text_element(method, "c_modifier", value="VSC_PUBLIC")
+    text_element(method, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
     # description
     if description:
         method.text = comment_text(description)
@@ -2899,10 +2929,12 @@ def _render_ir_method(
     visibility: str = "public",
     declaration: str = "public",
     definition: str = "external",
-    modifiers: tuple[str, ...] = ("VSC_PUBLIC",),
+    modifiers: tuple[str, ...] | None = None,
     code: str | None = None,
     uid: str | None = None,
 ) -> ET.Element:
+    if modifiers is None:
+        modifiers = (f"{project_ir.prefix.upper()}_PUBLIC",)
     resolved_definition = visibility if code is not None and definition == "external" else definition
     method = text_element(
         parent,
@@ -2942,7 +2974,7 @@ def _render_reference_class_support(
     for name, description, arguments in [
         (
             _class_runtime_symbol(project_ir, cls, "init_ctx"),
-            "Perform context specific initialization.\nNote, this method is called automatically when method init() is called.\nNote, that context is already zeroed.",
+            f"Perform context specific initialization.\nNote, this method is called automatically when method {_class_runtime_symbol(project_ir, cls, 'init')}() is called.\nNote, that context is already zeroed.",
             ({"name": "self", "class": "self"},),
         ),
         (
@@ -2983,19 +3015,16 @@ def _render_reference_class_support(
             uid=f"direct_{snake_name(cls.name)}_private_init_ctx_with_{_reference_ctor_suffix(ctor.name)}",
         )
 
+    class_symbol = _class_runtime_symbol(project_ir, cls, "")
+    # Emit: init, cleanup, new
     for name, description, arguments, return_attrs, body in [
         (_class_runtime_symbol(project_ir, cls, "init"), "Perform initialization of pre-allocated context.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_init_body(project_ir, cls)),
         (_class_runtime_symbol(project_ir, cls, "cleanup"), "Release all inner resources including class dependencies.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_cleanup_body(project_ir, cls)),
         (_class_runtime_symbol(project_ir, cls, "new"), "Allocate context and perform it's initialization.", (), {"class": "self"}, _lifecycle_new_body(project_ir, cls)),
-        (_class_runtime_symbol(project_ir, cls, "delete"), "Release all inner resources and deallocate context if needed.\nIt is safe to call this method even if the context was statically allocated.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_delete_body(project_ir, cls)),
-        (_class_runtime_symbol(project_ir, cls, "destroy"), "Delete given context and nullifies reference.\nThis is a reverse action of the function 'new ()'.", ({"name": "self_ref", "class": "self", "access": "readwrite", "passed_by": "reference"},), {"type": "void"}, _lifecycle_destroy_body(project_ir, cls)),
-        (_class_runtime_symbol(project_ir, cls, "shallow_copy"), "Copy given class context by increasing reference counter.", ({"name": "self", "class": "self"},), {"class": "self"}, _lifecycle_shallow_copy_body(project_ir, cls)),
     ]:
         _render_ir_method(parent, name=name, description=description, arguments=arguments, return_attrs=return_attrs, project_ir=project_ir, owner_class=cls.name, code=body)
 
-    # Dependency management methods: use/take/release (+ observer hooks).
-    _render_dependency_methods(parent, project_ir=project_ir, cls=cls)
-
+    # Emit constructor variants (init_with_X, new_with_X) — between new and delete to match legacy ordering
     for ctor in cls.constructors:
         args = tuple(_method_arg_dict(arg) for arg in ctor.arguments)
         ctor_arg_names = [_method_arg_dict(arg)["name"] for arg in ctor.arguments]
@@ -3023,6 +3052,18 @@ def _render_reference_class_support(
             uid=f"direct_{snake_name(cls.name)}_new_with_{snake_name(ctor.name)}",
             code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
         )
+
+    # Emit: delete, destroy, shallow_copy
+    full_new_name = _class_runtime_symbol(project_ir, cls, "new")
+    for name, description, arguments, return_attrs, body in [
+        (_class_runtime_symbol(project_ir, cls, "delete"), "Release all inner resources and deallocate context if needed.\nIt is safe to call this method even if the context was statically allocated.", ({"name": "self", "class": "self"},), {"type": "void"}, _lifecycle_delete_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "destroy"), f"Delete given context and nullifies reference.\nThis is a reverse action of the function '{full_new_name} ()'.", ({"name": "self_ref", "class": "self", "access": "readwrite", "passed_by": "reference"},), {"type": "void"}, _lifecycle_destroy_body(project_ir, cls)),
+        (_class_runtime_symbol(project_ir, cls, "shallow_copy"), "Copy given class context by increasing reference counter.", ({"name": "self", "class": "self"},), {"class": "self"}, _lifecycle_shallow_copy_body(project_ir, cls)),
+    ]:
+        _render_ir_method(parent, name=name, description=description, arguments=arguments, return_attrs=return_attrs, project_ir=project_ir, owner_class=cls.name, code=body)
+
+    # Dependency management methods: use/take/release (+ observer hooks).
+    _render_dependency_methods(parent, project_ir=project_ir, cls=cls)
 
 
 
