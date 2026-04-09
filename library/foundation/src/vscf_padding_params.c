@@ -103,9 +103,9 @@ vscf_padding_params_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_padding_params_init(vscf_padding_params_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_padding_params_t));
+    vsc_zeroize(self, sizeof(vscf_padding_params_t));
 
     self->refcnt = 1;
 
@@ -124,7 +124,7 @@ vscf_padding_params_cleanup(vscf_padding_params_t *self) {
 
     vscf_padding_params_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_padding_params_t));
+    vsc_zeroize(self, sizeof(vscf_padding_params_t));
 }
 
 //
@@ -133,12 +133,12 @@ vscf_padding_params_cleanup(vscf_padding_params_t *self) {
 VSCF_PUBLIC vscf_padding_params_t *
 vscf_padding_params_new(void) {
 
-    vscf_padding_params_t *self = (vscf_padding_params_t *) vscf_alloc(sizeof (vscf_padding_params_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_padding_params_t *self = (vscf_padding_params_t *) vsc_alloc(sizeof (vscf_padding_params_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_padding_params_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
@@ -153,7 +153,7 @@ vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t fr
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_padding_params_t));
+    vsc_zeroize(self, sizeof(vscf_padding_params_t));
 
     self->refcnt = 1;
 
@@ -168,12 +168,12 @@ vscf_padding_params_init_with_constraints(vscf_padding_params_t *self, size_t fr
 VSCF_PUBLIC vscf_padding_params_t *
 vscf_padding_params_new_with_constraints(size_t frame, size_t frame_max) {
 
-    vscf_padding_params_t *self = (vscf_padding_params_t *) vscf_alloc(sizeof (vscf_padding_params_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_padding_params_t *self = (vscf_padding_params_t *) vsc_alloc(sizeof (vscf_padding_params_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_padding_params_init_with_constraints(self, frame, frame_max);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

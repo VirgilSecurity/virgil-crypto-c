@@ -76,8 +76,8 @@
 //
 //  Return true if given key is an Elliptic Curve key defined in the SEC 1.
 //
-static bool
-vscf_sec1_serializer_is_ec_key(const vscf_impl_t *key);
+VSCF_PRIVATE bool
+vscf_sec1_serializer_is_ec_key(vscf_impl_t *key);
 
 
 // --------------------------------------------------------------------------

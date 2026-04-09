@@ -62,15 +62,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Private integral constants.
-//
-enum {
-    vscf_message_info_custom_params_OF_INT_TYPE = 1,
-    vscf_message_info_custom_params_OF_STRING_TYPE = 2,
-    vscf_message_info_custom_params_OF_DATA_TYPE = 3
-};
-
-//
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_info_custom_params_init() is called.
 //  Note, that context is already zeroed.
@@ -101,9 +92,9 @@ vscf_message_info_custom_params_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_message_info_custom_params_init(vscf_message_info_custom_params_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_message_info_custom_params_t));
+    vsc_zeroize(self, sizeof(vscf_message_info_custom_params_t));
 
     self->refcnt = 1;
 
@@ -122,7 +113,7 @@ vscf_message_info_custom_params_cleanup(vscf_message_info_custom_params_t *self)
 
     vscf_message_info_custom_params_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_message_info_custom_params_t));
+    vsc_zeroize(self, sizeof(vscf_message_info_custom_params_t));
 }
 
 //
@@ -131,12 +122,12 @@ vscf_message_info_custom_params_cleanup(vscf_message_info_custom_params_t *self)
 VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_message_info_custom_params_new(void) {
 
-    vscf_message_info_custom_params_t *self = (vscf_message_info_custom_params_t *) vscf_alloc(sizeof (vscf_message_info_custom_params_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_message_info_custom_params_t *self = (vscf_message_info_custom_params_t *) vsc_alloc(sizeof (vscf_message_info_custom_params_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_message_info_custom_params_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

@@ -76,49 +76,12 @@ vscf_key_material_rng_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'random api'.
 //
-static const vscf_random_api_t random_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'random' MUST be equal to the 'vscf_api_tag_RANDOM'.
-    //
-    vscf_api_tag_RANDOM,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_KEY_MATERIAL_RNG,
-    //
-    //  Generate random bytes.
-    //  All RNG implementations must be thread-safe.
-    //
-    (vscf_random_api_random_fn)vscf_key_material_rng_random,
-    //
-    //  Retrieve new seed data from the entropy sources.
-    //
-    (vscf_random_api_reseed_fn)vscf_key_material_rng_reseed
-};
+static const vscf_random_api_t random_api = vscf_api_tag_RANDOM;
 
 //
 //  Compile-time known information about 'key material rng' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_KEY_MATERIAL_RNG,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_key_material_rng_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_key_material_rng_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_key_material_rng_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_KEY_MATERIAL_RNG;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -262,7 +225,7 @@ vscf_key_material_rng_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_RANDOM:
-            return (const vscf_api_t *) &random_api;
+        return (const vscf_api_t *)                 &random_api;
         default:
             return NULL;
     }

@@ -150,26 +150,91 @@ vscf_message_info_custom_params_clear(vscf_message_info_custom_params_t *self);
 //  Return custom parameter with integer value.
 //
 VSCF_PUBLIC int
-vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
+vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t error);
 
 //
 //  Return custom parameter with UTF8 string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_t *error);
+vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t error);
 
 //
 //  Return custom parameter with octet string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
+vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t error);
+
+//
+//  Add given node to the list ending.
+//
+VSCF_PUBLIC void
+vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t node);
+
+//
+//  Add given node to the list ending.
+//
+VSCF_PUBLIC vscf_list_key_value_node_t
+vscf_message_info_custom_params_find_node(vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag, vscf_error_t error);
 
 //
 //  Return true if at least one param exists.
 //
 VSCF_PUBLIC bool
 vscf_message_info_custom_params_has_params(const vscf_message_info_custom_params_t *self);
+
+//
+//  Return first param, or NULL if does not exist.
+//
+VSCF_PUBLIC vscf_list_key_value_node_t
+vscf_message_info_custom_params_first_param(const vscf_message_info_custom_params_t *self);
+
+//
+//  Return next param, or NULL if does not exist.
+//
+VSCF_PUBLIC vscf_list_key_value_node_t
+vscf_message_info_custom_params_next_param(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return parameter's key.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_message_info_custom_params_param_key(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return true if given parameter holds an integer value.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_is_int_param(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return parameter as an integer value.
+//
+VSCF_PUBLIC int
+vscf_message_info_custom_params_as_int_value(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return true if given parameter holds a string value.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_is_string_param(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return parameter as a string value.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_message_info_custom_params_as_string_value(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return true if given parameter holds a data value.
+//
+VSCF_PUBLIC bool
+vscf_message_info_custom_params_is_data_param(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
+
+//
+//  Return parameter as a data value.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_message_info_custom_params_as_data_value(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t param);
 
 
 // --------------------------------------------------------------------------

@@ -91,18 +91,6 @@ struct vscf_entropy_accumulator_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-    //
-    //  Implementation specific context.
-    //
-    mbedtls_entropy_context ctx;
-    //
-    //  Implementation specific context.
-    //
-    vscf_impl_t *sources[vscf_entropy_accumulator_SOURCES_MAX];
-    //
-    //  Implementation specific context.
-    //
-    size_t source_count;
 };
 
 

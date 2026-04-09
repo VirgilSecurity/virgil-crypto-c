@@ -87,8 +87,7 @@ vscf_signer_info_cleanup_ctx(vscf_signer_info_t *self);
 //  Create object and define all properties.
 //
 static void
-vscf_signer_info_init_ctx_with_members(vscf_signer_info_t *self, vsc_data_t signer_id,
-        vscf_impl_t **signer_alg_info_ref, vsc_buffer_t **signature_ref);
+vscf_signer_info_init_ctx_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, void signer_alg_info, vsc_buffer_t signature);
 
 //
 //  Return size of 'vscf_signer_info_t'.
@@ -105,9 +104,9 @@ vscf_signer_info_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_signer_info_init(vscf_signer_info_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_signer_info_t));
+    vsc_zeroize(self, sizeof(vscf_signer_info_t));
 
     self->refcnt = 1;
 
@@ -126,7 +125,7 @@ vscf_signer_info_cleanup(vscf_signer_info_t *self) {
 
     vscf_signer_info_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_signer_info_t));
+    vsc_zeroize(self, sizeof(vscf_signer_info_t));
 }
 
 //
@@ -135,12 +134,12 @@ vscf_signer_info_cleanup(vscf_signer_info_t *self) {
 VSCF_PUBLIC vscf_signer_info_t *
 vscf_signer_info_new(void) {
 
-    vscf_signer_info_t *self = (vscf_signer_info_t *) vscf_alloc(sizeof (vscf_signer_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_signer_info_t *self = (vscf_signer_info_t *) vsc_alloc(sizeof (vscf_signer_info_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_signer_info_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
@@ -149,33 +148,31 @@ vscf_signer_info_new(void) {
 //  Perform initialization of pre-allocated context.
 //  Create object and define all properties.
 //
-VSCF_PRIVATE void
-vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref,
-        vsc_buffer_t **signature_ref) {
+VSCF_PUBLIC void
+vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, void signer_alg_info, vsc_buffer_t signature) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_signer_info_t));
+    vsc_zeroize(self, sizeof(vscf_signer_info_t));
 
     self->refcnt = 1;
 
-    vscf_signer_info_init_ctx_with_members(self, signer_id, signer_alg_info_ref, signature_ref);
+    vscf_signer_info_init_ctx_with_members(self, signer_id, signer_alg_info, signature);
 }
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
-VSCF_PRIVATE vscf_signer_info_t *
-vscf_signer_info_new_with_members(vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref,
-        vsc_buffer_t **signature_ref) {
+VSCF_PUBLIC vscf_signer_info_t *
+vscf_signer_info_new_with_members(vsc_data_t signer_id, void signer_alg_info, vsc_buffer_t signature) {
 
-    vscf_signer_info_t *self = (vscf_signer_info_t *) vscf_alloc(sizeof (vscf_signer_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_signer_info_t *self = (vscf_signer_info_t *) vsc_alloc(sizeof (vscf_signer_info_t));
+    VSC_ASSERT_ALLOC(self);
 
-    vscf_signer_info_init_with_members(self, signer_id, signer_alg_info_ref, signature_ref);
+    vscf_signer_info_init_with_members(self, signer_id, signer_alg_info, signature);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

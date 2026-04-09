@@ -92,17 +92,13 @@ struct vscf_key_asn1_serializer_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'asn1 writer'.
+    //  Implementation specific context.
     //
-    vscf_impl_t *asn1_writer;
+    void sec1_serializer;
     //
     //  Implementation specific context.
     //
-    vscf_sec1_serializer_t *sec1_serializer;
-    //
-    //  Implementation specific context.
-    //
-    vscf_pkcs8_serializer_t *pkcs8_serializer;
+    void pkcs8_serializer;
 };
 
 

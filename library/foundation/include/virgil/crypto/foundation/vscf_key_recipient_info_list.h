@@ -125,14 +125,13 @@ vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *self);
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
-VSCF_PRIVATE void
-vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *self,
-        vscf_key_recipient_info_t **key_recipient_info_ref);
+VSCF_PUBLIC void
+vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *self, vscf_key_recipient_info_t key_recipient_info);
 
 //
 //  Remove current node.
 //
-VSCF_PRIVATE void
+VSCF_PUBLIC void
 vscf_key_recipient_info_list_remove_self(vscf_key_recipient_info_list_t *self);
 
 //
@@ -144,7 +143,7 @@ vscf_key_recipient_info_list_has_item(const vscf_key_recipient_info_list_t *self
 //
 //  Return list item.
 //
-VSCF_PUBLIC const vscf_key_recipient_info_t *
+VSCF_PUBLIC vscf_key_recipient_info_t
 vscf_key_recipient_info_list_item(const vscf_key_recipient_info_list_t *self);
 
 //
@@ -156,13 +155,13 @@ vscf_key_recipient_info_list_has_next(const vscf_key_recipient_info_list_t *self
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC const vscf_key_recipient_info_list_t *
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_next(const vscf_key_recipient_info_list_t *self);
 
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSCF_PRIVATE vscf_key_recipient_info_list_t *
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_next_modifiable(vscf_key_recipient_info_list_t *self);
 
 //
@@ -174,7 +173,7 @@ vscf_key_recipient_info_list_has_prev(const vscf_key_recipient_info_list_t *self
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC const vscf_key_recipient_info_list_t *
+VSCF_PUBLIC vscf_key_recipient_info_list_t *
 vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *self);
 
 //

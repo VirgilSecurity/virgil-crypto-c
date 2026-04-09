@@ -92,14 +92,6 @@ struct vscf_ed25519_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-    //
-    //  Dependency to the interface 'random'.
-    //
-    vscf_impl_t *random;
-    //
-    //  Dependency to the class 'ecies'.
-    //
-    vscf_ecies_t *ecies;
 };
 
 

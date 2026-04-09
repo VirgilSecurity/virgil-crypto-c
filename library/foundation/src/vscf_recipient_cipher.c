@@ -108,125 +108,6 @@ static void
 vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self);
 
 //
-//  Configure decryption symmetric cipher with given key and
-//  nonce that is restored from the message info or derived from the key.
-//
-//  Note, this method change decryption state.
-//
-static vscf_status_t
-vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
-        vsc_data_t decryption_key) VSCF_NODISCARD;
-
-//
-//  Decrypt data encryption key with a password.
-//
-static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-//
-//  Decrypt data encryption key with a private key.
-//
-static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-//
-//  Decrypt data encryption key and configure underlying cipher.
-//
-static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-//
-//  Deserialize given message info from the given data or extracted data.
-//
-static vscf_status_t
-vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) VSCF_NODISCARD;
-
-//
-//  Deserialize given message info footer from the given data or extracted data.
-//
-static vscf_status_t
-vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-static vscf_status_t
-vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) VSCF_NODISCARD;
-
-//
-//  For signed encryption set serialized footer info as
-//  cipher additional data for AEAD ciphers.
-//
-static void
-vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
-
-//
-//  Sign data digest.
-//  Populate message info footer.
-//  Encrypt message info footer.
-//
-static vscf_status_t
-vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-//
-//  Calculate data digest.
-//
-static void
-vscf_recipient_cipher_accomplish_verified_decryption(vscf_recipient_cipher_t *self);
-
-//
-//  Derive keys and nonces from given master.
-//
-static void
-vscf_recipient_cipher_derive_decryption_cipher_keys_and_nonces(vscf_recipient_cipher_t *self, vsc_data_t master_key);
-
-static void
-vscf_recipient_cipher_configure_verifier_hash(vscf_recipient_cipher_t *self);
-
-static vsc_data_t
-vscf_recipient_cipher_data_derived_key(const vscf_recipient_cipher_t *self, const vscf_impl_t *cipher);
-
-static vsc_data_t
-vscf_recipient_cipher_data_derived_nonce(const vscf_recipient_cipher_t *self, const vscf_impl_t *cipher);
-
-static vsc_data_t
-vscf_recipient_cipher_footer_derived_key(const vscf_recipient_cipher_t *self, const vscf_impl_t *cipher);
-
-static vsc_data_t
-vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, const vscf_impl_t *cipher);
-
-//
-//  Setup default algorithms required for encryption.
-//
-static vscf_status_t
-vscf_recipient_cipher_setup_encryption_defaults(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-static vscf_status_t
-vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-static vscf_status_t
-vscf_recipient_cipher_configure_kdf_feeded_encryption_cipher(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-static vscf_status_t
-vscf_recipient_cipher_encrypt_cipher_key_for_recipients(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-static vsc_data_t
-vscf_recipient_cipher_filter_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t data);
-
-static void
-vscf_recipient_cipher_decrypt_chunk(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out);
-
-//
-//  Add information related to encryption to a message info.
-//
-static vscf_status_t
-vscf_recipient_cipher_update_message_info_for_encryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
-
-//
-//  Configure padding cipher with given padding and cipher.
-//
-static void
-vscf_recipient_cipher_configure_padding_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *padding,
-        vscf_impl_t *cipher);
-
-//
 //  Return size of 'vscf_recipient_cipher_t'.
 //
 VSCF_PUBLIC size_t
@@ -241,9 +122,9 @@ vscf_recipient_cipher_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_recipient_cipher_init(vscf_recipient_cipher_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
+    vsc_zeroize(self, sizeof(vscf_recipient_cipher_t));
 
     self->refcnt = 1;
 
@@ -263,12 +144,16 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
     vscf_recipient_cipher_cleanup_ctx(self);
 
     vscf_recipient_cipher_release_random(self);
+
     vscf_recipient_cipher_release_encryption_cipher(self);
+
     vscf_recipient_cipher_release_encryption_padding(self);
+
     vscf_recipient_cipher_release_padding_params(self);
+
     vscf_recipient_cipher_release_signer_hash(self);
 
-    vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
+    vsc_zeroize(self, sizeof(vscf_recipient_cipher_t));
 }
 
 //
@@ -277,12 +162,12 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
 VSCF_PUBLIC vscf_recipient_cipher_t *
 vscf_recipient_cipher_new(void) {
 
-    vscf_recipient_cipher_t *self = (vscf_recipient_cipher_t *) vscf_alloc(sizeof (vscf_recipient_cipher_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_recipient_cipher_t *self = (vscf_recipient_cipher_t *) vsc_alloc(sizeof (vscf_recipient_cipher_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_recipient_cipher_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

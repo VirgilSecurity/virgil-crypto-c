@@ -114,33 +114,29 @@ vscf_key_recipient_info_new(void);
 //  Perform initialization of pre-allocated context.
 //  Create object and define all properties.
 //
-VSCF_PRIVATE void
-vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref);
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create object and define all properties.
-//
-VSCF_PRIVATE vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
-        vsc_buffer_t **encrypted_key_ref);
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create object and define all properties.
-//
 VSCF_PUBLIC void
-vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
+vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, void key_encryption_algorithm, vsc_buffer_t encrypted_key);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
-        vsc_data_t encrypted_key);
+vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, void key_encryption_algorithm, vsc_buffer_t encrypted_key);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, void key_encryption_algorithm, vsc_data_t encrypted_key);
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC vscf_key_recipient_info_t *
+vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, void key_encryption_algorithm, vsc_data_t encrypted_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -172,7 +168,7 @@ vscf_key_recipient_info_recipient_id(const vscf_key_recipient_info_t *self);
 //  Return algorithm information that was used for encryption
 //  a data encryption key.
 //
-VSCF_PUBLIC const vscf_impl_t *
+VSCF_PUBLIC void
 vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t *self);
 
 //

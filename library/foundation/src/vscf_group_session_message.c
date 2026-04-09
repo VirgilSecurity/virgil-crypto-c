@@ -100,9 +100,9 @@ vscf_group_session_message_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_group_session_message_init(vscf_group_session_message_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_group_session_message_t));
+    vsc_zeroize(self, sizeof(vscf_group_session_message_t));
 
     self->refcnt = 1;
 
@@ -121,7 +121,7 @@ vscf_group_session_message_cleanup(vscf_group_session_message_t *self) {
 
     vscf_group_session_message_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_group_session_message_t));
+    vsc_zeroize(self, sizeof(vscf_group_session_message_t));
 }
 
 //
@@ -130,12 +130,12 @@ vscf_group_session_message_cleanup(vscf_group_session_message_t *self) {
 VSCF_PUBLIC vscf_group_session_message_t *
 vscf_group_session_message_new(void) {
 
-    vscf_group_session_message_t *self = (vscf_group_session_message_t *) vscf_alloc(sizeof (vscf_group_session_message_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_group_session_message_t *self = (vscf_group_session_message_t *) vsc_alloc(sizeof (vscf_group_session_message_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_group_session_message_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

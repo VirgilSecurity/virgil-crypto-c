@@ -96,9 +96,9 @@ vscf_list_key_value_node_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_list_key_value_node_init(vscf_list_key_value_node_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_list_key_value_node_t));
+    vsc_zeroize(self, sizeof(vscf_list_key_value_node_t));
 
     self->refcnt = 1;
 
@@ -117,7 +117,7 @@ vscf_list_key_value_node_cleanup(vscf_list_key_value_node_t *self) {
 
     vscf_list_key_value_node_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_list_key_value_node_t));
+    vsc_zeroize(self, sizeof(vscf_list_key_value_node_t));
 }
 
 //
@@ -126,12 +126,12 @@ vscf_list_key_value_node_cleanup(vscf_list_key_value_node_t *self) {
 VSCF_PUBLIC vscf_list_key_value_node_t *
 vscf_list_key_value_node_new(void) {
 
-    vscf_list_key_value_node_t *self = (vscf_list_key_value_node_t *) vscf_alloc(sizeof (vscf_list_key_value_node_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_list_key_value_node_t *self = (vscf_list_key_value_node_t *) vsc_alloc(sizeof (vscf_list_key_value_node_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_list_key_value_node_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

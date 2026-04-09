@@ -138,37 +138,22 @@ VSCF_PUBLIC vscf_ecc_alg_info_t *
 vscf_ecc_alg_info_shallow_copy(vscf_ecc_alg_info_t *self);
 
 //
-//  Perform initialization of pre-allocated context.
-//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//  Provide algorithm identificator.
 //
-VSCF_PUBLIC void
-vscf_ecc_alg_info_init_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
-        vscf_oid_id_t domain_id);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create algorithm info with EC generic key identificator, EC domain group identificator.
-//
-VSCF_PUBLIC vscf_ecc_alg_info_t *
-vscf_ecc_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_ecc_alg_info_alg_id(const vscf_ecc_alg_info_t *self);
 
 //
 //  Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
 //
-VSCF_PUBLIC vscf_oid_id_t
+VSCF_PRIVATE vscf_oid_id_t
 vscf_ecc_alg_info_key_id(const vscf_ecc_alg_info_t *self);
 
 //
 //  Return EC domain group identificator.
 //
-VSCF_PUBLIC vscf_oid_id_t
+VSCF_PRIVATE vscf_oid_id_t
 vscf_ecc_alg_info_domain_id(const vscf_ecc_alg_info_t *self);
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_ecc_alg_info_alg_id(const vscf_ecc_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

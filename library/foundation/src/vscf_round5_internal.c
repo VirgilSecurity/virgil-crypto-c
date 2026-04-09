@@ -79,162 +79,17 @@ vscf_round5_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'key alg api'.
 //
-static const vscf_key_alg_api_t key_alg_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_alg' MUST be equal to the 'vscf_api_tag_KEY_ALG'.
-    //
-    vscf_api_tag_KEY_ALG,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ROUND5,
-    //
-    //  Generate ephemeral private key of the same type.
-    //  Note, this operation might be slow.
-    //
-    (vscf_key_alg_api_generate_ephemeral_key_fn)vscf_round5_generate_ephemeral_key,
-    //
-    //  Import public key from the raw binary format.
-    //
-    //  Return public key that is adopted and optimized to be used
-    //  with this particular algorithm.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA public key must be imported from the format defined in
-    //  RFC 3447 Appendix A.1.1.
-    //
-    (vscf_key_alg_api_import_public_key_fn)vscf_round5_import_public_key,
-    //
-    //  Import public key from the raw binary format.
-    //
-    (vscf_key_alg_api_import_public_key_data_fn)vscf_round5_import_public_key_data,
-    //
-    //  Export public key to the raw binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA public key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.1.
-    //
-    (vscf_key_alg_api_export_public_key_fn)vscf_round5_export_public_key,
-    //
-    //  Return length in bytes required to hold exported public key.
-    //
-    (vscf_key_alg_api_exported_public_key_data_len_fn)vscf_round5_exported_public_key_data_len,
-    //
-    //  Export public key to the raw binary format without algorithm information.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA public key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.1.
-    //
-    (vscf_key_alg_api_export_public_key_data_fn)vscf_round5_export_public_key_data,
-    //
-    //  Import private key from the raw binary format.
-    //
-    //  Return private key that is adopted and optimized to be used
-    //  with this particular algorithm.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be imported from the format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    (vscf_key_alg_api_import_private_key_fn)vscf_round5_import_private_key,
-    //
-    //  Import private key from the raw binary format.
-    //
-    (vscf_key_alg_api_import_private_key_data_fn)vscf_round5_import_private_key_data,
-    //
-    //  Export private key in the raw binary format.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    (vscf_key_alg_api_export_private_key_fn)vscf_round5_export_private_key,
-    //
-    //  Return length in bytes required to hold exported private key.
-    //
-    (vscf_key_alg_api_exported_private_key_data_len_fn)vscf_round5_exported_private_key_data_len,
-    //
-    //  Export private key to the raw binary format without algorithm information.
-    //
-    //  Binary format must be defined in the key specification.
-    //  For instance, RSA private key must be exported in format defined in
-    //  RFC 3447 Appendix A.1.2.
-    //
-    (vscf_key_alg_api_export_private_key_data_fn)vscf_round5_export_private_key_data,
-    //
-    //  Defines whether a public key can be imported or not.
-    //
-    vscf_round5_CAN_IMPORT_PUBLIC_KEY,
-    //
-    //  Define whether a public key can be exported or not.
-    //
-    vscf_round5_CAN_EXPORT_PUBLIC_KEY,
-    //
-    //  Define whether a private key can be imported or not.
-    //
-    vscf_round5_CAN_IMPORT_PRIVATE_KEY,
-    //
-    //  Define whether a private key can be exported or not.
-    //
-    vscf_round5_CAN_EXPORT_PRIVATE_KEY
-};
+static const vscf_key_alg_api_t key_alg_api = vscf_api_tag_KEY_ALG;
 
 //
 //  Configuration of the interface API 'kem api'.
 //
-static const vscf_kem_api_t kem_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kem' MUST be equal to the 'vscf_api_tag_KEM'.
-    //
-    vscf_api_tag_KEM,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_ROUND5,
-    //
-    //  Return length in bytes required to hold encapsulated shared key.
-    //
-    (vscf_kem_api_kem_shared_key_len_fn)vscf_round5_kem_shared_key_len,
-    //
-    //  Return length in bytes required to hold encapsulated key.
-    //
-    (vscf_kem_api_kem_encapsulated_key_len_fn)vscf_round5_kem_encapsulated_key_len,
-    //
-    //  Generate a shared key and a key encapsulated message.
-    //
-    (vscf_kem_api_kem_encapsulate_fn)vscf_round5_kem_encapsulate,
-    //
-    //  Decapsulate the shared key.
-    //
-    (vscf_kem_api_kem_decapsulate_fn)vscf_round5_kem_decapsulate
-};
+static const vscf_kem_api_t kem_api = vscf_api_tag_KEM;
 
 //
 //  Compile-time known information about 'round5' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_ROUND5,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_round5_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_round5_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_round5_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_ROUND5;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -248,6 +103,8 @@ vscf_round5_init(vscf_round5_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_round5_init_ctx(self);
 }
 
 //
@@ -261,7 +118,7 @@ vscf_round5_cleanup(vscf_round5_t *self) {
         return;
     }
 
-    vscf_round5_release_random(self);
+    vscf_round5_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_round5_t));
 }
@@ -371,56 +228,14 @@ vscf_round5_impl_const(const vscf_round5_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_round5_use_random(vscf_round5_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_round5_take_random(vscf_round5_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_round5_release_random(vscf_round5_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
-
 static const vscf_api_t *
 vscf_round5_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEM:
-            return (const vscf_api_t *) &kem_api;
+        return (const vscf_api_t *)                 &kem_api;
         case vscf_api_tag_KEY_ALG:
-            return (const vscf_api_t *) &key_alg_api;
+        return (const vscf_api_t *)                 &key_alg_api;
         default:
             return NULL;
     }

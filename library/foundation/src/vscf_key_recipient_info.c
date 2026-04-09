@@ -85,15 +85,13 @@ vscf_key_recipient_info_cleanup_ctx(vscf_key_recipient_info_t *self);
 //  Create object and define all properties.
 //
 static void
-vscf_key_recipient_info_init_ctx_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref);
+vscf_key_recipient_info_init_ctx_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, void key_encryption_algorithm, vsc_buffer_t encrypted_key);
 
 //
 //  Create object and define all properties.
 //
 static void
-vscf_key_recipient_info_init_ctx_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
+vscf_key_recipient_info_init_ctx_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, void key_encryption_algorithm, vsc_data_t encrypted_key);
 
 //
 //  Return size of 'vscf_key_recipient_info_t'.
@@ -110,9 +108,9 @@ vscf_key_recipient_info_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_key_recipient_info_init(vscf_key_recipient_info_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_recipient_info_t));
+    vsc_zeroize(self, sizeof(vscf_key_recipient_info_t));
 
     self->refcnt = 1;
 
@@ -131,7 +129,7 @@ vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *self) {
 
     vscf_key_recipient_info_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_recipient_info_t));
+    vsc_zeroize(self, sizeof(vscf_key_recipient_info_t));
 }
 
 //
@@ -140,47 +138,12 @@ vscf_key_recipient_info_cleanup(vscf_key_recipient_info_t *self) {
 VSCF_PUBLIC vscf_key_recipient_info_t *
 vscf_key_recipient_info_new(void) {
 
-    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vscf_alloc(sizeof (vscf_key_recipient_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vsc_alloc(sizeof (vscf_key_recipient_info_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_key_recipient_info_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
-
-    return self;
-}
-
-//
-//  Perform initialization of pre-allocated context.
-//  Create object and define all properties.
-//
-VSCF_PRIVATE void
-vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_key_recipient_info_t));
-
-    self->refcnt = 1;
-
-    vscf_key_recipient_info_init_ctx_with_buffer(self, recipient_id, key_encryption_algorithm, encrypted_key_ref);
-}
-
-//
-//  Allocate class context and perform it's initialization.
-//  Create object and define all properties.
-//
-VSCF_PRIVATE vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
-        vsc_buffer_t **encrypted_key_ref) {
-
-    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vscf_alloc(sizeof (vscf_key_recipient_info_t));
-    VSCF_ASSERT_ALLOC(self);
-
-    vscf_key_recipient_info_init_with_buffer(self, recipient_id, key_encryption_algorithm, encrypted_key_ref);
-
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
@@ -190,12 +153,44 @@ vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, const vscf_impl
 //  Create object and define all properties.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key) {
+vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, void key_encryption_algorithm, vsc_buffer_t encrypted_key) {
 
     VSCF_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_recipient_info_t));
+    vsc_zeroize(self, sizeof(vscf_key_recipient_info_t));
+
+    self->refcnt = 1;
+
+    vscf_key_recipient_info_init_ctx_with_buffer(self, recipient_id, key_encryption_algorithm, encrypted_key);
+}
+
+//
+//  Allocate class context and perform it's initialization.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC vscf_key_recipient_info_t *
+vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, void key_encryption_algorithm, vsc_buffer_t encrypted_key) {
+
+    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vsc_alloc(sizeof (vscf_key_recipient_info_t));
+    VSC_ASSERT_ALLOC(self);
+
+    vscf_key_recipient_info_init_with_buffer(self, recipient_id, key_encryption_algorithm, encrypted_key);
+
+    self->self_dealloc_cb = vsc_dealloc;
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create object and define all properties.
+//
+VSCF_PUBLIC void
+vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, void key_encryption_algorithm, vsc_data_t encrypted_key) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vsc_zeroize(self, sizeof(vscf_key_recipient_info_t));
 
     self->refcnt = 1;
 
@@ -207,15 +202,14 @@ vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
-        vsc_data_t encrypted_key) {
+vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, void key_encryption_algorithm, vsc_data_t encrypted_key) {
 
-    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vscf_alloc(sizeof (vscf_key_recipient_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_key_recipient_info_t *self = (vscf_key_recipient_info_t *) vsc_alloc(sizeof (vscf_key_recipient_info_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_key_recipient_info_init_with_data(self, recipient_id, key_encryption_algorithm, encrypted_key);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

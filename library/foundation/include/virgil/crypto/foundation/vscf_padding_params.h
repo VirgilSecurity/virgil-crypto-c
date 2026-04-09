@@ -71,15 +71,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    vscf_padding_params_DEFAULT_FRAME_MIN = 32,
-    vscf_padding_params_DEFAULT_FRAME = 160,
-    vscf_padding_params_DEFAULT_FRAME_MAX = 256
-};
-
-//
 //  Handle 'padding params' context.
 //
 typedef struct vscf_padding_params_t vscf_padding_params_t;

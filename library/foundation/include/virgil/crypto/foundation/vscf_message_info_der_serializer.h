@@ -156,62 +156,16 @@ VSCF_PUBLIC vscf_message_info_der_serializer_t *
 vscf_message_info_der_serializer_shallow_copy(vscf_message_info_der_serializer_t *self);
 
 //
-//  Setup dependency to the interface 'asn1 reader' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
-
-//
-//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
-
-//
-//  Release dependency to the interface 'asn1 reader'.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *self);
-
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *self);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
-
-//
 //  Return buffer size enough to hold serialized message info.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer_t *self,
-        const vscf_message_info_t *message_info);
+vscf_message_info_der_serializer_serialized_len(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
 //
 //  Serialize class "message info".
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *self,
-        const vscf_message_info_t *message_info, vsc_buffer_t *out);
+vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
 //  Read message info prefix from the given data, and if it is valid,
@@ -221,35 +175,37 @@ vscf_message_info_der_serializer_serialize(vscf_message_info_der_serializer_t *s
 //  and this means that there is no message info at the data beginning.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t *self, vsc_data_t data);
+vscf_message_info_der_serializer_read_prefix(vscf_message_info_der_serializer_t *self, vsc_data_t *data);
 
 //
 //  Deserialize class "message info".
 //
 VSCF_PUBLIC vscf_message_info_t *
-vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *self, vsc_data_t data,
-        vscf_error_t *error);
+vscf_message_info_der_serializer_deserialize(vscf_message_info_der_serializer_t *self, vsc_data_t *data, vscf_error_t *error);
 
 //
 //  Return buffer size enough to hold serialized message info footer.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_der_serializer_serialized_footer_len(vscf_message_info_der_serializer_t *self,
-        const vscf_message_info_footer_t *message_info_footer);
+vscf_message_info_der_serializer_serialized_footer_len(vscf_message_info_der_serializer_t *self, vscf_message_info_footer_t *message_info_footer);
 
 //
 //  Serialize class "message info footer".
 //
 VSCF_PUBLIC void
-vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializer_t *self,
-        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+vscf_message_info_der_serializer_serialize_footer(vscf_message_info_der_serializer_t *self, vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
 
 //
 //  Deserialize class "message info footer".
 //
 VSCF_PUBLIC vscf_message_info_footer_t *
-vscf_message_info_der_serializer_deserialize_footer(vscf_message_info_der_serializer_t *self, vsc_data_t data,
-        vscf_error_t *error);
+vscf_message_info_der_serializer_deserialize_footer(vscf_message_info_der_serializer_t *self, vsc_data_t *data, vscf_error_t *error);
+
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PRIVATE void
+vscf_message_info_der_serializer_setup_defaults(vscf_message_info_der_serializer_t *self);
 
 
 // --------------------------------------------------------------------------

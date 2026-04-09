@@ -64,66 +64,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Defines that implemented source is strong.
-//
-VSCF_PUBLIC bool
-vscf_entropy_source_is_strong(vscf_impl_t *impl) {
-
-    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api(impl);
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    VSCF_ASSERT_PTR (entropy_source_api->is_strong_cb);
-    return entropy_source_api->is_strong_cb (impl);
-}
-
-//
-//  Gather entropy of the requested length.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_entropy_source_gather(vscf_impl_t *impl, size_t len, vsc_buffer_t *out) {
-
-    const vscf_entropy_source_api_t *entropy_source_api = vscf_entropy_source_api(impl);
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    VSCF_ASSERT_PTR (entropy_source_api->gather_cb);
-    return entropy_source_api->gather_cb (impl, len, out);
-}
-
-//
-//  Return entropy source API, or NULL if it is not implemented.
-//
-VSCF_PUBLIC const vscf_entropy_source_api_t *
-vscf_entropy_source_api(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ENTROPY_SOURCE);
-    return (const vscf_entropy_source_api_t *) api;
-}
-
-//
-//  Check if given object implements interface 'entropy source'.
-//
-VSCF_PUBLIC bool
-vscf_entropy_source_is_implemented(const vscf_impl_t *impl) {
-
-    VSCF_ASSERT_PTR (impl);
-
-    return vscf_impl_api(impl, vscf_api_tag_ENTROPY_SOURCE) != NULL;
-}
-
-//
-//  Returns interface unique identifier.
-//
-VSCF_PUBLIC vscf_api_tag_t
-vscf_entropy_source_api_tag(const vscf_entropy_source_api_t *entropy_source_api) {
-
-    VSCF_ASSERT_PTR (entropy_source_api);
-
-    return entropy_source_api->api_tag;
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

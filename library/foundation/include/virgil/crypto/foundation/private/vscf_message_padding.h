@@ -77,14 +77,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    vscf_message_padding_PADDING_SIZE_LEN = 4,
-    vscf_message_padding_PADDING_FACTOR = 160
-};
-
-//
 //  Handle 'message padding' context.
 //
 typedef struct vscf_message_padding_t vscf_message_padding_t;
@@ -153,13 +145,13 @@ VSCF_PUBLIC void
 vscf_message_padding_release_rng(vscf_message_padding_t *self);
 
 VSCF_PUBLIC size_t
-vscf_message_padding_padded_len(size_t plain_text_len);
+vscf_message_padding_padded_len(vscf_message_padding_t *self, size_t plain_text_len);
 
-VSCF_PUBLIC vscf_status_t
-vscf_message_padding_add_padding(vscf_message_padding_t *self, vsc_buffer_t *plain_text) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_message_padding_add_padding(vscf_message_padding_t *self, vsc_buffer_t plain_text);
 
-VSCF_PUBLIC vscf_status_t
-vscf_message_padding_remove_padding(vsc_data_t decrypted_text, vsc_buffer_t *buffer) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_message_padding_remove_padding(vscf_message_padding_t *self, vsc_data_t decrypted_text, vsc_buffer_t buffer);
 
 
 // --------------------------------------------------------------------------

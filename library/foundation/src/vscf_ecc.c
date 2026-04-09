@@ -94,8 +94,8 @@
 //      s INTEGER
 //  }
 //
-static void
-vscf_ecc_write_signature(const mbedtls_mpi *r, const mbedtls_mpi *s, vsc_buffer_t *signature);
+VSCF_PRIVATE void
+vscf_ecc_write_signature(vscf_mbedtls_mpi_t *r, vscf_mbedtls_mpi_t *s, vsc_buffer_t *signature);
 
 //
 //  Read R and S from ASN.1 structure.
@@ -105,14 +105,14 @@ vscf_ecc_write_signature(const mbedtls_mpi *r, const mbedtls_mpi *s, vsc_buffer_
 //      s INTEGER
 //  }
 //
-static vscf_status_t
-vscf_ecc_read_signature(vsc_data_t signature, mbedtls_mpi *r, mbedtls_mpi *s) VSCF_NODISCARD;
+VSCF_PRIVATE vscf_status_t
+vscf_ecc_read_signature(vsc_data_t *signature, vscf_mbedtls_mpi_t *r, vscf_mbedtls_mpi_t *s);
 
 //
 //  Produce algorithm information for public or private key.
 //
-static vscf_impl_t *
-vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, const vscf_impl_t *key);
+VSCF_PRIVATE vscf_impl_t *
+vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, vscf_impl_t *key);
 
 
 // --------------------------------------------------------------------------

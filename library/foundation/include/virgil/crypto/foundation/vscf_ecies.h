@@ -239,7 +239,7 @@ vscf_ecies_release_ephemeral_key(vscf_ecies_t *self);
 //  Key algorithm MUST support shared key computation as well.
 //
 VSCF_PUBLIC void
-vscf_ecies_set_key_alg(vscf_ecies_t *self, const vscf_impl_t *key_alg);
+vscf_ecies_set_key_alg(vscf_ecies_t *self, void key_alg);
 
 //
 //  Release weak reference to the key algorithm.
@@ -250,8 +250,8 @@ vscf_ecies_release_key_alg(vscf_ecies_t *self);
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_ecies_setup_defaults(vscf_ecies_t *self) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_ecies_setup_defaults(vscf_ecies_t *self);
 
 //
 //  Setup predefined values to the uninitialized class dependencies
@@ -264,27 +264,25 @@ vscf_ecies_setup_defaults_no_random(vscf_ecies_t *self);
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_encrypted_len(const vscf_ecies_t *self, const vscf_impl_t *public_key, size_t data_len);
+vscf_ecies_encrypted_len(const vscf_ecies_t *self, void public_key, size_t data_len);
 
 //
 //  Encrypt data with a given public key.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_ecies_encrypt(const vscf_ecies_t *self, const vscf_impl_t *public_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_ecies_encrypt(const vscf_ecies_t *self, void public_key, vsc_data_t data, vsc_buffer_t out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_ecies_decrypted_len(const vscf_ecies_t *self, const vscf_impl_t *private_key, size_t data_len);
+vscf_ecies_decrypted_len(const vscf_ecies_t *self, void private_key, size_t data_len);
 
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_ecies_decrypt(const vscf_ecies_t *self, const vscf_impl_t *private_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+VSCF_PUBLIC void
+vscf_ecies_decrypt(const vscf_ecies_t *self, void private_key, vsc_data_t data, vsc_buffer_t out);
 
 
 // --------------------------------------------------------------------------

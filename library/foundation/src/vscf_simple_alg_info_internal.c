@@ -76,44 +76,12 @@ vscf_simple_alg_info_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg info api'.
 //
-static const vscf_alg_info_api_t alg_info_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
-    //
-    vscf_api_tag_ALG_INFO,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SIMPLE_ALG_INFO,
-    //
-    //  Provide algorithm identificator.
-    //
-    (vscf_alg_info_api_alg_id_fn)vscf_simple_alg_info_alg_id
-};
+static const vscf_alg_info_api_t alg_info_api = vscf_api_tag_ALG_INFO;
 
 //
 //  Compile-time known information about 'simple alg info' implementation.
 //
-static const vscf_impl_info_t info = {
-    //
-    //  Implementation unique identifier, MUST be first in the structure.
-    //
-    vscf_impl_tag_SIMPLE_ALG_INFO,
-    //
-    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    //  MUST be second in the structure.
-    //
-    vscf_simple_alg_info_find_api,
-    //
-    //  Release acquired inner resources.
-    //
-    (vscf_impl_cleanup_fn)vscf_simple_alg_info_cleanup,
-    //
-    //  Self destruction, according to destruction policy.
-    //
-    (vscf_impl_delete_fn)vscf_simple_alg_info_delete
-};
+static const vscf_impl_info_t info = vscf_impl_tag_SIMPLE_ALG_INFO;
 
 //
 //  Perform initialization of preallocated implementation context.
@@ -224,37 +192,6 @@ vscf_simple_alg_info_shallow_copy(vscf_simple_alg_info_t *self) {
 }
 
 //
-//  Perform initialization of pre-allocated context.
-//  Create algorithm info with identificator.
-//
-VSCF_PUBLIC void
-vscf_simple_alg_info_init_with_alg_id(vscf_simple_alg_info_t *self, vscf_alg_id_t alg_id) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_simple_alg_info_t));
-
-    self->info = &info;
-    self->refcnt = 1;
-
-    vscf_simple_alg_info_init_ctx_with_alg_id(self, alg_id);
-}
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create algorithm info with identificator.
-//
-VSCF_PUBLIC vscf_simple_alg_info_t *
-vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_t alg_id) {
-
-    vscf_simple_alg_info_t *self = vscf_simple_alg_info_new();
-
-    vscf_simple_alg_info_init_with_alg_id(self, alg_id);
-
-    return self;
-}
-
-//
 //  Return size of 'vscf_simple_alg_info_t' type.
 //
 VSCF_PUBLIC size_t
@@ -288,7 +225,7 @@ vscf_simple_alg_info_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO:
-            return (const vscf_api_t *) &alg_info_api;
+        return (const vscf_api_t *)                 &alg_info_api;
         default:
             return NULL;
     }

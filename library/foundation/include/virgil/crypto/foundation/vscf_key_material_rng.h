@@ -83,20 +83,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Public integral constants.
-//
-enum {
-    //
-    //  Minimum length in bytes for the key material.
-    //
-    vscf_key_material_rng_KEY_MATERIAL_LEN_MIN = 32,
-    //
-    //  Maximum length in bytes for the key material.
-    //
-    vscf_key_material_rng_KEY_MATERIAL_LEN_MAX = 512
-};
-
-//
 //  Handles implementation details.
 //
 typedef struct vscf_key_material_rng_t vscf_key_material_rng_t;
@@ -161,23 +147,23 @@ VSCF_PUBLIC vscf_key_material_rng_t *
 vscf_key_material_rng_shallow_copy(vscf_key_material_rng_t *self);
 
 //
-//  Set a new key material.
-//
-VSCF_PUBLIC void
-vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t key_material);
-
-//
 //  Generate random bytes.
 //  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_material_rng_random(const vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
+vscf_key_material_rng_random(const vscf_key_material_rng_t *self, size_t data_len, vsc_buffer_t *data);
 
 //
 //  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) VSCF_NODISCARD;
+vscf_key_material_rng_reseed(vscf_key_material_rng_t *self);
+
+//
+//  Set a new key material.
+//
+VSCF_PRIVATE void
+vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t *key_material);
 
 
 // --------------------------------------------------------------------------

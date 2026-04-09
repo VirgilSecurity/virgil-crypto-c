@@ -117,9 +117,9 @@ vscf_key_provider_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_key_provider_init(vscf_key_provider_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_provider_t));
+    vsc_zeroize(self, sizeof(vscf_key_provider_t));
 
     self->refcnt = 1;
 
@@ -140,7 +140,7 @@ vscf_key_provider_cleanup(vscf_key_provider_t *self) {
 
     vscf_key_provider_release_random(self);
 
-    vscf_zeroize(self, sizeof(vscf_key_provider_t));
+    vsc_zeroize(self, sizeof(vscf_key_provider_t));
 }
 
 //
@@ -149,12 +149,12 @@ vscf_key_provider_cleanup(vscf_key_provider_t *self) {
 VSCF_PUBLIC vscf_key_provider_t *
 vscf_key_provider_new(void) {
 
-    vscf_key_provider_t *self = (vscf_key_provider_t *) vscf_alloc(sizeof (vscf_key_provider_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_key_provider_t *self = (vscf_key_provider_t *) vsc_alloc(sizeof (vscf_key_provider_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_key_provider_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }

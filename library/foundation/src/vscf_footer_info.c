@@ -96,9 +96,9 @@ vscf_footer_info_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_footer_info_init(vscf_footer_info_t *self) {
 
-    VSCF_ASSERT_PTR(self);
+    VSC_ASSERT_PTR(self);
 
-    vscf_zeroize(self, sizeof(vscf_footer_info_t));
+    vsc_zeroize(self, sizeof(vscf_footer_info_t));
 
     self->refcnt = 1;
 
@@ -117,7 +117,7 @@ vscf_footer_info_cleanup(vscf_footer_info_t *self) {
 
     vscf_footer_info_cleanup_ctx(self);
 
-    vscf_zeroize(self, sizeof(vscf_footer_info_t));
+    vsc_zeroize(self, sizeof(vscf_footer_info_t));
 }
 
 //
@@ -126,12 +126,12 @@ vscf_footer_info_cleanup(vscf_footer_info_t *self) {
 VSCF_PUBLIC vscf_footer_info_t *
 vscf_footer_info_new(void) {
 
-    vscf_footer_info_t *self = (vscf_footer_info_t *) vscf_alloc(sizeof (vscf_footer_info_t));
-    VSCF_ASSERT_ALLOC(self);
+    vscf_footer_info_t *self = (vscf_footer_info_t *) vsc_alloc(sizeof (vscf_footer_info_t));
+    VSC_ASSERT_ALLOC(self);
 
     vscf_footer_info_init(self);
 
-    self->self_dealloc_cb = vscf_dealloc;
+    self->self_dealloc_cb = vsc_dealloc;
 
     return self;
 }
