@@ -140,6 +140,7 @@ class IRCStructField(IRCommented):
     type_kind: str = "type"
     type_name: str | None = None
     class_name: str | None = None
+    interface_name: str | None = None
     callback: str | None = None
     access: str | None = None
     is_reference: bool = False
@@ -385,11 +386,13 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         type_kind=(
             "callback" if "callback" in attrs else
             "class" if "class" in attrs or attrs.get("type") == "self" else
+            "interface" if "interface" in attrs else
             "enum" if "enum" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
         class_name=attrs.get("class"),
+        interface_name=attrs.get("interface"),
         callback=attrs.get("callback"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},

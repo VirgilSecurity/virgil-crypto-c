@@ -3183,7 +3183,14 @@ def _resolve_impl_property_type(
     impl_output = cast(IROutputTarget, impl.output)
     attrs: dict[str, str] = {"name": snake_name(prop.name)}
 
-    if prop.enum_name is not None:
+    if prop.interface_name is not None:
+        # Interface property → resolve to {prefix}_impl_t pointer
+        attrs.update({
+            "type": f"{project_ir.prefix}_impl_t",
+            "type_is": "class",
+            "accessed_by": "pointer",
+        })
+    elif prop.enum_name is not None:
         # Enum property → resolve to the enum type symbol
         enum_name = prop.enum_name
         # Handle cross-module enum references (e.g. "impl/tag")
@@ -3338,6 +3345,21 @@ def render_implementation_defs_c_module(
             **prop_attrs,
         )
         prop_elem.text = comment_text("Implementation specific context.")
+
+    # Dependency fields — each dependency becomes a {prefix}_impl_t pointer
+    for dep in impl.dependencies:
+        dep_name = snake_name(dep.name)
+        dep_uid = f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}_property_{dep_name}"
+        dep_elem = text_element(
+            struct_elem,
+            "c_property",
+            name=dep_name,
+            accessed_by="pointer",
+            type=f"{prefix}_impl_t",
+            type_is="class",
+            uid=dep_uid,
+        )
+        dep_elem.text = comment_text(dep.description or f"Dependency '{dep.name}'.")
 
     struct_elem.text = (struct_elem.text or "") + "\n" + doc_comment(
         "Handles implementation details."
@@ -4257,6 +4279,19 @@ def render_implementation_c_module(
         uid = f"c_class_{impl_snake}_struct_{impl_snake}_property_{prop_name}"
         prop_elem = text_element(struct_elem, "c_property", name=prop_name, uid=uid, **prop_attrs)
         prop_elem.text = comment_text("Implementation specific context.")
+    # Dependency fields (same as defs)
+    for dep in impl.dependencies:
+        dep_name = snake_name(dep.name)
+        dep_uid = f"c_class_{impl_snake}_struct_{impl_snake}_property_{dep_name}"
+        dep_elem = text_element(
+            struct_elem, "c_property",
+            name=dep_name,
+            accessed_by="pointer",
+            type=f"{prefix}_impl_t",
+            type_is="class",
+            uid=dep_uid,
+        )
+        dep_elem.text = comment_text(dep.description or f"Dependency '{dep.name}'.")
     struct_elem.text = comment_text("Handles implementation details.")
 
     # --- impl_size method ---

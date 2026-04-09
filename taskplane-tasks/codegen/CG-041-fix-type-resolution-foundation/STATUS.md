@@ -1,6 +1,6 @@
 # CG-041: Fix Type Resolution for Foundation Entities — Status
 
-**Current Step:** Step 1: Fix defs rendering (C1, C2, C3)
+**Current Step:** Step 2: Fix argument/return type resolution (D2-D6)
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -17,14 +17,14 @@
 - [x] argument/return_from_source understood
 
 ### Step 1: Fix defs rendering (C1, C2, C3)
-**Status:** 🟨 In Progress
-- [ ] Dependency struct fields (C1)
-- [ ] Interface properties → impl_t * (C2)
-- [ ] Fixed-size arrays (C3)
-- [ ] Committed
+**Status:** ✅ Complete
+- [x] Dependency struct fields (C1)
+- [x] Interface properties → impl_t * (C2)
+- [x] Fixed-size arrays (C3)
+- [x] Committed
 
 ### Step 2: Fix argument/return type resolution (D2-D6)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Interface-typed args → impl_t * (D4)
 - [ ] const for readonly (D2)
 - [ ] data by value (D3)
