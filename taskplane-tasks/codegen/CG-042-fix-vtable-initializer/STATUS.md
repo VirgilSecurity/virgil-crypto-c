@@ -12,33 +12,35 @@
 
 ### Step 0: Preflight
 **Status:** ⬜ Not Started
-- [ ] sha256_internal resolved XML studied
-- [ ] aes256_gcm_internal resolved XML studied
-- [ ] Current renderer understood
+- [ ] Current renderer read
+- [ ] render_variable() in emitter read
+- [ ] Bug confirmed
 
-### Step 1: Fix API table struct initializer
+### Step 1: Fix C emitter multi-value struct initializers
 **Status:** ⬜ Not Started
-- [ ] Full struct initializer generated
-- [ ] api_tag + impl_tag as first fields
-- [ ] Function pointer casts
-- [ ] Interface binding constants
-- [ ] Per-field comments
+- [ ] render_variable() handles all c_value children
+- [ ] c_cast wrapping works
+- [ ] Per-value comments rendered
 - [ ] Committed
 
-### Step 2: Fix impl_info and find_api
+### Step 2: Fix backend API table variable emission
 **Status:** ⬜ Not Started
-- [ ] impl_info full initializer
-- [ ] find_api function generated
+- [ ] Multi-value c_values for API tables
+- [ ] impl_info variable emission
 - [ ] Committed
 
-### Step 3: Testing & Verification
+### Step 3: Generate find_api method
+**Status:** ⬜ Not Started
+- [ ] find_api with switch/case
+- [ ] Committed
+
+### Step 4: Testing & Verification
 **Status:** ⬜ Not Started
 - [ ] All tests pass
 - [ ] Common build gate passes
 - [ ] sha256_internal.c correct
-- [ ] aes256_gcm_internal.c correct
 
-### Step 4: Documentation & Delivery
+### Step 5: Documentation & Delivery
 **Status:** ⬜ Not Started
 - [ ] Discoveries logged
 
@@ -55,10 +57,10 @@
 ## Execution Log
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
-| 2026-04-09 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-09 | Task staged | Restructured PROMPT with inline XML patterns |
 
 ## Blockers
 *None*
 
 ## Notes
-*Reserved for execution notes*
+Previous attempt failed after 3 iterations with zero code commits. Root cause: worker spent all context reading GSL files. This version inlines the exact XML structure and C output patterns.

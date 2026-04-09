@@ -5,7 +5,7 @@
 
 ## Review Level: 2 (Plan and Code)
 
-**Assessment:** The implementation internal module renderer produces broken vtable initialization — just assigns the api_tag value instead of a full C struct initializer with function pointers and constants. Affects all 53 implementation internal modules.
+**Assessment:** The implementation internal module renderer produces broken vtable initialization. Affects all 53 implementation internal modules.
 **Score:** 4/8 — Blast radius: 2, Pattern novelty: 1, Security: 0, Reversibility: 1
 
 ## Canonical Task Folder
@@ -20,80 +20,101 @@ taskplane-tasks/codegen/CG-042-fix-vtable-initializer/
 
 ## Mission
 
-Fix the vtable struct initialization in `render_implementation_internal_c_module()`. Currently, API table variables are rendered as simple assignments (`static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;`) instead of full C struct initializers with all fields populated.
+Fix vtable struct initialization in `render_implementation_internal_c_module()`. Currently, API table variables emit a bare value assignment. They need full struct initializers with multiple `c_value` children.
 
-### Issue E1: API table struct initialization
+### The XML structure for struct initializers
 
-**Legacy output (correct):**
-```c
-static const vscf_hash_api_t hash_api = {
-    //
-    //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
-    //
-    vscf_api_tag_HASH,
-    //
-    //  Implementation unique identifier, MUST be second in the structure.
-    //
-    vscf_impl_tag_SHA256,
-    //
-    //  Calculate hash over given data.
-    //
-    (vscf_hash_api_hash_fn)vscf_sha256_hash,
-    //
-    //  Start a new hashing.
-    //
-    (vscf_hash_api_start_fn)vscf_sha256_start,
-    //
-    //  Add given data to the hash.
-    //
-    (vscf_hash_api_update_fn)vscf_sha256_update,
-    //
-    //  Accompilsh hashing and return it's result (a message digest).
-    //
-    (vscf_hash_api_finish_fn)vscf_sha256_finish,
-    //
-    //  Length of the digest (hashing output) in bytes.
-    //
-    vscf_sha256_DIGEST_LEN,
-    //
-    //  Block length of the digest function in bytes.
-    //
-    vscf_sha256_BLOCK_LEN
-};
+The C emitter (`common_bootstrap.py` → `render_variable()`) renders struct initializers when a `c_variable` has `array="derived"` and multiple `c_value` children. The format is:
+
+```python
+# When array="derived", render_variable produces:
+# static const type_t name[] = {
+#     value1,
+#     value2,
+#     ...
+# };
 ```
 
-**Current output (broken):**
-```c
-static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
+But for our case we need a single struct (not array), so use direct `c_value` children. Check how `render_variable()` handles `c_value` elements:
+
+```python
+# In common_bootstrap.py render_variable():
+cval = elem.find("c_value")  # only finds FIRST c_value
+if cval is not None:
+    value = cval.attrib["value"]
+    if elem.attrib.get("array") == "derived":
+        initializer = f" = {{\n    {value}\n}}"
+    else:
+        initializer = f" = {value}"
 ```
 
-### Issue E2: impl_info struct initialization
+**IMPORTANT**: The current `render_variable()` only reads the FIRST `c_value`. The legacy XML has MULTIPLE `c_value` children for struct initializers. The emitter needs to be updated too — it must iterate ALL `c_value` children and emit them as `{ val1, val2, ... }`.
 
-Same problem — should be a full struct initializer with impl_tag, find_api callback, cleanup callback, delete callback.
+### What each API table variable needs (example: `hash_api` for sha256):
 
-### Issue E3: find_api callback not generated
+The `c_variable` element needs these attributes and children:
 
-Each implementation needs a `find_api` static function that maps api_tags to the implementation's API table pointers. This function is referenced in the `impl_info` struct.
+```xml
+<c_variable name="hash_api" type="vscf_hash_api_t" type_is="class" is_const_type="1"
+            visibility="public" declaration="private" definition="private" 
+            accessed_by="value" array="derived">
+  <c_value value="vscf_api_tag_HASH" type="vscf_api_tag_t" type_is="primitive">
+    // API's unique identifier
+  </c_value>
+  <c_value value="vscf_impl_tag_SHA256" type="vscf_impl_tag_t" type_is="primitive">
+    // Implementation unique identifier
+  </c_value>
+  <c_value value="vscf_sha256_hash" type="vscf_hash_api_hash_fn" type_is="callback">
+    <c_cast type="vscf_hash_api_hash_fn" type_is="callback"/>
+  </c_value>
+  <!-- ... one c_value per API struct field ... -->
+  <c_value value="vscf_sha256_DIGEST_LEN" type="size_t" type_is="primitive">
+    // Length of the digest
+  </c_value>
+</c_variable>
+```
 
-### Issue E4: Missing per-field comments
+For callback-typed values, the `c_cast` child tells the emitter to wrap the value: `(vscf_hash_api_hash_fn)vscf_sha256_hash`.
 
-Each field in the struct initializer should have a comment describing it.
+### What the `info` variable needs:
 
-### What the initializer needs (per interface binding):
+```xml
+<c_variable name="info" type="vscf_impl_info_t" type_is="class" is_const_type="1"
+            declaration="private" definition="private" array="derived">
+  <c_value value="vscf_impl_tag_SHA256" type="vscf_impl_tag_t">
+    // impl tag
+  </c_value>
+  <c_value value="vscf_sha256_find_api" type="vscf_impl_find_api_fn" type_is="callback">
+    // find_api callback (no cast needed — exact type match)
+  </c_value>
+  <c_value value="vscf_sha256_cleanup" type="vscf_impl_cleanup_fn" type_is="callback">
+    <c_cast type="vscf_impl_cleanup_fn"/>
+  </c_value>
+  <c_value value="vscf_sha256_delete" type="vscf_impl_delete_fn" type_is="callback">
+    <c_cast type="vscf_impl_delete_fn"/>
+  </c_value>
+</c_variable>
+```
 
-For each interface an implementation binds to, emit a static const variable:
-1. `api_tag` field — the interface's API tag constant (e.g., `vscf_api_tag_HASH`)
-2. `impl_tag` field — the implementation's tag (e.g., `vscf_impl_tag_SHA256`)
-3. Function pointer fields — cast to callback type, pointing to impl's concrete functions (e.g., `(vscf_hash_api_hash_fn)vscf_sha256_hash`)
-4. Constant fields — values from the interface binding (e.g., `vscf_sha256_DIGEST_LEN` for `digest_len`)
-5. Inherited API pointers — for interfaces that inherit others
+### What the `find_api` method needs:
 
-The `find_api` function is a switch on `api_tag` returning the matching API table pointer.
+```c
+static const vscf_api_t *
+vscf_sha256_find_api(vscf_api_tag_t api_tag) {
+    switch(api_tag) {
+        case vscf_api_tag_ALG:
+            return (const vscf_api_t *) &alg_api;
+        case vscf_api_tag_HASH:
+            return (const vscf_api_t *) &hash_api;
+        default:
+            return NULL;
+    }
+}
+```
 
 ## Dependencies
 
-- **Task:** CG-040 (API struct must have correct field structure for initializer to match)
+- **Task:** CG-040 (API struct must have correct field structure)
 
 ## Context to Read First
 
@@ -101,9 +122,7 @@ The `find_api` function is a switch on `api_tag` returning the matching API tabl
 - `taskplane-tasks/codegen/CONTEXT.md`
 
 **Tier 3:**
-- `codegen/generated/foundation/c_module_vscf_sha256_internal.xml` — reference with 2 interfaces (alg, hash)
-- `codegen/generated/foundation/c_module_vscf_aes256_gcm_internal.xml` — reference with many interfaces
-- `codegen/c_module_implementation.gsl` — GSL internal module generation
+- `codegen/generated/foundation/c_module_vscf_sha256_internal.xml` — reference (read the c_variable elements)
 
 ## Environment
 
@@ -119,56 +138,82 @@ The `find_api` function is a switch on `api_tag` returning the matching API tabl
 
 ### Step 0: Preflight
 
-- [ ] Study legacy resolved XML for `vscf_sha256_internal` — note exact struct initializer format
-- [ ] Study `vscf_aes256_gcm_internal` — complex case with many interfaces and constants
-- [ ] Read current `render_implementation_internal_c_module()` to understand what's wrong
+- [ ] Read current `render_implementation_internal_c_module()` in `project_c_backend.py`
+- [ ] Read `render_variable()` in `common_bootstrap.py` to understand c_value handling
+- [ ] Confirm: current output has single c_value per variable (the bug)
 
-### Step 1: Fix API table struct initializer
+### Step 1: Fix C emitter to handle multi-value struct initializers
 
-- [ ] Generate full C struct initializer `{ field1, field2, ... }` instead of bare value
-- [ ] Include api_tag and impl_tag as first two fields
-- [ ] Cast function pointers to callback types: `(vscf_hash_api_hash_fn)vscf_sha256_hash`
-- [ ] Include constant values from interface bindings
-- [ ] Add per-field comments
+Update `render_variable()` in `common_bootstrap.py` to:
+- Find ALL `c_value` children (not just first)
+- When multiple c_values exist OR `array="derived"`, render as `{ val1, val2, ... }`
+- For each c_value: if it has a `c_cast` child, wrap value as `(cast_type)value`
+- Include comments from c_value `.text`
+
+- [ ] Update `render_variable()` to iterate all c_value children
+- [ ] Handle c_cast wrapping for callback-typed values
+- [ ] Render per-value comments
 - [ ] Commit
 
-### Step 2: Fix impl_info initializer and find_api
+### Step 2: Fix backend to emit multi-value API table variables
 
-- [ ] Generate full impl_info struct initializer with impl_tag, find_api, cleanup_cb, delete_cb
-- [ ] Generate static `find_api` function with switch on api_tag
+Update `render_implementation_internal_c_module()` in `project_c_backend.py` to emit:
+
+For each interface binding:
+- Create `c_variable` with `array="derived"`
+- Add `c_value` for api_tag (with comment)
+- Add `c_value` for impl_tag (with comment)
+- For each interface method: add `c_value` with function pointer name + `c_cast` child
+- For each interface constant: add `c_value` with constant name
+
+For impl_info:
+- Create `c_variable` with `array="derived"`
+- Add `c_value` for impl_tag
+- Add `c_value` for find_api (no cast)
+- Add `c_value` for cleanup_cb (with cast)
+- Add `c_value` for delete_cb (with cast)
+
+- [ ] Fix API table variable emission with multi-value c_values
+- [ ] Fix impl_info variable emission
 - [ ] Commit
 
-### Step 3: Testing & Verification
+### Step 3: Generate find_api method
+
+Generate the `find_api` static method with a switch statement mapping api_tags to API table pointers.
+
+- [ ] Generate find_api method with switch/case
+- [ ] Commit
+
+### Step 4: Testing & Verification
 
 - [ ] `python3 -m unittest discover -s tools/codegen -p "test_*.py" -v`
 - [ ] `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Verify: `vscf_sha256_internal.c` diff shows correct struct initializers
-- [ ] Verify: `vscf_aes256_gcm_internal.c` has all interface API tables
+- [ ] Verify: `diff` of `vscf_sha256_internal.c` shows correct struct initializers
 
-### Step 4: Documentation & Delivery
+### Step 5: Documentation & Delivery
 
 - [ ] Discoveries logged
 
 ## Completion Criteria
 
-- [ ] API table variables have full struct initializers with all fields
-- [ ] Function pointers cast to correct callback types
-- [ ] Constants from interface bindings present
+- [ ] API table variables have full `{ field1, field2, ... }` initializers
+- [ ] Function pointers cast to callback types via c_cast
 - [ ] impl_info correctly initialized
-- [ ] find_api function generated
+- [ ] find_api generated with switch statement
 - [ ] All tests pass
 
 ## Git Commit Convention
 
 - `feat(CG-042): complete Step N — description`
 
-**CRITICAL: Commit after EACH step.**
+**CRITICAL: Commit after EACH step. Do NOT try to implement multiple steps before committing.**
 
 ## Do NOT
 
 - Fix interface API/dispatch — that is CG-040
 - Fix type resolution — that is CG-041
 - Commit without task ID prefix
+- Read `codegen/c_module_implementation.gsl` — the patterns are specified above
 
 ---
 
