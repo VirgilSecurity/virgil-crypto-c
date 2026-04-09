@@ -1093,7 +1093,19 @@ def _interface_argument_from_source(
             type_symbol = _resolve_class_type_symbol(project_ir, cls_name, fallback_projects=fallback_projects)
         except KeyError:
             type_symbol = f"{project_ir.prefix}_{snake_name(cls_name)}_t"
+        # Determine accessed_by: value types (like data) are passed by value,
+        # non-value types (like buffer) are passed by pointer.
         accessed_by = "value"
+        is_value_type = False
+        for pir in [project_ir] + (fallback_projects or []):
+            try:
+                cls = class_ir(pir, cls_name)
+                is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+                break
+            except (KeyError, StopIteration):
+                continue
+        if not is_value_type:
+            accessed_by = "pointer"
         extra: dict[str, str] = {}
         if src.get("access") == "readonly":
             extra["is_const_type"] = "1"
