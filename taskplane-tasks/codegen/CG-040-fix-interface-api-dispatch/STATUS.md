@@ -1,11 +1,11 @@
 # CG-040: Fix Interface API and Dispatch Module Rendering — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Fix interface API module rendering
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** M
 
 ---
@@ -17,12 +17,12 @@
 - [x] Legacy XML compared
 
 ### Step 1: Fix API module rendering
-**Status:** ⬜ Not Started
-- [ ] Struct decl/def swapped (A1)
-- [ ] Struct comment (A4)
-- [ ] Per-field comments (A3)
-- [ ] Buffer accessed_by (A5)
-- [ ] Committed
+**Status:** ✅ Complete
+- [x] Struct decl/def swapped (A1)
+- [x] Struct comment (A4)
+- [x] Per-field comments (A3)
+- [x] Buffer accessed_by (A5)
+- [x] Committed
 
 ### Step 2: Fix dispatch module rendering
 **Status:** ⬜ Not Started
@@ -60,6 +60,8 @@
 | 2026-04-09 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-09 12:34 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-09 12:34 | Step 0 started | Preflight |
+| 2026-04-09 12:45 | Worker iter 1 | done in 617s, tools: 31 |
+| 2026-04-09 12:45 | Step 1 started | Fix interface API module rendering |
 
 ## Blockers
 *None*
