@@ -1,7 +1,7 @@
 # CG-041: Fix Type Resolution for Foundation Entities — Status
 
 **Current Step:** Step 5: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
@@ -46,8 +46,8 @@
 - [x] key_info.h enum returns correct
 
 ### Step 5: Documentation & Delivery
-**Status:** 🟨 In Progress
-- [ ] Discoveries logged
+**Status:** ✅ Complete
+- [x] Discoveries logged
 
 ---
 
@@ -58,6 +58,10 @@
 ## Discoveries
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| C3 (fixed-size arrays) was already working before this task | Verified existing | `_resolve_impl_property_type` |
+| D5/D6 (enum returns, NODISCARD) already handled in `_render_impl_interface_methods` | Verified existing | `project_c_backend.py:3700+` |
+| Implementation constructor rendering not yet implemented (D4 constructor path) | Out of scope | `render_implementation_c_module` |
+| `_method_arg_dict` was missing `interface_name` mapping, affecting all arg dict users | Fixed | `project_c_backend.py:_method_arg_dict` |
 
 ## Execution Log
 | Timestamp | Action | Outcome |
