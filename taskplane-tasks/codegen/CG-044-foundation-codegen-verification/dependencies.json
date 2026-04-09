@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-09T18:15:30Z",
+  "source": "prompt",
+  "tasks": {
+    "CG-044": [
+      "CG-040",
+      "CG-041",
+      "CG-042",
+      "CG-043"
+    ]
+  }
+}
