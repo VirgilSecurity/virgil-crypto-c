@@ -2431,7 +2431,7 @@ def render_class_c_module(
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
     attrs: dict[str, str] = {}
-    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library")):
+    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library"), ("enum_name", "enum")):
         value = getattr(arg, attr_name, None)
         if value is not None:
             attrs[key] = value
