@@ -1087,6 +1087,8 @@ def _interface_argument_from_source(
     fallback_projects: list[IRProject] | None = None,
 ) -> ET.Element:
     """Render an argument for an interface callback, handling cross-project classes."""
+    if fallback_projects is None:
+        fallback_projects = getattr(project_ir, 'fallback_projects', [])
     cls_name = src.get("class")
     if cls_name is not None:
         try:
@@ -1185,8 +1187,8 @@ def render_interface_api_c_module(
         root,
         "c_struct",
         name=api_struct_name,
-        declaration="public",
-        definition="external",
+        declaration="external",
+        definition="public",
     )
     struct_elem.text = comment_text(f"Contains API requirements of the interface '{iface.name}'.")
 
