@@ -4241,11 +4241,22 @@ def render_implementation_c_module(
     text_element(root, "c_include", file=internal_output.include_file, is_system="0", scope="private")
 
     # --- Interface binding constants (as enum) ---
+    # Build a lookup of interface constant descriptions for enrichment (D7)
+    _iface_const_descs: dict[str, dict[str, str]] = {}
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+            _iface_const_descs[binding.name] = {c.name: c.description for c in iface.constants}
+        except KeyError:
+            _iface_const_descs[binding.name] = {}
+
     all_constants = []
     for binding in impl.interface_bindings:
+        iface_descs = _iface_const_descs.get(binding.name, {})
         for const in binding.constants:
             const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
-            all_constants.append((const_symbol, const.value, const.description))
+            desc = const.description or iface_descs.get(const.name, "")
+            all_constants.append((const_symbol, const.value, desc))
 
     if all_constants:
         enum_elem = text_element(

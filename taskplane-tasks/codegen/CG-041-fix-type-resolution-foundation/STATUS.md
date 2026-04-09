@@ -1,6 +1,6 @@
 # CG-041: Fix Type Resolution for Foundation Entities — Status
 
-**Current Step:** Step 3: Fix enum constant comments (D7)
+**Current Step:** Step 4: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -33,12 +33,12 @@
 - [x] Committed
 
 ### Step 3: Fix enum constant comments (D7)
-**Status:** 🟨 In Progress
-- [ ] Per-constant comments added
-- [ ] Committed
+**Status:** ✅ Complete
+- [x] Per-constant comments added
+- [x] Committed
 
 ### Step 4: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] All tests pass
 - [ ] Common build gate passes
 - [ ] sha256.h signatures correct
