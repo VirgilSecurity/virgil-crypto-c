@@ -1,6 +1,6 @@
 # CG-037: Fix Cross-Project and External Type Resolution — Status
 
-**Current Step:** Step 2: Fix module require rendering
+**Current Step:** Step 3: Add tests
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -37,18 +37,18 @@
 - [x] Require kind dispatch implemented
 - [x] module/class/interface/header handled
 - [x] mbedtls_bridge modules fixed
-- [ ] Committed
+- [x] Committed
 
 ---
 
 ### Step 3: Add tests
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] brainkey_client rendering test
-- [ ] message_cipher rendering test
-- [ ] mbedtls_bridge_random rendering test
-- [ ] Foundation 0-skip integration test
-- [ ] Common regression test
+- [x] brainkey_client rendering test
+- [x] message_cipher rendering test
+- [x] mbedtls_bridge_random rendering test
+- [x] Foundation 0-skip integration test
+- [x] Common regression test
 
 ---
 
