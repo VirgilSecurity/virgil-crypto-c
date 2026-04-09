@@ -1,7 +1,7 @@
 # CG-043: Fix Dependency Methods + Library Macros — Status
 
 **Current Step:** Step 4: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-09
 **Review Level:** 1
 **Review Counter:** 0
@@ -34,8 +34,8 @@
 - [x] Common build gate passes
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
-- [ ] Discoveries logged
+**Status:** ✅ Complete
+- [x] Discoveries logged
 
 ---
 
@@ -46,6 +46,10 @@
 ## Discoveries
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `_render_dependency_methods` required entity_kind param to support implementations (not just classes) | Fixed — added `entity_kind` param to `_render_dependency_methods`, `_dependency_use_body`, `_dependency_take_body`, `_dependency_release_body`, `_render_dependency_method_element` | `project_c_backend.py` |
+| Observer hooks and release methods needed direct XML construction for impl context (bypassing class-only `argument_from_source`) | Fixed — added `_render_dep_observer_method` helper | `project_c_backend.py` |
+| Library `error_message_getter` code is stored in child element's `tail` in XML (not in parent `text`) | Fixed in `_parse_error_message_getter` | `project_source.py` |
+| Common project has no `error_message_getter` — correctly skipped for macro generation | Expected behavior | N/A |
 
 ## Execution Log
 | Timestamp | Action | Outcome |
