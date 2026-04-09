@@ -1,6 +1,6 @@
 # CG-037: Fix Cross-Project and External Type Resolution — Status
 
-**Current Step:** Step 3: Add tests
+**Current Step:** Step 4: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -53,12 +53,12 @@
 ---
 
 ### Step 4: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] New tests pass
-- [ ] All tests pass
-- [ ] Common build gate passes
-- [ ] Foundation 0 skips
+- [x] New tests pass
+- [x] All tests pass
+- [x] Common build gate passes
+- [x] Foundation 0 skips
 
 ---
 
