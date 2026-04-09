@@ -391,7 +391,7 @@ def render_api_c_module(project_ir: IRProject) -> ET.Element:
     iface_names = sorted(i.name for i in project_ir.interfaces)
     enum_sym = f"{prefix}_api_tag"
     enum_el = text_element(root, "c_enum", name=f"{enum_sym}_t", typedef_name=f"{enum_sym}_t", declaration="public", definition="public")
-    enum_el.text = "\nEnumerates all possible interfaces within crypto library.\n"
+    enum_el.text = comment_text("Enumerates all possible interfaces within crypto library.")
 
     text_element(enum_el, "c_constant", name=f"{enum_sym}_BEGIN", value="0")
     for iname in iface_names:
@@ -401,7 +401,7 @@ def render_api_c_module(project_ir: IRProject) -> ET.Element:
 
     # --- api_t forward declaration -------------------------------------
     struct_el = text_element(root, "c_struct", name=f"{prefix}_api_t", declaration="public", definition="external")
-    struct_el.text = "\nGeneric type for any 'API' object.\n"
+    struct_el.text = comment_text("Generic type for any 'API' object.")
 
     return root
 
@@ -437,9 +437,9 @@ def render_api_private_c_module(project_ir: IRProject) -> ET.Element:
         "It is used for runtime type casting and checking.\n"
     )
     prop1 = text_element(struct_el, "c_property", name="api_tag", type=f"{prefix}_api_tag_t", accessed_by="value", type_is="enum")
-    prop1.text = "\nInterface unique identifier.\n"
+    prop1.text = comment_text("Interface unique identifier.")
     prop2 = text_element(struct_el, "c_property", name="impl_tag", type=f"{prefix}_impl_tag_t", accessed_by="value", type_is="enum")
-    prop2.text = "\nImplementation unique identifier.\n"
+    prop2.text = comment_text("Implementation unique identifier.")
 
     return root
 
@@ -475,7 +475,7 @@ def render_impl_c_module(project_ir: IRProject) -> ET.Element:
     impl_names = sorted(i.name for i in project_ir.implementations)
     enum_sym = f"{prefix}_impl_tag"
     enum_el = text_element(root, "c_enum", name=f"{enum_sym}_t", typedef_name=f"{enum_sym}_t", declaration="public", definition="public")
-    enum_el.text = "\nEnumerates all possible implementations within crypto library.\n"
+    enum_el.text = comment_text("Enumerates all possible implementations within crypto library.")
 
     text_element(enum_el, "c_constant", name=f"{enum_sym}_BEGIN", value="0")
     for iname in impl_names:
@@ -485,7 +485,7 @@ def render_impl_c_module(project_ir: IRProject) -> ET.Element:
 
     # --- impl_t forward declaration ------------------------------------
     struct_el = text_element(root, "c_struct", name=f"{prefix}_impl_t", declaration="public", definition="external")
-    struct_el.text = "\nGeneric type for any 'implementation'.\n"
+    struct_el.text = comment_text("Generic type for any 'implementation'.")
 
     # --- dispatch method: api ------------------------------------------
     _impl_dispatch_api(root, prefix, PREFIX)
@@ -519,7 +519,7 @@ def _impl_method(root: ET.Element, *, name: str, uid: str, description: str,
         definition=definition,
         uid=uid,
     )
-    method.text = f"\n{description}\n"
+    method.text = comment_text(description)
     for arg_name, arg_type, arg_accessed_by in args:
         extra: dict[str, str] = {}
         if arg_type.endswith("_t") and "tag" in arg_type:
@@ -735,13 +735,13 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
 
     # --- callback: cleanup_fn -------------------------------------------
     cb_cleanup = text_element(root, "c_callback", name=f"{prefix}_impl_cleanup_fn", declaration="public")
-    cb_cleanup.text = "\nCallback type for cleanup action.\n"
+    cb_cleanup.text = comment_text("Callback type for cleanup action.")
     text_element(cb_cleanup, "c_argument", name="impl", type=f"{prefix}_impl_t", accessed_by="pointer", type_is="class")
     text_element(cb_cleanup, "c_return", type="void", accessed_by="value")
 
     # --- callback: delete_fn --------------------------------------------
     cb_delete = text_element(root, "c_callback", name=f"{prefix}_impl_delete_fn", declaration="public")
-    cb_delete.text = "\nCallback type for delete action.\n"
+    cb_delete.text = comment_text("Callback type for delete action.")
     text_element(cb_delete, "c_argument", name="impl", type=f"{prefix}_impl_t", accessed_by="pointer", type_is="class")
     text_element(cb_delete, "c_return", type="void", accessed_by="value")
 
@@ -761,18 +761,18 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
         declaration="public",
         definition="public",
     )
-    info_struct.text = "\nContains common properties for any 'API' implementation object.\n"
+    info_struct.text = comment_text("Contains common properties for any 'API' implementation object.")
     p1 = text_element(info_struct, "c_property", name="impl_tag", type=f"{prefix}_impl_tag_t", accessed_by="value", type_is="enum")
-    p1.text = "\nImplementation unique identifier, MUST be first in the structure.\n"
+    p1.text = comment_text("Implementation unique identifier, MUST be first in the structure.")
     p2 = text_element(info_struct, "c_property", name="find_api_cb", type=f"{prefix}_impl_find_api_fn", accessed_by="value", type_is="callback")
     p2.text = (
         "\nCallback that returns API of the requested interface if implemented, otherwise - NULL.\n"
         "MUST be second in the structure.\n"
     )
     p3 = text_element(info_struct, "c_property", name="self_cleanup_cb", type=f"{prefix}_impl_cleanup_fn", accessed_by="value", type_is="callback")
-    p3.text = "\nRelease acquired inner resources.\n"
+    p3.text = comment_text("Release acquired inner resources.")
     p4 = text_element(info_struct, "c_property", name="self_delete_cb", type=f"{prefix}_impl_delete_fn", accessed_by="value", type_is="callback")
-    p4.text = "\nSelf destruction, according to destruction policy.\n"
+    p4.text = comment_text("Self destruction, according to destruction policy.")
 
     # --- struct: impl_t definition --------------------------------------
     impl_struct = text_element(
@@ -786,9 +786,9 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
         "It is used for runtime type casting and checking.\n"
     )
     ip1 = text_element(impl_struct, "c_property", name="info", type=f"const {prefix}_impl_info_t", accessed_by="pointer", is_const_type="1", type_is="class")
-    ip1.text = "\nCompile-time known information.\n"
+    ip1.text = comment_text("Compile-time known information.")
     ip2 = text_element(impl_struct, "c_property", name="refcnt", type=f"{PREFIX}_ATOMIC size_t", accessed_by="value")
-    ip2.text = "\nReference counter.\n"
+    ip2.text = comment_text("Reference counter.")
 
     return root
 
@@ -4314,7 +4314,10 @@ def comment_text(desc: str) -> str:
     desc = desc.strip()
     if not desc:
         return ""
-    return "\n" + "\n".join(f"        //  {line}" if line else "        //" for line in desc.splitlines()) + "\n    "
+    lines = ["        //"]
+    lines.extend(f"        //  {line}" if line else "        //" for line in desc.splitlines())
+    lines.append("        //")
+    return "\n" + "\n".join(lines) + "\n    "
 
 
 
