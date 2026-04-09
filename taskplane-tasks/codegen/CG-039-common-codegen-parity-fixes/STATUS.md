@@ -1,21 +1,21 @@
 # CG-039: Fix Common Project Codegen Parity Issues — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-08
+**Current Step:** Step 1: Fix backend rendering issues
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Full verify diff captured
-- [ ] Each diff mapped to issue list
-- [ ] Responsible functions identified
+- [x] Full verify diff captured
+- [x] Each diff mapped to issue list
+- [x] Responsible functions identified
 
 ---
 
@@ -81,6 +81,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-08 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-09 01:53 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-09 01:53 | Step 0 started | Preflight |
 
 ---
 
