@@ -1,6 +1,6 @@
 # CG-041: Fix Type Resolution for Foundation Entities — Status
 
-**Current Step:** Step 2: Fix argument/return type resolution (D2-D6)
+**Current Step:** Step 3: Fix enum constant comments (D7)
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-09
 **Review Level:** 2
@@ -24,16 +24,16 @@
 - [x] Committed
 
 ### Step 2: Fix argument/return type resolution (D2-D6)
-**Status:** 🟨 In Progress
-- [ ] Interface-typed args → impl_t * (D4)
-- [ ] const for readonly (D2)
-- [ ] data by value (D3)
-- [ ] Enum returns (D5)
-- [ ] NODISCARD (D6)
-- [ ] Committed
+**Status:** ✅ Complete
+- [x] Interface-typed args → impl_t * (D4)
+- [x] const for readonly (D2)
+- [x] data by value (D3)
+- [x] Enum returns (D5)
+- [x] NODISCARD (D6)
+- [x] Committed
 
 ### Step 3: Fix enum constant comments (D7)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 - [ ] Per-constant comments added
 - [ ] Committed
 

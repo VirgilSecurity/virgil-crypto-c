@@ -2458,7 +2458,7 @@ def render_class_c_module(
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
     attrs: dict[str, str] = {}
-    for attr_name, key in (("class_name", "class"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library"), ("enum_name", "enum")):
+    for attr_name, key in (("class_name", "class"), ("interface_name", "interface"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library"), ("enum_name", "enum")):
         value = getattr(arg, attr_name, None)
         if value is not None:
             attrs[key] = value
@@ -3687,7 +3687,28 @@ def _render_impl_interface_methods(
                     arg_dict["class"] = arg.class_name
                     if arg.access == "readonly":
                         arg_dict["is_const"] = "1"
-                    arg_dict["accessed_by"] = "value" if arg.kind == "value" else "pointer"
+                    # Determine accessed_by: value types (data) passed by value
+                    if arg.kind == "value":
+                        arg_dict["accessed_by"] = "value"
+                    else:
+                        # Check if the class is a value type via IR lookup
+                        is_value = False
+                        for fp in (fallback_projects or []):
+                            try:
+                                cls = class_ir(fp, arg.class_name)
+                                if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                    is_value = True
+                                break
+                            except KeyError:
+                                pass
+                        if not is_value:
+                            try:
+                                cls = class_ir(project_ir, arg.class_name)
+                                if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                    is_value = True
+                            except KeyError:
+                                pass
+                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
                 elif arg.interface_name:
                     # Interface arguments are passed as impl_t pointers
                     arg_dict["class"] = "impl"
@@ -4425,10 +4446,29 @@ def render_implementation_c_module(
                 arg_dict["class"] = arg.class_name
                 if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
+                # Determine accessed_by: value types (data) passed by value
+                is_value = False
+                for fp in (fallback_projects or []):
+                    try:
+                        cls = class_ir(fp, arg.class_name)
+                        if cls.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                        break
+                    except KeyError:
+                        pass
+                if not is_value:
+                    try:
+                        cls = class_ir(project_ir, arg.class_name)
+                        if cls.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                    except KeyError:
+                        pass
+                arg_dict["accessed_by"] = "value" if is_value else "pointer"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
                 if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
+                arg_dict["accessed_by"] = "pointer"
             elif arg.type_name:
                 arg_dict["type"] = arg.type_name
             args.append(arg_dict)
@@ -4504,6 +4544,14 @@ def argument_from_source(
 ) -> ET.Element:
     attrs = src
     arg_name = name if name is not None else attrs.get("name", "")
+    if attrs.get("interface") is not None:
+        # Interface-typed argument → resolve to {prefix}_impl_t pointer
+        prefix = project_ir.prefix if project_ir is not None else "vscf"
+        type_name = f"{prefix}_impl_t"
+        extra: dict[str, str] = {}
+        if attrs.get("access") == "readonly":
+            extra["is_const_type"] = "1"
+        return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
         extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
@@ -4560,6 +4608,22 @@ def return_from_source(
     project_ir: IRProject | None = None,
     owner_class: str = "data",
 ) -> ET.Element:
+    if attrs.get("interface") is not None:
+        # Interface return → {prefix}_impl_t pointer
+        prefix = project_ir.prefix if project_ir is not None else "vscf"
+        return text_element(parent, "c_return", accessed_by="pointer", type=f"{prefix}_impl_t", type_is="class")
+    if attrs.get("enum") is not None:
+        # Enum return → resolve to enum type
+        enum_name = attrs["enum"]
+        if project_ir is not None:
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+        else:
+            rendered_type = f"vscf_{snake_name(enum_name)}_t"
+        return text_element(parent, "c_return", accessed_by="value", type=rendered_type, type_is="primitive")
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
         extra = {}
