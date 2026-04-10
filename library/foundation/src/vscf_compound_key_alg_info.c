@@ -66,24 +66,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create compound algorithm information.
-//
-//  Note, keys ownership is preserved.
-//
-static vscf_compound_key_alg_info_t *
-vscf_compound_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, vscf_impl_t *cipher_alg_info, vscf_impl_t *signer_alg_info);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create compound algorithm information.
-//
-//  Note, keys ownership is transferred.
-//
-static vscf_compound_key_alg_info_t *
-vscf_compound_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t *cipher_alg_info, vscf_impl_t *signer_alg_info);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

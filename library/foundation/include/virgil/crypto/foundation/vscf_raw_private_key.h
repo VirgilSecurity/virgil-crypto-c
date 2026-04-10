@@ -149,6 +149,37 @@ VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_raw_private_key_shallow_copy(vscf_raw_private_key_t *self);
 
 //
+//  Allocate implementation context and perform it's initialization.
+//  Creates raw key defined with data and algorithm.
+//  Note, data is copied.
+//
+VSCF_PRIVATE vscf_raw_private_key_t *
+vscf_raw_private_key_new_with_data(vsc_data_t key_data, vscf_impl_t *alg_info);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Creates raw key defined with buffer and algorithm.
+//  Note, data is not copied.
+//
+VSCF_PRIVATE vscf_raw_private_key_t *
+vscf_raw_private_key_new_with_buffer(vsc_buffer_t *key_data, vscf_impl_t *alg_info);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Creates raw key defined another raw key and new impl tag.
+//  Note, data is not copied, but new instance of key is created.s
+//
+VSCF_PRIVATE vscf_raw_private_key_t *
+vscf_raw_private_key_new_with_redefined_impl_tag(const vscf_self_t *other, vscf_impl_tag_t impl_tag);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Creates a fully defined raw key.
+//
+VSCF_PRIVATE vscf_raw_private_key_t *
+vscf_raw_private_key_new_with_members(vsc_data_t key_data, vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag);
+
+//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t

@@ -3036,6 +3036,124 @@ def _lifecycle_constructor_new_body(
 
 
 # ---------------------------------------------------------------------------
+#   Implementation constructor helpers.
+# ---------------------------------------------------------------------------
+
+
+def impl_constructor_symbol(project_ir: IRProject, impl: IRImplementation, ctor_name: str) -> str:
+    """Return the C symbol for an implementation's init_with_X constructor."""
+    impl_output = cast(IROutputTarget, impl.output)
+    return f"{impl_output.c_symbol}_init_{snake_name(ctor_name)}"
+
+
+def _impl_new_constructor_symbol(project_ir: IRProject, impl: IRImplementation, ctor_name: str) -> str:
+    """Return the C symbol for an implementation's new_with_X constructor."""
+    impl_output = cast(IROutputTarget, impl.output)
+    return f"{impl_output.c_symbol}_new_{snake_name(ctor_name)}"
+
+
+def _impl_lifecycle_constructor_init_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+    ctor_name: str,
+    ctor_arg_names: list[str],
+) -> str:
+    """Generate the body for the implementation init_with_X() constructor."""
+    impl_output = cast(IROutputTarget, impl.output)
+    prefix_upper = project_ir.prefix.upper()
+    struct_type = f"{impl_output.c_symbol}_t"
+    init_ctx_method = f"{impl_output.c_symbol}_init_ctx_{snake_name(ctor_name)}"
+    proxy_args = ", ".join(["self"] + ctor_arg_names)
+    return (
+        f"{prefix_upper}_ASSERT_PTR(self);\n"
+        f"\n"
+        f"{project_ir.prefix}_zeroize(self, sizeof({struct_type}));\n"
+        f"\n"
+        f"self->info = &info;\n"
+        f"self->refcnt = 1;\n"
+        f"\n"
+        f"{init_ctx_method}({proxy_args});"
+    )
+
+
+def _impl_lifecycle_constructor_new_body(
+    project_ir: IRProject,
+    impl: IRImplementation,
+    ctor_name: str,
+    ctor_arg_names: list[str],
+) -> str:
+    """Generate the body for the implementation new_with_X() constructor."""
+    impl_output = cast(IROutputTarget, impl.output)
+    struct_type = f"{impl_output.c_symbol}_t"
+    new_method = f"{impl_output.c_symbol}_new"
+    init_method = impl_constructor_symbol(project_ir, impl, ctor_name)
+    proxy_args = ", ".join(["self"] + ctor_arg_names)
+    return (
+        f"{struct_type} *self = {new_method}();\n"
+        f"\n"
+        f"{init_method}({proxy_args});\n"
+        f"\n"
+        f"return self;"
+    )
+
+
+def _build_impl_ctor_args(
+    ctor: "IRCMethod",
+    project_ir: IRProject,
+    fallback_projects: list[IRProject] | None = None,
+) -> list[dict[str, str]]:
+    """Build argument dict list for an implementation constructor.
+
+    Handles access='disown' by switching accessed_by to 'reference'
+    and appending '_ref' to the argument name.
+    """
+    ctor_args: list[dict[str, str]] = []
+    for arg in ctor.arguments:
+        arg_name = snake_name(arg.name)
+        arg_dict: dict[str, str] = {"name": arg_name}
+        if arg.class_name:
+            arg_dict["class"] = arg.class_name
+            if arg.access == "readonly":
+                arg_dict["is_const"] = "1"
+            is_value = False
+            for fp in (fallback_projects or []):
+                try:
+                    cls_ir = class_ir(fp, arg.class_name)
+                    if cls_ir.attrs.get("is_value_type") in {"1", "true"}:
+                        is_value = True
+                    break
+                except KeyError:
+                    pass
+            if not is_value:
+                try:
+                    cls_ir = class_ir(project_ir, arg.class_name)
+                    if cls_ir.attrs.get("is_value_type") in {"1", "true"}:
+                        is_value = True
+                except KeyError:
+                    pass
+            if arg.access == "disown":
+                arg_dict["accessed_by"] = "reference"
+                arg_dict["name"] = f"{arg_name}_ref"
+            else:
+                arg_dict["accessed_by"] = "value" if is_value else "pointer"
+        elif arg.interface_name:
+            arg_dict["class"] = "impl"
+            if arg.access == "readonly":
+                arg_dict["is_const"] = "1"
+            if arg.access == "disown":
+                arg_dict["accessed_by"] = "reference"
+                arg_dict["name"] = f"{arg_name}_ref"
+            else:
+                arg_dict["accessed_by"] = "pointer"
+        elif arg.enum_name:
+            arg_dict["enum"] = arg.enum_name
+        elif arg.type_name:
+            arg_dict["type"] = arg.type_name
+        ctor_args.append(arg_dict)
+    return ctor_args
+
+
+# ---------------------------------------------------------------------------
 #   Dependency management method generation helpers.
 # ---------------------------------------------------------------------------
 
@@ -4467,6 +4585,68 @@ def render_implementation_internal_c_module(
         definition="external",
     )
 
+    # --- Constructor lifecycle methods (init_with_X, new_with_X) definitions ---
+    for ctor in impl.constructors:
+        ctor_suffix = snake_name(ctor.name)
+        ctor_visibility = ctor.attrs.get("visibility", "public")
+        ctor_new_args = _build_impl_ctor_args(ctor, project_ir, fallback_projects)
+        ctor_args = [{"name": "self", "is_self": "1"}, *ctor_new_args]
+        ctor_arg_names = [a["name"] for a in ctor_new_args]
+        init_method_name = impl_constructor_symbol(project_ir, impl, ctor.name)
+        new_method_name = _impl_new_constructor_symbol(project_ir, impl, ctor.name)
+        init_description = f"Perform initialization of pre-allocated context.\n{ctor.description or ''}".strip()
+        new_description = f"Allocate implementation context and perform it's initialization.\n{ctor.description or ''}".strip()
+
+        # init_with_X definition in internal module
+        _render_impl_method(
+            root,
+            name=init_method_name,
+            description=init_description,
+            impl=impl,
+            project_ir=project_ir,
+            arguments=ctor_args,
+            code=_impl_lifecycle_constructor_init_body(project_ir, impl, ctor.name, ctor_arg_names),
+            visibility=ctor_visibility,
+            declaration="external",
+            definition="private",
+            fallback_projects=fallback_projects,
+        )
+
+        # new_with_X definition in internal module
+        _render_impl_method(
+            root,
+            name=new_method_name,
+            description=new_description,
+            impl=impl,
+            project_ir=project_ir,
+            arguments=ctor_new_args if ctor_new_args else None,
+            return_class="self_impl",
+            code=_impl_lifecycle_constructor_new_body(project_ir, impl, ctor.name, ctor_arg_names),
+            visibility=ctor_visibility,
+            declaration="external",
+            definition="private",
+            fallback_projects=fallback_projects,
+        )
+
+    # --- init_ctx_with_X stubs (one per constructor) ---
+    for ctor in impl.constructors:
+        ctor_suffix = snake_name(ctor.name)
+        ctor_ctx_args = [{"name": "self", "is_self": "1"}, *_build_impl_ctor_args(ctor, project_ir, fallback_projects)]
+
+        _render_impl_method(
+            root,
+            name=f"{impl_output.c_symbol}_init_ctx_{ctor_suffix}",
+            description=f"{ctor.description or ''}".strip() or "Provides initialization of the implementation specific context.",
+            impl=impl, project_ir=project_ir,
+            arguments=ctor_ctx_args,
+            code="//  TODO: This is STUB. Implement me.",
+            code_type="stub",
+            visibility="private",
+            declaration="public",
+            definition="external",
+            fallback_projects=fallback_projects,
+        )
+
     # --- impl_size method ---
     _render_impl_method(
         root, name=f"{impl_output.c_symbol}_impl_size",
@@ -4829,51 +5009,33 @@ def render_implementation_c_module(
     if impl.dependencies:
         _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
 
-    # --- Constructor methods (new_with_X) ---
+    # --- Constructor methods (init_with_X, new_with_X) ---
     for ctor in impl.constructors:
         ctor_suffix = snake_name(ctor.name)
         ctor_visibility = ctor.attrs.get("visibility", "public")
-        # Build argument list
-        ctor_args: list[dict[str, str]] = []
-        for arg in ctor.arguments:
-            arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
-            if arg.class_name:
-                arg_dict["class"] = arg.class_name
-                if arg.access == "readonly":
-                    arg_dict["is_const"] = "1"
-                is_value = False
-                for fp in (fallback_projects or []):
-                    try:
-                        cls_ir = class_ir(fp, arg.class_name)
-                        if cls_ir.attrs.get("is_value_type") in {"1", "true"}:
-                            is_value = True
-                        break
-                    except KeyError:
-                        pass
-                if not is_value:
-                    try:
-                        cls_ir = class_ir(project_ir, arg.class_name)
-                        if cls_ir.attrs.get("is_value_type") in {"1", "true"}:
-                            is_value = True
-                    except KeyError:
-                        pass
-                arg_dict["accessed_by"] = "value" if is_value else "pointer"
-            elif arg.interface_name:
-                arg_dict["class"] = "impl"
-                if arg.access == "readonly":
-                    arg_dict["is_const"] = "1"
-                arg_dict["accessed_by"] = "pointer"
-            elif arg.enum_name:
-                arg_dict["enum"] = arg.enum_name
-            elif arg.type_name:
-                arg_dict["type"] = arg.type_name
-            ctor_args.append(arg_dict)
-
-        new_method_name = f"{impl_output.c_symbol}_new_{ctor_suffix}"
+        ctor_args = _build_impl_ctor_args(ctor, project_ir, fallback_projects)
+        ctor_arg_names = [a["name"] for a in ctor_args]
+        init_method_name = impl_constructor_symbol(project_ir, impl, ctor.name)
+        new_method_name = _impl_new_constructor_symbol(project_ir, impl, ctor.name)
+        init_description = f"Perform initialization of pre-allocated context.\n{ctor.description or ''}".strip()
         new_description = f"Allocate implementation context and perform it's initialization.\n{ctor.description or ''}".strip()
 
-        # Constructor declarations always go in the public header
-        # (even private-visibility ones use VSCF_PRIVATE modifier)
+        # init_with_X: declaration in public header, definition in internal module
+        _render_impl_method(
+            root,
+            name=init_method_name,
+            description=init_description,
+            impl=impl,
+            project_ir=project_ir,
+            arguments=[{"name": "self", "is_self": "1"}, *(ctor_args if ctor_args else [])],
+            code=_impl_lifecycle_constructor_init_body(project_ir, impl, ctor.name, ctor_arg_names),
+            visibility=ctor_visibility,
+            declaration="public",
+            definition="external",
+            fallback_projects=fallback_projects,
+        )
+
+        # new_with_X: declaration in public header, definition in internal module
         _render_impl_method(
             root,
             name=new_method_name,
@@ -4882,11 +5044,10 @@ def render_implementation_c_module(
             project_ir=project_ir,
             arguments=ctor_args if ctor_args else None,
             return_class="self_impl",
-            code=f"//  TODO: This is STUB. Implement me.",
-            code_type="stub",
+            code=_impl_lifecycle_constructor_new_body(project_ir, impl, ctor.name, ctor_arg_names),
             visibility=ctor_visibility,
             declaration="public",
-            definition="private",
+            definition="external",
             fallback_projects=fallback_projects,
         )
 

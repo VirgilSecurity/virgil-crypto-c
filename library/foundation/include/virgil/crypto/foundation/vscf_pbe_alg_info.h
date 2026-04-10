@@ -137,6 +137,14 @@ VSCF_PUBLIC vscf_pbe_alg_info_t *
 vscf_pbe_alg_info_shallow_copy(vscf_pbe_alg_info_t *self);
 
 //
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator, KDF algorithm info and
+//  cipher alg info.
+//
+VSCF_PRIVATE vscf_pbe_alg_info_t *
+vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *kdf_alg_info, vscf_impl_t *cipher_alg_info);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
