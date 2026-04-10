@@ -73,7 +73,7 @@
 //
 //  Current source is exhausted and must be refreshed.
 //
-VSCF_PRIVATE void
+static void
 vscf_seed_entropy_source_move_forward(vscf_seed_entropy_source_t *self);
 
 

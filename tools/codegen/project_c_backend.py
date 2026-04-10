@@ -274,6 +274,43 @@ def implementation_internal_output(impl_output: IROutputTarget) -> IROutputTarge
 
 
 
+def class_internal_output(class_output: IROutputTarget) -> IROutputTarget:
+    """Derive the internal module output target from a class's output target.
+
+    The internal module lives under the ``src`` directory (next to .c files)
+    and uses the ``<prefix>_<class>_internal`` stem convention.
+    It is header-only.
+    """
+    stem = f"{class_output.c_symbol}_internal"
+    # Internal headers live in src/, not in include/
+    header_path = class_output.source_path.replace(class_output.source_file, f"{stem}.h")
+    source_path = class_output.source_path.replace(class_output.source_file, f"{stem}.c")
+    generated_header_path = class_output.generated_header_path.replace(
+        class_output.include_file.removesuffix(".h"),
+        stem,
+    )
+    generated_source_path = class_output.generated_source_path.replace(
+        Path(class_output.generated_source_path).stem,
+        f"class_{snake_name(class_output.entity_name)}_internal",
+    )
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=f"{class_output.entity_name} internal",
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility="private",
+        source_visibility="public",
+    )
+
+
 def callback_symbol(project_ir: IRProject, callback_name: str, *, module_name: str | None = None) -> str:
     if module_name is None:
         return f"{project_ir.prefix}_{snake_name(callback_name)}_fn"
@@ -883,6 +920,17 @@ def discover_renderers(
                 renderers[xml_name] = (
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
+            # Internal module for classes with internal-scope methods
+            has_internal = any(m.attrs.get("scope") == "internal" for m in cls.methods)
+            if has_internal:
+                internal_out = class_internal_output(cast(IROutputTarget, cls.output))
+                internal_xml = direct_xml_name(internal_out)
+                if internal_xml in overrides:
+                    renderers[internal_xml] = overrides[internal_xml]
+                else:
+                    renderers[internal_xml] = (
+                        lambda _repo_root, _pir=project_ir, _c=cls: render_class_internal_c_module(_pir, _c)
+                    )
 
     if include_all or "interface" in entity_kinds:  # type: ignore[operator]
         for iface in project_ir.interfaces:
@@ -2371,7 +2419,14 @@ def _dependency_is_implemented_check(project_ir: IRProject, dep: IRDependency) -
     return None
 
 
-def _class_dependency_includes(project_ir: IRProject, cls: IRClass) -> list[str]:
+def _class_dependency_includes(project_ir: IRProject, cls: IRClass, *, scope_filter: str | None = None) -> list[str]:
+    """Collect includes needed by *cls*.
+
+    When *scope_filter* is ``None`` (default) only public-scope items are
+    considered (struct fields, variables, public methods).  When set to a
+    specific scope string (e.g. ``"internal"``) only methods matching that
+    scope are scanned.
+    """
     includes: list[str] = []
     seen: set[str] = set()
 
@@ -2386,24 +2441,36 @@ def _class_dependency_includes(project_ir: IRProject, cls: IRClass) -> list[str]
             seen.add(include)
             includes.append(include)
 
-    for field in cls.struct_fields:
-        add_include(field.class_name)
-    for variable in cls.variables:
-        add_include(variable.class_name)
-    for method in [*cls.constructors, *cls.methods]:
-        for arg in [*method.arguments, *method.returns]:
-            add_include(arg.class_name)
+    cls_scope = cls.attrs.get("scope", "public")
+    if scope_filter is None:
+        # Public module: struct fields, variables, and matching-scope methods
+        for field in cls.struct_fields:
+            add_include(field.class_name)
+        for variable in cls.variables:
+            add_include(variable.class_name)
+        for method in [*cls.constructors, *cls.methods]:
+            method_scope = method.attrs.get("scope", cls_scope)
+            if method_scope != cls_scope:
+                continue  # belongs to a different scope module
+            for arg in [*method.arguments, *method.returns]:
+                add_include(arg.class_name)
 
-    # Dependency includes: class-type deps need their class header;
-    # interface/impl deps need the interface header for is_implemented checks.
-    for dep in cls.dependencies:
-        if dep.type_kind == "class":
-            add_include(dep.type_name)
-        elif dep.type_kind in {"interface", "impl"}:
-            iface_include = f"{project_ir.prefix}_{snake_name(dep.type_name)}.h"
-            if iface_include not in seen:
-                seen.add(iface_include)
-                includes.append(iface_include)
+        # Dependency includes
+        for dep in cls.dependencies:
+            if dep.type_kind == "class":
+                add_include(dep.type_name)
+            elif dep.type_kind in {"interface", "impl"}:
+                iface_include = f"{project_ir.prefix}_{snake_name(dep.type_name)}.h"
+                if iface_include not in seen:
+                    seen.add(iface_include)
+                    includes.append(iface_include)
+    else:
+        # Extended module (e.g. internal): only methods with matching scope
+        for method in cls.methods:
+            if method.attrs.get("scope") != scope_filter:
+                continue
+            for arg in [*method.arguments, *method.returns]:
+                add_include(arg.class_name)
 
     return includes
 
@@ -2516,6 +2583,10 @@ def render_class_c_module(
         for variable in cls.variables:
             _render_class_variable(root, variable, project_ir=project_ir, owner_class=cls.name)
 
+    # Macros
+    for macro in cls.macroses:
+        _render_class_macro(root, macro, project_ir=project_ir, cls=cls)
+
     if generate_ctx_size:
         _render_ctx_size_method(root, project_ir=project_ir, cls=cls)
 
@@ -2540,15 +2611,24 @@ def render_class_c_module(
         )
 
     if render_methods:
+        # Determine module scope — only render methods whose scope matches
+        module_scope = scope or cls.attrs.get("scope", "public")
         for method in cls.methods:
+            method_scope = method.attrs.get("scope", module_scope)
+            if method_scope != module_scope:
+                # Method belongs to a different scope module (e.g. internal)
+                continue
             method_args = list(_method_arg_dict(arg) for arg in method.arguments)
-            if not is_value_type:
-                self_attrs: dict[str, str] = {"class": "self"}
-                if method.attrs.get("is_const") in {"1", "true"}:
-                    self_attrs["access"] = "readonly"
-                method_args.insert(0, {"name": "self", **self_attrs})
-            else:
-                method_args.insert(0, {"name": "self", "class": "self"})
+            has_context = cls.attrs.get("context", "public") != "none"
+            is_static_method = method.attrs.get("is_static") in {"1", "true"}
+            if has_context and not is_static_method:
+                if not is_value_type:
+                    self_attrs: dict[str, str] = {"class": "self"}
+                    if method.attrs.get("is_const") in {"1", "true"}:
+                        self_attrs["access"] = "readonly"
+                    method_args.insert(0, {"name": "self", **self_attrs})
+                else:
+                    method_args.insert(0, {"name": "self", "class": "self"})
             return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
             _render_ir_method(
                 root,
@@ -2563,6 +2643,62 @@ def render_class_c_module(
 
     return root
 
+
+
+def render_class_internal_c_module(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> ET.Element:
+    """Render the *internal* module for a class.
+
+    Contains methods marked ``scope='internal'`` that shouldn't be in the
+    public header.  The module is header-only and lives in ``src/``.
+    """
+    class_output = cast(IROutputTarget, cls.output)
+    internal_output = class_internal_output(class_output)
+    root = c_module_root(
+        internal_output,
+        entity_id=f"{snake_name(cls.name)}_internal",
+        scope="internal",
+        class_name=cls.name,
+    )
+    root.set("header_only", "1")
+
+    # Require the main class module
+    text_element(root, "c_include", file=class_output.include_file, is_system="0", scope="public")
+
+    # Add dependency includes needed by internal methods
+    for include in _class_dependency_includes(project_ir, cls, scope_filter="internal"):
+        text_element(root, "c_include", file=include, is_system="0", scope="public")
+
+    is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+    has_context = cls.attrs.get("context", "public") != "none"
+    for method in cls.methods:
+        if method.attrs.get("scope") != "internal":
+            continue
+        method_args = list(_method_arg_dict(arg) for arg in method.arguments)
+        is_static_method = method.attrs.get("is_static") in {"1", "true"}
+        if has_context and not is_static_method:
+            if not is_value_type:
+                self_attrs: dict[str, str] = {"class": "self"}
+                if method.attrs.get("is_const") in {"1", "true"}:
+                    self_attrs["access"] = "readonly"
+                method_args.insert(0, {"name": "self", **self_attrs})
+        else:
+            method_args.insert(0, {"name": "self", "class": "self"})
+        return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
+        _render_ir_method(
+            root,
+            name=class_method_symbol(project_ir, cls, method.name),
+            description=method.description,
+            arguments=tuple(method_args),
+            return_attrs=return_attrs,
+            owner_class=cls.name,
+            project_ir=project_ir,
+            uid=f"direct_{snake_name(cls.name)}_internal_method_{snake_name(method.name)}",
+        )
+
+    return root
 
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
@@ -2652,6 +2788,34 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
         var_elem.text = comment_text(getattr(variable, "description"))
     return var_elem
 
+
+
+def _render_class_macro(parent: ET.Element, macro, *, project_ir: IRProject, cls: IRClass) -> ET.Element:
+    """Render a class macro (e.g. VSCF_ERROR_SAFE_UPDATE)."""
+    from tools.codegen.project_ir import IRClassMacro
+    class_output = cast(IROutputTarget, cls.output)
+    # Macro public name uses {PREFIX}_{CLASS}_{MACRO_NAME} without 'macros' infix
+    macro_upper = f"{class_output.c_symbol}_{snake_name(macro.name)}".upper()
+    # Resolve code: replace .(c_class_X_macros_Y) and .(c_class_X_method_Z) references
+    code = macro.code
+    # Remove trailing space after GSL reference to avoid space before macro args
+    code = code.replace(f".(c_class_{snake_name(cls.name)}_macros_{snake_name(macro.name)}) ", f"{macro_upper}")
+    code = code.replace(f".(c_class_{snake_name(cls.name)}_macros_{snake_name(macro.name)})", macro_upper)
+    # Replace method references like .(c_class_error_method_update)
+    for method in cls.methods:
+        method_sym = class_method_symbol(project_ir, cls, method.name)
+        code = code.replace(f".(c_class_{snake_name(cls.name)}_method_{snake_name(method.name)})", method_sym)
+    macros_elem = text_element(
+        parent,
+        "c_macros",
+        name=macro_upper,
+        definition="public",
+        uid=f"c_class_{snake_name(cls.name)}_macros_{snake_name(macro.name)}",
+    )
+    text_element(macros_elem, "c_code", code.strip(), type="generated", lang="c")
+    if macro.description:
+        macros_elem.text = comment_text(macro.description)
+    return macros_elem
 
 
 def _render_ctx_size_method(parent: ET.Element, *, project_ir: IRProject, cls: IRClass) -> ET.Element:
@@ -3780,6 +3944,21 @@ def _render_impl_method(
                     uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}_argument_{snake_name(arg_name)}",
                     **extra,
                 )
+            elif arg.get("enum"):
+                enum_name = arg["enum"]
+                try:
+                    enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                    rendered_type = f"{enum_out.c_symbol}_t"
+                except (KeyError, ValueError):
+                    rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+                text_element(
+                    method, "c_argument",
+                    name=arg_name,
+                    accessed_by="value",
+                    type=rendered_type,
+                    type_is="primitive",
+                    uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}_argument_{snake_name(arg_name)}",
+                )
             elif arg.get("type"):
                 rendered_type, kind = type_map(arg.get("type"))
                 text_element(
@@ -3852,7 +4031,12 @@ def _render_impl_method(
 
     # Modifiers
     if not modifiers:
-        modifiers = (f"{prefix_upper}_PUBLIC",) if visibility == "public" else (f"{prefix_upper}_PRIVATE",)
+        if visibility == "public":
+            modifiers = (f"{prefix_upper}_PUBLIC",)
+        elif declaration == "private" and definition == "private":
+            modifiers = ("static",)
+        else:
+            modifiers = (f"{prefix_upper}_PRIVATE",)
     for mod in modifiers:
         text_element(method, "c_modifier", value=mod)
 
@@ -4645,9 +4829,66 @@ def render_implementation_c_module(
     if impl.dependencies:
         _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
 
-    # --- Constructor methods (new_with_X stubs) ---
-    # NOTE: Only new_with_X is generated as a stub declaration.
-    # Full init_with_X lifecycle requires matching the existing hand-written code.
+    # --- Constructor methods (new_with_X) ---
+    for ctor in impl.constructors:
+        ctor_suffix = snake_name(ctor.name)
+        ctor_visibility = ctor.attrs.get("visibility", "public")
+        # Build argument list
+        ctor_args: list[dict[str, str]] = []
+        for arg in ctor.arguments:
+            arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
+            if arg.class_name:
+                arg_dict["class"] = arg.class_name
+                if arg.access == "readonly":
+                    arg_dict["is_const"] = "1"
+                is_value = False
+                for fp in (fallback_projects or []):
+                    try:
+                        cls_ir = class_ir(fp, arg.class_name)
+                        if cls_ir.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                        break
+                    except KeyError:
+                        pass
+                if not is_value:
+                    try:
+                        cls_ir = class_ir(project_ir, arg.class_name)
+                        if cls_ir.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                    except KeyError:
+                        pass
+                arg_dict["accessed_by"] = "value" if is_value else "pointer"
+            elif arg.interface_name:
+                arg_dict["class"] = "impl"
+                if arg.access == "readonly":
+                    arg_dict["is_const"] = "1"
+                arg_dict["accessed_by"] = "pointer"
+            elif arg.enum_name:
+                arg_dict["enum"] = arg.enum_name
+            elif arg.type_name:
+                arg_dict["type"] = arg.type_name
+            ctor_args.append(arg_dict)
+
+        new_method_name = f"{impl_output.c_symbol}_new_{ctor_suffix}"
+        new_description = f"Allocate implementation context and perform it's initialization.\n{ctor.description or ''}".strip()
+
+        # Constructor declarations always go in the public header
+        # (even private-visibility ones use VSCF_PRIVATE modifier)
+        _render_impl_method(
+            root,
+            name=new_method_name,
+            description=new_description,
+            impl=impl,
+            project_ir=project_ir,
+            arguments=ctor_args if ctor_args else None,
+            return_class="self_impl",
+            code=f"//  TODO: This is STUB. Implement me.",
+            code_type="stub",
+            visibility=ctor_visibility,
+            declaration="public",
+            definition="private",
+            fallback_projects=fallback_projects,
+        )
 
     # --- Interface method implementations ---
     _render_impl_interface_methods(
@@ -4661,6 +4902,9 @@ def render_implementation_c_module(
         if method_vis == "internal":
             method_vis = "private"
         method_decl = method.attrs.get("declaration", "private")
+        # Skip methods with explicit declaration="private" — their declarations are hand-written
+        if "declaration" in method.attrs and method_decl == "private":
+            continue
 
         args: list[dict[str, str]] = []
         is_static = method.attrs.get("is_static") == "1"
@@ -4698,6 +4942,8 @@ def render_implementation_c_module(
                 if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
                 arg_dict["accessed_by"] = "pointer"
+            elif arg.enum_name:
+                arg_dict["enum"] = arg.enum_name
             elif arg.type_name:
                 arg_dict["type"] = arg.type_name
             args.append(arg_dict)

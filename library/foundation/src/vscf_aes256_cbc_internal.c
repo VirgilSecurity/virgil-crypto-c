@@ -84,32 +84,206 @@ vscf_aes256_cbc_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_aes256_cbc_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_aes256_cbc_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_aes256_cbc_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'encrypt api'.
 //
-static const vscf_encrypt_api_t encrypt_api = vscf_api_tag_ENCRYPT;
+static const vscf_encrypt_api_t encrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'encrypt' MUST be equal to the  'vscf_api_tag_ENCRYPT'.
+    //
+    vscf_api_tag_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
+    //  Encrypt given data.
+    //
+    (vscf_encrypt_api_encrypt_fn)(void (*)(void))vscf_aes256_cbc_encrypt,
+    //
+    //  Calculate required buffer length to hold the encrypted data.
+    //
+    (vscf_encrypt_api_encrypted_len_fn)(void (*)(void))vscf_aes256_cbc_encrypted_len,
+    //
+    //  Precise length calculation of encrypted data.
+    //
+    (vscf_encrypt_api_precise_encrypted_len_fn)(void (*)(void))vscf_aes256_cbc_precise_encrypted_len
+};
 
 //
 //  Configuration of the interface API 'decrypt api'.
 //
-static const vscf_decrypt_api_t decrypt_api = vscf_api_tag_DECRYPT;
+static const vscf_decrypt_api_t decrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'decrypt' MUST be equal to the  'vscf_api_tag_DECRYPT'.
+    //
+    vscf_api_tag_DECRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_decrypt_api_decrypt_fn)(void (*)(void))vscf_aes256_cbc_decrypt,
+    //
+    //  Calculate required buffer length to hold the decrypted data.
+    //
+    (vscf_decrypt_api_decrypted_len_fn)(void (*)(void))vscf_aes256_cbc_decrypted_len
+};
 
 //
 //  Configuration of the interface API 'cipher info api'.
 //
-static const vscf_cipher_info_api_t cipher_info_api = vscf_api_tag_CIPHER_INFO;
+static const vscf_cipher_info_api_t cipher_info_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher info' MUST be equal to the  'vscf_api_tag_CIPHER_INFO'.
+    //
+    vscf_api_tag_CIPHER_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
+    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //
+    vscf_aes256_cbc_NONCE_LEN,
+    //
+    //  Cipher key length in bytes.
+    //
+    vscf_aes256_cbc_KEY_LEN,
+    //
+    //  Cipher key length in bits.
+    //
+    vscf_aes256_cbc_KEY_BITLEN,
+    //
+    //  Cipher block length in bytes.
+    //
+    vscf_aes256_cbc_BLOCK_LEN
+};
 
 //
 //  Configuration of the interface API 'cipher api'.
 //
-static const vscf_cipher_api_t cipher_api = vscf_api_tag_CIPHER;
+static const vscf_cipher_api_t cipher_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'cipher' MUST be equal to the  'vscf_api_tag_CIPHER'.
+    //
+    vscf_api_tag_CIPHER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
+    //  Link to the inherited interface API 'encrypt'.
+    //
+    &encrypt_api,
+    //
+    //  Link to the inherited interface API 'decrypt'.
+    //
+    &decrypt_api,
+    //
+    //  Link to the inherited interface API 'cipher info'.
+    //
+    &cipher_info_api,
+    //
+    //  Setup IV or nonce.
+    //
+    (vscf_cipher_api_set_nonce_fn)(void (*)(void))vscf_aes256_cbc_set_nonce,
+    //
+    //  Set cipher encryption / decryption key.
+    //
+    (vscf_cipher_api_set_key_fn)(void (*)(void))vscf_aes256_cbc_set_key,
+    //
+    //  Return cipher's current state.
+    //
+    (vscf_cipher_api_state_fn)(void (*)(void))vscf_aes256_cbc_state,
+    //
+    //  Start sequential encryption.
+    //
+    (vscf_cipher_api_start_encryption_fn)(void (*)(void))vscf_aes256_cbc_start_encryption,
+    //
+    //  Start sequential decryption.
+    //
+    (vscf_cipher_api_start_decryption_fn)(void (*)(void))vscf_aes256_cbc_start_decryption,
+    //
+    //  Process encryption or decryption of the given data chunk.
+    //
+    (vscf_cipher_api_update_fn)(void (*)(void))vscf_aes256_cbc_update,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an current mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_out_len_fn)(void (*)(void))vscf_aes256_cbc_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an encryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_encrypted_out_len_fn)(void (*)(void))vscf_aes256_cbc_encrypted_out_len,
+    //
+    //  Return buffer length required to hold an output of the methods
+    //  "update" or "finish" in an decryption mode.
+    //  Pass zero length to define buffer length of the method "finish".
+    //
+    (vscf_cipher_api_decrypted_out_len_fn)(void (*)(void))vscf_aes256_cbc_decrypted_out_len,
+    //
+    //  Accomplish encryption or decryption process.
+    //
+    (vscf_cipher_api_finish_fn)(void (*)(void))vscf_aes256_cbc_finish
+};
 
 //
 //  Compile-time known information about 'aes256 cbc' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_AES256_CBC;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_AES256_CBC,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_aes256_cbc_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_aes256_cbc_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_aes256_cbc_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

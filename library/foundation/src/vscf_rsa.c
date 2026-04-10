@@ -78,6 +78,48 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_rsa_use_random(vscf_rsa_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_rsa_take_random(vscf_rsa_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_rsa_release_random(vscf_rsa_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

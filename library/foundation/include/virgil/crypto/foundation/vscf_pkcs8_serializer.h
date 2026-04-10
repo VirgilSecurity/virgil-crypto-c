@@ -148,12 +148,31 @@ VSCF_PUBLIC vscf_pkcs8_serializer_t *
 vscf_pkcs8_serializer_shallow_copy(vscf_pkcs8_serializer_t *self);
 
 //
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_use_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_take_asn1_writer(vscf_pkcs8_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *self);
+
+//
 //  Calculate buffer size enough to hold serialized public key.
 //
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_public_key_len(const vscf_pkcs8_serializer_t *self, void);
+vscf_pkcs8_serializer_serialized_public_key_len(const vscf_pkcs8_serializer_t *self, vscf_raw_public_key_t *public_key);
 
 //
 //  Serialize given public key to an interchangeable format.
@@ -161,7 +180,7 @@ vscf_pkcs8_serializer_serialized_public_key_len(const vscf_pkcs8_serializer_t *s
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, void, vsc_buffer_t *out);
+vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, vscf_raw_public_key_t *public_key, vsc_buffer_t *out);
 
 //
 //  Calculate buffer size enough to hold serialized private key.
@@ -169,7 +188,7 @@ vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, void, 
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_private_key_len(const vscf_pkcs8_serializer_t *self, void);
+vscf_pkcs8_serializer_serialized_private_key_len(const vscf_pkcs8_serializer_t *self, vscf_raw_private_key_t *private_key);
 
 //
 //  Serialize given private key to an interchangeable format.
@@ -177,7 +196,7 @@ vscf_pkcs8_serializer_serialized_private_key_len(const vscf_pkcs8_serializer_t *
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, void, vsc_buffer_t *out);
+vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, vscf_raw_private_key_t *private_key, vsc_buffer_t *out);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -191,7 +210,7 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self);
 //  an output buffer.
 //
 VSCF_PRIVATE size_t
-vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self, void, vscf_error_t *error);
+vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self, vscf_raw_public_key_t *public_key, vscf_error_t *error);
 
 //
 //  Serialize Private Key by using internal ASN.1 writer.
@@ -199,7 +218,7 @@ vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self
 //  an output buffer.
 //
 VSCF_PRIVATE size_t
-vscf_pkcs8_serializer_serialize_private_key_inplace(vscf_pkcs8_serializer_t *self, void, vscf_error_t *error);
+vscf_pkcs8_serializer_serialize_private_key_inplace(vscf_pkcs8_serializer_t *self, vscf_raw_private_key_t *private_key, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

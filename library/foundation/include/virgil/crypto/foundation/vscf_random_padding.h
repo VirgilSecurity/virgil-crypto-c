@@ -149,6 +149,25 @@ VSCF_PUBLIC vscf_random_padding_t *
 vscf_random_padding_shallow_copy(vscf_random_padding_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_random_padding_use_random(vscf_random_padding_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_random_padding_take_random(vscf_random_padding_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_random_padding_release_random(vscf_random_padding_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -201,8 +220,8 @@ vscf_random_padding_start_data_processing(vscf_random_padding_t *self);
 //  Only data length is needed to produce padding later.
 //  Return data that should be further proceeded.
 //
-VSCF_PUBLIC vsc_data_t *
-vscf_random_padding_process_data(vscf_random_padding_t *self, vsc_data_t *data);
+VSCF_PUBLIC vsc_data_t
+vscf_random_padding_process_data(vscf_random_padding_t *self, vsc_data_t data);
 
 //
 //  Accomplish data processing and return padding.
@@ -221,7 +240,7 @@ vscf_random_padding_start_padded_data_processing(vscf_random_padding_t *self);
 //  Return filtered data without padding.
 //
 VSCF_PUBLIC void
-vscf_random_padding_process_padded_data(vscf_random_padding_t *self, vsc_data_t *data, vsc_buffer_t *out);
+vscf_random_padding_process_padded_data(vscf_random_padding_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Return length in bytes required hold output of the method

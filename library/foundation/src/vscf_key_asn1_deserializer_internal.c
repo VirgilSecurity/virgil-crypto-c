@@ -77,12 +77,48 @@ vscf_key_asn1_deserializer_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'key deserializer api'.
 //
-static const vscf_key_deserializer_api_t key_deserializer_api = vscf_api_tag_KEY_DESERIALIZER;
+static const vscf_key_deserializer_api_t key_deserializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key deserializer' MUST be equal to the  'vscf_api_tag_KEY_DESERIALIZER'.
+    //
+    vscf_api_tag_KEY_DESERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_KEY_ASN1_DESERIALIZER,
+    //
+    //  Deserialize given public key as an interchangeable format to the object.
+    //
+    (vscf_key_deserializer_api_deserialize_public_key_fn)(void (*)(void))vscf_key_asn1_deserializer_deserialize_public_key,
+    //
+    //  Deserialize given private key as an interchangeable format to the object.
+    //
+    (vscf_key_deserializer_api_deserialize_private_key_fn)(void (*)(void))vscf_key_asn1_deserializer_deserialize_private_key
+};
 
 //
 //  Compile-time known information about 'key asn1 deserializer' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_KEY_ASN1_DESERIALIZER;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_KEY_ASN1_DESERIALIZER,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_key_asn1_deserializer_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_key_asn1_deserializer_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_key_asn1_deserializer_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

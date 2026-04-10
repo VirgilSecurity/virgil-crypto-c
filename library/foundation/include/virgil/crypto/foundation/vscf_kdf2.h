@@ -148,6 +148,25 @@ VSCF_PUBLIC vscf_kdf2_t *
 vscf_kdf2_shallow_copy(vscf_kdf2_t *self);
 
 //
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_kdf2_use_hash(vscf_kdf2_t *self, vscf_impl_t *hash);
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_kdf2_take_hash(vscf_kdf2_t *self, vscf_impl_t *hash);
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_kdf2_release_hash(vscf_kdf2_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -169,7 +188,7 @@ vscf_kdf2_restore_alg_info(vscf_kdf2_t *self, const vscf_impl_t *alg_info);
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_kdf2_derive(vscf_kdf2_t *self, vsc_data_t *data, size_t key_len, vsc_buffer_t *key);
+vscf_kdf2_derive(vscf_kdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 
 // --------------------------------------------------------------------------

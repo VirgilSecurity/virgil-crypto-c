@@ -82,22 +82,102 @@ vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_pkcs5_pbes2_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_pkcs5_pbes2_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_pkcs5_pbes2_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'encrypt api'.
 //
-static const vscf_encrypt_api_t encrypt_api = vscf_api_tag_ENCRYPT;
+static const vscf_encrypt_api_t encrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'encrypt' MUST be equal to the  'vscf_api_tag_ENCRYPT'.
+    //
+    vscf_api_tag_ENCRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
+    //  Encrypt given data.
+    //
+    (vscf_encrypt_api_encrypt_fn)(void (*)(void))vscf_pkcs5_pbes2_encrypt,
+    //
+    //  Calculate required buffer length to hold the encrypted data.
+    //
+    (vscf_encrypt_api_encrypted_len_fn)(void (*)(void))vscf_pkcs5_pbes2_encrypted_len,
+    //
+    //  Precise length calculation of encrypted data.
+    //
+    (vscf_encrypt_api_precise_encrypted_len_fn)(void (*)(void))vscf_pkcs5_pbes2_precise_encrypted_len
+};
 
 //
 //  Configuration of the interface API 'decrypt api'.
 //
-static const vscf_decrypt_api_t decrypt_api = vscf_api_tag_DECRYPT;
+static const vscf_decrypt_api_t decrypt_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'decrypt' MUST be equal to the  'vscf_api_tag_DECRYPT'.
+    //
+    vscf_api_tag_DECRYPT,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
+    //  Decrypt given data.
+    //
+    (vscf_decrypt_api_decrypt_fn)(void (*)(void))vscf_pkcs5_pbes2_decrypt,
+    //
+    //  Calculate required buffer length to hold the decrypted data.
+    //
+    (vscf_decrypt_api_decrypted_len_fn)(void (*)(void))vscf_pkcs5_pbes2_decrypted_len
+};
 
 //
 //  Compile-time known information about 'pkcs5 pbes2' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_PKCS5_PBES2;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS5_PBES2,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_pkcs5_pbes2_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_pkcs5_pbes2_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_pkcs5_pbes2_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

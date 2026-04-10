@@ -89,9 +89,21 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    //
     vscf_aes256_cbc_NONCE_LEN = 16,
+    //
+    //  Cipher key length in bytes.
+    //
     vscf_aes256_cbc_KEY_LEN = 32,
+    //
+    //  Cipher key length in bits.
+    //
     vscf_aes256_cbc_KEY_BITLEN = 256,
+    //
+    //  Cipher block length in bytes.
+    //
     vscf_aes256_cbc_BLOCK_LEN = 16
 };
 
@@ -181,7 +193,7 @@ vscf_aes256_cbc_restore_alg_info(vscf_aes256_cbc_t *self, const vscf_impl_t *alg
 //  Encrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t *data, vsc_buffer_t *out);
+vscf_aes256_cbc_encrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
@@ -199,7 +211,7 @@ vscf_aes256_cbc_precise_encrypted_len(const vscf_aes256_cbc_t *self, size_t data
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *self, vsc_data_t *data, vsc_buffer_t *out);
+vscf_aes256_cbc_decrypt(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
@@ -211,18 +223,18 @@ vscf_aes256_cbc_decrypted_len(const vscf_aes256_cbc_t *self, size_t data_len);
 //  Setup IV or nonce.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_set_nonce(vscf_aes256_cbc_t *self, vsc_data_t *nonce);
+vscf_aes256_cbc_set_nonce(vscf_aes256_cbc_t *self, vsc_data_t nonce);
 
 //
 //  Set cipher encryption / decryption key.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_set_key(vscf_aes256_cbc_t *self, vsc_data_t *key);
+vscf_aes256_cbc_set_key(vscf_aes256_cbc_t *self, vsc_data_t key);
 
 //
 //  Return cipher's current state.
 //
-VSCF_PUBLIC vscf_cipher_state_t
+VSCF_PRIVATE vscf_cipher_state_t
 vscf_aes256_cbc_state(const vscf_aes256_cbc_t *self);
 
 //
@@ -241,7 +253,7 @@ vscf_aes256_cbc_start_decryption(vscf_aes256_cbc_t *self);
 //  Process encryption or decryption of the given data chunk.
 //
 VSCF_PUBLIC void
-vscf_aes256_cbc_update(vscf_aes256_cbc_t *self, vsc_data_t *data, vsc_buffer_t *out);
+vscf_aes256_cbc_update(vscf_aes256_cbc_t *self, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Return buffer length required to hold an output of the methods

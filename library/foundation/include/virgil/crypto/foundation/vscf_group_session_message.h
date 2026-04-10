@@ -135,7 +135,7 @@ vscf_group_session_message_shallow_copy(vscf_group_session_message_t *self);
 //
 //  Returns message type.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_group_msg_type_t
 vscf_group_session_message_get_type(const vscf_group_session_message_t *self);
 
 //
@@ -150,9 +150,6 @@ vscf_group_session_message_get_session_id(const vscf_group_session_message_t *se
 //
 VSCF_PUBLIC unsigned
 vscf_group_session_message_get_epoch(const vscf_group_session_message_t *self);
-
-VSCF_PUBLIC void
-vscf_group_session_message_set_type(vscf_group_session_message_t *self, void type);
 
 //
 //  Buffer len to serialize this class.
@@ -170,7 +167,7 @@ vscf_group_session_message_serialize(const vscf_group_session_message_t *self, v
 //  Deserializes instance.
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_message_deserialize(vscf_group_session_message_t *self, vsc_data_t input, vscf_error_t error);
+vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t error);
 
 
 // --------------------------------------------------------------------------

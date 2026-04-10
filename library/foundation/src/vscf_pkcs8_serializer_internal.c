@@ -77,12 +77,64 @@ vscf_pkcs8_serializer_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'key serializer api'.
 //
-static const vscf_key_serializer_api_t key_serializer_api = vscf_api_tag_KEY_SERIALIZER;
+static const vscf_key_serializer_api_t key_serializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key serializer' MUST be equal to the  'vscf_api_tag_KEY_SERIALIZER'.
+    //
+    vscf_api_tag_KEY_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_PKCS8_SERIALIZER,
+    //
+    //  Calculate buffer size enough to hold serialized public key.
+    //
+    //  Precondition: public key must be exportable.
+    //
+    (vscf_key_serializer_api_serialized_public_key_len_fn)(void (*)(void))vscf_pkcs8_serializer_serialized_public_key_len,
+    //
+    //  Serialize given public key to an interchangeable format.
+    //
+    //  Precondition: public key must be exportable.
+    //
+    (vscf_key_serializer_api_serialize_public_key_fn)(void (*)(void))vscf_pkcs8_serializer_serialize_public_key,
+    //
+    //  Calculate buffer size enough to hold serialized private key.
+    //
+    //  Precondition: private key must be exportable.
+    //
+    (vscf_key_serializer_api_serialized_private_key_len_fn)(void (*)(void))vscf_pkcs8_serializer_serialized_private_key_len,
+    //
+    //  Serialize given private key to an interchangeable format.
+    //
+    //  Precondition: private key must be exportable.
+    //
+    (vscf_key_serializer_api_serialize_private_key_fn)(void (*)(void))vscf_pkcs8_serializer_serialize_private_key
+};
 
 //
 //  Compile-time known information about 'pkcs8 serializer' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_PKCS8_SERIALIZER;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_PKCS8_SERIALIZER,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_pkcs8_serializer_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_pkcs8_serializer_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_pkcs8_serializer_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

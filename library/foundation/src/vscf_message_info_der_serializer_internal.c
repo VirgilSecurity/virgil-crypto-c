@@ -80,17 +80,88 @@ vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'message info serializer api'.
 //
-static const vscf_message_info_serializer_api_t message_info_serializer_api = vscf_api_tag_MESSAGE_INFO_SERIALIZER;
+static const vscf_message_info_serializer_api_t message_info_serializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'message info serializer' MUST be equal to the  'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
+    //
+    vscf_api_tag_MESSAGE_INFO_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    //
+    //  Return buffer size enough to hold serialized message info.
+    //
+    (vscf_message_info_serializer_api_serialized_len_fn)(void (*)(void))vscf_message_info_der_serializer_serialized_len,
+    //
+    //  Serialize class "message info".
+    //
+    (vscf_message_info_serializer_api_serialize_fn)(void (*)(void))vscf_message_info_der_serializer_serialize,
+    //
+    //  Read message info prefix from the given data, and if it is valid,
+    //  return a length of bytes of the whole message info.
+    //
+    //  Zero returned if length can not be determined from the given data,
+    //  and this means that there is no message info at the data beginning.
+    //
+    (vscf_message_info_serializer_api_read_prefix_fn)(void (*)(void))vscf_message_info_der_serializer_read_prefix,
+    //
+    //  Deserialize class "message info".
+    //
+    (vscf_message_info_serializer_api_deserialize_fn)(void (*)(void))vscf_message_info_der_serializer_deserialize,
+    vscf_message_info_der_serializer_PREFIX_LEN
+};
 
 //
 //  Configuration of the interface API 'message info footer serializer api'.
 //
-static const vscf_message_info_footer_serializer_api_t message_info_footer_serializer_api = vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER;
+static const vscf_message_info_footer_serializer_api_t message_info_footer_serializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'message info footer serializer' MUST be equal to the  'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
+    //
+    vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    //
+    //  Return buffer size enough to hold serialized message info footer.
+    //
+    (vscf_message_info_footer_serializer_api_serialized_footer_len_fn)(void (*)(void))vscf_message_info_der_serializer_serialized_footer_len,
+    //
+    //  Serialize class "message info footer".
+    //
+    (vscf_message_info_footer_serializer_api_serialize_footer_fn)(void (*)(void))vscf_message_info_der_serializer_serialize_footer,
+    //
+    //  Deserialize class "message info footer".
+    //
+    (vscf_message_info_footer_serializer_api_deserialize_footer_fn)(void (*)(void))vscf_message_info_der_serializer_deserialize_footer
+};
 
 //
 //  Compile-time known information about 'message info der serializer' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_message_info_der_serializer_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_message_info_der_serializer_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_message_info_der_serializer_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

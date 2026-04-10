@@ -145,10 +145,29 @@ VSCF_PUBLIC vscf_alg_info_der_deserializer_t *
 vscf_alg_info_der_deserializer_shallow_copy(vscf_alg_info_der_deserializer_t *self);
 
 //
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self);
+
+//
 //  Deserialize algorithm from the data.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t *data, vscf_error_t *error);
+vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

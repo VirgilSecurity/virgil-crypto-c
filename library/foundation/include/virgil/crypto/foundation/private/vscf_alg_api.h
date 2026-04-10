@@ -82,12 +82,12 @@ typedef vscf_alg_id_t (*vscf_alg_api_alg_id_fn)(const vscf_impl_t *impl);
 //
 //  Callback. Produce object with algorithm information and configuration parameters.
 //
-typedef void (*vscf_alg_api_produce_alg_info_fn)(const vscf_impl_t *impl);
+typedef vscf_impl_t * (*vscf_alg_api_produce_alg_info_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Restore algorithm configuration from the given object.
 //
-typedef vscf_status_t (*vscf_alg_api_restore_alg_info_fn)(vscf_impl_t *impl, void alg_info);
+typedef vscf_status_t (*vscf_alg_api_restore_alg_info_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
 //  Contains API requirements of the interface 'alg'.

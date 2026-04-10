@@ -97,7 +97,7 @@ struct vscf_hash_based_alg_info_t {
     //
     //  Implementation specific context.
     //
-    void hash_alg_info;
+    vscf_impl_t *hash_alg_info;
 };
 
 

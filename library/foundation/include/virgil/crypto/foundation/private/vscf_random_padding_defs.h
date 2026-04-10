@@ -118,6 +118,10 @@ struct vscf_random_padding_t {
     //  Implementation specific context.
     //
     size_t padding_frame_max;
+    //
+    //  Dependency 'random'.
+    //
+    vscf_impl_t *random;
 };
 
 

@@ -81,22 +81,198 @@ vscf_falcon_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FALCON,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_falcon_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_falcon_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_falcon_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'key alg api'.
 //
-static const vscf_key_alg_api_t key_alg_api = vscf_api_tag_KEY_ALG;
+static const vscf_key_alg_api_t key_alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key alg' MUST be equal to the  'vscf_api_tag_KEY_ALG'.
+    //
+    vscf_api_tag_KEY_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FALCON,
+    //
+    //  Generate ephemeral private key of the same type.
+    //  Note, this operation might be slow.
+    //
+    (vscf_key_alg_api_generate_ephemeral_key_fn)(void (*)(void))vscf_falcon_generate_ephemeral_key,
+    //
+    //  Import public key from the raw binary format.
+    //
+    //  Return public key that is adopted and optimized to be used
+    //  with this particular algorithm.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be imported from the format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_key_alg_api_import_public_key_fn)(void (*)(void))vscf_falcon_import_public_key,
+    //
+    //  Import public key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_public_key_data_fn)(void (*)(void))vscf_falcon_import_public_key_data,
+    //
+    //  Export public key to the raw binary format.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_key_alg_api_export_public_key_fn)(void (*)(void))vscf_falcon_export_public_key,
+    //
+    //  Return length in bytes required to hold exported public key.
+    //
+    (vscf_key_alg_api_exported_public_key_data_len_fn)(void (*)(void))vscf_falcon_exported_public_key_data_len,
+    //
+    //  Export public key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA public key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.1.
+    //
+    (vscf_key_alg_api_export_public_key_data_fn)(void (*)(void))vscf_falcon_export_public_key_data,
+    //
+    //  Import private key from the raw binary format.
+    //
+    //  Return private key that is adopted and optimized to be used
+    //  with this particular algorithm.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be imported from the format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_key_alg_api_import_private_key_fn)(void (*)(void))vscf_falcon_import_private_key,
+    //
+    //  Import private key from the raw binary format.
+    //
+    (vscf_key_alg_api_import_private_key_data_fn)(void (*)(void))vscf_falcon_import_private_key_data,
+    //
+    //  Export private key in the raw binary format.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_key_alg_api_export_private_key_fn)(void (*)(void))vscf_falcon_export_private_key,
+    //
+    //  Return length in bytes required to hold exported private key.
+    //
+    (vscf_key_alg_api_exported_private_key_data_len_fn)(void (*)(void))vscf_falcon_exported_private_key_data_len,
+    //
+    //  Export private key to the raw binary format without algorithm information.
+    //
+    //  Binary format must be defined in the key specification.
+    //  For instance, RSA private key must be exported in format defined in
+    //  RFC 3447 Appendix A.1.2.
+    //
+    (vscf_key_alg_api_export_private_key_data_fn)(void (*)(void))vscf_falcon_export_private_key_data,
+    //
+    //  Defines whether a public key can be imported or not.
+    //
+    vscf_falcon_CAN_IMPORT_PUBLIC_KEY,
+    //
+    //  Define whether a public key can be exported or not.
+    //
+    vscf_falcon_CAN_EXPORT_PUBLIC_KEY,
+    //
+    //  Define whether a private key can be imported or not.
+    //
+    vscf_falcon_CAN_IMPORT_PRIVATE_KEY,
+    //
+    //  Define whether a private key can be exported or not.
+    //
+    vscf_falcon_CAN_EXPORT_PRIVATE_KEY
+};
 
 //
 //  Configuration of the interface API 'key signer api'.
 //
-static const vscf_key_signer_api_t key_signer_api = vscf_api_tag_KEY_SIGNER;
+static const vscf_key_signer_api_t key_signer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key signer' MUST be equal to the  'vscf_api_tag_KEY_SIGNER'.
+    //
+    vscf_api_tag_KEY_SIGNER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_FALCON,
+    //
+    //  Link to the inherited interface API 'key alg'.
+    //
+    &key_alg_api,
+    //
+    //  Check if algorithm can sign data digest with a given key.
+    //
+    (vscf_key_signer_api_can_sign_fn)(void (*)(void))vscf_falcon_can_sign,
+    //
+    //  Return length in bytes required to hold signature.
+    //  Return zero if a given private key can not produce signatures.
+    //
+    (vscf_key_signer_api_signature_len_fn)(void (*)(void))vscf_falcon_signature_len,
+    //
+    //  Sign data digest with a given private key.
+    //
+    (vscf_key_signer_api_sign_hash_fn)(void (*)(void))vscf_falcon_sign_hash,
+    //
+    //  Check if algorithm can verify data digest with a given key.
+    //
+    (vscf_key_signer_api_can_verify_fn)(void (*)(void))vscf_falcon_can_verify,
+    //
+    //  Verify data digest with a given public key and signature.
+    //
+    (vscf_key_signer_api_verify_hash_fn)(void (*)(void))vscf_falcon_verify_hash
+};
 
 //
 //  Compile-time known information about 'falcon' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_FALCON;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_FALCON,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_falcon_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_falcon_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_falcon_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

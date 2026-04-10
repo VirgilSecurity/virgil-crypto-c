@@ -76,17 +76,95 @@
 // --------------------------------------------------------------------------
 
 //
+//  This method is called when interface 'asn1 reader' was setup.
+//
+static void
+vscf_key_asn1_deserializer_did_setup_asn1_reader(vscf_key_asn1_deserializer_t *self);
+
+//
+//  This method is called when interface 'asn1 reader' was released.
+//
+static void
+vscf_key_asn1_deserializer_did_release_asn1_reader(vscf_key_asn1_deserializer_t *self);
+
+//
 //  Deserialize PKCS#8 Private Key by using internal ASN.1 reader.
 //
-VSCF_PRIVATE void
+static vscf_raw_private_key_t *
 vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error);
 
 //
 //  Deserialize SEC1 Private Key by using internal ASN.1 reader.
 //  Argument "alg info" can be NULL.
 //
-VSCF_PRIVATE void
+static vscf_raw_private_key_t *
 vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_impl_t *alg_info, vscf_error_t *error);
+
+//
+//  This method is called when interface 'asn1 reader' was setup.
+//
+static void
+vscf_key_asn1_deserializer_did_setup_asn1_reader(vscf_key_asn1_deserializer_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  This method is called when interface 'asn1 reader' was released.
+//
+static void
+vscf_key_asn1_deserializer_did_release_asn1_reader(vscf_key_asn1_deserializer_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_use_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+
+    vscf_key_asn1_deserializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_take_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = asn1_reader;
+
+    vscf_key_asn1_deserializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_release_asn1_reader(vscf_key_asn1_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+
+    vscf_key_asn1_deserializer_did_release_asn1_reader(self);
+}
 
 
 // --------------------------------------------------------------------------

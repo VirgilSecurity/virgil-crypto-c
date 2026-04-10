@@ -89,6 +89,10 @@ struct vscf_compound_key_alg_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
+    //
+    //  Dependency 'random'.
+    //
+    vscf_impl_t *random;
 };
 
 

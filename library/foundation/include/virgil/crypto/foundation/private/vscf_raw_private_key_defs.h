@@ -105,11 +105,11 @@ struct vscf_raw_private_key_t {
     //
     //  Implementation specific context.
     //
-    void alg_info;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //
-    void public_key;
+    vscf_raw_public_key_t *public_key;
     //
     //  Implementation specific context.
     //

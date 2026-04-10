@@ -133,43 +133,43 @@ vscf_oid_shallow_copy(vscf_oid_t *self);
 //  Return OID for given algorithm identifier.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_oid_from_alg_id(vscf_oid_t *self, void alg_id);
+vscf_oid_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Return algorithm identifier for given OID.
 //
-VSCF_PUBLIC void
-vscf_oid_to_alg_id(vscf_oid_t *self, vsc_data_t oid);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_oid_to_alg_id(vsc_data_t oid);
 
 //
 //  Return OID for a given identifier.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_oid_from_id(vscf_oid_t *self, void oid_id);
+vscf_oid_from_id(vscf_oid_id_t oid_id);
 
 //
 //  Return identifier for a given OID.
 //
-VSCF_PUBLIC void
-vscf_oid_to_id(vscf_oid_t *self, vsc_data_t oid);
+VSCF_PUBLIC vscf_oid_id_t
+vscf_oid_to_id(vsc_data_t oid);
 
 //
 //  Map oid identifier to the algorithm identifier.
 //
-VSCF_PUBLIC void
-vscf_oid_id_to_alg_id(vscf_oid_t *self, void oid_id);
+VSCF_PUBLIC vscf_alg_id_t
+vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id);
 
 //
 //  Return true if given OIDs are equal.
 //
 VSCF_PUBLIC bool
-vscf_oid_equal(vscf_oid_t *self, vsc_data_t lhs, vsc_data_t rhs);
+vscf_oid_equal(vsc_data_t lhs, vsc_data_t rhs);
 
 //
 //  Return string representation of the given OID.
 //
 VSCF_PUBLIC void
-vscf_oid_to_string(vscf_oid_t *self, vsc_data_t oid, const char *str);
+vscf_oid_to_string(vsc_data_t oid, const char *str);
 
 
 // --------------------------------------------------------------------------

@@ -90,9 +90,21 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Defines whether a public key can be imported or not.
+    //
     vscf_curve25519_CAN_IMPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a public key can be exported or not.
+    //
     vscf_curve25519_CAN_EXPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a private key can be imported or not.
+    //
     vscf_curve25519_CAN_IMPORT_PRIVATE_KEY = true,
+    //
+    //  Define whether a private key can be exported or not.
+    //
     vscf_curve25519_CAN_EXPORT_PRIVATE_KEY = true
 };
 
@@ -161,6 +173,44 @@ VSCF_PUBLIC vscf_curve25519_t *
 vscf_curve25519_shallow_copy(vscf_curve25519_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_curve25519_use_random(vscf_curve25519_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_curve25519_take_random(vscf_curve25519_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_curve25519_release_random(vscf_curve25519_t *self);
+
+//
+//  Setup dependency to the class 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_curve25519_use_ecies(vscf_curve25519_t *self, vscf_ecies_t *ecies);
+
+//
+//  Setup dependency to the class 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_curve25519_take_ecies(vscf_curve25519_t *self, vscf_ecies_t *ecies);
+
+//
+//  Release dependency to the class 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_curve25519_release_ecies(vscf_curve25519_t *self);
+
+//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -178,13 +228,13 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, vscf_impl_
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(const vscf_curve25519_t *self, void, vscf_error_t *error);
+vscf_curve25519_import_public_key(const vscf_curve25519_t *self, vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key_data(const vscf_curve25519_t *self, vsc_data_t *key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_curve25519_import_public_key_data(const vscf_curve25519_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -193,7 +243,7 @@ vscf_curve25519_import_public_key_data(const vscf_curve25519_t *self, vsc_data_t
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_curve25519_export_public_key(const vscf_curve25519_t *self, vscf_impl_t *public_key, vscf_error_t *error);
 
 //
@@ -223,13 +273,13 @@ vscf_curve25519_export_public_key_data(const vscf_curve25519_t *self, vscf_impl_
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key(const vscf_curve25519_t *self, void, vscf_error_t *error);
+vscf_curve25519_import_private_key(const vscf_curve25519_t *self, vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key_data(const vscf_curve25519_t *self, vsc_data_t *key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_curve25519_import_private_key_data(const vscf_curve25519_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -238,7 +288,7 @@ vscf_curve25519_import_private_key_data(const vscf_curve25519_t *self, vsc_data_
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_curve25519_export_private_key(const vscf_curve25519_t *self, vscf_impl_t *private_key, vscf_error_t *error);
 
 //
@@ -273,7 +323,7 @@ vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, vscf_impl_t *public
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_encrypt(const vscf_curve25519_t *self, vscf_impl_t *public_key, vsc_data_t *data, vsc_buffer_t *out);
+vscf_curve25519_encrypt(const vscf_curve25519_t *self, vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Check if algorithm can decrypt data with a given key.
@@ -292,7 +342,7 @@ vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, vscf_impl_t *privat
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_decrypt(const vscf_curve25519_t *self, vscf_impl_t *private_key, vsc_data_t *data, vsc_buffer_t *out);
+vscf_curve25519_decrypt(const vscf_curve25519_t *self, vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Compute shared key for 2 asymmetric keys.
@@ -330,7 +380,7 @@ vscf_curve25519_kem_encapsulate(const vscf_curve25519_t *self, vscf_impl_t *publ
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_kem_decapsulate(const vscf_curve25519_t *self, vsc_data_t *encapsulated_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
+vscf_curve25519_kem_decapsulate(const vscf_curve25519_t *self, vsc_data_t encapsulated_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

@@ -112,11 +112,11 @@ struct vscf_seed_entropy_source_t {
     //
     //  Implementation specific context.
     //
-    void hash;
+    vscf_impl_t *hash;
     //
     //  Implementation specific context.
     //
-    void kdf;
+    vscf_impl_t *kdf;
 };
 
 

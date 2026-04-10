@@ -75,6 +75,18 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Perform update only if context defined, otherwise log error.
+//
+#define VSCF_ERROR_SAFE_UPDATE(CTX, ERR)                            \
+    do {                                                            \
+        if (NULL != (CTX)) {                                        \
+            vscf_error_update ((CTX), (ERR));                       \
+        } else {                                                    \
+            /* TODO: Log this error, when logging will be added. */ \
+        }                                                           \
+    } while (false)
+
+//
 //  Handle 'error' context.
 //
 typedef struct vscf_error_t vscf_error_t;
@@ -134,7 +146,7 @@ vscf_error_reset(vscf_error_t *self);
 //  If status is "success" then do nothing.
 //
 VSCF_PUBLIC void
-vscf_error_update(vscf_error_t *self, void status);
+vscf_error_update(vscf_error_t *self, vscf_status_t status);
 
 //
 //  Return true if status is not "success".
@@ -145,7 +157,7 @@ vscf_error_has_error(const vscf_error_t *self);
 //
 //  Return error code.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_error_status(const vscf_error_t *self);
 
 

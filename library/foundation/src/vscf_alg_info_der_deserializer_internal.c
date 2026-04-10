@@ -77,12 +77,44 @@ vscf_alg_info_der_deserializer_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg info deserializer api'.
 //
-static const vscf_alg_info_deserializer_api_t alg_info_deserializer_api = vscf_api_tag_ALG_INFO_DESERIALIZER;
+static const vscf_alg_info_deserializer_api_t alg_info_deserializer_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg info deserializer' MUST be equal to the  'vscf_api_tag_ALG_INFO_DESERIALIZER'.
+    //
+    vscf_api_tag_ALG_INFO_DESERIALIZER,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
+    //
+    //  Deserialize algorithm from the data.
+    //
+    (vscf_alg_info_deserializer_api_deserialize_fn)(void (*)(void))vscf_alg_info_der_deserializer_deserialize
+};
 
 //
 //  Compile-time known information about 'alg info der deserializer' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_ALG_INFO_DER_DESERIALIZER;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ALG_INFO_DER_DESERIALIZER,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_alg_info_der_deserializer_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_alg_info_der_deserializer_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_alg_info_der_deserializer_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

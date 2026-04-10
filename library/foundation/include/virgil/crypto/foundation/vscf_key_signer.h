@@ -95,32 +95,32 @@ typedef struct vscf_key_signer_api_t vscf_key_signer_api_t;
 //  Check if algorithm can sign data digest with a given key.
 //
 VSCF_PUBLIC bool
-vscf_key_signer_can_sign(const vscf_impl_t *impl, void private_key);
+vscf_key_signer_can_sign(const vscf_impl_t *impl, vscf_impl_t *private_key);
 
 //
 //  Return length in bytes required to hold signature.
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_key_signer_signature_len(const vscf_impl_t *impl, void private_key);
+vscf_key_signer_signature_len(const vscf_impl_t *impl, vscf_impl_t *private_key);
 
 //
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_key_signer_sign_hash(const vscf_impl_t *impl, void private_key, void hash_id, vsc_data_t digest, vsc_buffer_t *signature);
+vscf_key_signer_sign_hash(const vscf_impl_t *impl, vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature);
 
 //
 //  Check if algorithm can verify data digest with a given key.
 //
 VSCF_PUBLIC bool
-vscf_key_signer_can_verify(const vscf_impl_t *impl, void public_key);
+vscf_key_signer_can_verify(const vscf_impl_t *impl, vscf_impl_t *public_key);
 
 //
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_key_signer_verify_hash(const vscf_impl_t *impl, void public_key, void hash_id, vsc_data_t digest, vsc_data_t signature);
+vscf_key_signer_verify_hash(const vscf_impl_t *impl, vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
 
 //
 //  Return key signer API, or NULL if it is not implemented.

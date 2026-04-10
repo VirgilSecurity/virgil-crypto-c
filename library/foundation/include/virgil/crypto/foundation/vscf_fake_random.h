@@ -182,7 +182,7 @@ vscf_fake_random_setup_source_byte(vscf_fake_random_t *self, byte byte_source);
 //  Note, that given data is used as circular source.
 //
 VSCF_PRIVATE void
-vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t *data_source);
+vscf_fake_random_setup_source_data(vscf_fake_random_t *self, vsc_data_t data_source);
 
 
 // --------------------------------------------------------------------------

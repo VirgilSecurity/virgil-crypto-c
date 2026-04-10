@@ -101,6 +101,10 @@ struct vscf_hmac_t {
     //  Implementation specific context.
     //
     vsc_buffer_t *ipad;
+    //
+    //  Dependency 'hash'.
+    //
+    vscf_impl_t *hash;
 };
 
 

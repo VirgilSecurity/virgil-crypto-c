@@ -153,6 +153,12 @@ class IRCStructField(IRCommented):
 
 
 @dataclass
+class IRClassMacro(IRCommented):
+    name: str = ""
+    code: str = ""
+
+
+@dataclass
 class IRClass(IRCommented):
     name: str = ""
     source_path: str = ""
@@ -162,6 +168,7 @@ class IRClass(IRCommented):
     variables: list[IRCVariable] = field(default_factory=list)
     struct_fields: list[IRCStructField] = field(default_factory=list)
     dependencies: list[IRDependency] = field(default_factory=list)
+    macroses: list[IRClassMacro] = field(default_factory=list)
     output: IROutputTarget | None = None
 
 
@@ -489,6 +496,11 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
         variables=[_variable_to_ir(v) for v in src.variables],
         struct_fields=[_field_from_attrs(p.name, p.attrs, p.description) for p in src.properties],
         dependencies=[_dependency_to_ir(d) for d in src.dependencies],
+        macroses=[IRClassMacro(
+            name=m.name,
+            description=m.description,
+            code="\n".join(cb.get("text", "") for cb in m.code_blocks) if m.code_blocks else "",
+        ) for m in src.macroses],
         output=build_output_target(project, entity_kind="class", entity_name=src.name, attrs=src.attrs),
     )
 

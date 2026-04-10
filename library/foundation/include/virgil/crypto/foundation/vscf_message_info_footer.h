@@ -160,12 +160,12 @@ vscf_message_info_footer_signer_infos(const vscf_message_info_footer_t *self);
 //  Set information about algorithm that was used for data hashing.
 //
 VSCF_PUBLIC void
-vscf_message_info_footer_set_signer_hash_alg_info(vscf_message_info_footer_t *self, void signer_hash_alg_info);
+vscf_message_info_footer_set_signer_hash_alg_info(vscf_message_info_footer_t *self, vscf_impl_t *signer_hash_alg_info);
 
 //
 //  Return information about algorithm that was used for data hashing.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_message_info_footer_signer_hash_alg_info(const vscf_message_info_footer_t *self);
 
 //

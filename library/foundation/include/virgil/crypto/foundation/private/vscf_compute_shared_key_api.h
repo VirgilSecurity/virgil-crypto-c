@@ -86,13 +86,13 @@ extern "C" {
 //  Callback. Compute shared key for 2 asymmetric keys.
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
-typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(const vscf_impl_t *impl, void public_key, void private_key, vsc_buffer_t *shared_key);
+typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Callback. Return number of bytes required to hold shared key.
 //  Expect Public Key or Private Key.
 //
-typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(const vscf_impl_t *impl, void key);
+typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(const vscf_impl_t *impl, vscf_impl_t *key);
 
 //
 //  Contains API requirements of the interface 'compute shared key'.

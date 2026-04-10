@@ -89,6 +89,18 @@ struct vscf_hybrid_key_alg_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
+    //
+    //  Dependency 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Dependency 'cipher'.
+    //
+    vscf_impl_t *cipher;
+    //
+    //  Dependency 'hash'.
+    //
+    vscf_impl_t *hash;
 };
 
 

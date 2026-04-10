@@ -159,7 +159,7 @@ vscf_salted_kdf_alg_info_hash_alg_info(const vscf_salted_kdf_alg_info_t *self);
 //
 //  Return KDF salt.
 //
-VSCF_PRIVATE vsc_data_t *
+VSCF_PRIVATE vsc_data_t
 vscf_salted_kdf_alg_info_salt(const vscf_salted_kdf_alg_info_t *self);
 
 //

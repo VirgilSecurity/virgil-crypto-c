@@ -72,6 +72,84 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This method is called when interface 'hash' was setup.
+//
+static void
+vscf_hkdf_did_setup_hash(vscf_hkdf_t *self);
+
+//
+//  This method is called when interface 'hash' was released.
+//
+static void
+vscf_hkdf_did_release_hash(vscf_hkdf_t *self);
+
+//
+//  This method is called when interface 'hash' was setup.
+//
+static void
+vscf_hkdf_did_setup_hash(vscf_hkdf_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  This method is called when interface 'hash' was released.
+//
+static void
+vscf_hkdf_did_release_hash(vscf_hkdf_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_hkdf_use_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT(self->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
+
+    self->hash = vscf_impl_shallow_copy(hash);
+
+    vscf_hkdf_did_setup_hash(self);
+}
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_hkdf_take_hash(vscf_hkdf_t *self, vscf_impl_t *hash) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(hash);
+    VSCF_ASSERT(self->hash == NULL);
+
+    VSCF_ASSERT(vscf_hash_is_implemented(hash));
+
+    self->hash = hash;
+
+    vscf_hkdf_did_setup_hash(self);
+}
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_hkdf_release_hash(vscf_hkdf_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->hash);
+
+    vscf_hkdf_did_release_hash(self);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

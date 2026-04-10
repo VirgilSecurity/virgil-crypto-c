@@ -92,6 +92,10 @@ struct vscf_ctr_drbg_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
+    //
+    //  Dependency 'entropy source'.
+    //
+    vscf_impl_t *entropy_source;
 };
 
 

@@ -133,7 +133,7 @@ vscf_verifier_shallow_copy(vscf_verifier_t *self);
 //
 //  Start verifying a signature.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature);
 
 //
@@ -146,7 +146,7 @@ vscf_verifier_append_data(vscf_verifier_t *self, vsc_data_t data);
 //  Verify accumulated data.
 //
 VSCF_PUBLIC bool
-vscf_verifier_verify(vscf_verifier_t *self, void public_key);
+vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key);
 
 
 // --------------------------------------------------------------------------

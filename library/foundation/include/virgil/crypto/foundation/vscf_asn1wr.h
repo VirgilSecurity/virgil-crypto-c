@@ -314,7 +314,7 @@ vscf_asn1wr_write_null(vscf_asn1wr_t *self);
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_octet_str(vscf_asn1wr_t *self, vsc_data_t *value);
+vscf_asn1wr_write_octet_str(vscf_asn1wr_t *self, vsc_data_t value);
 
 //
 //  Write ASN.1 type: BIT STRING with all zero unused bits.
@@ -322,7 +322,7 @@ vscf_asn1wr_write_octet_str(vscf_asn1wr_t *self, vsc_data_t *value);
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *self, vsc_data_t *value);
+vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *self, vsc_data_t value);
 
 //
 //  Write raw data directly to the ASN.1 structure.
@@ -330,21 +330,21 @@ vscf_asn1wr_write_octet_str_as_bitstring(vscf_asn1wr_t *self, vsc_data_t *value)
 //  Note, use this method carefully.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_data(vscf_asn1wr_t *self, vsc_data_t *data);
+vscf_asn1wr_write_data(vscf_asn1wr_t *self, vsc_data_t data);
 
 //
 //  Write ASN.1 type: UTF8String.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_utf8_str(vscf_asn1wr_t *self, vsc_data_t *value);
+vscf_asn1wr_write_utf8_str(vscf_asn1wr_t *self, vsc_data_t value);
 
 //
 //  Write ASN.1 type: OID.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_oid(vscf_asn1wr_t *self, vsc_data_t *value);
+vscf_asn1wr_write_oid(vscf_asn1wr_t *self, vsc_data_t value);
 
 //
 //  Mark previously written data of given length as ASN.1 type: SEQUENCE.

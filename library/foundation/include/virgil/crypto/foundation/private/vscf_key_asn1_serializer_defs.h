@@ -94,11 +94,15 @@ struct vscf_key_asn1_serializer_t {
     //
     //  Implementation specific context.
     //
-    void sec1_serializer;
+    vscf_sec1_serializer_t *sec1_serializer;
     //
     //  Implementation specific context.
     //
-    void pkcs8_serializer;
+    vscf_pkcs8_serializer_t *pkcs8_serializer;
+    //
+    //  Dependency 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
 };
 
 

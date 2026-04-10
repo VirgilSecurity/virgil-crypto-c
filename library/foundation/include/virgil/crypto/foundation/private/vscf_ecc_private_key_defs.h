@@ -98,7 +98,7 @@ struct vscf_ecc_private_key_t {
     //
     //  Implementation specific context.
     //
-    void alg_info;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //

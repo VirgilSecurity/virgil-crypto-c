@@ -85,7 +85,7 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self);
 //  Create object and define all properties.
 //
 static void
-vscf_password_recipient_info_init_ctx_with_members(vscf_password_recipient_info_t *self, void key_encryption_algorithm, vsc_data_t encrypted_key);
+vscf_password_recipient_info_init_ctx_with_members(vscf_password_recipient_info_t *self, vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
 
 //
 //  Return size of 'vscf_password_recipient_info_t'.
@@ -147,7 +147,7 @@ vscf_password_recipient_info_new(void) {
 //  Create object and define all properties.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *self, void key_encryption_algorithm, vsc_data_t encrypted_key) {
+vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *self, vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -163,7 +163,7 @@ vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *s
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_password_recipient_info_t *
-vscf_password_recipient_info_new_with_members(void key_encryption_algorithm, vsc_data_t encrypted_key) {
+vscf_password_recipient_info_new_with_members(vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key) {
 
     vscf_password_recipient_info_t *self = (vscf_password_recipient_info_t *) vsc_alloc(sizeof (vscf_password_recipient_info_t));
     VSC_ASSERT_ALLOC(self);

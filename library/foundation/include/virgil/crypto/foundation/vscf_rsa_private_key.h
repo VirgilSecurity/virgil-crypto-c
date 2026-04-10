@@ -165,7 +165,7 @@ vscf_rsa_private_key_bitlen(const vscf_rsa_private_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PUBLIC vscf_impl/tag_t
+VSCF_PRIVATE vscf_impl_tag_t
 vscf_rsa_private_key_impl_tag(const vscf_rsa_private_key_t *self);
 
 //
@@ -197,7 +197,7 @@ vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self);
 //   }
 //
 VSCF_PRIVATE vscf_status_t
-vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, void);
+vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, vscf_raw_private_key_t *raw_private_key);
 
 //
 //  Export public key in the raw binary format.
@@ -214,7 +214,7 @@ vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, void);
 //       coefficient INTEGER -- (inverse of q) mod p
 //   }
 //
-VSCF_PRIVATE void
+VSCF_PRIVATE vscf_raw_private_key_t *
 vscf_rsa_private_key_export(const vscf_rsa_private_key_t *self);
 
 

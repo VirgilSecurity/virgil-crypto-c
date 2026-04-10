@@ -156,7 +156,7 @@ vscf_key_provider_release_random(vscf_key_provider_t *self);
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_key_provider_setup_defaults(vscf_key_provider_t *self);
 
 //
@@ -168,8 +168,8 @@ vscf_key_provider_set_rsa_params(vscf_key_provider_t *self, size_t bitlen);
 //
 //  Generate new private key with a given algorithm.
 //
-VSCF_PUBLIC void
-vscf_key_provider_generate_private_key(vscf_key_provider_t *self, void alg_id, vscf_error_t error);
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t alg_id, vscf_error_t error);
 
 //
 //  Generate new post-quantum private key with default algorithms.
@@ -183,20 +183,20 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, void alg_id, v
 //          - first key is a classic private key;
 //          - second key is a post-quantum private key.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, vscf_error_t error);
 
 //
 //  Generate new compound private key with given algorithms.
 //
-VSCF_PUBLIC void
-vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, void cipher_alg_id, void signer_alg_id, vscf_error_t error);
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_alg_id, vscf_alg_id_t signer_alg_id, vscf_error_t error);
 
 //
 //  Generate new hybrid private key with given algorithms.
 //
-VSCF_PUBLIC void
-vscf_key_provider_generate_hybrid_private_key(vscf_key_provider_t *self, void first_key_alg_id, void second_key_alg_id, vscf_error_t error);
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_hybrid_private_key(vscf_key_provider_t *self, vscf_alg_id_t first_key_alg_id, vscf_alg_id_t second_key_alg_id, vscf_error_t error);
 
 //
 //  Generate new compound private key with nested hybrid private keys.
@@ -204,19 +204,19 @@ vscf_key_provider_generate_hybrid_private_key(vscf_key_provider_t *self, void fi
 //  Note, second key algorithm identifiers can be NONE, in this case,
 //  a regular key will be crated instead of a hybrid key.
 //
-VSCF_PUBLIC void
-vscf_key_provider_generate_compound_hybrid_private_key(vscf_key_provider_t *self, void cipher_first_key_alg_id, void cipher_second_key_alg_id, void signer_first_key_alg_id, void signer_second_key_alg_id, vscf_error_t error);
+VSCF_PUBLIC vscf_impl_t *
+vscf_key_provider_generate_compound_hybrid_private_key(vscf_key_provider_t *self, vscf_alg_id_t cipher_first_key_alg_id, vscf_alg_id_t cipher_second_key_alg_id, vscf_alg_id_t signer_first_key_alg_id, vscf_alg_id_t signer_second_key_alg_id, vscf_error_t error);
 
 //
 //  Import private key from the PKCS#8 format.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_import_private_key(vscf_key_provider_t *self, vsc_data_t key_data, vscf_error_t error);
 
 //
 //  Import public key from the PKCS#8 format.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t key_data, vscf_error_t error);
 
 //
@@ -225,15 +225,15 @@ vscf_key_provider_import_public_key(vscf_key_provider_t *self, vsc_data_t key_da
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_provider_exported_public_key_len(vscf_key_provider_t *self, void public_key);
+vscf_key_provider_exported_public_key_len(vscf_key_provider_t *self, vscf_impl_t *public_key);
 
 //
 //  Export given public key to the PKCS#8 DER format.
 //
 //  Precondition: public key must be exportable.
 //
-VSCF_PUBLIC void
-vscf_key_provider_export_public_key(vscf_key_provider_t *self, void public_key, vsc_buffer_t out);
+VSCF_PUBLIC vscf_status_t
+vscf_key_provider_export_public_key(vscf_key_provider_t *self, const vscf_impl_t *public_key, vsc_buffer_t out);
 
 //
 //  Calculate buffer size enough to hold exported private key.
@@ -241,15 +241,15 @@ vscf_key_provider_export_public_key(vscf_key_provider_t *self, void public_key, 
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_provider_exported_private_key_len(vscf_key_provider_t *self, void private_key);
+vscf_key_provider_exported_private_key_len(vscf_key_provider_t *self, vscf_impl_t *private_key);
 
 //
 //  Export given private key to the PKCS#8 or SEC1 DER format.
 //
 //  Precondition: private key must be exportable.
 //
-VSCF_PUBLIC void
-vscf_key_provider_export_private_key(vscf_key_provider_t *self, void private_key, vsc_buffer_t out);
+VSCF_PUBLIC vscf_status_t
+vscf_key_provider_export_private_key(vscf_key_provider_t *self, const vscf_impl_t *private_key, vsc_buffer_t out);
 
 
 // --------------------------------------------------------------------------

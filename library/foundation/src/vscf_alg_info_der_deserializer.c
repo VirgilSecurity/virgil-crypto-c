@@ -83,56 +83,56 @@
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_simple_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "KeyDevAlgs" from the
 //  https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with AES parameters:
 //      - defined in the RFC 3565;
 //      - defined in the RFC 5084.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
 //  defined in the RFC 8018.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with PBES2 parameters
 //  defined in the RFC 8018.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
 //  parameters defined in the RFC 5480.
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with
@@ -149,8 +149,8 @@ vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(vscf_alg_info_der_deseri
 //      signerAlgorithm AlgorithmIdentifier
 //  }
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
 
 //
 //  Parse ASN.1 structure "AlgorithmIdentifier" with
@@ -167,8 +167,50 @@ vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(vscf_alg_info_d
 //      secondKeyAlgorithm AlgorithmIdentifier
 //  }
 //
-VSCF_PRIVATE vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(vscf_alg_info_der_deserializer_t *self, void, vscf_error_t *error);
+static vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(vscf_alg_info_der_deserializer_t *self, vscf_oid_id_t oid_id, vscf_error_t *error);
+
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = asn1_reader;
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+}
 
 
 // --------------------------------------------------------------------------

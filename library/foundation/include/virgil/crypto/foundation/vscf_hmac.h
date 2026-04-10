@@ -148,6 +148,25 @@ VSCF_PUBLIC vscf_hmac_t *
 vscf_hmac_shallow_copy(vscf_hmac_t *self);
 
 //
+//  Setup dependency to the interface 'hash' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_hmac_use_hash(vscf_hmac_t *self, vscf_impl_t *hash);
+
+//
+//  Setup dependency to the interface 'hash' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_hmac_take_hash(vscf_hmac_t *self, vscf_impl_t *hash);
+
+//
+//  Release dependency to the interface 'hash'.
+//
+VSCF_PUBLIC void
+vscf_hmac_release_hash(vscf_hmac_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -175,19 +194,19 @@ vscf_hmac_digest_len(vscf_hmac_t *self);
 //  Calculate MAC over given data.
 //
 VSCF_PUBLIC void
-vscf_hmac_mac(vscf_hmac_t *self, vsc_data_t *key, vsc_data_t *data, vsc_buffer_t *mac);
+vscf_hmac_mac(vscf_hmac_t *self, vsc_data_t key, vsc_data_t data, vsc_buffer_t *mac);
 
 //
 //  Start a new MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_start(vscf_hmac_t *self, vsc_data_t *key);
+vscf_hmac_start(vscf_hmac_t *self, vsc_data_t key);
 
 //
 //  Add given data to the MAC.
 //
 VSCF_PUBLIC void
-vscf_hmac_update(vscf_hmac_t *self, vsc_data_t *data);
+vscf_hmac_update(vscf_hmac_t *self, vsc_data_t data);
 
 //
 //  Accomplish MAC and return it's result (a message digest).

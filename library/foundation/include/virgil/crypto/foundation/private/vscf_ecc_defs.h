@@ -94,6 +94,14 @@ struct vscf_ecc_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
+    //
+    //  Dependency 'random'.
+    //
+    vscf_impl_t *random;
+    //
+    //  Dependency 'ecies'.
+    //
+    vscf_impl_t *ecies;
 };
 
 

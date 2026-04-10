@@ -116,14 +116,14 @@ vscf_signer_info_new(void);
 //  Create object and define all properties.
 //
 VSCF_PUBLIC void
-vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, void signer_alg_info, vsc_buffer_t signature);
+vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, vscf_impl_t *signer_alg_info, vsc_buffer_t signature);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_signer_info_t *
-vscf_signer_info_new_with_members(vsc_data_t signer_id, void signer_alg_info, vsc_buffer_t signature);
+vscf_signer_info_new_with_members(vsc_data_t signer_id, vscf_impl_t *signer_alg_info, vsc_buffer_t signature);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -154,7 +154,7 @@ vscf_signer_info_signer_id(const vscf_signer_info_t *self);
 //
 //  Return algorithm information that was used for data signing.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_signer_info_signer_alg_info(const vscf_signer_info_t *self);
 
 //

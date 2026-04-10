@@ -124,81 +124,81 @@ vscf_alg_factory_shallow_copy(vscf_alg_factory_t *self);
 //
 //  Create algorithm that implements "hash stream" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_hash_from_alg_id(vscf_alg_factory_t *self, void alg_id);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_hash_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "hash stream" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_hash_from_info(vscf_alg_factory_t *self, void alg_info);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_hash_from_info(vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "mac stream" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_mac_from_alg_id(vscf_alg_factory_t *self, void alg_id);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_mac_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "mac stream" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_mac_from_info(vscf_alg_factory_t *self, void alg_info);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_mac_from_info(vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "kdf" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_kdf_from_alg_id(vscf_alg_factory_t *self, void alg_id);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_kdf_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "kdf" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_kdf_from_info(vscf_alg_factory_t *self, void alg_info);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_kdf_from_info(vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "salted kdf" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_salted_kdf_from_alg_id(vscf_alg_factory_t *self, void alg_id);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_salted_kdf_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "salted kdf" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_salted_kdf_from_info(vscf_alg_factory_t *self, void alg_info);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_salted_kdf_from_info(vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "cipher" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_cipher_from_alg_id(vscf_alg_factory_t *self, void alg_id);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_cipher_from_alg_id(vscf_alg_id_t alg_id);
 
 //
 //  Create algorithm that implements "cipher" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_cipher_from_info(vscf_alg_factory_t *self, void alg_info);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_cipher_from_info(vscf_impl_t *alg_info);
 
 //
 //  Create algorithm that implements "padding" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_padding_from_alg_id(vscf_alg_factory_t *self, void alg_id, void random);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_padding_from_alg_id(vscf_alg_id_t alg_id, vscf_impl_t *random);
 
 //
 //  Create algorithm that implements "padding" interface.
 //
-VSCF_PUBLIC void
-vscf_alg_factory_create_padding_from_info(vscf_alg_factory_t *self, void alg_info, void random);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_create_padding_from_info(vscf_impl_t *alg_info, vscf_impl_t *random);
 
 //
 //  Restore algorithm info within a given algorithm and returns it if success,
 //  or delete it and returns NULL;
 //
-VSCF_PUBLIC void
-vscf_alg_factory_restore_alg_info_and_return(vscf_alg_factory_t *self, void alg, void alg_info);
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_factory_restore_alg_info_and_return(vscf_impl_t *alg, vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------

@@ -110,7 +110,11 @@ struct vscf_hkdf_t {
     //
     //  Implementation specific context.
     //
-    void hmac;
+    vscf_hmac_t *hmac;
+    //
+    //  Dependency 'hash'.
+    //
+    vscf_impl_t *hash;
 };
 
 

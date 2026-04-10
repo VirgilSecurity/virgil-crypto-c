@@ -76,12 +76,48 @@ vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'entropy source api'.
 //
-static const vscf_entropy_source_api_t entropy_source_api = vscf_api_tag_ENTROPY_SOURCE;
+static const vscf_entropy_source_api_t entropy_source_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'entropy source' MUST be equal to the  'vscf_api_tag_ENTROPY_SOURCE'.
+    //
+    vscf_api_tag_ENTROPY_SOURCE,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_ENTROPY_ACCUMULATOR,
+    //
+    //  Defines that implemented source is strong.
+    //
+    (vscf_entropy_source_api_is_strong_fn)(void (*)(void))vscf_entropy_accumulator_is_strong,
+    //
+    //  Gather entropy of the requested length.
+    //
+    (vscf_entropy_source_api_gather_fn)(void (*)(void))vscf_entropy_accumulator_gather
+};
 
 //
 //  Compile-time known information about 'entropy accumulator' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_ENTROPY_ACCUMULATOR;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_ENTROPY_ACCUMULATOR,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_entropy_accumulator_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_entropy_accumulator_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_entropy_accumulator_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

@@ -1,11 +1,11 @@
 # CG-044: Foundation Codegen Full Verification — Status
 
-**Current Step:** Step 6: Documentation & Delivery
+**Current Step:** Step 4: Run tests
 **Status:** ✅ Complete (with 4 pre-existing errors documented as tech debt)
 **Last Updated:** 2026-04-09
 **Review Level:** 2
 **Review Counter:** 0
-**Iteration:** 1
+**Iteration:** 2
 **Size:** M
 
 ---
@@ -22,7 +22,7 @@
 - [x] Errors captured and categorized
 
 ### Step 2: Fix compilation errors
-**Status:** ✅ Complete (4 pre-existing errors remain)
+**Status:** ✅ Complete
 > ⚠️ Hydrate: Expand based on errors found in Step 1
 - [x] Fix broken C comments in api_private/impl_private (comment_text wrap)
 - [x] Fix const const duplication in impl_private (remove extra const from property type)
@@ -48,7 +48,7 @@
 - [x] Acceptable diffs documented
 
 ### Step 4: Run tests
-**Status:** ⚠️ Blocked
+**Status:** 🟨 In Progress
 - [ ] Tests pass (blocked by 4 remaining compilation errors from missing constructor)
 - [ ] Test failures fixed
 
@@ -90,6 +90,11 @@
 | 2026-04-09 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-09 22:39 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-09 22:39 | Step 0 started | Preflight |
+| 2026-04-10 00:12 | Worker iter 1 | done in 5625s, tools: 409 |
+| 2026-04-10 00:12 | Step 4 started | Run tests |
+| 2026-04-10 00:50 | Worker iter 2 | done in 2232s, tools: 247 |
+| 2026-04-10 00:50 | No progress | Iteration 2: 0 new checkboxes (1/3 stall limit) |
+| 2026-04-10 00:50 | Paused | User paused at iteration 2 |
 
 ## Blockers
 - **Implementation constructor generation missing**: `cipher_alg_info_new_with_members` is called but never declared/defined. The XML model has `<constructor name="with members">` on implementations, but the codegen only generates constructors for classes, not implementations. 4 compilation errors remain because of this. This requires a new codegen feature (constructor generation for IRImplementation), not a fix.

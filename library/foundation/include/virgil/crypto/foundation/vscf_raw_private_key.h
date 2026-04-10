@@ -175,7 +175,7 @@ vscf_raw_private_key_bitlen(const vscf_raw_private_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PUBLIC vscf_impl/tag_t
+VSCF_PRIVATE vscf_impl_tag_t
 vscf_raw_private_key_impl_tag(const vscf_raw_private_key_t *self);
 
 //
@@ -194,7 +194,7 @@ vscf_raw_private_key_extract_public_key(const vscf_raw_private_key_t *self);
 //
 //  Return key data.
 //
-VSCF_PRIVATE vsc_data_t *
+VSCF_PRIVATE vsc_data_t
 vscf_raw_private_key_data(const vscf_raw_private_key_t *self);
 
 //
@@ -207,12 +207,12 @@ vscf_raw_private_key_has_public_key(const vscf_raw_private_key_t *self);
 //  Setup public key related to the private key.
 //
 VSCF_PRIVATE void
-vscf_raw_private_key_set_public_key(vscf_raw_private_key_t *self, void);
+vscf_raw_private_key_set_public_key(vscf_raw_private_key_t *self, vscf_raw_public_key_t *raw_public_key);
 
 //
 //  Return public key related to the private key.
 //
-VSCF_PRIVATE void
+VSCF_PRIVATE vscf_raw_public_key_t *
 vscf_raw_private_key_get_public_key(const vscf_raw_private_key_t *self);
 
 

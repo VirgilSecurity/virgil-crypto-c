@@ -167,7 +167,7 @@ vscf_group_session_get_current_epoch(const vscf_group_session_t *self);
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_group_session_setup_defaults(vscf_group_session_t *self);
 
 //
@@ -180,14 +180,14 @@ vscf_group_session_get_session_id(const vscf_group_session_t *self);
 //  Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
 //  Epoch message should be encrypted and signed by trusted group chat member (admin).
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_group_session_add_epoch(vscf_group_session_t *self, vscf_group_session_message_t message);
 
 //
 //  Encrypts data
 //
 VSCF_PUBLIC vscf_group_session_message_t
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, void private_key, vscf_error_t error);
+vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, vscf_impl_t *private_key, vscf_error_t error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
@@ -198,8 +198,8 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, vscf_group_session_me
 //
 //  Decrypts message
 //
-VSCF_PUBLIC void
-vscf_group_session_decrypt(vscf_group_session_t *self, vscf_group_session_message_t message, void public_key, vsc_buffer_t plain_text);
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_decrypt(vscf_group_session_t *self, vscf_group_session_message_t message, vscf_impl_t *public_key, vsc_buffer_t plain_text);
 
 //
 //  Creates ticket with new key for removing participants or proactive to rotate encryption key.

@@ -91,9 +91,21 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Defines whether a public key can be imported or not.
+    //
     vscf_ecc_CAN_IMPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a public key can be exported or not.
+    //
     vscf_ecc_CAN_EXPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a private key can be imported or not.
+    //
     vscf_ecc_CAN_IMPORT_PRIVATE_KEY = true,
+    //
+    //  Define whether a private key can be exported or not.
+    //
     vscf_ecc_CAN_EXPORT_PRIVATE_KEY = true
 };
 
@@ -162,6 +174,44 @@ VSCF_PUBLIC vscf_ecc_t *
 vscf_ecc_shallow_copy(vscf_ecc_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecc_use_random(vscf_ecc_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecc_take_random(vscf_ecc_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_ecc_release_random(vscf_ecc_t *self);
+
+//
+//  Setup dependency to the class 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_ecc_use_ecies(vscf_ecc_t *self, vscf_ecies_t *ecies);
+
+//
+//  Setup dependency to the class 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_ecc_take_ecies(vscf_ecc_t *self, vscf_ecies_t *ecies);
+
+//
+//  Release dependency to the class 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_ecc_release_ecies(vscf_ecc_t *self);
+
+//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -179,13 +229,13 @@ vscf_ecc_generate_ephemeral_key(const vscf_ecc_t *self, vscf_impl_t *key, vscf_e
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_import_public_key(const vscf_ecc_t *self, void, vscf_error_t *error);
+vscf_ecc_import_public_key(const vscf_ecc_t *self, vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_import_public_key_data(const vscf_ecc_t *self, vsc_data_t *key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_ecc_import_public_key_data(const vscf_ecc_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -194,7 +244,7 @@ vscf_ecc_import_public_key_data(const vscf_ecc_t *self, vsc_data_t *key_data, vs
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_ecc_export_public_key(const vscf_ecc_t *self, vscf_impl_t *public_key, vscf_error_t *error);
 
 //
@@ -224,13 +274,13 @@ vscf_ecc_export_public_key_data(const vscf_ecc_t *self, vscf_impl_t *public_key,
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_import_private_key(const vscf_ecc_t *self, void, vscf_error_t *error);
+vscf_ecc_import_private_key(const vscf_ecc_t *self, vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_ecc_import_private_key_data(const vscf_ecc_t *self, vsc_data_t *key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_ecc_import_private_key_data(const vscf_ecc_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -239,7 +289,7 @@ vscf_ecc_import_private_key_data(const vscf_ecc_t *self, vsc_data_t *key_data, v
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_ecc_export_private_key(const vscf_ecc_t *self, vscf_impl_t *private_key, vscf_error_t *error);
 
 //
@@ -274,7 +324,7 @@ vscf_ecc_encrypted_len(const vscf_ecc_t *self, vscf_impl_t *public_key, size_t d
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_encrypt(const vscf_ecc_t *self, vscf_impl_t *public_key, vsc_data_t *data, vsc_buffer_t *out);
+vscf_ecc_encrypt(const vscf_ecc_t *self, vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Check if algorithm can decrypt data with a given key.
@@ -293,7 +343,7 @@ vscf_ecc_decrypted_len(const vscf_ecc_t *self, vscf_impl_t *private_key, size_t 
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_decrypt(const vscf_ecc_t *self, vscf_impl_t *private_key, vsc_data_t *data, vsc_buffer_t *out);
+vscf_ecc_decrypt(const vscf_ecc_t *self, vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Check if algorithm can sign data digest with a given key.
@@ -312,7 +362,7 @@ vscf_ecc_signature_len(const vscf_ecc_t *self, vscf_impl_t *private_key);
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_sign_hash(const vscf_ecc_t *self, vscf_impl_t *private_key, void, vsc_data_t *digest, vsc_buffer_t *signature);
+vscf_ecc_sign_hash(const vscf_ecc_t *self, vscf_impl_t *private_key, void, vsc_data_t digest, vsc_buffer_t *signature);
 
 //
 //  Check if algorithm can verify data digest with a given key.
@@ -324,7 +374,7 @@ vscf_ecc_can_verify(const vscf_ecc_t *self, vscf_impl_t *public_key);
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_ecc_verify_hash(const vscf_ecc_t *self, vscf_impl_t *public_key, void, vsc_data_t *digest, vsc_data_t *signature);
+vscf_ecc_verify_hash(const vscf_ecc_t *self, vscf_impl_t *public_key, void, vsc_data_t digest, vsc_data_t signature);
 
 //
 //  Compute shared key for 2 asymmetric keys.
@@ -362,7 +412,7 @@ vscf_ecc_kem_encapsulate(const vscf_ecc_t *self, vscf_impl_t *public_key, vsc_bu
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ecc_kem_decapsulate(const vscf_ecc_t *self, vsc_data_t *encapsulated_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
+vscf_ecc_kem_decapsulate(const vscf_ecc_t *self, vsc_data_t encapsulated_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -378,7 +428,7 @@ vscf_ecc_setup_defaults(vscf_ecc_t *self);
 //  Note, this operation might be slow.
 //
 VSCF_PRIVATE vscf_impl_t *
-vscf_ecc_generate_key(const vscf_ecc_t *self, void, vscf_error_t *error);
+vscf_ecc_generate_key(const vscf_ecc_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

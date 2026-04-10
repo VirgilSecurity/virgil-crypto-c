@@ -77,17 +77,88 @@ vscf_compound_private_key_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'key api'.
 //
-static const vscf_key_api_t key_api = vscf_api_tag_KEY;
+static const vscf_key_api_t key_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'key' MUST be equal to the  'vscf_api_tag_KEY'.
+    //
+    vscf_api_tag_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_COMPOUND_PRIVATE_KEY,
+    //
+    //  Algorithm identifier the key belongs to.
+    //
+    (vscf_key_api_alg_id_fn)(void (*)(void))vscf_compound_private_key_alg_id,
+    //
+    //  Return algorithm information that can be used for serialization.
+    //
+    (vscf_key_api_alg_info_fn)(void (*)(void))vscf_compound_private_key_alg_info,
+    //
+    //  Length of the key in bytes.
+    //
+    (vscf_key_api_len_fn)(void (*)(void))vscf_compound_private_key_len,
+    //
+    //  Length of the key in bits.
+    //
+    (vscf_key_api_bitlen_fn)(void (*)(void))vscf_compound_private_key_bitlen,
+    //
+    //  Return tag of an associated algorithm that can handle this key.
+    //
+    (vscf_key_api_impl_tag_fn)(void (*)(void))vscf_compound_private_key_impl_tag,
+    //
+    //  Check that key is valid.
+    //  Note, this operation can be slow.
+    //
+    (vscf_key_api_is_valid_fn)(void (*)(void))vscf_compound_private_key_is_valid
+};
 
 //
 //  Configuration of the interface API 'private key api'.
 //
-static const vscf_private_key_api_t private_key_api = vscf_api_tag_PRIVATE_KEY;
+static const vscf_private_key_api_t private_key_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'private key' MUST be equal to the  'vscf_api_tag_PRIVATE_KEY'.
+    //
+    vscf_api_tag_PRIVATE_KEY,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_COMPOUND_PRIVATE_KEY,
+    //
+    //  Link to the inherited interface API 'key'.
+    //
+    &key_api,
+    //
+    //  Extract public key from the private key.
+    //
+    (vscf_private_key_api_extract_public_key_fn)(void (*)(void))vscf_compound_private_key_extract_public_key
+};
 
 //
 //  Compile-time known information about 'compound private key' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_COMPOUND_PRIVATE_KEY;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_COMPOUND_PRIVATE_KEY,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_compound_private_key_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_compound_private_key_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_compound_private_key_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

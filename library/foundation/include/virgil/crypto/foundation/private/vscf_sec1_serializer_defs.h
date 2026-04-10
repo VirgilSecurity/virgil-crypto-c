@@ -93,7 +93,11 @@ struct vscf_sec1_serializer_t {
     //
     //  Implementation specific context.
     //
-    void alg_info_der_serializer;
+    vscf_alg_info_der_serializer_t *alg_info_der_serializer;
+    //
+    //  Dependency 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
 };
 
 

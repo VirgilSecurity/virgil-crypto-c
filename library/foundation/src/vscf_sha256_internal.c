@@ -78,17 +78,91 @@ vscf_sha256_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA256,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_sha256_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_sha256_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_sha256_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'hash api'.
 //
-static const vscf_hash_api_t hash_api = vscf_api_tag_HASH;
+static const vscf_hash_api_t hash_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'hash' MUST be equal to the  'vscf_api_tag_HASH'.
+    //
+    vscf_api_tag_HASH,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_SHA256,
+    //
+    //  Calculate hash over given data.
+    //
+    (vscf_hash_api_hash_fn)(void (*)(void))vscf_sha256_hash,
+    //
+    //  Start a new hashing.
+    //
+    (vscf_hash_api_start_fn)(void (*)(void))vscf_sha256_start,
+    //
+    //  Add given data to the hash.
+    //
+    (vscf_hash_api_update_fn)(void (*)(void))vscf_sha256_update,
+    //
+    //  Accompilsh hashing and return it's result (a message digest).
+    //
+    (vscf_hash_api_finish_fn)(void (*)(void))vscf_sha256_finish,
+    //
+    //  Length of the digest (hashing output) in bytes.
+    //
+    vscf_sha256_DIGEST_LEN,
+    //
+    //  Block length of the digest function in bytes.
+    //
+    vscf_sha256_BLOCK_LEN
+};
 
 //
 //  Compile-time known information about 'sha256' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_SHA256;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_SHA256,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_sha256_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_sha256_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_sha256_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

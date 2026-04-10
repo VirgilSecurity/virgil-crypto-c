@@ -66,6 +66,14 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator, KDF algorithm info and
+//  cipher alg info.
+//
+static vscf_pbe_alg_info_t *
+vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *kdf_alg_info, vscf_impl_t *cipher_alg_info);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

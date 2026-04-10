@@ -145,6 +145,25 @@ VSCF_PUBLIC vscf_ctr_drbg_t *
 vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self);
 
 //
+//  Setup dependency to the interface 'entropy source' with shared ownership.
+//
+VSCF_PUBLIC status
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source);
+
+//
+//  Setup dependency to the interface 'entropy source' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC status
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source);
+
+//
+//  Release dependency to the interface 'entropy source'.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *self);
+
+//
 //  Generate random bytes.
 //  All RNG implementations must be thread-safe.
 //

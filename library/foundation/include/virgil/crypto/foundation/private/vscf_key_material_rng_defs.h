@@ -93,11 +93,11 @@ struct vscf_key_material_rng_t {
     //
     //  Implementation specific context.
     //
-    void ctr_drbg;
+    vscf_ctr_drbg_t *ctr_drbg;
     //
     //  Implementation specific context.
     //
-    void seed_entropy_source;
+    vscf_seed_entropy_source_t *seed_entropy_source;
 };
 
 

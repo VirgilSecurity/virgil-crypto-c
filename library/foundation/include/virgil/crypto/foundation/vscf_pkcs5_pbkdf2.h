@@ -148,6 +148,25 @@ VSCF_PUBLIC vscf_pkcs5_pbkdf2_t *
 vscf_pkcs5_pbkdf2_shallow_copy(vscf_pkcs5_pbkdf2_t *self);
 
 //
+//  Setup dependency to the interface 'mac' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac);
+
+//
+//  Setup dependency to the interface 'mac' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac);
+
+//
+//  Release dependency to the interface 'mac'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -169,20 +188,20 @@ vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *self, const vscf_impl_t 
 //  Derive key of the requested length from the given data.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *self, vsc_data_t *data, size_t key_len, vsc_buffer_t *key);
+vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *self, vsc_data_t data, size_t key_len, vsc_buffer_t *key);
 
 //
 //  Prepare algorithm to derive new key.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *self, vsc_data_t *salt, size_t iteration_count);
+vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *self, vsc_data_t salt, size_t iteration_count);
 
 //
 //  Setup application specific information (optional).
 //  Can be empty.
 //
 VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *self, vsc_data_t *info);
+vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *self, vsc_data_t info);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

@@ -94,7 +94,7 @@ typedef struct vscf_key_serializer_api_t vscf_key_serializer_api_t;
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_serializer_serialized_public_key_len(const vscf_impl_t *impl, void public_key);
+vscf_key_serializer_serialized_public_key_len(const vscf_impl_t *impl, vscf_raw_public_key_t *public_key);
 
 //
 //  Serialize given public key to an interchangeable format.
@@ -102,7 +102,7 @@ vscf_key_serializer_serialized_public_key_len(const vscf_impl_t *impl, void publ
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, void public_key, vsc_buffer_t *out);
+vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, vscf_raw_public_key_t *public_key, vsc_buffer_t *out);
 
 //
 //  Calculate buffer size enough to hold serialized private key.
@@ -110,7 +110,7 @@ vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, void public_key, vsc
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC size_t
-vscf_key_serializer_serialized_private_key_len(const vscf_impl_t *impl, void private_key);
+vscf_key_serializer_serialized_private_key_len(const vscf_impl_t *impl, vscf_raw_private_key_t *private_key);
 
 //
 //  Serialize given private key to an interchangeable format.
@@ -118,7 +118,7 @@ vscf_key_serializer_serialized_private_key_len(const vscf_impl_t *impl, void pri
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, void private_key, vsc_buffer_t *out);
+vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, vscf_raw_private_key_t *private_key, vsc_buffer_t *out);
 
 //
 //  Return key serializer API, or NULL if it is not implemented.

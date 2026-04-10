@@ -81,7 +81,7 @@ typedef struct vscf_private_key_api_t vscf_private_key_api_t;
 //
 //  Extract public key from the private key.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_private_key_extract_public_key(const vscf_impl_t *impl);
 
 //

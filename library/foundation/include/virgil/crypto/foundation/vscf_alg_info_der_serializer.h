@@ -144,6 +144,25 @@ VSCF_PUBLIC vscf_alg_info_der_serializer_t *
 vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self);
 
 //
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
+
+//
 //  Return buffer size enough to hold serialized algorithm.
 //
 VSCF_PUBLIC size_t

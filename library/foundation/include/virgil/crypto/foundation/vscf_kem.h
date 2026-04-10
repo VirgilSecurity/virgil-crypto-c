@@ -92,25 +92,25 @@ typedef struct vscf_kem_api_t vscf_kem_api_t;
 //  Return length in bytes required to hold encapsulated shared key.
 //
 VSCF_PUBLIC size_t
-vscf_kem_kem_shared_key_len(const vscf_impl_t *impl, void key);
+vscf_kem_kem_shared_key_len(const vscf_impl_t *impl, vscf_impl_t *key);
 
 //
 //  Return length in bytes required to hold encapsulated key.
 //
 VSCF_PUBLIC size_t
-vscf_kem_kem_encapsulated_key_len(const vscf_impl_t *impl, void public_key);
+vscf_kem_kem_encapsulated_key_len(const vscf_impl_t *impl, vscf_impl_t *public_key);
 
 //
 //  Generate a shared key and a key encapsulated message.
 //
 VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_kem_kem_encapsulate(const vscf_impl_t *impl, void public_key, vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key);
+vscf_kem_kem_encapsulate(const vscf_impl_t *impl, vscf_impl_t *public_key, vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key);
 
 //
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_kem_kem_decapsulate(const vscf_impl_t *impl, vsc_data_t encapsulated_key, void private_key, vsc_buffer_t *shared_key);
+vscf_kem_kem_decapsulate(const vscf_impl_t *impl, vsc_data_t encapsulated_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Return kem API, or NULL if it is not implemented.

@@ -82,7 +82,7 @@ vscf_key_info_cleanup_ctx(vscf_key_info_t *self);
 //  Build key information based on the generic algorithm information.
 //
 static void
-vscf_key_info_init_ctx_with_alg_info(vscf_key_info_t *self, void alg_info);
+vscf_key_info_init_ctx_with_alg_info(vscf_key_info_t *self, vscf_impl_t *alg_info);
 
 //
 //  Return size of 'vscf_key_info_t'.
@@ -144,7 +144,7 @@ vscf_key_info_new(void) {
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC void
-vscf_key_info_init_with_alg_info(vscf_key_info_t *self, void alg_info) {
+vscf_key_info_init_with_alg_info(vscf_key_info_t *self, vscf_impl_t *alg_info) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -160,7 +160,7 @@ vscf_key_info_init_with_alg_info(vscf_key_info_t *self, void alg_info) {
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC vscf_key_info_t *
-vscf_key_info_new_with_alg_info(void alg_info) {
+vscf_key_info_new_with_alg_info(vscf_impl_t *alg_info) {
 
     vscf_key_info_t *self = (vscf_key_info_t *) vsc_alloc(sizeof (vscf_key_info_t));
     VSC_ASSERT_ALLOC(self);

@@ -79,17 +79,92 @@ vscf_hmac_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg api'.
 //
-static const vscf_alg_api_t alg_api = vscf_api_tag_ALG;
+static const vscf_alg_api_t alg_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //
+    vscf_api_tag_ALG,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_hmac_alg_id,
+    //
+    //  Produce object with algorithm information and configuration parameters.
+    //
+    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_hmac_produce_alg_info,
+    //
+    //  Restore algorithm configuration from the given object.
+    //
+    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_hmac_restore_alg_info
+};
 
 //
 //  Configuration of the interface API 'mac api'.
 //
-static const vscf_mac_api_t mac_api = vscf_api_tag_MAC;
+static const vscf_mac_api_t mac_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'mac' MUST be equal to the  'vscf_api_tag_MAC'.
+    //
+    vscf_api_tag_MAC,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HMAC,
+    //
+    //  Size of the digest (mac output) in bytes.
+    //
+    (vscf_mac_api_digest_len_fn)(void (*)(void))vscf_hmac_digest_len,
+    //
+    //  Calculate MAC over given data.
+    //
+    (vscf_mac_api_mac_fn)(void (*)(void))vscf_hmac_mac,
+    //
+    //  Start a new MAC.
+    //
+    (vscf_mac_api_start_fn)(void (*)(void))vscf_hmac_start,
+    //
+    //  Add given data to the MAC.
+    //
+    (vscf_mac_api_update_fn)(void (*)(void))vscf_hmac_update,
+    //
+    //  Accomplish MAC and return it's result (a message digest).
+    //
+    (vscf_mac_api_finish_fn)(void (*)(void))vscf_hmac_finish,
+    //
+    //  Prepare to authenticate a new message with the same key
+    //  as the previous MAC operation.
+    //
+    (vscf_mac_api_reset_fn)(void (*)(void))vscf_hmac_reset
+};
 
 //
 //  Compile-time known information about 'hmac' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_HMAC;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_HMAC,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_hmac_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_hmac_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_hmac_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

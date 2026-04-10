@@ -88,28 +88,28 @@ extern "C" {
 //
 //  Precondition: public key must be exportable.
 //
-typedef size_t (*vscf_key_serializer_api_serialized_public_key_len_fn)(const vscf_impl_t *impl, void public_key);
+typedef size_t (*vscf_key_serializer_api_serialized_public_key_len_fn)(const vscf_impl_t *impl, vscf_raw_public_key_t *public_key);
 
 //
 //  Callback. Serialize given public key to an interchangeable format.
 //
 //  Precondition: public key must be exportable.
 //
-typedef vscf_status_t (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_impl_t *impl, void public_key, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_key_serializer_api_serialize_public_key_fn)(vscf_impl_t *impl, vscf_raw_public_key_t *public_key, vsc_buffer_t *out);
 
 //
 //  Callback. Calculate buffer size enough to hold serialized private key.
 //
 //  Precondition: private key must be exportable.
 //
-typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(const vscf_impl_t *impl, void private_key);
+typedef size_t (*vscf_key_serializer_api_serialized_private_key_len_fn)(const vscf_impl_t *impl, vscf_raw_private_key_t *private_key);
 
 //
 //  Callback. Serialize given private key to an interchangeable format.
 //
 //  Precondition: private key must be exportable.
 //
-typedef vscf_status_t (*vscf_key_serializer_api_serialize_private_key_fn)(vscf_impl_t *impl, void private_key, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_key_serializer_api_serialize_private_key_fn)(vscf_impl_t *impl, vscf_raw_private_key_t *private_key, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'key serializer'.

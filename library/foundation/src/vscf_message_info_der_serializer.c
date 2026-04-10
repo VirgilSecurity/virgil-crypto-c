@@ -85,9 +85,33 @@
 // --------------------------------------------------------------------------
 
 //
+//  This method is called when interface 'asn1 reader' was setup.
+//
+static void
+vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self);
+
+//
+//  This method is called when interface 'asn1 reader' was released.
+//
+static void
+vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_serializer_t *self);
+
+//
+//  This method is called when interface 'asn1 writer' was setup.
+//
+static void
+vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self);
+
+//
+//  This method is called when interface 'asn1 writer' was released.
+//
+static void
+vscf_message_info_der_serializer_did_release_asn1_writer(vscf_message_info_der_serializer_t *self);
+
+//
 //  Return size in bytes enough to hold serialized custom params.
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_custom_params_len(const vscf_message_info_der_serializer_t *self, vscf_message_info_custom_params_t *custom_params);
 
 //
@@ -106,7 +130,7 @@ vscf_message_info_der_serializer_serialized_custom_params_len(const vscf_message
 //      data [2] EXPLICIT OCTET STRING
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_custom_params(vscf_message_info_der_serializer_t *self, vscf_message_info_custom_params_t *custom_params);
 
 //
@@ -118,7 +142,7 @@ vscf_message_info_der_serializer_serialize_custom_params(vscf_message_info_der_s
 //      signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_footer_info_len(const vscf_message_info_der_serializer_t *self, vscf_footer_info_t *footer_info);
 
 //
@@ -130,7 +154,7 @@ vscf_message_info_der_serializer_serialized_footer_info_len(const vscf_message_i
 //      signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_footer_info(vscf_message_info_der_serializer_t *self, vscf_footer_info_t *footer_info);
 
 //
@@ -141,7 +165,7 @@ vscf_message_info_der_serializer_serialize_footer_info(vscf_message_info_der_ser
 //      digestAlgorithm AlgorithmIdentifier
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self, vscf_signed_data_info_t *signed_data_info);
 
 //
@@ -152,7 +176,7 @@ vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_mess
 //      digestAlgorithm AlgorithmIdentifier
 //  }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self, vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out);
 
 //
@@ -163,10 +187,10 @@ vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_de
 //      digestAlgorithm AlgorithmIdentifier
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_signed_data_info_internal(vscf_message_info_der_serializer_t *self, vscf_signed_data_info_t *signed_data_info);
 
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_key_recipient_info_len(const vscf_message_info_der_serializer_t *self, vscf_key_recipient_info_t *key_recipient_info);
 
 //
@@ -184,10 +208,10 @@ vscf_message_info_der_serializer_serialized_key_recipient_info_len(const vscf_me
 //
 //  EncryptedKey ::= OCTET STRING
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_key_recipient_info(vscf_message_info_der_serializer_t *self, vscf_key_recipient_info_t *key_recipient_info);
 
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_password_recipient_info_len(const vscf_message_info_der_serializer_t *self, vscf_password_recipient_info_t *password_recipient_info);
 
 //
@@ -199,10 +223,10 @@ vscf_message_info_der_serializer_serialized_password_recipient_info_len(const vs
 //      encryptedKey EncryptedKey
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_password_recipient_info(vscf_message_info_der_serializer_t *self, vscf_password_recipient_info_t *password_recipient_info);
 
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
 //
@@ -216,10 +240,10 @@ vscf_message_info_der_serializer_serialized_recipient_infos_len(const vscf_messa
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_recipient_infos(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_encrypted_content_info_len(const vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
 //
@@ -233,10 +257,10 @@ vscf_message_info_der_serializer_serialized_encrypted_content_info_len(const vsc
 //  ContentEncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
 //  EncryptedContent ::= OCTET STRING
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_encrypted_content_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_enveloped_data_len(const vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
 //
@@ -250,10 +274,10 @@ vscf_message_info_der_serializer_serialized_enveloped_data_len(const vscf_messag
 //
 //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_enveloped_data(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_cms_content_info_len(const vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
 //
@@ -264,19 +288,19 @@ vscf_message_info_der_serializer_serialized_cms_content_info_len(const vscf_mess
 //
 //  ContentType ::= OBJECT IDENTIFIER
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_cms_content_info_(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info);
 
 //
 //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_signer_infos_len(const vscf_message_info_der_serializer_t *self, vscf_message_info_footer_t *message_info_footer);
 
 //
 //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_signer_infos(vscf_message_info_der_serializer_t *self, vscf_message_info_footer_t *message_info_footer);
 
 //
@@ -293,7 +317,7 @@ vscf_message_info_der_serializer_serialize_signer_infos(vscf_message_info_der_se
 //
 //  VirgilSignatureValue ::= OCTET STRING
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialized_signer_info_len(const vscf_message_info_der_serializer_t *self, vscf_signer_info_t *signer_info);
 
 //
@@ -310,7 +334,7 @@ vscf_message_info_der_serializer_serialized_signer_info_len(const vscf_message_i
 //
 //  VirgilSignatureValue ::= OCTET STRING
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_message_info_der_serializer_serialize_signer_info(vscf_message_info_der_serializer_t *self, vscf_signer_info_t *signer_info);
 
 //
@@ -329,19 +353,19 @@ vscf_message_info_der_serializer_serialize_signer_info(vscf_message_info_der_ser
 //      data [2] EXPLICIT OCTET STRING
 //  }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_custom_params(vscf_message_info_der_serializer_t *self, vscf_message_info_custom_params_t *custom_params, vscf_error_t *error);
 
 //
 //  AlgorithmIdentifier
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_cipher_kdf(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  AlgorithmIdentifier
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_cipher_padding(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -351,7 +375,7 @@ vscf_message_info_der_serializer_deserialize_cipher_padding(vscf_message_info_de
 //      signedDataInfo [0] EXPLICIT VirgilSignedDataInfo OPTIONAL
 //  }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_footer_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -360,7 +384,7 @@ vscf_message_info_der_serializer_deserialize_footer_info(vscf_message_info_der_s
 //      digestAlgorithm AlgorithmIdentifier
 //  }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_signed_data_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -378,7 +402,7 @@ vscf_message_info_der_serializer_deserialize_signed_data_info(vscf_message_info_
 //
 //  EncryptedKey ::= OCTET STRING
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_key_recipient_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -390,7 +414,7 @@ vscf_message_info_der_serializer_deserialize_key_recipient_info(vscf_message_inf
 //      encryptedKey EncryptedKey
 //  }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -404,7 +428,7 @@ vscf_message_info_der_serializer_deserialize_password_recipient_info(vscf_messag
 //      ori [4] OtherRecipientInfo -- not supported
 //  }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_recipient_infos(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -418,7 +442,7 @@ vscf_message_info_der_serializer_deserialize_recipient_infos(vscf_message_info_d
 //  ContentEncryptionAlgorithmIdentifier ::= AlgorithmIdentifier
 //  EncryptedContent ::= OCTET STRING
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_encrypted_content_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -432,7 +456,7 @@ vscf_message_info_der_serializer_deserialize_encrypted_content_info(vscf_message
 //
 //  CMSVersion ::= INTEGER { v0(0), v1(1), v2(2), v3(3), v4(4), v5(5) }
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
@@ -443,13 +467,13 @@ vscf_message_info_der_serializer_deserialize_enveloped_data(vscf_message_info_de
 //
 //  ContentType ::= OBJECT IDENTIFIER
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_cms_content_info(vscf_message_info_der_serializer_t *self, vscf_message_info_t *message_info, vscf_error_t *error);
 
 //
 //  VirgilSignerInfos ::= SET SIZE (1..MAX) OF VirgilSignerInfo
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_signer_infos(vscf_message_info_der_serializer_t *self, vscf_message_info_footer_t *message_info_footer, vscf_error_t *error);
 
 //
@@ -466,8 +490,140 @@ vscf_message_info_der_serializer_deserialize_signer_infos(vscf_message_info_der_
 //
 //  VirgilSignatureValue ::= OCTET STRING
 //
-VSCF_PRIVATE void
+static void
 vscf_message_info_der_serializer_deserialize_signer_info(vscf_message_info_der_serializer_t *self, vscf_message_info_footer_t *message_info_footer, vscf_error_t *error);
+
+//
+//  This method is called when interface 'asn1 reader' was setup.
+//
+static void
+vscf_message_info_der_serializer_did_setup_asn1_reader(vscf_message_info_der_serializer_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  This method is called when interface 'asn1 reader' was released.
+//
+static void
+vscf_message_info_der_serializer_did_release_asn1_reader(vscf_message_info_der_serializer_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+
+    vscf_message_info_der_serializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = asn1_reader;
+
+    vscf_message_info_der_serializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+
+    vscf_message_info_der_serializer_did_release_asn1_reader(self);
+}
+
+//
+//  This method is called when interface 'asn1 writer' was setup.
+//
+static void
+vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_serializer_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  This method is called when interface 'asn1 writer' was released.
+//
+static void
+vscf_message_info_der_serializer_did_release_asn1_writer(vscf_message_info_der_serializer_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+
+    vscf_message_info_der_serializer_did_setup_asn1_writer(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = asn1_writer;
+
+    vscf_message_info_der_serializer_did_setup_asn1_writer(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_writer);
+
+    vscf_message_info_der_serializer_did_release_asn1_writer(self);
+}
 
 
 // --------------------------------------------------------------------------

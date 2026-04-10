@@ -163,7 +163,7 @@ vscf_compound_private_key_bitlen(const vscf_compound_private_key_t *self);
 //
 //  Return tag of an associated algorithm that can handle this key.
 //
-VSCF_PUBLIC vscf_impl/tag_t
+VSCF_PRIVATE vscf_impl_tag_t
 vscf_compound_private_key_impl_tag(const vscf_compound_private_key_t *self);
 
 //

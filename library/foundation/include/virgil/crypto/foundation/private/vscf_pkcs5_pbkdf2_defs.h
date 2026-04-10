@@ -105,6 +105,10 @@ struct vscf_pkcs5_pbkdf2_t {
     //  Implementation specific context.
     //
     size_t iteration_count;
+    //
+    //  Dependency 'hmac'.
+    //
+    vscf_impl_t *hmac;
 };
 
 

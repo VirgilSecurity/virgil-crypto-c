@@ -171,20 +171,20 @@ vscf_brainkey_client_take_operation_random(vscf_brainkey_client_t *self, vscf_im
 VSCF_PUBLIC void
 vscf_brainkey_client_release_operation_random(vscf_brainkey_client_t *self);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t deblind_factor, vsc_buffer_t blinded_point);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point, vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t seed);
 
 VSCF_PUBLIC mbedtls_ecp_group
 vscf_brainkey_client_get_op_group(vscf_brainkey_client_t *self);
 
 VSCF_PUBLIC void
-vscf_brainkey_client_free_op_group(vscf_brainkey_client_t *self, mbedtls_ecp_group op_group);
+vscf_brainkey_client_free_op_group(mbedtls_ecp_group op_group);
 
 
 // --------------------------------------------------------------------------

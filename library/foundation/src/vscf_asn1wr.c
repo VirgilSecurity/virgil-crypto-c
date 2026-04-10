@@ -74,19 +74,19 @@
 //  If given mbedtls code is equal to zero, then setup correspond error
 //  to the context and return true, otherwise return false.
 //
-VSCF_PRIVATE bool
+static bool
 vscf_asn1wr_mbedtls_has_error(vscf_asn1wr_t *self, int code);
 
 //
 //  Write raw data and with given tag the to ASN.1 structure.
 //
-VSCF_PRIVATE size_t
-vscf_asn1wr_write_tag_data(vscf_asn1wr_t *self, vsc_data_t *data, int tag);
+static size_t
+vscf_asn1wr_write_tag_data(vscf_asn1wr_t *self, vsc_data_t data, int tag);
 
 //
 //  Get length of the current ASN.1 element with tag and length itself.
 //
-VSCF_PRIVATE size_t
+static size_t
 vscf_asn1wr_get_current_element_len(byte curr, byte end);
 
 //
@@ -94,19 +94,19 @@ vscf_asn1wr_get_current_element_len(byte curr, byte end);
 //  Note, "from" element must be behind "to" element.
 //  Note, algorithm complexity is O^2.
 //
-VSCF_PRIVATE void
+static void
 vscf_asn1wr_swap_elements_of_set(byte to_start, size_t to_len, byte from_start, size_t from_len);
 
 //
 //  Return true if second element is lexicographical less then first.
 //
-VSCF_PRIVATE bool
+static bool
 vscf_asn1wr_second_element_of_set_is_less(byte first_start, size_t first_len, byte second_start, size_t second_len);
 
 //
 //  Perform lexicographical sorting of the given elements of set.
 //
-VSCF_PRIVATE void
+static void
 vscf_asn1wr_sort_elements_of_set(vscf_asn1wr_t *self, size_t len);
 
 

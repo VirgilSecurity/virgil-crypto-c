@@ -162,7 +162,7 @@ vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vs
 //  Set a new seed as an entropy source.
 //
 VSCF_PRIVATE void
-vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t *seed);
+vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t seed);
 
 
 // --------------------------------------------------------------------------

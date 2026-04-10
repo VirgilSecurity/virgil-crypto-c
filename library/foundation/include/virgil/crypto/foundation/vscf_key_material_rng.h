@@ -163,7 +163,7 @@ vscf_key_material_rng_reseed(vscf_key_material_rng_t *self);
 //  Set a new key material.
 //
 VSCF_PRIVATE void
-vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t *key_material);
+vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t key_material);
 
 
 // --------------------------------------------------------------------------

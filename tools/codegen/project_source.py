@@ -102,6 +102,7 @@ class ClassSource:
     methods: list[MethodSource] = field(default_factory=list)
     constructors: list[MethodSource] = field(default_factory=list)
     dependencies: list[DependencySource] = field(default_factory=list)
+    macroses: list[MethodSource] = field(default_factory=list)
 
 
 @dataclass
@@ -478,6 +479,7 @@ def load_class_source(path: Path) -> ClassSource:
         methods=[_method_like("method", e) for e in root.findall("method")],
         constructors=[_method_like("constructor", e) for e in root.findall("constructor")],
         dependencies=[_dependency(e) for e in root.findall("dependency")],
+        macroses=[_method_like("macros", e) for e in root.findall("macros")],
     )
 
 

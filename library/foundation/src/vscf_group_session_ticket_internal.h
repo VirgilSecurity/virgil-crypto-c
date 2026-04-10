@@ -74,8 +74,7 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *self, uint32_t epoch,
-        vsc_data_t session_id) VSCF_NODISCARD;
+vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *self, unsigned epoch, vsc_data_t session_id);
 
 
 // --------------------------------------------------------------------------

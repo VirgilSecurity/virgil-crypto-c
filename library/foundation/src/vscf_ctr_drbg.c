@@ -68,6 +68,85 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This method is called when interface 'entropy source' was setup.
+//
+static vscf_status_t
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self);
+
+//
+//  This method is called when interface 'entropy source' was released.
+//
+static void
+vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_t *self);
+
+//
+//  This method is called when interface 'entropy source' was setup.
+//
+static vscf_status_t
+vscf_ctr_drbg_did_setup_entropy_source(vscf_ctr_drbg_t *self) {
+
+    // TODO: This is STUB. Implement me.
+    return vscf_status_SUCCESS;
+}
+
+//
+//  This method is called when interface 'entropy source' was released.
+//
+static void
+vscf_ctr_drbg_did_release_entropy_source(vscf_ctr_drbg_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  Setup dependency to the interface 'entropy source' with shared ownership.
+//
+VSCF_PUBLIC status
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(entropy_source);
+    VSCF_ASSERT(self->entropy_source == NULL);
+
+    VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
+
+    self->entropy_source = vscf_impl_shallow_copy(entropy_source);
+
+    return vscf_ctr_drbg_did_setup_entropy_source(self);
+}
+
+//
+//  Setup dependency to the interface 'entropy source' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC status
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(entropy_source);
+    VSCF_ASSERT(self->entropy_source == NULL);
+
+    VSCF_ASSERT(vscf_entropy_source_is_implemented(entropy_source));
+
+    self->entropy_source = entropy_source;
+
+    return vscf_ctr_drbg_did_setup_entropy_source(self);
+}
+
+//
+//  Release dependency to the interface 'entropy source'.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->entropy_source);
+
+    vscf_ctr_drbg_did_release_entropy_source(self);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

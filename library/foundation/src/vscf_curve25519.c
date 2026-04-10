@@ -76,6 +76,122 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  This method is called when class 'ecies' was setup.
+//
+static void
+vscf_curve25519_did_setup_ecies(vscf_curve25519_t *self);
+
+//
+//  This method is called when class 'ecies' was released.
+//
+static void
+vscf_curve25519_did_release_ecies(vscf_curve25519_t *self);
+
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_curve25519_use_random(vscf_curve25519_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_curve25519_take_random(vscf_curve25519_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_curve25519_release_random(vscf_curve25519_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
+//
+//  This method is called when class 'ecies' was setup.
+//
+static void
+vscf_curve25519_did_setup_ecies(vscf_curve25519_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  This method is called when class 'ecies' was released.
+//
+static void
+vscf_curve25519_did_release_ecies(vscf_curve25519_t *self) {
+
+    // TODO: This is STUB. Implement me.
+}
+
+//
+//  Setup dependency to the class 'ecies' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_curve25519_use_ecies(vscf_curve25519_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT(self->ecies == NULL);
+
+    self->ecies = vscf_ecies_shallow_copy(ecies);
+
+    vscf_curve25519_did_setup_ecies(self);
+}
+
+//
+//  Setup dependency to the class 'ecies' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_curve25519_take_ecies(vscf_curve25519_t *self, vscf_ecies_t *ecies) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(ecies);
+    VSCF_ASSERT(self->ecies == NULL);
+
+    self->ecies = ecies;
+
+    vscf_curve25519_did_setup_ecies(self);
+}
+
+//
+//  Release dependency to the class 'ecies'.
+//
+VSCF_PUBLIC void
+vscf_curve25519_release_ecies(vscf_curve25519_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_ecies_destroy(&self->ecies);
+
+    vscf_curve25519_did_release_ecies(self);
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

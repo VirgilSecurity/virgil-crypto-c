@@ -76,7 +76,7 @@ extern "C" {
 //
 //  Callback. Extract public key from the private key.
 //
-typedef void (*vscf_private_key_api_extract_public_key_fn)(const vscf_impl_t *impl);
+typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_impl_t *impl);
 
 //
 //  Contains API requirements of the interface 'private key'.

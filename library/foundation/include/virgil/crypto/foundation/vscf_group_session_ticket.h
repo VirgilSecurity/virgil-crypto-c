@@ -158,22 +158,19 @@ vscf_group_session_ticket_release_rng(vscf_group_session_ticket_t *self);
 //  Setups default dependencies:
 //  - RNG: CTR DRBG
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_group_session_ticket_setup_defaults(vscf_group_session_ticket_t *self);
-
-VSCF_PUBLIC void
-vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *self, unsigned epoch, vsc_data_t session_id);
 
 //
 //  Set this ticket to start new group session.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_group_session_ticket_setup_ticket_as_new(vscf_group_session_ticket_t *self, vsc_data_t session_id);
 
 VSCF_PUBLIC void
 vscf_group_session_ticket_set_session_id(vscf_group_session_ticket_t *self, vsc_data_t session_id);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self);
 
 //

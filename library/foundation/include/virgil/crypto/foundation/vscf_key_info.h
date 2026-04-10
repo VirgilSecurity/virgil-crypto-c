@@ -100,14 +100,14 @@ vscf_key_info_new(void);
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC void
-vscf_key_info_init_with_alg_info(vscf_key_info_t *self, void alg_info);
+vscf_key_info_init_with_alg_info(vscf_key_info_t *self, vscf_impl_t *alg_info);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC vscf_key_info_t *
-vscf_key_info_new_with_alg_info(void alg_info);
+vscf_key_info_new_with_alg_info(vscf_impl_t *alg_info);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -189,63 +189,63 @@ vscf_key_info_is_hybrid_post_quantum_signer(const vscf_key_info_t *self);
 //
 //  Return common type of the key.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return compound's cipher key id, if key is compound.
 //  Return None, otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_cipher_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return compound's signer key id, if key is compound.
 //  Return None, otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_signer_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return hybrid's first key id, if key is hybrid.
 //  Return None, otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_hybrid_first_key_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return hybrid's second key id, if key is hybrid.
 //  Return None, otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_hybrid_second_key_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return hybrid's first key id of compound's cipher key,
 //  if key is compound(hybrid, ...), None - otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_hybrid_cipher_first_key_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return hybrid's second key id of compound's cipher key,
 //  if key is compound(hybrid, ...), None - otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_hybrid_cipher_second_key_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return hybrid's first key id of compound's signer key,
 //  if key is compound(..., hybrid), None - otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_hybrid_signer_first_key_alg_id(const vscf_key_info_t *self);
 
 //
 //  Return hybrid's second key id of compound's signer key,
 //  if key is compound(..., hybrid), None - otherwise.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_hybrid_signer_second_key_alg_id(const vscf_key_info_t *self);
 
 

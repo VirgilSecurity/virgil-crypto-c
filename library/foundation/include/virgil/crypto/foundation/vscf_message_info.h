@@ -143,12 +143,12 @@ vscf_message_info_add_password_recipient(vscf_message_info_t *self, vscf_passwor
 //  Set information about algorithm that was used for data encryption.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, void data_encryption_alg_info);
+vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t *data_encryption_alg_info);
 
 //
 //  Return information about algorithm that was used for the data encryption.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *self);
 
 //
@@ -205,12 +205,12 @@ vscf_message_info_has_cipher_kdf_alg_info(const vscf_message_info_t *self);
 //  Setup cipher kdf alg info.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_cipher_kdf_alg_info(vscf_message_info_t *self, void cipher_kdf_alg_info);
+vscf_message_info_set_cipher_kdf_alg_info(vscf_message_info_t *self, vscf_impl_t *cipher_kdf_alg_info);
 
 //
 //  Return cipher kdf alg info.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_message_info_cipher_kdf_alg_info(const vscf_message_info_t *self);
 
 //
@@ -229,12 +229,12 @@ vscf_message_info_has_cipher_padding_alg_info(const vscf_message_info_t *self);
 //  Setup cipher padding alg info.
 //
 VSCF_PUBLIC void
-vscf_message_info_set_cipher_padding_alg_info(vscf_message_info_t *self, void cipher_padding_alg_info);
+vscf_message_info_set_cipher_padding_alg_info(vscf_message_info_t *self, vscf_impl_t *cipher_padding_alg_info);
 
 //
 //  Return cipher padding alg info.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_impl_t *
 vscf_message_info_cipher_padding_alg_info(const vscf_message_info_t *self);
 
 //

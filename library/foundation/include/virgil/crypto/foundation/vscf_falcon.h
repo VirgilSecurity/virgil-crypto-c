@@ -90,9 +90,21 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Defines whether a public key can be imported or not.
+    //
     vscf_falcon_CAN_IMPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a public key can be exported or not.
+    //
     vscf_falcon_CAN_EXPORT_PUBLIC_KEY = true,
+    //
+    //  Define whether a private key can be imported or not.
+    //
     vscf_falcon_CAN_IMPORT_PRIVATE_KEY = true,
+    //
+    //  Define whether a private key can be exported or not.
+    //
     vscf_falcon_CAN_EXPORT_PRIVATE_KEY = true
 };
 
@@ -161,6 +173,25 @@ VSCF_PUBLIC vscf_falcon_t *
 vscf_falcon_shallow_copy(vscf_falcon_t *self);
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_falcon_use_random(vscf_falcon_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_falcon_take_random(vscf_falcon_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_falcon_release_random(vscf_falcon_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -196,13 +227,13 @@ vscf_falcon_generate_ephemeral_key(const vscf_falcon_t *self, vscf_impl_t *key, 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_import_public_key(const vscf_falcon_t *self, void, vscf_error_t *error);
+vscf_falcon_import_public_key(const vscf_falcon_t *self, vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_import_public_key_data(const vscf_falcon_t *self, vsc_data_t *key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_falcon_import_public_key_data(const vscf_falcon_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -211,7 +242,7 @@ vscf_falcon_import_public_key_data(const vscf_falcon_t *self, vsc_data_t *key_da
 //  For instance, RSA public key must be exported in format defined in
 //  RFC 3447 Appendix A.1.1.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_falcon_export_public_key(const vscf_falcon_t *self, vscf_impl_t *public_key, vscf_error_t *error);
 
 //
@@ -241,13 +272,13 @@ vscf_falcon_export_public_key_data(const vscf_falcon_t *self, vscf_impl_t *publi
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_import_private_key(const vscf_falcon_t *self, void, vscf_error_t *error);
+vscf_falcon_import_private_key(const vscf_falcon_t *self, vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_falcon_import_private_key_data(const vscf_falcon_t *self, vsc_data_t *key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_falcon_import_private_key_data(const vscf_falcon_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -256,7 +287,7 @@ vscf_falcon_import_private_key_data(const vscf_falcon_t *self, vsc_data_t *key_d
 //  For instance, RSA private key must be exported in format defined in
 //  RFC 3447 Appendix A.1.2.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_falcon_export_private_key(const vscf_falcon_t *self, vscf_impl_t *private_key, vscf_error_t *error);
 
 //
@@ -292,7 +323,7 @@ vscf_falcon_signature_len(const vscf_falcon_t *self, vscf_impl_t *private_key);
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_falcon_sign_hash(const vscf_falcon_t *self, vscf_impl_t *private_key, void, vsc_data_t *digest, vsc_buffer_t *signature);
+vscf_falcon_sign_hash(const vscf_falcon_t *self, vscf_impl_t *private_key, void, vsc_data_t digest, vsc_buffer_t *signature);
 
 //
 //  Check if algorithm can verify data digest with a given key.
@@ -304,7 +335,7 @@ vscf_falcon_can_verify(const vscf_falcon_t *self, vscf_impl_t *public_key);
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_falcon_verify_hash(const vscf_falcon_t *self, vscf_impl_t *public_key, void, vsc_data_t *digest, vsc_data_t *signature);
+vscf_falcon_verify_hash(const vscf_falcon_t *self, vscf_impl_t *public_key, void, vsc_data_t digest, vsc_data_t signature);
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

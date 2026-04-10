@@ -83,8 +83,10 @@ typedef void (*vscf_impl_cleanup_fn)(vscf_impl_t *impl);
 //
 typedef void (*vscf_impl_delete_fn)(vscf_impl_t *impl);
 
-Returns API of the requested interface if implemented,
-otherwise - NULL.
+//
+//  Returns API of the requested interface if implemented,
+//  otherwise - NULL.
+//
 typedef const vscf_api_t * (*vscf_impl_find_api_fn)(vscf_api_tag_t api_tag);
 
 //
@@ -96,8 +98,10 @@ struct vscf_impl_info_t {
     //  Implementation unique identifier, MUST be first in the structure.
     //
     vscf_impl_tag_t impl_tag;
-    Callback that returns API of the requested interface if implemented, otherwise - NULL.
-    MUST be second in the structure.
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
     vscf_impl_find_api_fn find_api_cb;
     //
     //  Release acquired inner resources.
@@ -109,13 +113,15 @@ struct vscf_impl_info_t {
     vscf_impl_delete_fn self_delete_cb;
 };
 
-Contains header of any 'API' implementation structure.
-It is used for runtime type casting and checking.
+//
+//  Contains header of any 'API' implementation structure.
+//  It is used for runtime type casting and checking.
+//
 struct vscf_impl_t {
     //
     //  Compile-time known information.
     //
-    const const vscf_impl_info_t *info;
+    const vscf_impl_info_t *info;
     //
     //  Reference counter.
     //

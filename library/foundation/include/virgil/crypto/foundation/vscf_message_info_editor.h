@@ -158,7 +158,7 @@ vscf_message_info_editor_release_random(vscf_message_info_editor_t *self);
 //
 //  Set dependencies to it's defaults.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self);
 
 //
@@ -167,20 +167,20 @@ vscf_message_info_editor_setup_defaults(vscf_message_info_editor_t *self);
 //  Note that recipients can only be removed but not added.
 //  Note, use "unlock" method to be able to add new recipients as well.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_message_info_editor_unpack(vscf_message_info_editor_t *self, vsc_data_t message_info_data);
 
 //
 //  Decrypt encryption key this allows adding new recipients.
 //
-VSCF_PUBLIC void
-vscf_message_info_editor_unlock(vscf_message_info_editor_t *self, vsc_data_t owner_recipient_id, void owner_private_key);
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_unlock(vscf_message_info_editor_t *self, vsc_data_t owner_recipient_id, vscf_impl_t *owner_private_key);
 
 //
 //  Add recipient defined with id and public key.
 //
-VSCF_PUBLIC void
-vscf_message_info_editor_add_key_recipient(vscf_message_info_editor_t *self, vsc_data_t recipient_id, void public_key);
+VSCF_PUBLIC vscf_status_t
+vscf_message_info_editor_add_key_recipient(vscf_message_info_editor_t *self, vsc_data_t recipient_id, vscf_impl_t *public_key);
 
 //
 //  Remove recipient with a given id.

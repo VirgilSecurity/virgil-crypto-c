@@ -92,15 +92,15 @@ struct vscf_hybrid_private_key_t {
     //
     //  Implementation specific context.
     //
-    void alg_info;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //
-    void first_key;
+    vscf_impl_t *first_key;
     //
     //  Implementation specific context.
     //
-    void second_key;
+    vscf_impl_t *second_key;
 };
 
 

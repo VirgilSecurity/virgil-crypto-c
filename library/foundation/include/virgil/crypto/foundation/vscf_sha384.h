@@ -87,7 +87,13 @@ extern "C" {
 //  Public integral constants.
 //
 enum {
+    //
+    //  Length of the digest (hashing output) in bytes.
+    //
     vscf_sha384_DIGEST_LEN = 48,
+    //
+    //  Block length of the digest function in bytes.
+    //
     vscf_sha384_BLOCK_LEN = 128
 };
 
@@ -177,7 +183,7 @@ vscf_sha384_restore_alg_info(vscf_sha384_t *self, const vscf_impl_t *alg_info);
 //  Calculate hash over given data.
 //
 VSCF_PUBLIC void
-vscf_sha384_hash(vsc_data_t *data, vsc_buffer_t *digest);
+vscf_sha384_hash(vsc_data_t data, vsc_buffer_t *digest);
 
 //
 //  Start a new hashing.
@@ -189,7 +195,7 @@ vscf_sha384_start(vscf_sha384_t *self);
 //  Add given data to the hash.
 //
 VSCF_PUBLIC void
-vscf_sha384_update(vscf_sha384_t *self, vsc_data_t *data);
+vscf_sha384_update(vscf_sha384_t *self, vsc_data_t data);
 
 //
 //  Accompilsh hashing and return it's result (a message digest).

@@ -92,15 +92,15 @@ struct vscf_compound_private_key_t {
     //
     //  Implementation specific context.
     //
-    void alg_info;
+    vscf_impl_t *alg_info;
     //
     //  Implementation specific context.
     //
-    void cipher_key;
+    vscf_impl_t *cipher_key;
     //
     //  Implementation specific context.
     //
-    void signer_key;
+    vscf_impl_t *signer_key;
 };
 
 

@@ -75,12 +75,44 @@ vscf_hybrid_key_alg_info_find_api(vscf_api_tag_t api_tag);
 //
 //  Configuration of the interface API 'alg info api'.
 //
-static const vscf_alg_info_api_t alg_info_api = vscf_api_tag_ALG_INFO;
+static const vscf_alg_info_api_t alg_info_api = {
+    //
+    //  API's unique identifier, MUST be first in the structure.
+    //  For interface 'alg info' MUST be equal to the  'vscf_api_tag_ALG_INFO'.
+    //
+    vscf_api_tag_ALG_INFO,
+    //
+    //  Implementation unique identifier, MUST be second in the structure.
+    //
+    vscf_impl_tag_HYBRID_KEY_ALG_INFO,
+    //
+    //  Provide algorithm identificator.
+    //
+    (vscf_alg_info_api_alg_id_fn)(void (*)(void))vscf_hybrid_key_alg_info_alg_id
+};
 
 //
 //  Compile-time known information about 'hybrid key alg info' implementation.
 //
-static const vscf_impl_info_t info = vscf_impl_tag_HYBRID_KEY_ALG_INFO;
+static const vscf_impl_info_t info = {
+    //
+    //  Implementation unique identifier, MUST be first in the structure.
+    //
+    vscf_impl_tag_HYBRID_KEY_ALG_INFO,
+    //
+    //  Callback that returns API of the requested interface if implemented, otherwise - NULL.
+    //  MUST be second in the structure.
+    //
+    vscf_hybrid_key_alg_info_find_api,
+    //
+    //  Release acquired inner resources.
+    //
+    (vscf_impl_cleanup_fn)(void (*)(void))vscf_hybrid_key_alg_info_cleanup,
+    //
+    //  Self destruction, according to destruction policy.
+    //
+    (vscf_impl_delete_fn)(void (*)(void))vscf_hybrid_key_alg_info_delete
+};
 
 //
 //  Perform initialization of preallocated implementation context.

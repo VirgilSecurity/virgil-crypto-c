@@ -134,26 +134,26 @@ vscf_base64_shallow_copy(vscf_base64_t *self);
 //  Calculate length in bytes required to hold an encoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_encoded_len(vscf_base64_t *self, size_t data_len);
+vscf_base64_encoded_len(size_t data_len);
 
 //
 //  Encode given data to the base64 format.
 //  Note, written buffer is NOT null-terminated.
 //
 VSCF_PUBLIC void
-vscf_base64_encode(vscf_base64_t *self, vsc_data_t data, vsc_buffer_t str);
+vscf_base64_encode(vsc_data_t data, vsc_buffer_t str);
 
 //
 //  Calculate length in bytes required to hold a decoded base64 string.
 //
 VSCF_PUBLIC size_t
-vscf_base64_decoded_len(vscf_base64_t *self, size_t str_len);
+vscf_base64_decoded_len(size_t str_len);
 
 //
 //  Decode given data from the base64 format.
 //
-VSCF_PUBLIC void
-vscf_base64_decode(vscf_base64_t *self, vsc_data_t str, vsc_buffer_t data);
+VSCF_PUBLIC vscf_status_t
+vscf_base64_decode(vsc_data_t str, vsc_buffer_t data);
 
 
 // --------------------------------------------------------------------------

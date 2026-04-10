@@ -97,11 +97,11 @@ struct vscf_hybrid_key_alg_info_t {
     //
     //  Implementation specific context.
     //
-    void first_key_alg_info;
+    vscf_impl_t *first_key_alg_info;
     //
     //  Implementation specific context.
     //
-    void second_key_alg_info;
+    vscf_impl_t *second_key_alg_info;
 };
 
 

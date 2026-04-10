@@ -185,13 +185,13 @@ vscf_signer_append_data(vscf_signer_t *self, vsc_data_t data);
 //  Return length of the signature.
 //
 VSCF_PUBLIC size_t
-vscf_signer_signature_len(const vscf_signer_t *self, void private_key);
+vscf_signer_signature_len(const vscf_signer_t *self, vscf_impl_t *private_key);
 
 //
 //  Accomplish signing and return signature.
 //
-VSCF_PUBLIC void
-vscf_signer_sign(const vscf_signer_t *self, void private_key, vsc_buffer_t signature);
+VSCF_PUBLIC vscf_status_t
+vscf_signer_sign(const vscf_signer_t *self, vscf_impl_t *private_key, vsc_buffer_t signature);
 
 
 // --------------------------------------------------------------------------

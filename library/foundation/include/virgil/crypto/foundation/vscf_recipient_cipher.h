@@ -243,7 +243,7 @@ vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc
 //  Add recipient defined with id and public key.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, void public_key);
+vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *public_key);
 
 //
 //  Remove all recipients.
@@ -255,8 +255,8 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self);
 //  Add identifier and private key to sign initial plain text.
 //  Return error if the private key can not sign.
 //
-VSCF_PUBLIC void
-vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, void private_key);
+VSCF_PUBLIC vscf_status_t
+vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *private_key);
 
 //
 //  Remove all signers.
@@ -274,7 +274,7 @@ vscf_recipient_cipher_custom_params(vscf_recipient_cipher_t *self);
 //
 //  Start encryption process.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self);
 
 //
@@ -283,7 +283,7 @@ vscf_recipient_cipher_start_encryption(vscf_recipient_cipher_t *self);
 //  Precondition: At least one signer should be added.
 //  Note, store message info footer as well.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_start_signed_encryption(vscf_recipient_cipher_t *self, size_t data_size);
 
 //
@@ -319,21 +319,21 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //
 //  Process encryption of a new portion of data.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t out);
 
 //
 //  Accomplish encryption.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffer_t out);
 
 //
 //  Initiate decryption process with a recipient private key.
 //  Message Info can be empty if it was embedded to encrypted data.
 //
-VSCF_PUBLIC void
-vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, void private_key, vsc_data_t message_info);
+VSCF_PUBLIC vscf_status_t
+vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info);
 
 //
 //  Initiate decryption process with a recipient private key.
@@ -341,8 +341,8 @@ vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, v
 //  Message Info footer can be empty if it was embedded to encrypted data.
 //  If footer was embedded, method "start decryption with key" can be used.
 //
-VSCF_PUBLIC void
-vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, void private_key, vsc_data_t message_info, vsc_data_t message_info_footer);
+VSCF_PUBLIC vscf_status_t
+vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer);
 
 //
 //  Return buffer length required to hold output of the method
@@ -355,13 +355,13 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Process with a new portion of data.
 //  Return error if data can not be encrypted or decrypted.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t out);
 
 //
 //  Accomplish decryption.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffer_t out);
 
 //
@@ -385,7 +385,7 @@ vscf_recipient_cipher_signer_infos(const vscf_recipient_cipher_t *self);
 //  Verify given cipher info.
 //
 VSCF_PUBLIC bool
-vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, vscf_signer_info_t signer_info, void public_key);
+vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, vscf_signer_info_t signer_info, vscf_impl_t *public_key);
 
 //
 //  Configure decryption symmetric cipher with given key and
@@ -393,37 +393,37 @@ vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, vscf_sig
 //
 //  Note, this method change decryption state.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self, vsc_data_t decryption_key);
 
 //
 //  Decrypt data encryption key with a password.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self);
 
 //
 //  Decrypt data encryption key with a private key.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self);
 
 //
 //  Decrypt data encryption key and configure underlying cipher.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self);
 
 //
 //  Deserialize given message info from the given data or extracted data.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info);
 
 //
 //  Deserialize given message info footer from the given data or extracted data.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self);
 
 //
@@ -445,10 +445,10 @@ vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *sel
 //
 //  Return message info footer - signers public information, etc.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t out);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data);
 
 //
@@ -456,14 +456,14 @@ vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_da
 //  cipher additional data for AEAD ciphers.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, void cipher);
+vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
 
 //
 //  Sign data digest.
 //  Populate message info footer.
 //  Encrypt message info footer.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self);
 
 //
@@ -482,30 +482,30 @@ VSCF_PUBLIC void
 vscf_recipient_cipher_configure_verifier_hash(vscf_recipient_cipher_t *self);
 
 VSCF_PUBLIC vsc_data_t
-vscf_recipient_cipher_data_derived_key(const vscf_recipient_cipher_t *self, void cipher);
+vscf_recipient_cipher_data_derived_key(const vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
 
 VSCF_PUBLIC vsc_data_t
-vscf_recipient_cipher_data_derived_nonce(const vscf_recipient_cipher_t *self, void cipher);
+vscf_recipient_cipher_data_derived_nonce(const vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
 
 VSCF_PUBLIC vsc_data_t
-vscf_recipient_cipher_footer_derived_key(const vscf_recipient_cipher_t *self, void cipher);
+vscf_recipient_cipher_footer_derived_key(const vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
 
 VSCF_PUBLIC vsc_data_t
-vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, void cipher);
+vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, vscf_impl_t *cipher);
 
 //
 //  Setup default algorithms required for encryption.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_setup_encryption_defaults(vscf_recipient_cipher_t *self);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_configure_kdf_feeded_encryption_cipher(vscf_recipient_cipher_t *self);
 
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_encrypt_cipher_key_for_recipients(vscf_recipient_cipher_t *self);
 
 VSCF_PUBLIC vsc_data_t
@@ -517,14 +517,14 @@ vscf_recipient_cipher_decrypt_chunk(vscf_recipient_cipher_t *self, vsc_data_t da
 //
 //  Add information related to encryption to a message info.
 //
-VSCF_PUBLIC void
+VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_update_message_info_for_encryption(vscf_recipient_cipher_t *self);
 
 //
 //  Configure padding cipher with given padding and cipher.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_configure_padding_cipher(vscf_recipient_cipher_t *self, void padding, void cipher);
+vscf_recipient_cipher_configure_padding_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *padding, vscf_impl_t *cipher);
 
 
 // --------------------------------------------------------------------------

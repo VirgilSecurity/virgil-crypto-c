@@ -101,6 +101,14 @@ struct vscf_pkcs5_pbes2_t {
     //  Implementation specific context.
     //
     vsc_buffer_t *password;
+    //
+    //  Dependency 'kdf'.
+    //
+    vscf_impl_t *kdf;
+    //
+    //  Dependency 'cipher'.
+    //
+    vscf_impl_t *cipher;
 };
 
 

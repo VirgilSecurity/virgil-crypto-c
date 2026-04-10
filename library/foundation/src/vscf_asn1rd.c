@@ -74,13 +74,13 @@
 //  If given mbedtls code is equal to zero, then setup correspond error
 //  to the context and return true, otherwise return false.
 //
-VSCF_PRIVATE bool
+static bool
 vscf_asn1rd_mbedtls_has_error(vscf_asn1rd_t *self, int code);
 
 //
 //  Read raw data of specific tag the from the buffer.
 //
-VSCF_PRIVATE vsc_data_t *
+static vsc_data_t
 vscf_asn1rd_read_tag_data(vscf_asn1rd_t *self, int tag);
 
 

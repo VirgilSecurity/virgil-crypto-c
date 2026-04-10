@@ -134,7 +134,7 @@ vscf_pem_shallow_copy(vscf_pem_t *self);
 //  Return length in bytes required to hold wrapped PEM format.
 //
 VSCF_PUBLIC size_t
-vscf_pem_wrapped_len(vscf_pem_t *self, const char *title, size_t data_len);
+vscf_pem_wrapped_len(const char *title, size_t data_len);
 
 //
 //  Takes binary data and wraps it to the simple PEM format - no
@@ -142,25 +142,25 @@ vscf_pem_wrapped_len(vscf_pem_t *self, const char *title, size_t data_len);
 //  Note, written buffer is NOT null-terminated.
 //
 VSCF_PUBLIC void
-vscf_pem_wrap(vscf_pem_t *self, const char *title, vsc_data_t data, vsc_buffer_t pem);
+vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t pem);
 
 //
 //  Return length in bytes required to hold unwrapped binary.
 //
 VSCF_PUBLIC size_t
-vscf_pem_unwrapped_len(vscf_pem_t *self, size_t pem_len);
+vscf_pem_unwrapped_len(size_t pem_len);
 
 //
 //  Takes PEM data and extract binary data from it.
 //
-VSCF_PUBLIC void
-vscf_pem_unwrap(vscf_pem_t *self, vsc_data_t pem, vsc_buffer_t data);
+VSCF_PUBLIC vscf_status_t
+vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t data);
 
 //
 //  Returns PEM title if PEM data is valid, otherwise - empty data.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_pem_title(vscf_pem_t *self, vsc_data_t pem);
+vscf_pem_title(vsc_data_t pem);
 
 
 // --------------------------------------------------------------------------

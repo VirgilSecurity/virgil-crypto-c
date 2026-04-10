@@ -88,28 +88,28 @@ extern "C" {
 //
 //  Callback. Check if algorithm can sign data digest with a given key.
 //
-typedef bool (*vscf_key_signer_api_can_sign_fn)(const vscf_impl_t *impl, void private_key);
+typedef bool (*vscf_key_signer_api_can_sign_fn)(const vscf_impl_t *impl, vscf_impl_t *private_key);
 
 //
 //  Callback. Return length in bytes required to hold signature.
 //  Return zero if a given private key can not produce signatures.
 //
-typedef size_t (*vscf_key_signer_api_signature_len_fn)(const vscf_impl_t *impl, void private_key);
+typedef size_t (*vscf_key_signer_api_signature_len_fn)(const vscf_impl_t *impl, vscf_impl_t *private_key);
 
 //
 //  Callback. Sign data digest with a given private key.
 //
-typedef vscf_status_t (*vscf_key_signer_api_sign_hash_fn)(const vscf_impl_t *impl, void private_key, void hash_id, vsc_data_t digest, vsc_buffer_t *signature);
+typedef vscf_status_t (*vscf_key_signer_api_sign_hash_fn)(const vscf_impl_t *impl, vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature);
 
 //
 //  Callback. Check if algorithm can verify data digest with a given key.
 //
-typedef bool (*vscf_key_signer_api_can_verify_fn)(const vscf_impl_t *impl, void public_key);
+typedef bool (*vscf_key_signer_api_can_verify_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key);
 
 //
 //  Callback. Verify data digest with a given public key and signature.
 //
-typedef bool (*vscf_key_signer_api_verify_hash_fn)(const vscf_impl_t *impl, void public_key, void hash_id, vsc_data_t digest, vsc_data_t signature);
+typedef bool (*vscf_key_signer_api_verify_hash_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
 
 //
 //  Contains API requirements of the interface 'key signer'.

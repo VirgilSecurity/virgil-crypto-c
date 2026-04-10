@@ -93,7 +93,11 @@ struct vscf_key_asn1_deserializer_t {
     //
     //  Implementation specific context.
     //
-    void alg_info_der_deserializer;
+    vscf_alg_info_der_deserializer_t *alg_info_der_deserializer;
+    //
+    //  Dependency 'asn1 reader'.
+    //
+    vscf_impl_t *asn1_reader;
 };
 
 
