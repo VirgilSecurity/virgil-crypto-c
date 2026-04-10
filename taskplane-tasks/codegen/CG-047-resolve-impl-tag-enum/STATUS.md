@@ -19,12 +19,11 @@
 - [x] Approach decided: Synthetic IREnum in project_to_ir() — add 'impl tag' enum with BEGIN/END + one constant per implementation
 
 ### Step 1: Implement impl/tag enum resolution
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on approach chosen in Step 0
-
-- [ ] impl/tag resolves in IR or type system
-- [ ] Both skipped modules generate successfully
+- [ ] Add synthetic `impl tag` IREnum to project_to_ir() in project_ir.py with proper output target
+- [ ] Ensure enum_ir() lookups for "impl tag" and "impl/tag" resolve correctly
+- [ ] Both skipped modules generate successfully (c_module_vscf_key.xml, c_module_vscf_key_api.xml)
 - [ ] No new skips introduced
 
 ### Step 2: Testing & Verification
