@@ -121,8 +121,7 @@ vscp_pythia_configure(void) {
     mbedtls_ctr_drbg_init(&g_rng);
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, 32,
-            MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
 
     const unsigned char pers[] = "vscp_pythia";

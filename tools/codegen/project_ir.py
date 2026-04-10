@@ -341,14 +341,14 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         description=description,
         kind=(
             "callback" if "callback" in attrs else
-            "class" if "class" in attrs or attrs.get("type") == "self" else
+            "class" if "class" in attrs or "impl" in attrs or attrs.get("type") == "self" else
             "interface" if "interface" in attrs else
             "enum" if "enum" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
         callback=attrs.get("callback"),
-        class_name=attrs.get("class"),
+        class_name=attrs.get("class") or attrs.get("impl"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
@@ -383,12 +383,12 @@ def _variable_to_ir(src) -> IRCVariable:
         description=src.description,
         type_kind=(
             "callback" if "callback" in attrs else
-            "class" if "class" in attrs else
+            "class" if "class" in attrs or "impl" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
         callback=attrs.get("callback"),
-        class_name=attrs.get("class"),
+        class_name=attrs.get("class") or attrs.get("impl"),
         access=attrs.get("access"),
         declaration=attrs.get("declaration"),
         definition=attrs.get("definition"),
@@ -403,13 +403,13 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         description=description,
         type_kind=(
             "callback" if "callback" in attrs else
-            "class" if "class" in attrs or attrs.get("type") == "self" else
+            "class" if "class" in attrs or "impl" in attrs or attrs.get("type") == "self" else
             "interface" if "interface" in attrs else
             "enum" if "enum" in attrs else
             "type"
         ),
         type_name=attrs.get("type"),
-        class_name=attrs.get("class"),
+        class_name=attrs.get("class") or attrs.get("impl"),
         interface_name=attrs.get("interface"),
         callback=attrs.get("callback"),
         access=attrs.get("access"),

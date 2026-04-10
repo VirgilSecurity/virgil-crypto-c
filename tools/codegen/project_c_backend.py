@@ -38,7 +38,7 @@ def text_element(parent: ET.Element, tag: str, text: str | None = None, **attrs:
 
 
 def snake_name(name: str) -> str:
-    return name.replace(" ", "_")
+    return name.replace("/", "_").replace(" ", "_")
 
 
 def module_ir(project_ir: IRProject, name: str) -> IRModule:
@@ -103,7 +103,11 @@ def entity_output(project_ir: IRProject, *, entity_kind: str, entity_name: str) 
 
 
 def class_type_symbol(project_ir: IRProject, class_name: str) -> str:
-    return f"{entity_output(project_ir, entity_kind='class', entity_name=class_name).c_symbol}_t"
+    try:
+        return f"{entity_output(project_ir, entity_kind='class', entity_name=class_name).c_symbol}_t"
+    except KeyError:
+        # Fall back to implementation lookup (handles impl="X" references)
+        return f"{entity_output(project_ir, entity_kind='implementation', entity_name=class_name).c_symbol}_t"
 
 
 
@@ -432,9 +436,9 @@ def render_api_private_c_module(project_ir: IRProject) -> ET.Element:
         declaration="external",
         definition="public",
     )
-    struct_el.text = (
-        "\nThis structure contains common part of any 'API' interface structure.\n"
-        "It is used for runtime type casting and checking.\n"
+    struct_el.text = comment_text(
+        "This structure contains common part of any 'API' interface structure.\n"
+        "It is used for runtime type casting and checking."
     )
     prop1 = text_element(struct_el, "c_property", name="api_tag", type=f"{prefix}_api_tag_t", accessed_by="value", type_is="enum")
     prop1.text = comment_text("Interface unique identifier.")
@@ -747,9 +751,9 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
 
     # --- callback: find_api_fn ------------------------------------------
     cb_find = text_element(root, "c_callback", name=f"{prefix}_impl_find_api_fn", declaration="public")
-    cb_find.text = (
-        "\nReturns API of the requested interface if implemented,\n"
-        "otherwise - NULL.\n"
+    cb_find.text = comment_text(
+        "Returns API of the requested interface if implemented,\n"
+        "otherwise - NULL."
     )
     text_element(cb_find, "c_argument", name="api_tag", type=f"{prefix}_api_tag_t", accessed_by="value", type_is="enum")
     text_element(cb_find, "c_return", type=f"{prefix}_api_t", accessed_by="pointer", is_const_type="1", type_is="class")
@@ -765,9 +769,9 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
     p1 = text_element(info_struct, "c_property", name="impl_tag", type=f"{prefix}_impl_tag_t", accessed_by="value", type_is="enum")
     p1.text = comment_text("Implementation unique identifier, MUST be first in the structure.")
     p2 = text_element(info_struct, "c_property", name="find_api_cb", type=f"{prefix}_impl_find_api_fn", accessed_by="value", type_is="callback")
-    p2.text = (
-        "\nCallback that returns API of the requested interface if implemented, otherwise - NULL.\n"
-        "MUST be second in the structure.\n"
+    p2.text = comment_text(
+        "Callback that returns API of the requested interface if implemented, otherwise - NULL.\n"
+        "MUST be second in the structure."
     )
     p3 = text_element(info_struct, "c_property", name="self_cleanup_cb", type=f"{prefix}_impl_cleanup_fn", accessed_by="value", type_is="callback")
     p3.text = comment_text("Release acquired inner resources.")
@@ -781,11 +785,11 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
         declaration="external",
         definition="public",
     )
-    impl_struct.text = (
-        "\nContains header of any 'API' implementation structure.\n"
-        "It is used for runtime type casting and checking.\n"
+    impl_struct.text = comment_text(
+        "Contains header of any 'API' implementation structure.\n"
+        "It is used for runtime type casting and checking."
     )
-    ip1 = text_element(impl_struct, "c_property", name="info", type=f"const {prefix}_impl_info_t", accessed_by="pointer", is_const_type="1", type_is="class")
+    ip1 = text_element(impl_struct, "c_property", name="info", type=f"{prefix}_impl_info_t", accessed_by="pointer", is_const_type="1", type_is="class")
     ip1.text = comment_text("Compile-time known information.")
     ip2 = text_element(impl_struct, "c_property", name="refcnt", type=f"{PREFIX}_ATOMIC size_t", accessed_by="value")
     ip2.text = comment_text("Reference counter.")
@@ -910,7 +914,7 @@ def discover_renderers(
                 renderers[main_xml] = overrides[main_xml]
             else:
                 renderers[main_xml] = (
-                    lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_c_module(_pir, _im)
+                    lambda _repo_root, _pir=project_ir, _im=impl, _fp=getattr(project_ir, 'fallback_projects', None): render_implementation_c_module(_pir, _im, fallback_projects=_fp)
                 )
             # Defs module
             defs_out = implementation_defs_output(impl_output)
@@ -919,7 +923,7 @@ def discover_renderers(
                 renderers[defs_xml] = overrides[defs_xml]
             else:
                 renderers[defs_xml] = (
-                    lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_defs_c_module(_pir, _im)
+                    lambda _repo_root, _pir=project_ir, _im=impl, _fp=getattr(project_ir, 'fallback_projects', None): render_implementation_defs_c_module(_pir, _im, fallback_projects=_fp)
                 )
             # Internal module
             internal_out = implementation_internal_output(impl_output)
@@ -928,7 +932,7 @@ def discover_renderers(
                 renderers[internal_xml] = overrides[internal_xml]
             else:
                 renderers[internal_xml] = (
-                    lambda _repo_root, _pir=project_ir, _im=impl: render_implementation_internal_c_module(_pir, _im)
+                    lambda _repo_root, _pir=project_ir, _im=impl, _fp=getattr(project_ir, 'fallback_projects', None): render_implementation_internal_c_module(_pir, _im, fallback_projects=_fp)
                 )
 
     # --- project-global impl infrastructure modules ---
@@ -2198,9 +2202,9 @@ def _render_library_assert_macros(
             parent,
             "c_method",
             name=trigger_method_name,
-            visibility="private",
-            declaration="private",
-            definition="private",
+            visibility="public",
+            declaration="public",
+            definition="public",
             uid=f"c_class_assert_method_trigger_unhandled_error_of_{kind_id}_{name_id}",
         )
         text_element(method_elem, "c_argument", name="error", accessed_by="value", type="int", type_is="primitive")
@@ -2208,7 +2212,6 @@ def _render_library_assert_macros(
         text_element(method_elem, "c_argument", name="line", accessed_by="value", type="int", type_is="primitive")
         text_element(method_elem, "c_return", accessed_by="value", type="void")
         text_element(method_elem, "c_code", trigger_code, type="generated", lang="c")
-        text_element(method_elem, "c_modifier", value="static")
         method_elem.text = comment_text(
             f"Tell assertion handler that error of {lib_req.kind} '{lib_req.name}' is not handled."
         )
@@ -2216,10 +2219,10 @@ def _render_library_assert_macros(
         # --- UNHANDLED_ERROR macro ---
         unhandled_macro_name = f"{prefix_upper}_ASSERT_{kind_name_upper}_UNHANDLED_ERROR"
         unhandled_code = (
-            f"#define {unhandled_macro_name}(error) \\"
-            f"\n    do {{ \\"
-            f"\n        {assert_macro}((error) != {emg.success_value}); \\"
-            f"\n        {trigger_method_name}((int)(error), {prefix_upper}_FILE_PATH_OR_NAME, __LINE__); \\"
+            f"#define {unhandled_macro_name}(error)"
+            f"\n    do {{"
+            f"\n        {assert_macro}((error) != {emg.success_value});"
+            f"\n        {trigger_method_name}((int)(error), {prefix_upper}_FILE_PATH_OR_NAME, __LINE__);"
             f"\n    }} while (0)"
         )
         macro_elem = text_element(
@@ -2238,11 +2241,11 @@ def _render_library_assert_macros(
         # --- SUCCESS macro ---
         success_macro_name = f"{prefix_upper}_ASSERT_{kind_name_upper}_SUCCESS"
         success_code = (
-            f"#define {success_macro_name}(status) \\"
-            f"\n    do {{ \\"
-            f"\n        if ((status) != {emg.success_value}) {{ \\"
-            f"\n            {unhandled_macro_name}(status); \\"
-            f"\n        }} \\"
+            f"#define {success_macro_name}(status)"
+            f"\n    do {{"
+            f"\n        if ((status) != {emg.success_value}) {{"
+            f"\n            {unhandled_macro_name}(status);"
+            f"\n        }}"
             f"\n    }} while (0)"
         )
         success_elem = text_element(
@@ -3828,7 +3831,18 @@ def _render_impl_method(
         extra = {}
         if return_is_const:
             extra["is_const_type"] = "1"
-        text_element(method, "c_return", accessed_by="pointer", type=type_sym, type_is="class", **extra)
+        # Determine accessed_by: value types (like data) returned by value
+        ret_accessed_by = "pointer"
+        if return_class not in ("self_impl", "impl"):
+            for pir in [project_ir] + (fallback_projects or []):
+                try:
+                    ret_cls = class_ir(pir, return_class)
+                    if ret_cls.attrs.get("is_value_type") in {"1", "true"}:
+                        ret_accessed_by = "value"
+                    break
+                except (KeyError, StopIteration):
+                    continue
+        text_element(method, "c_return", accessed_by=ret_accessed_by, type=type_sym, type_is="class", **extra)
     else:
         text_element(method, "c_return", type="void", accessed_by="value")
 
@@ -3938,6 +3952,7 @@ def _render_impl_interface_methods(
                 attrs_list = (f"{project_ir.prefix.upper()}_NODISCARD",)
                 ret_type = "status"
 
+            method_visibility = method.attrs.get("visibility", "public")
             _render_impl_method(
                 parent,
                 name=method_name,
@@ -3950,7 +3965,7 @@ def _render_impl_interface_methods(
                 return_is_const=ret_is_const,
                 code="//  TODO: This is STUB. Implement me.",
                 code_type="stub",
-                visibility="public",
+                visibility=method_visibility,
                 declaration="public",
                 definition="private",
                 attributes=attrs_list,
@@ -4799,6 +4814,18 @@ def argument_from_source(
             string="given",
             is_const_type="1",
         )
+    if attrs.get("enum") is not None:
+        # Enum-typed argument → resolve to enum type
+        enum_name = attrs["enum"]
+        if project_ir is not None:
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+        else:
+            rendered_type = f"vscf_{snake_name(enum_name)}_t"
+        return text_element(parent, "c_argument", name=arg_name, accessed_by="value", type=rendered_type, type_is="primitive")
     rendered_type, kind = type_map(attrs.get("type"))
     extra = {}
     if attrs.get("type") == "byte" and attrs.get("_array") == "given":
