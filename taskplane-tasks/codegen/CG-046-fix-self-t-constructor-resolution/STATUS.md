@@ -1,6 +1,6 @@
 # CG-046: Fix vscf_self_t Constructor Type Resolution — Status
 
-**Current Step:** Step 1: Fix self-type resolution for implementation constructors
+**Current Step:** Step 2: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-10
 **Review Level:** 1
@@ -26,12 +26,12 @@
 - [x] Targeted tests pass
 
 ### Step 2: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Python test suite passing (159 tests)
-- [ ] Common build gate passes
-- [ ] Foundation build: 0 vscf_self_t errors
-- [ ] No regressions
+- [x] Python test suite passing (159 tests)
+- [x] Common build gate passes
+- [x] Foundation build: 0 vscf_self_t errors
+- [x] No regressions
 
 ### Step 3: Documentation & Delivery
 **Status:** ⬜ Not Started
