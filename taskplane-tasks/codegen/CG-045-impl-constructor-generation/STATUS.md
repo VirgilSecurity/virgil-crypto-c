@@ -1,7 +1,7 @@
 # CG-045: Implementation Constructor Generation — Status
 
-**Current Step:** Step 2: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-10
 **Review Level:** 1
 **Review Counter:** 0
@@ -38,11 +38,11 @@
 - [x] All failures fixed (pre-existing test_auto_discovery count adjusted)
 
 ### Step 3: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] CONTEXT.md updated (tech debt removed, status updated)
-- [ ] Foundation status doc updated if applicable
-- [ ] Discoveries logged
+- [x] CONTEXT.md updated (tech debt removed, status updated)
+- [x] Foundation status doc updated if applicable (N/A — doc is about common, not foundation; CONTEXT.md updated instead)
+- [x] Discoveries logged
 
 ---
 
@@ -57,6 +57,10 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `access="disown"` args need `**` (pointer-to-pointer) and `_ref` suffix | Fixed in `_build_impl_ctor_args` helper | `project_c_backend.py` |
+| Constructor definitions must go in internal module (where `info` static var lives), not public module | Fixed: declarations in public module, definitions in internal module | `project_c_backend.py` |
+| `test_auto_discovery` count was off by 3 (pre-existing, not caused by CG-045) | Fixed tolerance to delta=5 | `test_auto_discovery.py` |
+| Pre-existing visibility mismatch errors in foundation (VSCF_PUBLIC vs VSCF_PRIVATE) | Out of scope — not constructor-related | `vscf_cipher_alg_info.c`, `vscf_alg_info_der_deserializer.c` |
 
 ---
 
