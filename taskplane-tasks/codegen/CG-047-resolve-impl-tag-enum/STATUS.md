@@ -1,7 +1,7 @@
 # CG-047: Resolve impl/tag Enum in IR — Status
 
-**Current Step:** Step 1: Implement impl/tag enum resolution
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-10
 **Review Level:** 1
 **Review Counter:** 0
@@ -37,11 +37,11 @@
 - [x] KNOWN_SKIPS updated if applicable
 
 ### Step 3: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CONTEXT.md updated (tech debt removed)
-- [ ] Foundation status doc updated if applicable
-- [ ] Discoveries logged
+- [x] CONTEXT.md updated (tech debt removed)
+- [x] Foundation status doc updated if applicable (no references to update)
+- [x] Discoveries logged
 
 ---
 
@@ -54,6 +54,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `impl/tag` enum referenced as `"impl/tag"` in XML (with slash, not space) — enum_ir() lookup uses exact name match | Used as-is — IREnum.name set to `"impl/tag"` | project_ir.py |
 
 ## Execution Log
 
