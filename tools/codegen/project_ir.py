@@ -559,9 +559,67 @@ def implementation_to_ir(project: ProjectSource, src: ImplementationSource, impl
     )
 
 
+def _synthetic_impl_tag_enum(project: ProjectSource) -> IREnum:
+    """Create a synthetic 'impl/tag' enum from the set of all implementations.
+
+    The legacy codegen generates an ``impl_tag`` enum (one constant per
+    implementation) inside the project-global ``impl`` module.  Other entities
+    reference this enum via ``enum="impl/tag"`` in the XML models, so it must
+    be discoverable in the IR's enum list.
+    """
+    impl_names = sorted(
+        impl.name
+        for implementor in project.implementors
+        for impl in implementor.implementations
+    )
+    prefix = project.prefix
+    stem = f"{prefix}_impl"
+    enum_stem = f"{prefix}_impl_tag"
+    include_namespace = project_include_namespace(project)
+    source_root = PurePosixPath(project.attrs.get("path", ""))
+    work_root = PurePosixPath(project.attrs.get("work_path", ""))
+
+    output = IROutputTarget(
+        entity_kind="enum",
+        entity_name="impl/tag",
+        c_artifact_kind="module",
+        c_symbol=enum_stem,
+        stem=enum_stem,
+        # The enum lives inside the impl module header, not its own file.
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=str(source_root / "include" / include_namespace / f"{stem}.h"),
+        source_path=str(source_root / "src" / f"{stem}.c"),
+        generated_header_path=str(work_root / f"c_module_{stem}.xml"),
+        generated_source_path=str(work_root / f"enum_impl_tag.xml"),
+        once_guard=output_once_guard(stem),
+        header_visibility="public",
+        source_visibility="public",
+    )
+
+    constants = [
+        IRCConstant(name=name, attrs={}, description="")
+        for name in impl_names
+    ]
+
+    return IREnum(
+        name="impl/tag",
+        source_path="",
+        attrs={},
+        description="Enumerates all possible implementations within crypto library.",
+        constants=constants,
+        output=output,
+    )
+
+
 def project_to_ir(project: ProjectSource) -> IRProject:
     explicit_module_paths = {module.path for module in project.modules}
     resolved_modules = [module_to_ir(project, m) for m in project.resolved_modules]
+
+    # Build the synthetic impl/tag enum if the project has implementations.
+    impl_tag_enums: list[IREnum] = []
+    if project.implementors:
+        impl_tag_enums.append(_synthetic_impl_tag_enum(project))
 
     return IRProject(
         name=project.name,
@@ -584,7 +642,7 @@ def project_to_ir(project: ProjectSource) -> IRProject:
         dependency_modules=[module for module in resolved_modules if module.source_path not in explicit_module_paths],
         resolved_modules=resolved_modules,
         classes=[class_to_ir(project, c) for c in project.classes],
-        enums=[enum_to_ir(project, e) for e in project.enums],
+        enums=[enum_to_ir(project, e) for e in project.enums] + impl_tag_enums,
         interfaces=[interface_to_ir(project, i) for i in project.interfaces],
         implementations=[
             implementation_to_ir(project, impl, implementor)

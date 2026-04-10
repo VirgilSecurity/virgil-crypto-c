@@ -138,13 +138,31 @@ VSCF_PUBLIC vscf_hybrid_public_key_t *
 vscf_hybrid_public_key_shallow_copy(vscf_hybrid_public_key_t *self);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create a hybrid public key with 2 public keys.
+//
+//  Note, keys ownership is kept.
+//
+VSCF_PRIVATE void
+vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key);
+
+//
 //  Allocate implementation context and perform it's initialization.
 //  Create a hybrid public key with 2 public keys.
 //
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys(vscf_impl_t *alg_info, vscf_impl_t *first_key, vscf_impl_t *second_key);
+vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create a hybrid public key with 2 public keys.
+//
+//  Note, keys ownership is transferred.
+//
+VSCF_PRIVATE void
+vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -153,7 +171,7 @@ vscf_hybrid_public_key_new_with_keys(vscf_impl_t *alg_info, vscf_impl_t *first_k
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t *first_key, vscf_impl_t *second_key);
+vscf_hybrid_public_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
 
 //
 //  Algorithm identifier the key belongs to.

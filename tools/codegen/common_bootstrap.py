@@ -733,7 +733,7 @@ def main() -> int:
         print(path.relative_to(repo_root))
     # Known skips: modules that reference IR entities not yet available.
     # These are expected and should not cause a non-zero exit code.
-    KNOWN_SKIPS = {"c_module_vscf_key.xml", "c_module_vscf_key_api.xml"}
+    KNOWN_SKIPS: set[str] = set()
 
     unexpected_skips = [(n, e) for n, e in skipped if n not in KNOWN_SKIPS]
     known = [(n, e) for n, e in skipped if n in KNOWN_SKIPS]

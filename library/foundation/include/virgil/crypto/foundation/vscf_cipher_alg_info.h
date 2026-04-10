@@ -145,6 +145,13 @@ VSCF_PUBLIC vscf_cipher_alg_info_t *
 vscf_cipher_alg_info_shallow_copy(vscf_cipher_alg_info_t *self);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create symmetric cipher algorithm info with identificator and input vector.
+//
+VSCF_PUBLIC void
+vscf_cipher_alg_info_init_with_members(vscf_cipher_alg_info_t *self, vscf_alg_id_t alg_id, vsc_data_t nonce);
+
+//
 //  Allocate implementation context and perform it's initialization.
 //  Create symmetric cipher algorithm info with identificator and input vector.
 //

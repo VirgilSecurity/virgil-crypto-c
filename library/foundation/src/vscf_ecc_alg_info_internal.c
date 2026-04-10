@@ -224,6 +224,37 @@ vscf_ecc_alg_info_shallow_copy(vscf_ecc_alg_info_t *self) {
 }
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//
+VSCF_PUBLIC void
+vscf_ecc_alg_info_init_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_ecc_alg_info_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_ecc_alg_info_init_ctx_with_members(self, alg_id, key_id, domain_id);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with EC generic key identificator, EC domain group identificator.
+//
+VSCF_PUBLIC vscf_ecc_alg_info_t *
+vscf_ecc_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id) {
+
+    vscf_ecc_alg_info_t *self = vscf_ecc_alg_info_new();
+
+    vscf_ecc_alg_info_init_with_members(self, alg_id, key_id, domain_id);
+
+    return self;
+}
+
+//
 //  Return size of 'vscf_ecc_alg_info_t' type.
 //
 VSCF_PUBLIC size_t

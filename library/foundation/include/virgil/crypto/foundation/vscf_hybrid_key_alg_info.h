@@ -137,6 +137,15 @@ VSCF_PUBLIC vscf_hybrid_key_alg_info_t *
 vscf_hybrid_key_alg_info_shallow_copy(vscf_hybrid_key_alg_info_t *self);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create hybrid algorithm information.
+//
+//  Note, keys ownership is preserved.
+//
+VSCF_PRIVATE void
+vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info);
+
+//
 //  Allocate implementation context and perform it's initialization.
 //  Create hybrid algorithm information.
 //
@@ -146,13 +155,22 @@ VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
 vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info);
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create hybrid algorithm information.
+//
+//  Note, keys ownership is transferred.
+//
+VSCF_PRIVATE void
+vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
+
+//
 //  Allocate implementation context and perform it's initialization.
 //  Create hybrid algorithm information.
 //
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info);
+vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
 
 //
 //  Provide algorithm identificator.

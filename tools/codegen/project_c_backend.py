@@ -4044,12 +4044,16 @@ def _render_impl_method(
                 )
             elif arg.get("class"):
                 cls_name = arg["class"]
-                try:
-                    type_sym = _resolve_class_type_symbol(
-                        project_ir, cls_name, fallback_projects=fallback_projects
-                    )
-                except KeyError:
-                    type_sym = f"{project_ir.prefix}_{snake_name(cls_name)}_t"
+                if cls_name == "self":
+                    # class="self" refers to the owning implementation's concrete type
+                    type_sym = struct_type
+                else:
+                    try:
+                        type_sym = _resolve_class_type_symbol(
+                            project_ir, cls_name, fallback_projects=fallback_projects
+                        )
+                    except KeyError:
+                        type_sym = f"{project_ir.prefix}_{snake_name(cls_name)}_t"
                 extra = {}
                 if arg.get("is_const"):
                     extra["is_const_type"] = "1"
