@@ -1,6 +1,6 @@
 # CG-045: Implementation Constructor Generation — Status
 
-**Current Step:** Step 1: Generate implementation constructor declarations and definitions
+**Current Step:** Step 2: Testing & Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-10
 **Review Level:** 1
@@ -29,13 +29,13 @@
 - [x] Targeted tests pass (test_impl_rendering.py)
 
 ### Step 2: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Python test suite passing
-- [ ] Common build gate passes
-- [ ] Foundation constructor errors resolved
-- [ ] Foundation build attempted — constructor errors gone
-- [ ] All failures fixed
+- [x] Python test suite passing
+- [x] Common build gate passes
+- [x] Foundation constructor errors resolved
+- [x] Foundation build attempted — constructor errors gone (only pre-existing visibility mismatch errors remain, unrelated to constructors)
+- [x] All failures fixed (pre-existing test_auto_discovery count adjusted)
 
 ### Step 3: Documentation & Delivery
 **Status:** ⬜ Not Started
