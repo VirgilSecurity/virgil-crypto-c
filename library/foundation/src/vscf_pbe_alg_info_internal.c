@@ -223,6 +223,39 @@ vscf_pbe_alg_info_shallow_copy(vscf_pbe_alg_info_t *self) {
 }
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create algorithm info with identificator, KDF algorithm info and
+//  cipher alg info.
+//
+VSCF_PRIVATE void
+vscf_pbe_alg_info_init_with_members(vscf_pbe_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref, vscf_impl_t **cipher_alg_info_ref) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_pbe_alg_info_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_pbe_alg_info_init_ctx_with_members(self, alg_id, kdf_alg_info_ref, cipher_alg_info_ref);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator, KDF algorithm info and
+//  cipher alg info.
+//
+VSCF_PRIVATE vscf_pbe_alg_info_t *
+vscf_pbe_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t **kdf_alg_info_ref, vscf_impl_t **cipher_alg_info_ref) {
+
+    vscf_pbe_alg_info_t *self = vscf_pbe_alg_info_new();
+
+    vscf_pbe_alg_info_init_with_members(self, alg_id, kdf_alg_info_ref, cipher_alg_info_ref);
+
+    return self;
+}
+
+//
 //  Return size of 'vscf_pbe_alg_info_t' type.
 //
 VSCF_PUBLIC size_t

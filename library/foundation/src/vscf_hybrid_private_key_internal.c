@@ -269,6 +269,76 @@ vscf_hybrid_private_key_shallow_copy(vscf_hybrid_private_key_t *self) {
 }
 
 //
+//  Perform initialization of pre-allocated context.
+//  Create a hybrid private key with 2 keys.
+//
+//  Note, keys ownership is kept.
+//
+VSCF_PRIVATE void
+vscf_hybrid_private_key_init_with_keys(vscf_hybrid_private_key_t *self, vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_hybrid_private_key_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_hybrid_private_key_init_ctx_with_keys(self, alg_info_ref, first_key, second_key);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create a hybrid private key with 2 keys.
+//
+//  Note, keys ownership is kept.
+//
+VSCF_PRIVATE vscf_hybrid_private_key_t *
+vscf_hybrid_private_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key) {
+
+    vscf_hybrid_private_key_t *self = vscf_hybrid_private_key_new();
+
+    vscf_hybrid_private_key_init_with_keys(self, alg_info_ref, first_key, second_key);
+
+    return self;
+}
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create a hybrid private key with 2 keys.
+//
+//  Note, keys ownership is transferred.
+//
+VSCF_PRIVATE void
+vscf_hybrid_private_key_init_with_keys_disown(vscf_hybrid_private_key_t *self, vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_hybrid_private_key_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+
+    vscf_hybrid_private_key_init_ctx_with_keys_disown(self, alg_info, first_key_ref, second_key_ref);
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create a hybrid private key with 2 keys.
+//
+//  Note, keys ownership is transferred.
+//
+VSCF_PRIVATE vscf_hybrid_private_key_t *
+vscf_hybrid_private_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref) {
+
+    vscf_hybrid_private_key_t *self = vscf_hybrid_private_key_new();
+
+    vscf_hybrid_private_key_init_with_keys_disown(self, alg_info, first_key_ref, second_key_ref);
+
+    return self;
+}
+
+//
 //  Return size of 'vscf_hybrid_private_key_t' type.
 //
 VSCF_PUBLIC size_t

@@ -137,12 +137,12 @@ VSCF_PUBLIC vscf_compound_private_key_t *
 vscf_compound_private_key_shallow_copy(vscf_compound_private_key_t *self);
 
 //
-//  Allocate implementation context and perform it's initialization.
+//  Perform initialization of pre-allocated context.
 //  Create a compound private key with a cipher private key and
 //  a signer private key.
 //
-VSCF_PRIVATE vscf_compound_private_key_t *
-vscf_compound_private_key_new_with_keys(vscf_impl_t *alg_info, vscf_impl_t *cipher_key, vscf_impl_t *signer_key);
+VSCF_PRIVATE void
+vscf_compound_private_key_init_with_keys(vscf_compound_private_key_t *self, vscf_impl_t **alg_info_ref, vscf_impl_t *cipher_key, vscf_impl_t *signer_key);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -150,7 +150,23 @@ vscf_compound_private_key_new_with_keys(vscf_impl_t *alg_info, vscf_impl_t *ciph
 //  a signer private key.
 //
 VSCF_PRIVATE vscf_compound_private_key_t *
-vscf_compound_private_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t *cipher_key, vscf_impl_t *signer_key);
+vscf_compound_private_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *cipher_key, vscf_impl_t *signer_key);
+
+//
+//  Perform initialization of pre-allocated context.
+//  Create a compound private key with a cipher private key and
+//  a signer private key.
+//
+VSCF_PRIVATE void
+vscf_compound_private_key_init_with_keys_disown(vscf_compound_private_key_t *self, vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Create a compound private key with a cipher private key and
+//  a signer private key.
+//
+VSCF_PRIVATE vscf_compound_private_key_t *
+vscf_compound_private_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
 
 //
 //  Algorithm identifier the key belongs to.

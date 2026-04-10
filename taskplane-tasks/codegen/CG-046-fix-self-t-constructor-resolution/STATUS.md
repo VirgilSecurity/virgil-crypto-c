@@ -1,21 +1,21 @@
 # CG-046: Fix vscf_self_t Constructor Type Resolution — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
 **Last Updated:** 2026-04-10
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** S
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] 4 vscf_self_t build errors reproduced
-- [ ] Self-type resolution code path located
-- [ ] Class constructor self-resolution pattern understood
+- [x] 4 vscf_self_t build errors reproduced
+- [x] Self-type resolution code path located
+- [x] Class constructor self-resolution pattern understood
 
 ### Step 1: Fix self-type resolution for implementation constructors
 **Status:** ⬜ Not Started
@@ -56,6 +56,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-10 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-10 02:00 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-10 02:00 | Step 0 started | Preflight |
 
 ## Blockers
 *None*
