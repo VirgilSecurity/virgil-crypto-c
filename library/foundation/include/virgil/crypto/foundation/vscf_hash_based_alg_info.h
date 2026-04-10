@@ -137,6 +137,13 @@ VSCF_PUBLIC vscf_hash_based_alg_info_t *
 vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *self);
 
 //
+//  Allocate implementation context and perform it's initialization.
+//  Create algorithm info with identificator and HASH algorithm info.
+//
+VSCF_PRIVATE vscf_hash_based_alg_info_t *
+vscf_hash_based_alg_info_new_with_members(vscf_alg_id_t alg_id, vscf_impl_t *hash_alg_info);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t

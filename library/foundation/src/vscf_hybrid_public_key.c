@@ -67,24 +67,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create a hybrid public key with 2 public keys.
-//
-//  Note, keys ownership is kept.
-//
-static vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys(vscf_impl_t *alg_info, vscf_impl_t *first_key, vscf_impl_t *second_key);
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Create a hybrid public key with 2 public keys.
-//
-//  Note, keys ownership is transferred.
-//
-static vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t *first_key, vscf_impl_t *second_key);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
