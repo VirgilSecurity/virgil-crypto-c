@@ -1,7 +1,7 @@
 # CG-046: Fix vscf_self_t Constructor Type Resolution — Status
 
-**Current Step:** Step 2: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-10
 **Review Level:** 1
 **Review Counter:** 0
@@ -34,10 +34,10 @@
 - [x] No regressions
 
 ### Step 3: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] CONTEXT.md updated
-- [ ] Discoveries logged
+- [x] CONTEXT.md updated
+- [x] Discoveries logged
 
 ---
 
@@ -50,6 +50,7 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Fix is a 3-line change in `_render_impl_method`: when `cls_name == "self"`, use `struct_type` | Implemented | `project_c_backend.py:4051` |
 
 ## Execution Log
 
