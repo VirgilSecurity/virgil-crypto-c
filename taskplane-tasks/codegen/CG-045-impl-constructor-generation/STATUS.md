@@ -20,13 +20,13 @@
 - [x] Foundation constructor errors confirmed (4 expected)
 
 ### Step 1: Generate implementation constructor declarations and definitions
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add impl_constructor_symbol and _impl_new_constructor_symbol helper functions
-- [ ] Add _impl_lifecycle_constructor_init_body and _impl_lifecycle_constructor_new_body body generators
-- [ ] Generate init_with_X and new_with_X in render_implementation_c_module (public header declarations + definitions)
-- [ ] Generate init_ctx_with_X stubs in render_implementation_internal_c_module (internal module)
-- [ ] Targeted tests pass (test_impl_rendering.py)
+- [x] Add impl_constructor_symbol and _impl_new_constructor_symbol helper functions
+- [x] Add _impl_lifecycle_constructor_init_body and _impl_lifecycle_constructor_new_body body generators
+- [x] Generate init_with_X and new_with_X in render_implementation_c_module (public header declarations + definitions)
+- [x] Generate init_ctx_with_X stubs in render_implementation_internal_c_module (internal module)
+- [x] Targeted tests pass (test_impl_rendering.py)
 
 ### Step 2: Testing & Verification
 **Status:** ⬜ Not Started
