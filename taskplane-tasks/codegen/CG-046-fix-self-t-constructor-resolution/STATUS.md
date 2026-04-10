@@ -1,6 +1,6 @@
 # CG-046: Fix vscf_self_t Constructor Type Resolution — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Fix self-type resolution for implementation constructors
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-10
 **Review Level:** 1
@@ -18,12 +18,12 @@
 - [x] Class constructor self-resolution pattern understood
 
 ### Step 1: Fix self-type resolution for implementation constructors
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] class="self" resolves to concrete impl type
-- [ ] init_with_X and new_with_X declarations correct
-- [ ] const/pointer qualifiers preserved
-- [ ] Targeted tests pass
+- [x] class="self" resolves to concrete impl type
+- [x] init_with_X and new_with_X declarations correct
+- [x] const/pointer qualifiers preserved
+- [x] Targeted tests pass
 
 ### Step 2: Testing & Verification
 **Status:** ⬜ Not Started
