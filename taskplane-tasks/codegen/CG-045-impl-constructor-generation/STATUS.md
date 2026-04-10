@@ -1,6 +1,6 @@
 # CG-045: Implementation Constructor Generation — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Generate implementation constructor declarations and definitions
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-10
 **Review Level:** 1
@@ -20,15 +20,13 @@
 - [x] Foundation constructor errors confirmed (4 expected)
 
 ### Step 1: Generate implementation constructor declarations and definitions
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on exact constructor patterns discovered in Step 0
-
-- [ ] Constructor symbol helpers added for implementations
-- [ ] init_with_X declarations and definitions generated
-- [ ] new_with_X declarations and definitions generated
-- [ ] Parameter types resolve correctly
-- [ ] Targeted tests pass
+- [ ] Add impl_constructor_symbol and _impl_new_constructor_symbol helper functions
+- [ ] Add _impl_lifecycle_constructor_init_body and _impl_lifecycle_constructor_new_body body generators
+- [ ] Generate init_with_X and new_with_X in render_implementation_c_module (public header declarations + definitions)
+- [ ] Generate init_ctx_with_X stubs in render_implementation_internal_c_module (internal module)
+- [ ] Targeted tests pass (test_impl_rendering.py)
 
 ### Step 2: Testing & Verification
 **Status:** ⬜ Not Started
