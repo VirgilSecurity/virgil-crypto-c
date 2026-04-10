@@ -182,6 +182,10 @@ Foundation codegen parity phase:
 - `CG-042` — fix vtable struct initializer in internal modules (depends on CG-040)
 - `CG-043` — fix dependency methods + library macros ‖ parallel with CG-040/041
 - `CG-044` — foundation codegen full verification: build + test gate (depends on CG-040-043)
+  - ✅ Reduced foundation build errors from 20+ categories to 4 pre-existing errors
+  - ✅ Fixed: broken comments, enum resolution, impl/ references, value type semantics, vtable casts, macro rendering, library assert visibility
+  - ⚠️ 4 remaining errors: `cipher_alg_info_new_with_members` undeclared (implementation constructor generation not yet supported)
+  - ✅ Common codegen unchanged (no regression), 159/159 Python tests pass
 
 ---
 
@@ -194,3 +198,6 @@ Foundation codegen parity phase:
 - Add parity/tooling checks that make mixed-mode bootstrap differences easier to review.
 - Revisit umbrella/support/build generation only where the broader shared framework requires it.
 - `_class_dependency_includes` in `project_c_backend.py` fails when rendering foundation classes that reference `common` project classes (e.g. `data`, `buffer`). Cross-project class resolution needs a multi-project-aware lookup. (discovered during CG-029)
+- **Implementation constructor generation**: The codegen generates constructors for classes but not implementations. `cipher alg info`, `raw public key`, `raw private key`, etc. have `<constructor>` elements that need `init_with_X` and `new_with_X` methods. Currently 4 build errors from `cipher_alg_info_new_with_members` being undeclared. (discovered during CG-044)
+- **Known module skips**: `c_module_vscf_key.xml` and `c_module_vscf_key_api.xml` skip with 'enum not found in IR: impl/tag'. The `impl/tag` enum is a generated enum in the impl module, not a standalone IR entity. (discovered during CG-044)
+- **vscf_message_info_custom_params.h missing include**: Pre-existing bug — uses `vscf_list_key_value_node_t` but doesn't include the header. Manually fixed but should be addressed in codegen include generation. (discovered during CG-044)
