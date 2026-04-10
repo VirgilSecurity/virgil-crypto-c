@@ -72,26 +72,26 @@ This script is allowed to apply generated output temporarily into the repo, buil
 
 ## Key Files
 
-| Category | Path |
-|----------|------|
-| Task area | `taskplane-tasks/codegen/` |
-| Main bootstrap generator | `tools/codegen/common_bootstrap.py` |
-| Direct lowering logic | `tools/codegen/common_direct_c.py` |
-| Source model loader | `tools/codegen/common_source.py` |
-| IR mapping | `tools/codegen/common_ir.py` |
-| Build / verification | `tools/codegen/build_common_with_new_codegen.sh` |
-| Migration overview | `docs/codegen-migration/README.md` |
-| Roadmap | `docs/codegen-migration/roadmap.md` |
-| Foundation status | `docs/codegen-migration/common-direct-foundation-status.md` |
-| Test: class dependencies | `tools/codegen/test_class_dependencies.py` |
-| Test: interface parsing | `tools/codegen/test_interface_parsing.py` |
-| Test: interface rendering | `tools/codegen/test_interface_rendering.py` |
-| Test: implementation rendering | `tools/codegen/test_impl_rendering.py` |
-| Test: type resolution | `tools/codegen/test_type_resolution.py` |
-| Test: impl infrastructure | `tools/codegen/test_impl_infra_rendering.py` |
-| Architecture ADR | `docs/adr/0002-project-rooted-codegen-pipeline.md` |
-| Generalization ADR | `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md` |
-| Next-phase plan | `docs/codegen-migration/foundation-next-phase-plan.md` |
+| Category                       | Path                                                               |
+| ------------------------------ | ------------------------------------------------------------------ |
+| Task area                      | `taskplane-tasks/codegen/`                                         |
+| Main bootstrap generator       | `tools/codegen/common_bootstrap.py`                                |
+| Direct lowering logic          | `tools/codegen/common_direct_c.py`                                 |
+| Source model loader            | `tools/codegen/common_source.py`                                   |
+| IR mapping                     | `tools/codegen/common_ir.py`                                       |
+| Build / verification           | `tools/codegen/build_common_with_new_codegen.sh`                   |
+| Migration overview             | `docs/codegen-migration/README.md`                                 |
+| Roadmap                        | `docs/codegen-migration/roadmap.md`                                |
+| Foundation status              | `docs/codegen-migration/common-direct-foundation-status.md`        |
+| Test: class dependencies       | `tools/codegen/test_class_dependencies.py`                         |
+| Test: interface parsing        | `tools/codegen/test_interface_parsing.py`                          |
+| Test: interface rendering      | `tools/codegen/test_interface_rendering.py`                        |
+| Test: implementation rendering | `tools/codegen/test_impl_rendering.py`                             |
+| Test: type resolution          | `tools/codegen/test_type_resolution.py`                            |
+| Test: impl infrastructure      | `tools/codegen/test_impl_infra_rendering.py`                       |
+| Architecture ADR               | `docs/adr/0002-project-rooted-codegen-pipeline.md`                 |
+| Generalization ADR             | `docs/adr/0003-generalize-project-rooted-codegen-beyond-common.md` |
+| Next-phase plan                | `docs/codegen-migration/foundation-next-phase-plan.md`             |
 
 ---
 
@@ -102,6 +102,7 @@ This script is allowed to apply generated output temporarily into the repo, buil
 - Update migration docs when direct coverage changes.
 - Prefer direct lowering from original models over extending resolved-XML dependency.
 - Use resolved XML only for parity reference, reverse engineering, or fixtures during migration.
+- Do not commit newly code-generated source files
 
 ---
 
