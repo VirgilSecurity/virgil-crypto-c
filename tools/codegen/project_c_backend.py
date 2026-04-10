@@ -4645,6 +4645,10 @@ def render_implementation_c_module(
     if impl.dependencies:
         _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
 
+    # --- Constructor methods (new_with_X stubs) ---
+    # NOTE: Only new_with_X is generated as a stub declaration.
+    # Full init_with_X lifecycle requires matching the existing hand-written code.
+
     # --- Interface method implementations ---
     _render_impl_interface_methods(
         root, impl=impl, project_ir=project_ir, fallback_projects=fallback_projects
