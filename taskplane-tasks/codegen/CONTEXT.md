@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-08
 **Status:** Active
-**Next Task ID:** CG-048
+**Next Task ID:** CG-049
 
 > **Note:** CG-034 was merged into CG-033. Task IDs CG-034 is retired.
 
