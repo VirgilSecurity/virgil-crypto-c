@@ -125,8 +125,9 @@ vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
-VSCF_PUBLIC void
-vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self, vscf_password_recipient_info_t password_recipient_info);
+VSCF_PRIVATE void
+vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self,
+        vscf_password_recipient_info_t **password_recipient_info_ref);
 
 //
 //  Return true if given list has item.
@@ -137,7 +138,7 @@ vscf_password_recipient_info_list_has_item(const vscf_password_recipient_info_li
 //
 //  Return list item.
 //
-VSCF_PUBLIC vscf_password_recipient_info_t
+VSCF_PUBLIC const vscf_password_recipient_info_t *
 vscf_password_recipient_info_list_item(const vscf_password_recipient_info_list_t *self);
 
 //
@@ -149,7 +150,7 @@ vscf_password_recipient_info_list_has_next(const vscf_password_recipient_info_li
 //
 //  Return next list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_password_recipient_info_list_t *
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_password_recipient_info_list_next(const vscf_password_recipient_info_list_t *self);
 
 //
@@ -161,7 +162,7 @@ vscf_password_recipient_info_list_has_prev(const vscf_password_recipient_info_li
 //
 //  Return previous list node if exists, or NULL otherwise.
 //
-VSCF_PUBLIC vscf_password_recipient_info_list_t *
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t *self);
 
 //

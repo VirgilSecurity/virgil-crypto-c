@@ -159,16 +159,16 @@ VSCF_PUBLIC vscf_cipher_alg_info_t *
 vscf_cipher_alg_info_new_with_members(vscf_alg_id_t alg_id, vsc_data_t nonce);
 
 //
+//  Return IV.
+//
+VSCF_PUBLIC vsc_data_t
+vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *self);
+
+//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_cipher_alg_info_alg_id(const vscf_cipher_alg_info_t *self);
-
-//
-//  Return IV.
-//
-VSCF_PRIVATE vsc_data_t
-vscf_cipher_alg_info_nonce(const vscf_cipher_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

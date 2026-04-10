@@ -81,7 +81,7 @@ vscf_fake_random_find_api(vscf_api_tag_t api_tag);
 static const vscf_random_api_t random_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'random' MUST be equal to the  'vscf_api_tag_RANDOM'.
+    //  For interface 'random' MUST be equal to the 'vscf_api_tag_RANDOM'.
     //
     vscf_api_tag_RANDOM,
     //
@@ -92,11 +92,11 @@ static const vscf_random_api_t random_api = {
     //  Generate random bytes.
     //  All RNG implementations must be thread-safe.
     //
-    (vscf_random_api_random_fn)(void (*)(void))vscf_fake_random_random,
+    (vscf_random_api_random_fn)vscf_fake_random_random,
     //
     //  Retrieve new seed data from the entropy sources.
     //
-    (vscf_random_api_reseed_fn)(void (*)(void))vscf_fake_random_reseed
+    (vscf_random_api_reseed_fn)vscf_fake_random_reseed
 };
 
 //
@@ -105,7 +105,7 @@ static const vscf_random_api_t random_api = {
 static const vscf_entropy_source_api_t entropy_source_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'entropy source' MUST be equal to the  'vscf_api_tag_ENTROPY_SOURCE'.
+    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
@@ -115,11 +115,11 @@ static const vscf_entropy_source_api_t entropy_source_api = {
     //
     //  Defines that implemented source is strong.
     //
-    (vscf_entropy_source_api_is_strong_fn)(void (*)(void))vscf_fake_random_is_strong,
+    (vscf_entropy_source_api_is_strong_fn)vscf_fake_random_is_strong,
     //
     //  Gather entropy of the requested length.
     //
-    (vscf_entropy_source_api_gather_fn)(void (*)(void))vscf_fake_random_gather
+    (vscf_entropy_source_api_gather_fn)vscf_fake_random_gather
 };
 
 //
@@ -138,11 +138,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_fake_random_cleanup,
+    (vscf_impl_cleanup_fn)vscf_fake_random_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_fake_random_delete
+    (vscf_impl_delete_fn)vscf_fake_random_delete
 };
 
 //
@@ -287,9 +287,9 @@ vscf_fake_random_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ENTROPY_SOURCE:
-        return (const vscf_api_t *)                 &entropy_source_api;
+            return (const vscf_api_t *) &entropy_source_api;
         case vscf_api_tag_RANDOM:
-        return (const vscf_api_t *)                 &random_api;
+            return (const vscf_api_t *) &random_api;
         default:
             return NULL;
     }

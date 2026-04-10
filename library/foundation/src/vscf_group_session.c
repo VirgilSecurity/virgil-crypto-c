@@ -121,9 +121,9 @@ vscf_group_session_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_group_session_init(vscf_group_session_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_group_session_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_t));
 
     self->refcnt = 1;
 
@@ -144,7 +144,7 @@ vscf_group_session_cleanup(vscf_group_session_t *self) {
 
     vscf_group_session_release_rng(self);
 
-    vsc_zeroize(self, sizeof(vscf_group_session_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_t));
 }
 
 //
@@ -153,12 +153,12 @@ vscf_group_session_cleanup(vscf_group_session_t *self) {
 VSCF_PUBLIC vscf_group_session_t *
 vscf_group_session_new(void) {
 
-    vscf_group_session_t *self = (vscf_group_session_t *) vsc_alloc(sizeof (vscf_group_session_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_group_session_t *self = (vscf_group_session_t *) vscf_alloc(sizeof (vscf_group_session_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_group_session_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }
@@ -238,24 +238,6 @@ vscf_group_session_shallow_copy(vscf_group_session_t *self) {
     #endif
 
     return self;
-}
-
-//
-//  This method is called when interface 'random' was setup.
-//
-static void
-vscf_group_session_did_setup_rng(vscf_group_session_t *self) {
-
-    // TODO: This is STUB. Implement me.
-}
-
-//
-//  This method is called when interface 'random' was released.
-//
-static void
-vscf_group_session_did_release_rng(vscf_group_session_t *self) {
-
-    // TODO: This is STUB. Implement me.
 }
 
 //

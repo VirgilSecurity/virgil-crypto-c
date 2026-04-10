@@ -93,7 +93,7 @@ typedef struct vscf_padding_api_t vscf_padding_api_t;
 //  Set new padding parameters.
 //
 VSCF_PUBLIC void
-vscf_padding_configure(vscf_impl_t *impl, vscf_padding_params_t *params);
+vscf_padding_configure(vscf_impl_t *impl, const vscf_padding_params_t *params);
 
 //
 //  Return length in bytes of a data with a padding.
@@ -130,8 +130,8 @@ vscf_padding_process_data(vscf_impl_t *impl, vsc_data_t data);
 //
 //  Accomplish data processing and return padding.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_padding_finish_data_processing(vscf_impl_t *impl, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_padding_finish_data_processing(vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Prepare the algorithm to process padded data.
@@ -156,8 +156,8 @@ vscf_padding_finish_padded_data_processing_out_len(const vscf_impl_t *impl);
 //
 //  Accomplish padded data processing and return left data without a padding.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_padding_finish_padded_data_processing(vscf_impl_t *impl, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_padding_finish_padded_data_processing(vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return padding API, or NULL if it is not implemented.

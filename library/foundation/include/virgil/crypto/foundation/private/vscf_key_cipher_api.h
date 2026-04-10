@@ -87,33 +87,39 @@ extern "C" {
 //
 //  Callback. Check if algorithm can encrypt data with a given key.
 //
-typedef bool (*vscf_key_cipher_api_can_encrypt_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key, size_t data_len);
+typedef bool (*vscf_key_cipher_api_can_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        size_t data_len);
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
 //
-typedef size_t (*vscf_key_cipher_api_encrypted_len_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key, size_t data_len);
+typedef size_t (*vscf_key_cipher_api_encrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        size_t data_len);
 
 //
 //  Callback. Encrypt data with a given public key.
 //
-typedef vscf_status_t (*vscf_key_cipher_api_encrypt_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_key_cipher_api_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Callback. Check if algorithm can decrypt data with a given key.
-//  However, success result of decryption is not guaranteed.
+//          However, success result of decryption is not guaranteed.
 //
-typedef bool (*vscf_key_cipher_api_can_decrypt_fn)(const vscf_impl_t *impl, vscf_impl_t *private_key, size_t data_len);
+typedef bool (*vscf_key_cipher_api_can_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        size_t data_len);
 
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.
 //
-typedef size_t (*vscf_key_cipher_api_decrypted_len_fn)(const vscf_impl_t *impl, vscf_impl_t *private_key, size_t data_len);
+typedef size_t (*vscf_key_cipher_api_decrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        size_t data_len);
 
 //
 //  Callback. Decrypt given data.
 //
-typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl, vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'key cipher'.
@@ -121,7 +127,7 @@ typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl,
 struct vscf_key_cipher_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
+    //  For interface 'key_cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
     //
     vscf_api_tag_t api_tag;
     //

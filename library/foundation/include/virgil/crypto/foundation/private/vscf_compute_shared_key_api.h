@@ -84,15 +84,16 @@ extern "C" {
 
 //
 //  Callback. Compute shared key for 2 asymmetric keys.
-//  Note, computed shared key can be used only within symmetric cryptography.
+//          Note, computed shared key can be used only within symmetric cryptography.
 //
-typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(const vscf_impl_t *impl, vscf_impl_t *public_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
+typedef vscf_status_t (*vscf_compute_shared_key_api_compute_shared_key_fn)(const vscf_impl_t *impl,
+        const vscf_impl_t *public_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Callback. Return number of bytes required to hold shared key.
-//  Expect Public Key or Private Key.
+//          Expect Public Key or Private Key.
 //
-typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(const vscf_impl_t *impl, vscf_impl_t *key);
+typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *key);
 
 //
 //  Contains API requirements of the interface 'compute shared key'.
@@ -100,7 +101,7 @@ typedef size_t (*vscf_compute_shared_key_api_shared_key_len_fn)(const vscf_impl_
 struct vscf_compute_shared_key_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'compute shared key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
+    //  For interface 'compute_shared_key' MUST be equal to the 'vscf_api_tag_COMPUTE_SHARED_KEY'.
     //
     vscf_api_tag_t api_tag;
     //

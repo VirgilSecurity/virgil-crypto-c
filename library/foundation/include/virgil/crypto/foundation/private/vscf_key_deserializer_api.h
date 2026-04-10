@@ -86,12 +86,14 @@ extern "C" {
 //
 //  Callback. Deserialize given public key as an interchangeable format to the object.
 //
-typedef vscf_raw_public_key_t (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error);
+typedef vscf_raw_public_key_t * (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl,
+        vsc_data_t public_key_data, vscf_error_t *error);
 
 //
 //  Callback. Deserialize given private key as an interchangeable format to the object.
 //
-typedef vscf_raw_private_key_t (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error);
+typedef vscf_raw_private_key_t * (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl,
+        vsc_data_t private_key_data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'key deserializer'.
@@ -99,7 +101,7 @@ typedef vscf_raw_private_key_t (*vscf_key_deserializer_api_deserialize_private_k
 struct vscf_key_deserializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
+    //  For interface 'key_deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //

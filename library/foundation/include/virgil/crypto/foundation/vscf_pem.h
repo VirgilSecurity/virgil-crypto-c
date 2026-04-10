@@ -82,55 +82,6 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
-//  Handle 'pem' context.
-//
-typedef struct vscf_pem_t vscf_pem_t;
-
-//
-//  Return size of 'vscf_pem_t'.
-//
-VSCF_PUBLIC size_t
-vscf_pem_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_pem_init(vscf_pem_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_pem_cleanup(vscf_pem_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_pem_t *
-vscf_pem_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_pem_delete(vscf_pem_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_pem_new ()'.
-//
-VSCF_PUBLIC void
-vscf_pem_destroy(vscf_pem_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_pem_t *
-vscf_pem_shallow_copy(vscf_pem_t *self);
-
-//
 //  Return length in bytes required to hold wrapped PEM format.
 //
 VSCF_PUBLIC size_t
@@ -142,7 +93,7 @@ vscf_pem_wrapped_len(const char *title, size_t data_len);
 //  Note, written buffer is NOT null-terminated.
 //
 VSCF_PUBLIC void
-vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t pem);
+vscf_pem_wrap(const char *title, vsc_data_t data, vsc_buffer_t *pem);
 
 //
 //  Return length in bytes required to hold unwrapped binary.
@@ -154,7 +105,7 @@ vscf_pem_unwrapped_len(size_t pem_len);
 //  Takes PEM data and extract binary data from it.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t data);
+vscf_pem_unwrap(vsc_data_t pem, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Returns PEM title if PEM data is valid, otherwise - empty data.

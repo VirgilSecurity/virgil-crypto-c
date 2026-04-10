@@ -80,7 +80,7 @@ vscf_hybrid_public_key_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_api_t key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key' MUST be equal to the  'vscf_api_tag_KEY'.
+    //  For interface 'key' MUST be equal to the 'vscf_api_tag_KEY'.
     //
     vscf_api_tag_KEY,
     //
@@ -90,28 +90,28 @@ static const vscf_key_api_t key_api = {
     //
     //  Algorithm identifier the key belongs to.
     //
-    (vscf_key_api_alg_id_fn)(void (*)(void))vscf_hybrid_public_key_alg_id,
+    (vscf_key_api_alg_id_fn)vscf_hybrid_public_key_alg_id,
     //
     //  Return algorithm information that can be used for serialization.
     //
-    (vscf_key_api_alg_info_fn)(void (*)(void))vscf_hybrid_public_key_alg_info,
+    (vscf_key_api_alg_info_fn)vscf_hybrid_public_key_alg_info,
     //
     //  Length of the key in bytes.
     //
-    (vscf_key_api_len_fn)(void (*)(void))vscf_hybrid_public_key_len,
+    (vscf_key_api_len_fn)vscf_hybrid_public_key_len,
     //
     //  Length of the key in bits.
     //
-    (vscf_key_api_bitlen_fn)(void (*)(void))vscf_hybrid_public_key_bitlen,
+    (vscf_key_api_bitlen_fn)vscf_hybrid_public_key_bitlen,
     //
     //  Return tag of an associated algorithm that can handle this key.
     //
-    (vscf_key_api_impl_tag_fn)(void (*)(void))vscf_hybrid_public_key_impl_tag,
+    (vscf_key_api_impl_tag_fn)vscf_hybrid_public_key_impl_tag,
     //
     //  Check that key is valid.
     //  Note, this operation can be slow.
     //
-    (vscf_key_api_is_valid_fn)(void (*)(void))vscf_hybrid_public_key_is_valid
+    (vscf_key_api_is_valid_fn)vscf_hybrid_public_key_is_valid
 };
 
 //
@@ -120,7 +120,7 @@ static const vscf_key_api_t key_api = {
 static const vscf_public_key_api_t public_key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public key' MUST be equal to the  'vscf_api_tag_PUBLIC_KEY'.
+    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_PUBLIC_KEY,
     //
@@ -149,11 +149,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_hybrid_public_key_cleanup,
+    (vscf_impl_cleanup_fn)vscf_hybrid_public_key_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_hybrid_public_key_delete
+    (vscf_impl_delete_fn)vscf_hybrid_public_key_delete
 };
 
 //
@@ -271,7 +271,8 @@ vscf_hybrid_public_key_shallow_copy(vscf_hybrid_public_key_t *self) {
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE void
-vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key) {
+vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_t **alg_info_ref,
+        const vscf_impl_t *first_key, const vscf_impl_t *second_key) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -290,7 +291,8 @@ vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key) {
+vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *first_key,
+        const vscf_impl_t *second_key) {
 
     vscf_hybrid_public_key_t *self = vscf_hybrid_public_key_new();
 
@@ -306,7 +308,8 @@ vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *fi
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
-vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref) {
+vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -325,13 +328,23 @@ vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, vsc
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref) {
+vscf_hybrid_public_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **first_key_ref,
+        vscf_impl_t **second_key_ref) {
 
     vscf_hybrid_public_key_t *self = vscf_hybrid_public_key_new();
 
     vscf_hybrid_public_key_init_with_keys_disown(self, alg_info, first_key_ref, second_key_ref);
 
     return self;
+}
+
+//
+//  Returns instance of the implemented interface 'public key'.
+//
+VSCF_PUBLIC const vscf_public_key_api_t *
+vscf_hybrid_public_key_public_key_api(void) {
+
+    return &public_key_api;
 }
 
 //
@@ -368,9 +381,9 @@ vscf_hybrid_public_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY:
-        return (const vscf_api_t *)                 &key_api;
+            return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PUBLIC_KEY:
-        return (const vscf_api_t *)                 &public_key_api;
+            return (const vscf_api_t *) &public_key_api;
         default:
             return NULL;
     }

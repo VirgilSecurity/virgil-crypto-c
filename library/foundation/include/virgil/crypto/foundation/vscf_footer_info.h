@@ -129,25 +129,25 @@ vscf_footer_info_has_signed_data_info(const vscf_footer_info_t *self);
 //
 //  Setup signed data info.
 //
-VSCF_PUBLIC void
-vscf_footer_info_set_signed_data_info(vscf_footer_info_t *self, vscf_signed_data_info_t signed_data_info);
+VSCF_PRIVATE void
+vscf_footer_info_set_signed_data_info(vscf_footer_info_t *self, vscf_signed_data_info_t **signed_data_info_ref);
 
 //
 //  Return signed data info.
 //
-VSCF_PUBLIC vscf_signed_data_info_t
+VSCF_PUBLIC const vscf_signed_data_info_t *
 vscf_footer_info_signed_data_info(const vscf_footer_info_t *self);
 
 //
 //  Return mutable signed data info.
 //
-VSCF_PUBLIC vscf_signed_data_info_t
+VSCF_PRIVATE vscf_signed_data_info_t *
 vscf_footer_info_signed_data_info_m(vscf_footer_info_t *self);
 
 //
 //  Remove signed data info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_footer_info_remove_signed_data_info(vscf_footer_info_t *self);
 
 //

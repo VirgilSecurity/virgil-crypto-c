@@ -90,50 +90,15 @@ extern "C" {
 //  Handle 'error' context.
 //
 typedef struct vscf_error_t vscf_error_t;
+struct vscf_error_t {
+    vscf_status_t status;
+};
 
 //
 //  Return size of 'vscf_error_t'.
 //
 VSCF_PUBLIC size_t
 vscf_error_ctx_size(void);
-
-//
-//  Perform initialization of pre-allocated context.
-//
-VSCF_PUBLIC void
-vscf_error_init(vscf_error_t *self);
-
-//
-//  Release all inner resources including class dependencies.
-//
-VSCF_PUBLIC void
-vscf_error_cleanup(vscf_error_t *self);
-
-//
-//  Allocate context and perform it's initialization.
-//
-VSCF_PUBLIC vscf_error_t *
-vscf_error_new(void);
-
-//
-//  Release all inner resources and deallocate context if needed.
-//  It is safe to call this method even if the context was statically allocated.
-//
-VSCF_PUBLIC void
-vscf_error_delete(vscf_error_t *self);
-
-//
-//  Delete given context and nullifies reference.
-//  This is a reverse action of the function 'vscf_error_new ()'.
-//
-VSCF_PUBLIC void
-vscf_error_destroy(vscf_error_t **self_ref);
-
-//
-//  Copy given class context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_error_t *
-vscf_error_shallow_copy(vscf_error_t *self);
 
 //
 //  Reset context to the "no error" state.
@@ -145,7 +110,7 @@ vscf_error_reset(vscf_error_t *self);
 //  Update context with given status.
 //  If status is "success" then do nothing.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_error_update(vscf_error_t *self, vscf_status_t status);
 
 //
@@ -158,7 +123,7 @@ vscf_error_has_error(const vscf_error_t *self);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_error_status(const vscf_error_t *self);
+vscf_error_status(const vscf_error_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

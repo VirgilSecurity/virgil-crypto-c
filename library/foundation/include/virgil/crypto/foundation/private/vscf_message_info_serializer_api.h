@@ -87,26 +87,29 @@ extern "C" {
 //
 //  Callback. Return buffer size enough to hold serialized message info.
 //
-typedef size_t (*vscf_message_info_serializer_api_serialized_len_fn)(vscf_impl_t *impl, vscf_message_info_t *message_info);
+typedef size_t (*vscf_message_info_serializer_api_serialized_len_fn)(vscf_impl_t *impl,
+        const vscf_message_info_t *message_info);
 
 //
 //  Callback. Serialize class "message info".
 //
-typedef void (*vscf_message_info_serializer_api_serialize_fn)(vscf_impl_t *impl, vscf_message_info_t *message_info, vsc_buffer_t *out);
+typedef void (*vscf_message_info_serializer_api_serialize_fn)(vscf_impl_t *impl,
+        const vscf_message_info_t *message_info, vsc_buffer_t *out);
 
 //
 //  Callback. Read message info prefix from the given data, and if it is valid,
-//  return a length of bytes of the whole message info.
+//          return a length of bytes of the whole message info.
 //
-//  Zero returned if length can not be determined from the given data,
-//  and this means that there is no message info at the data beginning.
+//          Zero returned if length can not be determined from the given data,
+//          and this means that there is no message info at the data beginning.
 //
 typedef size_t (*vscf_message_info_serializer_api_read_prefix_fn)(vscf_impl_t *impl, vsc_data_t data);
 
 //
 //  Callback. Deserialize class "message info".
 //
-typedef vscf_message_info_t (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
+typedef vscf_message_info_t * (*vscf_message_info_serializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
+        vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'message info serializer'.
@@ -114,7 +117,7 @@ typedef vscf_message_info_t (*vscf_message_info_serializer_api_deserialize_fn)(v
 struct vscf_message_info_serializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'message info serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
+    //  For interface 'message_info_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -141,6 +144,7 @@ struct vscf_message_info_serializer_api_t {
     //  Deserialize class "message info".
     //
     vscf_message_info_serializer_api_deserialize_fn deserialize_cb;
+
     size_t prefix_len;
 };
 

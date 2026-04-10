@@ -141,7 +141,7 @@ vscf_assert_path_basename(const char *path) {
 //
 //  Tell assertion handler that error of library 'mbedtls' is not handled.
 //
-void
+VSCF_PUBLIC void
 vscf_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line) {
 
     #if defined(MBEDTLS_ERROR_C)
@@ -154,6 +154,7 @@ vscf_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *fi
         }
         snprintf(error_message, sizeof(error_message), "Unhandled mbedTLS error -0x%04x", error);
     #endif
+
     vscf_assert_trigger(error_message, file, line);
 }
 

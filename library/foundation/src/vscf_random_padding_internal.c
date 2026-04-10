@@ -82,7 +82,7 @@ vscf_random_padding_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -92,15 +92,15 @@ static const vscf_alg_api_t alg_api = {
     //
     //  Provide algorithm identificator.
     //
-    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_random_padding_alg_id,
+    (vscf_alg_api_alg_id_fn)vscf_random_padding_alg_id,
     //
     //  Produce object with algorithm information and configuration parameters.
     //
-    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_random_padding_produce_alg_info,
+    (vscf_alg_api_produce_alg_info_fn)vscf_random_padding_produce_alg_info,
     //
     //  Restore algorithm configuration from the given object.
     //
-    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_random_padding_restore_alg_info
+    (vscf_alg_api_restore_alg_info_fn)vscf_random_padding_restore_alg_info
 };
 
 //
@@ -109,7 +109,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_padding_api_t padding_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'padding' MUST be equal to the  'vscf_api_tag_PADDING'.
+    //  For interface 'padding' MUST be equal to the 'vscf_api_tag_PADDING'.
     //
     vscf_api_tag_PADDING,
     //
@@ -119,51 +119,51 @@ static const vscf_padding_api_t padding_api = {
     //
     //  Set new padding parameters.
     //
-    (vscf_padding_api_configure_fn)(void (*)(void))vscf_random_padding_configure,
+    (vscf_padding_api_configure_fn)vscf_random_padding_configure,
     //
     //  Return length in bytes of a data with a padding.
     //
-    (vscf_padding_api_padded_data_len_fn)(void (*)(void))vscf_random_padding_padded_data_len,
+    (vscf_padding_api_padded_data_len_fn)vscf_random_padding_padded_data_len,
     //
     //  Return an actual number of padding in bytes.
     //  Note, this method might be called right before "finish data processing".
     //
-    (vscf_padding_api_len_fn)(void (*)(void))vscf_random_padding_len,
+    (vscf_padding_api_len_fn)vscf_random_padding_len,
     //
     //  Return a maximum number of padding in bytes.
     //
-    (vscf_padding_api_len_max_fn)(void (*)(void))vscf_random_padding_len_max,
+    (vscf_padding_api_len_max_fn)vscf_random_padding_len_max,
     //
     //  Prepare the algorithm to process data.
     //
-    (vscf_padding_api_start_data_processing_fn)(void (*)(void))vscf_random_padding_start_data_processing,
+    (vscf_padding_api_start_data_processing_fn)vscf_random_padding_start_data_processing,
     //
     //  Only data length is needed to produce padding later.
     //  Return data that should be further proceeded.
     //
-    (vscf_padding_api_process_data_fn)(void (*)(void))vscf_random_padding_process_data,
+    (vscf_padding_api_process_data_fn)vscf_random_padding_process_data,
     //
     //  Accomplish data processing and return padding.
     //
-    (vscf_padding_api_finish_data_processing_fn)(void (*)(void))vscf_random_padding_finish_data_processing,
+    (vscf_padding_api_finish_data_processing_fn)vscf_random_padding_finish_data_processing,
     //
     //  Prepare the algorithm to process padded data.
     //
-    (vscf_padding_api_start_padded_data_processing_fn)(void (*)(void))vscf_random_padding_start_padded_data_processing,
+    (vscf_padding_api_start_padded_data_processing_fn)vscf_random_padding_start_padded_data_processing,
     //
     //  Process padded data.
     //  Return filtered data without padding.
     //
-    (vscf_padding_api_process_padded_data_fn)(void (*)(void))vscf_random_padding_process_padded_data,
+    (vscf_padding_api_process_padded_data_fn)vscf_random_padding_process_padded_data,
     //
     //  Return length in bytes required hold output of the method
     //  "finish padded data processing".
     //
-    (vscf_padding_api_finish_padded_data_processing_out_len_fn)(void (*)(void))vscf_random_padding_finish_padded_data_processing_out_len,
+    (vscf_padding_api_finish_padded_data_processing_out_len_fn)vscf_random_padding_finish_padded_data_processing_out_len,
     //
     //  Accomplish padded data processing and return left data without a padding.
     //
-    (vscf_padding_api_finish_padded_data_processing_fn)(void (*)(void))vscf_random_padding_finish_padded_data_processing
+    (vscf_padding_api_finish_padded_data_processing_fn)vscf_random_padding_finish_padded_data_processing
 };
 
 //
@@ -182,11 +182,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_random_padding_cleanup,
+    (vscf_impl_cleanup_fn)vscf_random_padding_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_random_padding_delete
+    (vscf_impl_delete_fn)vscf_random_padding_delete
 };
 
 //
@@ -215,6 +215,8 @@ vscf_random_padding_cleanup(vscf_random_padding_t *self) {
     if (self == NULL) {
         return;
     }
+
+    vscf_random_padding_release_random(self);
 
     vscf_random_padding_cleanup_ctx(self);
 
@@ -326,14 +328,56 @@ vscf_random_padding_impl_const(const vscf_random_padding_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_random_padding_use_random(vscf_random_padding_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_random_padding_take_random(vscf_random_padding_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_random_padding_release_random(vscf_random_padding_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
 static const vscf_api_t *
 vscf_random_padding_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-        return (const vscf_api_t *)                 &alg_api;
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_PADDING:
-        return (const vscf_api_t *)                 &padding_api;
+            return (const vscf_api_t *) &padding_api;
         default:
             return NULL;
     }

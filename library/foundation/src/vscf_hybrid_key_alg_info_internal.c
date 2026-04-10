@@ -78,7 +78,7 @@ vscf_hybrid_key_alg_info_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_info_api_t alg_info_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg info' MUST be equal to the  'vscf_api_tag_ALG_INFO'.
+    //  For interface 'alg_info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
     //
     vscf_api_tag_ALG_INFO,
     //
@@ -88,7 +88,7 @@ static const vscf_alg_info_api_t alg_info_api = {
     //
     //  Provide algorithm identificator.
     //
-    (vscf_alg_info_api_alg_id_fn)(void (*)(void))vscf_hybrid_key_alg_info_alg_id
+    (vscf_alg_info_api_alg_id_fn)vscf_hybrid_key_alg_info_alg_id
 };
 
 //
@@ -107,11 +107,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_hybrid_key_alg_info_cleanup,
+    (vscf_impl_cleanup_fn)vscf_hybrid_key_alg_info_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_hybrid_key_alg_info_delete
+    (vscf_impl_delete_fn)vscf_hybrid_key_alg_info_delete
 };
 
 //
@@ -229,7 +229,8 @@ vscf_hybrid_key_alg_info_shallow_copy(vscf_hybrid_key_alg_info_t *self) {
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE void
-vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info) {
+vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        const vscf_impl_t *first_key_alg_info, const vscf_impl_t *second_key_alg_info) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -248,7 +249,8 @@ vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info) {
+vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *first_key_alg_info,
+        const vscf_impl_t *second_key_alg_info) {
 
     vscf_hybrid_key_alg_info_t *self = vscf_hybrid_key_alg_info_new();
 
@@ -264,7 +266,8 @@ vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, vscf_impl_t *first
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
-vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref) {
+vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -283,7 +286,8 @@ vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref) {
+vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref,
+        vscf_impl_t **second_key_alg_info_ref) {
 
     vscf_hybrid_key_alg_info_t *self = vscf_hybrid_key_alg_info_new();
 
@@ -326,7 +330,7 @@ vscf_hybrid_key_alg_info_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO:
-        return (const vscf_api_t *)                 &alg_info_api;
+            return (const vscf_api_t *) &alg_info_api;
         default:
             return NULL;
     }

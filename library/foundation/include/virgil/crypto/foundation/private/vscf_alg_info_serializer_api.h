@@ -83,12 +83,13 @@ extern "C" {
 //
 //  Callback. Return buffer size enough to hold serialized algorithm.
 //
-typedef size_t (*vscf_alg_info_serializer_api_serialized_len_fn)(const vscf_impl_t *impl, vscf_impl_t *alg_info);
+typedef size_t (*vscf_alg_info_serializer_api_serialized_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *alg_info);
 
 //
 //  Callback. Serialize algorithm info to buffer class.
 //
-typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, vscf_impl_t *alg_info, vsc_buffer_t *out);
+typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info,
+        vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'alg info serializer'.
@@ -96,7 +97,7 @@ typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, vsc
 struct vscf_alg_info_serializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg info serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
+    //  For interface 'alg_info_serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //

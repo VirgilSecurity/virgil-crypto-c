@@ -91,6 +91,12 @@ vscf_group_session_ticket_init_ctx(vscf_group_session_ticket_t *self);
 static void
 vscf_group_session_ticket_cleanup_ctx(vscf_group_session_ticket_t *self);
 
+static void
+vscf_group_session_ticket_set_session_id(vscf_group_session_ticket_t *self, vsc_data_t session_id);
+
+static vscf_status_t
+vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self) VSCF_NODISCARD;
+
 //
 //  Return size of 'vscf_group_session_ticket_t'.
 //
@@ -106,9 +112,9 @@ vscf_group_session_ticket_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_group_session_ticket_init(vscf_group_session_ticket_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_group_session_ticket_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_ticket_t));
 
     self->refcnt = 1;
 
@@ -129,7 +135,7 @@ vscf_group_session_ticket_cleanup(vscf_group_session_ticket_t *self) {
 
     vscf_group_session_ticket_release_rng(self);
 
-    vsc_zeroize(self, sizeof(vscf_group_session_ticket_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_ticket_t));
 }
 
 //
@@ -138,12 +144,12 @@ vscf_group_session_ticket_cleanup(vscf_group_session_ticket_t *self) {
 VSCF_PUBLIC vscf_group_session_ticket_t *
 vscf_group_session_ticket_new(void) {
 
-    vscf_group_session_ticket_t *self = (vscf_group_session_ticket_t *) vsc_alloc(sizeof (vscf_group_session_ticket_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_group_session_ticket_t *self = (vscf_group_session_ticket_t *) vscf_alloc(sizeof (vscf_group_session_ticket_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_group_session_ticket_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

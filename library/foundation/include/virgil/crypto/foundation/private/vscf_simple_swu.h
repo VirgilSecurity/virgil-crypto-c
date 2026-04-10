@@ -76,6 +76,13 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    vscf_simple_swu_HASH_LEN = 32
+};
+
+//
 //  Handle 'simple swu' context.
 //
 typedef struct vscf_simple_swu_t vscf_simple_swu_t;
@@ -125,10 +132,10 @@ VSCF_PUBLIC vscf_simple_swu_t *
 vscf_simple_swu_shallow_copy(vscf_simple_swu_t *self);
 
 VSCF_PUBLIC void
-vscf_simple_swu_bignum_to_point(vscf_simple_swu_t *self, const mbedtls_mpi t, mbedtls_ecp_point p);
+vscf_simple_swu_bignum_to_point(vscf_simple_swu_t *self, const mbedtls_mpi *t, mbedtls_ecp_point *p);
 
 VSCF_PUBLIC void
-vscf_simple_swu_data_to_point(vscf_simple_swu_t *self, vsc_data_t data, mbedtls_ecp_point p);
+vscf_simple_swu_data_to_point(vscf_simple_swu_t *self, vsc_data_t data, mbedtls_ecp_point *p);
 
 
 // --------------------------------------------------------------------------

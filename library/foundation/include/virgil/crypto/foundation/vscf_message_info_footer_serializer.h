@@ -93,18 +93,20 @@ typedef struct vscf_message_info_footer_serializer_api_t vscf_message_info_foote
 //  Return buffer size enough to hold serialized message info footer.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_footer_serializer_serialized_footer_len(vscf_impl_t *impl, vscf_message_info_footer_t *message_info_footer);
+vscf_message_info_footer_serializer_serialized_footer_len(vscf_impl_t *impl,
+        const vscf_message_info_footer_t *message_info_footer);
 
 //
 //  Serialize class "message info footer".
 //
 VSCF_PUBLIC void
-vscf_message_info_footer_serializer_serialize_footer(vscf_impl_t *impl, vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+vscf_message_info_footer_serializer_serialize_footer(vscf_impl_t *impl,
+        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
 
 //
 //  Deserialize class "message info footer".
 //
-VSCF_PUBLIC vscf_message_info_footer_t
+VSCF_PUBLIC vscf_message_info_footer_t *
 vscf_message_info_footer_serializer_deserialize_footer(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
@@ -123,7 +125,8 @@ vscf_message_info_footer_serializer_is_implemented(const vscf_impl_t *impl);
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_message_info_footer_serializer_api_tag(const vscf_message_info_footer_serializer_api_t *message_info_footer_serializer_api);
+vscf_message_info_footer_serializer_api_tag(
+        const vscf_message_info_footer_serializer_api_t *message_info_footer_serializer_api);
 
 
 // --------------------------------------------------------------------------

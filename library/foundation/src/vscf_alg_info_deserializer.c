@@ -64,6 +64,53 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Deserialize algorithm from the data.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_info_deserializer_deserialize(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error) {
+
+    const vscf_alg_info_deserializer_api_t *alg_info_deserializer_api = vscf_alg_info_deserializer_api(impl);
+    VSCF_ASSERT_PTR (alg_info_deserializer_api);
+
+    VSCF_ASSERT_PTR (alg_info_deserializer_api->deserialize_cb);
+    return alg_info_deserializer_api->deserialize_cb (impl, data, error);
+}
+
+//
+//  Return alg info deserializer API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_info_deserializer_api_t *
+vscf_alg_info_deserializer_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG_INFO_DESERIALIZER);
+    return (const vscf_alg_info_deserializer_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'alg info deserializer'.
+//
+VSCF_PUBLIC bool
+vscf_alg_info_deserializer_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_ALG_INFO_DESERIALIZER) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_info_deserializer_api_tag(const vscf_alg_info_deserializer_api_t *alg_info_deserializer_api) {
+
+    VSCF_ASSERT_PTR (alg_info_deserializer_api);
+
+    return alg_info_deserializer_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

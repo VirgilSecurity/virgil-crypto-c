@@ -192,11 +192,24 @@ VSCF_PUBLIC void
 vscf_round5_release_random(vscf_round5_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_round5_setup_defaults(vscf_round5_t *self) VSCF_NODISCARD;
+
+//
+//  Generate new private key.
+//  Note, this operation might be slow.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
+
+//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_generate_ephemeral_key(const vscf_round5_t *self, vscf_impl_t *key, vscf_error_t *error);
+vscf_round5_generate_ephemeral_key(const vscf_round5_t *self, const vscf_impl_t *key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
@@ -209,13 +222,14 @@ vscf_round5_generate_ephemeral_key(const vscf_round5_t *self, vscf_impl_t *key, 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_import_public_key(const vscf_round5_t *self, vscf_raw_public_key_t *raw_key, vscf_error_t *error);
+vscf_round5_import_public_key(const vscf_round5_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_import_public_key_data(const vscf_round5_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_round5_import_public_key_data(const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -225,13 +239,13 @@ vscf_round5_import_public_key_data(const vscf_round5_t *self, vsc_data_t key_dat
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_round5_export_public_key(const vscf_round5_t *self, vscf_impl_t *public_key, vscf_error_t *error);
+vscf_round5_export_public_key(const vscf_round5_t *self, const vscf_impl_t *public_key, vscf_error_t *error);
 
 //
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_round5_exported_public_key_data_len(const vscf_round5_t *self, vscf_impl_t *public_key);
+vscf_round5_exported_public_key_data_len(const vscf_round5_t *self, const vscf_impl_t *public_key);
 
 //
 //  Export public key to the raw binary format without algorithm information.
@@ -241,7 +255,8 @@ vscf_round5_exported_public_key_data_len(const vscf_round5_t *self, vscf_impl_t 
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_round5_export_public_key_data(const vscf_round5_t *self, vscf_impl_t *public_key, vsc_buffer_t *out);
+vscf_round5_export_public_key_data(const vscf_round5_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Import private key from the raw binary format.
@@ -254,13 +269,14 @@ vscf_round5_export_public_key_data(const vscf_round5_t *self, vscf_impl_t *publi
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_import_private_key(const vscf_round5_t *self, vscf_raw_private_key_t *raw_key, vscf_error_t *error);
+vscf_round5_import_private_key(const vscf_round5_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_round5_import_private_key_data(const vscf_round5_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_round5_import_private_key_data(const vscf_round5_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
+        vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -270,13 +286,13 @@ vscf_round5_import_private_key_data(const vscf_round5_t *self, vsc_data_t key_da
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_round5_export_private_key(const vscf_round5_t *self, vscf_impl_t *private_key, vscf_error_t *error);
+vscf_round5_export_private_key(const vscf_round5_t *self, const vscf_impl_t *private_key, vscf_error_t *error);
 
 //
 //  Return length in bytes required to hold exported private key.
 //
 VSCF_PUBLIC size_t
-vscf_round5_exported_private_key_data_len(const vscf_round5_t *self, vscf_impl_t *private_key);
+vscf_round5_exported_private_key_data_len(const vscf_round5_t *self, const vscf_impl_t *private_key);
 
 //
 //  Export private key to the raw binary format without algorithm information.
@@ -286,44 +302,34 @@ vscf_round5_exported_private_key_data_len(const vscf_round5_t *self, vscf_impl_t
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_round5_export_private_key_data(const vscf_round5_t *self, vscf_impl_t *private_key, vsc_buffer_t *out);
+vscf_round5_export_private_key_data(const vscf_round5_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return length in bytes required to hold encapsulated shared key.
 //
 VSCF_PUBLIC size_t
-vscf_round5_kem_shared_key_len(const vscf_round5_t *self, vscf_impl_t *key);
+vscf_round5_kem_shared_key_len(const vscf_round5_t *self, const vscf_impl_t *key);
 
 //
 //  Return length in bytes required to hold encapsulated key.
 //
 VSCF_PUBLIC size_t
-vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, vscf_impl_t *public_key);
+vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, const vscf_impl_t *public_key);
 
 //
 //  Generate a shared key and a key encapsulated message.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_round5_kem_encapsulate(const vscf_round5_t *self, vscf_impl_t *public_key, vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key);
+vscf_round5_kem_encapsulate(const vscf_round5_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key,
+        vsc_buffer_t *encapsulated_key) VSCF_NODISCARD;
 
 //
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_key, vscf_impl_t *private_key, vsc_buffer_t *shared_key);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PRIVATE vscf_status_t
-vscf_round5_setup_defaults(vscf_round5_t *self);
-
-//
-//  Generate new private key.
-//  Note, this operation might be slow.
-//
-VSCF_PRIVATE vscf_impl_t *
-vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_error_t *error);
+vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key,
+        vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

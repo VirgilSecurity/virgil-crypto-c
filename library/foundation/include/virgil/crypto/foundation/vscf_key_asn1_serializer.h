@@ -167,41 +167,9 @@ VSCF_PUBLIC void
 vscf_key_asn1_serializer_release_asn1_writer(vscf_key_asn1_serializer_t *self);
 
 //
-//  Calculate buffer size enough to hold serialized public key.
-//
-//  Precondition: public key must be exportable.
-//
-VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_public_key_len(const vscf_key_asn1_serializer_t *self, vscf_raw_public_key_t *public_key);
-
-//
-//  Serialize given public key to an interchangeable format.
-//
-//  Precondition: public key must be exportable.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, vscf_raw_public_key_t *public_key, vsc_buffer_t *out);
-
-//
-//  Calculate buffer size enough to hold serialized private key.
-//
-//  Precondition: private key must be exportable.
-//
-VSCF_PUBLIC size_t
-vscf_key_asn1_serializer_serialized_private_key_len(const vscf_key_asn1_serializer_t *self, vscf_raw_private_key_t *private_key);
-
-//
-//  Serialize given private key to an interchangeable format.
-//
-//  Precondition: private key must be exportable.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_key_asn1_serializer_serialize_private_key(vscf_key_asn1_serializer_t *self, vscf_raw_private_key_t *private_key, vsc_buffer_t *out);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PRIVATE void
+VSCF_PUBLIC void
 vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self);
 
 //
@@ -209,16 +177,54 @@ vscf_key_asn1_serializer_setup_defaults(vscf_key_asn1_serializer_t *self);
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
 //
-VSCF_PRIVATE size_t
-vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self, vscf_raw_public_key_t *public_key, vscf_error_t *error);
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialize_public_key_inplace(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_public_key_t *public_key, vscf_error_t *error);
 
 //
 //  Serialize Private Key by using internal ASN.1 writer.
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
 //
-VSCF_PRIVATE size_t
-vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self, vscf_raw_private_key_t *private_key, vscf_error_t *error);
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialize_private_key_inplace(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vscf_error_t *error);
+
+//
+//  Calculate buffer size enough to hold serialized public key.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialized_public_key_len(const vscf_key_asn1_serializer_t *self,
+        const vscf_raw_public_key_t *public_key);
+
+//
+//  Serialize given public key to an interchangeable format.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_asn1_serializer_serialize_public_key(vscf_key_asn1_serializer_t *self, const vscf_raw_public_key_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate buffer size enough to hold serialized private key.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_key_asn1_serializer_serialized_private_key_len(const vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key);
+
+//
+//  Serialize given private key to an interchangeable format.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_asn1_serializer_serialize_private_key(vscf_key_asn1_serializer_t *self,
+        const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

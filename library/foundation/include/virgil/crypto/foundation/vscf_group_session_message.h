@@ -84,6 +84,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    //
+    //  Max message len
+    //
+    vscf_group_session_message_MAX_MESSAGE_LEN = 30188,
+    //
+    //  Message version
+    //
+    vscf_group_session_message_MESSAGE_VERSION = 1
+};
+
+//
 //  Handle 'group session message' context.
 //
 typedef struct vscf_group_session_message_t vscf_group_session_message_t;
@@ -148,7 +162,7 @@ vscf_group_session_message_get_session_id(const vscf_group_session_message_t *se
 //
 //  Returns message epoch.
 //
-VSCF_PUBLIC unsigned
+VSCF_PUBLIC uint32_t
 vscf_group_session_message_get_epoch(const vscf_group_session_message_t *self);
 
 //
@@ -161,13 +175,13 @@ vscf_group_session_message_serialize_len(const vscf_group_session_message_t *sel
 //  Serializes instance.
 //
 VSCF_PUBLIC void
-vscf_group_session_message_serialize(const vscf_group_session_message_t *self, vsc_buffer_t output);
+vscf_group_session_message_serialize(const vscf_group_session_message_t *self, vsc_buffer_t *output);
 
 //
 //  Deserializes instance.
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t error);
+vscf_group_session_message_deserialize(vsc_data_t input, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

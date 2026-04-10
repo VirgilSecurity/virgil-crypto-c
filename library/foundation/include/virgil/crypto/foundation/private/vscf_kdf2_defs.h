@@ -90,7 +90,7 @@ struct vscf_kdf2_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency 'hash'.
+    //  Dependency to the interface 'hash'.
     //
     vscf_impl_t *hash;
 };

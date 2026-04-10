@@ -143,7 +143,8 @@ vscf_hybrid_key_alg_info_shallow_copy(vscf_hybrid_key_alg_info_t *self);
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE void
-vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info);
+vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        const vscf_impl_t *first_key_alg_info, const vscf_impl_t *second_key_alg_info);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -152,7 +153,8 @@ vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, vscf_impl_t *first_key_alg_info, vscf_impl_t *second_key_alg_info);
+vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *first_key_alg_info,
+        const vscf_impl_t *second_key_alg_info);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -161,7 +163,8 @@ vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, vscf_impl_t *first
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
-vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
+vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -170,25 +173,26 @@ vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
+vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref,
+        vscf_impl_t **second_key_alg_info_ref);
+
+//
+//  Return algorithm information about the first key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hybrid_key_alg_info_first_key_alg_info(const vscf_hybrid_key_alg_info_t *self);
+
+//
+//  Return algorithm information about the second key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hybrid_key_alg_info_second_key_alg_info(const vscf_hybrid_key_alg_info_t *self);
 
 //
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_hybrid_key_alg_info_alg_id(const vscf_hybrid_key_alg_info_t *self);
-
-//
-//  Return algorithm information about the first key.
-//
-VSCF_PRIVATE vscf_impl_t *
-vscf_hybrid_key_alg_info_first_key_alg_info(const vscf_hybrid_key_alg_info_t *self);
-
-//
-//  Return algorithm information about the second key.
-//
-VSCF_PRIVATE vscf_impl_t *
-vscf_hybrid_key_alg_info_second_key_alg_info(const vscf_hybrid_key_alg_info_t *self);
 
 
 // --------------------------------------------------------------------------

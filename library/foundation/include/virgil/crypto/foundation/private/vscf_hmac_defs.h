@@ -98,13 +98,13 @@ struct vscf_hmac_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *hash;
+    //
     //  Implementation specific context.
     //
     vsc_buffer_t *ipad;
-    //
-    //  Dependency 'hash'.
-    //
-    vscf_impl_t *hash;
 };
 
 

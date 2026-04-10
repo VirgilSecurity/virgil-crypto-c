@@ -64,6 +64,66 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return buffer size enough to hold serialized algorithm.
+//
+VSCF_PUBLIC size_t
+vscf_alg_info_serializer_serialized_len(const vscf_impl_t *impl, const vscf_impl_t *alg_info) {
+
+    const vscf_alg_info_serializer_api_t *alg_info_serializer_api = vscf_alg_info_serializer_api(impl);
+    VSCF_ASSERT_PTR (alg_info_serializer_api);
+
+    VSCF_ASSERT_PTR (alg_info_serializer_api->serialized_len_cb);
+    return alg_info_serializer_api->serialized_len_cb (impl, alg_info);
+}
+
+//
+//  Serialize algorithm info to buffer class.
+//
+VSCF_PUBLIC void
+vscf_alg_info_serializer_serialize(vscf_impl_t *impl, const vscf_impl_t *alg_info, vsc_buffer_t *out) {
+
+    const vscf_alg_info_serializer_api_t *alg_info_serializer_api = vscf_alg_info_serializer_api(impl);
+    VSCF_ASSERT_PTR (alg_info_serializer_api);
+
+    VSCF_ASSERT_PTR (alg_info_serializer_api->serialize_cb);
+    alg_info_serializer_api->serialize_cb (impl, alg_info, out);
+}
+
+//
+//  Return alg info serializer API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_info_serializer_api_t *
+vscf_alg_info_serializer_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG_INFO_SERIALIZER);
+    return (const vscf_alg_info_serializer_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'alg info serializer'.
+//
+VSCF_PUBLIC bool
+vscf_alg_info_serializer_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_ALG_INFO_SERIALIZER) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_info_serializer_api_tag(const vscf_alg_info_serializer_api_t *alg_info_serializer_api) {
+
+    VSCF_ASSERT_PTR (alg_info_serializer_api);
+
+    return alg_info_serializer_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

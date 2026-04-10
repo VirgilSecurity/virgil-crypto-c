@@ -95,13 +95,13 @@ struct vscf_ecc_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency 'random'.
+    //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
     //
-    //  Dependency 'ecies'.
+    //  Dependency to the class 'ecies'.
     //
-    vscf_impl_t *ecies;
+    vscf_ecies_t *ecies;
 };
 
 

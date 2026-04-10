@@ -166,21 +166,9 @@ VSCF_PUBLIC void
 vscf_key_asn1_deserializer_release_asn1_reader(vscf_key_asn1_deserializer_t *self);
 
 //
-//  Deserialize given public key as an interchangeable format to the object.
-//
-VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_key_asn1_deserializer_deserialize_public_key(vscf_key_asn1_deserializer_t *self, vsc_data_t public_key_data, vscf_error_t *error);
-
-//
-//  Deserialize given private key as an interchangeable format to the object.
-//
-VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_key_asn1_deserializer_deserialize_private_key(vscf_key_asn1_deserializer_t *self, vsc_data_t private_key_data, vscf_error_t *error);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PRIVATE void
+VSCF_PUBLIC void
 vscf_key_asn1_deserializer_setup_defaults(vscf_key_asn1_deserializer_t *self);
 
 //
@@ -188,7 +176,7 @@ vscf_key_asn1_deserializer_setup_defaults(vscf_key_asn1_deserializer_t *self);
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
 //
-VSCF_PRIVATE vscf_raw_public_key_t *
+VSCF_PUBLIC vscf_raw_public_key_t *
 vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserializer_t *self, vscf_error_t *error);
 
 //
@@ -196,8 +184,22 @@ vscf_key_asn1_deserializer_deserialize_public_key_inplace(vscf_key_asn1_deserial
 //  Note, that caller code is responsible to reset ASN.1 reader with
 //  an input buffer.
 //
-VSCF_PRIVATE vscf_raw_private_key_t *
+VSCF_PUBLIC vscf_raw_private_key_t *
 vscf_key_asn1_deserializer_deserialize_private_key_inplace(vscf_key_asn1_deserializer_t *self, vscf_error_t *error);
+
+//
+//  Deserialize given public key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_public_key_t *
+vscf_key_asn1_deserializer_deserialize_public_key(vscf_key_asn1_deserializer_t *self, vsc_data_t public_key_data,
+        vscf_error_t *error);
+
+//
+//  Deserialize given private key as an interchangeable format to the object.
+//
+VSCF_PUBLIC vscf_raw_private_key_t *
+vscf_key_asn1_deserializer_deserialize_private_key(vscf_key_asn1_deserializer_t *self, vsc_data_t private_key_data,
+        vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------

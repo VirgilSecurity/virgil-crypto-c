@@ -90,15 +90,15 @@ struct vscf_hybrid_key_alg_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency 'random'.
+    //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
     //
-    //  Dependency 'cipher'.
+    //  Dependency to the interface 'cipher auth'.
     //
     vscf_impl_t *cipher;
     //
-    //  Dependency 'hash'.
+    //  Dependency to the interface 'hash'.
     //
     vscf_impl_t *hash;
 };

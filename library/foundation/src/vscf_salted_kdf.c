@@ -65,6 +65,78 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Prepare algorithm to derive new key.
+//
+VSCF_PUBLIC void
+vscf_salted_kdf_reset(vscf_impl_t *impl, vsc_data_t salt, size_t iteration_count) {
+
+    const vscf_salted_kdf_api_t *salted_kdf_api = vscf_salted_kdf_api(impl);
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    VSCF_ASSERT_PTR (salted_kdf_api->reset_cb);
+    salted_kdf_api->reset_cb (impl, salt, iteration_count);
+}
+
+//
+//  Setup application specific information (optional).
+//  Can be empty.
+//
+VSCF_PUBLIC void
+vscf_salted_kdf_set_info(vscf_impl_t *impl, vsc_data_t info) {
+
+    const vscf_salted_kdf_api_t *salted_kdf_api = vscf_salted_kdf_api(impl);
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    VSCF_ASSERT_PTR (salted_kdf_api->set_info_cb);
+    salted_kdf_api->set_info_cb (impl, info);
+}
+
+//
+//  Return salted kdf API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_salted_kdf_api_t *
+vscf_salted_kdf_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_SALTED_KDF);
+    return (const vscf_salted_kdf_api_t *) api;
+}
+
+//
+//  Return kdf API.
+//
+VSCF_PUBLIC const vscf_kdf_api_t *
+vscf_salted_kdf_kdf_api(const vscf_salted_kdf_api_t *salted_kdf_api) {
+
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    return salted_kdf_api->kdf_api;
+}
+
+//
+//  Check if given object implements interface 'salted kdf'.
+//
+VSCF_PUBLIC bool
+vscf_salted_kdf_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_SALTED_KDF) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_salted_kdf_api_tag(const vscf_salted_kdf_api_t *salted_kdf_api) {
+
+    VSCF_ASSERT_PTR (salted_kdf_api);
+
+    return salted_kdf_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

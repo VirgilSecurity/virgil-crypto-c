@@ -78,48 +78,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_rsa_use_random(vscf_rsa_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_rsa_take_random(vscf_rsa_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_rsa_release_random(vscf_rsa_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -479,8 +437,8 @@ vscf_rsa_encrypt(const vscf_rsa_t *self, const vscf_impl_t *public_key, vsc_data
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, MBEDTLS_MD_SHA512);
 
-    const int mbed_status = mbedtls_rsa_rsaes_oaep_encrypt(&rsa, vscf_mbedtls_bridge_random, self->random, NULL, 0,
-            data.len, data.bytes, vsc_buffer_unused_bytes(out));
+    const int mbed_status = mbedtls_rsa_rsaes_oaep_encrypt(&rsa, vscf_mbedtls_bridge_random, self->random,
+            NULL, 0, data.len, data.bytes, vsc_buffer_unused_bytes(out));
 
     mbedtls_rsa_free(&rsa);
 
@@ -557,8 +515,9 @@ vscf_rsa_decrypt(const vscf_rsa_t *self, const vscf_impl_t *private_key, vsc_dat
 
 
     size_t out_len = 0;
-    const int mbed_status = mbedtls_rsa_rsaes_oaep_decrypt(&rsa, vscf_mbedtls_bridge_random, self->random, NULL, 0,
-            &out_len, data.bytes, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
+    const int mbed_status =
+            mbedtls_rsa_rsaes_oaep_decrypt(&rsa, vscf_mbedtls_bridge_random, self->random, NULL, 0,
+                    &out_len, data.bytes, vsc_buffer_unused_bytes(out), vsc_buffer_unused_len(out));
 
     mbedtls_rsa_free(&rsa);
 
@@ -637,8 +596,8 @@ vscf_rsa_sign_hash(const vscf_rsa_t *self, const vscf_impl_t *private_key, vscf_
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
 
-    const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, (void *)self->random, md_alg,
-            expected_hashlen, digest.bytes, vsc_buffer_unused_bytes(signature));
+    const int mbed_status = mbedtls_rsa_rsassa_pss_sign(&rsa, vscf_mbedtls_bridge_random, (void *)self->random,
+            md_alg, expected_hashlen, digest.bytes, vsc_buffer_unused_bytes(signature));
     VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MD_ALLOC_FAILED);
 
     mbedtls_rsa_free(&rsa);
@@ -701,7 +660,8 @@ vscf_rsa_verify_hash(const vscf_rsa_t *self, const vscf_impl_t *public_key, vscf
     VSCF_ASSERT_ALLOC(alloc_status == 0);
     mbedtls_rsa_set_padding(&rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
-    int result = mbedtls_rsa_rsassa_pss_verify(&rsa, md_alg, expected_hashlen, digest.bytes, signature.bytes);
+    int result = mbedtls_rsa_rsassa_pss_verify(
+            &rsa, md_alg, expected_hashlen, digest.bytes, signature.bytes);
 
     mbedtls_rsa_free(&rsa);
 

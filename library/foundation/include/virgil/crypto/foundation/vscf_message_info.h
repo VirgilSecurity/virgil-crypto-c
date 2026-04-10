@@ -130,56 +130,57 @@ vscf_message_info_shallow_copy(vscf_message_info_t *self);
 //
 //  Add recipient that is defined by Public Key.
 //
-VSCF_PUBLIC void
-vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipient_info_t key_recipient);
+VSCF_PRIVATE void
+vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipient_info_t **key_recipient_ref);
 
 //
 //  Add recipient that is defined by password.
 //
-VSCF_PUBLIC void
-vscf_message_info_add_password_recipient(vscf_message_info_t *self, vscf_password_recipient_info_t password_recipient);
+VSCF_PRIVATE void
+vscf_message_info_add_password_recipient(vscf_message_info_t *self,
+        vscf_password_recipient_info_t **password_recipient_ref);
 
 //
 //  Set information about algorithm that was used for data encryption.
 //
-VSCF_PUBLIC void
-vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t *data_encryption_alg_info);
+VSCF_PRIVATE void
+vscf_message_info_set_data_encryption_alg_info(vscf_message_info_t *self, vscf_impl_t **data_encryption_alg_info_ref);
 
 //
 //  Return information about algorithm that was used for the data encryption.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_message_info_data_encryption_alg_info(const vscf_message_info_t *self);
 
 //
 //  Return list with a "key recipient info" elements.
 //
-VSCF_PUBLIC vscf_key_recipient_info_list_t
+VSCF_PUBLIC const vscf_key_recipient_info_list_t *
 vscf_message_info_key_recipient_info_list(const vscf_message_info_t *self);
 
 //
 //  Return list with a "key recipient info" elements.
 //
-VSCF_PUBLIC vscf_key_recipient_info_list_t
+VSCF_PRIVATE vscf_key_recipient_info_list_t *
 vscf_message_info_key_recipient_info_list_modifiable(vscf_message_info_t *self);
 
 //
 //  Return list with a "password recipient info" elements.
 //
-VSCF_PUBLIC vscf_password_recipient_info_list_t
+VSCF_PUBLIC const vscf_password_recipient_info_list_t *
 vscf_message_info_password_recipient_info_list(const vscf_message_info_t *self);
 
 //
 //  Remove all recipients.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_clear_recipients(vscf_message_info_t *self);
 
 //
 //  Setup custom params.
 //
-VSCF_PUBLIC void
-vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t custom_params);
+VSCF_PRIVATE void
+vscf_message_info_set_custom_params(vscf_message_info_t *self, vscf_message_info_custom_params_t **custom_params_ref);
 
 //
 //  Return true if message info contains at least one custom param.
@@ -192,7 +193,7 @@ vscf_message_info_has_custom_params(const vscf_message_info_t *self);
 //  The returned object can be used to add custom params or read it.
 //  If custom params object was not set then new empty object is created.
 //
-VSCF_PUBLIC vscf_message_info_custom_params_t
+VSCF_PUBLIC vscf_message_info_custom_params_t *
 vscf_message_info_custom_params(vscf_message_info_t *self);
 
 //
@@ -204,19 +205,19 @@ vscf_message_info_has_cipher_kdf_alg_info(const vscf_message_info_t *self);
 //
 //  Setup cipher kdf alg info.
 //
-VSCF_PUBLIC void
-vscf_message_info_set_cipher_kdf_alg_info(vscf_message_info_t *self, vscf_impl_t *cipher_kdf_alg_info);
+VSCF_PRIVATE void
+vscf_message_info_set_cipher_kdf_alg_info(vscf_message_info_t *self, vscf_impl_t **cipher_kdf_alg_info_ref);
 
 //
 //  Return cipher kdf alg info.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_message_info_cipher_kdf_alg_info(const vscf_message_info_t *self);
 
 //
 //  Remove cipher kdf alg info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_remove_cipher_kdf_alg_info(vscf_message_info_t *self);
 
 //
@@ -228,19 +229,19 @@ vscf_message_info_has_cipher_padding_alg_info(const vscf_message_info_t *self);
 //
 //  Setup cipher padding alg info.
 //
-VSCF_PUBLIC void
-vscf_message_info_set_cipher_padding_alg_info(vscf_message_info_t *self, vscf_impl_t *cipher_padding_alg_info);
+VSCF_PRIVATE void
+vscf_message_info_set_cipher_padding_alg_info(vscf_message_info_t *self, vscf_impl_t **cipher_padding_alg_info_ref);
 
 //
 //  Return cipher padding alg info.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_message_info_cipher_padding_alg_info(const vscf_message_info_t *self);
 
 //
 //  Remove cipher padding alg info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_remove_cipher_padding_alg_info(vscf_message_info_t *self);
 
 //
@@ -252,25 +253,25 @@ vscf_message_info_has_footer_info(const vscf_message_info_t *self);
 //
 //  Setup footer info.
 //
-VSCF_PUBLIC void
-vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t footer_info);
+VSCF_PRIVATE void
+vscf_message_info_set_footer_info(vscf_message_info_t *self, vscf_footer_info_t **footer_info_ref);
 
 //
 //  Return footer info.
 //
-VSCF_PUBLIC vscf_footer_info_t
+VSCF_PUBLIC const vscf_footer_info_t *
 vscf_message_info_footer_info(const vscf_message_info_t *self);
 
 //
 //  Return mutable footer info.
 //
-VSCF_PUBLIC vscf_footer_info_t
+VSCF_PRIVATE vscf_footer_info_t *
 vscf_message_info_footer_info_m(vscf_message_info_t *self);
 
 //
 //  Remove footer info.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_message_info_remove_footer_info(vscf_message_info_t *self);
 
 //

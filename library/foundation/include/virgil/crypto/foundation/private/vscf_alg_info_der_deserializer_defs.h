@@ -90,7 +90,7 @@ struct vscf_alg_info_der_deserializer_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency 'asn1 reader'.
+    //  Dependency to the interface 'asn1 reader'.
     //
     vscf_impl_t *asn1_reader;
 };

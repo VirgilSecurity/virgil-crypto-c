@@ -230,11 +230,25 @@ VSCF_PUBLIC void
 vscf_hybrid_key_alg_release_hash(vscf_hybrid_key_alg_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_hybrid_key_alg_setup_defaults(vscf_hybrid_key_alg_t *self) VSCF_NODISCARD;
+
+//
+//  Make hybrid private key from given keys.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_hybrid_key_alg_make_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *first_key,
+        const vscf_impl_t *second_key, vscf_error_t *error);
+
+//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_generate_ephemeral_key(const vscf_hybrid_key_alg_t *self, vscf_impl_t *key, vscf_error_t *error);
+vscf_hybrid_key_alg_generate_ephemeral_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *key,
+        vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
@@ -247,13 +261,15 @@ vscf_hybrid_key_alg_generate_ephemeral_key(const vscf_hybrid_key_alg_t *self, vs
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_public_key(const vscf_hybrid_key_alg_t *self, vscf_raw_public_key_t *raw_key, vscf_error_t *error);
+vscf_hybrid_key_alg_import_public_key(const vscf_hybrid_key_alg_t *self, const vscf_raw_public_key_t *raw_key,
+        vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_public_key_data(const vscf_hybrid_key_alg_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_hybrid_key_alg_import_public_key_data(const vscf_hybrid_key_alg_t *self, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -263,13 +279,14 @@ vscf_hybrid_key_alg_import_public_key_data(const vscf_hybrid_key_alg_t *self, vs
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_raw_public_key_t *
-vscf_hybrid_key_alg_export_public_key(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key, vscf_error_t *error);
+vscf_hybrid_key_alg_export_public_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key,
+        vscf_error_t *error);
 
 //
 //  Return length in bytes required to hold exported public key.
 //
 VSCF_PUBLIC size_t
-vscf_hybrid_key_alg_exported_public_key_data_len(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key);
+vscf_hybrid_key_alg_exported_public_key_data_len(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key);
 
 //
 //  Export public key to the raw binary format without algorithm information.
@@ -279,7 +296,8 @@ vscf_hybrid_key_alg_exported_public_key_data_len(const vscf_hybrid_key_alg_t *se
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_export_public_key_data(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key, vsc_buffer_t *out);
+vscf_hybrid_key_alg_export_public_key_data(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Import private key from the raw binary format.
@@ -292,13 +310,15 @@ vscf_hybrid_key_alg_export_public_key_data(const vscf_hybrid_key_alg_t *self, vs
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_private_key(const vscf_hybrid_key_alg_t *self, vscf_raw_private_key_t *raw_key, vscf_error_t *error);
+vscf_hybrid_key_alg_import_private_key(const vscf_hybrid_key_alg_t *self, const vscf_raw_private_key_t *raw_key,
+        vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_import_private_key_data(const vscf_hybrid_key_alg_t *self, vsc_data_t key_data, vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_hybrid_key_alg_import_private_key_data(const vscf_hybrid_key_alg_t *self, vsc_data_t key_data,
+        const vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -308,13 +328,14 @@ vscf_hybrid_key_alg_import_private_key_data(const vscf_hybrid_key_alg_t *self, v
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_raw_private_key_t *
-vscf_hybrid_key_alg_export_private_key(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key, vscf_error_t *error);
+vscf_hybrid_key_alg_export_private_key(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key,
+        vscf_error_t *error);
 
 //
 //  Return length in bytes required to hold exported private key.
 //
 VSCF_PUBLIC size_t
-vscf_hybrid_key_alg_exported_private_key_data_len(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key);
+vscf_hybrid_key_alg_exported_private_key_data_len(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key);
 
 //
 //  Export private key to the raw binary format without algorithm information.
@@ -324,87 +345,80 @@ vscf_hybrid_key_alg_exported_private_key_data_len(const vscf_hybrid_key_alg_t *s
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_export_private_key_data(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key, vsc_buffer_t *out);
+vscf_hybrid_key_alg_export_private_key_data(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can encrypt data with a given key.
 //
 VSCF_PUBLIC bool
-vscf_hybrid_key_alg_can_encrypt(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key, size_t data_len);
+vscf_hybrid_key_alg_can_encrypt(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, size_t data_len);
 
 //
 //  Calculate required buffer length to hold the encrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_hybrid_key_alg_encrypted_len(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key, size_t data_len);
+vscf_hybrid_key_alg_encrypted_len(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, size_t data_len);
 
 //
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_encrypt(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out);
+vscf_hybrid_key_alg_encrypt(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can decrypt data with a given key.
 //  However, success result of decryption is not guaranteed.
 //
 VSCF_PUBLIC bool
-vscf_hybrid_key_alg_can_decrypt(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key, size_t data_len);
+vscf_hybrid_key_alg_can_decrypt(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, size_t data_len);
 
 //
 //  Calculate required buffer length to hold the decrypted data.
 //
 VSCF_PUBLIC size_t
-vscf_hybrid_key_alg_decrypted_len(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key, size_t data_len);
+vscf_hybrid_key_alg_decrypted_len(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, size_t data_len);
 
 //
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_decrypt(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out);
+vscf_hybrid_key_alg_decrypt(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can sign data digest with a given key.
 //
 VSCF_PUBLIC bool
-vscf_hybrid_key_alg_can_sign(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key);
+vscf_hybrid_key_alg_can_sign(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key);
 
 //
 //  Return length in bytes required to hold signature.
 //  Return zero if a given private key can not produce signatures.
 //
 VSCF_PUBLIC size_t
-vscf_hybrid_key_alg_signature_len(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key);
+vscf_hybrid_key_alg_signature_len(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key);
 
 //
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hybrid_key_alg_sign_hash(const vscf_hybrid_key_alg_t *self, vscf_impl_t *private_key, void, vsc_data_t digest, vsc_buffer_t *signature);
+vscf_hybrid_key_alg_sign_hash(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can verify data digest with a given key.
 //
 VSCF_PUBLIC bool
-vscf_hybrid_key_alg_can_verify(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key);
+vscf_hybrid_key_alg_can_verify(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key);
 
 //
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_hybrid_key_alg_verify_hash(const vscf_hybrid_key_alg_t *self, vscf_impl_t *public_key, void, vsc_data_t digest, vsc_data_t signature);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PRIVATE vscf_status_t
-vscf_hybrid_key_alg_setup_defaults(vscf_hybrid_key_alg_t *self);
-
-//
-//  Make hybrid private key from given keys.
-//
-VSCF_PRIVATE vscf_impl_t *
-vscf_hybrid_key_alg_make_key(const vscf_hybrid_key_alg_t *self, vscf_impl_t *first_key, vscf_impl_t *second_key, vscf_error_t *error);
+vscf_hybrid_key_alg_verify_hash(const vscf_hybrid_key_alg_t *self, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_data_t signature);
 
 
 // --------------------------------------------------------------------------

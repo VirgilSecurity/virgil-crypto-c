@@ -91,13 +91,13 @@ struct vscf_key_asn1_deserializer_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
+    //  Dependency to the interface 'asn1 reader'.
+    //
+    vscf_impl_t *asn1_reader;
+    //
     //  Implementation specific context.
     //
     vscf_alg_info_der_deserializer_t *alg_info_der_deserializer;
-    //
-    //  Dependency 'asn1 reader'.
-    //
-    vscf_impl_t *asn1_reader;
 };
 
 

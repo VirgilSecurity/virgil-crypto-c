@@ -183,13 +183,13 @@ vscf_random_padding_produce_alg_info(const vscf_random_padding_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_random_padding_restore_alg_info(vscf_random_padding_t *self, const vscf_impl_t *alg_info);
+vscf_random_padding_restore_alg_info(vscf_random_padding_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Set new padding parameters.
 //
 VSCF_PUBLIC void
-vscf_random_padding_configure(vscf_random_padding_t *self, vscf_padding_params_t *params);
+vscf_random_padding_configure(vscf_random_padding_t *self, const vscf_padding_params_t *params);
 
 //
 //  Return length in bytes of a data with a padding.
@@ -227,7 +227,7 @@ vscf_random_padding_process_data(vscf_random_padding_t *self, vsc_data_t data);
 //  Accomplish data processing and return padding.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_random_padding_finish_data_processing(vscf_random_padding_t *self, vsc_buffer_t *out);
+vscf_random_padding_finish_data_processing(vscf_random_padding_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Prepare the algorithm to process padded data.
@@ -253,7 +253,7 @@ vscf_random_padding_finish_padded_data_processing_out_len(const vscf_random_padd
 //  Accomplish padded data processing and return left data without a padding.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_random_padding_finish_padded_data_processing(vscf_random_padding_t *self, vsc_buffer_t *out);
+vscf_random_padding_finish_padded_data_processing(vscf_random_padding_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

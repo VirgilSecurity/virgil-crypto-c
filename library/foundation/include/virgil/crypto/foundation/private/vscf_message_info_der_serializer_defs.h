@@ -92,13 +92,21 @@ struct vscf_message_info_der_serializer_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency 'asn1 reader'.
+    //  Dependency to the interface 'asn1 reader'.
     //
     vscf_impl_t *asn1_reader;
     //
-    //  Dependency 'asn1 writer'.
+    //  Dependency to the interface 'asn1 writer'.
     //
     vscf_impl_t *asn1_writer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_info_der_serializer_t *alg_info_serializer;
+    //
+    //  Implementation specific context.
+    //
+    vscf_alg_info_der_deserializer_t *alg_info_deserializer;
 };
 
 

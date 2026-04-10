@@ -125,13 +125,13 @@ vscf_signer_info_list_shallow_copy(vscf_signer_info_list_t *self);
 //  Add new item to the list.
 //  Note, ownership is transfered.
 //
-VSCF_PUBLIC void
-vscf_signer_info_list_add(vscf_signer_info_list_t *self, vscf_signer_info_t signer_info);
+VSCF_PRIVATE void
+vscf_signer_info_list_add(vscf_signer_info_list_t *self, vscf_signer_info_t **signer_info_ref);
 
 //
 //  Remove current node.
 //
-VSCF_PUBLIC void
+VSCF_PRIVATE void
 vscf_signer_info_list_remove_self(vscf_signer_info_list_t *self);
 
 //
@@ -143,7 +143,7 @@ vscf_signer_info_list_has_item(const vscf_signer_info_list_t *self);
 //
 //  Return list item.
 //
-VSCF_PUBLIC vscf_signer_info_t
+VSCF_PUBLIC const vscf_signer_info_t *
 vscf_signer_info_list_item(const vscf_signer_info_list_t *self);
 
 //

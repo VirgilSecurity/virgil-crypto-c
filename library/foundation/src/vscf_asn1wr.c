@@ -87,7 +87,7 @@ vscf_asn1wr_write_tag_data(vscf_asn1wr_t *self, vsc_data_t data, int tag);
 //  Get length of the current ASN.1 element with tag and length itself.
 //
 static size_t
-vscf_asn1wr_get_current_element_len(byte curr, byte end);
+vscf_asn1wr_get_current_element_len(byte *curr, const byte *end);
 
 //
 //  Swap positions of the given ASN.1 elements.
@@ -95,13 +95,14 @@ vscf_asn1wr_get_current_element_len(byte curr, byte end);
 //  Note, algorithm complexity is O^2.
 //
 static void
-vscf_asn1wr_swap_elements_of_set(byte to_start, size_t to_len, byte from_start, size_t from_len);
+vscf_asn1wr_swap_elements_of_set(byte *to_start, size_t to_len, byte *from_start, size_t from_len);
 
 //
 //  Return true if second element is lexicographical less then first.
 //
 static bool
-vscf_asn1wr_second_element_of_set_is_less(byte first_start, size_t first_len, byte second_start, size_t second_len);
+vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start,
+        size_t second_len);
 
 //
 //  Perform lexicographical sorting of the given elements of set.

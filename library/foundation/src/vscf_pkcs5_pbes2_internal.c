@@ -85,7 +85,7 @@ vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -95,15 +95,15 @@ static const vscf_alg_api_t alg_api = {
     //
     //  Provide algorithm identificator.
     //
-    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_pkcs5_pbes2_alg_id,
+    (vscf_alg_api_alg_id_fn)vscf_pkcs5_pbes2_alg_id,
     //
     //  Produce object with algorithm information and configuration parameters.
     //
-    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_pkcs5_pbes2_produce_alg_info,
+    (vscf_alg_api_produce_alg_info_fn)vscf_pkcs5_pbes2_produce_alg_info,
     //
     //  Restore algorithm configuration from the given object.
     //
-    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_pkcs5_pbes2_restore_alg_info
+    (vscf_alg_api_restore_alg_info_fn)vscf_pkcs5_pbes2_restore_alg_info
 };
 
 //
@@ -112,7 +112,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_encrypt_api_t encrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the  'vscf_api_tag_ENCRYPT'.
+    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_ENCRYPT,
     //
@@ -122,15 +122,15 @@ static const vscf_encrypt_api_t encrypt_api = {
     //
     //  Encrypt given data.
     //
-    (vscf_encrypt_api_encrypt_fn)(void (*)(void))vscf_pkcs5_pbes2_encrypt,
+    (vscf_encrypt_api_encrypt_fn)vscf_pkcs5_pbes2_encrypt,
     //
     //  Calculate required buffer length to hold the encrypted data.
     //
-    (vscf_encrypt_api_encrypted_len_fn)(void (*)(void))vscf_pkcs5_pbes2_encrypted_len,
+    (vscf_encrypt_api_encrypted_len_fn)vscf_pkcs5_pbes2_encrypted_len,
     //
     //  Precise length calculation of encrypted data.
     //
-    (vscf_encrypt_api_precise_encrypted_len_fn)(void (*)(void))vscf_pkcs5_pbes2_precise_encrypted_len
+    (vscf_encrypt_api_precise_encrypted_len_fn)vscf_pkcs5_pbes2_precise_encrypted_len
 };
 
 //
@@ -139,7 +139,7 @@ static const vscf_encrypt_api_t encrypt_api = {
 static const vscf_decrypt_api_t decrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt' MUST be equal to the  'vscf_api_tag_DECRYPT'.
+    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
     //
     vscf_api_tag_DECRYPT,
     //
@@ -149,11 +149,11 @@ static const vscf_decrypt_api_t decrypt_api = {
     //
     //  Decrypt given data.
     //
-    (vscf_decrypt_api_decrypt_fn)(void (*)(void))vscf_pkcs5_pbes2_decrypt,
+    (vscf_decrypt_api_decrypt_fn)vscf_pkcs5_pbes2_decrypt,
     //
     //  Calculate required buffer length to hold the decrypted data.
     //
-    (vscf_decrypt_api_decrypted_len_fn)(void (*)(void))vscf_pkcs5_pbes2_decrypted_len
+    (vscf_decrypt_api_decrypted_len_fn)vscf_pkcs5_pbes2_decrypted_len
 };
 
 //
@@ -172,11 +172,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_pkcs5_pbes2_cleanup,
+    (vscf_impl_cleanup_fn)vscf_pkcs5_pbes2_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_pkcs5_pbes2_delete
+    (vscf_impl_delete_fn)vscf_pkcs5_pbes2_delete
 };
 
 //
@@ -205,6 +205,9 @@ vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *self) {
     if (self == NULL) {
         return;
     }
+
+    vscf_pkcs5_pbes2_release_kdf(self);
+    vscf_pkcs5_pbes2_release_cipher(self);
 
     vscf_pkcs5_pbes2_cleanup_ctx(self);
 
@@ -316,16 +319,100 @@ vscf_pkcs5_pbes2_impl_const(const vscf_pkcs5_pbes2_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
+//
+//  Setup dependency to the interface 'salted kdf' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT(self->kdf == NULL);
+
+    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
+
+    self->kdf = vscf_impl_shallow_copy(kdf);
+}
+
+//
+//  Setup dependency to the interface 'salted kdf' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT(self->kdf == NULL);
+
+    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
+
+    self->kdf = kdf;
+}
+
+//
+//  Release dependency to the interface 'salted kdf'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->kdf);
+}
+
+//
+//  Setup dependency to the interface 'cipher' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT(self->cipher == NULL);
+
+    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+
+    self->cipher = vscf_impl_shallow_copy(cipher);
+}
+
+//
+//  Setup dependency to the interface 'cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT(self->cipher == NULL);
+
+    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+
+    self->cipher = cipher;
+}
+
+//
+//  Release dependency to the interface 'cipher'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->cipher);
+}
+
 static const vscf_api_t *
 vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-        return (const vscf_api_t *)                 &alg_api;
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_DECRYPT:
-        return (const vscf_api_t *)                 &decrypt_api;
+            return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_ENCRYPT:
-        return (const vscf_api_t *)                 &encrypt_api;
+            return (const vscf_api_t *) &encrypt_api;
         default:
             return NULL;
     }

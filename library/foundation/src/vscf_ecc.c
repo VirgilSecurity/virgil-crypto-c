@@ -87,18 +87,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  This method is called when class 'ecies' was setup.
-//
-static void
-vscf_ecc_did_setup_ecies(vscf_ecc_t *self);
-
-//
-//  This method is called when class 'ecies' was released.
-//
-static void
-vscf_ecc_did_release_ecies(vscf_ecc_t *self);
-
-//
 //  Write R and S to ASN.1 structure.
 //
 //  ECDSA-Sig-Value ::= SEQUENCE {
@@ -107,7 +95,7 @@ vscf_ecc_did_release_ecies(vscf_ecc_t *self);
 //  }
 //
 static void
-vscf_ecc_write_signature(vscf_mbedtls_mpi_t *r, vscf_mbedtls_mpi_t *s, vsc_buffer_t *signature);
+vscf_ecc_write_signature(const mbedtls_mpi *r, const mbedtls_mpi *s, vsc_buffer_t *signature);
 
 //
 //  Read R and S from ASN.1 structure.
@@ -118,117 +106,13 @@ vscf_ecc_write_signature(vscf_mbedtls_mpi_t *r, vscf_mbedtls_mpi_t *s, vsc_buffe
 //  }
 //
 static vscf_status_t
-vscf_ecc_read_signature(vsc_data_t signature, vscf_mbedtls_mpi_t *r, vscf_mbedtls_mpi_t *s);
+vscf_ecc_read_signature(vsc_data_t signature, mbedtls_mpi *r, mbedtls_mpi *s) VSCF_NODISCARD;
 
 //
 //  Produce algorithm information for public or private key.
 //
 static vscf_impl_t *
-vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, vscf_impl_t *key);
-
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_ecc_use_random(vscf_ecc_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_ecc_take_random(vscf_ecc_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_ecc_release_random(vscf_ecc_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
-
-//
-//  This method is called when class 'ecies' was setup.
-//
-static void
-vscf_ecc_did_setup_ecies(vscf_ecc_t *self) {
-
-    // TODO: This is STUB. Implement me.
-}
-
-//
-//  This method is called when class 'ecies' was released.
-//
-static void
-vscf_ecc_did_release_ecies(vscf_ecc_t *self) {
-
-    // TODO: This is STUB. Implement me.
-}
-
-//
-//  Setup dependency to the class 'ecies' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_ecc_use_ecies(vscf_ecc_t *self, vscf_ecies_t *ecies) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT(self->ecies == NULL);
-
-    self->ecies = vscf_ecies_shallow_copy(ecies);
-
-    vscf_ecc_did_setup_ecies(self);
-}
-
-//
-//  Setup dependency to the class 'ecies' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_ecc_take_ecies(vscf_ecc_t *self, vscf_ecies_t *ecies) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(ecies);
-    VSCF_ASSERT(self->ecies == NULL);
-
-    self->ecies = ecies;
-
-    vscf_ecc_did_setup_ecies(self);
-}
-
-//
-//  Release dependency to the class 'ecies'.
-//
-VSCF_PUBLIC void
-vscf_ecc_release_ecies(vscf_ecc_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_ecies_destroy(&self->ecies);
-
-    vscf_ecc_did_release_ecies(self);
-}
+vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, const vscf_impl_t *key);
 
 
 // --------------------------------------------------------------------------
@@ -958,7 +842,8 @@ vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_
     } else {
         mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
         mbed_status = mbedtls_ecdsa_sign_det_ext(
-                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg, NULL, NULL);
+                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg,
+                NULL, NULL);
     }
 
     if (mbed_status != 0) {

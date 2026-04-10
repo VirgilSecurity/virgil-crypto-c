@@ -79,7 +79,7 @@ vscf_asn1rd_find_api(vscf_api_tag_t api_tag);
 static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'asn1 reader' MUST be equal to the  'vscf_api_tag_ASN1_READER'.
+    //  For interface 'asn1_reader' MUST be equal to the 'vscf_api_tag_ASN1_READER'.
     //
     vscf_api_tag_ASN1_READER,
     //
@@ -89,125 +89,125 @@ static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     //  Reset all internal states and prepare to new ASN.1 reading operations.
     //
-    (vscf_asn1_reader_api_reset_fn)(void (*)(void))vscf_asn1rd_reset,
+    (vscf_asn1_reader_api_reset_fn)vscf_asn1rd_reset,
     //
     //  Return length in bytes how many bytes are left for reading.
     //
-    (vscf_asn1_reader_api_left_len_fn)(void (*)(void))vscf_asn1rd_left_len,
+    (vscf_asn1_reader_api_left_len_fn)vscf_asn1rd_left_len,
     //
     //  Return true if status is not "success".
     //
-    (vscf_asn1_reader_api_has_error_fn)(void (*)(void))vscf_asn1rd_has_error,
+    (vscf_asn1_reader_api_has_error_fn)vscf_asn1rd_has_error,
     //
     //  Return error code.
     //
-    (vscf_asn1_reader_api_status_fn)(void (*)(void))vscf_asn1rd_status,
+    (vscf_asn1_reader_api_status_fn)vscf_asn1rd_status,
     //
     //  Get tag of the current ASN.1 element.
     //
-    (vscf_asn1_reader_api_get_tag_fn)(void (*)(void))vscf_asn1rd_get_tag,
+    (vscf_asn1_reader_api_get_tag_fn)vscf_asn1rd_get_tag,
     //
     //  Get length of the current ASN.1 element.
     //
-    (vscf_asn1_reader_api_get_len_fn)(void (*)(void))vscf_asn1rd_get_len,
+    (vscf_asn1_reader_api_get_len_fn)vscf_asn1rd_get_len,
     //
     //  Get length of the current ASN.1 element with tag and length itself.
     //
-    (vscf_asn1_reader_api_get_data_len_fn)(void (*)(void))vscf_asn1rd_get_data_len,
+    (vscf_asn1_reader_api_get_data_len_fn)vscf_asn1rd_get_data_len,
     //
     //  Read ASN.1 type: TAG.
     //  Return element length.
     //
-    (vscf_asn1_reader_api_read_tag_fn)(void (*)(void))vscf_asn1rd_read_tag,
+    (vscf_asn1_reader_api_read_tag_fn)vscf_asn1rd_read_tag,
     //
     //  Read ASN.1 type: context-specific TAG.
     //  Return element length.
     //  Return 0 if current position do not points to the requested tag.
     //
-    (vscf_asn1_reader_api_read_context_tag_fn)(void (*)(void))vscf_asn1rd_read_context_tag,
+    (vscf_asn1_reader_api_read_context_tag_fn)vscf_asn1rd_read_context_tag,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_int_fn)(void (*)(void))vscf_asn1rd_read_int,
+    (vscf_asn1_reader_api_read_int_fn)vscf_asn1rd_read_int,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_int8_fn)(void (*)(void))vscf_asn1rd_read_int8,
+    (vscf_asn1_reader_api_read_int8_fn)vscf_asn1rd_read_int8,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_int16_fn)(void (*)(void))vscf_asn1rd_read_int16,
+    (vscf_asn1_reader_api_read_int16_fn)vscf_asn1rd_read_int16,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_int32_fn)(void (*)(void))vscf_asn1rd_read_int32,
+    (vscf_asn1_reader_api_read_int32_fn)vscf_asn1rd_read_int32,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_int64_fn)(void (*)(void))vscf_asn1rd_read_int64,
+    (vscf_asn1_reader_api_read_int64_fn)vscf_asn1rd_read_int64,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_uint_fn)(void (*)(void))vscf_asn1rd_read_uint,
+    (vscf_asn1_reader_api_read_uint_fn)vscf_asn1rd_read_uint,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_uint8_fn)(void (*)(void))vscf_asn1rd_read_uint8,
+    (vscf_asn1_reader_api_read_uint8_fn)vscf_asn1rd_read_uint8,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_uint16_fn)(void (*)(void))vscf_asn1rd_read_uint16,
+    (vscf_asn1_reader_api_read_uint16_fn)vscf_asn1rd_read_uint16,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_uint32_fn)(void (*)(void))vscf_asn1rd_read_uint32,
+    (vscf_asn1_reader_api_read_uint32_fn)vscf_asn1rd_read_uint32,
     //
     //  Read ASN.1 type: INTEGER.
     //
-    (vscf_asn1_reader_api_read_uint64_fn)(void (*)(void))vscf_asn1rd_read_uint64,
+    (vscf_asn1_reader_api_read_uint64_fn)vscf_asn1rd_read_uint64,
     //
     //  Read ASN.1 type: BOOLEAN.
     //
-    (vscf_asn1_reader_api_read_bool_fn)(void (*)(void))vscf_asn1rd_read_bool,
+    (vscf_asn1_reader_api_read_bool_fn)vscf_asn1rd_read_bool,
     //
     //  Read ASN.1 type: NULL.
     //
-    (vscf_asn1_reader_api_read_null_fn)(void (*)(void))vscf_asn1rd_read_null,
+    (vscf_asn1_reader_api_read_null_fn)vscf_asn1rd_read_null,
     //
     //  Read ASN.1 type: NULL, only if it exists.
     //  Note, this method is safe to call even no more data is left for reading.
     //
-    (vscf_asn1_reader_api_read_null_optional_fn)(void (*)(void))vscf_asn1rd_read_null_optional,
+    (vscf_asn1_reader_api_read_null_optional_fn)vscf_asn1rd_read_null_optional,
     //
     //  Read ASN.1 type: OCTET STRING.
     //
-    (vscf_asn1_reader_api_read_octet_str_fn)(void (*)(void))vscf_asn1rd_read_octet_str,
+    (vscf_asn1_reader_api_read_octet_str_fn)vscf_asn1rd_read_octet_str,
     //
     //  Read ASN.1 type: BIT STRING.
     //
-    (vscf_asn1_reader_api_read_bitstring_as_octet_str_fn)(void (*)(void))vscf_asn1rd_read_bitstring_as_octet_str,
+    (vscf_asn1_reader_api_read_bitstring_as_octet_str_fn)vscf_asn1rd_read_bitstring_as_octet_str,
     //
     //  Read ASN.1 type: UTF8String.
     //
-    (vscf_asn1_reader_api_read_utf8_str_fn)(void (*)(void))vscf_asn1rd_read_utf8_str,
+    (vscf_asn1_reader_api_read_utf8_str_fn)vscf_asn1rd_read_utf8_str,
     //
     //  Read ASN.1 type: OID.
     //
-    (vscf_asn1_reader_api_read_oid_fn)(void (*)(void))vscf_asn1rd_read_oid,
+    (vscf_asn1_reader_api_read_oid_fn)vscf_asn1rd_read_oid,
     //
     //  Read raw data of given length.
     //
-    (vscf_asn1_reader_api_read_data_fn)(void (*)(void))vscf_asn1rd_read_data,
+    (vscf_asn1_reader_api_read_data_fn)vscf_asn1rd_read_data,
     //
     //  Read ASN.1 type: SEQUENCE.
     //  Return element length.
     //
-    (vscf_asn1_reader_api_read_sequence_fn)(void (*)(void))vscf_asn1rd_read_sequence,
+    (vscf_asn1_reader_api_read_sequence_fn)vscf_asn1rd_read_sequence,
     //
     //  Read ASN.1 type: SET.
     //  Return element length.
     //
-    (vscf_asn1_reader_api_read_set_fn)(void (*)(void))vscf_asn1rd_read_set
+    (vscf_asn1_reader_api_read_set_fn)vscf_asn1rd_read_set
 };
 
 //
@@ -226,11 +226,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_asn1rd_cleanup,
+    (vscf_impl_cleanup_fn)vscf_asn1rd_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_asn1rd_delete
+    (vscf_impl_delete_fn)vscf_asn1rd_delete
 };
 
 //
@@ -375,7 +375,7 @@ vscf_asn1rd_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ASN1_READER:
-        return (const vscf_api_t *)                 &asn1_reader_api;
+            return (const vscf_api_t *) &asn1_reader_api;
         default:
             return NULL;
     }

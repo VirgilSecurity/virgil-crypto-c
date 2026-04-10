@@ -182,7 +182,7 @@ vscf_hkdf_produce_alg_info(const vscf_hkdf_t *self);
 //  Restore algorithm configuration from the given object.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info);
+vscf_hkdf_restore_alg_info(vscf_hkdf_t *self, const vscf_impl_t *alg_info) VSCF_NODISCARD;
 
 //
 //  Derive key of the requested length from the given data.
@@ -202,18 +202,6 @@ vscf_hkdf_reset(vscf_hkdf_t *self, vsc_data_t salt, size_t iteration_count);
 //
 VSCF_PUBLIC void
 vscf_hkdf_set_info(vscf_hkdf_t *self, vsc_data_t info);
-
-//
-//  Extracts fixed-length pseudorandom key from keying material.
-//
-VSCF_PRIVATE void
-vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_data_t salt, vsc_buffer_t *pr_key);
-
-//
-//  Expands the pseudorandom key to the desired length.
-//
-VSCF_PRIVATE void
-vscf_hkdf_expand(vscf_hkdf_t *self, vsc_data_t pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len);
 
 
 // --------------------------------------------------------------------------

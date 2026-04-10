@@ -83,7 +83,7 @@ extern "C" {
 
 //
 //  Callback. Generate random bytes.
-//  All RNG implementations must be thread-safe.
+//          All RNG implementations must be thread-safe.
 //
 typedef vscf_status_t (*vscf_random_api_random_fn)(const vscf_impl_t *impl, size_t data_len, vsc_buffer_t *data);
 

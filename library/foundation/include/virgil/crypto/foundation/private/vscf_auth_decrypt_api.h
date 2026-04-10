@@ -86,9 +86,10 @@ extern "C" {
 
 //
 //  Callback. Decrypt given data.
-//  If 'tag' is not given, then it will be taken from the 'enc'.
+//          If 'tag' is not given, then it will be taken from the 'enc'.
 //
-typedef vscf_status_t (*vscf_auth_decrypt_api_auth_decrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_auth_decrypt_api_auth_decrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
+        vsc_data_t tag, vsc_buffer_t *out);
 
 //
 //  Callback. Calculate required buffer length to hold the authenticated decrypted data.
@@ -101,7 +102,7 @@ typedef size_t (*vscf_auth_decrypt_api_auth_decrypted_len_fn)(const vscf_impl_t 
 struct vscf_auth_decrypt_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'auth decrypt' MUST be equal to the 'vscf_api_tag_AUTH_DECRYPT'.
+    //  For interface 'auth_decrypt' MUST be equal to the 'vscf_api_tag_AUTH_DECRYPT'.
     //
     vscf_api_tag_t api_tag;
     //

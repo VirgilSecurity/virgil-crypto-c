@@ -144,7 +144,8 @@ vscf_hybrid_public_key_shallow_copy(vscf_hybrid_public_key_t *self);
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE void
-vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key);
+vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_t **alg_info_ref,
+        const vscf_impl_t *first_key, const vscf_impl_t *second_key);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -153,7 +154,8 @@ vscf_hybrid_public_key_init_with_keys(vscf_hybrid_public_key_t *self, vscf_impl_
 //  Note, keys ownership is kept.
 //
 VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *first_key, vscf_impl_t *second_key);
+vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *first_key,
+        const vscf_impl_t *second_key);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -162,7 +164,8 @@ vscf_hybrid_public_key_new_with_keys(vscf_impl_t **alg_info_ref, vscf_impl_t *fi
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
-vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
+vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, const vscf_impl_t *alg_info,
+        vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -171,7 +174,26 @@ vscf_hybrid_public_key_init_with_keys_disown(vscf_hybrid_public_key_t *self, vsc
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_public_key_t *
-vscf_hybrid_public_key_new_with_keys_disown(vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
+vscf_hybrid_public_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **first_key_ref,
+        vscf_impl_t **second_key_ref);
+
+//
+//  Returns instance of the implemented interface 'public key'.
+//
+VSCF_PUBLIC const vscf_public_key_api_t *
+vscf_hybrid_public_key_public_key_api(void);
+
+//
+//  Return the first public key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hybrid_public_key_first_key(const vscf_hybrid_public_key_t *self);
+
+//
+//  Return the second public key.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hybrid_public_key_second_key(const vscf_hybrid_public_key_t *self);
 
 //
 //  Algorithm identifier the key belongs to.
@@ -182,7 +204,7 @@ vscf_hybrid_public_key_alg_id(const vscf_hybrid_public_key_t *self);
 //
 //  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_hybrid_public_key_alg_info(const vscf_hybrid_public_key_t *self);
 
 //
@@ -209,18 +231,6 @@ vscf_hybrid_public_key_impl_tag(const vscf_hybrid_public_key_t *self);
 //
 VSCF_PUBLIC bool
 vscf_hybrid_public_key_is_valid(const vscf_hybrid_public_key_t *self);
-
-//
-//  Return the first public key.
-//
-VSCF_PRIVATE vscf_impl_t *
-vscf_hybrid_public_key_first_key(const vscf_hybrid_public_key_t *self);
-
-//
-//  Return the second public key.
-//
-VSCF_PRIVATE vscf_impl_t *
-vscf_hybrid_public_key_second_key(const vscf_hybrid_public_key_t *self);
 
 
 // --------------------------------------------------------------------------

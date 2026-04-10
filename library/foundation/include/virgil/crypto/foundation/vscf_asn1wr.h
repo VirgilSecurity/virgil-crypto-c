@@ -148,7 +148,7 @@ vscf_asn1wr_shallow_copy(vscf_asn1wr_t *self);
 //  Reset all internal states and prepare to new ASN.1 writing operations.
 //
 VSCF_PUBLIC void
-vscf_asn1wr_reset(vscf_asn1wr_t *self, byte out, size_t out_len);
+vscf_asn1wr_reset(vscf_asn1wr_t *self, byte *out, size_t out_len);
 
 //
 //  Finalize writing and forbid further operations.
@@ -165,7 +165,7 @@ vscf_asn1wr_finish(vscf_asn1wr_t *self, bool do_not_adjust);
 //
 //  Returns pointer to the inner buffer.
 //
-VSCF_PUBLIC byte
+VSCF_PUBLIC byte *
 vscf_asn1wr_bytes(vscf_asn1wr_t *self);
 
 //
@@ -196,13 +196,13 @@ vscf_asn1wr_has_error(const vscf_asn1wr_t *self);
 //  Return error code.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_asn1wr_status(const vscf_asn1wr_t *self);
+vscf_asn1wr_status(const vscf_asn1wr_t *self) VSCF_NODISCARD;
 
 //
 //  Move writing position backward for the given length.
 //  Return current writing position.
 //
-VSCF_PUBLIC byte
+VSCF_PUBLIC byte *
 vscf_asn1wr_reserve(vscf_asn1wr_t *self, size_t len);
 
 //
@@ -238,63 +238,63 @@ vscf_asn1wr_write_int(vscf_asn1wr_t *self, int value);
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int8(vscf_asn1wr_t *self, int value);
+vscf_asn1wr_write_int8(vscf_asn1wr_t *self, int8_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int16(vscf_asn1wr_t *self, int value);
+vscf_asn1wr_write_int16(vscf_asn1wr_t *self, int16_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int32(vscf_asn1wr_t *self, int value);
+vscf_asn1wr_write_int32(vscf_asn1wr_t *self, int32_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_int64(vscf_asn1wr_t *self, int value);
+vscf_asn1wr_write_int64(vscf_asn1wr_t *self, int64_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint(vscf_asn1wr_t *self, unsigned value);
+vscf_asn1wr_write_uint(vscf_asn1wr_t *self, unsigned int value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint8(vscf_asn1wr_t *self, unsigned value);
+vscf_asn1wr_write_uint8(vscf_asn1wr_t *self, uint8_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint16(vscf_asn1wr_t *self, unsigned value);
+vscf_asn1wr_write_uint16(vscf_asn1wr_t *self, uint16_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint32(vscf_asn1wr_t *self, unsigned value);
+vscf_asn1wr_write_uint32(vscf_asn1wr_t *self, uint32_t value);
 
 //
 //  Write ASN.1 type: INTEGER.
 //  Return count of written bytes.
 //
 VSCF_PUBLIC size_t
-vscf_asn1wr_write_uint64(vscf_asn1wr_t *self, unsigned value);
+vscf_asn1wr_write_uint64(vscf_asn1wr_t *self, uint64_t value);
 
 //
 //  Write ASN.1 type: BOOLEAN.

@@ -65,6 +65,79 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_alg_alg_id(const vscf_impl_t *impl) {
+
+    const vscf_alg_api_t *alg_api = vscf_alg_api(impl);
+    VSCF_ASSERT_PTR (alg_api);
+
+    VSCF_ASSERT_PTR (alg_api->alg_id_cb);
+    return alg_api->alg_id_cb (impl);
+}
+
+//
+//  Produce object with algorithm information and configuration parameters.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_produce_alg_info(const vscf_impl_t *impl) {
+
+    const vscf_alg_api_t *alg_api = vscf_alg_api(impl);
+    VSCF_ASSERT_PTR (alg_api);
+
+    VSCF_ASSERT_PTR (alg_api->produce_alg_info_cb);
+    return alg_api->produce_alg_info_cb (impl);
+}
+
+//
+//  Restore algorithm configuration from the given object.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_alg_restore_alg_info(vscf_impl_t *impl, const vscf_impl_t *alg_info) {
+
+    const vscf_alg_api_t *alg_api = vscf_alg_api(impl);
+    VSCF_ASSERT_PTR (alg_api);
+
+    VSCF_ASSERT_PTR (alg_api->restore_alg_info_cb);
+    return alg_api->restore_alg_info_cb (impl, alg_info);
+}
+
+//
+//  Return alg API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_api_t *
+vscf_alg_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG);
+    return (const vscf_alg_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'alg'.
+//
+VSCF_PUBLIC bool
+vscf_alg_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_ALG) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_api_tag(const vscf_alg_api_t *alg_api) {
+
+    VSCF_ASSERT_PTR (alg_api);
+
+    return alg_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

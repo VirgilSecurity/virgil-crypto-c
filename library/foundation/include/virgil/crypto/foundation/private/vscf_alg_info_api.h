@@ -84,7 +84,7 @@ typedef vscf_alg_id_t (*vscf_alg_info_api_alg_id_fn)(const vscf_impl_t *impl);
 struct vscf_alg_info_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
+    //  For interface 'alg_info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
     //
     vscf_api_tag_t api_tag;
     //

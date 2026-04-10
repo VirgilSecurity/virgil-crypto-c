@@ -100,6 +100,10 @@ struct vscf_hkdf_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *hash;
+    //
     //  Implementation specific context.
     //
     vsc_buffer_t *salt;
@@ -110,11 +114,7 @@ struct vscf_hkdf_t {
     //
     //  Implementation specific context.
     //
-    vscf_hmac_t *hmac;
-    //
-    //  Dependency 'hash'.
-    //
-    vscf_impl_t *hash;
+    vscf_hmac_t hmac;
 };
 
 

@@ -144,7 +144,7 @@ extern "C" {
     } while (false)
 
 //
-//  This macros can be used as library 'mbedtls' error handling post-condition.
+//  This macros can be used as library 'mbedtls' error handlind post-condition.
 //
 #define VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(error)                                                      \
     do {                                                                                                        \
@@ -153,7 +153,8 @@ extern "C" {
     } while (0)
 
 //
-//  This macros can be used to ensure that library 'mbedtls' operation returns success status code.
+//  This macros can be used to ensure that library 'mbedtls' operation
+//  returns success status code.
 //
 #define VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status)              \
     do {                                                         \
@@ -189,7 +190,7 @@ vscf_assert_trigger(const char *message, const char *file, int line);
 //
 //  Tell assertion handler that error of library 'mbedtls' is not handled.
 //
-void
+VSCF_PUBLIC void
 vscf_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line);
 
 

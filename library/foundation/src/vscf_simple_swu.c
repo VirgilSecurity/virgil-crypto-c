@@ -93,9 +93,9 @@ vscf_simple_swu_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_simple_swu_init(vscf_simple_swu_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_simple_swu_t));
+    vscf_zeroize(self, sizeof(vscf_simple_swu_t));
 
     self->refcnt = 1;
 
@@ -114,7 +114,7 @@ vscf_simple_swu_cleanup(vscf_simple_swu_t *self) {
 
     vscf_simple_swu_cleanup_ctx(self);
 
-    vsc_zeroize(self, sizeof(vscf_simple_swu_t));
+    vscf_zeroize(self, sizeof(vscf_simple_swu_t));
 }
 
 //
@@ -123,12 +123,12 @@ vscf_simple_swu_cleanup(vscf_simple_swu_t *self) {
 VSCF_PUBLIC vscf_simple_swu_t *
 vscf_simple_swu_new(void) {
 
-    vscf_simple_swu_t *self = (vscf_simple_swu_t *) vsc_alloc(sizeof (vscf_simple_swu_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_simple_swu_t *self = (vscf_simple_swu_t *) vscf_alloc(sizeof (vscf_simple_swu_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_simple_swu_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

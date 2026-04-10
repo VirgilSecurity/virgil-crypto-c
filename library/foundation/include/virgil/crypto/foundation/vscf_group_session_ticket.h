@@ -159,24 +159,18 @@ vscf_group_session_ticket_release_rng(vscf_group_session_ticket_t *self);
 //  - RNG: CTR DRBG
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_ticket_setup_defaults(vscf_group_session_ticket_t *self);
+vscf_group_session_ticket_setup_defaults(vscf_group_session_ticket_t *self) VSCF_NODISCARD;
 
 //
 //  Set this ticket to start new group session.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_ticket_setup_ticket_as_new(vscf_group_session_ticket_t *self, vsc_data_t session_id);
-
-VSCF_PUBLIC void
-vscf_group_session_ticket_set_session_id(vscf_group_session_ticket_t *self, vsc_data_t session_id);
-
-VSCF_PUBLIC vscf_status_t
-vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self);
+vscf_group_session_ticket_setup_ticket_as_new(vscf_group_session_ticket_t *self, vsc_data_t session_id) VSCF_NODISCARD;
 
 //
 //  Returns message that should be sent to all participants using secure channel.
 //
-VSCF_PUBLIC vscf_group_session_message_t
+VSCF_PUBLIC const vscf_group_session_message_t *
 vscf_group_session_ticket_get_ticket_message(const vscf_group_session_ticket_t *self);
 
 

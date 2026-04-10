@@ -100,14 +100,14 @@ vscf_key_info_new(void);
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC void
-vscf_key_info_init_with_alg_info(vscf_key_info_t *self, vscf_impl_t *alg_info);
+vscf_key_info_init_with_alg_info(vscf_key_info_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Build key information based on the generic algorithm information.
 //
 VSCF_PUBLIC vscf_key_info_t *
-vscf_key_info_new_with_alg_info(vscf_impl_t *alg_info);
+vscf_key_info_new_with_alg_info(const vscf_impl_t *alg_info);
 
 //
 //  Release all inner resources and deallocate context if needed.

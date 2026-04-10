@@ -123,13 +123,13 @@ vscf_signed_data_info_shallow_copy(vscf_signed_data_info_t *self);
 //
 //  Set information about algorithm that was used to produce data digest.
 //
-VSCF_PUBLIC void
-vscf_signed_data_info_set_hash_alg_info(vscf_signed_data_info_t *self, vscf_impl_t *hash_alg_info);
+VSCF_PRIVATE void
+vscf_signed_data_info_set_hash_alg_info(vscf_signed_data_info_t *self, vscf_impl_t **hash_alg_info_ref);
 
 //
 //  Return information about algorithm that was used to produce data digest.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_signed_data_info_hash_alg_info(const vscf_signed_data_info_t *self);
 
 

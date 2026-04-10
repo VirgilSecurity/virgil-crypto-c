@@ -73,48 +73,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Setup dependency to the interface 'mac' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT(self->hmac == NULL);
-
-    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
-
-    self->hmac = vscf_impl_shallow_copy(hmac);
-}
-
-//
-//  Setup dependency to the interface 'mac' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT(self->hmac == NULL);
-
-    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
-
-    self->hmac = hmac;
-}
-
-//
-//  Release dependency to the interface 'mac'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->hmac);
-}
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -78,7 +78,7 @@ vscf_hash_based_alg_info_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_info_api_t alg_info_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg info' MUST be equal to the  'vscf_api_tag_ALG_INFO'.
+    //  For interface 'alg_info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
     //
     vscf_api_tag_ALG_INFO,
     //
@@ -88,7 +88,7 @@ static const vscf_alg_info_api_t alg_info_api = {
     //
     //  Provide algorithm identificator.
     //
-    (vscf_alg_info_api_alg_id_fn)(void (*)(void))vscf_hash_based_alg_info_alg_id
+    (vscf_alg_info_api_alg_id_fn)vscf_hash_based_alg_info_alg_id
 };
 
 //
@@ -107,11 +107,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_hash_based_alg_info_cleanup,
+    (vscf_impl_cleanup_fn)vscf_hash_based_alg_info_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_hash_based_alg_info_delete
+    (vscf_impl_delete_fn)vscf_hash_based_alg_info_delete
 };
 
 //
@@ -227,7 +227,8 @@ vscf_hash_based_alg_info_shallow_copy(vscf_hash_based_alg_info_t *self) {
 //  Create algorithm info with identificator and HASH algorithm info.
 //
 VSCF_PRIVATE void
-vscf_hash_based_alg_info_init_with_members(vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref) {
+vscf_hash_based_alg_info_init_with_members(vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **hash_alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -287,7 +288,7 @@ vscf_hash_based_alg_info_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO:
-        return (const vscf_api_t *)                 &alg_info_api;
+            return (const vscf_api_t *) &alg_info_api;
         default:
             return NULL;
     }

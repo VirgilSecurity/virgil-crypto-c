@@ -91,8 +91,8 @@ typedef struct vscf_decrypt_api_t vscf_decrypt_api_t;
 //
 //  Decrypt given data.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the decrypted data.

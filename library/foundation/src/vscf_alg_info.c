@@ -64,6 +64,53 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_alg_info_alg_id(const vscf_impl_t *impl) {
+
+    const vscf_alg_info_api_t *alg_info_api = vscf_alg_info_api(impl);
+    VSCF_ASSERT_PTR (alg_info_api);
+
+    VSCF_ASSERT_PTR (alg_info_api->alg_id_cb);
+    return alg_info_api->alg_id_cb (impl);
+}
+
+//
+//  Return alg info API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_alg_info_api_t *
+vscf_alg_info_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_ALG_INFO);
+    return (const vscf_alg_info_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'alg info'.
+//
+VSCF_PUBLIC bool
+vscf_alg_info_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_ALG_INFO) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_alg_info_api_tag(const vscf_alg_info_api_t *alg_info_api) {
+
+    VSCF_ASSERT_PTR (alg_info_api);
+
+    return alg_info_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

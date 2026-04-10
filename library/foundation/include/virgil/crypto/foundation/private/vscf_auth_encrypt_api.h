@@ -86,9 +86,10 @@ extern "C" {
 
 //
 //  Callback. Encrypt given data.
-//  If 'tag' is not given, then it will written to the 'enc'.
+//          If 'tag' is not given, then it will written to the 'enc'.
 //
-typedef vscf_status_t (*vscf_auth_encrypt_api_auth_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out, vsc_buffer_t *tag);
+typedef vscf_status_t (*vscf_auth_encrypt_api_auth_encrypt_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data,
+        vsc_buffer_t *out, vsc_buffer_t *tag);
 
 //
 //  Callback. Calculate required buffer length to hold the authenticated encrypted data.
@@ -101,7 +102,7 @@ typedef size_t (*vscf_auth_encrypt_api_auth_encrypted_len_fn)(const vscf_impl_t 
 struct vscf_auth_encrypt_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'auth encrypt' MUST be equal to the 'vscf_api_tag_AUTH_ENCRYPT'.
+    //  For interface 'auth_encrypt' MUST be equal to the 'vscf_api_tag_AUTH_ENCRYPT'.
     //
     vscf_api_tag_t api_tag;
     //

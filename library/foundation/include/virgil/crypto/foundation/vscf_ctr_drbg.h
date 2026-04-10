@@ -81,6 +81,20 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    //
+    //  The interval before reseed is performed by default.
+    //
+    vscf_ctr_drbg_RESEED_INTERVAL = 10000,
+    //
+    //  The amount of entropy used per seed by default.
+    //
+    vscf_ctr_drbg_ENTROPY_LEN = 48
+};
+
+//
 //  Handles implementation details.
 //
 typedef struct vscf_ctr_drbg_t vscf_ctr_drbg_t;
@@ -147,15 +161,15 @@ vscf_ctr_drbg_shallow_copy(vscf_ctr_drbg_t *self);
 //
 //  Setup dependency to the interface 'entropy source' with shared ownership.
 //
-VSCF_PUBLIC status
-vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source);
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_use_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) VSCF_NODISCARD;
 
 //
 //  Setup dependency to the interface 'entropy source' and transfer ownership.
 //  Note, transfer ownership does not mean that object is uniquely owned by the target object.
 //
-VSCF_PUBLIC status
-vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source);
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_take_entropy_source(vscf_ctr_drbg_t *self, vscf_impl_t *entropy_source) VSCF_NODISCARD;
 
 //
 //  Release dependency to the interface 'entropy source'.
@@ -164,45 +178,45 @@ VSCF_PUBLIC void
 vscf_ctr_drbg_release_entropy_source(vscf_ctr_drbg_t *self);
 
 //
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
+
+//
+//  Force entropy to be gathered at the beginning of every call to
+//  the random() method.
+//  Note, use this if your entropy source has sufficient throughput.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_t *self);
+
+//
+//  Sets the reseed interval.
+//  Default value is reseed interval.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_t *self, size_t interval);
+
+//
+//  Sets the amount of entropy grabbed on each seed or reseed.
+//  The default value is entropy len.
+//
+VSCF_PUBLIC void
+vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len);
+
+//
 //  Generate random bytes.
 //  All RNG implementations must be thread-safe.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_random(const vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data);
+vscf_ctr_drbg_random(const vscf_ctr_drbg_t *self, size_t data_len, vsc_buffer_t *data) VSCF_NODISCARD;
 
 //
 //  Retrieve new seed data from the entropy sources.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self);
-
-//
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PRIVATE vscf_status_t
-vscf_ctr_drbg_setup_defaults(vscf_ctr_drbg_t *self);
-
-//
-//  Force entropy to be gathered at the beginning of every call to
-//  the .(class_ctr_drbg_method_random)() method.
-//  Note, use this if your entropy source has sufficient throughput.
-//
-VSCF_PRIVATE void
-vscf_ctr_drbg_enable_prediction_resistance(vscf_ctr_drbg_t *self);
-
-//
-//  Sets the reseed interval.
-//  Default value is .(class_ctr_drbg_constant_reseed_interval).
-//
-VSCF_PRIVATE void
-vscf_ctr_drbg_set_reseed_interval(vscf_ctr_drbg_t *self, size_t interval);
-
-//
-//  Sets the amount of entropy grabbed on each seed or reseed.
-//  The default value is .(class_ctr_drbg_constant_entropy_len).
-//
-VSCF_PRIVATE void
-vscf_ctr_drbg_set_entropy_len(vscf_ctr_drbg_t *self, size_t len);
+vscf_ctr_drbg_reseed(vscf_ctr_drbg_t *self) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

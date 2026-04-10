@@ -65,6 +65,119 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Check if algorithm can sign data digest with a given key.
+//
+VSCF_PUBLIC bool
+vscf_key_signer_can_sign(const vscf_impl_t *impl, const vscf_impl_t *private_key) {
+
+    const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    VSCF_ASSERT_PTR (key_signer_api->can_sign_cb);
+    return key_signer_api->can_sign_cb (impl, private_key);
+}
+
+//
+//  Return length in bytes required to hold signature.
+//  Return zero if a given private key can not produce signatures.
+//
+VSCF_PUBLIC size_t
+vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *private_key) {
+
+    const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    VSCF_ASSERT_PTR (key_signer_api->signature_len_cb);
+    return key_signer_api->signature_len_cb (impl, private_key);
+}
+
+//
+//  Sign data digest with a given private key.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_buffer_t *signature) {
+
+    const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    VSCF_ASSERT_PTR (key_signer_api->sign_hash_cb);
+    return key_signer_api->sign_hash_cb (impl, private_key, hash_id, digest, signature);
+}
+
+//
+//  Check if algorithm can verify data digest with a given key.
+//
+VSCF_PUBLIC bool
+vscf_key_signer_can_verify(const vscf_impl_t *impl, const vscf_impl_t *public_key) {
+
+    const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    VSCF_ASSERT_PTR (key_signer_api->can_verify_cb);
+    return key_signer_api->can_verify_cb (impl, public_key);
+}
+
+//
+//  Verify data digest with a given public key and signature.
+//
+VSCF_PUBLIC bool
+vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_data_t signature) {
+
+    const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    VSCF_ASSERT_PTR (key_signer_api->verify_hash_cb);
+    return key_signer_api->verify_hash_cb (impl, public_key, hash_id, digest, signature);
+}
+
+//
+//  Return key signer API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_key_signer_api_t *
+vscf_key_signer_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_KEY_SIGNER);
+    return (const vscf_key_signer_api_t *) api;
+}
+
+//
+//  Return key alg API.
+//
+VSCF_PUBLIC const vscf_key_alg_api_t *
+vscf_key_signer_key_alg_api(const vscf_key_signer_api_t *key_signer_api) {
+
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    return key_signer_api->key_alg_api;
+}
+
+//
+//  Check if given object implements interface 'key signer'.
+//
+VSCF_PUBLIC bool
+vscf_key_signer_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_KEY_SIGNER) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_key_signer_api_tag(const vscf_key_signer_api_t *key_signer_api) {
+
+    VSCF_ASSERT_PTR (key_signer_api);
+
+    return key_signer_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

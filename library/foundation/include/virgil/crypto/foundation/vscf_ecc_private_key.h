@@ -146,7 +146,7 @@ vscf_ecc_private_key_alg_id(const vscf_ecc_private_key_t *self);
 //
 //  Return algorithm information that can be used for serialization.
 //
-VSCF_PUBLIC vscf_impl_t *
+VSCF_PUBLIC const vscf_impl_t *
 vscf_ecc_private_key_alg_info(const vscf_ecc_private_key_t *self);
 
 //

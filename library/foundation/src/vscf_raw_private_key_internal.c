@@ -80,7 +80,7 @@ vscf_raw_private_key_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_api_t key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key' MUST be equal to the  'vscf_api_tag_KEY'.
+    //  For interface 'key' MUST be equal to the 'vscf_api_tag_KEY'.
     //
     vscf_api_tag_KEY,
     //
@@ -90,28 +90,28 @@ static const vscf_key_api_t key_api = {
     //
     //  Algorithm identifier the key belongs to.
     //
-    (vscf_key_api_alg_id_fn)(void (*)(void))vscf_raw_private_key_alg_id,
+    (vscf_key_api_alg_id_fn)vscf_raw_private_key_alg_id,
     //
     //  Return algorithm information that can be used for serialization.
     //
-    (vscf_key_api_alg_info_fn)(void (*)(void))vscf_raw_private_key_alg_info,
+    (vscf_key_api_alg_info_fn)vscf_raw_private_key_alg_info,
     //
     //  Length of the key in bytes.
     //
-    (vscf_key_api_len_fn)(void (*)(void))vscf_raw_private_key_len,
+    (vscf_key_api_len_fn)vscf_raw_private_key_len,
     //
     //  Length of the key in bits.
     //
-    (vscf_key_api_bitlen_fn)(void (*)(void))vscf_raw_private_key_bitlen,
+    (vscf_key_api_bitlen_fn)vscf_raw_private_key_bitlen,
     //
     //  Return tag of an associated algorithm that can handle this key.
     //
-    (vscf_key_api_impl_tag_fn)(void (*)(void))vscf_raw_private_key_impl_tag,
+    (vscf_key_api_impl_tag_fn)vscf_raw_private_key_impl_tag,
     //
     //  Check that key is valid.
     //  Note, this operation can be slow.
     //
-    (vscf_key_api_is_valid_fn)(void (*)(void))vscf_raw_private_key_is_valid
+    (vscf_key_api_is_valid_fn)vscf_raw_private_key_is_valid
 };
 
 //
@@ -120,7 +120,7 @@ static const vscf_key_api_t key_api = {
 static const vscf_private_key_api_t private_key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'private key' MUST be equal to the  'vscf_api_tag_PRIVATE_KEY'.
+    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_PRIVATE_KEY,
     //
@@ -134,7 +134,7 @@ static const vscf_private_key_api_t private_key_api = {
     //
     //  Extract public key from the private key.
     //
-    (vscf_private_key_api_extract_public_key_fn)(void (*)(void))vscf_raw_private_key_extract_public_key
+    (vscf_private_key_api_extract_public_key_fn)vscf_raw_private_key_extract_public_key
 };
 
 //
@@ -153,11 +153,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_raw_private_key_cleanup,
+    (vscf_impl_cleanup_fn)vscf_raw_private_key_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_raw_private_key_delete
+    (vscf_impl_delete_fn)vscf_raw_private_key_delete
 };
 
 //
@@ -307,7 +307,8 @@ vscf_raw_private_key_new_with_data(vsc_data_t key_data, vscf_impl_t **alg_info_r
 //  Note, data is not copied.
 //
 VSCF_PRIVATE void
-vscf_raw_private_key_init_with_buffer(vscf_raw_private_key_t *self, vsc_buffer_t **key_data_ref, vscf_impl_t **alg_info_ref) {
+vscf_raw_private_key_init_with_buffer(vscf_raw_private_key_t *self, vsc_buffer_t **key_data_ref,
+        vscf_impl_t **alg_info_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -340,7 +341,8 @@ vscf_raw_private_key_new_with_buffer(vsc_buffer_t **key_data_ref, vscf_impl_t **
 //  Note, data is not copied, but new instance of key is created.s
 //
 VSCF_PRIVATE void
-vscf_raw_private_key_init_with_redefined_impl_tag(vscf_raw_private_key_t *self, const vscf_self_t *other, vscf_impl_tag_t impl_tag) {
+vscf_raw_private_key_init_with_redefined_impl_tag(vscf_raw_private_key_t *self, const vscf_raw_private_key_t *other,
+        vscf_impl_tag_t impl_tag) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -358,7 +360,7 @@ vscf_raw_private_key_init_with_redefined_impl_tag(vscf_raw_private_key_t *self, 
 //  Note, data is not copied, but new instance of key is created.s
 //
 VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_raw_private_key_new_with_redefined_impl_tag(const vscf_self_t *other, vscf_impl_tag_t impl_tag) {
+vscf_raw_private_key_new_with_redefined_impl_tag(const vscf_raw_private_key_t *other, vscf_impl_tag_t impl_tag) {
 
     vscf_raw_private_key_t *self = vscf_raw_private_key_new();
 
@@ -372,7 +374,8 @@ vscf_raw_private_key_new_with_redefined_impl_tag(const vscf_self_t *other, vscf_
 //  Creates a fully defined raw key.
 //
 VSCF_PRIVATE void
-vscf_raw_private_key_init_with_members(vscf_raw_private_key_t *self, vsc_data_t key_data, vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag) {
+vscf_raw_private_key_init_with_members(vscf_raw_private_key_t *self, vsc_data_t key_data, const vscf_impl_t *alg_info,
+        vscf_impl_tag_t impl_tag) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -389,7 +392,7 @@ vscf_raw_private_key_init_with_members(vscf_raw_private_key_t *self, vsc_data_t 
 //  Creates a fully defined raw key.
 //
 VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_raw_private_key_new_with_members(vsc_data_t key_data, vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag) {
+vscf_raw_private_key_new_with_members(vsc_data_t key_data, const vscf_impl_t *alg_info, vscf_impl_tag_t impl_tag) {
 
     vscf_raw_private_key_t *self = vscf_raw_private_key_new();
 
@@ -432,9 +435,9 @@ vscf_raw_private_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY:
-        return (const vscf_api_t *)                 &key_api;
+            return (const vscf_api_t *) &key_api;
         case vscf_api_tag_PRIVATE_KEY:
-        return (const vscf_api_t *)                 &private_key_api;
+            return (const vscf_api_t *) &private_key_api;
         default:
             return NULL;
     }

@@ -95,9 +95,9 @@ vscf_message_padding_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_message_padding_init(vscf_message_padding_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_message_padding_t));
+    vscf_zeroize(self, sizeof(vscf_message_padding_t));
 
     self->refcnt = 1;
 
@@ -118,7 +118,7 @@ vscf_message_padding_cleanup(vscf_message_padding_t *self) {
 
     vscf_message_padding_release_rng(self);
 
-    vsc_zeroize(self, sizeof(vscf_message_padding_t));
+    vscf_zeroize(self, sizeof(vscf_message_padding_t));
 }
 
 //
@@ -127,12 +127,12 @@ vscf_message_padding_cleanup(vscf_message_padding_t *self) {
 VSCF_PUBLIC vscf_message_padding_t *
 vscf_message_padding_new(void) {
 
-    vscf_message_padding_t *self = (vscf_message_padding_t *) vsc_alloc(sizeof (vscf_message_padding_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_message_padding_t *self = (vscf_message_padding_t *) vscf_alloc(sizeof (vscf_message_padding_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_message_padding_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

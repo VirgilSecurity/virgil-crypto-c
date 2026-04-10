@@ -105,6 +105,12 @@ VSCF_PUBLIC void
 vscf_cipher_set_key(vscf_impl_t *impl, vsc_data_t key);
 
 //
+//  Return cipher's current state.
+//
+VSCF_PRIVATE vscf_cipher_state_t
+vscf_cipher_state(const vscf_impl_t *impl);
+
+//
 //  Start sequential encryption.
 //
 VSCF_PUBLIC void
@@ -149,8 +155,8 @@ vscf_cipher_decrypted_out_len(const vscf_impl_t *impl, size_t data_len);
 //
 //  Accomplish encryption or decryption process.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_cipher_finish(vscf_impl_t *impl, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_cipher_finish(vscf_impl_t *impl, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return cipher API, or NULL if it is not implemented.

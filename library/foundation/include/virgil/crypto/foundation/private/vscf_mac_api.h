@@ -109,7 +109,7 @@ typedef void (*vscf_mac_api_finish_fn)(vscf_impl_t *impl, vsc_buffer_t *mac);
 
 //
 //  Callback. Prepare to authenticate a new message with the same key
-//  as the previous MAC operation.
+//          as the previous MAC operation.
 //
 typedef void (*vscf_mac_api_reset_fn)(vscf_impl_t *impl);
 

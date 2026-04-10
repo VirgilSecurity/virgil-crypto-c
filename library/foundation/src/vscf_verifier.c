@@ -105,9 +105,9 @@ vscf_verifier_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_verifier_init(vscf_verifier_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_verifier_t));
+    vscf_zeroize(self, sizeof(vscf_verifier_t));
 
     self->refcnt = 1;
 
@@ -126,7 +126,7 @@ vscf_verifier_cleanup(vscf_verifier_t *self) {
 
     vscf_verifier_cleanup_ctx(self);
 
-    vsc_zeroize(self, sizeof(vscf_verifier_t));
+    vscf_zeroize(self, sizeof(vscf_verifier_t));
 }
 
 //
@@ -135,12 +135,12 @@ vscf_verifier_cleanup(vscf_verifier_t *self) {
 VSCF_PUBLIC vscf_verifier_t *
 vscf_verifier_new(void) {
 
-    vscf_verifier_t *self = (vscf_verifier_t *) vsc_alloc(sizeof (vscf_verifier_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_verifier_t *self = (vscf_verifier_t *) vscf_alloc(sizeof (vscf_verifier_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_verifier_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

@@ -89,9 +89,9 @@ vscf_group_session_epoch_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_group_session_epoch_init(vscf_group_session_epoch_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_group_session_epoch_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_epoch_t));
 
     self->refcnt = 1;
 
@@ -110,7 +110,7 @@ vscf_group_session_epoch_cleanup(vscf_group_session_epoch_t *self) {
 
     vscf_group_session_epoch_cleanup_ctx(self);
 
-    vsc_zeroize(self, sizeof(vscf_group_session_epoch_t));
+    vscf_zeroize(self, sizeof(vscf_group_session_epoch_t));
 }
 
 //
@@ -119,12 +119,12 @@ vscf_group_session_epoch_cleanup(vscf_group_session_epoch_t *self) {
 VSCF_PUBLIC vscf_group_session_epoch_t *
 vscf_group_session_epoch_new(void) {
 
-    vscf_group_session_epoch_t *self = (vscf_group_session_epoch_t *) vsc_alloc(sizeof (vscf_group_session_epoch_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_group_session_epoch_t *self = (vscf_group_session_epoch_t *) vscf_alloc(sizeof (vscf_group_session_epoch_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_group_session_epoch_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

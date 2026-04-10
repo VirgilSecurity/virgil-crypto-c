@@ -113,9 +113,9 @@ vscf_ecies_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_ecies_init(vscf_ecies_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_ecies_t));
+    vscf_zeroize(self, sizeof(vscf_ecies_t));
 
     self->refcnt = 1;
 
@@ -135,16 +135,12 @@ vscf_ecies_cleanup(vscf_ecies_t *self) {
     vscf_ecies_cleanup_ctx(self);
 
     vscf_ecies_release_random(self);
-
     vscf_ecies_release_cipher(self);
-
     vscf_ecies_release_mac(self);
-
     vscf_ecies_release_kdf(self);
-
     vscf_ecies_release_ephemeral_key(self);
 
-    vsc_zeroize(self, sizeof(vscf_ecies_t));
+    vscf_zeroize(self, sizeof(vscf_ecies_t));
 }
 
 //
@@ -153,12 +149,12 @@ vscf_ecies_cleanup(vscf_ecies_t *self) {
 VSCF_PUBLIC vscf_ecies_t *
 vscf_ecies_new(void) {
 
-    vscf_ecies_t *self = (vscf_ecies_t *) vsc_alloc(sizeof (vscf_ecies_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_ecies_t *self = (vscf_ecies_t *) vscf_alloc(sizeof (vscf_ecies_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_ecies_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

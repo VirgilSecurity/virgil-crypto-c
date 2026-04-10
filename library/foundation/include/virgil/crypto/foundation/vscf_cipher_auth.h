@@ -104,8 +104,8 @@ vscf_cipher_auth_set_auth_data(vscf_impl_t *impl, vsc_data_t auth_data);
 //  Note, if authentication tag should be added to an encrypted data,
 //  method "finish" can be used.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_cipher_auth_finish_auth_encryption(vscf_impl_t *impl, vsc_buffer_t *out, vsc_buffer_t *tag);
+VSCF_PUBLIC vscf_status_t
+vscf_cipher_auth_finish_auth_encryption(vscf_impl_t *impl, vsc_buffer_t *out, vsc_buffer_t *tag) VSCF_NODISCARD;
 
 //
 //  Accomplish an authenticated decryption with explicitly given tag.
@@ -113,8 +113,8 @@ vscf_cipher_auth_finish_auth_encryption(vscf_impl_t *impl, vsc_buffer_t *out, vs
 //  Note, if authentication tag is a part of an encrypted data then,
 //  method "finish" can be used for simplicity.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_cipher_auth_finish_auth_decryption(vscf_impl_t *impl, vsc_data_t tag, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_cipher_auth_finish_auth_decryption(vscf_impl_t *impl, vsc_data_t tag, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return cipher auth API, or NULL if it is not implemented.

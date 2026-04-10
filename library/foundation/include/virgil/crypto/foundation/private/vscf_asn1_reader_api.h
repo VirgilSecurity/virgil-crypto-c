@@ -118,14 +118,14 @@ typedef size_t (*vscf_asn1_reader_api_get_data_len_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: TAG.
-//  Return element length.
+//          Return element length.
 //
 typedef size_t (*vscf_asn1_reader_api_read_tag_fn)(vscf_impl_t *impl, int tag);
 
 //
 //  Callback. Read ASN.1 type: context-specific TAG.
-//  Return element length.
-//  Return 0 if current position do not points to the requested tag.
+//          Return element length.
+//          Return 0 if current position do not points to the requested tag.
 //
 typedef size_t (*vscf_asn1_reader_api_read_context_tag_fn)(vscf_impl_t *impl, int tag);
 
@@ -137,47 +137,47 @@ typedef int (*vscf_asn1_reader_api_read_int_fn)(vscf_impl_t *impl);
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef int (*vscf_asn1_reader_api_read_int8_fn)(vscf_impl_t *impl);
+typedef int8_t (*vscf_asn1_reader_api_read_int8_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef int (*vscf_asn1_reader_api_read_int16_fn)(vscf_impl_t *impl);
+typedef int16_t (*vscf_asn1_reader_api_read_int16_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef int (*vscf_asn1_reader_api_read_int32_fn)(vscf_impl_t *impl);
+typedef int32_t (*vscf_asn1_reader_api_read_int32_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef int (*vscf_asn1_reader_api_read_int64_fn)(vscf_impl_t *impl);
+typedef int64_t (*vscf_asn1_reader_api_read_int64_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef unsigned (*vscf_asn1_reader_api_read_uint_fn)(vscf_impl_t *impl);
+typedef unsigned int (*vscf_asn1_reader_api_read_uint_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef unsigned (*vscf_asn1_reader_api_read_uint8_fn)(vscf_impl_t *impl);
+typedef uint8_t (*vscf_asn1_reader_api_read_uint8_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef unsigned (*vscf_asn1_reader_api_read_uint16_fn)(vscf_impl_t *impl);
+typedef uint16_t (*vscf_asn1_reader_api_read_uint16_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef unsigned (*vscf_asn1_reader_api_read_uint32_fn)(vscf_impl_t *impl);
+typedef uint32_t (*vscf_asn1_reader_api_read_uint32_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: INTEGER.
 //
-typedef unsigned (*vscf_asn1_reader_api_read_uint64_fn)(vscf_impl_t *impl);
+typedef uint64_t (*vscf_asn1_reader_api_read_uint64_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: BOOLEAN.
@@ -191,7 +191,7 @@ typedef void (*vscf_asn1_reader_api_read_null_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: NULL, only if it exists.
-//  Note, this method is safe to call even no more data is left for reading.
+//          Note, this method is safe to call even no more data is left for reading.
 //
 typedef void (*vscf_asn1_reader_api_read_null_optional_fn)(vscf_impl_t *impl);
 
@@ -222,13 +222,13 @@ typedef vsc_data_t (*vscf_asn1_reader_api_read_data_fn)(vscf_impl_t *impl, size_
 
 //
 //  Callback. Read ASN.1 type: SEQUENCE.
-//  Return element length.
+//          Return element length.
 //
 typedef size_t (*vscf_asn1_reader_api_read_sequence_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Read ASN.1 type: SET.
-//  Return element length.
+//          Return element length.
 //
 typedef size_t (*vscf_asn1_reader_api_read_set_fn)(vscf_impl_t *impl);
 
@@ -238,7 +238,7 @@ typedef size_t (*vscf_asn1_reader_api_read_set_fn)(vscf_impl_t *impl);
 struct vscf_asn1_reader_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'asn1 reader' MUST be equal to the 'vscf_api_tag_ASN1_READER'.
+    //  For interface 'asn1_reader' MUST be equal to the 'vscf_api_tag_ASN1_READER'.
     //
     vscf_api_tag_t api_tag;
     //

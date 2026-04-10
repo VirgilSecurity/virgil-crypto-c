@@ -81,7 +81,7 @@ vscf_sha384_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -91,15 +91,15 @@ static const vscf_alg_api_t alg_api = {
     //
     //  Provide algorithm identificator.
     //
-    (vscf_alg_api_alg_id_fn)(void (*)(void))vscf_sha384_alg_id,
+    (vscf_alg_api_alg_id_fn)vscf_sha384_alg_id,
     //
     //  Produce object with algorithm information and configuration parameters.
     //
-    (vscf_alg_api_produce_alg_info_fn)(void (*)(void))vscf_sha384_produce_alg_info,
+    (vscf_alg_api_produce_alg_info_fn)vscf_sha384_produce_alg_info,
     //
     //  Restore algorithm configuration from the given object.
     //
-    (vscf_alg_api_restore_alg_info_fn)(void (*)(void))vscf_sha384_restore_alg_info
+    (vscf_alg_api_restore_alg_info_fn)vscf_sha384_restore_alg_info
 };
 
 //
@@ -108,7 +108,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_hash_api_t hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash' MUST be equal to the  'vscf_api_tag_HASH'.
+    //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
     //
     vscf_api_tag_HASH,
     //
@@ -118,19 +118,19 @@ static const vscf_hash_api_t hash_api = {
     //
     //  Calculate hash over given data.
     //
-    (vscf_hash_api_hash_fn)(void (*)(void))vscf_sha384_hash,
+    (vscf_hash_api_hash_fn)vscf_sha384_hash,
     //
     //  Start a new hashing.
     //
-    (vscf_hash_api_start_fn)(void (*)(void))vscf_sha384_start,
+    (vscf_hash_api_start_fn)vscf_sha384_start,
     //
     //  Add given data to the hash.
     //
-    (vscf_hash_api_update_fn)(void (*)(void))vscf_sha384_update,
+    (vscf_hash_api_update_fn)vscf_sha384_update,
     //
     //  Accompilsh hashing and return it's result (a message digest).
     //
-    (vscf_hash_api_finish_fn)(void (*)(void))vscf_sha384_finish,
+    (vscf_hash_api_finish_fn)vscf_sha384_finish,
     //
     //  Length of the digest (hashing output) in bytes.
     //
@@ -157,11 +157,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_sha384_cleanup,
+    (vscf_impl_cleanup_fn)vscf_sha384_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_sha384_delete
+    (vscf_impl_delete_fn)vscf_sha384_delete
 };
 
 //
@@ -306,9 +306,9 @@ vscf_sha384_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-        return (const vscf_api_t *)                 &alg_api;
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_HASH:
-        return (const vscf_api_t *)                 &hash_api;
+            return (const vscf_api_t *) &hash_api;
         default:
             return NULL;
     }

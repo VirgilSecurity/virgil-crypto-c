@@ -90,7 +90,7 @@ struct vscf_round5_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency 'random'.
+    //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
 };

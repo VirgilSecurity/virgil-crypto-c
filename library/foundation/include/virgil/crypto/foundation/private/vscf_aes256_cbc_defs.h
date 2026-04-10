@@ -98,11 +98,11 @@ struct vscf_aes256_cbc_t {
     //
     //  Implementation specific context.
     //
-    byte *key;
+    byte key[vscf_aes256_cbc_KEY_LEN];
     //
     //  Implementation specific context.
     //
-    byte *nonce;
+    byte nonce[vscf_aes256_cbc_NONCE_LEN];
     //
     //  Implementation specific context.
     //

@@ -163,21 +163,9 @@ VSCF_PUBLIC void
 vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
 
 //
-//  Return buffer size enough to hold serialized algorithm.
-//
-VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, vscf_impl_t *alg_info);
-
-//
-//  Serialize algorithm info to buffer class.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, vscf_impl_t *alg_info, vsc_buffer_t *out);
-
-//
 //  Setup predefined values to the uninitialized class dependencies.
 //
-VSCF_PRIVATE void
+VSCF_PUBLIC void
 vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self);
 
 //
@@ -185,8 +173,21 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self
 //  Note, that caller code is responsible to reset ASN.1 writer with
 //  an output buffer.
 //
-VSCF_PRIVATE size_t
-vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, vscf_impl_t *alg_info);
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Return buffer size enough to hold serialized algorithm.
+//
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Serialize algorithm info to buffer class.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info,
+        vsc_buffer_t *out);
 
 
 // --------------------------------------------------------------------------

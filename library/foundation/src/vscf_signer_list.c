@@ -97,9 +97,9 @@ vscf_signer_list_ctx_size(void) {
 VSCF_PUBLIC void
 vscf_signer_list_init(vscf_signer_list_t *self) {
 
-    VSC_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(self);
 
-    vsc_zeroize(self, sizeof(vscf_signer_list_t));
+    vscf_zeroize(self, sizeof(vscf_signer_list_t));
 
     self->refcnt = 1;
 
@@ -118,7 +118,7 @@ vscf_signer_list_cleanup(vscf_signer_list_t *self) {
 
     vscf_signer_list_cleanup_ctx(self);
 
-    vsc_zeroize(self, sizeof(vscf_signer_list_t));
+    vscf_zeroize(self, sizeof(vscf_signer_list_t));
 }
 
 //
@@ -127,12 +127,12 @@ vscf_signer_list_cleanup(vscf_signer_list_t *self) {
 VSCF_PUBLIC vscf_signer_list_t *
 vscf_signer_list_new(void) {
 
-    vscf_signer_list_t *self = (vscf_signer_list_t *) vsc_alloc(sizeof (vscf_signer_list_t));
-    VSC_ASSERT_ALLOC(self);
+    vscf_signer_list_t *self = (vscf_signer_list_t *) vscf_alloc(sizeof (vscf_signer_list_t));
+    VSCF_ASSERT_ALLOC(self);
 
     vscf_signer_list_init(self);
 
-    self->self_dealloc_cb = vsc_dealloc;
+    self->self_dealloc_cb = vscf_dealloc;
 
     return self;
 }

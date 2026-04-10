@@ -79,7 +79,7 @@ vscf_asn1wr_find_api(vscf_api_tag_t api_tag);
 static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'asn1 writer' MUST be equal to the  'vscf_api_tag_ASN1_WRITER'.
+    //  For interface 'asn1_writer' MUST be equal to the 'vscf_api_tag_ASN1_WRITER'.
     //
     vscf_api_tag_ASN1_WRITER,
     //
@@ -89,7 +89,7 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     //  Reset all internal states and prepare to new ASN.1 writing operations.
     //
-    (vscf_asn1_writer_api_reset_fn)(void (*)(void))vscf_asn1wr_reset,
+    (vscf_asn1_writer_api_reset_fn)vscf_asn1wr_reset,
     //
     //  Finalize writing and forbid further operations.
     //
@@ -99,147 +99,147 @@ static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     //  Returns length of the written bytes.
     //
-    (vscf_asn1_writer_api_finish_fn)(void (*)(void))vscf_asn1wr_finish,
+    (vscf_asn1_writer_api_finish_fn)vscf_asn1wr_finish,
     //
     //  Returns pointer to the inner buffer.
     //
-    (vscf_asn1_writer_api_bytes_fn)(void (*)(void))vscf_asn1wr_bytes,
+    (vscf_asn1_writer_api_bytes_fn)vscf_asn1wr_bytes,
     //
     //  Returns total inner buffer length.
     //
-    (vscf_asn1_writer_api_len_fn)(void (*)(void))vscf_asn1wr_len,
+    (vscf_asn1_writer_api_len_fn)vscf_asn1wr_len,
     //
     //  Returns how many bytes were already written to the ASN.1 structure.
     //
-    (vscf_asn1_writer_api_written_len_fn)(void (*)(void))vscf_asn1wr_written_len,
+    (vscf_asn1_writer_api_written_len_fn)vscf_asn1wr_written_len,
     //
     //  Returns how many bytes are available for writing.
     //
-    (vscf_asn1_writer_api_unwritten_len_fn)(void (*)(void))vscf_asn1wr_unwritten_len,
+    (vscf_asn1_writer_api_unwritten_len_fn)vscf_asn1wr_unwritten_len,
     //
     //  Return true if status is not "success".
     //
-    (vscf_asn1_writer_api_has_error_fn)(void (*)(void))vscf_asn1wr_has_error,
+    (vscf_asn1_writer_api_has_error_fn)vscf_asn1wr_has_error,
     //
     //  Return error code.
     //
-    (vscf_asn1_writer_api_status_fn)(void (*)(void))vscf_asn1wr_status,
+    (vscf_asn1_writer_api_status_fn)vscf_asn1wr_status,
     //
     //  Move writing position backward for the given length.
     //  Return current writing position.
     //
-    (vscf_asn1_writer_api_reserve_fn)(void (*)(void))vscf_asn1wr_reserve,
+    (vscf_asn1_writer_api_reserve_fn)vscf_asn1wr_reserve,
     //
     //  Write ASN.1 tag.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_tag_fn)(void (*)(void))vscf_asn1wr_write_tag,
+    (vscf_asn1_writer_api_write_tag_fn)vscf_asn1wr_write_tag,
     //
     //  Write context-specific ASN.1 tag.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_context_tag_fn)(void (*)(void))vscf_asn1wr_write_context_tag,
+    (vscf_asn1_writer_api_write_context_tag_fn)vscf_asn1wr_write_context_tag,
     //
     //  Write length of the following data.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_len_fn)(void (*)(void))vscf_asn1wr_write_len,
+    (vscf_asn1_writer_api_write_len_fn)vscf_asn1wr_write_len,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_int_fn)(void (*)(void))vscf_asn1wr_write_int,
+    (vscf_asn1_writer_api_write_int_fn)vscf_asn1wr_write_int,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_int8_fn)(void (*)(void))vscf_asn1wr_write_int8,
+    (vscf_asn1_writer_api_write_int8_fn)vscf_asn1wr_write_int8,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_int16_fn)(void (*)(void))vscf_asn1wr_write_int16,
+    (vscf_asn1_writer_api_write_int16_fn)vscf_asn1wr_write_int16,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_int32_fn)(void (*)(void))vscf_asn1wr_write_int32,
+    (vscf_asn1_writer_api_write_int32_fn)vscf_asn1wr_write_int32,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_int64_fn)(void (*)(void))vscf_asn1wr_write_int64,
+    (vscf_asn1_writer_api_write_int64_fn)vscf_asn1wr_write_int64,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_uint_fn)(void (*)(void))vscf_asn1wr_write_uint,
+    (vscf_asn1_writer_api_write_uint_fn)vscf_asn1wr_write_uint,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_uint8_fn)(void (*)(void))vscf_asn1wr_write_uint8,
+    (vscf_asn1_writer_api_write_uint8_fn)vscf_asn1wr_write_uint8,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_uint16_fn)(void (*)(void))vscf_asn1wr_write_uint16,
+    (vscf_asn1_writer_api_write_uint16_fn)vscf_asn1wr_write_uint16,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_uint32_fn)(void (*)(void))vscf_asn1wr_write_uint32,
+    (vscf_asn1_writer_api_write_uint32_fn)vscf_asn1wr_write_uint32,
     //
     //  Write ASN.1 type: INTEGER.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_uint64_fn)(void (*)(void))vscf_asn1wr_write_uint64,
+    (vscf_asn1_writer_api_write_uint64_fn)vscf_asn1wr_write_uint64,
     //
     //  Write ASN.1 type: BOOLEAN.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_bool_fn)(void (*)(void))vscf_asn1wr_write_bool,
+    (vscf_asn1_writer_api_write_bool_fn)vscf_asn1wr_write_bool,
     //
     //  Write ASN.1 type: NULL.
     //
-    (vscf_asn1_writer_api_write_null_fn)(void (*)(void))vscf_asn1wr_write_null,
+    (vscf_asn1_writer_api_write_null_fn)vscf_asn1wr_write_null,
     //
     //  Write ASN.1 type: OCTET STRING.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_octet_str_fn)(void (*)(void))vscf_asn1wr_write_octet_str,
+    (vscf_asn1_writer_api_write_octet_str_fn)vscf_asn1wr_write_octet_str,
     //
     //  Write ASN.1 type: BIT STRING with all zero unused bits.
     //
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_octet_str_as_bitstring_fn)(void (*)(void))vscf_asn1wr_write_octet_str_as_bitstring,
+    (vscf_asn1_writer_api_write_octet_str_as_bitstring_fn)vscf_asn1wr_write_octet_str_as_bitstring,
     //
     //  Write raw data directly to the ASN.1 structure.
     //  Return count of written bytes.
     //  Note, use this method carefully.
     //
-    (vscf_asn1_writer_api_write_data_fn)(void (*)(void))vscf_asn1wr_write_data,
+    (vscf_asn1_writer_api_write_data_fn)vscf_asn1wr_write_data,
     //
     //  Write ASN.1 type: UTF8String.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_utf8_str_fn)(void (*)(void))vscf_asn1wr_write_utf8_str,
+    (vscf_asn1_writer_api_write_utf8_str_fn)vscf_asn1wr_write_utf8_str,
     //
     //  Write ASN.1 type: OID.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_oid_fn)(void (*)(void))vscf_asn1wr_write_oid,
+    (vscf_asn1_writer_api_write_oid_fn)vscf_asn1wr_write_oid,
     //
     //  Mark previously written data of given length as ASN.1 type: SEQUENCE.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_sequence_fn)(void (*)(void))vscf_asn1wr_write_sequence,
+    (vscf_asn1_writer_api_write_sequence_fn)vscf_asn1wr_write_sequence,
     //
     //  Mark previously written data of given length as ASN.1 type: SET.
     //  Return count of written bytes.
     //
-    (vscf_asn1_writer_api_write_set_fn)(void (*)(void))vscf_asn1wr_write_set
+    (vscf_asn1_writer_api_write_set_fn)vscf_asn1wr_write_set
 };
 
 //
@@ -258,11 +258,11 @@ static const vscf_impl_info_t info = {
     //
     //  Release acquired inner resources.
     //
-    (vscf_impl_cleanup_fn)(void (*)(void))vscf_asn1wr_cleanup,
+    (vscf_impl_cleanup_fn)vscf_asn1wr_cleanup,
     //
     //  Self destruction, according to destruction policy.
     //
-    (vscf_impl_delete_fn)(void (*)(void))vscf_asn1wr_delete
+    (vscf_impl_delete_fn)vscf_asn1wr_delete
 };
 
 //
@@ -407,7 +407,7 @@ vscf_asn1wr_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ASN1_WRITER:
-        return (const vscf_api_t *)                 &asn1_writer_api;
+            return (const vscf_api_t *) &asn1_writer_api;
         default:
             return NULL;
     }

@@ -77,6 +77,14 @@ extern "C" {
 // --------------------------------------------------------------------------
 
 //
+//  Public integral constants.
+//
+enum {
+    vscf_brainkey_server_POINT_LEN = 65,
+    vscf_brainkey_server_MPI_LEN = 32
+};
+
+//
 //  Handle 'brainkey server' context.
 //
 typedef struct vscf_brainkey_server_t vscf_brainkey_server_t;
@@ -172,19 +180,15 @@ VSCF_PUBLIC void
 vscf_brainkey_server_release_operation_random(vscf_brainkey_server_t *self);
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self);
+vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self, vsc_buffer_t identity_secret);
+vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self,
+        vsc_buffer_t *identity_secret) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point, vsc_buffer_t hardened_point);
-
-VSCF_PUBLIC mbedtls_ecp_group
-vscf_brainkey_server_get_op_group(vscf_brainkey_server_t *self);
-
-VSCF_PUBLIC void
-vscf_brainkey_server_free_op_group(mbedtls_ecp_group op_group);
+vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point,
+        vsc_buffer_t *hardened_point) VSCF_NODISCARD;
 
 
 // --------------------------------------------------------------------------

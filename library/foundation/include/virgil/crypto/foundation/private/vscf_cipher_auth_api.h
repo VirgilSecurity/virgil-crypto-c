@@ -94,18 +94,20 @@ typedef void (*vscf_cipher_auth_api_set_auth_data_fn)(vscf_impl_t *impl, vsc_dat
 //
 //  Callback. Accomplish an authenticated encryption and place tag separately.
 //
-//  Note, if authentication tag should be added to an encrypted data,
-//  method "finish" can be used.
+//          Note, if authentication tag should be added to an encrypted data,
+//          method "finish" can be used.
 //
-typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_encryption_fn)(vscf_impl_t *impl, vsc_buffer_t *out, vsc_buffer_t *tag);
+typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_encryption_fn)(vscf_impl_t *impl, vsc_buffer_t *out,
+        vsc_buffer_t *tag);
 
 //
 //  Callback. Accomplish an authenticated decryption with explicitly given tag.
 //
-//  Note, if authentication tag is a part of an encrypted data then,
-//  method "finish" can be used for simplicity.
+//          Note, if authentication tag is a part of an encrypted data then,
+//          method "finish" can be used for simplicity.
 //
-typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_decryption_fn)(vscf_impl_t *impl, vsc_data_t tag, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_decryption_fn)(vscf_impl_t *impl, vsc_data_t tag,
+        vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'cipher auth'.
@@ -113,7 +115,7 @@ typedef vscf_status_t (*vscf_cipher_auth_api_finish_auth_decryption_fn)(vscf_imp
 struct vscf_cipher_auth_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher auth' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH'.
+    //  For interface 'cipher_auth' MUST be equal to the 'vscf_api_tag_CIPHER_AUTH'.
     //
     vscf_api_tag_t api_tag;
     //

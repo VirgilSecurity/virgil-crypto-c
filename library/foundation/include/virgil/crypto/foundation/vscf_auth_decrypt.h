@@ -93,8 +93,9 @@ typedef struct vscf_auth_decrypt_api_t vscf_auth_decrypt_api_t;
 //  Decrypt given data.
 //  If 'tag' is not given, then it will be taken from the 'enc'.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out);
+VSCF_PUBLIC vscf_status_t
+vscf_auth_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the authenticated decrypted data.

@@ -84,7 +84,7 @@ typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_i
 struct vscf_private_key_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'private key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
+    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_t api_tag;
     //

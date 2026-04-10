@@ -64,6 +64,64 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Extract public key from the private key.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_private_key_extract_public_key(const vscf_impl_t *impl) {
+
+    const vscf_private_key_api_t *private_key_api = vscf_private_key_api(impl);
+    VSCF_ASSERT_PTR (private_key_api);
+
+    VSCF_ASSERT_PTR (private_key_api->extract_public_key_cb);
+    return private_key_api->extract_public_key_cb (impl);
+}
+
+//
+//  Return private key API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_private_key_api_t *
+vscf_private_key_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_PRIVATE_KEY);
+    return (const vscf_private_key_api_t *) api;
+}
+
+//
+//  Return key API.
+//
+VSCF_PUBLIC const vscf_key_api_t *
+vscf_private_key_key_api(const vscf_private_key_api_t *private_key_api) {
+
+    VSCF_ASSERT_PTR (private_key_api);
+
+    return private_key_api->key_api;
+}
+
+//
+//  Check if given object implements interface 'private key'.
+//
+VSCF_PUBLIC bool
+vscf_private_key_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_PRIVATE_KEY) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_private_key_api_tag(const vscf_private_key_api_t *private_key_api) {
+
+    VSCF_ASSERT_PTR (private_key_api);
+
+    return private_key_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

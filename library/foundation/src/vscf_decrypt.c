@@ -64,6 +64,66 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Decrypt given data.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_decrypt(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out) {
+
+    const vscf_decrypt_api_t *decrypt_api = vscf_decrypt_api(impl);
+    VSCF_ASSERT_PTR (decrypt_api);
+
+    VSCF_ASSERT_PTR (decrypt_api->decrypt_cb);
+    return decrypt_api->decrypt_cb (impl, data, out);
+}
+
+//
+//  Calculate required buffer length to hold the decrypted data.
+//
+VSCF_PUBLIC size_t
+vscf_decrypt_decrypted_len(const vscf_impl_t *impl, size_t data_len) {
+
+    const vscf_decrypt_api_t *decrypt_api = vscf_decrypt_api(impl);
+    VSCF_ASSERT_PTR (decrypt_api);
+
+    VSCF_ASSERT_PTR (decrypt_api->decrypted_len_cb);
+    return decrypt_api->decrypted_len_cb (impl, data_len);
+}
+
+//
+//  Return decrypt API, or NULL if it is not implemented.
+//
+VSCF_PUBLIC const vscf_decrypt_api_t *
+vscf_decrypt_api(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    const vscf_api_t *api = vscf_impl_api(impl, vscf_api_tag_DECRYPT);
+    return (const vscf_decrypt_api_t *) api;
+}
+
+//
+//  Check if given object implements interface 'decrypt'.
+//
+VSCF_PUBLIC bool
+vscf_decrypt_is_implemented(const vscf_impl_t *impl) {
+
+    VSCF_ASSERT_PTR (impl);
+
+    return vscf_impl_api(impl, vscf_api_tag_DECRYPT) != NULL;
+}
+
+//
+//  Returns interface unique identifier.
+//
+VSCF_PUBLIC vscf_api_tag_t
+vscf_decrypt_api_tag(const vscf_decrypt_api_t *decrypt_api) {
+
+    VSCF_ASSERT_PTR (decrypt_api);
+
+    return decrypt_api->api_tag;
+}
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.

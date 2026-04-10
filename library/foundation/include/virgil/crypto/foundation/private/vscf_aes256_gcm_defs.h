@@ -106,11 +106,11 @@ struct vscf_aes256_gcm_t {
     //
     //  Implementation specific context.
     //
-    byte *key;
+    byte key[vscf_aes256_gcm_KEY_LEN];
     //
     //  Implementation specific context.
     //
-    byte *nonce;
+    byte nonce[vscf_aes256_gcm_NONCE_LEN];
     //
     //  Implementation specific context.
     //
@@ -122,11 +122,11 @@ struct vscf_aes256_gcm_t {
     //
     //  Implementation specific context.
     //
-    byte *cached_data;
+    byte cached_data[vscf_aes256_gcm_BLOCK_LEN];
     //
     //  Implementation specific context.
     //
-    byte *auth_tag;
+    byte auth_tag[vscf_aes256_gcm_AUTH_TAG_LEN];
     //
     //  Implementation specific context.
     //

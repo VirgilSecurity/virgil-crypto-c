@@ -109,8 +109,8 @@ vscf_asn1_reader_has_error(const vscf_impl_t *impl);
 //
 //  Return error code.
 //
-VSCF_PUBLIC VSCF_NODISCARD vscf_status_t
-vscf_asn1_reader_status(const vscf_impl_t *impl);
+VSCF_PUBLIC vscf_status_t
+vscf_asn1_reader_status(const vscf_impl_t *impl) VSCF_NODISCARD;
 
 //
 //  Get tag of the current ASN.1 element.
@@ -154,55 +154,55 @@ vscf_asn1_reader_read_int(vscf_impl_t *impl);
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int
+VSCF_PUBLIC int8_t
 vscf_asn1_reader_read_int8(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int
+VSCF_PUBLIC int16_t
 vscf_asn1_reader_read_int16(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int
+VSCF_PUBLIC int32_t
 vscf_asn1_reader_read_int32(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC int
+VSCF_PUBLIC int64_t
 vscf_asn1_reader_read_int64(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC unsigned
+VSCF_PUBLIC unsigned int
 vscf_asn1_reader_read_uint(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC unsigned
+VSCF_PUBLIC uint8_t
 vscf_asn1_reader_read_uint8(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC unsigned
+VSCF_PUBLIC uint16_t
 vscf_asn1_reader_read_uint16(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC unsigned
+VSCF_PUBLIC uint32_t
 vscf_asn1_reader_read_uint32(vscf_impl_t *impl);
 
 //
 //  Read ASN.1 type: INTEGER.
 //
-VSCF_PUBLIC unsigned
+VSCF_PUBLIC uint64_t
 vscf_asn1_reader_read_uint64(vscf_impl_t *impl);
 
 //
