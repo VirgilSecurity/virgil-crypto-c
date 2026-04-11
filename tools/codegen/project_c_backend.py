@@ -3692,6 +3692,8 @@ def _render_dependency_method_element(
     # return
     if return_type == "void":
         text_element(method, "c_return", accessed_by="value", type="void")
+    elif return_type == "status":
+        text_element(method, "c_return", accessed_by="value", type=f"{project_ir.prefix}_status_t", type_is="primitive")
     else:
         text_element(method, "c_return", accessed_by="value", type=return_type, type_is="primitive")
     # code
@@ -5022,6 +5024,10 @@ def _render_impl_interface_methods(
                     if arg.access in ("readonly", None):
                         arg_dict["is_const"] = "1"
                     arg_dict["accessed_by"] = "pointer"
+                elif arg.enum_name:
+                    # Enum-typed arguments — resolve to project-prefixed enum type
+                    arg_dict["enum"] = arg.enum_name
+                    arg_dict["accessed_by"] = "value"
                 elif arg.type_name:
                     resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
                     arg_dict["type"] = resolved_arg_type
