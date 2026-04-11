@@ -21,14 +21,14 @@
 ---
 
 ### Step 1: Fix HKDF visibility routing
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add `implementation_private_output()` helper (derives `_private` output target under `private/` include dir)
-- [ ] Create `render_implementation_private_c_module()` for scope="private" methods with declaration="public"
-- [ ] In `render_implementation_c_module()`, skip scope="private" methods (they go to private module)
-- [ ] Register private module renderer in `_discover_renderers()` (only when impl has private methods)
-- [ ] Verify `vscf_hkdf_extract` and `vscf_hkdf_expand` appear in private header, not public
-- [ ] Check if any other implementations have the same pattern
+- [x] Add `implementation_private_output()` helper (derives `_private` output target under `private/` include dir)
+- [x] Create `render_implementation_private_c_module()` for scope="private" methods with declaration="public"
+- [x] In `render_implementation_c_module()`, skip scope="private" methods (they go to private module)
+- [x] Register private module renderer in `_discover_renderers()` (only when impl has private methods)
+- [x] Verify `vscf_hkdf_extract` and `vscf_hkdf_expand` appear in private header, not public
+- [x] Check if any other implementations have the same pattern (only HKDF)
 
 ---
 
