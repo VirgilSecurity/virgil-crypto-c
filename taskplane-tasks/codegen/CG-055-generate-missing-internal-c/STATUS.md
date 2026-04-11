@@ -49,7 +49,7 @@ The codegen is already correct. No fix is needed. Reclassifying as dead/deprecat
 ---
 
 ### Step 3: Documentation & Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 - [x] Update `taskplane-tasks/codegen/CONTEXT.md` — updated `_internal.c/h` counts, CG-055 task status, deferred tech debt section
 - [x] Discoveries logged in STATUS.md
