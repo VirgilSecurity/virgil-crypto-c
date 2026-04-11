@@ -220,6 +220,7 @@ class IRImplementation(IRCommented):
     constructors: list[IRCMethod] = field(default_factory=list)
     dependencies: list[IRDependency] = field(default_factory=list)
     requirements: list[IRRequirement] = field(default_factory=list)
+    constants: list[IRCConstant] = field(default_factory=list)
     output: IROutputTarget | None = None
 
 
@@ -572,6 +573,10 @@ def implementation_to_ir(project: ProjectSource, src: ImplementationSource, impl
         requirements=[
             IRRequirement(kind=r.kind, name=r.name, attrs=r.attrs, description=r.description)
             for r in src.requirements
+        ],
+        constants=[
+            _constant_to_ir(c.name, c.attrs, c.description)
+            for c in src.constants
         ],
         output=build_output_target(project, entity_kind="implementation", entity_name=src.name, attrs=src.attrs),
     )

@@ -1,6 +1,6 @@
 # CG-060: Fix `vscf_error_t` Struct Definition and Class Inline Definitions — Status
 
-**Current Step:** Step 2: Fix inline enum constants
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -31,17 +31,17 @@
 ---
 
 ### Step 2: Fix inline enum constants
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add `constants` field to `ImplementationSource` and parse `<constant>` elements from implementation XML
-- [ ] Add `constants` field to `IRImplementation` and wire through `implementation_to_ir`
-- [ ] Render own constants (not interface binding constants) as enum in `render_implementation_c_module`
-- [ ] Verify `vscf_ctr_drbg.h` has RESEED_INTERVAL and ENTROPY_LEN enum constants matching legacy
+- [x] Add `constants` field to `ImplementationSource` and parse `<constant>` elements from implementation XML
+- [x] Add `constants` field to `IRImplementation` and wire through `implementation_to_ir`
+- [x] Render own constants (not interface binding constants) as enum in `render_implementation_c_module`
+- [x] Verify `vscf_ctr_drbg.h` has RESEED_INTERVAL and ENTROPY_LEN enum constants matching legacy
 
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
 - [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`

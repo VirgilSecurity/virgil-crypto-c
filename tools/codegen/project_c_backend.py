@@ -5746,6 +5746,11 @@ def render_implementation_c_module(
             desc = const.description or iface_descs.get(const.name, "")
             all_constants.append((const_symbol, const.value, desc))
 
+    # Own implementation constants (e.g. RESEED_INTERVAL, ENTROPY_LEN)
+    for const in impl.constants:
+        const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
+        all_constants.append((const_symbol, const.attrs.get("value", ""), const.description))
+
     if all_constants:
         enum_elem = text_element(
             root,

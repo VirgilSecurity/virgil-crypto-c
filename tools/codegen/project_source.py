@@ -158,6 +158,7 @@ class ImplementationSource:
     constructors: list[MethodSource] = field(default_factory=list)
     dependencies: list[DependencySource] = field(default_factory=list)
     requirements: list[RequirementSource] = field(default_factory=list)
+    constants: list['ConstantSource'] = field(default_factory=list)
     attrs: dict[str, str] = field(default_factory=dict)
 
 
@@ -547,6 +548,7 @@ def _implementation(elem: ET.Element) -> ImplementationSource:
         constructors=[_method_like("constructor", e) for e in elem.findall("constructor")],
         dependencies=[_dependency(e) for e in elem.findall("dependency")],
         requirements=[_requirement(e) for e in elem.findall("require")],
+        constants=[_constant(e) for e in elem.findall("constant")],
         attrs=dict(elem.attrib),
     )
 
