@@ -21,7 +21,7 @@
 ---
 
 ### Step 1: Fix generation of missing `_internal.c` files
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
 **Root cause analysis (from Step 0):** All 4 `_internal.c` and 5 `_internal.h` files are dead legacy code:
 - NOT in `sources.cmake` (not compiled)
@@ -31,8 +31,8 @@
 
 The codegen is already correct. No fix is needed. Reclassifying as dead/deprecated files.
 
-- [ ] Verify no code changes needed — confirm existing generation counts match build system
-- [ ] Verify `_internal.c` (53/53) and `_internal.h` (56/56) match `sources.cmake` entries exactly
+- [x] Verify no code changes needed — confirm existing generation counts match build system
+- [x] Verify `_internal.c` (53/53) and `_internal.h` (56/56) match `sources.cmake` entries exactly
 
 ---
 
