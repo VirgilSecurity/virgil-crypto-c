@@ -1,6 +1,6 @@
 # Codegen — Context
 
-**Last Updated:** 2026-04-10
+**Last Updated:** 2026-04-11
 **Status:** Active
 **Next Task ID:** CG-059
 
@@ -53,11 +53,11 @@ Interface and implementation rendering is now complete. The `project_c_backend.p
 - Implementation constructors (`init_with_X`, `new_with_X`, `init_ctx_with_X`)
 - Synthetic `impl/tag` enum from the set of all implementations
 
-### Foundation Codegen Status (as of CG-047)
+### Foundation Codegen Status (as of CG-058)
 
-The new codegen generates **638 files** for the foundation project. Zero unexpected module skips. The generated output is applied temporarily by build/verify scripts and **never committed** to the branch.
+The new codegen generates **639+ files** for the foundation project (including newly-added `_private.h` modules). Zero unexpected module skips. The generated output is applied temporarily by build/verify scripts and **never committed** to the branch.
 
-**Build status:** Foundation build has **0 errors** in `alg_info_der_serializer`, `alg_info_der_deserializer` (CG-048), `vscf_asn1rd`, and `vscf_asn1wr` (CG-052). Remaining error is in `vscf_cipher_alg_info.c` (visibility mismatch — Pattern G). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
+**Build status:** Foundation build has **1 pre-existing error** (`vscf_mbedtls_bridge_entropy_poll` unused function — not codegen-related; the caller `vscf_entropy_accumulator.c` isn't in the generated CMake build yet). All codegen parity issues are resolved. HKDF `extract`/`expand` methods now correctly route to the private header (`vscf_hkdf_private.h`). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
 
 **Common build:** ✅ passes cleanly.
 
@@ -94,7 +94,7 @@ Full comparison of new codegen output (`build/new-codegen/library/foundation/`) 
 | **`_defs.c`** (struct definition source) | 36 | ✅ Yes | Struct definition source files. **CG-053: Now generated** — 86/89 _defs.c rendered (3 blocked by CG-052 type resolution). |
 | **`_internal.c`** (4 dead legacy files) | 4 | ✅ Yes (legacy) | **CG-055: Confirmed dead code** — `ec_alg_info`, `ecies`, `padding_cipher`, `pkcs8_der_serializer` — NOT in `sources.cmake`, contain duplicate symbols with main `.c`, not referenced by any file. `ec_alg_info`/`pkcs8_der_serializer` are deprecated rename aliases. `ecies`/`padding_cipher` are orphaned class internal files. New codegen correctly generates 53/53 `_internal.c` matching the build system. |
 | **API dispatch source** (interface `.c` bodies) | ~30 | ✅ Yes (CG-051) | All interface dispatch `.c` files now generated. Changed `c_code` type from `stub` to `generated` so bodies are included in source output. |
-| **Private helpers / umbrella headers** | 10 | Partially | `foundation_private.h`, `foundation_public.h`, `endianness.h`, `hkdf_private.h`, various `_api.h`. Mix of generated and handwritten. |
+| **Private helpers / umbrella headers** | 10 | Partially | `foundation_private.h`, `foundation_public.h`, `endianness.h`, various `_api.h`. Mix of generated and handwritten. **CG-058:** `hkdf_private.h` now generated via `render_implementation_private_c_module`. |
 | **Handwritten source** (non-generated `.c`) | 16 | ❌ No | `vscf_asn1.c`, `vscf_raw_key.c`, mbedTLS bridge files, internal data structures (`vscf_group_session_epoch.h`, etc.). These are hand-authored, not generated. |
 | **Build system / config** | 6 | ✅ Yes (CMake generation) | `CMakeLists.txt`, `sources.cmake`, `features.cmake`, `definitions.cmake`, `Config.cmake.in`, `module.modulemap` |
 | **Protobuf** | 4 | ❌ No | Protocol buffer definitions — separate toolchain. |
@@ -112,7 +112,7 @@ Analysis of all differences between the 326 files that exist in both legacy and 
 | **D: Missing `did_setup`/`did_release` callbacks** | 55 | ✅ Resolved (CG-050) | Fixed: forward declarations (VSCF_PRIVATE) emitted in internal module `.c` output for all impl dependencies with `has_observers`. Static stubs removed from main module. NODISCARD added for status-returning callbacks. |
 | **E: Missing interface dispatch function bodies** | 164 | ✅ Resolved (CG-051) | Fixed: changed `c_code` type from `"stub"` to `"generated"` for all 6 interface dispatch render functions. Also fixed: (1) missing `return` for interface-typed returns, (2) NODISCARD in `.c` definitions, (3) pointer return for `access="disown"` class returns. All 30 interface dispatch `.c` files now match legacy. |
 | **F: Const qualifier mismatches** | ~1488 lines | ✅ Largely resolved (CG-049) | Fixed: default access for class/impl/interface args without explicit access now matches legacy GSL defaults (readonly for most, writeonly for buffer args). Value types (data) don't get spurious `const`. Remaining minor gaps from missing methods. |
-| **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ✅ Largely resolved (CG-049) | Fixed: class methods and constructors with `visibility="private"` now emit `VSCF_PRIVATE`. Interface dispatch methods with `visibility="private"` emit `VSCF_PRIVATE`. `_render_ir_method` respects visibility parameter. 1 known remaining gap: `scope="private"` impl own methods appearing in wrong header (hkdf extract/expand). |
+| **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ✅ Fully resolved (CG-049, CG-058) | Fixed: class methods and constructors with `visibility="private"` now emit `VSCF_PRIVATE`. Interface dispatch methods with `visibility="private"` emit `VSCF_PRIVATE`. `_render_ir_method` respects visibility parameter. **CG-058:** `scope="private"` impl own methods (hkdf extract/expand) now routed to `_private.h` header via new `render_implementation_private_c_module`. |
 | **H: Missing `init_ctx`/`cleanup_ctx` declarations** | 8 | ✅ Resolved (CG-048) | Fixed by correcting `_internal.h` output path from `include/private/` to `src/` to match legacy layout. Now generated for all implementations. |
 
 ### What Causes Actual Build Errors
@@ -260,7 +260,7 @@ Foundation remaining-files phase:
 - `CG-055` — ~~generate missing `_internal.c` for 4 modules + 5 missing `_internal.h` files~~ — **Resolved: all 9 files are dead legacy code** (not in build system, duplicate symbols, deprecated aliases). 53/53 `_internal.c` and 56/56 `_internal.h` match `sources.cmake` exactly. ✅
 - `CG-056` — ~~generate remaining interface dispatch + API files (36 files across 9 interfaces)~~ — **Resolved: 7 of 9 interfaces are dead legacy code** (not in XML models, not in `sources.cmake`, not referenced by any build file or wrapper). 2 of 9 (`key_alg`, `key_deserializer`) were already discovered but failed to render due to `impl` type resolution bug — fixed `return_from_source` and `_add_interface_type_includes`. 638 files now generated. ✅
 - `CG-057` — generate umbrella and support headers (10 files, mix of generated and handwritten)
-- `CG-058` — fix HKDF visibility gap + final parity sweep (depends on CG-055, CG-056, CG-057)
+- `CG-058` — fix HKDF visibility gap + final parity sweep (depends on CG-055, CG-056, CG-057) ✅
 
 Future tasks (not yet planned):
 
