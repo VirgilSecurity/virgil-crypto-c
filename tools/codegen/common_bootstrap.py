@@ -26,6 +26,7 @@ from tools.codegen.project_c_backend import (
     direct_renderer_map,
     direct_xml_name,
     discover_renderers,
+    generate_umbrella_headers,
     include_file_for_entity,
     module_ir,
     render_class_c_module,
@@ -732,6 +733,27 @@ def main() -> int:
             written.extend(render_one(xml_path, repo_root, codegen_root, out_root, project=args.project))
         except Exception as exc:
             skipped.append((xml_path.name, str(exc)))
+
+    # --- Umbrella headers ---
+    project_ir = project_to_ir(load_named_project_source(args.project, repo_root))
+    if args.project != "common":
+        common_ir = project_to_ir(load_named_project_source("common", repo_root))
+        project_ir.fallback_projects = [common_ir]
+    # Read license text from project XML model
+    project_xml_path = codegen_root / "models" / f"project_{args.project}" / f"project_{args.project}.xml"
+    license_text = ""
+    if project_xml_path.exists():
+        project_tree = ET.parse(project_xml_path)
+        lic_elem = project_tree.getroot().find("license")
+        if lic_elem is not None and lic_elem.text:
+            license_text = lic_elem.text
+    for rel_path, content in generate_umbrella_headers(project_ir, license_text=license_text):
+        # rel_path is relative to codegen root (e.g. ../library/...)
+        abs_path = (codegen_root / rel_path).resolve()
+        out_path = out_root / abs_path.relative_to(repo_root)
+        ensure_parent(out_path)
+        out_path.write_text(content)
+        written.append(out_path)
 
     destination = repo_root if args.apply else out_root
     print(f"generated {len(written)} files into {destination}")

@@ -21,12 +21,12 @@
 ---
 
 ### Step 1: Generate umbrella headers
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Add `render_umbrella_public_header()` and `render_umbrella_private_header()` to `project_c_backend.py` — collect public/private headers from IR entities, produce full file content matching legacy structure
-- [ ] Add umbrella header writing to `common_bootstrap.py` main loop — generate for both common and foundation projects, write full files (not merge)
-- [ ] Verify common umbrella headers match existing files
-- [ ] Verify foundation umbrella headers match existing files
+- [x] Add `render_umbrella_public_header()` and `render_umbrella_private_header()` to `project_c_backend.py` — collect public/private headers from IR entities, produce full file content matching legacy structure
+- [x] Add umbrella header writing to `common_bootstrap.py` main loop — generate for both common and foundation projects, write full files (not merge)
+- [x] Verify common umbrella headers match existing files
+- [x] Verify foundation umbrella headers match existing files (public matches exactly; private is superset of legacy — includes _internal.h files from CG-054)
 
 ---
 

@@ -903,6 +903,226 @@ def _register_impl_infra_renderers(
             )
 
 
+# ---------------------------------------------------------------------------
+# Umbrella header generation
+# ---------------------------------------------------------------------------
+
+def collect_umbrella_includes(
+    project_ir: IRProject,
+) -> tuple[list[str], list[str]]:
+    """Collect include files for public and private umbrella headers.
+
+    Returns
+    -------
+    (public_includes, private_includes)
+        Sorted lists of include file basenames for the public and private
+        umbrella headers respectively.
+    """
+    public_includes: set[str] = set()
+    private_includes: set[str] = set()
+
+    def _add(output: IROutputTarget, *, scope: str = "") -> None:
+        # Internal-scope entities have headers in src/, not in include/;
+        # they must NOT appear in either umbrella header.
+        if scope == "internal":
+            return
+        if output.header_visibility == "private":
+            private_includes.add(output.include_file)
+        else:
+            public_includes.add(output.include_file)
+
+    for enum in project_ir.enums:
+        _add(enum.output, scope=enum.attrs.get("scope", ""))
+
+    for module in project_ir.modules:
+        _add(module.output, scope=module.attrs.get("scope", ""))
+
+    for cls in project_ir.classes:
+        cls_scope = cls.attrs.get("scope", "")
+        _add(cls.output, scope=cls_scope)
+        # Defs module — always private
+        is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+        context = cls.attrs.get("context", "public")
+        if not is_value_type and context != "none" and cls_scope != "internal":
+            private_includes.add(class_defs_output(cls.output).include_file)
+        # Internal module — for classes with internal-scope methods
+        has_internal = any(m.attrs.get("scope") == "internal" for m in cls.methods)
+        if has_internal and cls_scope != "internal":
+            private_includes.add(class_internal_output(cls.output).include_file)
+
+    for iface in project_ir.interfaces:
+        _add(iface.output, scope=iface.attrs.get("scope", ""))
+        # API module — always private
+        private_includes.add(interface_api_output(iface.output).include_file)
+
+    for impl in project_ir.implementations:
+        impl_scope = impl.attrs.get("scope", "")
+        _add(impl.output, scope=impl_scope)
+        if impl_scope != "internal":
+            # Defs module — always private
+            private_includes.add(implementation_defs_output(impl.output).include_file)
+            # Internal module — always private
+            private_includes.add(implementation_internal_output(impl.output).include_file)
+
+    # Project-global impl infrastructure modules
+    if project_ir.interfaces or project_ir.implementations:
+        prefix = project_ir.prefix
+        # api and impl are public
+        public_includes.add(f"{prefix}_api.h")
+        public_includes.add(f"{prefix}_impl.h")
+        # api_private and impl_private are private
+        private_includes.add(f"{prefix}_api_private.h")
+        private_includes.add(f"{prefix}_impl_private.h")
+
+    # CMake-configured platform header — always present at build time
+    prefix = project_ir.prefix
+    public_includes.add(f"{prefix}_platform.h")
+
+    return sorted(public_includes), sorted(private_includes)
+
+
+def _umbrella_header_content(
+    project_ir: IRProject,
+    *,
+    includes: list[str],
+    description: str,
+    guard_name: str,
+    license_text: str = "",
+) -> str:
+    """Generate the full content of an umbrella header file.
+
+    Matches the legacy partially-generated file structure with
+    @license, @warning, @description, user-area includes, and an
+    empty @generated section.
+    """
+    # Dedent the license text: remove common leading whitespace (from XML indentation)
+    # but preserve relative indentation within the text.
+    if license_text:
+        import textwrap
+        dedented = textwrap.dedent(license_text).strip()
+        license_lines = dedented.splitlines()
+    else:
+        license_lines = []
+
+    lines: list[str] = []
+    # @license
+    lines.append("//  @license")
+    lines.append("// --------------------------------------------------------------------------")
+    for ll in license_lines:
+        lines.append(f"//  {ll}" if ll.strip() else "//")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("// clang-format off")
+    lines.append("")
+    lines.append("")
+    # @warning
+    lines.append("//  @warning")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("//  This file is partially generated.")
+    lines.append("//  Generated blocks are enclosed between tags [@<tag>, @end].")
+    lines.append("//  User's code can be added between tags [@end, @<tag>].")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("")
+    lines.append("")
+    # @description
+    lines.append("//  @description")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append(f"//  {description}")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("")
+    lines.append(f"#ifndef {guard_name}")
+    lines.append(f"#define {guard_name}")
+    lines.append("")
+    # Include list
+    for inc in includes:
+        lines.append(f'#include "{inc}"')
+    lines.append("")
+    lines.append("// clang-format on")
+    lines.append("//  @end")
+    lines.append("")
+    lines.append("")
+    lines.append("#ifdef __cplusplus")
+    lines.append('extern "C" {')
+    lines.append("#endif")
+    lines.append("")
+    lines.append("")
+    # Empty @generated section
+    lines.append("//  @generated")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("// clang-format off")
+    lines.append("//  Generated section start.")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("")
+    lines.append("")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("//  Generated section end.")
+    lines.append("// clang-format on")
+    lines.append("// --------------------------------------------------------------------------")
+    lines.append("//  @end")
+    lines.append("")
+    lines.append("")
+    lines.append("#ifdef __cplusplus")
+    lines.append("}")
+    lines.append("#endif")
+    lines.append("")
+    lines.append("")
+    lines.append(f"//  @footer")
+    lines.append(f"#endif // {guard_name}")
+    lines.append("//  @end")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def generate_umbrella_headers(
+    project_ir: IRProject,
+    *,
+    license_text: str = "",
+) -> list[tuple[str, str]]:
+    """Generate umbrella header (path, content) pairs for the project.
+
+    Returns a list of (relative_path, file_content) tuples for the public
+    and private umbrella headers.
+
+    Parameters
+    ----------
+    project_ir:
+        Fully resolved project IR.
+    license_text:
+        License block text (from project XML ``<license>`` element).
+    """
+    prefix = project_ir.prefix
+    name = project_ir.name
+    include_namespace = project_ir.include_namespace
+    source_root = project_ir.attrs.get("path", project_ir.source_root).rstrip("/")
+
+    public_includes, private_includes = collect_umbrella_includes(project_ir)
+
+    public_guard = f"{prefix}_{snake_name(name)}_public_h_included".upper()
+    private_guard = f"{prefix}_{snake_name(name)}_private_h_included".upper()
+
+    public_path = f"{source_root}/include/{include_namespace}/{prefix}_{snake_name(name)}_public.h"
+    private_path = f"{source_root}/include/{include_namespace}/private/{prefix}_{snake_name(name)}_private.h"
+
+    public_content = _umbrella_header_content(
+        project_ir,
+        includes=public_includes,
+        description="This ia an umbrella header that includes library public headers.",
+        guard_name=public_guard,
+        license_text=license_text,
+    )
+    private_content = _umbrella_header_content(
+        project_ir,
+        includes=private_includes,
+        description="This is an umbrella header that includes library private headers.",
+        guard_name=private_guard,
+        license_text=license_text,
+    )
+
+    return [
+        (public_path, public_content),
+        (private_path, private_content),
+    ]
+
+
 def discover_renderers(
     project_ir: IRProject,
     *,
