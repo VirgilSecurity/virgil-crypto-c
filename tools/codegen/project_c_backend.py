@@ -238,14 +238,12 @@ def implementation_defs_output(impl_output: IROutputTarget) -> IROutputTarget:
 def implementation_internal_output(impl_output: IROutputTarget) -> IROutputTarget:
     """Derive the internal module output target from an implementation's output target.
 
-    The internal module lives under the ``private`` include directory and uses
-    the ``<prefix>_<impl>_internal`` stem convention.
+    The internal module header lives alongside the source file (in ``src/``)
+    and uses the ``<prefix>_<impl>_internal`` stem convention.
     """
     stem = f"{impl_output.c_symbol}_internal"
-    header_path = impl_output.header_path.replace(
-        f"/{impl_output.include_file}",
-        f"/private/{stem}.h",
-    )
+    # Legacy layout: _internal.h lives in src/ alongside the .c files
+    header_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.h")
     source_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.c")
     generated_header_path = impl_output.generated_header_path.replace(
         impl_output.include_file.removesuffix(".h"),
@@ -1168,7 +1166,12 @@ def _interface_argument_from_source(
         if not is_value_type:
             accessed_by = "pointer"
         extra: dict[str, str] = {}
-        if src.get("access") == "readonly":
+        # Legacy defaults: buffer→writeonly, everything else→readonly
+        # Value types don't use const qualifier (meaningless for pass-by-value)
+        effective_access = src.get("access")
+        if effective_access is None:
+            effective_access = "writeonly" if cls_name == "buffer" else "readonly"
+        if effective_access == "readonly" and not is_value_type:
             extra["is_const_type"] = "1"
         return text_element(parent, "c_argument", name=src.get("name", ""), accessed_by=accessed_by, type=type_symbol, type_is="class", **extra)
     # For non-class arguments, delegate to argument_from_source
@@ -1426,21 +1429,22 @@ def _render_dispatch_method(
 
     method_attrs: dict[str, str] = {
         "name": method_symbol,
-        "declaration": "public" if visibility == "public" else "private",
+        "declaration": "public",
     }
     if visibility == "private":
         method_attrs["visibility"] = "private"
 
     method_elem = text_element(parent, "c_method", **method_attrs)
 
-    # Add PUBLIC modifier
-    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
+    # Add visibility modifier
+    vis_modifier = f"{prefix.upper()}_PRIVATE" if visibility == "private" else f"{prefix.upper()}_PUBLIC"
+    text_element(method_elem, "c_modifier", value=vis_modifier)
 
-    # Add NODISCARD modifier for status-returning methods
+    # Add NODISCARD attribute for status-returning methods (placed after closing paren)
     if method.returns:
         ret_dict = _method_arg_dict(method.returns[0])
         if ret_dict.get("enum") == "status":
-            text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_NODISCARD")
+            text_element(method_elem, "c_attribute", value=f"{prefix.upper()}_NODISCARD")
 
     desc = method.description.strip() if method.description else ""
     if desc:
@@ -2630,6 +2634,7 @@ def render_class_c_module(
                 else:
                     method_args.insert(0, {"name": "self", "class": "self"})
             return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
+            method_vis = method.attrs.get("visibility", "public")
             _render_ir_method(
                 root,
                 name=class_method_symbol(project_ir, cls, method.name),
@@ -2638,6 +2643,7 @@ def render_class_c_module(
                 return_attrs=return_attrs,
                 owner_class=cls.name,
                 project_ir=project_ir,
+                visibility=method_vis,
                 uid=f"direct_{snake_name(cls.name)}_method_{snake_name(method.name)}",
             )
 
@@ -3295,6 +3301,9 @@ def _render_dependency_method_element(
     text_element(method, "c_code", code, type="generated", lang="c")
     # modifier
     text_element(method, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
+    # NODISCARD attribute for status-returning methods
+    if return_type == "status":
+        text_element(method, "c_attribute", value=f"{project_ir.prefix.upper()}_NODISCARD")
     # description
     if description:
         method.text = comment_text(description)
@@ -3371,6 +3380,7 @@ def _render_dependency_methods(
     project_ir: IRProject,
     cls: IRClass | IRImplementation,
     entity_kind: str = "class",
+    skip_observers: bool = False,
 ) -> None:
     """Render use/take/release methods for each class/implementation dependency.
 
@@ -3385,7 +3395,7 @@ def _render_dependency_methods(
         dep_type = _dependency_type_symbol(project_ir, dep)
 
         # --- Observer hooks (rendered before use/take/release so forward decls work) ---
-        if dep.has_observers:
+        if dep.has_observers and not skip_observers:
             # did_setup
             did_setup_name = f"{class_symbol}_did_setup_{dep_field}"
             did_setup_return: dict[str, str] | None = {"type": "void"}
@@ -3511,7 +3521,10 @@ def _render_ir_method(
     uid: str | None = None,
 ) -> ET.Element:
     if modifiers is None:
-        modifiers = (f"{project_ir.prefix.upper()}_PUBLIC",)
+        if visibility == "private":
+            modifiers = (f"{project_ir.prefix.upper()}_PRIVATE",)
+        else:
+            modifiers = (f"{project_ir.prefix.upper()}_PUBLIC",)
     resolved_definition = visibility if code is not None and definition == "external" else definition
     method = text_element(
         parent,
@@ -3607,6 +3620,7 @@ def _render_reference_class_support(
         ctor_arg_names = [_method_arg_dict(arg)["name"] for arg in ctor.arguments]
         init_name = class_constructor_symbol(project_ir, cls, ctor.name)
         new_name = _class_new_constructor_symbol(project_ir, cls, ctor.name)
+        ctor_vis = ctor.attrs.get("visibility", "public")
         _render_ir_method(
             parent,
             name=init_name,
@@ -3615,6 +3629,7 @@ def _render_reference_class_support(
             return_attrs={"type": "void"},
             project_ir=project_ir,
             owner_class=cls.name,
+            visibility=ctor_vis,
             uid=f"direct_{snake_name(cls.name)}_init_with_{snake_name(ctor.name)}",
             code=_lifecycle_constructor_init_body(project_ir, cls, ctor.name, ctor_arg_names),
         )
@@ -3626,6 +3641,7 @@ def _render_reference_class_support(
             return_attrs={"class": "self"},
             project_ir=project_ir,
             owner_class=cls.name,
+            visibility=ctor_vis,
             uid=f"direct_{snake_name(cls.name)}_new_with_{snake_name(ctor.name)}",
             code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
         )
@@ -4200,14 +4216,18 @@ def _render_impl_interface_methods(
                 arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
                 if arg.class_name:
                     arg_dict["class"] = arg.class_name
-                    if arg.access == "readonly":
-                        arg_dict["is_const"] = "1"
+                    # Resolve effective access: legacy defaults to 'readonly' except
+                    # buffer arguments which default to 'writeonly'
+                    effective_access = arg.access
+                    if effective_access is None:
+                        if arg.class_name == "buffer":
+                            effective_access = "writeonly"
+                        else:
+                            effective_access = "readonly"
                     # Determine accessed_by: value types (data) passed by value
-                    if arg.kind == "value":
-                        arg_dict["accessed_by"] = "value"
-                    else:
+                    is_value = arg.kind == "value"
+                    if not is_value:
                         # Check if the class is a value type via IR lookup
-                        is_value = False
                         for fp in (fallback_projects or []):
                             try:
                                 cls = class_ir(fp, arg.class_name)
@@ -4223,11 +4243,14 @@ def _render_impl_interface_methods(
                                     is_value = True
                             except KeyError:
                                 pass
-                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    # Apply const for non-value readonly args
+                    if effective_access == "readonly" and not is_value:
+                        arg_dict["is_const"] = "1"
                 elif arg.interface_name:
                     # Interface arguments are passed as impl_t pointers
                     arg_dict["class"] = "impl"
-                    if arg.access == "readonly":
+                    if arg.access in ("readonly", None):
                         arg_dict["is_const"] = "1"
                     arg_dict["accessed_by"] = "pointer"
                 elif arg.type_name:
@@ -4328,6 +4351,54 @@ def render_implementation_internal_c_module(
         _add_interface_includes_recursive(
             root, binding.name, project_ir=project_ir, seen=seen_iface_includes,
         )
+
+    # --- did_setup / did_release forward declarations (Pattern D) ---
+    # These are forward declarations for observer hooks whose definitions
+    # live in the handwritten .c file.
+    for dep in impl.dependencies:
+        if not dep.has_observers:
+            continue
+        dep_field = snake_name(dep.name)
+        # did_setup
+        did_setup_name = f"{impl_output.c_symbol}_did_setup_{dep_field}"
+        did_setup_method = text_element(
+            root,
+            "c_method",
+            name=did_setup_name,
+            visibility="private",
+            declaration="private",
+            definition="external",
+            uid=f"c_class_{impl_snake}_method_did_setup_{dep_field}",
+        )
+        text_element(did_setup_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+        if dep.is_observers_return_status:
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name="status")
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{prefix}_status_t"
+            text_element(did_setup_method, "c_return", accessed_by="value", type=rendered_type, type_is="primitive")
+            text_element(did_setup_method, "c_attribute", value=f"{prefix_upper}_NODISCARD")
+        else:
+            text_element(did_setup_method, "c_return", accessed_by="value", type="void")
+        text_element(did_setup_method, "c_modifier", value=f"{prefix_upper}_PRIVATE")
+        did_setup_method.text = comment_text(f"This method is called when {dep.type_kind} '{dep.type_name}' was setup.")
+
+        # did_release
+        did_release_name = f"{impl_output.c_symbol}_did_release_{dep_field}"
+        did_release_method = text_element(
+            root,
+            "c_method",
+            name=did_release_name,
+            visibility="private",
+            declaration="private",
+            definition="external",
+            uid=f"c_class_{impl_snake}_method_did_release_{dep_field}",
+        )
+        text_element(did_release_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+        text_element(did_release_method, "c_return", accessed_by="value", type="void")
+        text_element(did_release_method, "c_modifier", value=f"{prefix_upper}_PRIVATE")
+        did_release_method.text = comment_text(f"This method is called when {dep.type_kind} '{dep.type_name}' was released.")
 
     # --- API table variables (one per bound interface) ---
     api_var_names: list[tuple[str, str]] = []  # (iface_name, var_name)
@@ -4726,6 +4797,38 @@ def render_implementation_internal_c_module(
     text_element(find_api, "c_code", find_api_body, type="generated", lang="c")
     text_element(find_api, "c_modifier", value="static")
 
+    # --- Interface API accessor functions (Pattern B) ---
+    # e.g. vscf_aes256_gcm_cipher_info_api(void) → returns &cipher_info_api;
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+        except KeyError:
+            continue
+        iface_output = cast(IROutputTarget, iface.output)
+        iface_snake = snake_name(binding.name)
+        api_type = _interface_api_struct_symbol(iface_output)
+        accessor_name = f"{impl_output.c_symbol}_{iface_snake}_api"
+        var_name = f"{iface_snake}_api"
+
+        accessor = text_element(
+            root,
+            "c_method",
+            name=accessor_name,
+            visibility="public",
+            declaration="external",
+            definition="private",
+            uid=f"c_class_{impl_snake}_method_{iface_snake}_api",
+        )
+        text_element(
+            accessor, "c_return",
+            accessed_by="pointer",
+            type=api_type, type_is="class",
+            is_const_type="1",
+        )
+        text_element(accessor, "c_code", f"return &{var_name};", type="generated", lang="c")
+        text_element(accessor, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+        accessor.text = comment_text(f"Returns instance of the implemented interface '{binding.name}'.")
+
     root.text = comment_text(
         "This module contains logic for interface/implementation architecture.\n"
         "Do not use this module in any part of the code."
@@ -4813,6 +4916,14 @@ def render_implementation_c_module(
                 text_element(root, "c_include", file=impl_out.include_file, is_system="0", scope="private")
             except (KeyError, ValueError):
                 pass
+
+    # Interface binding headers (public scope — needed for _api(void) accessor return types)
+    for binding in impl.interface_bindings:
+        try:
+            iface_out = entity_output(project_ir, entity_kind="interface", entity_name=binding.name)
+            text_element(root, "c_include", file=iface_out.include_file, is_system="0", scope="public")
+        except (KeyError, ValueError):
+            pass
 
     # Defs and internal headers
     text_element(root, "c_include", file=defs_output.include_file, is_system="0", scope="private")
@@ -5011,7 +5122,7 @@ def render_implementation_c_module(
 
     # --- Dependency management methods: use/take/release ---
     if impl.dependencies:
-        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
+        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation", skip_observers=True)
 
     # --- Constructor methods (init_with_X, new_with_X) ---
     for ctor in impl.constructors:
@@ -5063,7 +5174,8 @@ def render_implementation_c_module(
     # --- Implementation-specific methods ---
     for method in impl.methods:
         method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
-        method_vis = method.attrs.get("visibility", method.attrs.get("scope", "private"))
+        method_vis = method.attrs.get("visibility", method.attrs.get("scope",
+            method.attrs.get("declaration", "private")))
         if method_vis == "internal":
             method_vis = "private"
         method_decl = method.attrs.get("declaration", "private")
@@ -5082,8 +5194,14 @@ def render_implementation_c_module(
             arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
             if arg.class_name:
                 arg_dict["class"] = arg.class_name
-                if arg.access == "readonly":
-                    arg_dict["is_const"] = "1"
+                # Resolve effective access: legacy defaults to 'readonly' except
+                # buffer arguments which default to 'writeonly'
+                effective_access = arg.access
+                if effective_access is None:
+                    if arg.class_name == "buffer":
+                        effective_access = "writeonly"
+                    else:
+                        effective_access = "readonly"
                 # Determine accessed_by: value types (data) passed by value
                 is_value = False
                 for fp in (fallback_projects or []):
@@ -5102,9 +5220,12 @@ def render_implementation_c_module(
                     except KeyError:
                         pass
                 arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                # Apply const for non-value readonly args
+                if effective_access == "readonly" and not is_value:
+                    arg_dict["is_const"] = "1"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
-                if arg.access == "readonly":
+                if arg.access in ("readonly", None):
                     arg_dict["is_const"] = "1"
                 arg_dict["accessed_by"] = "pointer"
             elif arg.enum_name:
@@ -5115,6 +5236,7 @@ def render_implementation_c_module(
 
         ret_type = None
         ret_class = None
+        attrs_list: tuple[str, ...] = ()
         if method.returns:
             ret = method.returns[0]
             if ret.enum_name:
@@ -5125,6 +5247,11 @@ def render_implementation_c_module(
                 ret_class = ret.class_name
             elif ret.type_name:
                 ret_type = ret.type_name
+
+        # Check for NODISCARD / status return
+        if method.returns and method.returns[0].enum_name == "status":
+            attrs_list = (f"{project_ir.prefix.upper()}_NODISCARD",)
+            ret_type = "status"
 
         _render_impl_method(
             root,
@@ -5140,8 +5267,54 @@ def render_implementation_c_module(
             visibility=method_vis,
             declaration=method_decl,
             definition="private",
+            attributes=attrs_list,
             fallback_projects=fallback_projects,
         )
+
+    # --- Forward typedefs for interface API types (needed by accessor return types) ---
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+        except KeyError:
+            continue
+        iface_output = cast(IROutputTarget, iface.output)
+        api_type = _interface_api_struct_symbol(iface_output)
+        text_element(
+            root, "c_alias",
+            name=api_type,
+            type=f"struct {api_type}",
+            declaration="public",
+        )
+
+    # --- Interface API accessor declarations (Pattern B) ---
+    # e.g. VSCF_PUBLIC const vscf_cipher_info_api_t * vscf_aes256_gcm_cipher_info_api(void);
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+        except KeyError:
+            continue
+        iface_output = cast(IROutputTarget, iface.output)
+        iface_snake = snake_name(binding.name)
+        api_type = _interface_api_struct_symbol(iface_output)
+        accessor_name = f"{impl_output.c_symbol}_{iface_snake}_api"
+
+        accessor = text_element(
+            root,
+            "c_method",
+            name=accessor_name,
+            visibility="public",
+            declaration="public",
+            definition="external",
+            uid=f"c_class_{impl_snake}_method_{iface_snake}_api",
+        )
+        text_element(
+            accessor, "c_return",
+            accessed_by="pointer",
+            type=api_type, type_is="class",
+            is_const_type="1",
+        )
+        text_element(accessor, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+        accessor.text = comment_text(f"Returns instance of the implemented interface '{binding.name}'.")
 
     root.text = comment_text(f"This module contains '{impl.name}' implementation.")
 
@@ -5189,12 +5362,20 @@ def argument_from_source(
         prefix = project_ir.prefix if project_ir is not None else "vscf"
         type_name = f"{prefix}_impl_t"
         extra: dict[str, str] = {}
-        if attrs.get("access") == "readonly":
+        # Legacy default: interface args without access → readonly (const)
+        effective_access = attrs.get("access")
+        if effective_access is None:
+            effective_access = "readonly"
+        if effective_access == "readonly":
             extra["is_const_type"] = "1"
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
+        # Legacy default: buffer→writeonly, self→keep existing, everything else→readonly
+        effective_cls_access = attrs.get("access")
+        if effective_cls_access is None and attrs.get("class") != "self":
+            effective_cls_access = "writeonly" if attrs.get("class") == "buffer" else "readonly"
+        extra = {"is_const_type": "1"} if effective_cls_access == "readonly" else {}
         # Handle const prefix in class name
         resolved_class_str = cast(str, resolved_class)
         if resolved_class_str.startswith("const "):

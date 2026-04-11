@@ -121,9 +121,9 @@ class TestSha256MainModule(unittest.TestCase):
         self.assertEqual(self.root.get("scope"), "public")
 
     def test_total_method_count(self) -> None:
-        """sha256 should have 18 methods: 3 cast + 6 lifecycle + 2 ctx + 7 interface."""
+        """sha256 should have 20 methods: 3 cast + 6 lifecycle + 2 ctx + 7 interface + 2 api accessors."""
         methods = self.root.findall(".//c_method")
-        self.assertEqual(len(methods), 18)
+        self.assertEqual(len(methods), 20)
 
 
 class TestSha256DefsModule(unittest.TestCase):
