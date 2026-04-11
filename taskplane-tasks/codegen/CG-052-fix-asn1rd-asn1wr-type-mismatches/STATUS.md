@@ -84,6 +84,8 @@
 | 2026-04-11 02:35 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-11 02:35 | Step 0 started | Preflight |
 | 2026-04-11 | Step 0 complete | Root causes: (1) `_resolve_impl_property_type` ignores `is_reference` for primitive types → `byte` instead of `byte *`; (2) `size` attribute on integer/unsigned not preserved in IR → `int`/`unsigned` instead of `int8_t`/`uint8_t`; (3) `access=readonly` not producing `const` qualifier on pointer properties |
+| 2026-04-11 02:48 | Worker iter 1 | done in 753s, tools: 139 |
+| 2026-04-11 02:48 | Task complete | .DONE created |
 
 ---
 
