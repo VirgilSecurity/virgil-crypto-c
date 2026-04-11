@@ -103,6 +103,9 @@ class ClassSource:
     constructors: list[MethodSource] = field(default_factory=list)
     dependencies: list[DependencySource] = field(default_factory=list)
     macroses: list[MethodSource] = field(default_factory=list)
+    requirements: list['RequirementSource'] = field(default_factory=list)
+    struct_members_order: list[tuple[str, int]] = field(default_factory=list)
+    # Ordered list of ('field', idx) and ('dep', idx) preserving XML source order.
 
 
 @dataclass
@@ -469,17 +472,32 @@ def _dependency(elem: ET.Element) -> DependencySource:
 
 def load_class_source(path: Path) -> ClassSource:
     root = _parse_legacy_xml(path)
+    properties = [PropertySource(name=e.attrib.get("name", ""), attrs=_attrs_with_child_shapes(e), description=_description(e)) for e in root.findall("property")]
+    dependencies = [_dependency(e) for e in root.findall("dependency")]
+    # Compute struct_members_order by scanning direct children in XML source order
+    struct_members_order: list[tuple[str, int]] = []
+    prop_idx = 0
+    dep_idx = 0
+    for child in root:
+        if child.tag == "property":
+            struct_members_order.append(("field", prop_idx))
+            prop_idx += 1
+        elif child.tag == "dependency":
+            struct_members_order.append(("dep", dep_idx))
+            dep_idx += 1
     return ClassSource(
         name=root.attrib["name"],
         path=str(path),
         attrs=dict(root.attrib),
         description=_description(root),
-        properties=[PropertySource(name=e.attrib.get("name", ""), attrs=_attrs_with_child_shapes(e), description=_description(e)) for e in root.findall("property")],
+        properties=properties,
         variables=[_variable(e) for e in root.findall("variable")],
         methods=[_method_like("method", e) for e in root.findall("method")],
         constructors=[_method_like("constructor", e) for e in root.findall("constructor")],
-        dependencies=[_dependency(e) for e in root.findall("dependency")],
+        dependencies=dependencies,
         macroses=[_method_like("macros", e) for e in root.findall("macros")],
+        requirements=[_requirement(e) for e in root.findall("require")],
+        struct_members_order=struct_members_order,
     )
 
 

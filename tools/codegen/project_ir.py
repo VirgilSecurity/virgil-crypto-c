@@ -145,6 +145,7 @@ class IRCStructField(IRCommented):
     callback: str | None = None
     access: str | None = None
     is_reference: bool = False
+    is_reference_explicit: bool = False  # True when is_reference was explicitly set in XML
     is_string: bool = False
     is_array: bool = False
     enum_name: str | None = None
@@ -169,7 +170,11 @@ class IRClass(IRCommented):
     variables: list[IRCVariable] = field(default_factory=list)
     struct_fields: list[IRCStructField] = field(default_factory=list)
     dependencies: list[IRDependency] = field(default_factory=list)
+    struct_members_order: list[tuple[str, int]] = field(default_factory=list)
+    # Ordered list of (kind, index) tuples preserving XML source order.
+    # kind is 'field' or 'dep', index is into struct_fields or dependencies.
     macroses: list[IRClassMacro] = field(default_factory=list)
+    requirements: list['IRRequirement'] = field(default_factory=list)
     output: IROutputTarget | None = None
 
 
@@ -423,6 +428,7 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         callback=attrs.get("callback"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},
+        is_reference_explicit="is_reference" in attrs,
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
         is_array=attrs.get("array") == "given",
         enum_name=attrs.get("enum"),
@@ -498,11 +504,16 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
         variables=[_variable_to_ir(v) for v in src.variables],
         struct_fields=[_field_from_attrs(p.name, p.attrs, p.description) for p in src.properties],
         dependencies=[_dependency_to_ir(d) for d in src.dependencies],
+        struct_members_order=list(src.struct_members_order) if src.struct_members_order else [],
         macroses=[IRClassMacro(
             name=m.name,
             description=m.description,
             code="\n".join(cb.get("text", "") for cb in m.code_blocks) if m.code_blocks else "",
         ) for m in src.macroses],
+        requirements=[
+            IRRequirement(kind=r.kind, name=r.name, attrs=r.attrs, description=r.description)
+            for r in src.requirements
+        ],
         output=build_output_target(project, entity_kind="class", entity_name=src.name, attrs=src.attrs),
     )
 
