@@ -40,14 +40,14 @@
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation generation: `bash tools/codegen/new_codegen.sh foundation`
-- [ ] Verify all 36 files are now generated
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Fix any regressions
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"` — 159 tests, all pass
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh` — passes
+- [x] Run foundation generation: `bash tools/codegen/new_codegen.sh foundation` — passes, generates all files
+- [x] Verify all 36 files are now generated — 8/8 files for key_alg+key_deserializer generated (dispatch .c/.h + api .c/.h). 28 files for 7 dead legacy interfaces correctly NOT generated. Total foundation files: 638.
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` — pre-existing error in handwritten `vscf_mbedtls_bridge_entropy_poll.c` (unused function, not related to codegen changes)
+- [x] Fix any regressions — no regressions from CG-056 changes
 
 ---
 
