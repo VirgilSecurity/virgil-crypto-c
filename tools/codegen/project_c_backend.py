@@ -4917,6 +4917,14 @@ def render_implementation_c_module(
             except (KeyError, ValueError):
                 pass
 
+    # Interface binding headers (public scope — needed for _api(void) accessor return types)
+    for binding in impl.interface_bindings:
+        try:
+            iface_out = entity_output(project_ir, entity_kind="interface", entity_name=binding.name)
+            text_element(root, "c_include", file=iface_out.include_file, is_system="0", scope="public")
+        except (KeyError, ValueError):
+            pass
+
     # Defs and internal headers
     text_element(root, "c_include", file=defs_output.include_file, is_system="0", scope="private")
     text_element(root, "c_include", file=internal_output.include_file, is_system="0", scope="private")
@@ -5261,6 +5269,21 @@ def render_implementation_c_module(
             definition="private",
             attributes=attrs_list,
             fallback_projects=fallback_projects,
+        )
+
+    # --- Forward typedefs for interface API types (needed by accessor return types) ---
+    for binding in impl.interface_bindings:
+        try:
+            iface = interface_ir(project_ir, binding.name)
+        except KeyError:
+            continue
+        iface_output = cast(IROutputTarget, iface.output)
+        api_type = _interface_api_struct_symbol(iface_output)
+        text_element(
+            root, "c_alias",
+            name=api_type,
+            type=f"struct {api_type}",
+            declaration="public",
         )
 
     # --- Interface API accessor declarations (Pattern B) ---
