@@ -1,6 +1,6 @@
 # CG-050: Missing Declarations — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Add _api(void) accessor declarations (Pattern B)
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -19,11 +19,12 @@
 - [x] Target output locations determined (B: decl in main module, defn in internal module; D: fwd decl in internal module; H: already correct in internal module)
 
 ### Step 1: Add _api(void) accessor declarations (Pattern B)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Accessor declarations emitted for implementations
-- [ ] Signature matches legacy pattern
-- [ ] Verified against representative implementations
+- [ ] Add accessor declaration in main module (render_implementation_c_module) with declaration="public"
+- [ ] Add accessor definition in internal module (render_implementation_internal_c_module) with definition="private"
+- [ ] Verify generated XML against legacy aes256_gcm and ecc patterns
+- [ ] Run targeted tests
 
 ### Step 2: Add did_setup/did_release callback declarations (Pattern D)
 **Status:** ⬜ Not Started
