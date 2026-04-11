@@ -5526,8 +5526,14 @@ def return_from_source(
         elif attrs.get("library") and attrs.get("is_reference") in {"1", "true"} and attrs.get("class") != "self":
             accessed_by = "pointer"
         elif attrs.get("access") in {"disown", "readwrite"} and attrs.get("class") != "self":
-            # Ownership-transfer returns (disown) or mutable returns are always by pointer
-            accessed_by = "pointer"
+            # Ownership-transfer returns (disown) or mutable returns are by pointer,
+            # unless the class is a value type (e.g. vsc_data_t is returned by value)
+            is_value_type = (
+                project_ir is not None
+                and class_ir(project_ir, resolved_class_str).attrs.get("is_value_type") in {"1", "true"}
+            )
+            if not is_value_type:
+                accessed_by = "pointer"
         return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"}:
         extra = {"is_const_type": "1"} if attrs.get("access") != "readwrite" else {}
