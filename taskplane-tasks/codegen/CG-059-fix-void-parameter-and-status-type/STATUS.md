@@ -1,6 +1,6 @@
 # CG-059: Fix Bare `void` Parameter and Unresolved `status` Type — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Documentation & Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -38,13 +38,13 @@
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Confirm 0 errors for bare `void` and bare `status`
-- [ ] Fix any regressions
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
+- [x] Confirm 0 errors for bare `void` and bare `status`
+- [x] Fix any regressions
 
 ---
 
