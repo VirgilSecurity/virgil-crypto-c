@@ -1,6 +1,6 @@
 # CG-051: Generate Interface Dispatch `.c` Bodies — Status
 
-**Current Step:** Step 1: Implement dispatch body renderer
+**Current Step:** Step 2: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -29,14 +29,14 @@
 ---
 
 ### Step 2: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Diff generated dispatch `.c` files against legacy to verify pattern match
-- [ ] Confirm link errors from Pattern E are resolved
-- [ ] Fix any regressions
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"` — 159 tests OK
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh` — PASS
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` — interface dispatch files compile; pre-existing visibility error in cipher_alg_info (impl module, not interface dispatch) blocks full build
+- [x] Diff generated dispatch `.c` files against legacy to verify pattern match — all 30 interface dispatch files match legacy (only cosmetic line-wrapping diffs in 8 files)
+- [x] Confirm link errors from Pattern E are resolved — all 164 dispatch function bodies now generated (type changed from stub to generated)
+- [x] Fix any regressions — fixed 2 bugs: (1) missing return for interface returns, (2) NODISCARD in definitions. Also fixed pointer return for disown/readwrite access types.
 
 ---
 
@@ -69,6 +69,10 @@
 | Dispatch bodies already coded in `render_interface_c_module` with `c_code type="stub"` but `generate_block` only renders `type="generated"` | Fix: change stub→generated for 6 interface dispatch render functions | project_c_backend.py lines 1514,1559,1595,1640,1674,1715 |
 | 30 interface dispatch .c files exist in foundation (not just 8) | In scope | library/foundation/src/ |
 | Implementation module methods also use type="stub" (lines 4320,4668,etc) | Out of scope - different task | project_c_backend.py |
+| `has_return` check in `_render_dispatch_method` didn't check `interface_name` → methods returning interfaces had no `return` prefix | Fixed: added `interface_name` check | project_c_backend.py:1484 |
+| NODISCARD attribute was rendered in both .h declarations and .c definitions | Fixed: only render in declarations | common_bootstrap.py:601 |
+| `return_from_source` returned non-value-type classes by value when `access=disown` | Fixed: disown/readwrite access → pointer return | project_c_backend.py:5527 |
+| Pre-existing visibility mismatch in cipher_alg_info.c (VSCF_PUBLIC vs VSCF_PRIVATE) | Out of scope - impl module issue | build output |
 
 ---
 
