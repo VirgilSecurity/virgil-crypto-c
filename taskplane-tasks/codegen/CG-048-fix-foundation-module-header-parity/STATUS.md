@@ -1,22 +1,22 @@
 # CG-048: Fix Foundation Module Header Parity — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-10
+**Current Step:** Step 1: Fix declaration parity
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-11
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] All foundation build errors captured
-- [ ] Generated vs legacy header diffs analyzed for both modules
-- [ ] Error categories traced to codegen root causes
-- [ ] Module types identified in XML models
+- [x] All foundation build errors captured
+- [x] Generated vs legacy header diffs analyzed for both modules
+- [x] Error categories traced to codegen root causes
+- [x] Module types identified in XML models
 
 ### Step 1: Fix declaration parity
 **Status:** ⬜ Not Started
@@ -59,9 +59,17 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-10 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-11 00:39 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-11 00:39 | Step 0 started | Preflight |
 
 ## Blockers
 *None*
 
 ## Notes
-*Reserved for execution notes*
+- Modules are implementation type (within `implementor_alg_info_der.xml`)
+- Actual build errors: 4 (not 24+ — build stops early on first module)
+  - 2 visibility errors in deserializer.c (VSCF_PUBLIC in .c vs VSCF_PRIVATE in generated .h)
+  - 2 undeclared init_ctx/cleanup_ctx in deserializer_internal.c
+- Root cause 1 (visibility): `_render_impl_method` uses `visibility` for modifier but `declaration="public"` methods default visibility to "private"
+- Root cause 2 (const): Interface args without `access` attr don't get `const` but legacy expects it
+- Root cause 3 (init_ctx/cleanup_ctx): `implementation_internal_output` puts header in `include/private/` but legacy files are in `src/`, so _internal.h never gets generated
