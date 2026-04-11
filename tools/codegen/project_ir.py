@@ -170,6 +170,7 @@ class IRClass(IRCommented):
     struct_fields: list[IRCStructField] = field(default_factory=list)
     dependencies: list[IRDependency] = field(default_factory=list)
     macroses: list[IRClassMacro] = field(default_factory=list)
+    requirements: list['IRRequirement'] = field(default_factory=list)
     output: IROutputTarget | None = None
 
 
@@ -503,6 +504,10 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
             description=m.description,
             code="\n".join(cb.get("text", "") for cb in m.code_blocks) if m.code_blocks else "",
         ) for m in src.macroses],
+        requirements=[
+            IRRequirement(kind=r.kind, name=r.name, attrs=r.attrs, description=r.description)
+            for r in src.requirements
+        ],
         output=build_output_target(project, entity_kind="class", entity_name=src.name, attrs=src.attrs),
     )
 

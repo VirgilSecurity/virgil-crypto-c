@@ -235,6 +235,44 @@ def implementation_defs_output(impl_output: IROutputTarget) -> IROutputTarget:
 
 
 
+def class_defs_output(class_output: IROutputTarget) -> IROutputTarget:
+    """Derive the defs module output target from a class's output target.
+
+    The defs module lives under the ``private`` include directory and uses
+    the ``<prefix>_<class>_defs`` stem convention.
+    """
+    stem = f"{class_output.c_symbol}_defs"
+    header_path = class_output.header_path.replace(
+        f"/{class_output.include_file}",
+        f"/private/{stem}.h",
+    )
+    source_path = class_output.source_path.replace(class_output.source_file, f"{stem}.c")
+    generated_header_path = class_output.generated_header_path.replace(
+        class_output.include_file.removesuffix(".h"),
+        stem,
+    )
+    generated_source_path = class_output.generated_source_path.replace(
+        Path(class_output.generated_source_path).stem,
+        f"class_{snake_name(class_output.entity_name)}_defs",
+    )
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=f"{class_output.entity_name} defs",
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility="private",
+        source_visibility="public",
+    )
+
+
 def implementation_internal_output(impl_output: IROutputTarget) -> IROutputTarget:
     """Derive the internal module output target from an implementation's output target.
 
@@ -918,6 +956,18 @@ def discover_renderers(
                 renderers[xml_name] = (
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
+            # Defs module for non-value-type classes with a struct context
+            is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+            context = cls.attrs.get("context", "public")
+            if not is_value_type and context != "none":
+                defs_out = class_defs_output(cast(IROutputTarget, cls.output))
+                defs_xml = direct_xml_name(defs_out)
+                if defs_xml in overrides:
+                    renderers[defs_xml] = overrides[defs_xml]
+                else:
+                    renderers[defs_xml] = (
+                        lambda _repo_root, _pir=project_ir, _c=cls: render_class_defs_c_module(_pir, _c)
+                    )
             # Internal module for classes with internal-scope methods
             has_internal = any(m.attrs.get("scope") == "internal" for m in cls.methods)
             if has_internal:
@@ -2734,13 +2784,54 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
     field_attrs: dict[str, str] = {
         "name": c_identifier(field.name, callback=callback is not None),
     }
-    if attrs.get("class") is not None:
-        resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class")
+    if attrs.get("interface") is not None:
+        # Interface property → {prefix}_impl_t pointer
         field_attrs.update({
-            "type": class_type_symbol(project_ir, cast(str, resolved_class)),
+            "type": f"{project_ir.prefix}_impl_t",
             "type_is": "class",
-            "accessed_by": "pointer" if attrs.get("is_reference") in {"1", "true"} else "value",
+            "accessed_by": "pointer",
         })
+    elif attrs.get("enum") is not None:
+        # Enum property → resolve to the enum type symbol
+        enum_name = attrs["enum"]
+        if "/" in enum_name:
+            enum_name = " ".join(enum_name.split("/"))
+        try:
+            enum_output = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+            type_sym = f"{enum_output.c_symbol}_t"
+        except (KeyError, ValueError):
+            type_sym = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+        field_attrs.update({
+            "type": type_sym,
+            "type_is": "primitive",
+            "accessed_by": "value",
+        })
+    elif attrs.get("class") is not None:
+        class_name = attrs["class"]
+        if class_name == "self":
+            resolved_class = owner_class
+        else:
+            resolved_class = class_name
+        if class_name == "any":
+            # Special 'any' type → void pointer
+            field_attrs.update({
+                "type": "void",
+                "type_is": "primitive",
+                "accessed_by": "pointer",
+            })
+        elif attrs.get("library"):
+            # External library type — use class_name as-is (already a C type)
+            field_attrs.update({
+                "type": class_name,
+                "type_is": "class",
+                "accessed_by": "pointer" if attrs.get("is_reference") in {"1", "true"} else "value",
+            })
+        else:
+            field_attrs.update({
+                "type": class_type_symbol(project_ir, cast(str, resolved_class)),
+                "type_is": "class",
+                "accessed_by": "pointer" if attrs.get("is_reference") in {"1", "true"} else "value",
+            })
     elif callback is not None:
         field_attrs.update({
             "type": callback_symbol(project_ir, callback_name_from_ref(callback)),
@@ -3873,6 +3964,163 @@ def render_implementation_defs_c_module(
         f"This types SHOULD NOT be used directly.\n"
         f"The only purpose of including this module is to place implementation\n"
         f"object in the stack memory."
+    ) + "\n"
+
+    return root
+
+
+def render_class_defs_c_module(
+    project_ir: IRProject,
+    cls: IRClass,
+) -> ET.Element:
+    """Render the defs module for a class.
+
+    The defs module defines the class struct with the ``self_dealloc_cb``
+    and ``refcnt`` base fields followed by the class-specific properties
+    and dependency fields.
+    """
+    class_output = cast(IROutputTarget, cls.output)
+    defs_output = class_defs_output(class_output)
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+    context = cls.attrs.get("context", "public")
+
+    root = c_module_root(
+        defs_output,
+        entity_id=f"{snake_name(cls.name)}_defs",
+        scope="private",
+    )
+
+    # Standard includes
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_atomic.h", is_system="0", scope="public")
+
+    # Library header includes (from requirements, e.g. mbedtls headers)
+    for req in cls.requirements:
+        if req.kind == "header" and req.attrs.get("scope") in {"context", "public"}:
+            text_element(root, "c_include", file=req.name, is_system="1", scope="public")
+
+    # Collect includes needed for struct field types
+    seen_includes: set[str] = set()
+    def _add_include(file: str, is_system: str = "0") -> None:
+        if file not in seen_includes:
+            seen_includes.add(file)
+            text_element(root, "c_include", file=file, is_system=is_system, scope="public")
+
+    for field in cls.struct_fields:
+        if field.class_name is not None and field.class_name != "self" and field.class_name != cls.name and field.class_name != "any":
+            if field.library:
+                # External library type — may need system/library include
+                # These are typically handled by the existing include infrastructure
+                pass
+            else:
+                try:
+                    inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=field.class_name)
+                    _add_include(inc)
+                except KeyError:
+                    pass
+        if field.interface_name is not None:
+            # Interface property becomes {prefix}_impl_t pointer
+            _add_include(f"{prefix}_impl.h")
+        if field.enum_name is not None:
+            enum_name = field.enum_name
+            if "/" in enum_name:
+                enum_name = " ".join(enum_name.split("/"))
+            try:
+                enum_inc = include_file_for_entity(project_ir, entity_kind="enum", entity_name=enum_name)
+                _add_include(enum_inc)
+            except KeyError:
+                pass
+
+    # Includes for dependency field types
+    for dep in cls.dependencies:
+        if dep.type_kind == "class":
+            try:
+                dep_inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=dep.type_name)
+                _add_include(dep_inc)
+            except KeyError:
+                pass
+        elif dep.type_kind in {"interface", "impl"}:
+            _add_include(f"{prefix}_impl.h")
+
+    # Struct definition
+    struct_name = class_type_symbol(project_ir, cls.name)
+    struct_elem = text_element(
+        root,
+        "c_struct",
+        name=struct_name,
+        visibility="public",
+        declaration="external",
+        definition="public",
+        uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}",
+    )
+
+    # Base fields for non-value-type classes: self_dealloc_cb and refcnt
+    if not is_value_type:
+        dealloc_prop = text_element(
+            struct_elem,
+            "c_property",
+            name="self_dealloc_cb",
+            accessed_by="value",
+            type=f"{prefix}_dealloc_fn",
+            type_is="callback",
+            uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}_property_self_dealloc_cb",
+        )
+        dealloc_prop.text = comment_text("Function do deallocate self context.")
+
+        refcnt_prop = text_element(
+            struct_elem,
+            "c_property",
+            name="refcnt",
+            accessed_by="value",
+            type=f"{prefix_upper}_ATOMIC size_t",
+            type_is="primitive",
+            uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}_property_refcnt",
+        )
+        refcnt_prop.text = comment_text("Reference counter.")
+
+    # Class struct fields
+    for field in cls.struct_fields:
+        field_spec = ClassFieldSpec(
+            name=field.name,
+            attrs={
+                **({"class": field.class_name} if field.class_name is not None else {}),
+                **({"callback": field.callback} if field.callback is not None else {}),
+                **({"type": field.type_name} if field.type_name is not None else {}),
+                **({"access": field.access} if field.access is not None else {}),
+                **({"is_reference": "1"} if field.is_reference else {}),
+                **({"array": "given"} if field.is_array else {}),
+                **({"library": field.library} if field.library is not None else {}),
+                **({"interface": field.interface_name} if field.interface_name is not None else {}),
+                **({"enum": field.enum_name} if field.enum_name is not None else {}),
+            },
+            description=field.description,
+        )
+        _render_class_property(struct_elem, field_spec, project_ir=project_ir, owner_class=cls.name)
+
+    # Dependency fields
+    for dep in cls.dependencies:
+        dep_type = _dependency_type_symbol(project_ir, dep)
+        dep_field_name = snake_name(dep.name)
+        dep_uid = f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}_property_{dep_field_name}"
+        dep_elem = text_element(
+            struct_elem,
+            "c_property",
+            name=dep_field_name,
+            type=dep_type,
+            type_is="class",
+            accessed_by="pointer",
+            uid=dep_uid,
+        )
+        dep_elem.text = comment_text(f"Dependency to the {dep.type_kind} '{dep.type_name}'.")
+
+    struct_elem.text = (struct_elem.text or "") + "\n" + doc_comment(
+        f"Handle '{cls.name}' context."
+    ) + "\n    "
+
+    root.text = (root.text or "") + "\n" + doc_comment(
+        f"Class '{cls.name}' types definition."
     ) + "\n"
 
     return root
