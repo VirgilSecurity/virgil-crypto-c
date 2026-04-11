@@ -3692,6 +3692,8 @@ def _render_dependency_method_element(
     # return
     if return_type == "void":
         text_element(method, "c_return", accessed_by="value", type="void")
+    elif return_type == "status":
+        text_element(method, "c_return", accessed_by="value", type=f"{project_ir.prefix}_status_t", type_is="primitive")
     else:
         text_element(method, "c_return", accessed_by="value", type=return_type, type_is="primitive")
     # code

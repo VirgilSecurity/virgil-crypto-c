@@ -1,6 +1,6 @@
 # CG-059: Fix Bare `void` Parameter and Unresolved `status` Type — Status
 
-**Current Step:** Step 2: Fix bare status return type
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -30,10 +30,10 @@
 ---
 
 ### Step 2: Fix bare `status` return type
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Fix dependency method return type to include project prefix and `_t` suffix
-- [ ] Verify `use_*` and `take_*` methods across all implementations with dependencies
+- [x] Fix dependency method return type to include project prefix and `_t` suffix
+- [x] Verify `use_*` and `take_*` methods across all implementations with dependencies
 
 ---
 
