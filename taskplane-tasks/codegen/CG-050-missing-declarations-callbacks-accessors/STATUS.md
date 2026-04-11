@@ -1,22 +1,22 @@
 # CG-050: Missing Declarations — Status
 
-**Current Step:** Not Started
-**Status:** 🔵 Ready for Execution
-**Last Updated:** 2026-04-10
+**Current Step:** Step 0: Preflight
+**Status:** 🟡 In Progress
+**Last Updated:** 2026-04-11
 **Review Level:** 1
 **Review Counter:** 0
-**Iteration:** 0
+**Iteration:** 1
 **Size:** M
 
 ---
 
 ### Step 0: Preflight
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Baseline error count captured
-- [ ] Legacy _internal.h declaration patterns examined
-- [ ] IR/source model expressions identified for each pattern
-- [ ] Target output locations determined
+- [x] Baseline error count captured (40 errors, mostly asn1rd/asn1wr type mismatches)
+- [x] Legacy _internal.h declaration patterns examined (B: decl in .h + defn in _internal.c; D: fwd decl in _internal.c; H: decl in _internal.h)
+- [x] IR/source model expressions identified (B: impl.interface_bindings; D: dep.has_observers on deps; H: all impls need init_ctx/cleanup_ctx — already generated)
+- [x] Target output locations determined (B: decl in main module, defn in internal module; D: fwd decl in internal module; H: already correct in internal module)
 
 ### Step 1: Add _api(void) accessor declarations (Pattern B)
 **Status:** ⬜ Not Started
@@ -72,6 +72,8 @@
 | Timestamp | Action | Outcome |
 |-----------|--------|---------|
 | 2026-04-10 | Task staged | PROMPT.md and STATUS.md created |
+| 2026-04-11 02:02 | Task started | Runtime V2 lane-runner execution |
+| 2026-04-11 02:02 | Step 0 started | Preflight |
 
 ## Blockers
 *None*
