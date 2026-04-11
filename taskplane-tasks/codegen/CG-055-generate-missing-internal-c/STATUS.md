@@ -94,6 +94,8 @@ The codegen is already correct. No fix is needed. Reclassifying as dead/deprecat
 | 2026-04-11 | Step 1 complete | Codegen confirmed correct: 53/53 _internal.c and 56/56 _internal.h match sources.cmake |
 | 2026-04-11 | Step 2 complete | Python tests 155/157 pass (2 pre-existing), common build PASS, foundation verify PASS |
 | 2026-04-11 | Step 3 complete | CONTEXT.md updated with CG-055 findings |
+| 2026-04-11 16:44 | Worker iter 1 | done in 1826s, tools: 139 |
+| 2026-04-11 16:44 | Task complete | .DONE created |
 
 ---
 
