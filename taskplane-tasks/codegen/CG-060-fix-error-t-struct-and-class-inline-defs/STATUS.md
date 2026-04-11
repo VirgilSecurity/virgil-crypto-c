@@ -24,10 +24,9 @@
 ### Step 1: Fix inline struct definition
 **Status:** 🟨 In Progress
 
-- [ ] Add support for classes that expose their struct in the public header (not `_defs.h`)
-- [ ] Detect the model attribute that indicates inline struct (e.g., `context="none"` or similar)
-- [ ] Suppress lifecycle method generation for non-lifecycle classes
-- [ ] Verify `vscf_error.h` matches legacy
+- [ ] In `render_class_c_module`: when `lifecycle="none"`, set `struct_definition="public"`, render struct fields, and skip `_render_reference_class_support`
+- [ ] In `collect_renderers`: skip `_defs.h` module generation for `lifecycle="none"` classes (struct is in public header)
+- [ ] Verify generated `vscf_error.h` matches legacy (struct inline, no lifecycle methods, macro present)
 
 ---
 
