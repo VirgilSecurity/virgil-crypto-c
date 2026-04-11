@@ -2523,7 +2523,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
         if visibility == "public":
             text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
         elif visibility == "private":
-            text_element(method_elem, "c_modifier", value="static")
+            text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PRIVATE")
         if method.attrs.get("noreturn") in {"1", "true"}:
             text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_NORETURN")
         if method.description:
