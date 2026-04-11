@@ -1,6 +1,6 @@
 # CG-051: Generate Interface Dispatch `.c` Bodies — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Implement dispatch body renderer
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -21,14 +21,10 @@
 ---
 
 ### Step 1: Implement dispatch body renderer
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Add a `.c` body renderer for interface dispatch functions in `project_c_backend.py`
-- [ ] Handle the standard dispatch pattern: validate → lookup API → assert callback → call → return
-- [ ] Handle `vscf_status_t` return (with NODISCARD) vs void return vs value return
-- [ ] Handle `const` correctness in dispatch arguments
-- [ ] Handle `self` parameter casting (from `vscf_impl_t *` to API access)
-- [ ] Wire the new renderer into the interface module output (alongside the existing `.h` output)
+- [ ] Change `c_code` type from `"stub"` to `"generated"` for all 6 interface dispatch render functions in `project_c_backend.py` — this is the ONLY change needed since bodies are already correctly coded
+- [ ] Run targeted tests to confirm interface rendering tests still pass
 
 ---
 
