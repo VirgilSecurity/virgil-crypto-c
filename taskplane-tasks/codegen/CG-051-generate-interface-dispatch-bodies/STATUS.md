@@ -21,10 +21,10 @@
 ---
 
 ### Step 1: Implement dispatch body renderer
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Change `c_code` type from `"stub"` to `"generated"` for all 6 interface dispatch render functions in `project_c_backend.py` — this is the ONLY change needed since bodies are already correctly coded
-- [ ] Run targeted tests to confirm interface rendering tests still pass
+- [x] Change `c_code` type from `"stub"` to `"generated"` for all 6 interface dispatch render functions in `project_c_backend.py` — this is the ONLY change needed since bodies are already correctly coded
+- [x] Run targeted tests to confirm interface rendering tests still pass
 
 ---
 

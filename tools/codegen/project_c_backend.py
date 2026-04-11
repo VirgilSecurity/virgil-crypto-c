@@ -1511,7 +1511,7 @@ def _render_dispatch_method(
         ]
 
     code_text = "\n".join(body_lines)
-    text_element(method_elem, "c_code", type="stub").text = code_text
+    text_element(method_elem, "c_code", type="generated").text = code_text
 
     return method_elem
 
@@ -1556,7 +1556,7 @@ def _render_constant_getter(
         "",
         f"return {api_var_name}->{field_name};",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1592,7 +1592,7 @@ def _render_api_method(
         f"const {prefix}_api_t *api = {prefix}_impl_api(impl, {api_tag});",
         f"return (const {api_struct_name} *) api;",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1637,7 +1637,7 @@ def _render_inherited_api_getter(
         "",
         f"return {api_var_name}->{field_name};",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1671,7 +1671,7 @@ def _render_is_implemented_method(
         "",
         f"return {prefix}_impl_api(impl, {api_tag}) != NULL;",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1712,7 +1712,7 @@ def _render_api_tag_method(
         "",
         f"return {api_var_name}->api_tag;",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
