@@ -21,12 +21,18 @@
 ---
 
 ### Step 1: Fix generation of missing `_internal.c` files
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Fix the root cause for each skipped module (name aliasing, model loading, IR filtering)
-- [ ] Verify all 4 `_internal.c` files are now generated
-- [ ] Fix `_internal.h` generation for the 5 missing headers if applicable
-- [ ] Diff generated files against legacy to verify structural parity
+**Root cause analysis (from Step 0):** All 4 `_internal.c` and 5 `_internal.h` files are dead legacy code:
+- NOT in `sources.cmake` (not compiled)
+- Contain duplicate symbol definitions with main `.c` files
+- Not included/referenced by any other source file
+- New codegen generates exactly 53/53 `_internal.c` and 56/56 `_internal.h` matching `sources.cmake`
+
+The codegen is already correct. No fix is needed. Reclassifying as dead/deprecated files.
+
+- [ ] Verify no code changes needed — confirm existing generation counts match build system
+- [ ] Verify `_internal.c` (53/53) and `_internal.h` (56/56) match `sources.cmake` entries exactly
 
 ---
 
