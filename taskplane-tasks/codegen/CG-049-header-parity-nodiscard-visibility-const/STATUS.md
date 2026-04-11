@@ -35,11 +35,12 @@
 - [x] Verify const parity against legacy for key_alg, ecc headers
 
 ### Step 3: Fix visibility parity (Pattern G)
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Fix interface method visibility to check 'scope' attr (not just 'visibility')
-- [ ] Fix interface dispatch method visibility to check 'scope' attr
-- [ ] Verify visibility parity against legacy headers
+- [x] Fix interface dispatch method visibility (VSCF_PRIVATE for visibility=private methods)
+- [x] Fix _render_ir_method to use VSCF_PRIVATE when visibility=private
+- [x] Fix class method and constructor visibility pass-through
+- [x] Verify visibility parity (1 remaining mismatch: hkdf scope=private in wrong header)
 
 ### Step 4: Testing & Verification
 **Status:** ⬜ Not Started

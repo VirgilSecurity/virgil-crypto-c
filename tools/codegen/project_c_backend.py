@@ -1429,15 +1429,16 @@ def _render_dispatch_method(
 
     method_attrs: dict[str, str] = {
         "name": method_symbol,
-        "declaration": "public" if visibility == "public" else "private",
+        "declaration": "public",
     }
     if visibility == "private":
         method_attrs["visibility"] = "private"
 
     method_elem = text_element(parent, "c_method", **method_attrs)
 
-    # Add PUBLIC modifier
-    text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
+    # Add visibility modifier
+    vis_modifier = f"{prefix.upper()}_PRIVATE" if visibility == "private" else f"{prefix.upper()}_PUBLIC"
+    text_element(method_elem, "c_modifier", value=vis_modifier)
 
     # Add NODISCARD attribute for status-returning methods (placed after closing paren)
     if method.returns:
@@ -2633,6 +2634,7 @@ def render_class_c_module(
                 else:
                     method_args.insert(0, {"name": "self", "class": "self"})
             return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
+            method_vis = method.attrs.get("visibility", "public")
             _render_ir_method(
                 root,
                 name=class_method_symbol(project_ir, cls, method.name),
@@ -2641,6 +2643,7 @@ def render_class_c_module(
                 return_attrs=return_attrs,
                 owner_class=cls.name,
                 project_ir=project_ir,
+                visibility=method_vis,
                 uid=f"direct_{snake_name(cls.name)}_method_{snake_name(method.name)}",
             )
 
@@ -3517,7 +3520,10 @@ def _render_ir_method(
     uid: str | None = None,
 ) -> ET.Element:
     if modifiers is None:
-        modifiers = (f"{project_ir.prefix.upper()}_PUBLIC",)
+        if visibility == "private":
+            modifiers = (f"{project_ir.prefix.upper()}_PRIVATE",)
+        else:
+            modifiers = (f"{project_ir.prefix.upper()}_PUBLIC",)
     resolved_definition = visibility if code is not None and definition == "external" else definition
     method = text_element(
         parent,
@@ -3613,6 +3619,7 @@ def _render_reference_class_support(
         ctor_arg_names = [_method_arg_dict(arg)["name"] for arg in ctor.arguments]
         init_name = class_constructor_symbol(project_ir, cls, ctor.name)
         new_name = _class_new_constructor_symbol(project_ir, cls, ctor.name)
+        ctor_vis = ctor.attrs.get("visibility", "public")
         _render_ir_method(
             parent,
             name=init_name,
@@ -3621,6 +3628,7 @@ def _render_reference_class_support(
             return_attrs={"type": "void"},
             project_ir=project_ir,
             owner_class=cls.name,
+            visibility=ctor_vis,
             uid=f"direct_{snake_name(cls.name)}_init_with_{snake_name(ctor.name)}",
             code=_lifecycle_constructor_init_body(project_ir, cls, ctor.name, ctor_arg_names),
         )
@@ -3632,6 +3640,7 @@ def _render_reference_class_support(
             return_attrs={"class": "self"},
             project_ir=project_ir,
             owner_class=cls.name,
+            visibility=ctor_vis,
             uid=f"direct_{snake_name(cls.name)}_new_with_{snake_name(ctor.name)}",
             code=_lifecycle_constructor_new_body(project_ir, cls, ctor.name, ctor_arg_names),
         )
