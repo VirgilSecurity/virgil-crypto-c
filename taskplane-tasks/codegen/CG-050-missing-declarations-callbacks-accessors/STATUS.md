@@ -1,6 +1,6 @@
 # CG-050: Missing Declarations — Status
 
-**Current Step:** Step 1: Add _api(void) accessor declarations (Pattern B)
+**Current Step:** Step 2: Add did_setup/did_release callback declarations (Pattern D)
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -27,13 +27,12 @@
 - [x] Run targeted tests (30 tests passing)
 
 ### Step 2: Add did_setup/did_release callback declarations (Pattern D)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on dependency property parsing discovered in Step 0
-
-- [ ] Dependency properties parsed from model
-- [ ] did_setup/did_release declarations emitted
-- [ ] Verified against legacy internal headers
+- [ ] Add forward declarations in internal module for impl deps with has_observers
+- [ ] Add forward declarations in internal module for class deps with has_observers
+- [ ] Remove static stubs from main module (already called from use/take/release in main module — keep forward decl in internal only)
+- [ ] Run targeted tests
 
 ### Step 3: Add init_ctx/cleanup_ctx declarations (Pattern H)
 **Status:** ⬜ Not Started
