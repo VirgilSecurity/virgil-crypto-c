@@ -1166,7 +1166,12 @@ def _interface_argument_from_source(
         if not is_value_type:
             accessed_by = "pointer"
         extra: dict[str, str] = {}
-        if src.get("access") == "readonly":
+        # Legacy defaults: buffer→writeonly, everything else→readonly
+        # Value types don't use const qualifier (meaningless for pass-by-value)
+        effective_access = src.get("access")
+        if effective_access is None:
+            effective_access = "writeonly" if cls_name == "buffer" else "readonly"
+        if effective_access == "readonly" and not is_value_type:
             extra["is_const_type"] = "1"
         return text_element(parent, "c_argument", name=src.get("name", ""), accessed_by=accessed_by, type=type_symbol, type_is="class", **extra)
     # For non-class arguments, delegate to argument_from_source
@@ -4201,14 +4206,18 @@ def _render_impl_interface_methods(
                 arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
                 if arg.class_name:
                     arg_dict["class"] = arg.class_name
-                    if arg.access == "readonly":
-                        arg_dict["is_const"] = "1"
+                    # Resolve effective access: legacy defaults to 'readonly' except
+                    # buffer arguments which default to 'writeonly'
+                    effective_access = arg.access
+                    if effective_access is None:
+                        if arg.class_name == "buffer":
+                            effective_access = "writeonly"
+                        else:
+                            effective_access = "readonly"
                     # Determine accessed_by: value types (data) passed by value
-                    if arg.kind == "value":
-                        arg_dict["accessed_by"] = "value"
-                    else:
+                    is_value = arg.kind == "value"
+                    if not is_value:
                         # Check if the class is a value type via IR lookup
-                        is_value = False
                         for fp in (fallback_projects or []):
                             try:
                                 cls = class_ir(fp, arg.class_name)
@@ -4224,7 +4233,10 @@ def _render_impl_interface_methods(
                                     is_value = True
                             except KeyError:
                                 pass
-                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    # Apply const for non-value readonly args
+                    if effective_access == "readonly" and not is_value:
+                        arg_dict["is_const"] = "1"
                 elif arg.interface_name:
                     # Interface arguments are passed as impl_t pointers
                     arg_dict["class"] = "impl"
@@ -5084,8 +5096,14 @@ def render_implementation_c_module(
             arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
             if arg.class_name:
                 arg_dict["class"] = arg.class_name
-                if arg.access == "readonly":
-                    arg_dict["is_const"] = "1"
+                # Resolve effective access: legacy defaults to 'readonly' except
+                # buffer arguments which default to 'writeonly'
+                effective_access = arg.access
+                if effective_access is None:
+                    if arg.class_name == "buffer":
+                        effective_access = "writeonly"
+                    else:
+                        effective_access = "readonly"
                 # Determine accessed_by: value types (data) passed by value
                 is_value = False
                 for fp in (fallback_projects or []):
@@ -5104,6 +5122,9 @@ def render_implementation_c_module(
                     except KeyError:
                         pass
                 arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                # Apply const for non-value readonly args
+                if effective_access == "readonly" and not is_value:
+                    arg_dict["is_const"] = "1"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
                 if arg.access in ("readonly", None):
@@ -5198,12 +5219,20 @@ def argument_from_source(
         prefix = project_ir.prefix if project_ir is not None else "vscf"
         type_name = f"{prefix}_impl_t"
         extra: dict[str, str] = {}
-        if attrs.get("access") == "readonly":
+        # Legacy default: interface args without access → readonly (const)
+        effective_access = attrs.get("access")
+        if effective_access is None:
+            effective_access = "readonly"
+        if effective_access == "readonly":
             extra["is_const_type"] = "1"
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        extra = {"is_const_type": "1"} if attrs.get("access") == "readonly" else {}
+        # Legacy default: buffer→writeonly, everything else→readonly
+        effective_cls_access = attrs.get("access")
+        if effective_cls_access is None:
+            effective_cls_access = "writeonly" if attrs.get("class") == "buffer" else "readonly"
+        extra = {"is_const_type": "1"} if effective_cls_access == "readonly" else {}
         # Handle const prefix in class name
         resolved_class_str = cast(str, resolved_class)
         if resolved_class_str.startswith("const "):

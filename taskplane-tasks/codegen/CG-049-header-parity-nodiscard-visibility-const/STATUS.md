@@ -27,11 +27,12 @@
 - [x] Verified against legacy headers (sha256 exact match, ecc/aes256_gcm NODISCARD correct, 134 vs 176 legacy)
 
 ### Step 2: Fix const qualifier parity (Pattern F)
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Fix class_name (impl) args: default access=None to readonly (const) in interface method impl path
-- [ ] Fix class_name (impl) args: default access=None to readonly (const) in impl own methods path
-- [ ] Verify const parity against legacy for key_alg, ecc headers
+- [x] Fix class_name (impl) args: default access=None to readonly (const) in interface method impl path
+- [x] Fix class_name (impl) args: default access=None to readonly (const) in impl own methods path
+- [x] Fix value types (data) not getting spurious const qualifier
+- [x] Verify const parity against legacy for key_alg, ecc headers
 
 ### Step 3: Fix visibility parity (Pattern G)
 **Status:** ⬜ Not Started
