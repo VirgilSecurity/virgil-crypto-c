@@ -61,6 +61,7 @@ class IRCArgument(IRCommented):
     enum_name: str | None = None
     interface_name: str | None = None
     library: str | None = None
+    type_size: str | None = None  # Bit-width for integer/unsigned: "1", "2", "4", "8"
 
 
 @dataclass
@@ -363,6 +364,7 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         enum_name=attrs.get("enum"),
         interface_name=attrs.get("interface"),
         library=attrs.get("library"),
+        type_size=attrs.get("size"),
     )
 
 

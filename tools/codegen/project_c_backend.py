@@ -2719,6 +2719,9 @@ def _method_arg_dict(arg: object) -> dict[str, str]:
         attrs["type"] = "string"
     if getattr(arg, "is_array", False):
         attrs["_array"] = "given"
+    type_size = getattr(arg, "type_size", None)
+    if type_size is not None:
+        attrs["size"] = type_size
     name = getattr(arg, "name", "")
     rendered_name = name if name == "return" else c_identifier(name, callback=getattr(arg, "callback", None) is not None)
     return {"name": rendered_name, **attrs}
@@ -3730,11 +3733,15 @@ def _resolve_impl_property_type(
     else:
         # Primitive type (byte, size, etc.)
         rendered_type, kind = type_map(prop.type_name)
+        accessed_by = "pointer" if prop.is_reference else "value"
         attrs.update({
             "type": rendered_type,
             "type_is": kind,
-            "accessed_by": "value",
+            "accessed_by": accessed_by,
         })
+        # Handle const qualifier for readonly pointer properties
+        if prop.is_reference and prop.access == "readonly":
+            attrs["is_const_type"] = "1"
 
     # Handle fixed-length array properties
     if prop.array_kind == "fixed" and prop.array_length_constant:
@@ -4011,6 +4018,7 @@ def _render_impl_method(
     return_type: str | None = None,
     return_class: str | None = None,
     return_is_const: bool = False,
+    return_accessed_by: str = "value",
     code: str | None = None,
     code_type: str = "generated",
     visibility: str = "public",
@@ -4099,6 +4107,9 @@ def _render_impl_method(
                 )
             elif arg.get("type"):
                 rendered_type, kind = type_map(arg.get("type"))
+                extra = {}
+                if arg.get("is_const"):
+                    extra["is_const_type"] = "1"
                 text_element(
                     method, "c_argument",
                     name=arg_name,
@@ -4106,6 +4117,7 @@ def _render_impl_method(
                     type=rendered_type,
                     type_is=kind,
                     uid=f"c_class_{impl_snake}_method_{snake_name(name.removeprefix(impl_output.c_symbol + '_'))}_argument_{snake_name(arg_name)}",
+                    **extra,
                 )
             else:
                 text_element(method, "c_argument", type="void", accessed_by="value")
@@ -4132,7 +4144,7 @@ def _render_impl_method(
         extra = {}
         if return_is_const:
             extra["is_const_type"] = "1"
-        text_element(method, "c_return", accessed_by="value", type=rendered_type, type_is=kind, **extra)
+        text_element(method, "c_return", accessed_by=return_accessed_by, type=rendered_type, type_is=kind, **extra)
     elif return_class:
         if return_class == "self_impl":
             type_sym = struct_type
@@ -4254,14 +4266,20 @@ def _render_impl_interface_methods(
                         arg_dict["is_const"] = "1"
                     arg_dict["accessed_by"] = "pointer"
                 elif arg.type_name:
-                    arg_dict["type"] = arg.type_name
-                    arg_dict["accessed_by"] = "value"
+                    resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
+                    arg_dict["type"] = resolved_arg_type
+                    is_pointer = arg.is_reference or arg.is_array
+                    accessed_by = "pointer" if is_pointer else "value"
+                    arg_dict["accessed_by"] = accessed_by
+                    if is_pointer and arg.access in ("readonly", None) and not arg.is_array:
+                        arg_dict["is_const"] = "1"
                 args.append(arg_dict)
 
             # Return type
             ret_type = None
             ret_class = None
             ret_is_const = False
+            ret_accessed_by = "value"
             attrs_list: tuple[str, ...] = ()
             if method.returns:
                 ret = method.returns[0]
@@ -4274,7 +4292,12 @@ def _render_impl_interface_methods(
                 elif ret.class_name:
                     ret_class = ret.class_name
                 elif ret.type_name:
-                    ret_type = ret.type_name
+                    resolved_ret_type, _ = type_map(ret.type_name, getattr(ret, 'type_size', None))
+                    ret_type = resolved_ret_type
+                    if ret.is_reference:
+                        ret_accessed_by = "pointer"
+                        if ret.access == "readonly":
+                            ret_is_const = True
 
             # Check for NODISCARD / status return
             if method.returns and method.returns[0].enum_name == "status":
@@ -4292,6 +4315,7 @@ def _render_impl_interface_methods(
                 return_type=ret_type,
                 return_class=ret_class,
                 return_is_const=ret_is_const,
+                return_accessed_by=ret_accessed_by,
                 code="//  TODO: This is STUB. Implement me.",
                 code_type="stub",
                 visibility=method_visibility,
@@ -5231,11 +5255,19 @@ def render_implementation_c_module(
             elif arg.enum_name:
                 arg_dict["enum"] = arg.enum_name
             elif arg.type_name:
-                arg_dict["type"] = arg.type_name
+                resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
+                arg_dict["type"] = resolved_arg_type
+                is_pointer = arg.is_reference or arg.is_array
+                accessed_by = "pointer" if is_pointer else "value"
+                arg_dict["accessed_by"] = accessed_by
+                if is_pointer and arg.access in ("readonly", None) and not arg.is_array:
+                    arg_dict["is_const"] = "1"
             args.append(arg_dict)
 
         ret_type = None
         ret_class = None
+        ret_is_const = False
+        ret_accessed_by = "value"
         attrs_list: tuple[str, ...] = ()
         if method.returns:
             ret = method.returns[0]
@@ -5246,7 +5278,12 @@ def render_implementation_c_module(
             elif ret.class_name:
                 ret_class = ret.class_name
             elif ret.type_name:
-                ret_type = ret.type_name
+                resolved_ret_type, _ = type_map(ret.type_name, getattr(ret, 'type_size', None))
+                ret_type = resolved_ret_type
+                if ret.is_reference:
+                    ret_accessed_by = "pointer"
+                    if ret.access == "readonly":
+                        ret_is_const = True
 
         # Check for NODISCARD / status return
         if method.returns and method.returns[0].enum_name == "status":
@@ -5262,6 +5299,8 @@ def render_implementation_c_module(
             arguments=args if args else None,
             return_type=ret_type,
             return_class=ret_class,
+            return_is_const=ret_is_const,
+            return_accessed_by=ret_accessed_by,
             code="//  TODO: This is STUB. Implement me.",
             code_type="stub",
             visibility=method_vis,
@@ -5321,7 +5360,18 @@ def render_implementation_c_module(
     return root
 
 
-def type_map(type_name: str | None) -> tuple[str, str]:
+def type_map(type_name: str | None, type_size: str | None = None) -> tuple[str, str]:
+    # Handle sized integer/unsigned types first
+    if type_name == "integer" and type_size is not None:
+        sized_map = {"1": "int8_t", "2": "int16_t", "4": "int32_t", "8": "int64_t"}
+        if type_size in sized_map:
+            return (sized_map[type_size], "primitive")
+    if type_name == "unsigned" and type_size is not None:
+        sized_map = {"1": "uint8_t", "2": "uint16_t", "4": "uint32_t", "8": "uint64_t"}
+        if type_size in sized_map:
+            return (sized_map[type_size], "primitive")
+    if type_name == "unsigned" and type_size is None:
+        return ("unsigned int", "primitive")
     mapping = {
         "boolean": ("bool", "primitive"),
         "size": ("size_t", "primitive"),
@@ -5422,7 +5472,7 @@ def argument_from_source(
         else:
             rendered_type = f"vscf_{snake_name(enum_name)}_t"
         return text_element(parent, "c_argument", name=arg_name, accessed_by="value", type=rendered_type, type_is="primitive")
-    rendered_type, kind = type_map(attrs.get("type"))
+    rendered_type, kind = type_map(attrs.get("type"), attrs.get("size"))
     extra = {}
     if attrs.get("type") == "byte" and attrs.get("_array") == "given":
         extra["array"] = "given"
@@ -5479,5 +5529,5 @@ def return_from_source(
     if attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"}:
         extra = {"is_const_type": "1"} if attrs.get("access") != "readwrite" else {}
         return text_element(parent, "c_return", accessed_by="pointer", type="byte", type_is="primitive", **extra)
-    rendered_type, kind = type_map(attrs.get("type"))
+    rendered_type, kind = type_map(attrs.get("type"), attrs.get("size"))
     return text_element(parent, "c_return", accessed_by="value", type=rendered_type, type_is=kind)

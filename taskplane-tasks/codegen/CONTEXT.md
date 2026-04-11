@@ -57,7 +57,7 @@ Interface and implementation rendering is now complete. The `project_c_backend.p
 
 The new codegen generates **511 files** for the foundation project (289 `.c` + 222 `.h`). Zero unexpected module skips. The generated output is applied temporarily by build/verify scripts and **never committed** to the branch.
 
-**Build status:** Foundation build has **0 errors** in `alg_info_der_serializer` and `alg_info_der_deserializer` (resolved by CG-048). Remaining errors are in `vscf_asn1rd.c` / `vscf_asn1wr.c` (class modules with pointer/array type mismatches). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
+**Build status:** Foundation build has **0 errors** in `alg_info_der_serializer`, `alg_info_der_deserializer` (CG-048), `vscf_asn1rd`, and `vscf_asn1wr` (CG-052). Remaining error is in `vscf_cipher_alg_info.c` (visibility mismatch — Pattern G). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
 
 **Common build:** ✅ passes cleanly.
 
@@ -119,7 +119,7 @@ Analysis of all differences between the 326 files that exist in both legacy and 
 
 Only mismatches between **generated headers** and **legacy handwritten `.c` files** cause build errors. Pure `.c` file diffs (where both are generated) don't matter since the new codegen `.c` replaces the legacy one.
 
-The previous 24+ errors in `alg_info_der_serializer` / `alg_info_der_deserializer` (patterns F, G, H) are resolved by CG-048. Current build errors are in `vscf_asn1rd` / `vscf_asn1wr` class modules (20+ errors from type mismatches in pointer/array arguments). As more modules are exercised, patterns A, B, D, E will surface additional errors.
+The previous 24+ errors in `alg_info_der_serializer` / `alg_info_der_deserializer` (patterns F, G, H) are resolved by CG-048. The 40+ type mismatch errors in `vscf_asn1rd` / `vscf_asn1wr` are resolved by CG-052 (pointer/array/sized-integer type resolution). Remaining error: `vscf_cipher_alg_info.c` visibility mismatch (Pattern G). As more modules are exercised, patterns A, B, D, E will surface additional errors.
 
 ---
 
@@ -251,7 +251,7 @@ Foundation header parity phase (current):
 Foundation codegen next phase:
 
 - `CG-051` — generate interface dispatch `.c` bodies (Pattern E — 164 functions, ~8 files)
-- `CG-052` — fix `vscf_asn1rd` / `vscf_asn1wr` type mismatches (40+ build errors)
+- `CG-052` — fix `vscf_asn1rd` / `vscf_asn1wr` type mismatches (40+ build errors) ✅
 - `CG-053` — generate `_defs.h` / `_defs.c` files (73 files — struct layouts, size exports)
 - `CG-054` — generate `_internal.h` headers (58 files — lifecycle forward decls, vtable registration) (depends on CG-053)
 
@@ -267,7 +267,7 @@ Future tasks (not yet planned):
 
 ### Active (blocking foundation build)
 
-- **Foundation header parity (CG-049/050):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). Remaining: pattern E (dispatch bodies). Current blocking build errors are in `vscf_asn1rd`/`vscf_asn1wr` class modules (40 errors from pointer/array type mismatches — Pattern E territory).
+- **Foundation header parity (CG-049/050/052):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). CG-052 resolved pointer/array/sized-integer type mismatches in `vscf_asn1rd`/`vscf_asn1wr` (40+ errors → 0). Remaining: pattern E (dispatch bodies), `vscf_cipher_alg_info` visibility mismatch (Pattern G).
 
 ### Resolved
 
