@@ -23,9 +23,9 @@
 ### Step 1: Implement `_internal.h` renderer
 **Status:** 🟨 In Progress
 
-- [ ] Fix constructor `init_ctx_with_X` visibility to use constructor's own visibility (not hardcoded "private") for header declarations
-- [ ] Verify the existing renderer produces correct header output for all implementation types (simple, with constructors, with observers)
-- [ ] Confirm no additional renderer needed — `render_implementation_internal_c_module` already generates both `.h` and `.c` via XML attributes
+- [x] Fix constructor `init_ctx_with_X` visibility to use constructor's own visibility (not hardcoded "private") for header declarations
+- [x] Verify the existing renderer produces correct header output for all implementation types (simple, with constructors, with observers)
+- [x] Confirm no additional renderer needed — `render_implementation_internal_c_module` already generates both `.h` and `.c` via XML attributes
 
 ---
 
