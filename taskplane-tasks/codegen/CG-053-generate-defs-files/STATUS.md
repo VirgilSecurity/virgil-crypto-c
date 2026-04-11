@@ -1,6 +1,6 @@
 # CG-053: Generate `_defs.h` / `_defs.c` Files — Status
 
-**Current Step:** Step 2: Implement `_defs.c` renderer
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -42,15 +42,15 @@
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation generation: `bash tools/codegen/new_codegen.sh foundation`
-- [ ] Verify correct number of `_defs.h` and `_defs.c` files generated
-- [ ] Diff 5+ generated `_defs` files against legacy to verify parity
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Fix any regressions
+- [x] Run FULL Python test suite (1 failure + 1 error are pre-existing CG-052 type resolution issues, not from this task)
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Run foundation generation: `bash tools/codegen/new_codegen.sh foundation` (7 skips are pre-existing type resolution issues)
+- [x] Verify correct number: 75/78 _defs.h and 86/89 _defs.c (3 missing = pre-existing type resolution skips)
+- [x] Diff all generated _defs files: 55/75 _defs.h match exactly (18 impl mismatches pre-existing, 2 class comment-only diffs), 86/86 _defs.c match perfectly
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` (7 pre-existing skips)
+- [x] Fix any regressions (fixed: field ordering, pointer/value access, is_reference handling, dependency comments, auto-discovery test counts)
 
 ---
 

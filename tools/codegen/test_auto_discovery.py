@@ -65,7 +65,18 @@ class TestDiscoverRenderersCommon(unittest.TestCase):
     def test_full_discovery_covers_all_entities(self) -> None:
         """Common project has no interfaces or implementations."""
         renderers = discover_renderers(self.project_ir)
-        total_expected = len(self.project_ir.modules) + len(self.project_ir.classes) + len(self.project_ir.enums)
+        # Classes that are non-value-type with context != 'none' get a defs module
+        class_defs_count = sum(
+            1 for c in self.project_ir.classes
+            if c.attrs.get('is_value_type') not in {'1', 'true'}
+            and c.attrs.get('context', 'public') != 'none'
+        )
+        total_expected = (
+            len(self.project_ir.modules)
+            + len(self.project_ir.classes)
+            + len(self.project_ir.enums)
+            + class_defs_count
+        )
         self.assertEqual(len(renderers), total_expected)
 
     def test_common_has_no_interfaces_or_implementations(self) -> None:
@@ -130,6 +141,17 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
         # Project-global impl infrastructure modules (api, api_private,
         # impl, impl_private) are added when interfaces/implementations exist.
         infra_count = 4 if (self.project_ir.interfaces or self.project_ir.implementations) else 0
+        # Non-value-type classes with context != 'none' get a defs module
+        class_defs_count = sum(
+            1 for c in self.project_ir.classes
+            if c.attrs.get('is_value_type') not in {'1', 'true'}
+            and c.attrs.get('context', 'public') != 'none'
+        )
+        # Classes with internal-scope methods get an internal module
+        class_internal_count = sum(
+            1 for c in self.project_ir.classes
+            if any(m.attrs.get('scope') == 'internal' for m in c.methods)
+        )
         total = (
             len(self.project_ir.modules)
             + len(self.project_ir.classes)
@@ -137,12 +159,10 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
             + len(self.project_ir.interfaces) * 2
             + len(self.project_ir.implementations) * 3
             + infra_count
+            + class_defs_count
+            + class_internal_count
         )
-        # NOTE: Foundation has 3 extra renderers due to class internal modules
-        # (e.g. key_material_rng, error, etc.) that generate *_internal modules.
-        # Allow a small tolerance for now until the discovery formula accounts
-        # for all generated module variants.
-        self.assertAlmostEqual(len(renderers), total, delta=5)
+        self.assertAlmostEqual(len(renderers), total, delta=2)
 
     def test_full_discovery_has_expected_enum_count(self) -> None:
         renderers = discover_renderers(self.project_ir, entity_kinds={"enum"})

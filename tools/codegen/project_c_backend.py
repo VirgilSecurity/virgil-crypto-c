@@ -2791,6 +2791,8 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
             "type_is": "class",
             "accessed_by": "pointer",
         })
+        if attrs.get("access") == "readonly":
+            field_attrs["is_const_type"] = "1"
     elif attrs.get("enum") is not None:
         # Enum property → resolve to the enum type symbol
         enum_name = attrs["enum"]
@@ -2820,17 +2822,40 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
                 "accessed_by": "pointer",
             })
         elif attrs.get("library"):
-            # External library type — use class_name as-is (already a C type)
+            # External library type — use class_name as-is (already a C type).
+            # Default to pointer; only use value when is_reference is explicitly "0".
+            if attrs.get("is_reference") == "0":
+                access = "value"
+            else:
+                access = "pointer"
             field_attrs.update({
                 "type": class_name,
                 "type_is": "class",
-                "accessed_by": "pointer" if attrs.get("is_reference") in {"1", "true"} else "value",
+                "accessed_by": access,
             })
         else:
+            # Non-value-type classes are always accessed by pointer in the struct.
+            # Value-type classes (like data) are accessed by value.
+            is_target_value_type = False
+            try:
+                target_cls_name = cast(str, resolved_class)
+                for c in project_ir.classes:
+                    if c.name == target_cls_name:
+                        is_target_value_type = c.attrs.get("is_value_type") in {"1", "true"}
+                        break
+                # Also check fallback projects (e.g. common classes like buffer)
+                if not is_target_value_type and hasattr(project_ir, 'fallback_projects') and project_ir.fallback_projects:
+                    for fp in project_ir.fallback_projects:
+                        for c in fp.classes:
+                            if c.name == target_cls_name:
+                                is_target_value_type = c.attrs.get("is_value_type") in {"1", "true"}
+                                break
+            except (KeyError, ValueError):
+                pass
             field_attrs.update({
                 "type": class_type_symbol(project_ir, cast(str, resolved_class)),
                 "type_is": "class",
-                "accessed_by": "pointer" if attrs.get("is_reference") in {"1", "true"} else "value",
+                "accessed_by": "value" if is_target_value_type else "pointer",
             })
     elif callback is not None:
         field_attrs.update({
@@ -3953,7 +3978,7 @@ def render_implementation_defs_c_module(
             type_is="class",
             uid=dep_uid,
         )
-        dep_elem.text = comment_text(dep.description or f"Dependency '{dep.name}'.")
+        dep_elem.text = comment_text(dep.description or f"Dependency to the {dep.type_kind} '{dep.type_name}'.")
 
     struct_elem.text = (struct_elem.text or "") + "\n" + doc_comment(
         "Handles implementation details."
@@ -4080,8 +4105,16 @@ def render_class_defs_c_module(
         )
         refcnt_prop.text = comment_text("Reference counter.")
 
-    # Class struct fields
-    for field in cls.struct_fields:
+    # Render struct fields and dependencies in XML source order
+    def _render_field(field: 'IRCStructField') -> None:
+        # For library types, we need to distinguish "is_reference not set"
+        # (defaults to pointer) from "is_reference=0" (explicitly value).
+        if field.is_reference:
+            is_ref_attrs = {"is_reference": "1"}
+        elif field.is_reference_explicit:
+            is_ref_attrs = {"is_reference": "0"}
+        else:
+            is_ref_attrs = {}
         field_spec = ClassFieldSpec(
             name=field.name,
             attrs={
@@ -4089,7 +4122,7 @@ def render_class_defs_c_module(
                 **({"callback": field.callback} if field.callback is not None else {}),
                 **({"type": field.type_name} if field.type_name is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
-                **({"is_reference": "1"} if field.is_reference else {}),
+                **is_ref_attrs,
                 **({"array": "given"} if field.is_array else {}),
                 **({"library": field.library} if field.library is not None else {}),
                 **({"interface": field.interface_name} if field.interface_name is not None else {}),
@@ -4099,8 +4132,7 @@ def render_class_defs_c_module(
         )
         _render_class_property(struct_elem, field_spec, project_ir=project_ir, owner_class=cls.name)
 
-    # Dependency fields
-    for dep in cls.dependencies:
+    def _render_dep(dep: 'IRDependency') -> None:
         dep_type = _dependency_type_symbol(project_ir, dep)
         dep_field_name = snake_name(dep.name)
         dep_uid = f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}_property_{dep_field_name}"
@@ -4114,6 +4146,19 @@ def render_class_defs_c_module(
             uid=dep_uid,
         )
         dep_elem.text = comment_text(f"Dependency to the {dep.type_kind} '{dep.type_name}'.")
+
+    if cls.struct_members_order:
+        for kind, idx in cls.struct_members_order:
+            if kind == 'field' and idx < len(cls.struct_fields):
+                _render_field(cls.struct_fields[idx])
+            elif kind == 'dep' and idx < len(cls.dependencies):
+                _render_dep(cls.dependencies[idx])
+    else:
+        # Fallback: fields then dependencies
+        for field in cls.struct_fields:
+            _render_field(field)
+        for dep in cls.dependencies:
+            _render_dep(dep)
 
     struct_elem.text = (struct_elem.text or "") + "\n" + doc_comment(
         f"Handle '{cls.name}' context."
