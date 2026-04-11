@@ -1,6 +1,6 @@
 # CG-049: Systematic Header Parity — Status
 
-**Current Step:** Step 1: Fix VSCF_NODISCARD emission
+**Current Step:** Step 2: Fix const qualifier parity
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -27,13 +27,11 @@
 - [x] Verified against legacy headers (sha256 exact match, ecc/aes256_gcm NODISCARD correct, 134 vs 176 legacy)
 
 ### Step 2: Fix const qualifier parity (Pattern F)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on const rules discovered in Step 0
-
-- [ ] Const rules identified from model/legacy comparison
-- [ ] Parameter const qualifiers fixed
-- [ ] Return type const qualifiers fixed
+- [ ] Fix class_name (impl) args: default access=None to readonly (const) in interface method impl path
+- [ ] Fix class_name (impl) args: default access=None to readonly (const) in impl own methods path
+- [ ] Verify const parity against legacy for key_alg, ecc headers
 
 ### Step 3: Fix visibility parity (Pattern G)
 **Status:** ⬜ Not Started
