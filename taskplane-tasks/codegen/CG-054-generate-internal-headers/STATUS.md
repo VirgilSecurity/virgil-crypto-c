@@ -21,16 +21,11 @@
 ---
 
 ### Step 1: Implement `_internal.h` renderer
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Add a `_internal.h` renderer in `project_c_backend.py`
-- [ ] Generate `init_ctx` / `cleanup_ctx` forward declarations
-- [ ] Generate constructor forward declarations (`init_ctx_with_X`) if implementation has constructors
-- [ ] Generate vtable registration function declarations for each implemented interface
-- [ ] Generate `did_setup_*` / `did_release_*` declarations for dependencies with observers
-- [ ] Handle includes (`_defs.h`, interface API headers)
-- [ ] Handle header guards and generated block markers
-- [ ] Wire into implementation module output and auto-discovery
+- [ ] Fix constructor `init_ctx_with_X` visibility to use constructor's own visibility (not hardcoded "private") for header declarations
+- [ ] Verify the existing renderer produces correct header output for all implementation types (simple, with constructors, with observers)
+- [ ] Confirm no additional renderer needed — `render_implementation_internal_c_module` already generates both `.h` and `.c` via XML attributes
 
 ---
 
