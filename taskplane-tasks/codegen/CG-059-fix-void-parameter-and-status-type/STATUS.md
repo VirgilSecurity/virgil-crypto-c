@@ -1,6 +1,6 @@
 # CG-059: Fix Bare `void` Parameter and Unresolved `status` Type — Status
 
-**Current Step:** Step 1: Fix bare void parameter resolution
+**Current Step:** Step 2: Fix bare status return type
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -21,11 +21,11 @@
 ---
 
 ### Step 1: Fix bare `void` parameter resolution
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Fix enum parameter type resolution in interface method rendering
-- [ ] Verify `sign_hash` and `verify_hash` declarations across all 6 affected implementations
-- [ ] Check for similar issues in other interface methods with enum parameters
+- [x] Fix enum parameter type resolution in interface method rendering
+- [x] Verify `sign_hash` and `verify_hash` declarations across all 6 affected implementations
+- [x] Check for similar issues in other interface methods with enum parameters
 
 ---
 

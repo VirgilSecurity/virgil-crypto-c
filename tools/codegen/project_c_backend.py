@@ -5022,6 +5022,10 @@ def _render_impl_interface_methods(
                     if arg.access in ("readonly", None):
                         arg_dict["is_const"] = "1"
                     arg_dict["accessed_by"] = "pointer"
+                elif arg.enum_name:
+                    # Enum-typed arguments — resolve to project-prefixed enum type
+                    arg_dict["enum"] = arg.enum_name
+                    arg_dict["accessed_by"] = "value"
                 elif arg.type_name:
                     resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
                     arg_dict["type"] = resolved_arg_type
