@@ -3238,8 +3238,6 @@ def _build_impl_ctor_args(
         arg_dict: dict[str, str] = {"name": arg_name}
         if arg.class_name:
             arg_dict["class"] = arg.class_name
-            if arg.access == "readonly":
-                arg_dict["is_const"] = "1"
             is_value = False
             for fp in (fallback_projects or []):
                 try:
@@ -3261,9 +3259,11 @@ def _build_impl_ctor_args(
                 arg_dict["name"] = f"{arg_name}_ref"
             else:
                 arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                if not is_value:
+                    arg_dict["is_const"] = "1"
         elif arg.interface_name:
             arg_dict["class"] = "impl"
-            if arg.access == "readonly":
+            if arg.access != "disown":
                 arg_dict["is_const"] = "1"
             if arg.access == "disown":
                 arg_dict["accessed_by"] = "reference"
@@ -5021,6 +5021,10 @@ def render_implementation_internal_c_module(
         )
 
     # --- init_ctx_with_X stubs (one per constructor) ---
+    # These stubs are forward declarations for functions defined in the
+    # handwritten .c file.  The handwritten definitions use VSCF_PUBLIC,
+    # so the forward declarations must also use visibility="public" to
+    # match (regardless of the constructor's own visibility).
     for ctor in impl.constructors:
         ctor_suffix = snake_name(ctor.name)
         ctor_ctx_args = [{"name": "self", "is_self": "1"}, *_build_impl_ctor_args(ctor, project_ir, fallback_projects)]
@@ -5033,7 +5037,7 @@ def render_implementation_internal_c_module(
             arguments=ctor_ctx_args,
             code="//  TODO: This is STUB. Implement me.",
             code_type="stub",
-            visibility="private",
+            visibility="public",
             declaration="public",
             definition="external",
             fallback_projects=fallback_projects,
