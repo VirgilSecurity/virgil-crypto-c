@@ -27,13 +27,13 @@
 - [x] Verify targeted: run `new_codegen.sh --verify foundation` and confirm errors reduced (alg_info_der errors eliminated, new errors in asn1rd/asn1wr are different modules - out of scope)
 
 ### Step 2: Testing & Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Python test suite passing (159+ tests)
-- [ ] Common build gate passes
-- [ ] Foundation build: 0 errors in target modules
-- [ ] Remaining errors in other modules documented
-- [ ] No regressions
+- [x] Python test suite passing (159+ tests)
+- [x] Common build gate passes
+- [x] Foundation build: 0 errors in target modules
+- [x] Remaining errors in other modules documented
+- [x] No regressions
 
 ### Step 3: Documentation & Delivery
 **Status:** ⬜ Not Started
@@ -52,6 +52,8 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| vscf_asn1rd.c / vscf_asn1wr.c: 20+ type errors from pointer/array type mismatches in class methods | Out of scope — class module type resolution issue | tools/codegen/project_c_backend.py |
+| _internal.h now generated for all implementations due to path fix (58 files that were previously not generated) | Beneficial side effect — resolves pattern H from CONTEXT.md | tools/codegen/project_c_backend.py:implementation_internal_output |
 
 ## Execution Log
 
