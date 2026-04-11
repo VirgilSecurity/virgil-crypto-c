@@ -1,6 +1,6 @@
 # CG-052: Fix `vscf_asn1rd` / `vscf_asn1wr` Type Mismatches — Status
 
-**Current Step:** Step 1: Fix type resolution
+**Current Step:** Step 2: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -33,14 +33,14 @@
 ---
 
 ### Step 2: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Confirm `vscf_asn1rd.c` and `vscf_asn1wr.c` compile with 0 errors
-- [ ] Diff generated `_defs.h` against legacy to verify struct parity
-- [ ] Document any remaining errors (different modules) as discoveries — do NOT expand scope
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"` — 159 tests OK
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh` — passes
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` — asn1rd/asn1wr compile clean
+- [x] Confirm `vscf_asn1rd.c` and `vscf_asn1wr.c` compile with 0 errors
+- [x] Diff generated `_defs.h` against legacy to verify struct parity — both match exactly
+- [x] Document any remaining errors (different modules) as discoveries — do NOT expand scope
 
 ---
 
@@ -70,6 +70,9 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `vscf_cipher_alg_info.c` visibility mismatch (VSCF_PUBLIC vs VSCF_PRIVATE for `cleanup_ctx`) | Out of scope — pre-existing Pattern G issue | `library/foundation/src/vscf_cipher_alg_info.c:103` |
+| `aes256_gcm_defs.h` fixed-length array properties render as `byte *` instead of `byte key[N]` | Out of scope — pre-existing defs rendering issue | `vscf_aes256_gcm_defs.h` |
+| `size` attribute on `integer`/`unsigned` types also used by `group_session`, `group_session_epoch`, `group_session_message`, `group_session_ticket` models | Fixed by this task (type_map now handles sized types globally) | `codegen/models/project_foundation/class_group_session*.xml` |
 
 ---
 
