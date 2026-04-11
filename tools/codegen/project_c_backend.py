@@ -984,7 +984,8 @@ def collect_umbrella_includes(
         # Defs module — always private
         is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
         context = cls.attrs.get("context", "public")
-        if not is_value_type and context != "none" and cls_scope != "internal":
+        has_lifecycle = cls.attrs.get("lifecycle") != "none"
+        if not is_value_type and context != "none" and cls_scope != "internal" and has_lifecycle:
             private_includes.add(class_defs_output(cls.output).include_file)
         # Internal module — for classes with internal-scope methods
         has_internal = any(m.attrs.get("scope") == "internal" for m in cls.methods)
@@ -1223,7 +1224,8 @@ def discover_renderers(
             # Defs module for non-value-type classes with a struct context
             is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
             context = cls.attrs.get("context", "public")
-            if not is_value_type and context != "none":
+            has_lifecycle = cls.attrs.get("lifecycle") != "none"
+            if not is_value_type and context != "none" and has_lifecycle:
                 defs_out = class_defs_output(cast(IROutputTarget, cls.output))
                 defs_xml = direct_xml_name(defs_out)
                 if defs_xml in overrides:
@@ -2830,6 +2832,7 @@ def render_class_c_module(
 ) -> ET.Element:
     class_output = cast(IROutputTarget, cls.output) if output is None else output
     is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+    has_lifecycle = cls.attrs.get("lifecycle") != "none"
     root = c_module_root(
         class_output,
         entity_id=entity_id or snake_name(cls.name),
@@ -2856,13 +2859,16 @@ def render_class_c_module(
     for include in resolved_public_includes:
         text_element(root, "c_include", file=include, is_system="0", scope="public")
 
+    # Classes with lifecycle="none" define their struct in the public header (like value types)
+    inline_struct = is_value_type or not has_lifecycle
+
     struct = text_element(
         root,
         "c_struct",
         name=class_type_symbol(project_ir, cls.name),
         visibility="public",
-        declaration=struct_declaration or ("public" if is_value_type else "public"),
-        definition=struct_definition or ("public" if is_value_type else "external"),
+        declaration=struct_declaration or "public",
+        definition=struct_definition or ("public" if inline_struct else "external"),
         uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}",
     )
     struct.text = comment_text(f"Handle '{cls.name}' context.")
@@ -2872,6 +2878,7 @@ def render_class_c_module(
             ClassFieldSpec(name=field.name, attrs={
                 **({"class": field.class_name} if field.class_name is not None else {}),
                 **({"callback": field.callback} if field.callback is not None else {}),
+                **({"enum": field.enum_name} if field.enum_name is not None else {}),
                 **({"type": field.type_name} if field.type_name is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
                 **({"is_reference": "1"} if field.is_reference else {}),
@@ -2884,6 +2891,7 @@ def render_class_c_module(
             ClassFieldSpec(name=field.name, attrs={
                 **({"class": field.class_name} if field.class_name is not None else {}),
                 **({"callback": field.callback} if field.callback is not None else {}),
+                **({"enum": field.enum_name} if field.enum_name is not None else {}),
                 **({"type": field.type_name} if field.type_name is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
                 **({"is_reference": "1"} if field.is_reference else {}),
@@ -2892,7 +2900,7 @@ def render_class_c_module(
             for field in cls.struct_fields
         ]]
 
-    if is_value_type or extra_struct_fields:
+    if inline_struct or extra_struct_fields:
         for field_spec in field_specs:
             _render_class_property(struct, field_spec, project_ir=project_ir, owner_class=cls.name)
 
@@ -2934,7 +2942,7 @@ def render_class_c_module(
                 project_ir=project_ir,
                 uid=f"direct_{snake_name(cls.name)}_ctor_{snake_name(ctor.name)}",
             )
-    elif render_reference_support:
+    elif render_reference_support and has_lifecycle:
         _render_reference_class_support(
             root,
             project_ir=project_ir,
@@ -5738,6 +5746,11 @@ def render_implementation_c_module(
             desc = const.description or iface_descs.get(const.name, "")
             all_constants.append((const_symbol, const.value, desc))
 
+    # Own implementation constants (e.g. RESEED_INTERVAL, ENTROPY_LEN)
+    for const in impl.constants:
+        const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
+        all_constants.append((const_symbol, const.attrs.get("value", ""), const.description))
+
     if all_constants:
         enum_elem = text_element(
             root,
@@ -6216,6 +6229,18 @@ def argument_from_source(
             accessed_by = "value"
         elif attrs.get("library") and attrs.get("class") != "self":
             accessed_by = "pointer"
+        elif attrs.get("class") != "self" and project_ir is not None:
+            # Non-self class argument: check if target class is a value type
+            target_is_value_type = False
+            for pir in [project_ir, *getattr(project_ir, 'fallback_projects', [])]:
+                try:
+                    target_cls = class_ir(pir, resolved_class_str)
+                    target_is_value_type = target_cls.attrs.get("is_value_type") in {"1", "true"}
+                    break
+                except (KeyError, ValueError):
+                    pass
+            if not target_is_value_type:
+                accessed_by = "pointer"
         return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("callback") is not None:
         callback_type = callback_symbol(project_ir, callback_name_from_ref(attrs.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"

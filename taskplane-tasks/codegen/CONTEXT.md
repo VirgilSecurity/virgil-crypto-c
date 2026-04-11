@@ -53,11 +53,11 @@ Interface and implementation rendering is now complete. The `project_c_backend.p
 - Implementation constructors (`init_with_X`, `new_with_X`, `init_ctx_with_X`)
 - Synthetic `impl/tag` enum from the set of all implementations
 
-### Foundation Codegen Status (as of CG-059)
+### Foundation Codegen Status (as of CG-060)
 
 The new codegen generates **639+ files** for the foundation project (including newly-added `_private.h` modules). Zero unexpected module skips. The generated output is applied temporarily by build/verify scripts and **never committed** to the branch.
 
-**Build status:** Foundation build has pre-existing errors (`vscf_error_t` incomplete type in `compound_key_alg.c`, `compound_key_alg_info` conflicting types — not codegen-related). **CG-059** fixed two type resolution bugs: (1) bare `void` in enum-typed interface method parameters (`sign_hash`/`verify_hash` across 6 implementations), and (2) bare `status` instead of `vscf_status_t` in dependency use/take methods (`ctr_drbg`). Zero bare-void and zero bare-status errors remaining. HKDF `extract`/`expand` methods now correctly route to the private header (`vscf_hkdf_private.h`). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
+**Build status:** **CG-060** fixed `vscf_error_t` incomplete type errors: (1) classes with `lifecycle="none"` now define their struct inline in the public header (not in `_defs.h`), (2) lifecycle methods (init/cleanup/new/delete) are suppressed for these classes, (3) implementation-level constants (`<constant>` in `<implementation>`) are now parsed and rendered as enum constants, (4) non-value-type class arguments now correctly use pointer access (fixing `vscf_error_t` being passed by value). Zero incomplete-type errors remaining. 5 pre-existing "conflicting types" errors remain (missing `const` in return types for compound_key_alg_info/compound_private_key methods — not related to CG-060). **CG-059** fixed two type resolution bugs: (1) bare `void` in enum-typed interface method parameters (`sign_hash`/`verify_hash` across 6 implementations), and (2) bare `status` instead of `vscf_status_t` in dependency use/take methods (`ctr_drbg`). Zero bare-void and zero bare-status errors remaining. HKDF `extract`/`expand` methods now correctly route to the private header (`vscf_hkdf_private.h`). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
 
 **Common build:** ✅ passes cleanly.
 
@@ -262,6 +262,7 @@ Foundation remaining-files phase:
 - `CG-057` — generate umbrella and support headers (10 files, mix of generated and handwritten)
 - `CG-058` — fix HKDF visibility gap + final parity sweep (depends on CG-055, CG-056, CG-057) ✅
 - `CG-059` — fix bare `void` parameter (enum-typed interface args) and bare `status` return type (dependency methods) ✅
+- `CG-060` — fix `vscf_error_t` struct definition, suppress lifecycle for `lifecycle="none"` classes, add implementation constants, fix non-value-type class argument passing ✅
 
 Future tasks (not yet planned):
 

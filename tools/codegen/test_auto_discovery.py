@@ -144,11 +144,12 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
         # Project-global impl infrastructure modules (api, api_private,
         # impl, impl_private) are added when interfaces/implementations exist.
         infra_count = 4 if (self.project_ir.interfaces or self.project_ir.implementations) else 0
-        # Non-value-type classes with context != 'none' get a defs module
+        # Non-value-type classes with context != 'none' and lifecycle != 'none' get a defs module
         class_defs_count = sum(
             1 for c in self.project_ir.classes
             if c.attrs.get('is_value_type') not in {'1', 'true'}
             and c.attrs.get('context', 'public') != 'none'
+            and c.attrs.get('lifecycle') != 'none'
         )
         # Classes with internal-scope methods get an internal module
         class_internal_count = sum(
