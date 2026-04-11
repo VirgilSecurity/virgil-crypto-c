@@ -317,9 +317,14 @@ def build_output_target(project: ProjectSource, *, entity_kind: str, entity_name
     source_root = PurePosixPath(project.attrs.get("path", ""))
     work_root = PurePosixPath(project.attrs.get("work_path", ""))
 
-    header_visibility = "private" if attrs.get("scope") == "private" else "public"
-    include_dir = include_namespace / ("private" if header_visibility == "private" else "")
-    header_path = str(source_root / "include" / include_dir / f"{stem}.h")
+    scope = attrs.get("scope", "")
+    header_visibility = "private" if scope == "private" else "internal" if scope == "internal" else "public"
+    if scope == "internal":
+        # Internal-scope entities have their header in src/ alongside the implementation
+        header_path = str(source_root / "src" / f"{stem}.h")
+    else:
+        include_dir = include_namespace / ("private" if header_visibility == "private" else "")
+        header_path = str(source_root / "include" / include_dir / f"{stem}.h")
     source_path = str(source_root / "src" / f"{stem}.c")
     entity_slug = _snake(entity_name)
     c_artifact_kind = "module"
