@@ -3238,8 +3238,6 @@ def _build_impl_ctor_args(
         arg_dict: dict[str, str] = {"name": arg_name}
         if arg.class_name:
             arg_dict["class"] = arg.class_name
-            if arg.access == "readonly":
-                arg_dict["is_const"] = "1"
             is_value = False
             for fp in (fallback_projects or []):
                 try:
@@ -3261,9 +3259,11 @@ def _build_impl_ctor_args(
                 arg_dict["name"] = f"{arg_name}_ref"
             else:
                 arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                if not is_value:
+                    arg_dict["is_const"] = "1"
         elif arg.interface_name:
             arg_dict["class"] = "impl"
-            if arg.access == "readonly":
+            if arg.access != "disown":
                 arg_dict["is_const"] = "1"
             if arg.access == "disown":
                 arg_dict["accessed_by"] = "reference"
