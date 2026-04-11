@@ -3380,6 +3380,7 @@ def _render_dependency_methods(
     project_ir: IRProject,
     cls: IRClass | IRImplementation,
     entity_kind: str = "class",
+    skip_observers: bool = False,
 ) -> None:
     """Render use/take/release methods for each class/implementation dependency.
 
@@ -3394,7 +3395,7 @@ def _render_dependency_methods(
         dep_type = _dependency_type_symbol(project_ir, dep)
 
         # --- Observer hooks (rendered before use/take/release so forward decls work) ---
-        if dep.has_observers:
+        if dep.has_observers and not skip_observers:
             # did_setup
             did_setup_name = f"{class_symbol}_did_setup_{dep_field}"
             did_setup_return: dict[str, str] | None = {"type": "void"}
@@ -4351,6 +4352,54 @@ def render_implementation_internal_c_module(
             root, binding.name, project_ir=project_ir, seen=seen_iface_includes,
         )
 
+    # --- did_setup / did_release forward declarations (Pattern D) ---
+    # These are forward declarations for observer hooks whose definitions
+    # live in the handwritten .c file.
+    for dep in impl.dependencies:
+        if not dep.has_observers:
+            continue
+        dep_field = snake_name(dep.name)
+        # did_setup
+        did_setup_name = f"{impl_output.c_symbol}_did_setup_{dep_field}"
+        did_setup_method = text_element(
+            root,
+            "c_method",
+            name=did_setup_name,
+            visibility="private",
+            declaration="private",
+            definition="external",
+            uid=f"c_class_{impl_snake}_method_did_setup_{dep_field}",
+        )
+        text_element(did_setup_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+        if dep.is_observers_return_status:
+            try:
+                enum_out = entity_output(project_ir, entity_kind="enum", entity_name="status")
+                rendered_type = f"{enum_out.c_symbol}_t"
+            except (KeyError, ValueError):
+                rendered_type = f"{prefix}_status_t"
+            text_element(did_setup_method, "c_return", accessed_by="value", type=rendered_type, type_is="primitive")
+            text_element(did_setup_method, "c_attribute", value=f"{prefix_upper}_NODISCARD")
+        else:
+            text_element(did_setup_method, "c_return", accessed_by="value", type="void")
+        text_element(did_setup_method, "c_modifier", value=f"{prefix_upper}_PRIVATE")
+        did_setup_method.text = comment_text(f"This method is called when {dep.type_kind} '{dep.type_name}' was setup.")
+
+        # did_release
+        did_release_name = f"{impl_output.c_symbol}_did_release_{dep_field}"
+        did_release_method = text_element(
+            root,
+            "c_method",
+            name=did_release_name,
+            visibility="private",
+            declaration="private",
+            definition="external",
+            uid=f"c_class_{impl_snake}_method_did_release_{dep_field}",
+        )
+        text_element(did_release_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+        text_element(did_release_method, "c_return", accessed_by="value", type="void")
+        text_element(did_release_method, "c_modifier", value=f"{prefix_upper}_PRIVATE")
+        did_release_method.text = comment_text(f"This method is called when {dep.type_kind} '{dep.type_name}' was released.")
+
     # --- API table variables (one per bound interface) ---
     api_var_names: list[tuple[str, str]] = []  # (iface_name, var_name)
     for binding in impl.interface_bindings:
@@ -5065,7 +5114,7 @@ def render_implementation_c_module(
 
     # --- Dependency management methods: use/take/release ---
     if impl.dependencies:
-        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation")
+        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation", skip_observers=True)
 
     # --- Constructor methods (init_with_X, new_with_X) ---
     for ctor in impl.constructors:

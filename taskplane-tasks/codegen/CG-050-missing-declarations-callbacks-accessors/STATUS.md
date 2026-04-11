@@ -27,12 +27,12 @@
 - [x] Run targeted tests (30 tests passing)
 
 ### Step 2: Add did_setup/did_release callback declarations (Pattern D)
-**Status:** 🟨 In Progress
+**Status:** ✅ Done
 
-- [ ] Add forward declarations in internal module for impl deps with has_observers
-- [ ] Add forward declarations in internal module for class deps with has_observers
-- [ ] Remove static stubs from main module (already called from use/take/release in main module — keep forward decl in internal only)
-- [ ] Run targeted tests
+- [x] Add forward declarations in internal module for impl deps with has_observers
+- [x] Class deps keep observer hooks in class module (correct for classes, no _internal.c separation)
+- [x] Skip observer static stubs from main implementation module (skip_observers=True)
+- [x] Run targeted tests (30 impl + 13 class_dep tests passing)
 
 ### Step 3: Add init_ctx/cleanup_ctx declarations (Pattern H)
 **Status:** ⬜ Not Started
