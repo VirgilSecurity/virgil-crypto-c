@@ -106,13 +106,13 @@ Analysis of all differences between the 326 files that exist in both legacy and 
 
 | Pattern | Occurrences | Build Impact | Description |
 |---------|-------------|--------------|-------------|
-| **A: `VSCF_NODISCARD` missing** | 190 | ⚠️ May cause warnings; errors with strict flags | New codegen doesn't emit `VSCF_NODISCARD` on functions returning `vscf_status_t`. Legacy has it on ~190 declarations. |
+| **A: `VSCF_NODISCARD` missing** | 190 | ✅ Resolved (CG-049) | Fixed: NODISCARD now emitted as `c_attribute` after closing paren for all status-returning methods (interface dispatch, impl interface methods, impl own methods, dependency methods). 134 of 176 legacy occurrences now matched; gap is from missing `_api()` functions (Pattern B). |
 | **B: Missing `_api(void)` accessor functions** | 16 | ❌ Link errors if called | Legacy headers declare `vscf_*_cipher_info_api(void)`, `vscf_*_cipher_auth_info_api(void)` etc. New codegen omits these. |
 | **C: `(void(*)(void))` vtable casts** | 579 | ✅ None — new codegen is correct | New codegen wraps vtable function pointer casts with `(void(*)(void))` intermediary to suppress `-Wcast-function-type-mismatch`. Legacy casts directly. **New codegen is correct here.** |
 | **D: Missing `did_setup`/`did_release` callbacks** | 55 | ❌ Compile errors in `_internal.c` | Dependency injection callbacks (`did_setup_random`, `did_release_random`, etc.) declared in legacy internal headers but not emitted by new codegen. |
 | **E: Missing interface dispatch function bodies** | 164 | ❌ Link errors | Legacy `.c` files contain full dispatch function implementations (e.g., `vscf_key_alg_import_public_key()` dispatches to `key_alg_api->import_public_key_cb()`). New codegen doesn't generate these `.c` bodies. |
-| **F: Const qualifier mismatches** | ~1488 lines | ❌ Compile errors | Generated declarations use different `const` qualifiers than legacy handwritten code. E.g., `const vscf_impl_t *` in header vs `vscf_impl_t *` in `.c`, or vice versa. |
-| **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ❌ Compile errors | Generated headers declare functions with different visibility than legacy `.c` definitions. |
+| **F: Const qualifier mismatches** | ~1488 lines | ✅ Largely resolved (CG-049) | Fixed: default access for class/impl/interface args without explicit access now matches legacy GSL defaults (readonly for most, writeonly for buffer args). Value types (data) don't get spurious `const`. Remaining minor gaps from missing methods. |
+| **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ✅ Largely resolved (CG-049) | Fixed: class methods and constructors with `visibility="private"` now emit `VSCF_PRIVATE`. Interface dispatch methods with `visibility="private"` emit `VSCF_PRIVATE`. `_render_ir_method` respects visibility parameter. 1 known remaining gap: `scope="private"` impl own methods appearing in wrong header (hkdf extract/expand). |
 | **H: Missing `init_ctx`/`cleanup_ctx` declarations** | 8 | ✅ Resolved (CG-048) | Fixed by correcting `_internal.h` output path from `include/private/` to `src/` to match legacy layout. Now generated for all implementations. |
 
 ### What Causes Actual Build Errors
@@ -263,7 +263,7 @@ Future tasks (see [Foundation Diff Analysis](#foundation-diff-analysis) for cont
 
 ### Active (blocking foundation build)
 
-- **Foundation header parity (CG-049/050):** CG-048 resolved patterns F, G, H for the `alg_info_der_*` modules. Remaining: visibility/const/NODISCARD mismatches in other modules, plus `did_setup`/`did_release` declarations. See [Diff Patterns](#diff-patterns-in-generated-files-326-files-differ). Current blocking errors are in `vscf_asn1rd`/`vscf_asn1wr` class modules (pointer/array type mismatches).
+- **Foundation header parity (CG-049/050):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. Remaining: patterns B (missing `_api()` functions), D (`did_setup`/`did_release`), E (dispatch bodies). Current blocking build errors are in `vscf_asn1rd`/`vscf_asn1wr` class modules (20 errors from pointer/array type mismatches — Pattern B/D territory).
 
 ### Resolved
 
