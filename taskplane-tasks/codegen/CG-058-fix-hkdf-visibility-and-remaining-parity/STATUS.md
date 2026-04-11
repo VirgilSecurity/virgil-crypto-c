@@ -21,9 +21,12 @@
 ---
 
 ### Step 1: Fix HKDF visibility routing
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Fix `project_c_backend.py` to route `scope="private"` impl methods to private header
+- [ ] Add `implementation_private_output()` helper (derives `_private` output target under `private/` include dir)
+- [ ] Create `render_implementation_private_c_module()` for scope="private" methods with declaration="public"
+- [ ] In `render_implementation_c_module()`, skip scope="private" methods (they go to private module)
+- [ ] Register private module renderer in `_discover_renderers()` (only when impl has private methods)
 - [ ] Verify `vscf_hkdf_extract` and `vscf_hkdf_expand` appear in private header, not public
 - [ ] Check if any other implementations have the same pattern
 
