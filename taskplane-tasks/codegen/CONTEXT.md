@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-10
 **Status:** Active
-**Next Task ID:** CG-051
+**Next Task ID:** CG-055
 
 > **Note:** CG-034 was merged into CG-033. Task IDs CG-034 is retired.
 
@@ -248,11 +248,15 @@ Foundation header parity phase (current):
 - `CG-049` — systematic header parity: `VSCF_NODISCARD`, visibility, const qualifiers (patterns A, F, G — ~190+ declarations)
 - `CG-050` — missing declarations: `did_setup`/`did_release`, `init_ctx`/`cleanup_ctx`, `_api()` accessors (patterns B, D, H — ~79 occurrences)
 
-Future tasks (see [Foundation Diff Analysis](#foundation-diff-analysis) for context):
+Foundation codegen next phase:
 
-- Generate `_internal.h` headers (58 files) — forward declarations for lifecycle, vtable registration
-- Generate `_defs.h` / `_defs.c` (73 files) — struct layout definitions and size exports
-- Generate interface dispatch `.c` bodies (pattern E — 164 missing function implementations across ~8 dispatch files)
+- `CG-051` — generate interface dispatch `.c` bodies (Pattern E — 164 functions, ~8 files)
+- `CG-052` — fix `vscf_asn1rd` / `vscf_asn1wr` type mismatches (40+ build errors)
+- `CG-053` — generate `_defs.h` / `_defs.c` files (73 files — struct layouts, size exports)
+- `CG-054` — generate `_internal.h` headers (58 files — lifecycle forward decls, vtable registration) (depends on CG-053)
+
+Future tasks (not yet planned):
+
 - Generate missing `_internal.c` for 4 modules (`ec_alg_info`, `ecies`, `padding_cipher`, `pkcs8_der_serializer`)
 - Generate build system files (`CMakeLists.txt`, `sources.cmake`, etc.) — 6 files
 - Generate private umbrella / support headers (10 files, partially handwritten)
