@@ -93,7 +93,7 @@ Full comparison of new codegen output (`build/new-codegen/library/foundation/`) 
 | **`_defs.h`** (struct definition headers, in `private/`) | 37 | ✅ Yes | Private struct layout definitions (e.g. `vscf_sha256_defs.h`). Referenced by internal code. |
 | **`_defs.c`** (struct definition source) | 36 | ✅ Yes | Struct size/alignment exports, compile-time assertions. |
 | **`_internal.c`** (4 special modules) | 4 | ✅ Yes | `ec_alg_info`, `ecies`, `padding_cipher`, `pkcs8_der_serializer` — internal wiring not yet generated. |
-| **API dispatch source** (interface `.c` bodies) | 8 | ✅ Yes | `generate_key.c`, `sign_hash.c`, `verify_hash.c`, `mac_info.c`, `mac_stream.c`, `generate_ephemeral_key.c`, `defaults.c`, `defaults_api.c` — interface dispatch function implementations. |
+| **API dispatch source** (interface `.c` bodies) | ~30 | ✅ Yes (CG-051) | All interface dispatch `.c` files now generated. Changed `c_code` type from `stub` to `generated` so bodies are included in source output. |
 | **Private helpers / umbrella headers** | 10 | Partially | `foundation_private.h`, `foundation_public.h`, `endianness.h`, `hkdf_private.h`, various `_api.h`. Mix of generated and handwritten. |
 | **Handwritten source** (non-generated `.c`) | 16 | ❌ No | `vscf_asn1.c`, `vscf_raw_key.c`, mbedTLS bridge files, internal data structures (`vscf_group_session_epoch.h`, etc.). These are hand-authored, not generated. |
 | **Build system / config** | 6 | ✅ Yes (CMake generation) | `CMakeLists.txt`, `sources.cmake`, `features.cmake`, `definitions.cmake`, `Config.cmake.in`, `module.modulemap` |
@@ -110,7 +110,7 @@ Analysis of all differences between the 326 files that exist in both legacy and 
 | **B: Missing `_api(void)` accessor functions** | 16 | ✅ Resolved (CG-050) | Fixed: accessor declarations emitted in main module (public header) and definitions in internal module for ALL interface bindings. Forward typedefs for API struct types added to generated header block. |
 | **C: `(void(*)(void))` vtable casts** | 579 | ✅ None — new codegen is correct | New codegen wraps vtable function pointer casts with `(void(*)(void))` intermediary to suppress `-Wcast-function-type-mismatch`. Legacy casts directly. **New codegen is correct here.** |
 | **D: Missing `did_setup`/`did_release` callbacks** | 55 | ✅ Resolved (CG-050) | Fixed: forward declarations (VSCF_PRIVATE) emitted in internal module `.c` output for all impl dependencies with `has_observers`. Static stubs removed from main module. NODISCARD added for status-returning callbacks. |
-| **E: Missing interface dispatch function bodies** | 164 | ❌ Link errors | Legacy `.c` files contain full dispatch function implementations (e.g., `vscf_key_alg_import_public_key()` dispatches to `key_alg_api->import_public_key_cb()`). New codegen doesn't generate these `.c` bodies. |
+| **E: Missing interface dispatch function bodies** | 164 | ✅ Resolved (CG-051) | Fixed: changed `c_code` type from `"stub"` to `"generated"` for all 6 interface dispatch render functions. Also fixed: (1) missing `return` for interface-typed returns, (2) NODISCARD in `.c` definitions, (3) pointer return for `access="disown"` class returns. All 30 interface dispatch `.c` files now match legacy. |
 | **F: Const qualifier mismatches** | ~1488 lines | ✅ Largely resolved (CG-049) | Fixed: default access for class/impl/interface args without explicit access now matches legacy GSL defaults (readonly for most, writeonly for buffer args). Value types (data) don't get spurious `const`. Remaining minor gaps from missing methods. |
 | **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ✅ Largely resolved (CG-049) | Fixed: class methods and constructors with `visibility="private"` now emit `VSCF_PRIVATE`. Interface dispatch methods with `visibility="private"` emit `VSCF_PRIVATE`. `_render_ir_method` respects visibility parameter. 1 known remaining gap: `scope="private"` impl own methods appearing in wrong header (hkdf extract/expand). |
 | **H: Missing `init_ctx`/`cleanup_ctx` declarations** | 8 | ✅ Resolved (CG-048) | Fixed by correcting `_internal.h` output path from `include/private/` to `src/` to match legacy layout. Now generated for all implementations. |
@@ -250,7 +250,7 @@ Foundation header parity phase (current):
 
 Foundation codegen next phase:
 
-- `CG-051` — generate interface dispatch `.c` bodies (Pattern E — 164 functions, ~8 files)
+- `CG-051` — generate interface dispatch `.c` bodies (Pattern E — 164 functions, ~30 files) ✅
 - `CG-052` — fix `vscf_asn1rd` / `vscf_asn1wr` type mismatches (40+ build errors) ✅
 - `CG-053` — generate `_defs.h` / `_defs.c` files (73 files — struct layouts, size exports)
 - `CG-054` — generate `_internal.h` headers (58 files — lifecycle forward decls, vtable registration) (depends on CG-053)
@@ -267,7 +267,7 @@ Future tasks (not yet planned):
 
 ### Active (blocking foundation build)
 
-- **Foundation header parity (CG-049/050/052):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). CG-052 resolved pointer/array/sized-integer type mismatches in `vscf_asn1rd`/`vscf_asn1wr` (40+ errors → 0). Remaining: pattern E (dispatch bodies), `vscf_cipher_alg_info` visibility mismatch (Pattern G).
+- **Foundation header parity (CG-049/050/052):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). CG-052 resolved pointer/array/sized-integer type mismatches in `vscf_asn1rd`/`vscf_asn1wr` (40+ errors → 0). CG-051 resolved pattern E (dispatch bodies). Remaining: `vscf_cipher_alg_info` visibility mismatch (Pattern G — init_ctx_with_members declared PRIVATE but rendered PUBLIC in .c).
 
 ### Resolved
 
@@ -279,5 +279,5 @@ Future tasks (not yet planned):
 
 - `_class_dependency_includes` in `project_c_backend.py` fails when rendering foundation classes that reference `common` project classes (e.g. `data`, `buffer`). Cross-project class resolution needs a multi-project-aware lookup. (discovered during CG-029)
 - **vscf_message_info_custom_params.h missing include**: Pre-existing bug — uses `vscf_list_key_value_node_t` but doesn't include the header. Manually fixed but should be addressed in codegen include generation. (discovered during CG-044)
-- **195 legacy-only files not generated**: See [Files Not Generated](#files-not-generated-195-legacy-only) for full categorization. Major categories: `_internal.h` (58), `_defs.h/.c` (73), interface dispatch `.c` (8), build system (6). These represent the next wave of codegen feature work after header parity is achieved.
+- **~187 legacy-only files not generated**: See [Files Not Generated](#files-not-generated-195-legacy-only) for full categorization. Major categories: `_internal.h` (58), `_defs.h/.c` (73), build system (6). Interface dispatch `.c` files (8) now generated by CG-051. These represent the next wave of codegen feature work after header parity is achieved.
 - **Deprecated / removed interfaces** (16 files): `vscf_raw_key`, `vscf_ec_alg_info`, `vscf_pkcs8_der_serializer`, `vscf_platform.h.in`, and others that may be removable from legacy or that represent superseded APIs. Need audit to determine which are still needed.
