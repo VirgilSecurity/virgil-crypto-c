@@ -5237,9 +5237,9 @@ def argument_from_source(
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        # Legacy default: buffer→writeonly, everything else→readonly
+        # Legacy default: buffer→writeonly, self→keep existing, everything else→readonly
         effective_cls_access = attrs.get("access")
-        if effective_cls_access is None:
+        if effective_cls_access is None and attrs.get("class") != "self":
             effective_cls_access = "writeonly" if attrs.get("class") == "buffer" else "readonly"
         extra = {"is_const_type": "1"} if effective_cls_access == "readonly" else {}
         # Handle const prefix in class name
