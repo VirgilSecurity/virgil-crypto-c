@@ -1,6 +1,6 @@
 # CG-049: Systematic Header Parity — Status
 
-**Current Step:** Step 2: Fix const qualifier parity
+**Current Step:** Step 3: Fix visibility parity
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -35,13 +35,11 @@
 - [x] Verify const parity against legacy for key_alg, ecc headers
 
 ### Step 3: Fix visibility parity (Pattern G)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on visibility rules discovered in Step 0
-
-- [ ] Visibility attribute handling fixed
-- [ ] Correct defaults applied
-- [ ] Verified against legacy headers
+- [ ] Fix interface method visibility to check 'scope' attr (not just 'visibility')
+- [ ] Fix interface dispatch method visibility to check 'scope' attr
+- [ ] Verify visibility parity against legacy headers
 
 ### Step 4: Testing & Verification
 **Status:** ⬜ Not Started
