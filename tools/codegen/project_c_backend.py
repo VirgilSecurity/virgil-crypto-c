@@ -1434,11 +1434,11 @@ def _render_dispatch_method(
     # Add PUBLIC modifier
     text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_PUBLIC")
 
-    # Add NODISCARD modifier for status-returning methods
+    # Add NODISCARD attribute for status-returning methods (placed after closing paren)
     if method.returns:
         ret_dict = _method_arg_dict(method.returns[0])
         if ret_dict.get("enum") == "status":
-            text_element(method_elem, "c_modifier", value=f"{prefix.upper()}_NODISCARD")
+            text_element(method_elem, "c_attribute", value=f"{prefix.upper()}_NODISCARD")
 
     desc = method.description.strip() if method.description else ""
     if desc:
@@ -3293,6 +3293,9 @@ def _render_dependency_method_element(
     text_element(method, "c_code", code, type="generated", lang="c")
     # modifier
     text_element(method, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
+    # NODISCARD attribute for status-returning methods
+    if return_type == "status":
+        text_element(method, "c_attribute", value=f"{project_ir.prefix.upper()}_NODISCARD")
     # description
     if description:
         method.text = comment_text(description)
@@ -5114,6 +5117,7 @@ def render_implementation_c_module(
 
         ret_type = None
         ret_class = None
+        attrs_list: tuple[str, ...] = ()
         if method.returns:
             ret = method.returns[0]
             if ret.enum_name:
@@ -5124,6 +5128,11 @@ def render_implementation_c_module(
                 ret_class = ret.class_name
             elif ret.type_name:
                 ret_type = ret.type_name
+
+        # Check for NODISCARD / status return
+        if method.returns and method.returns[0].enum_name == "status":
+            attrs_list = (f"{project_ir.prefix.upper()}_NODISCARD",)
+            ret_type = "status"
 
         _render_impl_method(
             root,
@@ -5139,6 +5148,7 @@ def render_implementation_c_module(
             visibility=method_vis,
             declaration=method_decl,
             definition="private",
+            attributes=attrs_list,
             fallback_projects=fallback_projects,
         )
 

@@ -19,12 +19,12 @@
 - [x] XML model attributes identified (NODISCARD, const, visibility)
 
 ### Step 1: Fix VSCF_NODISCARD emission (Pattern A)
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Fix render_method_signature in common_bootstrap.py to render c_attribute after closing paren
-- [ ] Fix interface dispatch path (line ~1441) to use c_attribute instead of c_modifier for NODISCARD
-- [ ] Add NODISCARD for impl own methods that return status (line ~5128)
-- [ ] Verified against legacy headers
+- [x] Fix render_method_signature in common_bootstrap.py to render c_attribute after closing paren
+- [x] Fix interface dispatch path (line ~1441) to use c_attribute instead of c_modifier for NODISCARD
+- [x] Add NODISCARD for impl own methods that return status (line ~5128)
+- [x] Verified against legacy headers (sha256 exact match, ecc/aes256_gcm NODISCARD correct, 134 vs 176 legacy)
 
 ### Step 2: Fix const qualifier parity (Pattern F)
 **Status:** ⬜ Not Started
