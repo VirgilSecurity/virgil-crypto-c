@@ -1,6 +1,6 @@
 # CG-050: Missing Declarations — Status
 
-**Current Step:** Step 2: Add did_setup/did_release callback declarations (Pattern D)
+**Current Step:** Step 3: Add init_ctx/cleanup_ctx declarations (Pattern H)
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -35,11 +35,11 @@
 - [x] Run targeted tests (30 impl + 13 class_dep tests passing)
 
 ### Step 3: Add init_ctx/cleanup_ctx declarations (Pattern H)
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] init_ctx/cleanup_ctx declarations emitted in internal output
-- [ ] Signature matches legacy pattern
-- [ ] Verified against legacy internal headers
+- [x] init_ctx/cleanup_ctx declarations emitted in internal output (already present: declaration="public", definition="external")
+- [x] Signature matches legacy pattern (VSCF_PRIVATE void prefix, pointer to self)
+- [x] Verified against legacy vscf_sha256_internal.h — exact match
 
 ### Step 4: Testing & Verification
 **Status:** ⬜ Not Started
