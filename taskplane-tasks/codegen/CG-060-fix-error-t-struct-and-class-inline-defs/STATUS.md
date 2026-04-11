@@ -1,6 +1,6 @@
 # CG-060: Fix `vscf_error_t` Struct Definition and Class Inline Definitions — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Documentation & Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -41,19 +41,19 @@
 ---
 
 ### Step 3: Verification
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Confirm 0 "incomplete type" errors for `vscf_error_t`
-- [ ] Confirm enum constants present in headers
-- [ ] Fix any regressions
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` (5 pre-existing "conflicting types" errors remain — missing `const` in return types, not related to CG-060)
+- [x] Confirm 0 "incomplete type" errors for `vscf_error_t`
+- [x] Confirm enum constants present in headers
+- [x] Fix any regressions (fixed class argument accessed_by for non-value-type classes, updated test)
 
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Update `taskplane-tasks/codegen/CONTEXT.md`
 - [ ] Discoveries logged in STATUS.md
