@@ -597,9 +597,12 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
         else:
             args.append(c_decl(arg.attrib['type'], arg.attrib['name'], arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, arg.attrib.get('array') is not None, arg.attrib.get('type_is')))
     arg_str = ", ".join(args) if args else "void"
-    # Attributes (e.g. VSCF_NODISCARD) are placed after the closing paren
-    attributes = " ".join(a.attrib["value"] for a in elem.findall("c_attribute"))
-    suffix = f" {attributes}" if attributes else ""
+    # Attributes (e.g. VSCF_NODISCARD) are placed after the closing paren — only in declarations
+    if not for_definition:
+        attributes = " ".join(a.attrib["value"] for a in elem.findall("c_attribute"))
+        suffix = f" {attributes}" if attributes else ""
+    else:
+        suffix = ""
     return f"{header}\n{elem.attrib['name']}({arg_str}){suffix}"
 
 

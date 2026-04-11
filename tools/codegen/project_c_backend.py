@@ -1480,7 +1480,7 @@ def _render_dispatch_method(
 
     # Method body (c_code)
     has_return = bool(method.returns) and not all(
-        getattr(r, "type_name", None) in {"nothing", None} and getattr(r, "class_name", None) is None and _method_arg_dict(r).get("enum") is None
+        getattr(r, "type_name", None) in {"nothing", None} and getattr(r, "class_name", None) is None and getattr(r, "interface_name", None) is None and _method_arg_dict(r).get("enum") is None
         for r in method.returns
     )
     return_prefix = "return " if has_return else ""
@@ -1511,7 +1511,7 @@ def _render_dispatch_method(
         ]
 
     code_text = "\n".join(body_lines)
-    text_element(method_elem, "c_code", type="stub").text = code_text
+    text_element(method_elem, "c_code", type="generated").text = code_text
 
     return method_elem
 
@@ -1556,7 +1556,7 @@ def _render_constant_getter(
         "",
         f"return {api_var_name}->{field_name};",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1592,7 +1592,7 @@ def _render_api_method(
         f"const {prefix}_api_t *api = {prefix}_impl_api(impl, {api_tag});",
         f"return (const {api_struct_name} *) api;",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1637,7 +1637,7 @@ def _render_inherited_api_getter(
         "",
         f"return {api_var_name}->{field_name};",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1671,7 +1671,7 @@ def _render_is_implemented_method(
         "",
         f"return {prefix}_impl_api(impl, {api_tag}) != NULL;",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -1712,7 +1712,7 @@ def _render_api_tag_method(
         "",
         f"return {api_var_name}->api_tag;",
     ]
-    text_element(method_elem, "c_code", type="stub").text = "\n".join(body_lines)
+    text_element(method_elem, "c_code", type="generated").text = "\n".join(body_lines)
 
     return method_elem
 
@@ -5524,6 +5524,9 @@ def return_from_source(
         if attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
             accessed_by = "pointer"
         elif attrs.get("library") and attrs.get("is_reference") in {"1", "true"} and attrs.get("class") != "self":
+            accessed_by = "pointer"
+        elif attrs.get("access") in {"disown", "readwrite"} and attrs.get("class") != "self":
+            # Ownership-transfer returns (disown) or mutable returns are always by pointer
             accessed_by = "pointer"
         return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"}:
