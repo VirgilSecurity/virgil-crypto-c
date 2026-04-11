@@ -1,7 +1,7 @@
 # CG-059: Fix Bare `void` Parameter and Unresolved `status` Type — Status
 
 **Current Step:** Step 4: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-11
 **Review Level:** 1
 **Review Counter:** 0
@@ -49,16 +49,16 @@
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Update `taskplane-tasks/codegen/CONTEXT.md`
-- [ ] Discoveries logged in STATUS.md
-- [ ] All steps complete
-- [ ] All Python tests passing
-- [ ] Common build gate passes
-- [ ] 0 bare `void` parameter errors
-- [ ] 0 bare `status` type errors
-- [ ] Documentation updated
+- [x] Update `taskplane-tasks/codegen/CONTEXT.md`
+- [x] Discoveries logged in STATUS.md
+- [x] All steps complete
+- [x] All Python tests passing
+- [x] Common build gate passes
+- [x] 0 bare `void` parameter errors
+- [x] 0 bare `status` type errors
+- [x] Documentation updated
 
 ---
 
@@ -73,6 +73,9 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Bug 1: `_render_impl_interface_methods` missing `elif arg.enum_name:` handler — enum args fell through to void | Fixed | `project_c_backend.py` ~line 5021 |
+| Bug 2: `_render_dependency_method_element` passed raw `"status"` as type instead of `{prefix}_status_t` | Fixed | `project_c_backend.py` ~line 3698 |
+| Pre-existing foundation build errors: `vscf_error_t` incomplete type, `compound_key_alg_info` conflicting types | Not codegen-related | `compound_key_alg.c`, `compound_key_alg_info.c` |
 
 ---
 
