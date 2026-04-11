@@ -1,6 +1,6 @@
 # CG-049: Systematic Header Parity — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Fix VSCF_NODISCARD emission
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -19,10 +19,11 @@
 - [x] XML model attributes identified (NODISCARD, const, visibility)
 
 ### Step 1: Fix VSCF_NODISCARD emission (Pattern A)
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Status-returning methods identified
-- [ ] VSCF_NODISCARD emitted correctly
+- [ ] Fix render_method_signature in common_bootstrap.py to render c_attribute after closing paren
+- [ ] Fix interface dispatch path (line ~1441) to use c_attribute instead of c_modifier for NODISCARD
+- [ ] Add NODISCARD for impl own methods that return status (line ~5128)
 - [ ] Verified against legacy headers
 
 ### Step 2: Fix const qualifier parity (Pattern F)
