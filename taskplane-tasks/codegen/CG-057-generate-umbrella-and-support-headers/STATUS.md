@@ -1,6 +1,6 @@
 # CG-057: Generate Umbrella and Support Headers — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Generate umbrella headers
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -21,12 +21,12 @@
 ---
 
 ### Step 1: Generate umbrella headers
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Implement umbrella header generation (public + private) in `project_c_backend.py`
-- [ ] Generate the include list from the set of rendered modules
-- [ ] Handle correct ordering and include paths
-- [ ] Wire into auto-discovery / output registration
+- [ ] Add `render_umbrella_public_header()` and `render_umbrella_private_header()` to `project_c_backend.py` — collect public/private headers from IR entities, produce full file content matching legacy structure
+- [ ] Add umbrella header writing to `common_bootstrap.py` main loop — generate for both common and foundation projects, write full files (not merge)
+- [ ] Verify common umbrella headers match existing files
+- [ ] Verify foundation umbrella headers match existing files
 
 ---
 
