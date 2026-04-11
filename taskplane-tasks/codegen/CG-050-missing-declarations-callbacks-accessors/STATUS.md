@@ -11,7 +11,7 @@
 ---
 
 ### Step 0: Preflight
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Baseline error count captured (40 errors, mostly asn1rd/asn1wr type mismatches)
 - [x] Legacy _internal.h declaration patterns examined (B: decl in .h + defn in _internal.c; D: fwd decl in _internal.c; H: decl in _internal.h)
@@ -19,7 +19,7 @@
 - [x] Target output locations determined (B: decl in main module, defn in internal module; D: fwd decl in internal module; H: already correct in internal module)
 
 ### Step 1: Add _api(void) accessor declarations (Pattern B)
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Add accessor declaration in main module (render_implementation_c_module) with declaration="public"
 - [x] Add accessor definition in internal module (render_implementation_internal_c_module) with definition="private"
@@ -27,7 +27,7 @@
 - [x] Run targeted tests (30 tests passing)
 
 ### Step 2: Add did_setup/did_release callback declarations (Pattern D)
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Add forward declarations in internal module for impl deps with has_observers
 - [x] Class deps keep observer hooks in class module (correct for classes, no _internal.c separation)
@@ -35,14 +35,14 @@
 - [x] Run targeted tests (30 impl + 13 class_dep tests passing)
 
 ### Step 3: Add init_ctx/cleanup_ctx declarations (Pattern H)
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] init_ctx/cleanup_ctx declarations emitted in internal output (already present: declaration="public", definition="external")
 - [x] Signature matches legacy pattern (VSCF_PRIVATE void prefix, pointer to self)
 - [x] Verified against legacy vscf_sha256_internal.h — exact match
 
 ### Step 4: Testing & Verification
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] Python test suite passing (159 tests)
 - [x] Common build gate passes
@@ -50,7 +50,7 @@
 - [x] No regressions
 
 ### Step 5: Documentation & Delivery
-**Status:** ✅ Done
+**Status:** ✅ Complete
 
 - [x] CONTEXT.md updated (patterns B, D, H status)
 - [x] Discoveries logged
@@ -77,6 +77,8 @@
 | 2026-04-10 | Task staged | PROMPT.md and STATUS.md created |
 | 2026-04-11 02:02 | Task started | Runtime V2 lane-runner execution |
 | 2026-04-11 02:02 | Step 0 started | Preflight |
+| 2026-04-11 02:28 | Worker iter 1 | done in 1550s, tools: 194 |
+| 2026-04-11 02:28 | Task complete | .DONE created |
 
 ## Blockers
 *None*
