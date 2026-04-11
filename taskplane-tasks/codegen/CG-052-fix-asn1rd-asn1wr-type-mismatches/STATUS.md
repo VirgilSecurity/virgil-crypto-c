@@ -1,7 +1,7 @@
 # CG-052: Fix `vscf_asn1rd` / `vscf_asn1wr` Type Mismatches — Status
 
-**Current Step:** Step 2: Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 3: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-11
 **Review Level:** 1
 **Review Counter:** 0
@@ -45,17 +45,17 @@
 ---
 
 ### Step 3: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-- [ ] Update `taskplane-tasks/codegen/CONTEXT.md` — update foundation build error status
-- [ ] Discoveries logged in STATUS.md
-- [ ] All steps complete
-- [ ] All Python tests passing
-- [ ] Common build gate passes
-- [ ] Foundation build: 0 errors in `vscf_asn1rd` and `vscf_asn1wr`
-- [ ] Struct definitions match legacy layout for these 2 modules
-- [ ] Any remaining errors in OTHER modules documented as discoveries
-- [ ] Documentation updated
+- [x] Update `taskplane-tasks/codegen/CONTEXT.md` — update foundation build error status
+- [x] Discoveries logged in STATUS.md
+- [x] All steps complete
+- [x] All Python tests passing (159/159)
+- [x] Common build gate passes
+- [x] Foundation build: 0 errors in `vscf_asn1rd` and `vscf_asn1wr`
+- [x] Struct definitions match legacy layout for these 2 modules
+- [x] Any remaining errors in OTHER modules documented as discoveries
+- [x] Documentation updated
 
 ---
 
