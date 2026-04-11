@@ -1361,25 +1361,29 @@ def _interface_callback_return(
 def _add_interface_type_includes(root: ET.Element, iface: IRInterface, *, project_ir: IRProject) -> None:
     """Add c_include elements for types used in interface method arguments/returns."""
     included: set[str] = set()
+
+    def _try_include_class_or_impl(name: str) -> None:
+        """Try to include a header for a class; fall back to implementation."""
+        if name in included:
+            return
+        for kind in ("class", "implementation"):
+            try:
+                inc = include_file_for_entity(project_ir, entity_kind=kind, entity_name=name)
+                text_element(root, "c_include", file=inc, is_system="0", scope="public")
+                included.add(name)
+                return
+            except KeyError:
+                continue
+
     for method in iface.methods:
         for arg in method.arguments:
             cls = arg.class_name
-            if cls is not None and cls not in included:
-                try:
-                    inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=cls)
-                    text_element(root, "c_include", file=inc, is_system="0", scope="public")
-                    included.add(cls)
-                except KeyError:
-                    pass
+            if cls is not None:
+                _try_include_class_or_impl(cls)
         for ret in method.returns:
             cls = ret.class_name
-            if cls is not None and cls not in included:
-                try:
-                    inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=cls)
-                    text_element(root, "c_include", file=inc, is_system="0", scope="public")
-                    included.add(cls)
-                except KeyError:
-                    pass
+            if cls is not None:
+                _try_include_class_or_impl(cls)
             attrs_dict = _method_arg_dict(ret)
             if attrs_dict.get("enum") is not None:
                 ename = attrs_dict["enum"]
@@ -6045,10 +6049,14 @@ def return_from_source(
         elif attrs.get("access") in {"disown", "readwrite"} and attrs.get("class") != "self":
             # Ownership-transfer returns (disown) or mutable returns are by pointer,
             # unless the class is a value type (e.g. vsc_data_t is returned by value)
-            is_value_type = (
-                project_ir is not None
-                and class_ir(project_ir, resolved_class_str).attrs.get("is_value_type") in {"1", "true"}
-            )
+            is_value_type = False
+            if project_ir is not None:
+                try:
+                    is_value_type = class_ir(project_ir, resolved_class_str).attrs.get("is_value_type") in {"1", "true"}
+                except KeyError:
+                    # Name may refer to an implementation rather than a class;
+                    # implementations are never value types.
+                    pass
             if not is_value_type:
                 accessed_by = "pointer"
         return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class", **extra)
