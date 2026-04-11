@@ -33,9 +33,10 @@
 ### Step 2: Fix inline enum constants
 **Status:** 🟨 In Progress
 
-- [ ] Add support for class-level enum constants in the header renderer
-- [ ] Parse constants from XML model / IR
-- [ ] Verify `vscf_ctr_drbg.h` enum constants match legacy
+- [ ] Add `constants` field to `ImplementationSource` and parse `<constant>` elements from implementation XML
+- [ ] Add `constants` field to `IRImplementation` and wire through `implementation_to_ir`
+- [ ] Render own constants (not interface binding constants) as enum in `render_implementation_c_module`
+- [ ] Verify `vscf_ctr_drbg.h` has RESEED_INTERVAL and ENTROPY_LEN enum constants matching legacy
 
 ---
 
