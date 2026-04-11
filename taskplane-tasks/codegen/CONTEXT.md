@@ -107,9 +107,9 @@ Analysis of all differences between the 326 files that exist in both legacy and 
 | Pattern | Occurrences | Build Impact | Description |
 |---------|-------------|--------------|-------------|
 | **A: `VSCF_NODISCARD` missing** | 190 | ✅ Resolved (CG-049) | Fixed: NODISCARD now emitted as `c_attribute` after closing paren for all status-returning methods (interface dispatch, impl interface methods, impl own methods, dependency methods). 134 of 176 legacy occurrences now matched; gap is from missing `_api()` functions (Pattern B). |
-| **B: Missing `_api(void)` accessor functions** | 16 | ❌ Link errors if called | Legacy headers declare `vscf_*_cipher_info_api(void)`, `vscf_*_cipher_auth_info_api(void)` etc. New codegen omits these. |
+| **B: Missing `_api(void)` accessor functions** | 16 | ✅ Resolved (CG-050) | Fixed: accessor declarations emitted in main module (public header) and definitions in internal module for ALL interface bindings. Forward typedefs for API struct types added to generated header block. |
 | **C: `(void(*)(void))` vtable casts** | 579 | ✅ None — new codegen is correct | New codegen wraps vtable function pointer casts with `(void(*)(void))` intermediary to suppress `-Wcast-function-type-mismatch`. Legacy casts directly. **New codegen is correct here.** |
-| **D: Missing `did_setup`/`did_release` callbacks** | 55 | ❌ Compile errors in `_internal.c` | Dependency injection callbacks (`did_setup_random`, `did_release_random`, etc.) declared in legacy internal headers but not emitted by new codegen. |
+| **D: Missing `did_setup`/`did_release` callbacks** | 55 | ✅ Resolved (CG-050) | Fixed: forward declarations (VSCF_PRIVATE) emitted in internal module `.c` output for all impl dependencies with `has_observers`. Static stubs removed from main module. NODISCARD added for status-returning callbacks. |
 | **E: Missing interface dispatch function bodies** | 164 | ❌ Link errors | Legacy `.c` files contain full dispatch function implementations (e.g., `vscf_key_alg_import_public_key()` dispatches to `key_alg_api->import_public_key_cb()`). New codegen doesn't generate these `.c` bodies. |
 | **F: Const qualifier mismatches** | ~1488 lines | ✅ Largely resolved (CG-049) | Fixed: default access for class/impl/interface args without explicit access now matches legacy GSL defaults (readonly for most, writeonly for buffer args). Value types (data) don't get spurious `const`. Remaining minor gaps from missing methods. |
 | **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ✅ Largely resolved (CG-049) | Fixed: class methods and constructors with `visibility="private"` now emit `VSCF_PRIVATE`. Interface dispatch methods with `visibility="private"` emit `VSCF_PRIVATE`. `_render_ir_method` respects visibility parameter. 1 known remaining gap: `scope="private"` impl own methods appearing in wrong header (hkdf extract/expand). |
@@ -263,7 +263,7 @@ Future tasks (see [Foundation Diff Analysis](#foundation-diff-analysis) for cont
 
 ### Active (blocking foundation build)
 
-- **Foundation header parity (CG-049/050):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. Remaining: patterns B (missing `_api()` functions), D (`did_setup`/`did_release`), E (dispatch bodies). Current blocking build errors are in `vscf_asn1rd`/`vscf_asn1wr` class modules (20 errors from pointer/array type mismatches — Pattern B/D territory).
+- **Foundation header parity (CG-049/050):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). Remaining: pattern E (dispatch bodies). Current blocking build errors are in `vscf_asn1rd`/`vscf_asn1wr` class modules (40 errors from pointer/array type mismatches — Pattern E territory).
 
 ### Resolved
 

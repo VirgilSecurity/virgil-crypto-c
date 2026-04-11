@@ -1,7 +1,7 @@
 # CG-050: Missing Declarations — Status
 
-**Current Step:** Step 4: Testing & Verification
-**Status:** 🟡 In Progress
+**Current Step:** Step 5: Documentation & Delivery
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-11
 **Review Level:** 1
 **Review Counter:** 0
@@ -50,10 +50,10 @@
 - [x] No regressions
 
 ### Step 5: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] CONTEXT.md updated (patterns B, D, H status)
-- [ ] Discoveries logged
+- [x] CONTEXT.md updated (patterns B, D, H status)
+- [x] Discoveries logged
 
 ---
 
@@ -66,6 +66,9 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| Pattern H (init_ctx/cleanup_ctx) was already resolved by prior work (CG-048) | Verified, no changes needed | project_c_backend.py |
+| API accessor return types need forward typedefs in generated block since includes are outside @generated | Added c_alias elements for forward typedefs | project_c_backend.py |
+| generate_block doesn't render c_include elements — includes must be managed outside @generated blocks | Documented, used c_alias forward typedefs instead | common_bootstrap.py |
 
 ## Execution Log
 
