@@ -19,13 +19,12 @@
 - [x] Module types identified in XML models
 
 ### Step 1: Fix declaration parity
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
-> ⚠️ Hydrate: Expand based on root causes identified in Step 0
-
-- [ ] init_ctx/cleanup_ctx declarations fixed
-- [ ] Visibility mismatches fixed
-- [ ] Conflicting types and const qualifiers fixed
+- [ ] Fix visibility: In `_render_impl_method`, when `declaration=="public"`, use `_PUBLIC` modifier (not just when `visibility=="public"`)
+- [ ] Fix const qualifiers: Interface arguments without `access` attr should default to `const` (both in `_render_impl_interface_methods` and impl-specific methods)
+- [ ] Fix `_internal.h` path: Change `implementation_internal_output` header_path to use `src/` dir (matching legacy layout)
+- [ ] Verify targeted: run `new_codegen.sh --verify foundation` and confirm errors reduced
 
 ### Step 2: Testing & Verification
 **Status:** ⬜ Not Started
