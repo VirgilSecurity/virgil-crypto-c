@@ -1,6 +1,6 @@
 # CG-060: Fix `vscf_error_t` Struct Definition and Class Inline Definitions — Status
 
-**Current Step:** Step 1: Fix inline struct definition
+**Current Step:** Step 2: Fix inline enum constants
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -22,16 +22,16 @@
 ---
 
 ### Step 1: Fix inline struct definition
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] In `render_class_c_module`: when `lifecycle="none"`, set `struct_definition="public"`, render struct fields, and skip `_render_reference_class_support`
-- [ ] In `collect_renderers`: skip `_defs.h` module generation for `lifecycle="none"` classes (struct is in public header)
-- [ ] Verify generated `vscf_error.h` matches legacy (struct inline, no lifecycle methods, macro present)
+- [x] In `render_class_c_module`: when `lifecycle="none"`, set `struct_definition="public"`, render struct fields, and skip `_render_reference_class_support`
+- [x] In `collect_renderers`: skip `_defs.h` module generation for `lifecycle="none"` classes (struct is in public header)
+- [x] Verify generated `vscf_error.h` matches legacy (struct inline, no lifecycle methods, macro present)
 
 ---
 
 ### Step 2: Fix inline enum constants
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Add support for class-level enum constants in the header renderer
 - [ ] Parse constants from XML model / IR

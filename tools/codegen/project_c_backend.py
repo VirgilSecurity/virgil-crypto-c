@@ -984,7 +984,8 @@ def collect_umbrella_includes(
         # Defs module — always private
         is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
         context = cls.attrs.get("context", "public")
-        if not is_value_type and context != "none" and cls_scope != "internal":
+        has_lifecycle = cls.attrs.get("lifecycle") != "none"
+        if not is_value_type and context != "none" and cls_scope != "internal" and has_lifecycle:
             private_includes.add(class_defs_output(cls.output).include_file)
         # Internal module — for classes with internal-scope methods
         has_internal = any(m.attrs.get("scope") == "internal" for m in cls.methods)
@@ -1223,7 +1224,8 @@ def discover_renderers(
             # Defs module for non-value-type classes with a struct context
             is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
             context = cls.attrs.get("context", "public")
-            if not is_value_type and context != "none":
+            has_lifecycle = cls.attrs.get("lifecycle") != "none"
+            if not is_value_type and context != "none" and has_lifecycle:
                 defs_out = class_defs_output(cast(IROutputTarget, cls.output))
                 defs_xml = direct_xml_name(defs_out)
                 if defs_xml in overrides:
@@ -2830,6 +2832,7 @@ def render_class_c_module(
 ) -> ET.Element:
     class_output = cast(IROutputTarget, cls.output) if output is None else output
     is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+    has_lifecycle = cls.attrs.get("lifecycle") != "none"
     root = c_module_root(
         class_output,
         entity_id=entity_id or snake_name(cls.name),
@@ -2856,13 +2859,16 @@ def render_class_c_module(
     for include in resolved_public_includes:
         text_element(root, "c_include", file=include, is_system="0", scope="public")
 
+    # Classes with lifecycle="none" define their struct in the public header (like value types)
+    inline_struct = is_value_type or not has_lifecycle
+
     struct = text_element(
         root,
         "c_struct",
         name=class_type_symbol(project_ir, cls.name),
         visibility="public",
-        declaration=struct_declaration or ("public" if is_value_type else "public"),
-        definition=struct_definition or ("public" if is_value_type else "external"),
+        declaration=struct_declaration or "public",
+        definition=struct_definition or ("public" if inline_struct else "external"),
         uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}",
     )
     struct.text = comment_text(f"Handle '{cls.name}' context.")
@@ -2872,6 +2878,7 @@ def render_class_c_module(
             ClassFieldSpec(name=field.name, attrs={
                 **({"class": field.class_name} if field.class_name is not None else {}),
                 **({"callback": field.callback} if field.callback is not None else {}),
+                **({"enum": field.enum_name} if field.enum_name is not None else {}),
                 **({"type": field.type_name} if field.type_name is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
                 **({"is_reference": "1"} if field.is_reference else {}),
@@ -2884,6 +2891,7 @@ def render_class_c_module(
             ClassFieldSpec(name=field.name, attrs={
                 **({"class": field.class_name} if field.class_name is not None else {}),
                 **({"callback": field.callback} if field.callback is not None else {}),
+                **({"enum": field.enum_name} if field.enum_name is not None else {}),
                 **({"type": field.type_name} if field.type_name is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
                 **({"is_reference": "1"} if field.is_reference else {}),
@@ -2892,7 +2900,7 @@ def render_class_c_module(
             for field in cls.struct_fields
         ]]
 
-    if is_value_type or extra_struct_fields:
+    if inline_struct or extra_struct_fields:
         for field_spec in field_specs:
             _render_class_property(struct, field_spec, project_ir=project_ir, owner_class=cls.name)
 
@@ -2934,7 +2942,7 @@ def render_class_c_module(
                 project_ir=project_ir,
                 uid=f"direct_{snake_name(cls.name)}_ctor_{snake_name(ctor.name)}",
             )
-    elif render_reference_support:
+    elif render_reference_support and has_lifecycle:
         _render_reference_class_support(
             root,
             project_ir=project_ir,
