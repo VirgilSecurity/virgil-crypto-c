@@ -22,13 +22,13 @@
 ---
 
 ### Step 1: Fix type resolution
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Fix `_resolve_impl_property_type` to handle `is_reference=True` for primitive types (byte → byte *) and `access=readonly` for const qualifier
-- [ ] Add `type_size` field to `IRCArgument` and `IRCStructField` in project_ir.py; preserve `size` attr from XML
-- [ ] Carry `type_size` through `_method_arg_dict` in project_c_backend.py
-- [ ] Update `type_map` or `argument_from_source`/`return_from_source` to produce sized types (int8_t, uint16_t, etc.)
-- [ ] Verify fixes don't break other modules' struct definitions (run codegen + check diffs)
+- [x] Fix `_resolve_impl_property_type` to handle `is_reference=True` for primitive types (byte → byte *) and `access=readonly` for const qualifier
+- [x] Add `type_size` field to `IRCArgument` and `IRCStructField` in project_ir.py; preserve `size` attr from XML
+- [x] Carry `type_size` through `_method_arg_dict` in project_c_backend.py
+- [x] Update `type_map` or `argument_from_source`/`return_from_source` to produce sized types (int8_t, uint16_t, etc.)
+- [x] Verify fixes don't break other modules' struct definitions (run codegen + check diffs)
 
 ---
 
