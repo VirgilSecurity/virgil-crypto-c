@@ -238,14 +238,12 @@ def implementation_defs_output(impl_output: IROutputTarget) -> IROutputTarget:
 def implementation_internal_output(impl_output: IROutputTarget) -> IROutputTarget:
     """Derive the internal module output target from an implementation's output target.
 
-    The internal module lives under the ``private`` include directory and uses
-    the ``<prefix>_<impl>_internal`` stem convention.
+    The internal module header lives alongside the source file (in ``src/``)
+    and uses the ``<prefix>_<impl>_internal`` stem convention.
     """
     stem = f"{impl_output.c_symbol}_internal"
-    header_path = impl_output.header_path.replace(
-        f"/{impl_output.include_file}",
-        f"/private/{stem}.h",
-    )
+    # Legacy layout: _internal.h lives in src/ alongside the .c files
+    header_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.h")
     source_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.c")
     generated_header_path = impl_output.generated_header_path.replace(
         impl_output.include_file.removesuffix(".h"),
@@ -4227,7 +4225,7 @@ def _render_impl_interface_methods(
                 elif arg.interface_name:
                     # Interface arguments are passed as impl_t pointers
                     arg_dict["class"] = "impl"
-                    if arg.access == "readonly":
+                    if arg.access in ("readonly", None):
                         arg_dict["is_const"] = "1"
                     arg_dict["accessed_by"] = "pointer"
                 elif arg.type_name:
@@ -5063,7 +5061,8 @@ def render_implementation_c_module(
     # --- Implementation-specific methods ---
     for method in impl.methods:
         method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
-        method_vis = method.attrs.get("visibility", method.attrs.get("scope", "private"))
+        method_vis = method.attrs.get("visibility", method.attrs.get("scope",
+            method.attrs.get("declaration", "private")))
         if method_vis == "internal":
             method_vis = "private"
         method_decl = method.attrs.get("declaration", "private")
@@ -5104,7 +5103,7 @@ def render_implementation_c_module(
                 arg_dict["accessed_by"] = "value" if is_value else "pointer"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
-                if arg.access == "readonly":
+                if arg.access in ("readonly", None):
                     arg_dict["is_const"] = "1"
                 arg_dict["accessed_by"] = "pointer"
             elif arg.enum_name:

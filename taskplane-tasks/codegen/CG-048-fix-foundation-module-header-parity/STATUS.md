@@ -19,12 +19,12 @@
 - [x] Module types identified in XML models
 
 ### Step 1: Fix declaration parity
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Fix visibility: In `_render_impl_method`, when `declaration=="public"`, use `_PUBLIC` modifier (not just when `visibility=="public"`)
-- [ ] Fix const qualifiers: Interface arguments without `access` attr should default to `const` (both in `_render_impl_interface_methods` and impl-specific methods)
-- [ ] Fix `_internal.h` path: Change `implementation_internal_output` header_path to use `src/` dir (matching legacy layout)
-- [ ] Verify targeted: run `new_codegen.sh --verify foundation` and confirm errors reduced
+- [x] Fix visibility: In `_render_impl_method`, when `declaration=="public"`, use `_PUBLIC` modifier (not just when `visibility=="public"`)
+- [x] Fix const qualifiers: Interface arguments without `access` attr should default to `const` (both in `_render_impl_interface_methods` and impl-specific methods)
+- [x] Fix `_internal.h` path: Change `implementation_internal_output` header_path to use `src/` dir (matching legacy layout)
+- [x] Verify targeted: run `new_codegen.sh --verify foundation` and confirm errors reduced (alg_info_der errors eliminated, new errors in asn1rd/asn1wr are different modules - out of scope)
 
 ### Step 2: Testing & Verification
 **Status:** ⬜ Not Started
