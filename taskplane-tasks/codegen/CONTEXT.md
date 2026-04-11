@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-04-10
 **Status:** Active
-**Next Task ID:** CG-055
+**Next Task ID:** CG-059
 
 > **Note:** CG-034 was merged into CG-033. Task IDs CG-034 is retired.
 
@@ -255,11 +255,17 @@ Foundation codegen next phase:
 - `CG-053` — generate `_defs.h` / `_defs.c` files (73 files — struct layouts, size exports) ✅
 - `CG-054` — generate `_internal.h` headers (58 files — lifecycle forward decls, vtable registration) (depends on CG-053)
 
+Foundation remaining-files phase:
+
+- `CG-055` — generate missing `_internal.c` for 4 modules + 5 missing `_internal.h` files
+- `CG-056` — generate remaining interface dispatch + API files (36 files across 9 interfaces)
+- `CG-057` — generate umbrella and support headers (10 files, mix of generated and handwritten)
+- `CG-058` — fix HKDF visibility gap + final parity sweep (depends on CG-055, CG-056, CG-057)
+
 Future tasks (not yet planned):
 
-- Generate missing `_internal.c` for 4 modules (`ec_alg_info`, `ecies`, `padding_cipher`, `pkcs8_der_serializer`)
 - Generate build system files (`CMakeLists.txt`, `sources.cmake`, etc.) — 6 files
-- Generate private umbrella / support headers (10 files, partially handwritten)
+- Deprecated/removed interface audit (14 files: `ec_alg_info`, `pkcs8_der_serializer`, `raw_key`, `platform`)
 
 ---
 
