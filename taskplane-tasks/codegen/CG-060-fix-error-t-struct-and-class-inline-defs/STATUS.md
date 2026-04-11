@@ -1,7 +1,7 @@
 # CG-060: Fix `vscf_error_t` Struct Definition and Class Inline Definitions — Status
 
 **Current Step:** Step 4: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-11
 **Review Level:** 1
 **Review Counter:** 0
@@ -53,16 +53,16 @@
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** 🟨 In Progress
+**Status:** ✅ Complete
 
-- [ ] Update `taskplane-tasks/codegen/CONTEXT.md`
-- [ ] Discoveries logged in STATUS.md
-- [ ] All steps complete
-- [ ] All Python tests passing
-- [ ] Common build gate passes
-- [ ] `vscf_error_t` struct in public header, no spurious lifecycle methods
-- [ ] Class-level constants generated
-- [ ] Documentation updated
+- [x] Update `taskplane-tasks/codegen/CONTEXT.md`
+- [x] Discoveries logged in STATUS.md
+- [x] All steps complete
+- [x] All Python tests passing
+- [x] Common build gate passes
+- [x] `vscf_error_t` struct in public header, no spurious lifecycle methods
+- [x] Class-level constants generated
+- [x] Documentation updated
 
 ---
 
@@ -81,6 +81,9 @@
 | Impl constants (`<constant>` in `<implementation>`) not parsed into `ImplementationSource` or `IRImplementation` | Fix in Step 2 | `project_source.py:_implementation()`, `project_ir.py:IRImplementation` |
 | `_render_reference_class_support` unconditionally emits lifecycle methods for non-value-type classes | Fix in Step 1 | `project_c_backend.py:2938` |
 | `_defs.h` module emitted even for `lifecycle="none"` classes where struct is in public header | Fix in Step 1 | `project_c_backend.py:1226` |
+| `ClassFieldSpec` attrs missing `enum` key for enum-typed struct fields | Fixed in Step 1 | `project_c_backend.py:2880` |
+| `argument_from_source` defaults non-self class args to `accessed_by="value"` regardless of value type | Fixed in Step 3 | `project_c_backend.py:6224` |
+| 5 pre-existing "conflicting types" errors (missing `const` in impl return types) | Tech debt | compound_key_alg_info, compound_private_key |
 
 ---
 
