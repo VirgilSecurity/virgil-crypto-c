@@ -57,7 +57,7 @@ Interface and implementation rendering is now complete. The `project_c_backend.p
 
 The new codegen generates **511 files** for the foundation project (289 `.c` + 222 `.h`). Zero unexpected module skips. The generated output is applied temporarily by build/verify scripts and **never committed** to the branch.
 
-**Build status:** Foundation build currently has **24+ compilation errors** in 2 modules (`alg_info_der_serializer`, `alg_info_der_deserializer`), caused by generated header declarations not matching legacy handwritten `.c` file signatures. See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
+**Build status:** Foundation build has **0 errors** in `alg_info_der_serializer` and `alg_info_der_deserializer` (resolved by CG-048). Remaining errors are in `vscf_asn1rd.c` / `vscf_asn1wr.c` (class modules with pointer/array type mismatches). See [Foundation Diff Analysis](#foundation-diff-analysis) for the full breakdown.
 
 **Common build:** ✅ passes cleanly.
 
@@ -113,13 +113,13 @@ Analysis of all differences between the 326 files that exist in both legacy and 
 | **E: Missing interface dispatch function bodies** | 164 | ❌ Link errors | Legacy `.c` files contain full dispatch function implementations (e.g., `vscf_key_alg_import_public_key()` dispatches to `key_alg_api->import_public_key_cb()`). New codegen doesn't generate these `.c` bodies. |
 | **F: Const qualifier mismatches** | ~1488 lines | ❌ Compile errors | Generated declarations use different `const` qualifiers than legacy handwritten code. E.g., `const vscf_impl_t *` in header vs `vscf_impl_t *` in `.c`, or vice versa. |
 | **G: Visibility mismatches (`VSCF_PUBLIC`/`VSCF_PRIVATE`)** | ~1133 lines | ❌ Compile errors | Generated headers declare functions with different visibility than legacy `.c` definitions. |
-| **H: Missing `init_ctx`/`cleanup_ctx` declarations** | 8 | ❌ Compile errors | Implementation-specific context init/cleanup functions called from `_internal.c` but not declared in generated headers. |
+| **H: Missing `init_ctx`/`cleanup_ctx` declarations** | 8 | ✅ Resolved (CG-048) | Fixed by correcting `_internal.h` output path from `include/private/` to `src/` to match legacy layout. Now generated for all implementations. |
 
 ### What Causes Actual Build Errors
 
 Only mismatches between **generated headers** and **legacy handwritten `.c` files** cause build errors. Pure `.c` file diffs (where both are generated) don't matter since the new codegen `.c` replaces the legacy one.
 
-The current 24+ errors in `alg_info_der_serializer` / `alg_info_der_deserializer` are caused by patterns F, G, and H. As more modules are exercised, patterns A, B, D, E, F, G will surface additional errors.
+The previous 24+ errors in `alg_info_der_serializer` / `alg_info_der_deserializer` (patterns F, G, H) are resolved by CG-048. Current build errors are in `vscf_asn1rd` / `vscf_asn1wr` class modules (20+ errors from type mismatches in pointer/array arguments). As more modules are exercised, patterns A, B, D, E will surface additional errors.
 
 ---
 
@@ -244,7 +244,7 @@ Foundation codegen parity phase:
 
 Foundation header parity phase (current):
 
-- `CG-048` — fix foundation module header parity for `alg_info_der_*` modules (patterns F, G, H — 24+ errors)
+- `CG-048` — fix foundation module header parity for `alg_info_der_*` modules (patterns F, G, H — 24+ errors) ✅
 - `CG-049` — systematic header parity: `VSCF_NODISCARD`, visibility, const qualifiers (patterns A, F, G — ~190+ declarations)
 - `CG-050` — missing declarations: `did_setup`/`did_release`, `init_ctx`/`cleanup_ctx`, `_api()` accessors (patterns B, D, H — ~79 occurrences)
 
@@ -263,7 +263,7 @@ Future tasks (see [Foundation Diff Analysis](#foundation-diff-analysis) for cont
 
 ### Active (blocking foundation build)
 
-- **Foundation header parity (CG-048/049/050):** Generated headers have mismatched visibility, const qualifiers, and missing declarations compared to legacy. 24+ current build errors, hundreds more latent. See [Diff Patterns](#diff-patterns-in-generated-files-326-files-differ).
+- **Foundation header parity (CG-049/050):** CG-048 resolved patterns F, G, H for the `alg_info_der_*` modules. Remaining: visibility/const/NODISCARD mismatches in other modules, plus `did_setup`/`did_release` declarations. See [Diff Patterns](#diff-patterns-in-generated-files-326-files-differ). Current blocking errors are in `vscf_asn1rd`/`vscf_asn1wr` class modules (pointer/array type mismatches).
 
 ### Resolved
 
