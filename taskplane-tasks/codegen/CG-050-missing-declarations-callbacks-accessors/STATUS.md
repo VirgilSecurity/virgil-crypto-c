@@ -19,12 +19,12 @@
 - [x] Target output locations determined (B: decl in main module, defn in internal module; D: fwd decl in internal module; H: already correct in internal module)
 
 ### Step 1: Add _api(void) accessor declarations (Pattern B)
-**Status:** 🟨 In Progress
+**Status:** ✅ Done
 
-- [ ] Add accessor declaration in main module (render_implementation_c_module) with declaration="public"
-- [ ] Add accessor definition in internal module (render_implementation_internal_c_module) with definition="private"
-- [ ] Verify generated XML against legacy aes256_gcm and ecc patterns
-- [ ] Run targeted tests
+- [x] Add accessor declaration in main module (render_implementation_c_module) with declaration="public"
+- [x] Add accessor definition in internal module (render_implementation_internal_c_module) with definition="private"
+- [x] Verify generated XML against legacy aes256_gcm and ecc patterns
+- [x] Run targeted tests (30 tests passing)
 
 ### Step 2: Add did_setup/did_release callback declarations (Pattern D)
 **Status:** ⬜ Not Started
