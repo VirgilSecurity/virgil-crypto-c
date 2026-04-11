@@ -101,6 +101,8 @@
 | 2026-04-11 13:35 | Step 0 started | Preflight |
 | 2026-04-11 14:05 | Worker iter 1 | done in 1810s, tools: 131 |
 | 2026-04-11 14:05 | Step 2 started | Implement `_defs.c` renderer |
+| 2026-04-11 14:30 | Worker iter 2 | done in 1502s, tools: 185 |
+| 2026-04-11 14:30 | Task complete | .DONE created |
 
 ---
 
