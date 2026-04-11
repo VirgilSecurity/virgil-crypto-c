@@ -1,6 +1,6 @@
 # CG-053: Generate `_defs.h` / `_defs.c` Files — Status
 
-**Current Step:** Step 0: Preflight
+**Current Step:** Step 1: Implement _defs.h renderer for classes
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-11
 **Review Level:** 1
@@ -21,15 +21,12 @@
 
 ---
 
-### Step 1: Implement `_defs.h` renderer
-**Status:** ⬜ Not Started
+### Step 1: Implement `_defs.h` renderer for classes
+**Status:** 🟨 In Progress
 
-- [ ] Add a `_defs.h` renderer for implementation struct definitions in `project_c_backend.py`
-- [ ] Handle struct fields from class properties (types, names, comments)
-- [ ] Handle the `vscf_impl_t` base struct embedding
-- [ ] Handle include dependencies for field types
-- [ ] Handle header guards and generated block markers
-- [ ] Wire into the implementation module output and auto-discovery
+- [ ] Add `class_defs_output()` function to derive defs output target from class output
+- [ ] Add `render_class_defs_c_module()` that generates defs header for non-value-type classes with context != 'none'
+- [ ] Wire class defs into the discovery loop (for cls in project_ir.classes)
 
 ---
 
