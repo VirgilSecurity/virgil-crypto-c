@@ -133,8 +133,11 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
 
     def test_discovers_implementations(self) -> None:
         renderers = discover_renderers(self.project_ir, entity_kinds={"implementation"})
-        # Each implementation produces 3 renderers (main + defs + internal)
-        self.assertEqual(len(renderers), len(self.project_ir.implementations) * 3)
+        # Each implementation produces 3 renderers (main + defs + internal),
+        # plus 1 private renderer per implementation that has scope="private" methods.
+        from project_c_backend import _impl_has_private_methods
+        private_count = sum(1 for impl in self.project_ir.implementations if _impl_has_private_methods(impl))
+        self.assertEqual(len(renderers), len(self.project_ir.implementations) * 3 + private_count)
 
     def test_full_discovery_covers_all_entities(self) -> None:
         renderers = discover_renderers(self.project_ir)
@@ -152,12 +155,18 @@ class TestDiscoverRenderersFoundation(unittest.TestCase):
             1 for c in self.project_ir.classes
             if any(m.attrs.get('scope') == 'internal' for m in c.methods)
         )
+        # Implementations with scope="private" methods get an extra private module
+        from project_c_backend import _impl_has_private_methods
+        impl_private_count = sum(
+            1 for impl in self.project_ir.implementations if _impl_has_private_methods(impl)
+        )
         total = (
             len(self.project_ir.modules)
             + len(self.project_ir.classes)
             + len(self.project_ir.enums)
             + len(self.project_ir.interfaces) * 2
             + len(self.project_ir.implementations) * 3
+            + impl_private_count
             + infra_count
             + class_defs_count
             + class_internal_count

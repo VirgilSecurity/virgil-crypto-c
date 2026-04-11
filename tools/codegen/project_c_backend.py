@@ -235,6 +235,47 @@ def implementation_defs_output(impl_output: IROutputTarget) -> IROutputTarget:
 
 
 
+def implementation_private_output(impl_output: IROutputTarget) -> IROutputTarget:
+    """Derive the private module output target from an implementation's output target.
+
+    The private module lives under the ``private`` include directory and uses
+    the ``<prefix>_<impl>_private`` stem convention.  It hosts methods that
+    have ``scope='private'`` in the XML model – i.e. methods that should be
+    visible to other translation units within the library but NOT part of the
+    public API surface.
+    """
+    stem = f"{impl_output.c_symbol}_private"
+    header_path = impl_output.header_path.replace(
+        f"/{impl_output.include_file}",
+        f"/private/{stem}.h",
+    )
+    source_path = impl_output.source_path.replace(impl_output.source_file, f"{stem}.c")
+    generated_header_path = impl_output.generated_header_path.replace(
+        impl_output.include_file.removesuffix(".h"),
+        stem,
+    )
+    generated_source_path = impl_output.generated_source_path.replace(
+        Path(impl_output.generated_source_path).stem,
+        f"implementation_{snake_name(impl_output.entity_name)}_private",
+    )
+    return IROutputTarget(
+        entity_kind="module",
+        entity_name=f"{impl_output.entity_name} private",
+        c_artifact_kind="module",
+        c_symbol=stem,
+        stem=stem,
+        include_file=f"{stem}.h",
+        source_file=f"{stem}.c",
+        header_path=header_path,
+        source_path=source_path,
+        generated_header_path=generated_header_path,
+        generated_source_path=generated_source_path,
+        once_guard=f"{stem}_h_included",
+        header_visibility="private",
+        source_visibility="public",
+    )
+
+
 def class_defs_output(class_output: IROutputTarget) -> IROutputTarget:
     """Derive the defs module output target from a class's output target.
 
@@ -963,6 +1004,9 @@ def collect_umbrella_includes(
             private_includes.add(implementation_defs_output(impl.output).include_file)
             # Internal module — always private
             private_includes.add(implementation_internal_output(impl.output).include_file)
+            # Private module — only when impl has scope="private" methods
+            if _impl_has_private_methods(impl):
+                private_includes.add(implementation_private_output(impl.output).include_file)
 
     # Project-global impl infrastructure modules
     if project_ir.interfaces or project_ir.implementations:
@@ -1250,6 +1294,16 @@ def discover_renderers(
                 renderers[internal_xml] = (
                     lambda _repo_root, _pir=project_ir, _im=impl, _fp=getattr(project_ir, 'fallback_projects', None): render_implementation_internal_c_module(_pir, _im, fallback_projects=_fp)
                 )
+            # Private module (only when impl has scope="private" methods)
+            if _impl_has_private_methods(impl):
+                private_out = implementation_private_output(impl_output)
+                private_xml = direct_xml_name(private_out)
+                if private_xml in overrides:
+                    renderers[private_xml] = overrides[private_xml]
+                else:
+                    renderers[private_xml] = (
+                        lambda _repo_root, _pir=project_ir, _im=impl, _fp=getattr(project_ir, 'fallback_projects', None): render_implementation_private_c_module(_pir, _im, fallback_projects=_fp)
+                    )
 
     # --- project-global impl infrastructure modules ---
     # Only registered during full discovery (no entity_kinds filter)
@@ -4102,6 +4156,192 @@ def _impl_binding_constant_symbol(impl_output: IROutputTarget, constant_name: st
     return f"{impl_output.c_symbol}_{snake_name(constant_name).upper()}"
 
 
+def _impl_has_private_methods(impl: IRImplementation) -> bool:
+    """Return True if *impl* has methods that belong in the private header.
+
+    These are methods with ``scope='private'`` and ``declaration='public'``
+    (i.e. declared for library-internal use but not part of the public API).
+    """
+    for method in impl.methods:
+        scope = method.attrs.get("scope", "")
+        decl = method.attrs.get("declaration", "private")
+        if scope == "private" and decl == "public":
+            return True
+    return False
+
+
+def render_implementation_private_c_module(
+    project_ir: IRProject,
+    impl: IRImplementation,
+    *,
+    fallback_projects: list[IRProject] | None = None,
+) -> ET.Element:
+    """Render the private module for an implementation.
+
+    The private module hosts methods that have ``scope='private'`` and
+    ``declaration='public'`` in the XML model.  These methods are visible
+    within the library (e.g. from the ``_private.h`` header) but are **not**
+    part of the public API surface.
+
+    Example: ``vscf_hkdf_extract`` / ``vscf_hkdf_expand``.
+    """
+    impl_output = cast(IROutputTarget, impl.output)
+    private_output = implementation_private_output(impl_output)
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    impl_snake = snake_name(impl.name)
+
+    root = c_module_root(
+        private_output,
+        entity_id=f"{impl_snake}_private",
+        scope="private",
+    )
+    root.set("feature", f"{prefix_upper}_{impl_snake.upper()}")
+
+    # Include the public header (always needed)
+    text_element(root, "c_include", file=impl_output.include_file, is_system="0", scope="public")
+
+    # Collect additional includes needed by private method arguments
+    extra_includes: set[str] = set()
+    for method in impl.methods:
+        scope = method.attrs.get("scope", "")
+        decl = method.attrs.get("declaration", "private")
+        if scope != "private" or decl != "public":
+            continue
+        for arg in method.arguments:
+            if arg.class_name:
+                try:
+                    cls_out = entity_output(project_ir, entity_kind="class", entity_name=arg.class_name)
+                    extra_includes.add(cls_out.include_file)
+                except (KeyError, ValueError):
+                    # Try fallback projects
+                    for fp in (fallback_projects or []):
+                        try:
+                            cls_out = entity_output(fp, entity_kind="class", entity_name=arg.class_name)
+                            extra_includes.add(cls_out.include_file)
+                            break
+                        except (KeyError, ValueError):
+                            pass
+    # Don't duplicate the main public header
+    extra_includes.discard(impl_output.include_file)
+    for inc in sorted(extra_includes):
+        text_element(root, "c_include", file=inc, is_system="0", scope="public")
+
+    # --- Render each scope="private" + declaration="public" method ---
+    for method in impl.methods:
+        scope = method.attrs.get("scope", "")
+        decl = method.attrs.get("declaration", "private")
+        if scope != "private" or decl != "public":
+            continue
+
+        method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
+        method_vis = "private"
+
+        args: list[dict[str, str]] = []
+        is_static = method.attrs.get("is_static") == "1"
+        is_const_self = method.attrs.get("is_const") == "1"
+        if not is_static:
+            args.append({"name": "self", "is_self": "1", **(
+                {"is_const": "1"} if is_const_self else {})})
+
+        for arg in method.arguments:
+            arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
+            if arg.class_name:
+                arg_dict["class"] = arg.class_name
+                effective_access = arg.access
+                if effective_access is None:
+                    if arg.class_name == "buffer":
+                        effective_access = "writeonly"
+                    else:
+                        effective_access = "readonly"
+                is_value = False
+                for fp in (fallback_projects or []):
+                    try:
+                        cls = class_ir(fp, arg.class_name)
+                        if cls.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                        break
+                    except KeyError:
+                        pass
+                if not is_value:
+                    try:
+                        cls = class_ir(project_ir, arg.class_name)
+                        if cls.attrs.get("is_value_type") in {"1", "true"}:
+                            is_value = True
+                    except KeyError:
+                        pass
+                arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                if effective_access == "readonly" and not is_value:
+                    arg_dict["is_const"] = "1"
+            elif arg.interface_name:
+                arg_dict["class"] = "impl"
+                if arg.access in ("readonly", None):
+                    arg_dict["is_const"] = "1"
+                arg_dict["accessed_by"] = "pointer"
+            elif arg.enum_name:
+                arg_dict["enum"] = arg.enum_name
+            elif arg.type_name:
+                resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
+                arg_dict["type"] = resolved_arg_type
+                is_pointer = arg.is_reference or arg.is_array
+                arg_dict["accessed_by"] = "pointer" if is_pointer else "value"
+                if is_pointer and arg.access in ("readonly", None) and not arg.is_array:
+                    arg_dict["is_const"] = "1"
+            args.append(arg_dict)
+
+        ret_type = None
+        ret_class = None
+        ret_is_const = False
+        ret_accessed_by = "value"
+        attrs_list: tuple[str, ...] = ()
+        if method.returns:
+            ret = method.returns[0]
+            if ret.enum_name:
+                ret_type = f"enum:{ret.enum_name}"
+            elif ret.interface_name:
+                ret_class = "impl"
+            elif ret.class_name:
+                ret_class = ret.class_name
+            elif ret.type_name:
+                resolved_ret_type, _ = type_map(ret.type_name, getattr(ret, 'type_size', None))
+                ret_type = resolved_ret_type
+                if ret.is_reference:
+                    ret_accessed_by = "pointer"
+                    if ret.access == "readonly":
+                        ret_is_const = True
+
+        if method.returns and method.returns[0].enum_name == "status":
+            attrs_list = (f"{prefix_upper}_NODISCARD",)
+            ret_type = "status"
+
+        _render_impl_method(
+            root,
+            name=method_name,
+            description=method.description or "",
+            impl=impl,
+            project_ir=project_ir,
+            arguments=args if args else None,
+            return_type=ret_type,
+            return_class=ret_class,
+            return_is_const=ret_is_const,
+            return_accessed_by=ret_accessed_by,
+            code="//  TODO: This is STUB. Implement me.",
+            code_type="stub",
+            visibility=method_vis,
+            declaration="public",
+            definition="private",
+            attributes=attrs_list,
+            fallback_projects=fallback_projects,
+        )
+
+    root.text = (root.text or "") + "\n" + doc_comment(
+        f"Private methods of the '{impl.name}' implementation.\n"
+        f"These methods are not part of the public API."
+    ) + "\n"
+
+    return root
+
+
 def render_implementation_defs_c_module(
     project_ir: IRProject,
     impl: IRImplementation,
@@ -5726,6 +5966,10 @@ def render_implementation_c_module(
         method_decl = method.attrs.get("declaration", "private")
         # Skip methods with explicit declaration="private" — their declarations are hand-written
         if "declaration" in method.attrs and method_decl == "private":
+            continue
+        # Skip scope="private" methods — they belong in the private module
+        method_scope = method.attrs.get("scope", "")
+        if method_scope == "private" and method_decl == "public":
             continue
 
         args: list[dict[str, str]] = []
