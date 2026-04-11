@@ -43,12 +43,12 @@
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Complete
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Document final error count and remaining gap summary
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"` (159 tests OK)
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh` (PASS)
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` (1 error: pre-existing unused function, not codegen-related)
+- [x] Document final error count and remaining gap summary (1 pre-existing error: vscf_mbedtls_bridge_entropy_poll unused function)
 
 ---
 
