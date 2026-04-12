@@ -2473,7 +2473,7 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
                 type=variable_attrs["type"],
                 type_is=variable_attrs["type_is"],
             )
-        if variable_attrs["visibility"] == "public":
+        if variable_attrs["visibility"] == "public" and variable_attrs["declaration"] == "public":
             text_element(variable_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
         if variable.description:
             variable_elem.text = comment_text(variable.description)
@@ -3347,7 +3347,7 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
             raw_val,
         )
         text_element(var_elem, "c_value", value=raw_val, accessed_by="value", type=variable_attrs["type"], type_is=variable_attrs["type_is"])
-    for modifier in [f"{project_ir.prefix.upper()}_PUBLIC"] if variable_attrs["visibility"] == "public" else []:
+    for modifier in [f"{project_ir.prefix.upper()}_PUBLIC"] if variable_attrs["visibility"] == "public" and variable_attrs["declaration"] == "public" else []:
         text_element(var_elem, "c_modifier", value=modifier)
     if getattr(variable, "description", ""):
         var_elem.text = comment_text(getattr(variable, "description"))
