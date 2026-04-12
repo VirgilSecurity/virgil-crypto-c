@@ -1,6 +1,6 @@
 # CG-062: Resolve Model Defaults at Load Time — Status
 
-**Current Step:** Step 2: Simplify project_c_backend.py
+**Current Step:** Step 3: Verification
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-12
 **Review Level:** 2
@@ -35,16 +35,16 @@
 ---
 
 ### Step 2: Simplify `project_c_backend.py`
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Remove all `effective_access` default resolution blocks (6+ occurrences)
-- [ ] Remove hardcoded `data` value-type fallbacks (3 occurrences)
-- [ ] Simplify `is_value_type` checks — read from IR attribute, don't re-derive
-- [ ] Remove buffer/data special-casing in argument/return rendering
-- [ ] Simplify `return_from_source` and `argument_from_source` — trust IR defaults
-- [ ] Fix `context="none"` class rendering — skip lifecycle methods and struct when context is none
-- [ ] Fix `brainkey_client` missing include for library types in properties
-- [ ] Ensure no `None` access/is_reference values reach the rendering layer
+- [x] Remove all `effective_access` default resolution blocks (6+ occurrences) — simplified 6 blocks to use pre-resolved access
+- [x] Remove hardcoded `data` value-type fallbacks (3 occurrences) — replaced with is_reference checks
+- [x] Simplify `is_value_type` checks — read from IR attribute, don't re-derive (4 argument blocks simplified)
+- [x] Remove buffer/data special-casing in argument/return rendering — access defaults now in IR
+- [x] Simplify `return_from_source` and `argument_from_source` — trust IR defaults, removed None checks
+- [x] Fix `context="none"` class rendering — skip lifecycle methods and struct when context is none
+- [x] Fix `brainkey_client` missing include for library types in properties — added _library_type_header mapping + system include rendering in generate_block
+- [x] Ensure no `None` access/is_reference values reach the rendering layer — all None checks simplified to direct access
 
 ---
 
