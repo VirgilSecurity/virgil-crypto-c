@@ -6384,6 +6384,24 @@ def render_implementation_c_module(
                     ret_is_const = True
             elif ret.class_name:
                 ret_class = ret.class_name
+                # Check if return class is a value type
+                _ret_is_value = False
+                for _pir in [project_ir, *(fallback_projects or []), *getattr(project_ir, 'fallback_projects', [])]:
+                    try:
+                        _ret_is_value = class_ir(_pir, ret.class_name).attrs.get('is_value_type') in {'1', 'true'}
+                        break
+                    except (KeyError, ValueError):
+                        pass
+                # Known value types from common project (hardcoded fallback)
+                if not _ret_is_value and ret.class_name == 'data':
+                    _ret_is_value = True
+                # Legacy convention: const methods return non-owning (readonly) by default
+                # but only for pointer types (not value types like vsc_data_t)
+                if is_const_self and ret.access is None and not _ret_is_value:
+                    ret_is_const = True
+                    ret_accessed_by = "pointer"
+                elif ret.access == "disown":
+                    ret_accessed_by = "pointer"
             elif ret.type_name:
                 resolved_ret_type, _ = type_map(ret.type_name, getattr(ret, 'type_size', None))
                 ret_type = resolved_ret_type
