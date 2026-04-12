@@ -38,7 +38,7 @@ def text_element(parent: ET.Element, tag: str, text: str | None = None, **attrs:
 
 
 def snake_name(name: str) -> str:
-    return name.replace("/", "_").replace(" ", "_")
+    return name.strip().replace("/", "_").replace(" ", "_")
 
 
 def module_ir(project_ir: IRProject, name: str) -> IRModule:
@@ -5845,16 +5845,16 @@ def render_implementation_internal_c_module(
         method_scope = method.attrs.get("scope", "")
         if method_scope != "internal":
             continue
-        # Skip methods with declaration="private" — they are hand-written
-        if method.attrs.get("declaration", "private") == "private":
+        # Skip methods with explicit declaration="private" — they are hand-written
+        if method.attrs.get("declaration") == "private":
             continue
         method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
         args: list[dict[str, str]] = []
         is_static = method.attrs.get("is_static") == "1"
         is_const_self = method.attrs.get("is_const") == "1"
         if not is_static:
-            args.append({"name": "self", "is_self": "1", **(
-                {"is_const": "1"} if is_const_self else {})})
+            args.append({"name": "self", "class": "self", **(
+                {"access": "readonly"} if is_const_self else {})})
         for arg in method.arguments:
             arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
             if arg.class_name:
@@ -6539,8 +6539,13 @@ def argument_from_source(
         accessed_by = "value"
         if attrs.get("class") == "self" and attrs.get("passed_by") == "reference":
             accessed_by = "reference"
-        elif attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
-            accessed_by = "pointer"
+        elif attrs.get("class") == "self" and project_ir is not None:
+            try:
+                is_value = class_ir(project_ir, owner_class).attrs.get("is_value_type") in {"1", "true"}
+            except (KeyError, ValueError):
+                is_value = False  # implementations are never value types
+            if not is_value:
+                accessed_by = "pointer"
         elif attrs.get("library") and attrs.get("class") != "self":
             # Library types default to pointer; only value when explicitly is_reference="0"
             accessed_by = "pointer"
