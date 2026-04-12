@@ -3841,6 +3841,7 @@ def _render_dependency_method_element(
     project_ir: IRProject,
     uid: str,
     owner_entity_kind: str = "class",
+    declaration: str = "public",
 ) -> ET.Element:
     """Render a dependency use/take method with a typed dependency argument.
 
@@ -3855,7 +3856,7 @@ def _render_dependency_method_element(
         "c_method",
         name=name,
         visibility="public",
-        declaration="public",
+        declaration=declaration,
         definition="public",
         uid=uid,
     )
@@ -4031,6 +4032,7 @@ def _render_dependency_methods(
     cls: IRClass | IRImplementation,
     entity_kind: str = "class",
     skip_observers: bool = False,
+    declaration: str = "public",
 ) -> None:
     """Render use/take/release methods for each class/implementation dependency.
 
@@ -4095,6 +4097,7 @@ def _render_dependency_methods(
             project_ir=project_ir,
             uid=f"direct_{class_snake}_use_{dep_field}",
             owner_entity_kind=entity_kind,
+            declaration=declaration,
         )
 
         # --- take_X (only for interface/class/impl deps) ---
@@ -4115,6 +4118,7 @@ def _render_dependency_methods(
                 project_ir=project_ir,
                 uid=f"direct_{class_snake}_take_{dep_field}",
                 owner_entity_kind=entity_kind,
+                declaration=declaration,
             )
 
         # --- release_X ---
@@ -4142,7 +4146,7 @@ def _render_dependency_methods(
                 "c_method",
                 name=release_name,
                 visibility="public",
-                declaration="public",
+                declaration=declaration,
                 definition="public",
                 uid=f"direct_{class_snake}_release_{dep_field}",
             )
@@ -5491,9 +5495,9 @@ def render_implementation_internal_c_module(
         did_release_method.text = comment_text(f"This method is called when {dep.type_kind} '{dep.type_name}' was released.")
 
     # --- Dependency management methods: use/take/release (Pattern D) ---
-    # These are rendered in the internal module to match the legacy codegen layout.
+    # These are rendered in the internal module (definitions only, declarations are in public .h).
     if impl.dependencies:
-        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation", skip_observers=True)
+        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation", skip_observers=True, declaration="private")
 
     # --- API table variables (one per bound interface) ---
     api_var_names: list[tuple[str, str]] = []  # (iface_name, var_name)
