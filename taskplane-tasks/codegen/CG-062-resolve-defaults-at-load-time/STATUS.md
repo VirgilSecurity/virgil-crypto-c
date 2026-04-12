@@ -21,7 +21,7 @@
 ---
 
 ### Step 1: Add default resolution pass in `project_ir.py`
-**Status:** ⬜ Not Started
+**Status:** 🟨 In Progress
 
 - [ ] Add `resolve_defaults()` function that runs after `project_to_ir()` builds the IR
 - [ ] Resolve `is_reference` defaults for all arguments, returns, properties
