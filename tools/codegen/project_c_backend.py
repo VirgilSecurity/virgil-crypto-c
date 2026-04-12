@@ -5908,38 +5908,6 @@ def render_implementation_internal_c_module(
     text_element(find_api, "c_code", find_api_body, type="generated", lang="c")
     text_element(find_api, "c_modifier", value="static")
 
-    # --- Interface API accessor functions (Pattern B) ---
-    # e.g. vscf_aes256_gcm_cipher_info_api(void) → returns &cipher_info_api;
-    for binding in impl.interface_bindings:
-        try:
-            iface = interface_ir(project_ir, binding.name)
-        except KeyError:
-            continue
-        iface_output = cast(IROutputTarget, iface.output)
-        iface_snake = snake_name(binding.name)
-        api_type = _interface_api_struct_symbol(iface_output)
-        accessor_name = f"{impl_output.c_symbol}_{iface_snake}_api"
-        var_name = f"{iface_snake}_api"
-
-        accessor = text_element(
-            root,
-            "c_method",
-            name=accessor_name,
-            visibility="public",
-            declaration="external",
-            definition="private",
-            uid=f"c_class_{impl_snake}_method_{iface_snake}_api",
-        )
-        text_element(
-            accessor, "c_return",
-            accessed_by="pointer",
-            type=api_type, type_is="class",
-            is_const_type="1",
-        )
-        text_element(accessor, "c_code", f"return &{var_name};", type="generated", lang="c")
-        text_element(accessor, "c_modifier", value=f"{prefix_upper}_PUBLIC")
-        accessor.text = comment_text(f"Returns instance of the implemented interface '{binding.name}'.")
-
     # --- scope="internal" methods (declarations in internal header, definitions external) ---
     for method in impl.methods:
         method_scope = method.attrs.get("scope", "")
@@ -6091,14 +6059,6 @@ def render_implementation_c_module(
                 text_element(root, "c_include", file=impl_out.include_file, is_system="0", scope="private")
             except (KeyError, ValueError):
                 pass
-
-    # Interface binding headers (public scope — needed for _api(void) accessor return types)
-    for binding in impl.interface_bindings:
-        try:
-            iface_out = entity_output(project_ir, entity_kind="interface", entity_name=binding.name)
-            text_element(root, "c_include", file=iface_out.include_file, is_system="0", scope="public")
-        except (KeyError, ValueError):
-            pass
 
     # Defs and internal headers
     text_element(root, "c_include", file=defs_output.include_file, is_system="0", scope="private")
@@ -6494,51 +6454,6 @@ def render_implementation_c_module(
             attributes=attrs_list,
             fallback_projects=fallback_projects,
         )
-
-    # --- Forward typedefs for interface API types (needed by accessor return types) ---
-    for binding in impl.interface_bindings:
-        try:
-            iface = interface_ir(project_ir, binding.name)
-        except KeyError:
-            continue
-        iface_output = cast(IROutputTarget, iface.output)
-        api_type = _interface_api_struct_symbol(iface_output)
-        text_element(
-            root, "c_alias",
-            name=api_type,
-            type=f"struct {api_type}",
-            declaration="public",
-        )
-
-    # --- Interface API accessor declarations (Pattern B) ---
-    # e.g. VSCF_PUBLIC const vscf_cipher_info_api_t * vscf_aes256_gcm_cipher_info_api(void);
-    for binding in impl.interface_bindings:
-        try:
-            iface = interface_ir(project_ir, binding.name)
-        except KeyError:
-            continue
-        iface_output = cast(IROutputTarget, iface.output)
-        iface_snake = snake_name(binding.name)
-        api_type = _interface_api_struct_symbol(iface_output)
-        accessor_name = f"{impl_output.c_symbol}_{iface_snake}_api"
-
-        accessor = text_element(
-            root,
-            "c_method",
-            name=accessor_name,
-            visibility="public",
-            declaration="public",
-            definition="external",
-            uid=f"c_class_{impl_snake}_method_{iface_snake}_api",
-        )
-        text_element(
-            accessor, "c_return",
-            accessed_by="pointer",
-            type=api_type, type_is="class",
-            is_const_type="1",
-        )
-        text_element(accessor, "c_modifier", value=f"{prefix_upper}_PUBLIC")
-        accessor.text = comment_text(f"Returns instance of the implemented interface '{binding.name}'.")
 
     root.text = comment_text(f"This module contains '{impl.name}' implementation.")
 
