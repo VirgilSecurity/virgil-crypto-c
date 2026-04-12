@@ -5506,7 +5506,7 @@ def render_implementation_internal_c_module(
             "c_variable",
             name=var_name,
             uid=f"c_class_{impl_snake}_variable_{var_name}",
-            visibility="public",
+            visibility="private",
             declaration="private",
             definition="private",
             accessed_by="value",
@@ -5591,8 +5591,6 @@ def render_implementation_internal_c_module(
             if desc:
                 val.text = comment_text(desc)
 
-        # Modifier
-        text_element(var_elem, "c_modifier", value=f"{prefix_upper}_PUBLIC")
         var_elem.text = comment_text(f"Configuration of the interface API '{binding.name} api'.")
         api_var_names.append((binding.name, var_name))
 
