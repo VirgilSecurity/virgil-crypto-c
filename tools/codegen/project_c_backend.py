@@ -6623,7 +6623,8 @@ def argument_from_source(
     extra = {}
     if attrs.get("type") == "byte" and attrs.get("_array") == "given":
         extra["array"] = "given"
-        extra["is_const_type"] = "1"
+        if attrs.get("access") not in ("readwrite", "writeonly"):
+            extra["is_const_type"] = "1"
     elif attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"} and attrs.get("access") != "readwrite":
         extra["is_const_type"] = "1"
     accessed_by = "pointer" if attrs.get("is_reference") in {"1", "true"} else "value"
