@@ -53,11 +53,22 @@
 #ifndef VSCR_RATCHET_TYPEDEFS_H_INCLUDED
 #define VSCR_RATCHET_TYPEDEFS_H_INCLUDED
 
-#include <stdint.h>
-
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include <stdint.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
 
 #ifdef __cplusplus
 extern "C" {
@@ -106,7 +117,6 @@ extern "C" {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 #ifdef __cplusplus
 }

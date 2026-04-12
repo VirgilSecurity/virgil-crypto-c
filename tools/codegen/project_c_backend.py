@@ -2563,8 +2563,6 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
             text_element(method_elem, "c_code", code, type="generated", lang="c")
         if visibility == "public":
             text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
-        elif visibility == "private":
-            text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PRIVATE")
         if method.attrs.get("noreturn") in {"1", "true"}:
             text_element(method_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_NORETURN")
         if method.description:
@@ -2628,6 +2626,7 @@ def _render_library_assert_macros(
             definition="public",
             uid=f"c_class_assert_method_trigger_unhandled_error_of_{kind_id}_{name_id}",
         )
+        text_element(method_elem, "c_modifier", value=f"{prefix_upper}_PUBLIC")
         text_element(method_elem, "c_argument", name="error", accessed_by="value", type="int", type_is="primitive")
         text_element(method_elem, "c_argument", name="file", accessed_by="value", type="char", type_is="primitive", string="given", is_const_type="1")
         text_element(method_elem, "c_argument", name="line", accessed_by="value", type="int", type_is="primitive")
@@ -2959,8 +2958,10 @@ def render_class_c_module(
                     **({"callback": field.callback} if field.callback is not None else {}),
                     **({"enum": field.enum_name} if field.enum_name is not None else {}),
                     **({"type": field.type_name} if field.type_name is not None else {}),
+                    **({"size": field.type_size} if getattr(field, "type_size", None) is not None else {}),
                     **({"access": field.access} if field.access is not None else {}),
                     **({"library": field.library} if field.library is not None else {}),
+                    **({"project": field.project} if getattr(field, "project", None) is not None else {}),
                     **({"is_reference": "1"} if field.is_reference else {}),
                     **({"is_reference": "0"} if field.is_reference_explicit and not field.is_reference else {}),
                     **({"array": "given"} if field.is_array else {}),
@@ -2975,8 +2976,10 @@ def render_class_c_module(
                     **({"callback": field.callback} if field.callback is not None else {}),
                     **({"enum": field.enum_name} if field.enum_name is not None else {}),
                     **({"type": field.type_name} if field.type_name is not None else {}),
+                    **({"size": field.type_size} if getattr(field, "type_size", None) is not None else {}),
                     **({"access": field.access} if field.access is not None else {}),
                     **({"library": field.library} if field.library is not None else {}),
+                    **({"project": field.project} if getattr(field, "project", None) is not None else {}),
                     **({"is_reference": "1"} if field.is_reference else {}),
                     **({"is_reference": "0"} if field.is_reference_explicit and not field.is_reference else {}),
                     **({"array": "given"} if field.is_array else {}),
@@ -3062,12 +3065,20 @@ def render_class_c_module(
     if render_methods:
         # Determine module scope — only render methods whose scope matches
         module_scope = scope or cls.attrs.get("scope", "public")
-        # Forward declarations for declaration="private" methods (hand-written, static)
+        # Forward declarations for hand-written private methods.
+        # Some models mark them with declaration="private", others with scope="private".
         for method in cls.methods:
-            if method.attrs.get("declaration") != "private":
+            is_private_decl = method.attrs.get("declaration") == "private"
+            is_private_scope = method.attrs.get("scope") == "private"
+            if not (is_private_decl or is_private_scope):
+                continue
+            # scope="private" methods that belong to a class whose main module is
+            # itself private are declared in that private header, not as static
+            # source-local helpers.
+            if is_private_scope and module_scope == "private":
                 continue
             method_scope = method.attrs.get("scope", module_scope)
-            if method_scope != module_scope:
+            if not is_private_scope and method_scope != module_scope:
                 continue
             method_args = list(_method_arg_dict(arg) for arg in method.arguments)
             has_context = cls.attrs.get("context", "public") != "none"
@@ -3099,8 +3110,12 @@ def render_class_c_module(
             if method_scope != module_scope:
                 # Method belongs to a different scope module (e.g. internal)
                 continue
-            # Skip methods with declaration="private" — they are hand-written
+            # Skip source-local private helpers. For classes whose module scope is
+            # private, scope="private" methods are part of that private surface and
+            # must still be emitted.
             if method.attrs.get("declaration") == "private":
+                continue
+            if method.attrs.get("scope") == "private" and module_scope != "private":
                 continue
             method_args = list(_method_arg_dict(arg) for arg in method.arguments)
             has_context = cls.attrs.get("context", "public") != "none"
@@ -3201,7 +3216,7 @@ def render_class_internal_c_module(
 
 def _method_arg_dict(arg: object) -> dict[str, str]:
     attrs: dict[str, str] = {}
-    for attr_name, key in (("class_name", "class"), ("interface_name", "interface"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library"), ("enum_name", "enum")):
+    for attr_name, key in (("class_name", "class"), ("interface_name", "interface"), ("callback", "callback"), ("type_name", "type"), ("access", "access"), ("library", "library"), ("project", "project"), ("enum_name", "enum")):
         value = getattr(arg, attr_name, None)
         if value is not None:
             attrs[key] = value
@@ -3238,8 +3253,15 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
     }
     if attrs.get("interface") is not None:
         # Interface property → {prefix}_impl_t pointer
+        prop_project = attrs.get("project")
+        prop_prefix = project_ir.prefix
+        if prop_project:
+            for fp in (project_ir.fallback_projects or []):
+                if fp.name == prop_project:
+                    prop_prefix = fp.prefix
+                    break
         field_attrs.update({
-            "type": f"{project_ir.prefix}_impl_t",
+            "type": f"{prop_prefix}_impl_t",
             "type_is": "class",
             "accessed_by": "pointer",
         })
@@ -3286,8 +3308,9 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
                 "accessed_by": access,
             })
         else:
-            # Non-value-type classes are always accessed by pointer in the struct.
-            # Value-type classes (like data) are accessed by value.
+            # Non-value-type classes are pointer-backed by default, but an explicit
+            # is_reference="0" on the source model must preserve by-value embedding.
+            # Value-type classes (like data) are also embedded by value.
             is_target_value_type = False
             try:
                 target_cls_name = cast(str, resolved_class)
@@ -3304,10 +3327,18 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
                                 break
             except (KeyError, ValueError):
                 pass
+
+            if attrs.get("is_reference") == "0":
+                accessed_by = "value"
+            elif attrs.get("is_reference") == "1":
+                accessed_by = "pointer"
+            else:
+                accessed_by = "value" if is_target_value_type else "pointer"
+
             field_attrs.update({
                 "type": class_type_symbol(project_ir, cast(str, resolved_class)),
                 "type_is": "class",
-                "accessed_by": "value" if is_target_value_type else "pointer",
+                "accessed_by": accessed_by,
             })
     elif callback is not None:
         field_attrs.update({
@@ -3316,7 +3347,7 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
             "accessed_by": "value",
         })
     else:
-        rendered_type, kind = type_map(attrs.get("type"))
+        rendered_type, kind = type_map(attrs.get("type"), attrs.get("size"))
         field_attrs.update({
             "type": rendered_type,
             "type_is": kind,
@@ -3360,7 +3391,7 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
     elif callback is not None:
         variable_attrs.update({"accessed_by": "value", "type": callback_symbol(project_ir, callback_name_from_ref(callback)), "type_is": "callback"})
     else:
-        rendered_type, kind = type_map(getattr(variable, "type_name", None))
+        rendered_type, kind = type_map(getattr(variable, "type_name", None), getattr(variable, "type_size", None))
         variable_attrs.update({"accessed_by": "value", "type": rendered_type, "type_is": kind})
         if attrs.get("array") == "derived":
             variable_attrs["array"] = "derived"
@@ -4934,10 +4965,12 @@ def render_class_defs_c_module(
                 **({"class": field.class_name} if field.class_name is not None else {}),
                 **({"callback": field.callback} if field.callback is not None else {}),
                 **({"type": field.type_name} if field.type_name is not None else {}),
+                **({"size": field.type_size} if getattr(field, "type_size", None) is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
                 **is_ref_attrs,
                 **({"array": "given"} if field.is_array else {}),
                 **({"library": field.library} if field.library is not None else {}),
+                **({"project": field.project} if getattr(field, "project", None) is not None else {}),
                 **({"interface": field.interface_name} if field.interface_name is not None else {}),
                 **({"enum": field.enum_name} if field.enum_name is not None else {}),
             },
@@ -6558,7 +6591,16 @@ def argument_from_source(
     arg_name = name if name is not None else attrs.get("name", "")
     if attrs.get("interface") is not None:
         # Interface-typed argument → resolve to {prefix}_impl_t pointer
-        prefix = project_ir.prefix if project_ir is not None else "vscf"
+        # For cross-project interfaces, use the source project's prefix
+        arg_project = attrs.get("project")
+        if arg_project and project_ir is not None:
+            prefix = project_ir.prefix  # default
+            for fp in (project_ir.fallback_projects or []):
+                if fp.name == arg_project:
+                    prefix = fp.prefix
+                    break
+        else:
+            prefix = project_ir.prefix if project_ir is not None else "vscf"
         type_name = f"{prefix}_impl_t"
         extra: dict[str, str] = {}
         # Access is pre-resolved in the IR
@@ -6595,8 +6637,11 @@ def argument_from_source(
             if not is_value:
                 accessed_by = "pointer"
         elif attrs.get("library") and attrs.get("class") != "self":
-            # Library types default to pointer; only value when explicitly is_reference="0"
-            if attrs.get("is_reference") == "0":
+            # Library types default to pointer; only value when explicitly is_reference="0".
+            # Array out-parameters such as nanopb repeated fields use a double pointer.
+            if (attrs.get("_array") == "given" or attrs.get("array") == "given") and attrs.get("is_reference") in {"1", "true"}:
+                accessed_by = "reference"
+            elif attrs.get("is_reference") == "0":
                 accessed_by = "value"
             else:
                 accessed_by = "pointer"
@@ -6612,6 +6657,10 @@ def argument_from_source(
                     pass
             if not target_is_value_type:
                 accessed_by = "pointer"
+        # Array arguments are pointer-backed in C. When the model also marks the
+        # argument as a reference, preserve the double-pointer form.
+        if attrs.get("_array") == "given" or attrs.get("array") == "given":
+            accessed_by = "reference" if attrs.get("is_reference") in {"1", "true"} else "pointer"
         # Only apply const for readonly pointer types (not value types)
         if effective_cls_access == "readonly" and accessed_by == "pointer":
             extra["is_const_type"] = "1"
@@ -6685,7 +6734,15 @@ def return_from_source(
 ) -> ET.Element:
     if attrs.get("interface") is not None:
         # Interface return → {prefix}_impl_t pointer
-        prefix = project_ir.prefix if project_ir is not None else "vscf"
+        arg_project = attrs.get("project")
+        if arg_project and project_ir is not None:
+            prefix = project_ir.prefix
+            for fp in (project_ir.fallback_projects or []):
+                if fp.name == arg_project:
+                    prefix = fp.prefix
+                    break
+        else:
+            prefix = project_ir.prefix if project_ir is not None else "vscf"
         extra = {}
         if attrs.get("access") not in ("disown", "readwrite"):
             extra["is_const_type"] = "1"

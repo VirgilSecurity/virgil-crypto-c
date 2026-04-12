@@ -56,11 +56,22 @@
 #include "vscr_library.h"
 #include "vscr_atomic.h"
 
-#include <vscr_RatchetMessage.pb.h>
-
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include <vscr_RatchetMessage.pb.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
 
 #ifdef __cplusplus
 extern "C" {
@@ -97,7 +108,6 @@ struct vscr_ratchet_message_t {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 #ifdef __cplusplus
 }

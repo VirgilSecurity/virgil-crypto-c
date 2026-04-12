@@ -59,15 +59,26 @@
 
 #include "vscr_platform.h"
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -176,7 +187,6 @@ typedef void (*vscr_dealloc_fn)(void *mem);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 #ifdef __cplusplus
 }

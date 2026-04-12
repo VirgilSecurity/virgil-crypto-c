@@ -41,6 +41,7 @@ from tools.codegen.project_source import load_named_project_source
 
 
 GENERATED_START = "//  @generated"
+GENERATED_HEADER_INCLUDES_START = "//  @generated_header_includes"
 GENERATED_END = "//  @end"
 
 
@@ -49,7 +50,7 @@ GENERATED_END = "//  @end"
 # Supported projects
 # ---------------------------------------------------------------------------
 
-_SUPPORTED_PROJECTS = ("common", "foundation", "phe")
+_SUPPORTED_PROJECTS = ("common", "foundation", "phe", "ratchet")
 
 
 def supported_projects() -> tuple[str, ...]:
@@ -317,14 +318,34 @@ def norm_text(text: str | None) -> str:
     return textwrap.dedent(html.unescape(text)).strip("\n")
 
 
-def split_generated_sections(content: str) -> tuple[str, str]:
-    start = content.index(GENERATED_START)
-    end = content.index(GENERATED_END, start)
-    prefix = content[:start]
-    suffix = content[end + len(GENERATED_END):]
+def split_tagged_section(content: str, start_marker: str) -> tuple[str, str]:
+    lines = content.splitlines(keepends=True)
+    start_idx: int | None = None
+    end_idx: int | None = None
+
+    for i, line in enumerate(lines):
+        if line.rstrip("\n") == start_marker:
+            start_idx = i
+            break
+    if start_idx is None:
+        raise ValueError(f"start marker not found on its own line: {start_marker}")
+
+    for i in range(start_idx + 1, len(lines)):
+        if lines[i].rstrip("\n") == GENERATED_END:
+            end_idx = i
+            break
+    if end_idx is None:
+        raise ValueError(f"end marker not found for section starting with: {start_marker}")
+
+    prefix = "".join(lines[:start_idx])
+    suffix = "".join(lines[end_idx + 1:])
     if suffix.startswith("\n"):
         suffix = suffix[1:]
     return prefix, suffix
+
+
+def split_generated_sections(content: str) -> tuple[str, str]:
+    return split_tagged_section(content, GENERATED_START)
 
 
 def ensure_parent(path: Path) -> None:
@@ -334,6 +355,23 @@ def ensure_parent(path: Path) -> None:
 def merge_generated_section(existing: str, generated: str) -> str:
     prefix, suffix = split_generated_sections(existing)
     return prefix + generated + suffix
+
+
+def merge_or_insert_tagged_section(existing: str, generated: str, *, start_marker: str, anchor_before: str | None = None) -> str:
+    if start_marker in existing:
+        prefix, suffix = split_tagged_section(existing, start_marker)
+        return prefix + generated + suffix
+
+    if not generated:
+        return existing
+
+    if anchor_before and anchor_before in existing:
+        idx = existing.index(anchor_before)
+        prefix = existing[:idx].rstrip("\n")
+        suffix = existing[idx:].lstrip("\n")
+        return f"{prefix}\n\n{generated}\n\n{suffix}"
+
+    return existing.rstrip("\n") + "\n\n" + generated
 
 
 def iter_project_xml_paths(project_dir: Path, repo_root: Path, *, project: str = "common", include_legacy_fallback: bool = False) -> list[Path]:
@@ -402,18 +440,15 @@ def render_alias(elem: ET.Element) -> str:
     name = elem.attrib['name']
     type_name = elem.attrib['type']
     comment = description_text(elem)
-    # Special case: 'byte' typedef gets a BYTE_DEFINED guard (legacy GSL behavior)
-    if name == 'byte':
-        guard_name = f"{name.upper()}_DEFINED"
+
+    def _guarded_typedef(guard_name: str) -> str:
         lines = [f"#ifndef {guard_name}", f"#define {guard_name}"]
-        # Extract the raw description, unwrapping all //  prefixes
         raw_desc = comment.strip()
         desc_lines = []
         for dl in raw_desc.splitlines():
             dl = dl.strip()
             if dl == '//':
                 continue
-            # Strip ALL '//  ' prefixes (comment_text adds one, model may add another)
             while dl.startswith('//  '):
                 dl = dl[4:]
             while dl.startswith('//'):
@@ -425,6 +460,18 @@ def render_alias(elem: ET.Element) -> str:
         lines.append(f"    typedef {type_name} {name};")
         lines.append(f"#endif // {guard_name}")
         return "\n".join(lines)
+
+    # Special case: 'byte' typedef gets a BYTE_DEFINED guard (legacy GSL behavior)
+    if name == 'byte':
+        return _guarded_typedef(f"{name.upper()}_DEFINED")
+
+    # Legacy array typedef aliases use per-alias include guards, e.g.
+    # vscr_ratchet_public_key_t[32] -> VSCR_RATCHET_PUBLIC_KEY_T_32__DEFINED
+    if '[' in name and ']' in name:
+        import re as _re
+        normalized = _re.sub(r'[^A-Za-z0-9]+', '_', name.upper()).strip('_')
+        return _guarded_typedef(f"{normalized}__DEFINED")
+
     rendered_comment = emit_comment_block(comment)
     return f"{rendered_comment}typedef {type_name} {name};"
 
@@ -615,6 +662,8 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
     if ret is not None:
         ret_type = c_decl(ret.attrib["type"], "", ret.attrib.get("accessed_by", "value"), ret.attrib.get("is_const_type"), ret.attrib.get("string") is not None, ret.attrib.get("array") is not None, ret.attrib.get("type_is")).strip()
     modifiers = " ".join(m.attrib["value"] for m in elem.findall("c_modifier"))
+    if not modifiers and elem.attrib.get("visibility") == "private" and elem.attrib.get("declaration") == "private":
+        modifiers = "static"
     parts = [p for p in [modifiers, ret_type] if p]
     header = " ".join(parts)
     args = []
@@ -656,21 +705,45 @@ def _append_items(out: list[str], items: list[str]) -> None:
             out.append("")
 
 
-def generate_block(root: ET.Element, for_header: bool) -> str:
-    out: list[str] = [
-        "//  @generated",
+def _generated_block_header(start_marker: str, title: str = "Generated section start.") -> list[str]:
+    return [
+        start_marker,
         "// --------------------------------------------------------------------------",
         "// clang-format off",
-        "//  Generated section start.",
+        f"//  {title}",
         "// --------------------------------------------------------------------------",
         "",
     ]
 
+
+def _generated_block_footer() -> list[str]:
+    return [
+        "// --------------------------------------------------------------------------",
+        "//  Generated section end.",
+        "// clang-format on",
+        "// --------------------------------------------------------------------------",
+        "//  @end",
+    ]
+
+
+def generate_header_includes_block(root: ET.Element) -> str:
+    children = list(root)
+    sys_includes = [render_include(c) for c in children if c.tag == 'c_include' and c.attrib.get('is_system') == '1' and c.attrib.get('scope') == 'public']
+    if not sys_includes:
+        return ""
+
+    out: list[str] = _generated_block_header(GENERATED_HEADER_INCLUDES_START, "Generated header includes start.")
+    out.extend(sys_includes)
+    out.append("")
+    out.extend(_generated_block_footer())
+    return "\n".join(out) + "\n"
+
+
+def generate_block(root: ET.Element, for_header: bool) -> str:
+    out: list[str] = _generated_block_header(GENERATED_START)
+
     children = list(root)
     if for_header:
-        # System includes needed by generated code (e.g. library types in methods)
-        sys_includes = [render_include(c) for c in children if c.tag == 'c_include' and c.attrib.get('is_system') == '1' and c.attrib.get('scope') == 'public']
-        _append_items(out, sys_includes)
         _append_items(out, [render_alias(c) for c in children if c.tag == 'c_alias' and c.attrib.get('declaration') == 'public'])
         _append_items(out, [render_c_code(c) for c in children if c.tag == 'c_code' and c.attrib.get('definition') == 'public'])
         _append_items(out, [render_macroses(c) for c in children if c.tag == 'c_macroses' and c.attrib.get('definition') == 'public'])
@@ -697,13 +770,7 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
         out.pop()
     # Ensure exactly 2 trailing blank lines before section end markers (matches legacy)
     out.extend(["", ""])
-    out.extend([
-        "// --------------------------------------------------------------------------",
-        "//  Generated section end.",
-        "// clang-format on",
-        "// --------------------------------------------------------------------------",
-        "//  @end",
-    ])
+    out.extend(_generated_block_footer())
     return "\n".join(out) + "\n"
 
 
@@ -723,9 +790,18 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             continue
         existing = target.read_text()
         generated = generate_block(root, is_header)
+        merged = merge_generated_section(existing, generated)
+        if is_header:
+            include_block = generate_header_includes_block(root)
+            merged = merge_or_insert_tagged_section(
+                merged,
+                include_block,
+                start_marker=GENERATED_HEADER_INCLUDES_START,
+                anchor_before="#ifdef __cplusplus",
+            )
         out_path = out_root / target.relative_to(repo_root)
         ensure_parent(out_path)
-        out_path.write_text(merge_generated_section(existing, generated))
+        out_path.write_text(merged)
         written.append(out_path)
     return written
 

@@ -97,9 +97,17 @@ case "${PROJECT}" in
     CMAKE_TARGET="phe"
     CMAKE_TEST_TARGET="test_phe"
     ;;
+  ratchet)
+    LIB_RESTORE_PATHS=(
+      "library/ratchet/include/virgil/crypto/ratchet"
+      "library/ratchet/src"
+    )
+    CMAKE_TARGET="ratchet"
+    CMAKE_TEST_TARGET="test_ratchet"
+    ;;
   *)
     echo "error: unsupported project '${PROJECT}'" >&2
-    echo "supported projects: common, foundation, phe" >&2
+    echo "supported projects: common, foundation, phe, ratchet" >&2
     exit 1
     ;;
 esac
@@ -197,20 +205,73 @@ for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
   fi
 
   for file in ${changed_files}; do
-    # Check if changes are only within generated blocks
-    # Generated blocks are between @generated and @end markers
-    full_diff=$(git -C "${ROOT_DIR}" diff -- "${file}" 2>/dev/null || true)
+    # Compare only the non-generated portions of the file.
+    # This avoids false positives when diff hunks include generated lines but
+    # the @generated / @end markers themselves are unchanged context lines.
+    outside_generated=$(python3 - <<'PY' "${ROOT_DIR}" "${file}"
+from __future__ import annotations
+import difflib
+import subprocess
+import sys
+from pathlib import Path
 
-    # Check for changes outside generated blocks by looking at diff context
-    # Lines starting with - or + that are NOT within generated sections
-    outside_generated=$(echo "${full_diff}" | awk '
-      /^@@/ { in_hunk=1; next }
-      !in_hunk { next }
-      /^[-+].*@generated/ { in_gen=1; next }
-      /^[-+].*@end/ { in_gen=0; next }
-      in_gen { next }
-      /^[-+][^-+]/ { print }
-    ')
+root = Path(sys.argv[1])
+file = sys.argv[2]
+
+START_MARKERS = {"//  @generated", "//  @generated_header_includes"}
+END = "//  @end"
+
+
+def strip_generated_blocks(text: str) -> str:
+    lines = text.splitlines(keepends=True)
+    out: list[str] = []
+    in_generated = False
+    for line in lines:
+        stripped = line.rstrip("\n")
+        if stripped in START_MARKERS:
+            in_generated = True
+            continue
+        if in_generated:
+            if stripped == END:
+                in_generated = False
+            continue
+        out.append(line)
+    text = "".join(out)
+    while "\n\n\n" in text:
+        text = text.replace("\n\n\n", "\n\n")
+    return text
+
+old_res = subprocess.run(
+    ["git", "-C", str(root), "show", f"HEAD:{file}"],
+    capture_output=True,
+    text=True,
+)
+if old_res.returncode != 0:
+    sys.exit(0)
+
+new_path = root / file
+if not new_path.exists():
+    sys.exit(0)
+
+old_text = strip_generated_blocks(old_res.stdout)
+new_text = strip_generated_blocks(new_path.read_text())
+
+if old_text == new_text:
+    sys.exit(0)
+
+for line in difflib.unified_diff(
+    old_text.splitlines(),
+    new_text.splitlines(),
+    fromfile=file,
+    tofile=file,
+    lineterm="",
+):
+    if line.startswith(("---", "+++", "@@")):
+        continue
+    if line.startswith(("-", "+")) and not line.startswith(("---", "+++")):
+        print(line)
+PY
+)
 
     if [ -n "${outside_generated}" ]; then
       IMPL_CHANGES="${IMPL_CHANGES}\n⚠️  ${file} — changes OUTSIDE generated blocks:\n${outside_generated}\n"

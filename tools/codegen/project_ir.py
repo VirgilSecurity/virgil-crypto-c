@@ -65,6 +65,7 @@ class IRCArgument(IRCommented):
     enum_name: str | None = None
     interface_name: str | None = None
     library: str | None = None
+    project: str | None = None  # Source project for cross-project references
     type_size: str | None = None  # Bit-width for integer/unsigned: "1", "2", "4", "8"
 
 
@@ -88,6 +89,7 @@ class IRCVariable(IRCommented):
     attrs: dict[str, str] = field(default_factory=dict)
     type_kind: str = "type"
     type_name: str | None = None
+    type_size: str | None = None
     callback: str | None = None
     class_name: str | None = None
     access: str | None = None
@@ -145,6 +147,7 @@ class IRCStructField(IRCommented):
     name: str = ""
     type_kind: str = "type"
     type_name: str | None = None
+    type_size: str | None = None
     class_name: str | None = None
     interface_name: str | None = None
     callback: str | None = None
@@ -157,6 +160,7 @@ class IRCStructField(IRCommented):
     array_kind: str | None = None
     array_length_constant: str | None = None
     library: str | None = None
+    project: str | None = None
 
 
 @dataclass
@@ -385,6 +389,7 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         enum_name=attrs.get("enum"),
         interface_name=attrs.get("interface"),
         library=attrs.get("library"),
+        project=attrs.get("project"),
         type_size=attrs.get("size"),
     )
 
@@ -417,6 +422,7 @@ def _variable_to_ir(src) -> IRCVariable:
             "type"
         ),
         type_name=attrs.get("type"),
+        type_size=attrs.get("size"),
         callback=attrs.get("callback"),
         class_name=attrs.get("class") or attrs.get("impl"),
         access=attrs.get("access"),
@@ -440,6 +446,7 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
             "type"
         ),
         type_name=attrs.get("type"),
+        type_size=attrs.get("size"),
         class_name=attrs.get("class") or attrs.get("impl"),
         interface_name=attrs.get("interface"),
         callback=attrs.get("callback"),
@@ -452,6 +459,7 @@ def _field_from_attrs(name: str, attrs: dict[str, str], description: str = "") -
         array_kind=attrs.get("array"),
         array_length_constant=attrs.get("array_length_constant"),
         library=attrs.get("library"),
+        project=attrs.get("project"),
     )
 
 

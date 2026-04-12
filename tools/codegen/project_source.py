@@ -378,8 +378,8 @@ def _named_ref(kind: str, elem: ET.Element) -> NamedRef:
 def _attrs_with_child_shapes(elem: ET.Element) -> dict[str, str]:
     attrs = dict(elem.attrib)
     array = elem.find("array")
-    if array is not None and array.attrib.get("length"):
-        attrs["array"] = array.attrib["length"]
+    if array is not None:
+        attrs["array"] = array.attrib.get("length", "given")
         if array.attrib.get("length_constant"):
             attrs["array_length_constant"] = array.attrib["length_constant"]
     string = elem.find("string")
