@@ -534,12 +534,7 @@ def _render_c_value(cval: ET.Element) -> str:
     cast_elem = cval.find("c_cast")
     if cast_elem is not None:
         cast_type = cast_elem.attrib["type"]
-        # Cast via void(*)(void) intermediary to suppress -Wcast-function-type-mismatch
-        # when impl function pointers are cast to interface callback types.
-        if cast_elem.attrib.get("type_is") == "callback":
-            value = f"({cast_type})(void (*)(void)){value}"
-        else:
-            value = f"({cast_type}){value}"
+        value = f"({cast_type}){value}"
     # For pointer-accessed values that reference local variables, add &
     if cval.attrib.get("accessed_by") == "pointer" and not value.startswith("&"):
         value = f"&{value}"
