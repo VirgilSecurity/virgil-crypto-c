@@ -2913,6 +2913,7 @@ def render_class_c_module(
             field_specs = [
                 ClassFieldSpec(name=field.name, attrs={
                     **({"class": field.class_name} if field.class_name is not None else {}),
+                    **({"interface": field.interface_name} if field.interface_name is not None else {}),
                     **({"callback": field.callback} if field.callback is not None else {}),
                     **({"enum": field.enum_name} if field.enum_name is not None else {}),
                     **({"type": field.type_name} if field.type_name is not None else {}),
@@ -2926,6 +2927,7 @@ def render_class_c_module(
             field_specs = [*extra_struct_fields, *[
                 ClassFieldSpec(name=field.name, attrs={
                     **({"class": field.class_name} if field.class_name is not None else {}),
+                    **({"interface": field.interface_name} if field.interface_name is not None else {}),
                     **({"callback": field.callback} if field.callback is not None else {}),
                     **({"enum": field.enum_name} if field.enum_name is not None else {}),
                     **({"type": field.type_name} if field.type_name is not None else {}),
@@ -3005,10 +3007,45 @@ def render_class_c_module(
     if render_methods:
         # Determine module scope — only render methods whose scope matches
         module_scope = scope or cls.attrs.get("scope", "public")
+        # Forward declarations for declaration="private" methods (hand-written, static)
+        for method in cls.methods:
+            if method.attrs.get("declaration") != "private":
+                continue
+            method_scope = method.attrs.get("scope", module_scope)
+            if method_scope != module_scope:
+                continue
+            method_args = list(_method_arg_dict(arg) for arg in method.arguments)
+            has_context = cls.attrs.get("context", "public") != "none"
+            is_static_method = method.attrs.get("is_static") in {"1", "true"}
+            if has_context and not is_static_method:
+                self_attrs: dict[str, str] = {"class": "self"}
+                if method.attrs.get("is_const") in {"1", "true"}:
+                    self_attrs["access"] = "readonly"
+                method_args.insert(0, {"name": "self", **self_attrs})
+            ret_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
+            method_name = class_method_symbol(project_ir, cls, method.name)
+            _render_ir_method(
+                root,
+                name=method_name,
+                description=method.description,
+                arguments=tuple(method_args),
+                return_attrs=ret_attrs,
+                owner_class=cls.name,
+                project_ir=project_ir,
+                visibility="private",
+                declaration="private",
+                definition="private",
+                modifiers=("static",),
+                uid=f"direct_{snake_name(cls.name)}_fwd_decl_{snake_name(method.name)}",
+            )
+
         for method in cls.methods:
             method_scope = method.attrs.get("scope", module_scope)
             if method_scope != module_scope:
                 # Method belongs to a different scope module (e.g. internal)
+                continue
+            # Skip methods with declaration="private" — they are hand-written
+            if method.attrs.get("declaration") == "private":
                 continue
             method_args = list(_method_arg_dict(arg) for arg in method.arguments)
             has_context = cls.attrs.get("context", "public") != "none"
