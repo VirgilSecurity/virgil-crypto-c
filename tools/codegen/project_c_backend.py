@@ -6029,7 +6029,17 @@ def render_implementation_c_module(
     # Own implementation constants (e.g. RESEED_INTERVAL, ENTROPY_LEN)
     for const in impl.constants:
         const_symbol = _impl_binding_constant_symbol(impl_output, const.name)
-        all_constants.append((const_symbol, const.attrs.get("value", ""), const.description))
+        raw_value = const.attrs.get("value", "")
+        # Resolve .(c_class_X_constant_Y) placeholders to actual constant symbols
+        import re as _re
+        def _resolve_const_placeholder(m: _re.Match) -> str:
+            return f"{impl_output.c_symbol}_{m.group(1).upper()}"
+        resolved_value = _re.sub(
+            r'\.\.?\(c_class_' + _re.escape(snake_name(impl.name)) + r'_constant_([a-z0-9_]+)\)',
+            _resolve_const_placeholder,
+            raw_value,
+        )
+        all_constants.append((const_symbol, resolved_value, const.description))
 
     if all_constants:
         enum_elem = text_element(
