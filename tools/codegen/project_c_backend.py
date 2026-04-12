@@ -3166,6 +3166,8 @@ def _method_arg_dict(arg: object) -> dict[str, str]:
         attrs["is_reference"] = "1"
     elif getattr(arg, "is_reference_explicit", False) and not getattr(arg, "is_reference", False):
         attrs["is_reference"] = "0"
+    if getattr(arg, "access_explicit", False):
+        attrs["access_explicit"] = "1"
     if getattr(arg, "is_string", False):
         attrs["type"] = "string"
     if getattr(arg, "is_array", False):
@@ -4233,7 +4235,12 @@ def _render_reference_class_support(
     # Emit constructor variants (init_with_X, new_with_X) — between new and delete to match legacy ordering
     for ctor in cls.constructors:
         args = tuple(_method_arg_dict(arg) for arg in ctor.arguments)
-        ctor_arg_names = [_method_arg_dict(arg)["name"] for arg in ctor.arguments]
+        def _ctor_rendered_name(arg_dict: dict[str, str]) -> str:
+            name = arg_dict["name"]
+            if arg_dict.get("access") == "disown" and (arg_dict.get("class") or arg_dict.get("interface")):
+                return f"{name}_ref"
+            return name
+        ctor_arg_names = [_ctor_rendered_name(_method_arg_dict(arg)) for arg in ctor.arguments]
         init_name = class_constructor_symbol(project_ir, cls, ctor.name)
         new_name = _class_new_constructor_symbol(project_ir, cls, ctor.name)
         ctor_vis = ctor.attrs.get("visibility", "public")
@@ -6711,6 +6718,9 @@ def return_from_source(
                 accessed_by = "value"
             else:
                 accessed_by = "pointer"
+                # Self returns with EXPLICIT access=readonly get const
+                if attrs.get("access") == "readonly" and attrs.get("access_explicit") == "1":
+                    extra["is_const_type"] = "1"
         else:
             accessed_by = "pointer"
             # Non-owning (readonly) class returns get const

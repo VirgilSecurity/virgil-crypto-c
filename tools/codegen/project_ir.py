@@ -55,6 +55,7 @@ class IRCArgument(IRCommented):
     callback: str | None = None
     class_name: str | None = None
     access: str | None = None
+    access_explicit: bool = False
     is_reference: bool = False
     is_reference_explicit: bool = False
     is_string: bool = False
@@ -371,6 +372,7 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         callback=attrs.get("callback"),
         class_name=attrs.get("class") or attrs.get("impl"),
         access=attrs.get("access"),
+        access_explicit="access" in attrs,
         is_reference=attrs.get("is_reference") in {"1", "true"},
         is_reference_explicit="is_reference" in attrs,
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
