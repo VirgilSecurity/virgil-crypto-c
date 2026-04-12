@@ -89,9 +89,17 @@ case "${PROJECT}" in
     CMAKE_TARGET="foundation"
     CMAKE_TEST_TARGET="test_foundation"
     ;;
+  phe)
+    LIB_RESTORE_PATHS=(
+      "library/phe/include/virgil/crypto/phe"
+      "library/phe/src"
+    )
+    CMAKE_TARGET="phe"
+    CMAKE_TEST_TARGET="test_phe"
+    ;;
   *)
     echo "error: unsupported project '${PROJECT}'" >&2
-    echo "supported projects: common, foundation" >&2
+    echo "supported projects: common, foundation, phe" >&2
     exit 1
     ;;
 esac

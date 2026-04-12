@@ -49,7 +49,7 @@ GENERATED_END = "//  @end"
 # Supported projects
 # ---------------------------------------------------------------------------
 
-_SUPPORTED_PROJECTS = ("common", "foundation")
+_SUPPORTED_PROJECTS = ("common", "foundation", "phe")
 
 
 def supported_projects() -> tuple[str, ...]:
@@ -280,12 +280,16 @@ def direct_c_renderers_for_project(
             f"unsupported project '{project}'; expected one of: {', '.join(supported_projects())}"
         )
 
-    project_ir = project_to_ir(load_named_project_source(project, repo_root))
+    project_source = load_named_project_source(project, repo_root)
+    project_ir = project_to_ir(project_source)
 
-    # Cross-project fallback: foundation needs common types (e.g. data, buffer)
-    if project != "common":
-        common_ir = project_to_ir(load_named_project_source("common", repo_root))
-        project_ir.fallback_projects = [common_ir]
+    # Cross-project fallback: load required projects from model <require project="..."/>
+    fallbacks: list[IRProject] = []
+    for req in project_source.library_requires:
+        if req.kind == "project":
+            fallbacks.append(project_to_ir(load_named_project_source(req.name, repo_root)))
+    if fallbacks:
+        project_ir.fallback_projects = fallbacks
 
     # Only common has custom overrides; other projects use pure auto-discovery
     custom_overrides: dict[str, DirectCRenderer] = {}
@@ -757,9 +761,13 @@ def main() -> int:
 
     # --- Umbrella headers ---
     project_ir = project_to_ir(load_named_project_source(args.project, repo_root))
-    if args.project != "common":
-        common_ir = project_to_ir(load_named_project_source("common", repo_root))
-        project_ir.fallback_projects = [common_ir]
+    umbrella_source = load_named_project_source(args.project, repo_root)
+    umbrella_fallbacks: list[IRProject] = []
+    for req in umbrella_source.library_requires:
+        if req.kind == "project":
+            umbrella_fallbacks.append(project_to_ir(load_named_project_source(req.name, repo_root)))
+    if umbrella_fallbacks:
+        project_ir.fallback_projects = umbrella_fallbacks
     # Read license text from project XML model
     project_xml_path = codegen_root / "models" / f"project_{args.project}" / f"project_{args.project}.xml"
     license_text = ""
