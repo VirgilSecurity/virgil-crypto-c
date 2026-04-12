@@ -45,6 +45,8 @@ Related support headers:
 
 remain checked-in umbrella headers with empty generated blocks and are now tracked as static support artifacts rather than as active fallback migration work.
 
+**Default resolution architecture (CG-062):** All model defaults (access, is_reference) are resolved in `project_ir.py::resolve_defaults()` immediately after `project_to_ir()` builds the IR. This eliminates scattered default resolution in the backend. Rules match legacy GSL `component.gsl`: data→readonly/value, buffer→writeonly(arg)/disown(ret)/readwrite(prop)/pointer, interface/impl/class→pointer, type/enum/callback→value. Classes with `context="none"` get `lifecycle="none"` (no struct, no lifecycle methods).
+
 Interface and implementation rendering is now complete. The `project_c_backend.py` module can render:
 - Interface dispatch modules (public API) and API struct modules (private)
 - Implementation main modules, defs modules (struct definition), and internal modules (vtable init, impl_info)
@@ -263,6 +265,7 @@ Foundation remaining-files phase:
 - `CG-058` — fix HKDF visibility gap + final parity sweep (depends on CG-055, CG-056, CG-057) ✅
 - `CG-059` — fix bare `void` parameter (enum-typed interface args) and bare `status` return type (dependency methods) ✅
 - `CG-060` — fix `vscf_error_t` struct definition, suppress lifecycle for `lifecycle="none"` classes, add implementation constants, fix non-value-type class argument passing ✅
+- `CG-062` — resolve model defaults at load time: move access/is_reference default resolution from scattered render-time checks in `project_c_backend.py` to a single `resolve_defaults()` pass in `project_ir.py`. Eliminates 6 `effective_access` blocks, simplifies `is_value_type` lookups. Fixes `context="none"` classes (base64, alg_factory) to skip struct/lifecycle generation. Adds library-type include mapping for mbedtls types. Foundation build: 0 errors (down from 23). ✅
 
 Future tasks (not yet planned):
 
@@ -275,7 +278,7 @@ Future tasks (not yet planned):
 
 ### Active (blocking foundation build)
 
-- **Foundation header parity (CG-049/050/052):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). CG-052 resolved pointer/array/sized-integer type mismatches in `vscf_asn1rd`/`vscf_asn1wr` (40+ errors → 0). CG-051 resolved pattern E (dispatch bodies). Remaining: `vscf_cipher_alg_info` visibility mismatch (Pattern G — init_ctx_with_members declared PRIVATE but rendered PUBLIC in .c).
+- **Foundation header parity (CG-049/050/052/062):** CG-049 resolved patterns A (NODISCARD), F (const), G (visibility) systematically across all foundation modules. CG-048 previously resolved pattern H. CG-050 resolved patterns B (`_api()` accessors) and D (`did_setup`/`did_release`). CG-052 resolved pointer/array/sized-integer type mismatches in `vscf_asn1rd`/`vscf_asn1wr` (40+ errors → 0). CG-051 resolved pattern E (dispatch bodies). CG-062 resolved `context="none"` classes (alg_factory, base64 — 21 errors), `brainkey_client` missing include (2 errors), and const-qualifier regressions. **Foundation build: 0 errors** (only pre-existing round5 third-party errors remain).
 
 ### Resolved
 

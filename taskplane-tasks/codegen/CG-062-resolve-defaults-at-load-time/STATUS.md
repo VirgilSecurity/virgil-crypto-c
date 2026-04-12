@@ -1,7 +1,7 @@
 # CG-062: Resolve Model Defaults at Load Time — Status
 
 **Current Step:** Step 4: Documentation & Delivery
-**Status:** 🟡 In Progress
+**Status:** ✅ Complete
 **Last Updated:** 2026-04-12
 **Review Level:** 2
 **Review Counter:** 0
@@ -61,19 +61,19 @@
 ---
 
 ### Step 4: Documentation & Delivery
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Update `taskplane-tasks/codegen/CONTEXT.md` — document the defaults resolution architecture
-- [ ] Document the default rules in a code comment at the top of the resolution function
-- [ ] Discoveries logged in STATUS.md
-- [ ] All steps complete
-- [ ] All Python tests passing
-- [ ] Common build gate passes
-- [ ] Foundation build: 0 errors (down from 23)
-- [ ] No `None` values for `access` or `is_reference` in IR output
-- [ ] Backend has zero `effective_access` default blocks
-- [ ] Backend has zero hardcoded `data`/`buffer` class special-cases for defaults
-- [ ] Documentation updated
+- [x] Update `taskplane-tasks/codegen/CONTEXT.md` — document the defaults resolution architecture
+- [x] Document the default rules in a code comment at the top of the resolution function
+- [x] Discoveries logged in STATUS.md
+- [x] All steps complete
+- [x] All Python tests passing (159/159)
+- [x] Common build gate passes
+- [x] Foundation build: 0 errors (down from 23; only pre-existing round5 third-party errors)
+- [x] No `None` values for `access` or `is_reference` in IR output (resolve_defaults fills all)
+- [x] Backend has zero `effective_access` default blocks (6 simplified to direct access reads)
+- [x] Backend has zero hardcoded `data`/`buffer` class special-cases for defaults (replaced with is_reference)
+- [x] Documentation updated (CONTEXT.md updated with architecture, CG-062 entry added)
 
 ---
 
@@ -88,6 +88,10 @@
 
 | Discovery | Disposition | Location |
 |-----------|-------------|----------|
+| `generate_block` doesn't render `c_include` elements in generated section | Fixed: added system include rendering for `is_system="1"` includes | `common_bootstrap.py:generate_block()` |
+| `argument_from_source` applied `const` qualifier to value-type class args (data) | Fixed: only apply `is_const_type` when `accessed_by=="pointer"` | `project_c_backend.py:argument_from_source()` |
+| Pre-existing: 3 round5 third-party build errors (crypto_kem redefinition) | Out of scope | `build/thirdparty/round5/` |
+| Pre-existing: private methods (declaration="private") rendered in public module | Out of scope — needs separate filtering pass | `project_c_backend.py:render_class_c_module()` |
 
 ---
 
