@@ -715,13 +715,6 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             continue
         target = (codegen_root / rel).resolve()
         if not target.exists():
-            # No legacy file — write full generated output as a new file
-            generated = generate_block(root, is_header)
-            if generated.strip():
-                out_path = out_root / target.relative_to(repo_root)
-                ensure_parent(out_path)
-                out_path.write_text(generated)
-                written.append(out_path)
             continue
         existing = target.read_text()
         generated = generate_block(root, is_header)
