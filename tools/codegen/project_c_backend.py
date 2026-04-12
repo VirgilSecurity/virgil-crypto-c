@@ -2867,17 +2867,16 @@ def render_class_c_module(
     for include in _class_dependency_includes(project_ir, cls):
         if include not in resolved_public_includes:
             resolved_public_includes.append(include)
-    # Add system includes for external library types used in struct fields or methods
+    # Add system includes for external library types used in struct fields,
+    # but only when the struct is inline in this module (not in a separate _defs.h).
+    cls_scope = cls.attrs.get("scope", "public")
+    has_explicit_ctx_public = cls_scope == "internal" and cls.attrs.get("context") == "public"
+    will_inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public
     resolved_system_includes: list[str] = []
-    for field in cls.struct_fields:
-        if field.library and field.class_name:
-            lib_header = _library_type_header(field.class_name, field.library)
-            if lib_header and lib_header not in resolved_system_includes:
-                resolved_system_includes.append(lib_header)
-    for method in [*cls.methods, *cls.constructors]:
-        for arg in [*method.arguments, *method.returns]:
-            if arg.library and arg.class_name:
-                lib_header = _library_type_header(arg.class_name, arg.library)
+    if will_inline_struct:
+        for field in cls.struct_fields:
+            if field.library and field.class_name:
+                lib_header = _library_type_header(field.class_name, field.library)
                 if lib_header and lib_header not in resolved_system_includes:
                     resolved_system_includes.append(lib_header)
     if include_own_header_public and class_output.include_file not in resolved_public_includes:
@@ -2892,7 +2891,7 @@ def render_class_c_module(
 
     # Classes with context="none" should not have a struct or lifecycle methods
     context = cls.attrs.get("context", "public")
-    cls_scope = cls.attrs.get("scope", "public")
+    # cls_scope already computed above for system includes
     # Internal-scope classes with EXPLICIT context="public" have inline struct (no _defs.h)
     # Note: check raw attr, not defaulted — unset context means use _defs.h
     has_explicit_context_public = cls_scope == "internal" and cls.attrs.get("context") == "public"
@@ -3077,6 +3076,10 @@ def render_class_c_module(
                     method_args.insert(0, {"name": "self", "class": "self"})
             return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
             method_vis = method.attrs.get("visibility", "public")
+            # NODISCARD for methods returning status enum
+            method_attributes: tuple[str, ...] = ()
+            if method.returns and method.returns[0].enum_name == "status":
+                method_attributes = (f"{project_ir.prefix.upper()}_NODISCARD",)
             # Handle of_class attribute: redirect method to a different namespace
             of_class = method.attrs.get("of_class")
             if of_class:
@@ -3092,6 +3095,7 @@ def render_class_c_module(
                 owner_class=cls.name,
                 project_ir=project_ir,
                 visibility=method_vis,
+                attributes=method_attributes,
                 uid=f"direct_{snake_name(cls.name)}_method_{snake_name(method.name)}",
             )
 
@@ -4163,6 +4167,7 @@ def _render_ir_method(
     declaration: str = "public",
     definition: str = "external",
     modifiers: tuple[str, ...] | None = None,
+    attributes: tuple[str, ...] = (),
     code: str | None = None,
     uid: str | None = None,
 ) -> ET.Element:
@@ -4194,6 +4199,8 @@ def _render_ir_method(
         text_element(method, "c_code", code, type="generated", lang="c")
     for modifier in modifiers:
         text_element(method, "c_modifier", value=modifier)
+    for attr in attributes:
+        text_element(method, "c_attribute", value=attr)
     if description:
         method.text = comment_text(description)
     return method
