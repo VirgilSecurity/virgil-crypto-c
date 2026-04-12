@@ -2442,34 +2442,59 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
 
     for variable in module.variables:
         callback_ref = variable.callback
+        # Variable name: respect c_prefix attribute
+        c_prefix = variable.attrs.get("c_prefix")
+        if c_prefix == "":
+            # c_prefix="" means no prefix, just the identifier
+            var_name = c_identifier(variable.name)
+        else:
+            # Default: just the identifier (module variables use short names in legacy)
+            var_name = c_identifier(variable.name)
         variable_attrs: dict[str, str] = {
-            "name": c_identifier(variable.name),
+            "name": var_name,
             "uid": _module_member_uid(module, variable.attrs, kind="variable", name=variable.name),
             "visibility": variable.visibility or "public",
-            "declaration": variable.declaration or "private",
+            "declaration": variable.declaration or ("public" if (variable.visibility or "public") == "public" else "private"),
             "definition": variable.definition or "private",
         }
         if callback_ref is not None:
             variable_attrs.update({"accessed_by": "value", "type": _module_callback_name_from_ref(project_ir, module, callback_ref), "type_is": "callback"})
         elif variable.class_name is not None:
             resolved_class = variable.class_name
-            variable_attrs.update({"accessed_by": "value", "type": class_type_symbol(project_ir, resolved_class), "type_is": "class"})
+            extra = {}
+            if variable.access not in ("readwrite", "writeonly"):
+                extra["is_const_type"] = "1"
+            variable_attrs.update({"accessed_by": "value", "type": class_type_symbol(project_ir, resolved_class), "type_is": "class", **extra})
         else:
             rendered_type, kind = type_map(variable.type_name)
             variable_attrs.update({"accessed_by": "value", "type": rendered_type, "type_is": kind})
-            if variable.attrs.get("array") == "derived":
-                variable_attrs["array"] = "derived"
-            if variable.type_name == "byte" and variable.access != "readwrite":
+            if variable.attrs.get("array") in ("derived", "fixed"):
+                if variable.attrs.get("array") == "fixed" and variable.attrs.get("array_length_constant"):
+                    variable_attrs["array"] = variable.attrs["array_length_constant"]
+                else:
+                    variable_attrs["array"] = "derived"
+            if variable.access not in ("readwrite", "writeonly"):
                 variable_attrs["is_const_type"] = "1"
         variable_elem = text_element(root, "c_variable", **variable_attrs)
-        if variable.value is not None:
+        # Render ALL values (not just first)
+        all_values = variable.values if variable.values else ([variable.value] if variable.value else [])
+        for val_dict in all_values:
+            if val_dict is None:
+                continue
+            val_type = val_dict.get("type", variable_attrs["type"])
+            val_type_is = variable_attrs.get("type_is", "primitive")
+            if val_type == "size":
+                val_type, val_type_is = type_map("size")
+            elif val_type == "byte":
+                val_type = "byte"
+                val_type_is = "primitive"
             text_element(
                 variable_elem,
                 "c_value",
-                value=_resolve_module_placeholders(variable.value.get("value"), placeholders, project_prefix=project_ir.prefix) or "",
+                value=_resolve_module_placeholders(val_dict.get("value"), placeholders, project_prefix=project_ir.prefix) or "",
                 accessed_by="value",
-                type=variable_attrs["type"],
-                type_is=variable_attrs["type_is"],
+                type=val_type,
+                type_is=val_type_is,
             )
         if variable_attrs["visibility"] == "public" and variable_attrs["declaration"] == "public":
             text_element(variable_elem, "c_modifier", value=f"{project_ir.prefix.upper()}_PUBLIC")
@@ -2729,9 +2754,11 @@ def _dependency_type_symbol(project_ir: IRProject, dep: IRDependency) -> str:
 
     For interface/impl dependencies the type is the framework impl_t.
     For class dependencies the type is the class's own type symbol.
+    For cross-project deps, use the source project's prefix.
     """
     if dep.type_kind in {"interface", "impl"}:
-        return f"{project_ir.prefix}_impl_t"
+        prefix = _dep_prefix(project_ir, dep)
+        return f"{prefix}_impl_t"
     return class_type_symbol(project_ir, dep.type_name)
 
 
@@ -2742,9 +2769,20 @@ def _dependency_destroy_call(project_ir: IRProject, dep: IRDependency) -> str:
     For class dependencies: ``{class_symbol}_destroy``.
     """
     if dep.type_kind in {"interface", "impl"}:
-        return f"{project_ir.prefix}_impl_destroy"
+        prefix = _dep_prefix(project_ir, dep)
+        return f"{prefix}_impl_destroy"
     class_sym = entity_output(project_ir, entity_kind="class", entity_name=dep.type_name).c_symbol
     return f"{class_sym}_destroy"
+
+
+def _dep_prefix(project_ir: IRProject, dep: IRDependency) -> str:
+    """Return the C prefix for a dependency's source project."""
+    dep_project = dep.attrs.get("project")
+    if dep_project:
+        for fp in (project_ir.fallback_projects or []):
+            if fp.name == dep_project:
+                return fp.prefix
+    return project_ir.prefix
 
 
 def _dependency_shallow_copy_call(project_ir: IRProject, dep: IRDependency) -> str:
@@ -2754,7 +2792,8 @@ def _dependency_shallow_copy_call(project_ir: IRProject, dep: IRDependency) -> s
     For class dependencies: ``{class_symbol}_shallow_copy``.
     """
     if dep.type_kind in {"interface", "impl"}:
-        return f"{project_ir.prefix}_impl_shallow_copy"
+        prefix = _dep_prefix(project_ir, dep)
+        return f"{prefix}_impl_shallow_copy"
     class_sym = entity_output(project_ir, entity_kind="class", entity_name=dep.type_name).c_symbol
     return f"{class_sym}_shallow_copy"
 
@@ -2762,8 +2801,10 @@ def _dependency_shallow_copy_call(project_ir: IRProject, dep: IRDependency) -> s
 def _dependency_is_implemented_check(project_ir: IRProject, dep: IRDependency) -> str | None:
     """Return the is_implemented assertion for interface dependencies, or None."""
     if dep.type_kind == "interface":
+        dep_pfx = _dep_prefix(project_ir, dep)
         iface_snake = snake_name(dep.type_name)
-        return f"{project_ir.prefix.upper()}_ASSERT({project_ir.prefix}_{iface_snake}_is_implemented({snake_name(dep.name)}));"
+        # Assert macro uses current project prefix, function uses dep project prefix
+        return f"{project_ir.prefix.upper()}_ASSERT({dep_pfx}_{iface_snake}_is_implemented({snake_name(dep.name)}));"
     return None
 
 

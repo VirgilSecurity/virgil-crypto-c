@@ -579,7 +579,8 @@ def render_variable(elem: ET.Element, for_header: bool = False) -> str:
         storage = ""
     cvals = elem.findall("c_value")
     initializer = ""
-    is_array = elem.attrib.get("array") == "derived"
+    array_attr = elem.attrib.get("array")
+    is_array = array_attr is not None  # "derived" or a fixed size like "8"
     if len(cvals) > 1 or (len(cvals) == 1 and is_array):
         # Struct or array initializer with braces
         parts: list[str] = []
@@ -597,7 +598,10 @@ def render_variable(elem: ET.Element, for_header: bool = False) -> str:
         initializer = f" = {_render_c_value(cvals[0])}"
     decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None, False, elem.attrib.get('type_is'))}"
     if is_array:
-        decl += "[]"
+        if array_attr == "derived":
+            decl += "[]"
+        else:
+            decl += f"[{array_attr}]"  # Fixed-size array e.g. [8]
     if for_header:
         decl += ";"  # Declaration only, no initializer
     else:

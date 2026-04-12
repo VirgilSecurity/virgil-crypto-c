@@ -49,6 +49,7 @@ class VariableSource:
     attrs: dict[str, str] = field(default_factory=dict)
     description: str = ""
     value: dict[str, str] | None = None
+    values: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -410,12 +411,14 @@ def _method_like(kind: str, elem: ET.Element) -> MethodSource:
 
 
 def _variable(elem: ET.Element) -> VariableSource:
-    value = elem.find("value")
+    all_values = elem.findall("value")
+    first_value = all_values[0] if all_values else None
     return VariableSource(
         name=elem.attrib.get("name", ""),
         attrs=_attrs_with_child_shapes(elem),
         description=_description(elem),
-        value=(dict(value.attrib) if value is not None else None),
+        value=(dict(first_value.attrib) if first_value is not None else None),
+        values=[dict(v.attrib) for v in all_values],
     )
 
 

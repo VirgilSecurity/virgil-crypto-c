@@ -95,6 +95,7 @@ class IRCVariable(IRCommented):
     definition: str | None = None
     visibility: str | None = None
     value: dict[str, str] | None = None
+    values: list[dict[str, str]] = field(default_factory=list)
 
 
 @dataclass
@@ -423,6 +424,7 @@ def _variable_to_ir(src) -> IRCVariable:
         definition=attrs.get("definition"),
         visibility=attrs.get("visibility"),
         value=src.value,
+        values=getattr(src, 'values', []),
     )
 
 
