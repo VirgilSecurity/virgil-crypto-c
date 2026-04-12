@@ -571,8 +571,10 @@ def render_variable(elem: ET.Element, for_header: bool = False) -> str:
         # Header: extern declaration with modifiers
         storage = (" ".join(modifiers) + " extern ") if modifiers else "extern "
     elif modifiers:
+        # Modifiers present → use them (e.g. VSCF_PUBLIC), not static
         storage = " ".join(modifiers) + " "
     elif elem.attrib.get("definition") == "private":
+        # No modifier + definition=private → static (file-local)
         storage = "static "
     else:
         storage = ""

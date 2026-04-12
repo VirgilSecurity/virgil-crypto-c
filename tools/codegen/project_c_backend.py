@@ -5653,7 +5653,6 @@ def render_implementation_internal_c_module(
         type=f"{prefix}_impl_delete_fn", type_is="callback",
     )
     val.text = comment_text("Self destruction, according to destruction policy.")
-    text_element(info_elem, "c_modifier", value=f"{prefix_upper}_PUBLIC")
     info_elem.text = comment_text(f"Compile-time known information about '{impl.name}' implementation.")
 
     # --- Lifecycle methods (definition="private", declaration="external") ---
