@@ -1,6 +1,6 @@
 # CG-062: Resolve Model Defaults at Load Time — Status
 
-**Current Step:** Step 1: Add default resolution pass in project_ir.py
+**Current Step:** Step 2: Simplify project_c_backend.py
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-12
 **Review Level:** 2
@@ -21,16 +21,16 @@
 ---
 
 ### Step 1: Add default resolution pass in `project_ir.py`
-**Status:** 🟨 In Progress
+**Status:** ✅ Done
 
-- [ ] Add `resolve_defaults()` function that runs after `project_to_ir()` builds the IR
-- [ ] Resolve `is_reference` defaults for all arguments, returns, properties
-- [ ] Resolve `access` defaults for all arguments, returns, properties (context-aware: argument vs return vs property)
-- [ ] Resolve `access` for method self arguments based on `is_const`
-- [ ] Resolve `access` for impl method returns based on `is_const` (const method → readonly, non-const → readwrite for class/impl returns)
-- [ ] Mark `context="none"` classes with `lifecycle="none"` or equivalent flag
-- [ ] Ensure cross-project classes (`data`, `buffer` from common) are handled
-- [ ] Run tests after this step to catch any regressions from changed IR
+- [x] Add `resolve_defaults()` function that runs after `project_to_ir()` builds the IR
+- [x] Resolve `is_reference` defaults for all arguments, returns, properties
+- [x] Resolve `access` defaults for all arguments, returns, properties (context-aware: argument vs return vs property)
+- [x] Resolve `access` for method self arguments based on `is_const` (N/A — self args are synthetic, not in XML IR)
+- [x] Resolve `access` for impl method returns based on `is_const` (N/A — handled at render time for synthetic methods)
+- [x] Mark `context="none"` classes with `lifecycle="none"` or equivalent flag
+- [x] Ensure cross-project classes (`data`, `buffer` from common) are handled
+- [x] Run tests after this step to catch any regressions from changed IR (159/159 pass, common builds)
 
 ---
 
