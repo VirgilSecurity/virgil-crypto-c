@@ -4808,10 +4808,9 @@ def render_class_defs_c_module(
     for field in cls.struct_fields:
         if field.class_name is not None and field.class_name != "self" and field.class_name != cls.name and field.class_name != "any":
             if field.library:
-                # External library type — add system include for the library header
-                lib_header = _library_type_header(field.class_name, field.library)
-                if lib_header:
-                    _add_include(lib_header, is_system="1")
+                # External library type includes are in the non-generated section
+                # of the legacy file — don't duplicate in the generated block.
+                pass
             else:
                 try:
                     inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=field.class_name)
