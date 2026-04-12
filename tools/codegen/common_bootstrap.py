@@ -50,7 +50,7 @@ GENERATED_END = "//  @end"
 # Supported projects
 # ---------------------------------------------------------------------------
 
-_SUPPORTED_PROJECTS = ("common", "foundation", "phe", "ratchet")
+_SUPPORTED_PROJECTS = ("common", "foundation", "phe", "pythia", "ratchet")
 
 
 def supported_projects() -> tuple[str, ...]:
@@ -480,18 +480,19 @@ def render_c_code(elem: ET.Element) -> str:
     code = norm_text(elem.text)
     lines = code.splitlines()
     if lines and lines[0].lstrip().startswith("#define") and len(lines) > 1:
+        # Strip existing trailing backslash continuations before re-adding
+        cleaned = [line.rstrip().rstrip("\\").rstrip() for line in lines]
         # Find the max content width for column-aligned backslash continuation
         content_widths = []
-        for idx, line in enumerate(lines):
-            if idx < len(lines) - 1 and line.strip():
-                content_widths.append(len(line.rstrip()))
+        for idx, line in enumerate(cleaned):
+            if idx < len(cleaned) - 1 and line.strip():
+                content_widths.append(len(line))
         align_col = max(content_widths) + 1 if content_widths else 70
         rendered: list[str] = []
-        for idx, line in enumerate(lines):
-            if idx < len(lines) - 1 and line.strip():
-                stripped = line.rstrip()
-                padding = max(1, align_col - len(stripped))
-                rendered.append(stripped + ' ' * padding + '\\')
+        for idx, line in enumerate(cleaned):
+            if idx < len(cleaned) - 1 and line.strip():
+                padding = max(1, align_col - len(line))
+                rendered.append(line + ' ' * padding + '\\')
             else:
                 rendered.append(line)
         return "\n".join(rendered)
@@ -840,7 +841,26 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             # single @generated_header_includes section.
             merged, old_includes = _extract_old_header_includes(merged)
             include_block = generate_header_includes_block(root)
-            # Build combined block: old project includes + system includes
+            # Also preserve includes already in an existing @generated_header_includes section
+            existing_section_includes: list[str] = []
+            if GENERATED_HEADER_INCLUDES_START in merged:
+                for ln in merged.splitlines():
+                    stripped = ln.strip()
+                    if stripped.startswith("#include "):
+                        # Only grab includes between the header-includes markers
+                        pass
+                # More precise: extract from the section
+                try:
+                    _, _ = split_tagged_section(merged, GENERATED_HEADER_INCLUDES_START)
+                    sec_start = merged.index(GENERATED_HEADER_INCLUDES_START)
+                    sec_end = merged.index(GENERATED_END, sec_start)
+                    for ln in merged[sec_start:sec_end].splitlines():
+                        stripped = ln.strip()
+                        if stripped.startswith("#include "):
+                            existing_section_includes.append(stripped)
+                except ValueError:
+                    pass
+            # Build combined block: old first-@end includes + existing section includes + system includes
             sys_lines: list[str] = []
             if include_block:
                 for ln in include_block.splitlines():
@@ -850,6 +870,10 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             seen: set[str] = set()
             combined: list[str] = []
             for inc in old_includes:
+                if inc not in seen:
+                    combined.append(inc)
+                    seen.add(inc)
+            for inc in existing_section_includes:
                 if inc not in seen:
                     combined.append(inc)
                     seen.add(inc)
@@ -871,12 +895,13 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                 out_lines.append("")
                 out_lines.extend(_generated_block_footer())
                 include_block = "\n".join(out_lines) + "\n"
-            merged = merge_or_insert_tagged_section(
-                merged,
-                include_block,
-                start_marker=GENERATED_HEADER_INCLUDES_START,
-                anchor_before="#ifdef __cplusplus",
-            )
+            if combined or include_block:
+                merged = merge_or_insert_tagged_section(
+                    merged,
+                    include_block,
+                    start_marker=GENERATED_HEADER_INCLUDES_START,
+                    anchor_before="#ifdef __cplusplus",
+                )
         out_path = out_root / target.relative_to(repo_root)
         ensure_parent(out_path)
         out_path.write_text(merged)

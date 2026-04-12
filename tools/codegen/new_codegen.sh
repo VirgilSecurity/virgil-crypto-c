@@ -97,6 +97,14 @@ case "${PROJECT}" in
     CMAKE_TARGET="phe"
     CMAKE_TEST_TARGET="test_phe"
     ;;
+  pythia)
+    LIB_RESTORE_PATHS=(
+      "library/pythia/include/virgil/crypto/pythia"
+      "library/pythia/src"
+    )
+    CMAKE_TARGET="pythia"
+    CMAKE_TEST_TARGET="test_pythia"
+    ;;
   ratchet)
     LIB_RESTORE_PATHS=(
       "library/ratchet/include/virgil/crypto/ratchet"
@@ -107,7 +115,7 @@ case "${PROJECT}" in
     ;;
   *)
     echo "error: unsupported project '${PROJECT}'" >&2
-    echo "supported projects: common, foundation, phe, ratchet" >&2
+    echo "supported projects: common, foundation, phe, pythia, ratchet" >&2
     exit 1
     ;;
 esac

@@ -167,6 +167,7 @@ class IRCStructField(IRCommented):
 class IRClassMacro(IRCommented):
     name: str = ""
     code: str = ""
+    definition: str = "public"
 
 
 @dataclass
@@ -534,6 +535,7 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
             name=m.name,
             description=m.description,
             code="\n".join(cb.get("text", "") for cb in m.code_blocks) if m.code_blocks else "",
+            definition=m.attrs.get("definition", "public"),
         ) for m in src.macroses],
         requirements=[
             IRRequirement(kind=r.kind, name=r.name, attrs=r.attrs, description=r.description)

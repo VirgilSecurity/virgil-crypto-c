@@ -687,7 +687,8 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
     project.dependency_modules = [module for module in project.resolved_modules if module.name not in explicit_module_names]
 
     for class_ref in project.class_refs:
-        class_path = _model_path(repo_root, project_dir, "class", class_ref["name"])
+        class_area = class_ref.get("from") or project_dir
+        class_path = _model_path(repo_root, class_area, "class", class_ref["name"])
         project.classes.append(load_class_source(class_path))
 
     for enum_ref in project.enum_refs:

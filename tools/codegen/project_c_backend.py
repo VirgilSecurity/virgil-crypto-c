@@ -3448,7 +3448,7 @@ def _render_class_macro(parent: ET.Element, macro, *, project_ir: IRProject, cls
         parent,
         "c_macros",
         name=macro_upper,
-        definition="public",
+        definition=macro.definition,
         uid=f"c_class_{snake_name(cls.name)}_macros_{snake_name(macro.name)}",
     )
     text_element(macros_elem, "c_code", code.strip(), type="generated", lang="c")
@@ -6556,6 +6556,7 @@ def type_map(type_name: str | None, type_size: str | None = None) -> tuple[str, 
         return ("unsigned int", "primitive")
     mapping = {
         "boolean": ("bool", "primitive"),
+        "nothing": ("void", "primitive"),
         "size": ("size_t", "primitive"),
         "integer": ("int", "primitive"),
         "byte": ("byte", "primitive"),
