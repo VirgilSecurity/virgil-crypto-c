@@ -2892,7 +2892,8 @@ def render_class_c_module(
 
     # Classes with context="none" should not have a struct or lifecycle methods
     context = cls.attrs.get("context", "public")
-    inline_struct = is_value_type or not has_lifecycle
+    cls_scope = cls.attrs.get("scope", "public")
+    inline_struct = is_value_type or not has_lifecycle or cls_scope == "internal"
     skip_struct = context == "none"
 
     struct: ET.Element | None = None
@@ -4008,7 +4009,7 @@ def _render_dependency_methods(
                 project_ir=project_ir,
                 owner_name=cls.name,
                 entity_kind=entity_kind,
-                code=did_setup_code,
+                code=None,
                 uid=f"direct_{class_snake}_did_setup_{dep_field}",
             )
             # did_release
@@ -4021,7 +4022,7 @@ def _render_dependency_methods(
                 project_ir=project_ir,
                 owner_name=cls.name,
                 entity_kind=entity_kind,
-                code="// TODO: This is STUB. Implement me.",
+                code=None,
                 uid=f"direct_{class_snake}_did_release_{dep_field}",
             )
 
