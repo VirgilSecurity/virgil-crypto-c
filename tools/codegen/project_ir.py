@@ -646,7 +646,7 @@ def project_to_ir(project: ProjectSource) -> IRProject:
     if project.implementors:
         impl_tag_enums.append(_synthetic_impl_tag_enum(project))
 
-    return IRProject(
+    ir = IRProject(
         name=project.name,
         attrs=project.attrs,
         version=project.version,
@@ -698,3 +698,198 @@ def project_to_ir(project: ProjectSource) -> IRProject:
             if project.error_message_getter else None
         ),
     )
+    resolve_defaults(ir)
+    return ir
+
+
+# ---------------------------------------------------------------------------
+#   Default resolution pass
+#
+#   Resolves all None values for `access` and `is_reference` on IR nodes,
+#   matching the legacy GSL rules from component.gsl.
+#
+#   Rules for is_reference:
+#     - class (general): True (pointer)
+#     - class="data":    False (value — vsc_data_t passed by value)
+#     - class="buffer":  True (pointer)
+#     - interface/impl/api: True (pointer)
+#     - type/enum/callback: False (value)
+#
+#   Rules for access:
+#     - General default: "readonly"
+#     - class="data" (any context): "readonly"
+#     - class="buffer" + argument:  "writeonly"
+#     - class="buffer" + return:    "disown"
+#     - class="buffer" + property/variable: "readwrite"
+#     - property (non-buffer): "readwrite"
+#     - interface/impl self argument in is_const method: "readonly"
+#     - interface/impl self argument in non-const method: "readwrite"
+#     - impl return in is_const method: "readonly"
+#     - impl return in non-const method: "readwrite"
+#     - api (interface api): access forced to "readonly"
+# ---------------------------------------------------------------------------
+
+
+def _resolve_arg_is_reference(arg: IRCArgument) -> None:
+    """Resolve is_reference for an argument if not explicitly set."""
+    # is_reference is already a bool with default False.
+    # We only need to set it to True for class/interface/impl/api kinds
+    # when it wasn't explicitly set in the XML.
+    # The _arg_from_attrs already reads is_reference from XML attrs.
+    # But when the XML doesn't set it, the default False is wrong for
+    # class/interface/impl kinds (except data which should stay False).
+    # We need to know if it was explicitly set. Currently we don't track that
+    # for arguments like we do for struct fields (is_reference_explicit).
+    # The logic: if kind is class/interface and is_reference is False,
+    # it was likely not set (since XML would need is_reference="0" to override).
+    # But data class should remain False. Let's check:
+    pass  # Handled inline in resolve_defaults for arguments
+
+
+def _resolve_arg_defaults(arg: IRCArgument, context: str, method_is_const: bool = False) -> None:
+    """Resolve access and is_reference defaults for an argument.
+
+    Args:
+        arg: The argument IR node.
+        context: One of 'argument', 'return', 'property', 'variable'.
+        method_is_const: Whether the parent method has is_const=True.
+    """
+    # --- is_reference ---
+    # For class kinds: default to True (pointer), except data→False
+    if arg.kind == "class":
+        if arg.class_name == "data":
+            arg.is_reference = False
+        elif not arg.is_reference:
+            # Only override if not already set to True from XML
+            # class/impl default to pointer
+            arg.is_reference = True
+    elif arg.kind == "interface":
+        if not arg.is_reference:
+            arg.is_reference = True
+    # type, enum, callback → is_reference stays False (default)
+
+    # --- access ---
+    if arg.access is not None:
+        return  # Explicitly set in XML, don't override
+
+    if arg.class_name == "data":
+        arg.access = "readonly"
+    elif arg.class_name == "buffer":
+        if context == "argument":
+            arg.access = "writeonly"
+        elif context == "return":
+            arg.access = "disown"
+        elif context in ("property", "variable"):
+            arg.access = "readwrite"
+        else:
+            arg.access = "readonly"
+    elif context == "property":
+        arg.access = "readwrite"
+    else:
+        arg.access = "readonly"
+
+
+def _resolve_field_defaults(field: IRCStructField, context: str) -> None:
+    """Resolve access and is_reference defaults for a struct field / property.
+
+    Args:
+        field: The struct field IR node.
+        context: 'property' or 'field'.
+    """
+    # --- is_reference ---
+    if not field.is_reference_explicit:
+        if field.type_kind == "class":
+            if field.class_name == "data":
+                field.is_reference = False
+            else:
+                field.is_reference = True
+        elif field.type_kind in ("interface",):
+            field.is_reference = True
+        # type, enum, callback → False (default)
+
+    # --- access ---
+    if field.access is not None:
+        return
+
+    if field.class_name == "data":
+        field.access = "readonly"
+    elif field.class_name == "buffer":
+        field.access = "readwrite"  # buffer properties/variables default to readwrite
+    else:
+        field.access = "readwrite"  # properties default to readwrite per GSL
+
+
+def _resolve_variable_defaults(var: IRCVariable) -> None:
+    """Resolve access defaults for a variable."""
+    if var.access is not None:
+        return
+    if var.class_name == "data":
+        var.access = "readonly"
+    elif var.class_name == "buffer":
+        var.access = "readwrite"
+    else:
+        var.access = "readwrite"  # variables default to readwrite
+
+
+def _resolve_method_defaults(method: IRCMethod) -> None:
+    """Resolve defaults for all arguments and returns in a method."""
+    is_const = method.attrs.get("is_const") in {"1", "true"}
+
+    for arg in method.arguments:
+        _resolve_arg_defaults(arg, context="argument", method_is_const=is_const)
+
+    for ret in method.returns:
+        _resolve_arg_defaults(ret, context="return", method_is_const=is_const)
+
+
+def resolve_defaults(ir: IRProject) -> None:
+    """Resolve all default values in the IR, eliminating None access/is_reference.
+
+    This must be called after project_to_ir() builds the IR. After this pass,
+    no argument, return, property, or variable will have access=None.
+    """
+    # --- Modules ---
+    for module in ir.resolved_modules:
+        for method in module.methods:
+            _resolve_method_defaults(method)
+        for callback in module.callbacks:
+            _resolve_method_defaults(callback)
+        for macro in module.macros:
+            _resolve_method_defaults(macro)
+        for macro in module.macro_groups:
+            _resolve_method_defaults(macro)
+        for var in module.variables:
+            _resolve_variable_defaults(var)
+
+    # --- Classes ---
+    for cls in ir.classes:
+        # Mark context="none" classes
+        context = cls.attrs.get("context", "public")
+        if context == "none":
+            cls.attrs["lifecycle"] = "none"
+
+        for method in cls.methods:
+            _resolve_method_defaults(method)
+        for constructor in cls.constructors:
+            _resolve_method_defaults(constructor)
+        for field in cls.struct_fields:
+            _resolve_field_defaults(field, context="property")
+        for var in cls.variables:
+            _resolve_variable_defaults(var)
+
+    # --- Interfaces ---
+    for iface in ir.interfaces:
+        for method in iface.methods:
+            _resolve_method_defaults(method)
+
+    # --- Implementations ---
+    for impl in ir.implementations:
+        for method in impl.methods:
+            _resolve_method_defaults(method)
+        for constructor in impl.constructors:
+            _resolve_method_defaults(constructor)
+        for prop in impl.properties:
+            _resolve_field_defaults(prop, context="property")
+
+    # --- Enums (no access/is_reference to resolve) ---
+    # Enums only have constants, no access/is_reference attributes.

@@ -388,6 +388,25 @@ def class_internal_output(class_output: IROutputTarget) -> IROutputTarget:
     )
 
 
+# Mapping of external library type prefixes to their include headers.
+# Used to automatically add system includes for struct fields that use library types.
+_LIBRARY_TYPE_HEADERS: dict[str, str] = {
+    "mbedtls_ecp_group": "mbedtls/ecp.h",
+    "mbedtls_ecp_point": "mbedtls/ecp.h",
+    "mbedtls_ecp_group_id": "mbedtls/ecp.h",
+    "mbedtls_mpi": "mbedtls/bignum.h",
+    "mbedtls_cipher_context_t": "mbedtls/cipher.h",
+    "mbedtls_md_context_t": "mbedtls/md.h",
+}
+
+
+def _library_type_header(type_name: str | None, library: str | None) -> str | None:
+    """Return the system include header for an external library type, or None."""
+    if type_name is None:
+        return None
+    return _LIBRARY_TYPE_HEADERS.get(type_name)
+
+
 def callback_symbol(project_ir: IRProject, callback_name: str, *, module_name: str | None = None) -> str:
     if module_name is None:
         return f"{project_ir.prefix}_{snake_name(callback_name)}_fn"
@@ -1496,11 +1515,8 @@ def _interface_argument_from_source(
         if not is_value_type:
             accessed_by = "pointer"
         extra: dict[str, str] = {}
-        # Legacy defaults: buffer→writeonly, everything else→readonly
-        # Value types don't use const qualifier (meaningless for pass-by-value)
-        effective_access = src.get("access")
-        if effective_access is None:
-            effective_access = "writeonly" if cls_name == "buffer" else "readonly"
+        # Access is pre-resolved in the IR; value types don't use const qualifier
+        effective_access = src.get("access", "readonly")
         if effective_access == "readonly" and not is_value_type:
             extra["is_const_type"] = "1"
         return text_element(parent, "c_argument", name=src.get("name", ""), accessed_by=accessed_by, type=type_symbol, type_is="class", **extra)
@@ -2851,6 +2867,19 @@ def render_class_c_module(
     for include in _class_dependency_includes(project_ir, cls):
         if include not in resolved_public_includes:
             resolved_public_includes.append(include)
+    # Add system includes for external library types used in struct fields or methods
+    resolved_system_includes: list[str] = []
+    for field in cls.struct_fields:
+        if field.library and field.class_name:
+            lib_header = _library_type_header(field.class_name, field.library)
+            if lib_header and lib_header not in resolved_system_includes:
+                resolved_system_includes.append(lib_header)
+    for method in [*cls.methods, *cls.constructors]:
+        for arg in [*method.arguments, *method.returns]:
+            if arg.library and arg.class_name:
+                lib_header = _library_type_header(arg.class_name, arg.library)
+                if lib_header and lib_header not in resolved_system_includes:
+                    resolved_system_includes.append(lib_header)
     if include_own_header_public and class_output.include_file not in resolved_public_includes:
         resolved_public_includes.append(class_output.include_file)
 
@@ -2858,66 +2887,73 @@ def render_class_c_module(
         text_element(root, "c_include", file=include, is_system="0", scope="private")
     for include in resolved_public_includes:
         text_element(root, "c_include", file=include, is_system="0", scope="public")
+    for include in resolved_system_includes:
+        text_element(root, "c_include", file=include, is_system="1", scope="public")
 
-    # Classes with lifecycle="none" define their struct in the public header (like value types)
+    # Classes with context="none" should not have a struct or lifecycle methods
+    context = cls.attrs.get("context", "public")
     inline_struct = is_value_type or not has_lifecycle
+    skip_struct = context == "none"
 
-    struct = text_element(
-        root,
-        "c_struct",
-        name=class_type_symbol(project_ir, cls.name),
-        visibility="public",
-        declaration=struct_declaration or "public",
-        definition=struct_definition or ("public" if inline_struct else "external"),
-        uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}",
-    )
-    struct.text = comment_text(f"Handle '{cls.name}' context.")
+    struct: ET.Element | None = None
+    if not skip_struct:
+        struct = text_element(
+            root,
+            "c_struct",
+            name=class_type_symbol(project_ir, cls.name),
+            visibility="public",
+            declaration=struct_declaration or "public",
+            definition=struct_definition or ("public" if inline_struct else "external"),
+            uid=f"c_class_{snake_name(cls.name)}_struct_{snake_name(cls.name)}",
+        )
+        struct.text = comment_text(f"Handle '{cls.name}' context.")
 
-    if is_value_type:
-        field_specs = [
-            ClassFieldSpec(name=field.name, attrs={
-                **({"class": field.class_name} if field.class_name is not None else {}),
-                **({"callback": field.callback} if field.callback is not None else {}),
-                **({"enum": field.enum_name} if field.enum_name is not None else {}),
-                **({"type": field.type_name} if field.type_name is not None else {}),
-                **({"access": field.access} if field.access is not None else {}),
-                **({"is_reference": "1"} if field.is_reference else {}),
-                **({"array": "given"} if field.is_array else {}),
-            }, description=field.description)
-            for field in cls.struct_fields
-        ]
-    else:
-        field_specs = [*extra_struct_fields, *[
-            ClassFieldSpec(name=field.name, attrs={
-                **({"class": field.class_name} if field.class_name is not None else {}),
-                **({"callback": field.callback} if field.callback is not None else {}),
-                **({"enum": field.enum_name} if field.enum_name is not None else {}),
-                **({"type": field.type_name} if field.type_name is not None else {}),
-                **({"access": field.access} if field.access is not None else {}),
-                **({"is_reference": "1"} if field.is_reference else {}),
-                **({"array": "given"} if field.is_array else {}),
-            }, description=field.description)
-            for field in cls.struct_fields
-        ]]
+    if struct is not None:
+        if is_value_type:
+            field_specs = [
+                ClassFieldSpec(name=field.name, attrs={
+                    **({"class": field.class_name} if field.class_name is not None else {}),
+                    **({"callback": field.callback} if field.callback is not None else {}),
+                    **({"enum": field.enum_name} if field.enum_name is not None else {}),
+                    **({"type": field.type_name} if field.type_name is not None else {}),
+                    **({"access": field.access} if field.access is not None else {}),
+                    **({"is_reference": "1"} if field.is_reference else {}),
+                    **({"array": "given"} if field.is_array else {}),
+                }, description=field.description)
+                for field in cls.struct_fields
+            ]
+        else:
+            field_specs = [*extra_struct_fields, *[
+                ClassFieldSpec(name=field.name, attrs={
+                    **({"class": field.class_name} if field.class_name is not None else {}),
+                    **({"callback": field.callback} if field.callback is not None else {}),
+                    **({"enum": field.enum_name} if field.enum_name is not None else {}),
+                    **({"type": field.type_name} if field.type_name is not None else {}),
+                    **({"access": field.access} if field.access is not None else {}),
+                    **({"is_reference": "1"} if field.is_reference else {}),
+                    **({"array": "given"} if field.is_array else {}),
+                }, description=field.description)
+                for field in cls.struct_fields
+            ]]
 
-    if inline_struct or extra_struct_fields:
-        for field_spec in field_specs:
-            _render_class_property(struct, field_spec, project_ir=project_ir, owner_class=cls.name)
+        if inline_struct or extra_struct_fields:
+            for field_spec in field_specs:
+                _render_class_property(struct, field_spec, project_ir=project_ir, owner_class=cls.name)
 
-    # Dependency struct fields — each dependency becomes a pointer property.
-    if not is_value_type:
-        for dep in cls.dependencies:
-            dep_type = _dependency_type_symbol(project_ir, dep)
-            dep_field_name = snake_name(dep.name)
-            prop = text_element(
-                struct,
-                "c_property",
-                name=dep_field_name,
-                type=dep_type,
-                type_is="class",
-                accessed_by="pointer",
-            )
-            prop.text = comment_text(f"Dependency to the {dep.type_kind} '{dep.type_name}'.")
+        # Dependency struct fields — each dependency becomes a pointer property.
+        if not is_value_type:
+            for dep in cls.dependencies:
+                dep_type = _dependency_type_symbol(project_ir, dep)
+                dep_field_name = snake_name(dep.name)
+                prop = text_element(
+                    struct,
+                    "c_property",
+                    name=dep_field_name,
+                    type=dep_type,
+                    type_is="class",
+                    accessed_by="pointer",
+                )
+                prop.text = comment_text(f"Dependency to the {dep.type_kind} '{dep.type_name}'.")
 
     if render_variables:
         for variable in cls.variables:
@@ -2943,7 +2979,7 @@ def render_class_c_module(
             if constant.description:
                 const_elem.text = comment_text(constant.description)
 
-    if generate_ctx_size:
+    if generate_ctx_size and not skip_struct:
         _render_ctx_size_method(root, project_ir=project_ir, cls=cls)
 
     if is_value_type and render_methods:
@@ -4381,35 +4417,12 @@ def render_implementation_private_c_module(
                 arg_dict["class"] = arg.class_name
                 if arg.library:
                     arg_dict["library"] = arg.library
+                # Access is pre-resolved in the IR
                 effective_access = arg.access
-                if effective_access is None:
-                    if arg.class_name == "buffer":
-                        effective_access = "writeonly"
-                    else:
-                        effective_access = "readonly"
-                is_value = False
-                if not arg.library:
-                    for fp in (fallback_projects or []):
-                        try:
-                            cls = class_ir(fp, arg.class_name)
-                            if cls.attrs.get("is_value_type") in {"1", "true"}:
-                                is_value = True
-                            break
-                        except KeyError:
-                            pass
-                    if not is_value:
-                        try:
-                            cls = class_ir(project_ir, arg.class_name)
-                            if cls.attrs.get("is_value_type") in {"1", "true"}:
-                                is_value = True
-                        except KeyError:
-                            pass
+                is_value = not arg.is_reference
                 if arg.library:
-                    # Library types default to pointer; only use value when is_reference="0"
-                    if getattr(arg, 'is_reference_explicit', False) and not arg.is_reference:
-                        arg_dict["accessed_by"] = "value"
-                    else:
-                        arg_dict["accessed_by"] = "pointer"
+                    # Library types: use is_reference to determine pointer vs value
+                    arg_dict["accessed_by"] = "value" if not arg.is_reference else "pointer"
                     if effective_access == "readonly":
                         arg_dict["is_const"] = "1"
                 else:
@@ -4422,7 +4435,7 @@ def render_implementation_private_c_module(
                         arg_dict["is_const"] = "1"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
-                if arg.access in ("readonly", None):
+                if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
                 if arg.access == "disown":
                     arg_dict["accessed_by"] = "reference"
@@ -4438,7 +4451,7 @@ def render_implementation_private_c_module(
                 arg_dict["type"] = resolved_arg_type
                 is_pointer = arg.is_reference or arg.is_array
                 arg_dict["accessed_by"] = "pointer" if is_pointer else "value"
-                if is_pointer and arg.access in ("readonly", None) and not arg.is_array:
+                if is_pointer and arg.access == "readonly" and not arg.is_array:
                     arg_dict["is_const"] = "1"
             args.append(arg_dict)
 
@@ -4695,9 +4708,10 @@ def render_class_defs_c_module(
     for field in cls.struct_fields:
         if field.class_name is not None and field.class_name != "self" and field.class_name != cls.name and field.class_name != "any":
             if field.library:
-                # External library type — may need system/library include
-                # These are typically handled by the existing include infrastructure
-                pass
+                # External library type — add system include for the library header
+                lib_header = _library_type_header(field.class_name, field.library)
+                if lib_header:
+                    _add_include(lib_header, is_system="1")
             else:
                 try:
                     inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=field.class_name)
@@ -5191,33 +5205,9 @@ def _render_impl_interface_methods(
                 arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
                 if arg.class_name:
                     arg_dict["class"] = arg.class_name
-                    # Resolve effective access: legacy defaults to 'readonly' except
-                    # buffer arguments which default to 'writeonly'
+                    # Access is pre-resolved in the IR
                     effective_access = arg.access
-                    if effective_access is None:
-                        if arg.class_name == "buffer":
-                            effective_access = "writeonly"
-                        else:
-                            effective_access = "readonly"
-                    # Determine accessed_by: value types (data) passed by value
-                    is_value = arg.kind == "value"
-                    if not is_value:
-                        # Check if the class is a value type via IR lookup
-                        for fp in (fallback_projects or []):
-                            try:
-                                cls = class_ir(fp, arg.class_name)
-                                if cls.attrs.get("is_value_type") in {"1", "true"}:
-                                    is_value = True
-                                break
-                            except KeyError:
-                                pass
-                        if not is_value:
-                            try:
-                                cls = class_ir(project_ir, arg.class_name)
-                                if cls.attrs.get("is_value_type") in {"1", "true"}:
-                                    is_value = True
-                            except KeyError:
-                                pass
+                    is_value = not arg.is_reference
                     if effective_access == "disown" and not is_value:
                         arg_dict["accessed_by"] = "reference"
                         arg_dict["name"] = f"{snake_name(arg.name)}_ref"
@@ -5229,7 +5219,7 @@ def _render_impl_interface_methods(
                 elif arg.interface_name:
                     # Interface arguments are passed as impl_t pointers
                     arg_dict["class"] = "impl"
-                    if arg.access in ("readonly", None):
+                    if arg.access == "readonly":
                         arg_dict["is_const"] = "1"
                     if arg.access == "disown":
                         arg_dict["accessed_by"] = "reference"
@@ -5246,7 +5236,7 @@ def _render_impl_interface_methods(
                     is_pointer = arg.is_reference or arg.is_array
                     accessed_by = "pointer" if is_pointer else "value"
                     arg_dict["accessed_by"] = accessed_by
-                    if is_pointer and arg.access in ("readonly", None) and not arg.is_array:
+                    if is_pointer and arg.access == "readonly" and not arg.is_array:
                         arg_dict["is_const"] = "1"
                 args.append(arg_dict)
 
@@ -5859,16 +5849,14 @@ def render_implementation_internal_c_module(
             arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
             if arg.class_name:
                 arg_dict["class"] = arg.class_name
-                effective_access = arg.access
-                if effective_access is None:
-                    effective_access = "writeonly" if arg.class_name == "buffer" else "readonly"
-                if effective_access == "readonly":
+                # Access is pre-resolved in the IR
+                if arg.access == "readonly":
                     arg_dict["access"] = "readonly"
-                if effective_access == "disown":
+                if arg.access == "disown":
                     arg_dict["access"] = "disown"
             elif arg.interface_name:
                 arg_dict["interface"] = arg.interface_name
-                if arg.access in ("readonly", None):
+                if arg.access == "readonly":
                     arg_dict["access"] = "readonly"
                 if arg.access == "disown":
                     arg_dict["access"] = "disown"
@@ -5886,11 +5874,9 @@ def render_implementation_internal_c_module(
             if ret.enum_name:
                 return_attrs = {"enum": ret.enum_name}
             elif ret.interface_name:
-                return_attrs = {"interface": ret.interface_name, "access": ret.access or "readonly"}
+                return_attrs = {"interface": ret.interface_name, "access": ret.access}
             elif ret.class_name:
-                return_attrs = {"class": ret.class_name}
-                if ret.access:
-                    return_attrs["access"] = ret.access
+                return_attrs = {"class": ret.class_name, "access": ret.access}
             elif ret.type_name:
                 resolved_ret_type, _ = type_map(ret.type_name, getattr(ret, 'type_size', None))
                 return_attrs = {"type": resolved_ret_type}
@@ -6299,38 +6285,12 @@ def render_implementation_c_module(
                 arg_dict["class"] = arg.class_name
                 if arg.library:
                     arg_dict["library"] = arg.library
-                # Resolve effective access: legacy defaults to 'readonly' except
-                # buffer arguments which default to 'writeonly'
+                # Access is pre-resolved in the IR
                 effective_access = arg.access
-                if effective_access is None:
-                    if arg.class_name == "buffer":
-                        effective_access = "writeonly"
-                    else:
-                        effective_access = "readonly"
-                # Determine accessed_by: value types (data) passed by value
-                is_value = False
-                if not arg.library:
-                    for fp in (fallback_projects or []):
-                        try:
-                            cls = class_ir(fp, arg.class_name)
-                            if cls.attrs.get("is_value_type") in {"1", "true"}:
-                                is_value = True
-                            break
-                        except KeyError:
-                            pass
-                    if not is_value:
-                        try:
-                            cls = class_ir(project_ir, arg.class_name)
-                            if cls.attrs.get("is_value_type") in {"1", "true"}:
-                                is_value = True
-                        except KeyError:
-                            pass
+                is_value = not arg.is_reference
                 if arg.library:
-                    # Library types default to pointer; only use value when is_reference="0"
-                    if getattr(arg, 'is_reference_explicit', False) and not arg.is_reference:
-                        arg_dict["accessed_by"] = "value"
-                    else:
-                        arg_dict["accessed_by"] = "pointer"
+                    # Library types: use is_reference to determine pointer vs value
+                    arg_dict["accessed_by"] = "value" if not arg.is_reference else "pointer"
                     if effective_access == "readonly":
                         arg_dict["is_const"] = "1"
                 else:
@@ -6344,7 +6304,7 @@ def render_implementation_c_module(
                         arg_dict["is_const"] = "1"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
-                if arg.access in ("readonly", None):
+                if arg.access == "readonly":
                     arg_dict["is_const"] = "1"
                 if arg.access == "disown":
                     arg_dict["accessed_by"] = "reference"
@@ -6361,7 +6321,7 @@ def render_implementation_c_module(
                 is_pointer = arg.is_reference or arg.is_array
                 accessed_by = "pointer" if is_pointer else "value"
                 arg_dict["accessed_by"] = accessed_by
-                if is_pointer and arg.access in ("readonly", None) and not arg.is_array:
+                if is_pointer and arg.access == "readonly" and not arg.is_array:
                     arg_dict["is_const"] = "1"
             args.append(arg_dict)
 
@@ -6384,20 +6344,10 @@ def render_implementation_c_module(
                     ret_is_const = True
             elif ret.class_name:
                 ret_class = ret.class_name
-                # Check if return class is a value type
-                _ret_is_value = False
-                for _pir in [project_ir, *(fallback_projects or []), *getattr(project_ir, 'fallback_projects', [])]:
-                    try:
-                        _ret_is_value = class_ir(_pir, ret.class_name).attrs.get('is_value_type') in {'1', 'true'}
-                        break
-                    except (KeyError, ValueError):
-                        pass
-                # Known value types from common project (hardcoded fallback)
-                if not _ret_is_value and ret.class_name == 'data':
-                    _ret_is_value = True
-                # Legacy convention: const methods return non-owning (readonly) by default
-                # but only for pointer types (not value types like vsc_data_t)
-                if is_const_self and ret.access is None and not _ret_is_value:
+                # is_reference is pre-resolved: value types have is_reference=False
+                _ret_is_value = not ret.is_reference
+                # Readonly access on pointer types → const return
+                if ret.access == "readonly" and not _ret_is_value:
                     ret_is_const = True
                     ret_accessed_by = "pointer"
                 elif ret.access == "disown":
@@ -6537,10 +6487,8 @@ def argument_from_source(
         prefix = project_ir.prefix if project_ir is not None else "vscf"
         type_name = f"{prefix}_impl_t"
         extra: dict[str, str] = {}
-        # Legacy default: interface args without access → readonly (const)
-        effective_access = attrs.get("access")
-        if effective_access is None:
-            effective_access = "readonly"
+        # Access is pre-resolved in the IR
+        effective_access = attrs.get("access", "readonly")
         if effective_access == "readonly":
             extra["is_const_type"] = "1"
         # Disown access → double pointer (reference) with _ref suffix
@@ -6549,11 +6497,9 @@ def argument_from_source(
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        # Legacy default: buffer→writeonly, self→keep existing, everything else→readonly
+        # Access is pre-resolved in the IR
         effective_cls_access = attrs.get("access")
-        if effective_cls_access is None and attrs.get("class") != "self":
-            effective_cls_access = "writeonly" if attrs.get("class") == "buffer" else "readonly"
-        extra = {"is_const_type": "1"} if effective_cls_access == "readonly" else {}
+        extra: dict[str, str] = {}
         # Handle const prefix in class name
         resolved_class_str = cast(str, resolved_class)
         if resolved_class_str.startswith("const "):
@@ -6589,6 +6535,9 @@ def argument_from_source(
                     pass
             if not target_is_value_type:
                 accessed_by = "pointer"
+        # Only apply const for readonly pointer types (not value types)
+        if effective_cls_access == "readonly" and accessed_by == "pointer":
+            extra["is_const_type"] = "1"
         # Disown access → double pointer (reference) with _ref suffix
         if attrs.get("access") == "disown" and attrs.get("class") != "self":
             return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)

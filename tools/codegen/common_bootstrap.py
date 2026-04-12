@@ -649,6 +649,9 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
 
     children = list(root)
     if for_header:
+        # System includes needed by generated code (e.g. library types in methods)
+        sys_includes = [render_include(c) for c in children if c.tag == 'c_include' and c.attrib.get('is_system') == '1' and c.attrib.get('scope') == 'public']
+        _append_items(out, sys_includes)
         _append_items(out, [render_alias(c) for c in children if c.tag == 'c_alias' and c.attrib.get('declaration') == 'public'])
         _append_items(out, [render_c_code(c) for c in children if c.tag == 'c_code' and c.attrib.get('definition') == 'public'])
         _append_items(out, [render_macroses(c) for c in children if c.tag == 'c_macroses' and c.attrib.get('definition') == 'public'])
