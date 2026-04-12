@@ -3293,11 +3293,22 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
 def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: IRProject, owner_class: str) -> ET.Element:
     attrs = getattr(variable, "attrs")
     callback = attrs.get("callback")
+    # Build variable name — public variables get fully-qualified prefix, private stay short
+    try:
+        class_symbol = entity_output(project_ir, entity_kind="class", entity_name=owner_class).c_symbol
+    except KeyError:
+        class_symbol = f"{project_ir.prefix}_{snake_name(owner_class)}"
+    vis = getattr(variable, "visibility", None) or "public"
+    decl = getattr(variable, "declaration", None)
+    if vis == "public" and decl != "private":
+        var_name = f"{class_symbol}_{snake_name(getattr(variable, 'name'))}"
+    else:
+        var_name = c_identifier(getattr(variable, "name"), callback=callback is not None)
     variable_attrs: dict[str, str] = {
-        "name": c_identifier(getattr(variable, "name"), callback=callback is not None),
+        "name": var_name,
         "uid": f"c_class_{snake_name(owner_class)}_variable_{snake_name(getattr(variable, 'name'))}",
-        "visibility": getattr(variable, "visibility", None) or "public",
-        "declaration": getattr(variable, "declaration", None) or "private",
+        "visibility": vis,
+        "declaration": getattr(variable, "declaration", None) or ("public" if vis == "public" else "private"),
         "definition": getattr(variable, "definition", None) or "private",
     }
     if getattr(variable, "class_name", None) is not None:
@@ -3310,13 +3321,15 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
         variable_attrs.update({"accessed_by": "value", "type": rendered_type, "type_is": kind})
         if attrs.get("array") == "derived":
             variable_attrs["array"] = "derived"
-        if getattr(variable, "type_name", None) == "byte" and attrs.get("access") != "readwrite":
+        if attrs.get("access") not in ("readwrite", "writeonly"):
             variable_attrs["is_const_type"] = "1"
-        # String variables: emit as `const char *const` with quoted value
+        # String variables: emit as const char[] (extern const char[] in header)
         if getattr(variable, "type_name", None) == "string":
-            variable_attrs["type"] = "const char *const"
+            variable_attrs["type"] = "char"
             variable_attrs["type_is"] = "primitive"
             variable_attrs["accessed_by"] = "value"
+            variable_attrs["is_const_type"] = "1"
+            variable_attrs["array"] = "derived"
     var_elem = text_element(parent, "c_variable", **{k: v for k, v in variable_attrs.items() if v is not None})
     if getattr(variable, "value", None) is not None:
         value = cast(dict[str, str], getattr(variable, "value"))
@@ -3324,6 +3337,15 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
         # Wrap string values in double quotes if not already quoted
         if value.get("type") == "string" and not raw_val.startswith('"'):
             raw_val = f'\"{ raw_val}\"'
+        # Resolve .(class_X_variable_Y) placeholders to full variable symbols
+        import re as _re
+        def _resolve_var_placeholder(m: _re.Match) -> str:
+            return f"{class_symbol}_{m.group(1)}"
+        raw_val = _re.sub(
+            r'\.\.?\(class_' + _re.escape(snake_name(owner_class)) + r'_variable_([a-z0-9_]+)\)',
+            _resolve_var_placeholder,
+            raw_val,
+        )
         text_element(var_elem, "c_value", value=raw_val, accessed_by="value", type=variable_attrs["type"], type_is=variable_attrs["type_is"])
     for modifier in [f"{project_ir.prefix.upper()}_PUBLIC"] if variable_attrs["visibility"] == "public" else []:
         text_element(var_elem, "c_modifier", value=modifier)

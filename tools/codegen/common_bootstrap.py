@@ -564,9 +564,18 @@ def _render_c_value_comment(cval: ET.Element) -> str:
     return "\n".join(lines) + "\n"
 
 
-def render_variable(elem: ET.Element) -> str:
+def render_variable(elem: ET.Element, for_header: bool = False) -> str:
     comment = emit_comment_block(description_text(elem))
-    storage = "static " if elem.attrib.get("definition") == "private" else ""
+    modifiers = [m.attrib["value"] for m in elem.findall("c_modifier")]
+    if for_header:
+        # Header: extern declaration with modifiers
+        storage = (" ".join(modifiers) + " extern ") if modifiers else "extern "
+    elif modifiers:
+        storage = " ".join(modifiers) + " "
+    elif elem.attrib.get("definition") == "private":
+        storage = "static "
+    else:
+        storage = ""
     cvals = elem.findall("c_value")
     initializer = ""
     is_array = elem.attrib.get("array") == "derived"
@@ -588,7 +597,10 @@ def render_variable(elem: ET.Element) -> str:
     decl = f"{storage}{c_decl(elem.attrib['type'], elem.attrib['name'], elem.attrib.get('accessed_by', 'value'), elem.attrib.get('is_const_type'), elem.attrib.get('string') is not None, False, elem.attrib.get('type_is'))}"
     if is_array:
         decl += "[]"
-    decl += initializer + ";"
+    if for_header:
+        decl += ";"  # Declaration only, no initializer
+    else:
+        decl += initializer + ";"
     return f"{comment}{decl}"
 
 
@@ -660,7 +672,7 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
         _append_items(out, [render_struct_forward(c) for c in children if c.tag == 'c_struct' and c.attrib.get('declaration') == 'public' and c.attrib.get('definition') != 'public'])
         _append_items(out, [render_callback(c) for c in children if c.tag == 'c_callback' and c.attrib.get('declaration') == 'public'])
         _append_items(out, [render_struct_full(c) for c in children if c.tag == 'c_struct' and c.attrib.get('definition') == 'public'])
-        _append_items(out, [render_variable(c) for c in children if c.tag == 'c_variable' and c.attrib.get('declaration') == 'public'])
+        _append_items(out, [render_variable(c, for_header=True) for c in children if c.tag == 'c_variable' and c.attrib.get('declaration') == 'public'])
         _append_items(out, [render_method(c, False) for c in children if c.tag == 'c_method' and c.attrib.get('declaration') == 'public'])
     else:
         _append_items(out, [render_alias(c) for c in children if c.tag == 'c_alias' and c.attrib.get('declaration') == 'private'])
