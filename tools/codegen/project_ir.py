@@ -59,6 +59,8 @@ class IRCArgument(IRCommented):
     is_reference: bool = False
     is_reference_explicit: bool = False
     is_string: bool = False
+    string_length: str | None = None  # "fixed" or "null_terminated"
+    string_length_constant: str | None = None  # e.g. "64"
     is_array: bool = False
     enum_name: str | None = None
     interface_name: str | None = None
@@ -376,6 +378,8 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         is_reference=attrs.get("is_reference") in {"1", "true"},
         is_reference_explicit="is_reference" in attrs,
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
+        string_length=attrs.get("string"),
+        string_length_constant=attrs.get("string_length_constant"),
         is_array=attrs.get("array") == "given",
         enum_name=attrs.get("enum"),
         interface_name=attrs.get("interface"),

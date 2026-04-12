@@ -3170,6 +3170,12 @@ def _method_arg_dict(arg: object) -> dict[str, str]:
         attrs["access_explicit"] = "1"
     if getattr(arg, "is_string", False):
         attrs["type"] = "string"
+        sl = getattr(arg, "string_length", None)
+        slc = getattr(arg, "string_length_constant", None)
+        if sl:
+            attrs["string_length"] = sl
+        if slc:
+            attrs["string_length_constant"] = slc
     if getattr(arg, "is_array", False):
         attrs["_array"] = "given"
     type_size = getattr(arg, "type_size", None)
@@ -6612,6 +6618,19 @@ def argument_from_source(
         callback_type = callback_symbol(project_ir, callback_name_from_ref(attrs.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"
         return text_element(parent, "c_argument", name=c_identifier(arg_name, callback=True), accessed_by="value", type=callback_type, type_is="callback")
     if attrs.get("type") == "string":
+        if attrs.get("string_length") == "fixed" and attrs.get("string_length_constant"):
+            # Fixed-length writable string buffer: char name[N]
+            return text_element(
+                parent,
+                "c_argument",
+                name=arg_name,
+                accessed_by="value",
+                type="char",
+                type_is="primitive",
+                array=attrs["string_length_constant"],
+            )
+        # Default: null-terminated const string: const char *name
+        is_const = "1" if attrs.get("access") in ("readonly", None) else None
         return text_element(
             parent,
             "c_argument",
@@ -6620,7 +6639,7 @@ def argument_from_source(
             type="char",
             type_is="primitive",
             string="given",
-            is_const_type="1",
+            **({"is_const_type": "1"} if is_const else {}),
         )
     if attrs.get("enum") is not None:
         # Enum-typed argument → resolve to enum type

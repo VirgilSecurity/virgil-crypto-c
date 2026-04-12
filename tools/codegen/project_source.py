@@ -384,6 +384,10 @@ def _attrs_with_child_shapes(elem: ET.Element) -> dict[str, str]:
     string = elem.find("string")
     if string is not None and string.attrib.get("length"):
         attrs["string"] = string.attrib["length"]
+        if string.attrib.get("length_constant"):
+            attrs["string_length_constant"] = string.attrib["length_constant"]
+        if string.attrib.get("access"):
+            attrs["string_access"] = string.attrib["access"]
     return attrs
 
 
