@@ -56,6 +56,7 @@ class IRCArgument(IRCommented):
     class_name: str | None = None
     access: str | None = None
     is_reference: bool = False
+    is_reference_explicit: bool = False
     is_string: bool = False
     is_array: bool = False
     enum_name: str | None = None
@@ -371,6 +372,7 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         class_name=attrs.get("class") or attrs.get("impl"),
         access=attrs.get("access"),
         is_reference=attrs.get("is_reference") in {"1", "true"},
+        is_reference_explicit="is_reference" in attrs,
         is_string=(attrs.get("type") == "string" or attrs.get("string") is not None),
         is_array=attrs.get("array") == "given",
         enum_name=attrs.get("enum"),
@@ -759,12 +761,13 @@ def _resolve_arg_defaults(arg: IRCArgument, context: str, method_is_const: bool 
     if arg.kind == "class":
         if arg.class_name == "data":
             arg.is_reference = False
+        elif arg.is_reference_explicit:
+            pass  # Respect explicit is_reference="0" or is_reference="1"
         elif not arg.is_reference:
-            # Only override if not already set to True from XML
-            # class/impl default to pointer
+            # class/impl default to pointer when not explicitly set
             arg.is_reference = True
     elif arg.kind == "interface":
-        if not arg.is_reference:
+        if not arg.is_reference and not arg.is_reference_explicit:
             arg.is_reference = True
     # type, enum, callback → is_reference stays False (default)
 
@@ -863,10 +866,19 @@ def resolve_defaults(ir: IRProject) -> None:
 
     # --- Classes ---
     for cls in ir.classes:
-        # Mark context="none" classes
-        context = cls.attrs.get("context", "public")
+        # Classes without properties are static utilities — default to context="none"
+        context = cls.attrs.get("context")
+        if context is None and len(cls.struct_fields) == 0:
+            context = "none"
+            cls.attrs["context"] = "none"
+        elif context is None:
+            context = "public"
         if context == "none":
             cls.attrs["lifecycle"] = "none"
+            # All methods in context=none classes are static by default
+            for method in cls.methods:
+                if method.attrs.get("is_static") is None:
+                    method.attrs["is_static"] = "1"
 
         for method in cls.methods:
             _resolve_method_defaults(method)

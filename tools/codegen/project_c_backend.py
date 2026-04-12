@@ -2893,7 +2893,10 @@ def render_class_c_module(
     # Classes with context="none" should not have a struct or lifecycle methods
     context = cls.attrs.get("context", "public")
     cls_scope = cls.attrs.get("scope", "public")
-    inline_struct = is_value_type or not has_lifecycle or cls_scope == "internal"
+    # Internal-scope classes with EXPLICIT context="public" have inline struct (no _defs.h)
+    # Note: check raw attr, not defaulted — unset context means use _defs.h
+    has_explicit_context_public = cls_scope == "internal" and cls.attrs.get("context") == "public"
+    inline_struct = is_value_type or not has_lifecycle or has_explicit_context_public
     skip_struct = context == "none"
 
     struct: ET.Element | None = None
@@ -2919,7 +2922,9 @@ def render_class_c_module(
                     **({"enum": field.enum_name} if field.enum_name is not None else {}),
                     **({"type": field.type_name} if field.type_name is not None else {}),
                     **({"access": field.access} if field.access is not None else {}),
+                    **({"library": field.library} if field.library is not None else {}),
                     **({"is_reference": "1"} if field.is_reference else {}),
+                    **({"is_reference": "0"} if field.is_reference_explicit and not field.is_reference else {}),
                     **({"array": "given"} if field.is_array else {}),
                 }, description=field.description)
                 for field in cls.struct_fields
@@ -2933,13 +2938,24 @@ def render_class_c_module(
                     **({"enum": field.enum_name} if field.enum_name is not None else {}),
                     **({"type": field.type_name} if field.type_name is not None else {}),
                     **({"access": field.access} if field.access is not None else {}),
+                    **({"library": field.library} if field.library is not None else {}),
                     **({"is_reference": "1"} if field.is_reference else {}),
+                    **({"is_reference": "0"} if field.is_reference_explicit and not field.is_reference else {}),
                     **({"array": "given"} if field.is_array else {}),
                 }, description=field.description)
                 for field in cls.struct_fields
             ]]
 
         if inline_struct or extra_struct_fields:
+            # Non-value-type inline structs need lifecycle base fields
+            if has_explicit_context_public and has_lifecycle and not extra_struct_fields:
+                prefix = project_ir.prefix
+                text_element(struct, "c_property", name="self_dealloc_cb",
+                    type=f"{prefix}_dealloc_fn", accessed_by="value",
+                    uid=f"c_class_{snake_name(cls.name)}_struct_self_dealloc_cb")
+                text_element(struct, "c_property", name="refcnt",
+                    type=f"{prefix.upper()}_ATOMIC size_t", accessed_by="value",
+                    uid=f"c_class_{snake_name(cls.name)}_struct_refcnt")
             for field_spec in field_specs:
                 _render_class_property(struct, field_spec, project_ir=project_ir, owner_class=cls.name)
 
@@ -3148,6 +3164,8 @@ def _method_arg_dict(arg: object) -> dict[str, str]:
             attrs[key] = value
     if getattr(arg, "is_reference", False):
         attrs["is_reference"] = "1"
+    elif getattr(arg, "is_reference_explicit", False) and not getattr(arg, "is_reference", False):
+        attrs["is_reference"] = "0"
     if getattr(arg, "is_string", False):
         attrs["type"] = "string"
     if getattr(arg, "is_array", False):
@@ -6560,7 +6578,10 @@ def argument_from_source(
                 accessed_by = "pointer"
         elif attrs.get("library") and attrs.get("class") != "self":
             # Library types default to pointer; only value when explicitly is_reference="0"
-            accessed_by = "pointer"
+            if attrs.get("is_reference") == "0":
+                accessed_by = "value"
+            else:
+                accessed_by = "pointer"
         elif attrs.get("class") != "self" and project_ir is not None:
             # Non-self class argument: check if target class is a value type
             target_is_value_type = False
