@@ -5720,7 +5720,29 @@ def render_implementation_internal_c_module(
         definition="private",
     )
 
-    # --- init_ctx / cleanup_ctx (declaration="public", definition="external") ---
+    # --- init_ctx / cleanup_ctx ---
+    # If impl has properties (state beyond dependencies), these are handwritten (external).
+    # If impl has only dependencies (no properties), generate bodies that release deps.
+    has_properties = len(impl.properties) > 0
+    if has_properties:
+        init_ctx_code = "//  TODO: This is STUB. Implement me."
+        init_ctx_code_type = "stub"
+        init_ctx_definition = "external"
+        cleanup_ctx_code = "//  TODO: This is STUB. Implement me."
+        cleanup_ctx_code_type = "stub"
+        cleanup_ctx_definition = "external"
+    else:
+        # No properties — init_ctx is a no-op, cleanup_ctx releases dependencies
+        init_ctx_code = "VSCF_UNUSED(self);"
+        init_ctx_code_type = "generated"
+        init_ctx_definition = "private"
+        cleanup_lines = []
+        for dep in impl.dependencies:
+            dep_field = snake_name(dep.name)
+            cleanup_lines.append(f"{impl_output.c_symbol}_release_{dep_field}(self);")
+        cleanup_ctx_code = "\n".join(cleanup_lines) if cleanup_lines else "VSCF_UNUSED(self);"
+        cleanup_ctx_code_type = "generated"
+        cleanup_ctx_definition = "private"
     _render_impl_method(
         root, name=f"{impl_output.c_symbol}_init_ctx",
         description="Provides initialization of the implementation specific context.\n"
@@ -5728,11 +5750,11 @@ def render_implementation_internal_c_module(
                     "Note, that context is already zeroed.",
         impl=impl, project_ir=project_ir,
         arguments=[{"name": "self", "is_self": "1"}],
-        code="//  TODO: This is STUB. Implement me.",
-        code_type="stub",
+        code=init_ctx_code,
+        code_type=init_ctx_code_type,
         visibility="private",
         declaration="public",
-        definition="external",
+        definition=init_ctx_definition,
     )
     _render_impl_method(
         root, name=f"{impl_output.c_symbol}_cleanup_ctx",
@@ -5741,11 +5763,11 @@ def render_implementation_internal_c_module(
                     "Note, that context will be zeroed automatically next this method.",
         impl=impl, project_ir=project_ir,
         arguments=[{"name": "self", "is_self": "1"}],
-        code="//  TODO: This is STUB. Implement me.",
-        code_type="stub",
+        code=cleanup_ctx_code,
+        code_type=cleanup_ctx_code_type,
         visibility="private",
         declaration="public",
-        definition="external",
+        definition=cleanup_ctx_definition,
     )
 
     # --- Constructor lifecycle methods (init_with_X, new_with_X) definitions ---
