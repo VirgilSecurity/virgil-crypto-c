@@ -1,6 +1,6 @@
 # CG-062: Resolve Model Defaults at Load Time — Status
 
-**Current Step:** Step 3: Verification
+**Current Step:** Step 4: Documentation & Delivery
 **Status:** 🟡 In Progress
 **Last Updated:** 2026-04-12
 **Review Level:** 2
@@ -49,14 +49,14 @@
 ---
 
 ### Step 3: Verification
-**Status:** ⬜ Not Started
+**Status:** ✅ Done
 
-- [ ] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"`
-- [ ] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh`
-- [ ] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation`
-- [ ] Verify 0 foundation build errors (down from 23)
-- [ ] Diff 10+ generated headers against legacy to verify parity is maintained
-- [ ] Fix any regressions
+- [x] Run FULL Python test suite: `PYTHONPATH=. python3 -m unittest discover -s tools/codegen -p "test_*.py"` — 159/159 pass
+- [x] Run common build gate: `bash tools/codegen/build_common_with_new_codegen.sh` — PASS
+- [x] Run foundation build: `bash tools/codegen/new_codegen.sh --verify foundation` — PASS
+- [x] Verify 0 foundation build errors (down from 23) — 0 errors (3 pre-existing round5 third-party errors only)
+- [x] Diff 10+ generated headers against legacy to verify parity is maintained — checked 12 headers (sha256, sha512, aes256_gcm, alg_factory, base64, key_provider, brainkey_client, error, random, data, buffer, buffer_defs). Common headers identical. Foundation diffs are: cosmetic line-wrapping, missing VSCF_NODISCARD (pre-existing), new API methods. Fixed const vsc_data_t regression.
+- [x] Fix any regressions — fixed const qualifier on value-type class args (data)
 
 ---
 

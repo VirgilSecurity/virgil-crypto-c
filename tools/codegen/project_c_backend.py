@@ -6499,7 +6499,7 @@ def argument_from_source(
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
         # Access is pre-resolved in the IR
         effective_cls_access = attrs.get("access")
-        extra = {"is_const_type": "1"} if effective_cls_access == "readonly" else {}
+        extra: dict[str, str] = {}
         # Handle const prefix in class name
         resolved_class_str = cast(str, resolved_class)
         if resolved_class_str.startswith("const "):
@@ -6535,6 +6535,9 @@ def argument_from_source(
                     pass
             if not target_is_value_type:
                 accessed_by = "pointer"
+        # Only apply const for readonly pointer types (not value types)
+        if effective_cls_access == "readonly" and accessed_by == "pointer":
+            extra["is_const_type"] = "1"
         # Disown access → double pointer (reference) with _ref suffix
         if attrs.get("access") == "disown" and attrs.get("class") != "self":
             return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
