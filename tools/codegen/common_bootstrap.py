@@ -621,6 +621,8 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
     for arg in elem.findall("c_argument"):
         if arg.attrib.get("type") == "void" and not arg.attrib.get("name"):
             args.append("void")
+        elif arg.attrib.get("type") == "...":
+            args.append("...")
         else:
             args.append(c_decl(arg.attrib['type'], arg.attrib['name'], arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, arg.attrib.get('array') is not None, arg.attrib.get('type_is')))
     arg_str = ", ".join(args) if args else "void"

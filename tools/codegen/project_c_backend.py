@@ -38,7 +38,7 @@ def text_element(parent: ET.Element, tag: str, text: str | None = None, **attrs:
 
 
 def snake_name(name: str) -> str:
-    return name.strip().replace("/", "_").replace(" ", "_")
+    return name.strip().replace("/", "_").replace(" ", "_").lower()
 
 
 def module_ir(project_ir: IRProject, name: str) -> IRModule:
@@ -6661,6 +6661,8 @@ def argument_from_source(
         else:
             rendered_type = f"vscf_{snake_name(enum_name)}_t"
         return text_element(parent, "c_argument", name=arg_name, accessed_by="value", type=rendered_type, type_is="primitive")
+    if attrs.get("type") == "varargs":
+        return text_element(parent, "c_argument", type="...", accessed_by="value")
     rendered_type, kind = type_map(attrs.get("type"), attrs.get("size"))
     extra = {}
     if attrs.get("type") == "byte" and attrs.get("_array") == "given":
