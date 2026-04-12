@@ -104,6 +104,7 @@ if ${VERIFY}; then
     echo "--- Restoring generated files ---"
     for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
       git -C "${ROOT_DIR}" checkout -- "${restore_path}" >/dev/null 2>&1 || true
+      git -C "${ROOT_DIR}" clean -fd -- "${restore_path}" >/dev/null 2>&1 || true
     done
     echo "restored ${PROJECT} generated files"
     exit ${exit_code}
