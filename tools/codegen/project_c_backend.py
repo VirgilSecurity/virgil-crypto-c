@@ -1004,12 +1004,10 @@ def collect_umbrella_includes(
         is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
         context = cls.attrs.get("context", "public")
         has_lifecycle = cls.attrs.get("lifecycle") != "none"
-        if not is_value_type and context != "none" and cls_scope != "internal" and has_lifecycle:
+        if not is_value_type and context not in ("none", "internal") and cls_scope != "internal" and has_lifecycle:
             private_includes.add(class_defs_output(cls.output).include_file)
-        # Internal module — for classes with internal-scope methods
-        has_internal = any(m.attrs.get("scope") == "internal" for m in cls.methods)
-        if has_internal and cls_scope != "internal":
-            private_includes.add(class_internal_output(cls.output).include_file)
+        # Note: class _internal.h files live in src/, not include/private/
+        # They should NOT be in the private umbrella header.
 
     for iface in project_ir.interfaces:
         _add(iface.output, scope=iface.attrs.get("scope", ""))
@@ -1020,10 +1018,10 @@ def collect_umbrella_includes(
         impl_scope = impl.attrs.get("scope", "")
         _add(impl.output, scope=impl_scope)
         if impl_scope != "internal":
-            # Defs module — always private
+            # Defs module — always private (in include/private/)
             private_includes.add(implementation_defs_output(impl.output).include_file)
-            # Internal module — always private
-            private_includes.add(implementation_internal_output(impl.output).include_file)
+            # Note: impl _internal.h files live in src/, not include/private/
+            # They should NOT be in the private umbrella header.
             # Private module — only when impl has scope="private" methods
             if _impl_has_private_methods(impl):
                 private_includes.add(implementation_private_output(impl.output).include_file)
