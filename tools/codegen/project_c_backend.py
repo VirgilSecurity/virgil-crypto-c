@@ -522,7 +522,7 @@ def render_api_c_module(project_ir: IRProject) -> ET.Element:
     prefix = project_ir.prefix
 
     # --- require: library -----------------------------------------------
-    text_element(root, "c_include", file=include_file_for_entity(project_ir, entity_kind="module", entity_name="library"))
+    text_element(root, "c_include", file=include_file_for_entity(project_ir, entity_kind="module", entity_name="library"), is_system="0", scope="public")
 
     # --- api_tag enum ---------------------------------------------------
     iface_names = sorted(i.name for i in project_ir.interfaces)
@@ -558,9 +558,9 @@ def render_api_private_c_module(project_ir: IRProject) -> ET.Element:
     prefix = project_ir.prefix
 
     # --- includes -------------------------------------------------------
-    text_element(root, "c_include", file=f"{prefix}_library.h")
-    text_element(root, "c_include", file=f"{prefix}_api.h")
-    text_element(root, "c_include", file=f"{prefix}_impl.h")
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_api.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_impl.h", is_system="0", scope="public")
 
     # --- api_t full struct definition -----------------------------------
     struct_el = text_element(
@@ -601,8 +601,8 @@ def render_impl_c_module(project_ir: IRProject) -> ET.Element:
     PREFIX = prefix.upper()
 
     # --- public includes ------------------------------------------------
-    text_element(root, "c_include", file=f"{prefix}_library.h")
-    text_element(root, "c_include", file=f"{prefix}_api.h")
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_api.h", is_system="0", scope="public")
 
     # --- private includes (source-only) ---------------------------------
     for inc in (f"{prefix}_api_private.h", f"{prefix}_impl_private.h", f"{prefix}_assert.h", f"{prefix}_atomic.h"):
@@ -865,10 +865,10 @@ def render_impl_private_c_module(project_ir: IRProject) -> ET.Element:
     PREFIX = prefix.upper()
 
     # --- includes -------------------------------------------------------
-    text_element(root, "c_include", file=f"{prefix}_library.h")
-    text_element(root, "c_include", file=f"{prefix}_impl.h")
-    text_element(root, "c_include", file=f"{prefix}_atomic.h")
-    text_element(root, "c_include", file=f"{prefix}_api.h")
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_impl.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_atomic.h", is_system="0", scope="public")
+    text_element(root, "c_include", file=f"{prefix}_api.h", is_system="0", scope="public")
 
     # --- callback: cleanup_fn -------------------------------------------
     cb_cleanup = text_element(root, "c_callback", name=f"{prefix}_impl_cleanup_fn", declaration="public")
@@ -1360,14 +1360,16 @@ def enum_constant_name(enum_output: IROutputTarget, constant_name: str) -> str:
 
 
 def render_enum_c_module(project_ir: IRProject, enum: IREnum) -> ET.Element:
-    del project_ir
-
     enum_output = cast(IROutputTarget, enum.output)
     root = c_module_root(
         enum_output,
         entity_id=snake_name(enum.name),
         scope=enum.attrs.get("scope", "public"),
     )
+
+    # Ensure {prefix}_library.h is included (matches legacy GSL codegen behavior)
+    if enum_output.c_symbol != f"{project_ir.prefix}_library":
+        text_element(root, "c_include", file=f"{project_ir.prefix}_library.h", is_system="0", scope="public")
 
     enum_elem = text_element(
         root,
@@ -2328,6 +2330,9 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
     root.set("has_cmakedefine", module.attrs.get("has_cmakedefine", "0"))
 
     text_element(root, "c_include", file=output.include_file, is_system="0", scope="private")
+    # Ensure {prefix}_library.h is included (matches legacy GSL codegen behavior)
+    if output.c_symbol != f"{project_ir.prefix}_library":
+        text_element(root, "c_include", file=f"{project_ir.prefix}_library.h", is_system="0", scope="public")
     for include in module.c_includes:
         include_attrs = dict(include.attrs)
         include_attrs["file"] = _resolve_module_placeholders(include_attrs.get("file") or include.name, placeholders, project_prefix=project_ir.prefix) or ""
@@ -2898,10 +2903,10 @@ def render_class_c_module(
 
     resolved_private_includes = [class_output.include_file, *(private_includes or [])]
     resolved_public_includes = list(public_includes or [])
-    if _class_uses_library_types(cls):
-        library_include = include_file_for_entity(project_ir, entity_kind="module", entity_name="library")
-        if library_include not in resolved_public_includes:
-            resolved_public_includes.append(library_include)
+    # Always include {prefix}_library.h (matches legacy GSL codegen behavior)
+    library_include = include_file_for_entity(project_ir, entity_kind="module", entity_name="library")
+    if library_include not in resolved_public_includes:
+        resolved_public_includes.insert(0, library_include)
     for include in _class_dependency_includes(project_ir, cls):
         if include not in resolved_public_includes:
             resolved_public_includes.append(include)
@@ -3176,6 +3181,8 @@ def render_class_internal_c_module(
     )
     root.set("header_only", "1")
 
+    # Standard includes (matches legacy GSL codegen behavior)
+    text_element(root, "c_include", file=f"{project_ir.prefix}_library.h", is_system="0", scope="public")
     # Require the main class module
     text_element(root, "c_include", file=class_output.include_file, is_system="0", scope="public")
 
@@ -4537,6 +4544,8 @@ def render_implementation_private_c_module(
     )
     root.set("feature", f"{prefix_upper}_{impl_snake.upper()}")
 
+    # Standard includes (matches legacy GSL codegen behavior)
+    text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
     # Include the public header (always needed)
     text_element(root, "c_include", file=impl_output.include_file, is_system="0", scope="public")
 
