@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,9 +51,6 @@
 
 #ifndef VSCF_AES256_GCM_INTERNAL_H_INCLUDED
 #define VSCF_AES256_GCM_INTERNAL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_aes256_gcm.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,11 +65,25 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_aes256_gcm.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -98,25 +107,15 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *self);
 VSCF_PRIVATE void
 vscf_aes256_gcm_cleanup_ctx(vscf_aes256_gcm_t *self);
 
-//
-//  Process buffered encryption/decryption to ensure that data size is
-//  multiple of the block size of the cipher.
-//
-VSCF_PRIVATE void
-vscf_aes256_gcm_update_internal(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out);
-
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_AES256_GCM_INTERNAL_H_INCLUDED

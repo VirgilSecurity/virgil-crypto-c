@@ -220,7 +220,6 @@ vscf_footer_info_shallow_copy(vscf_footer_info_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_footer_info_init() is called.

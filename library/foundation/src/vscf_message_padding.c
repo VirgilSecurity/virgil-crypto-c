@@ -263,7 +263,6 @@ vscf_message_padding_release_rng(vscf_message_padding_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_padding_init() is called.

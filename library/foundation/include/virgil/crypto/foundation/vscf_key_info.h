@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,18 +46,29 @@
 #ifndef VSCF_KEY_INFO_H_INCLUDED
 #define VSCF_KEY_INFO_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -248,18 +258,15 @@ vscf_key_info_compound_hybrid_signer_first_key_alg_id(const vscf_key_info_t *sel
 VSCF_PUBLIC vscf_alg_id_t
 vscf_key_info_compound_hybrid_signer_second_key_alg_id(const vscf_key_info_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_INFO_H_INCLUDED

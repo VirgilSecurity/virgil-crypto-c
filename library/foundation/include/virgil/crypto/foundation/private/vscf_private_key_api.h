@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,19 +51,30 @@
 #ifndef VSCF_PRIVATE_KEY_API_H_INCLUDED
 #define VSCF_PRIVATE_KEY_API_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -84,7 +93,7 @@ typedef vscf_impl_t * (*vscf_private_key_api_extract_public_key_fn)(const vscf_i
 struct vscf_private_key_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'private_key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
+    //  For interface 'private key' MUST be equal to the 'vscf_api_tag_PRIVATE_KEY'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -101,18 +110,15 @@ struct vscf_private_key_api_t {
     vscf_private_key_api_extract_public_key_fn extract_public_key_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PRIVATE_KEY_API_H_INCLUDED

@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
 #define VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,17 +64,42 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    //
+    //  The maximum length of the entropy requested at once.
+    //
+    vscf_seed_entropy_source_GATHER_LEN_MAX = 48
+};
 
 //
 //  Handles implementation details.
@@ -147,12 +166,6 @@ VSCF_PUBLIC vscf_seed_entropy_source_t *
 vscf_seed_entropy_source_shallow_copy(vscf_seed_entropy_source_t *self);
 
 //
-//  Set a new seed as an entropy source.
-//
-VSCF_PUBLIC void
-vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t seed);
-
-//
 //  Defines that implemented source is strong.
 //
 VSCF_PUBLIC bool
@@ -164,6 +177,11 @@ vscf_seed_entropy_source_is_strong(vscf_seed_entropy_source_t *self);
 VSCF_PUBLIC vscf_status_t
 vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
 
+//
+//  Set a new seed as an entropy source.
+//
+VSCF_PUBLIC void
+vscf_seed_entropy_source_reset_seed(vscf_seed_entropy_source_t *self, vsc_data_t seed);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -171,11 +189,9 @@ vscf_seed_entropy_source_gather(vscf_seed_entropy_source_t *self, size_t len, vs
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_SEED_ENTROPY_SOURCE_H_INCLUDED

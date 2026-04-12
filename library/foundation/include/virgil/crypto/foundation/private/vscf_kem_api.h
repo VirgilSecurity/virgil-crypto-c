@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,11 +50,6 @@
 
 #ifndef VSCF_KEM_API_H_INCLUDED
 #define VSCF_KEM_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -71,11 +64,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -96,14 +105,12 @@ typedef size_t (*vscf_kem_api_kem_encapsulated_key_len_fn)(const vscf_impl_t *im
 //
 //  Callback. Generate a shared key and a key encapsulated message.
 //
-typedef vscf_status_t (*vscf_kem_api_kem_encapsulate_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
-        vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key);
+typedef vscf_status_t (*vscf_kem_api_kem_encapsulate_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key);
 
 //
 //  Callback. Decapsulate the shared key.
 //
-typedef vscf_status_t (*vscf_kem_api_kem_decapsulate_fn)(const vscf_impl_t *impl, vsc_data_t encapsulated_key,
-        const vscf_impl_t *private_key, vsc_buffer_t *shared_key);
+typedef vscf_status_t (*vscf_kem_api_kem_decapsulate_fn)(const vscf_impl_t *impl, vsc_data_t encapsulated_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key);
 
 //
 //  Contains API requirements of the interface 'kem'.
@@ -136,18 +143,15 @@ struct vscf_kem_api_t {
     vscf_kem_api_kem_decapsulate_fn kem_decapsulate_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEM_API_H_INCLUDED

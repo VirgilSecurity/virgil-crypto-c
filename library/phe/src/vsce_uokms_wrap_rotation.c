@@ -279,7 +279,6 @@ vsce_uokms_wrap_rotation_release_operation_random(vsce_uokms_wrap_rotation_t *se
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vsce_uokms_wrap_rotation_init() is called.

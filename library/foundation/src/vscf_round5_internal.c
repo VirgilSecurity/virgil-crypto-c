@@ -73,6 +73,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_round5_use_random(vscf_round5_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_round5_take_random(vscf_round5_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_round5_release_random(vscf_round5_t *self);
+
 static const vscf_api_t *
 vscf_round5_find_api(vscf_api_tag_t api_tag);
 
@@ -82,7 +101,7 @@ vscf_round5_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_alg_api_t key_alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_alg' MUST be equal to the 'vscf_api_tag_KEY_ALG'.
+    //  For interface 'key alg' MUST be equal to the  'vscf_api_tag_KEY_ALG'.
     //
     vscf_api_tag_KEY_ALG,
     //
@@ -188,7 +207,7 @@ static const vscf_key_alg_api_t key_alg_api = {
 static const vscf_kem_api_t kem_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kem' MUST be equal to the 'vscf_api_tag_KEM'.
+    //  For interface 'kem' MUST be equal to the  'vscf_api_tag_KEM'.
     //
     vscf_api_tag_KEM,
     //
@@ -237,6 +256,48 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_round5_use_random(vscf_round5_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_round5_take_random(vscf_round5_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_round5_release_random(vscf_round5_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -248,6 +309,8 @@ vscf_round5_init(vscf_round5_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_round5_init_ctx(self);
 }
 
 //
@@ -261,7 +324,7 @@ vscf_round5_cleanup(vscf_round5_t *self) {
         return;
     }
 
-    vscf_round5_release_random(self);
+    vscf_round5_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_round5_t));
 }
@@ -343,6 +406,28 @@ vscf_round5_shallow_copy(vscf_round5_t *self) {
 }
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_round5_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_round5_init_ctx(vscf_round5_t *self) {
+
+    VSCF_UNUSED(self);
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_round5_cleanup_ctx(vscf_round5_t *self) {
+
+    vscf_round5_release_random(self);
+}
+
+//
 //  Return size of 'vscf_round5_t' type.
 //
 VSCF_PUBLIC size_t
@@ -371,56 +456,14 @@ vscf_round5_impl_const(const vscf_round5_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_round5_use_random(vscf_round5_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_round5_take_random(vscf_round5_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_round5_release_random(vscf_round5_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
-
 static const vscf_api_t *
 vscf_round5_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEM:
-            return (const vscf_api_t *) &kem_api;
+        return (const vscf_api_t *)                 &kem_api;
         case vscf_api_tag_KEY_ALG:
-            return (const vscf_api_t *) &key_alg_api;
+        return (const vscf_api_t *)                 &key_alg_api;
         default:
             return NULL;
     }

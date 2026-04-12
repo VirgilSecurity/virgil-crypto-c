@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,9 +45,6 @@
 
 #ifndef VSCF_GROUP_SESSION_TICKET_INTERNAL_H_INCLUDED
 #define VSCF_GROUP_SESSION_TICKET_INTERNAL_H_INCLUDED
-
-#include "vscf_group_session_ticket.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -61,22 +57,14 @@
 // clang-format on
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
+//  @generated_header_includes
 // --------------------------------------------------------------------------
 // clang-format off
-//  Generated section start.
+//  Generated header includes start.
 // --------------------------------------------------------------------------
 
-VSCF_PUBLIC vscf_status_t
-vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *self, uint32_t epoch,
-        vsc_data_t session_id) VSCF_NODISCARD;
-
+#include "vscf_group_session_ticket.h"
+#include "vscf_status.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -86,9 +74,27 @@ vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *sel
 
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+VSCF_PUBLIC vscf_status_t
+vscf_group_session_ticket_setup_ticket_internal(vscf_group_session_ticket_t *self, uint32_t epoch, vsc_data_t session_id);
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+#ifdef __cplusplus
+}
+#endif
 
 //  @footer
 #endif // VSCF_GROUP_SESSION_TICKET_INTERNAL_H_INCLUDED

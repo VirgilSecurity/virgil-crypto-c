@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCF_KEY_SIGNER_API_H_INCLUDED
 #define VSCF_KEY_SIGNER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_key_alg.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -73,11 +64,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_key_alg.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -92,15 +101,14 @@ typedef bool (*vscf_key_signer_api_can_sign_fn)(const vscf_impl_t *impl, const v
 
 //
 //  Callback. Return length in bytes required to hold signature.
-//          Return zero if a given private key can not produce signatures.
+//  Return zero if a given private key can not produce signatures.
 //
 typedef size_t (*vscf_key_signer_api_signature_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key);
 
 //
 //  Callback. Sign data digest with a given private key.
 //
-typedef vscf_status_t (*vscf_key_signer_api_sign_hash_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
-        vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature);
+typedef vscf_status_t (*vscf_key_signer_api_sign_hash_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature);
 
 //
 //  Callback. Check if algorithm can verify data digest with a given key.
@@ -110,8 +118,7 @@ typedef bool (*vscf_key_signer_api_can_verify_fn)(const vscf_impl_t *impl, const
 //
 //  Callback. Verify data digest with a given public key and signature.
 //
-typedef bool (*vscf_key_signer_api_verify_hash_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
-        vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
+typedef bool (*vscf_key_signer_api_verify_hash_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
 
 //
 //  Contains API requirements of the interface 'key signer'.
@@ -119,7 +126,7 @@ typedef bool (*vscf_key_signer_api_verify_hash_fn)(const vscf_impl_t *impl, cons
 struct vscf_key_signer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_signer' MUST be equal to the 'vscf_api_tag_KEY_SIGNER'.
+    //  For interface 'key signer' MUST be equal to the 'vscf_api_tag_KEY_SIGNER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -153,18 +160,15 @@ struct vscf_key_signer_api_t {
     vscf_key_signer_api_verify_hash_fn verify_hash_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_SIGNER_API_H_INCLUDED

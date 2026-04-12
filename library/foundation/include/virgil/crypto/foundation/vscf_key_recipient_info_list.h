@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,18 +51,29 @@
 #ifndef VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
 #define VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_key_recipient_info_list.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -126,8 +135,7 @@ vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *self);
 //  Note, ownership is transfered.
 //
 VSCF_PRIVATE void
-vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *self,
-        vscf_key_recipient_info_t **key_recipient_info_ref);
+vscf_key_recipient_info_list_add(vscf_key_recipient_info_list_t *self, vscf_key_recipient_info_t **key_recipient_info_ref);
 
 //
 //  Remove current node.
@@ -183,18 +191,15 @@ vscf_key_recipient_info_list_prev(const vscf_key_recipient_info_list_t *self);
 VSCF_PUBLIC void
 vscf_key_recipient_info_list_clear(vscf_key_recipient_info_list_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_RECIPIENT_INFO_LIST_H_INCLUDED

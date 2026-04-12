@@ -215,7 +215,6 @@ vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_receiver_chain_init() is called.

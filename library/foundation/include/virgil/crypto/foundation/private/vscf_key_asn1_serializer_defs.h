@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -56,6 +54,15 @@
 #ifndef VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
 #define VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_impl_private.h"
 #include "vscf_key_asn1_serializer.h"
@@ -64,14 +71,16 @@
 #include "vscf_sec1_serializer.h"
 #include "vscf_pkcs8_serializer.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -92,10 +101,6 @@ struct vscf_key_asn1_serializer_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'asn1 writer'.
-    //
-    vscf_impl_t *asn1_writer;
-    //
     //  Implementation specific context.
     //
     vscf_sec1_serializer_t *sec1_serializer;
@@ -103,8 +108,11 @@ struct vscf_key_asn1_serializer_t {
     //  Implementation specific context.
     //
     vscf_pkcs8_serializer_t *pkcs8_serializer;
+    //
+    //  Dependency to the interface 'asn1 writer'.
+    //
+    vscf_impl_t *asn1_writer;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -112,11 +120,9 @@ struct vscf_key_asn1_serializer_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_ASN1_SERIALIZER_DEFS_H_INCLUDED

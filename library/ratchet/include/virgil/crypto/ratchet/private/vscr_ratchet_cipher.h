@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,16 +45,6 @@
 
 #ifndef VSCR_RATCHET_CIPHER_H_INCLUDED
 #define VSCR_RATCHET_CIPHER_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet_message_key.h"
-#include "vscr_status.h"
-
-#include <vscr_RatchetMessage.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
-#include <virgil/crypto/foundation/private/vscf_message_padding.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,11 +59,32 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
+#include "vscr_ratchet_message_key.h"
+#include "vscr_status.h"
+
+#include <vscr_RatchetMessage.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
+#include <virgil/crypto/foundation/private/vscf_message_padding.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -138,21 +148,16 @@ VSCR_PUBLIC size_t
 vscr_ratchet_cipher_decrypt_len(vscr_ratchet_cipher_t *self, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t plain_text,
-        vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
+vscr_ratchet_cipher_encrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text,
-        vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
+vscr_ratchet_cipher_decrypt(vscr_ratchet_cipher_t *self, const vscr_ratchet_symmetric_key_t key, vsc_data_t cipher_text, vsc_data_t additional_data, vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscf_message_padding_t *padding, vsc_data_t data,
-        const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) VSCR_NODISCARD;
+vscr_ratchet_cipher_pad_then_encrypt(vscr_ratchet_cipher_t *self, vscf_message_padding_t *padding, vsc_data_t data, const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *cipher_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_data_t data,
-        const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *plain_text) VSCR_NODISCARD;
-
+vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_data_t data, const vscr_ratchet_message_key_t *key, vsc_data_t ad, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -160,11 +165,9 @@ vscr_ratchet_cipher_decrypt_then_remove_pad(vscr_ratchet_cipher_t *self, vsc_dat
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_CIPHER_H_INCLUDED

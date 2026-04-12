@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,20 +51,31 @@
 #ifndef VSCF_ECC_PUBLIC_KEY_H_INCLUDED
 #define VSCF_ECC_PUBLIC_KEY_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_alg_info.h"
 #include "vscf_impl.h"
 #include "vscf_public_key.h"
 #include "vscf_alg_id.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -139,12 +148,6 @@ VSCF_PUBLIC vscf_ecc_public_key_t *
 vscf_ecc_public_key_shallow_copy(vscf_ecc_public_key_t *self);
 
 //
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_ecc_public_key_public_key_api(void);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -181,18 +184,15 @@ vscf_ecc_public_key_impl_tag(const vscf_ecc_public_key_t *self);
 VSCF_PUBLIC bool
 vscf_ecc_public_key_is_valid(const vscf_ecc_public_key_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ECC_PUBLIC_KEY_H_INCLUDED

@@ -116,6 +116,7 @@ vsce_proof_generator_cleanup(vsce_proof_generator_t *self) {
     vsce_proof_generator_cleanup_ctx(self);
 
     vsce_proof_generator_release_random(self);
+
     vsce_proof_generator_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_proof_generator_t));
@@ -304,7 +305,6 @@ vsce_proof_generator_release_operation_random(vsce_proof_generator_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

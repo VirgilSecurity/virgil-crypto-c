@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,19 +51,30 @@
 #ifndef VSCF_KEY_API_H_INCLUDED
 #define VSCF_KEY_API_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -100,7 +109,7 @@ typedef vscf_impl_tag_t (*vscf_key_api_impl_tag_fn)(const vscf_impl_t *impl);
 
 //
 //  Callback. Check that key is valid.
-//          Note, this operation can be slow.
+//  Note, this operation can be slow.
 //
 typedef bool (*vscf_key_api_is_valid_fn)(const vscf_impl_t *impl);
 
@@ -144,18 +153,15 @@ struct vscf_key_api_t {
     vscf_key_api_is_valid_fn is_valid_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_API_H_INCLUDED

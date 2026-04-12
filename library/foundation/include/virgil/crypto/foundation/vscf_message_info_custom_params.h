@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,9 +45,6 @@
 
 #ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
 #define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -61,17 +57,40 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    vscf_message_info_custom_params_OF_INT_TYPE = 1,
+    vscf_message_info_custom_params_OF_STRING_TYPE = 2,
+    vscf_message_info_custom_params_OF_DATA_TYPE = 3
+};
 
 //
 //  Handle 'message info custom params' context.
@@ -156,8 +175,7 @@ vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self
 //  Return custom parameter with UTF8 string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key,
-        vscf_error_t *error);
+vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
 
 //
 //  Return custom parameter with octet string value.
@@ -171,18 +189,15 @@ vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *sel
 VSCF_PUBLIC bool
 vscf_message_info_custom_params_has_params(const vscf_message_info_custom_params_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED

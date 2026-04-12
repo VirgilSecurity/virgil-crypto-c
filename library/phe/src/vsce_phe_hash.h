@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,11 +45,6 @@
 
 #ifndef VSCE_PHE_HASH_H_INCLUDED
 #define VSCE_PHE_HASH_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-
-#include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -65,11 +59,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+
+#include <mbedtls/ecp.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -142,15 +152,10 @@ VSCE_PUBLIC void
 vsce_phe_hash_hs1(vsce_phe_hash_t *self, vsc_data_t ns, mbedtls_ecp_point *hs1);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p2,
-        const mbedtls_ecp_point *q2, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, mbedtls_mpi *z);
+vsce_phe_hash_hash_z_success(vsce_phe_hash_t *self, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p2, const mbedtls_ecp_point *q2, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2, const mbedtls_ecp_point *term3, mbedtls_mpi *z);
 
 VSCE_PUBLIC void
-vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2,
-        const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
-
+vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2, const mbedtls_ecp_point *term3, const mbedtls_ecp_point *term4, mbedtls_mpi *z);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -158,11 +163,9 @@ vsce_phe_hash_hash_z_failure(vsce_phe_hash_t *self, vsc_data_t server_public_key
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_PHE_HASH_H_INCLUDED

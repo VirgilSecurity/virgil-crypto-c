@@ -285,7 +285,6 @@ vscf_key_provider_release_random(vscf_key_provider_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_key_provider_init() is called.

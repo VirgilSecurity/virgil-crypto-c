@@ -236,7 +236,6 @@ vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_key_utils_init() is called.

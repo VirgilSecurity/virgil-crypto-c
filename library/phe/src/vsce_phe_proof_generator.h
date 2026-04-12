@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,13 +45,6 @@
 
 #ifndef VSCE_PHE_PROOF_GENERATOR_H_INCLUDED
 #define VSCE_PHE_PROOF_GENERATOR_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
-
-#include <PHEModels.pb.h>
-#include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -73,11 +65,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
+
+#include <PHEModels.pb.h>
+#include <mbedtls/ecp.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -173,16 +183,10 @@ VSCE_PUBLIC void
 vsce_phe_proof_generator_release_operation_random(vsce_phe_proof_generator_t *self);
 
 VSCE_PUBLIC vsce_status_t
-vsce_phe_proof_generator_prove_success(vsce_phe_proof_generator_t *self, mbedtls_ecp_group *op_group,
-        const mbedtls_mpi *priv, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *hs0,
-        const mbedtls_ecp_point *hs1, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1,
-        ProofOfSuccess *success_proof) VSCE_NODISCARD;
+vsce_phe_proof_generator_prove_success(vsce_phe_proof_generator_t *self, mbedtls_ecp_group *op_group, const mbedtls_mpi *priv, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *hs0, const mbedtls_ecp_point *hs1, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *c1, ProofOfSuccess *success_proof) VSCE_NODISCARD;
 
 VSCE_PUBLIC vsce_status_t
-vsce_phe_proof_generator_prove_failure(vsce_phe_proof_generator_t *self, mbedtls_ecp_group *op_group,
-        vsc_data_t server_private_key, vsc_data_t server_public_key, const mbedtls_ecp_point *c0,
-        const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1, ProofOfFail *failure_proof) VSCE_NODISCARD;
-
+vsce_phe_proof_generator_prove_failure(vsce_phe_proof_generator_t *self, mbedtls_ecp_group *op_group, vsc_data_t server_private_key, vsc_data_t server_public_key, const mbedtls_ecp_point *c0, const mbedtls_ecp_point *hs0, mbedtls_ecp_point *c1, ProofOfFail *failure_proof) VSCE_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -190,11 +194,9 @@ vsce_phe_proof_generator_prove_failure(vsce_phe_proof_generator_t *self, mbedtls
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_PHE_PROOF_GENERATOR_H_INCLUDED

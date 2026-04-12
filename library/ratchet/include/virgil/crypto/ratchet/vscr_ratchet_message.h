@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,11 +50,6 @@
 
 #ifndef VSCR_RATCHET_MESSAGE_H_INCLUDED
 #define VSCR_RATCHET_MESSAGE_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_error.h"
-#include "vscr_ratchet_message.h"
-#include "vscr_msg_type.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -71,11 +64,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+#include "vscr_error.h"
+#include "vscr_ratchet_message.h"
+#include "vscr_msg_type.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -186,18 +195,15 @@ vscr_ratchet_message_serialize(const vscr_ratchet_message_t *self, vsc_buffer_t 
 VSCR_PUBLIC vscr_ratchet_message_t *
 vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_MESSAGE_H_INCLUDED

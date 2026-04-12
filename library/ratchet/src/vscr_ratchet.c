@@ -101,17 +101,13 @@ static void
 vscr_ratchet_did_release_rng(vscr_ratchet_t *self);
 
 static vscr_status_t
-vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
-        const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header,
-        vsc_buffer_t *buffer) VSCR_NODISCARD;
+vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key, const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer);
 
 static vscr_status_t
-vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self,
-        vscr_ratchet_sender_chain_t *sender_chain) VSCR_NODISCARD;
+vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
 
 static vscr_status_t
-vscr_ratchet_generate_skipped_keys(vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain,
-        uint32_t counter) VSCR_NODISCARD;
+vscr_ratchet_generate_skipped_keys(vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain, uint32_t counter);
 
 //
 //  Return size of 'vscr_ratchet_t'.
@@ -301,7 +297,6 @@ vscr_ratchet_release_rng(vscr_ratchet_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

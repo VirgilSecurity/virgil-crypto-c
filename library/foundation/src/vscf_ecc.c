@@ -121,7 +121,6 @@ vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, const vscf_impl_t *key
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  This method is called when class 'ecies' was setup.
 //

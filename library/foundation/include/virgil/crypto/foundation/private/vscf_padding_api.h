@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,12 +50,6 @@
 
 #ifndef VSCF_PADDING_API_H_INCLUDED
 #define VSCF_PADDING_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_padding_params.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -72,11 +64,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_padding_params.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -96,7 +105,7 @@ typedef size_t (*vscf_padding_api_padded_data_len_fn)(const vscf_impl_t *impl, s
 
 //
 //  Callback. Return an actual number of padding in bytes.
-//          Note, this method might be called right before "finish data processing".
+//  Note, this method might be called right before "finish data processing".
 //
 typedef size_t (*vscf_padding_api_len_fn)(const vscf_impl_t *impl);
 
@@ -112,7 +121,7 @@ typedef void (*vscf_padding_api_start_data_processing_fn)(vscf_impl_t *impl);
 
 //
 //  Callback. Only data length is needed to produce padding later.
-//          Return data that should be further proceeded.
+//  Return data that should be further proceeded.
 //
 typedef vsc_data_t (*vscf_padding_api_process_data_fn)(vscf_impl_t *impl, vsc_data_t data);
 
@@ -128,13 +137,13 @@ typedef void (*vscf_padding_api_start_padded_data_processing_fn)(vscf_impl_t *im
 
 //
 //  Callback. Process padded data.
-//          Return filtered data without padding.
+//  Return filtered data without padding.
 //
 typedef void (*vscf_padding_api_process_padded_data_fn)(vscf_impl_t *impl, vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Callback. Return length in bytes required hold output of the method
-//          "finish padded data processing".
+//  "finish padded data processing".
 //
 typedef size_t (*vscf_padding_api_finish_padded_data_processing_out_len_fn)(const vscf_impl_t *impl);
 
@@ -206,18 +215,15 @@ struct vscf_padding_api_t {
     vscf_padding_api_finish_padded_data_processing_fn finish_padded_data_processing_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PADDING_API_H_INCLUDED

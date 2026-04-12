@@ -73,7 +73,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Restore state of given MbedTLS big number from ASN.1 INTEGER representation.
 //  Client side must check state of 'asn1rd' to define result of reading.

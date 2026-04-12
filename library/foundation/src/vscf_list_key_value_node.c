@@ -220,7 +220,6 @@ vscf_list_key_value_node_shallow_copy(vscf_list_key_value_node_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_list_key_value_node_init() is called.

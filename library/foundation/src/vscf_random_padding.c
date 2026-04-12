@@ -72,21 +72,12 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Private integral constants.
-//
-enum {
-    vscf_random_padding_PADDING_SIZE_LEN = 4,
-    vscf_random_padding_PADDING_LEN_MIN = vscf_random_padding_PADDING_SIZE_LEN + 1
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Provides initialization of the implementation specific context.

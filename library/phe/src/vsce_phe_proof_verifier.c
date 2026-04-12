@@ -140,6 +140,7 @@ vsce_phe_proof_verifier_cleanup(vsce_phe_proof_verifier_t *self) {
     vsce_phe_proof_verifier_cleanup_ctx(self);
 
     vsce_phe_proof_verifier_release_random(self);
+
     vsce_phe_proof_verifier_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_phe_proof_verifier_t));
@@ -340,7 +341,6 @@ vsce_phe_proof_verifier_release_operation_random(vsce_phe_proof_verifier_t *self
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

@@ -80,7 +80,7 @@ vscf_compound_public_key_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_api_t key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key' MUST be equal to the 'vscf_api_tag_KEY'.
+    //  For interface 'key' MUST be equal to the  'vscf_api_tag_KEY'.
     //
     vscf_api_tag_KEY,
     //
@@ -120,7 +120,7 @@ static const vscf_key_api_t key_api = {
 static const vscf_public_key_api_t public_key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
+    //  For interface 'public key' MUST be equal to the  'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_PUBLIC_KEY,
     //
@@ -270,8 +270,7 @@ vscf_compound_public_key_shallow_copy(vscf_compound_public_key_t *self) {
 //  a signer public key.
 //
 VSCF_PRIVATE void
-vscf_compound_public_key_init_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key) {
+vscf_compound_public_key_init_with_keys(vscf_compound_public_key_t *self, vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -289,8 +288,7 @@ vscf_compound_public_key_init_with_keys(vscf_compound_public_key_t *self, vscf_i
 //  a signer public key.
 //
 VSCF_PRIVATE vscf_compound_public_key_t *
-vscf_compound_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key,
-        const vscf_impl_t *signer_key) {
+vscf_compound_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key) {
 
     vscf_compound_public_key_t *self = vscf_compound_public_key_new();
 
@@ -305,8 +303,7 @@ vscf_compound_public_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_im
 //  a signer public key.
 //
 VSCF_PRIVATE void
-vscf_compound_public_key_init_with_keys_disown(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref) {
+vscf_compound_public_key_init_with_keys_disown(vscf_compound_public_key_t *self, const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -324,23 +321,13 @@ vscf_compound_public_key_init_with_keys_disown(vscf_compound_public_key_t *self,
 //  a signer public key.
 //
 VSCF_PRIVATE vscf_compound_public_key_t *
-vscf_compound_public_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref,
-        vscf_impl_t **signer_key_ref) {
+vscf_compound_public_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref) {
 
     vscf_compound_public_key_t *self = vscf_compound_public_key_new();
 
     vscf_compound_public_key_init_with_keys_disown(self, alg_info, cipher_key_ref, signer_key_ref);
 
     return self;
-}
-
-//
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_compound_public_key_public_key_api(void) {
-
-    return &public_key_api;
 }
 
 //
@@ -377,9 +364,9 @@ vscf_compound_public_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY:
-            return (const vscf_api_t *) &key_api;
+        return (const vscf_api_t *)                 &key_api;
         case vscf_api_tag_PUBLIC_KEY:
-            return (const vscf_api_t *) &public_key_api;
+        return (const vscf_api_t *)                 &public_key_api;
         default:
             return NULL;
     }

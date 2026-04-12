@@ -96,8 +96,7 @@ vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *privat
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_buffer_t *signature) {
+vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature) {
 
     const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
     VSCF_ASSERT_PTR (key_signer_api);
@@ -123,8 +122,7 @@ vscf_key_signer_can_verify(const vscf_impl_t *impl, const vscf_impl_t *public_ke
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_data_t signature) {
+vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature) {
 
     const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
     VSCF_ASSERT_PTR (key_signer_api);

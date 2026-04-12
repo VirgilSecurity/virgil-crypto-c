@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,12 +50,6 @@
 
 #ifndef VSCF_COMPUTE_SHARED_KEY_H_INCLUDED
 #define VSCF_COMPUTE_SHARED_KEY_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_key_alg.h"
-#include "vscf_status.h"
-#include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -70,11 +62,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_key_alg.h"
+#include "vscf_status.h"
+#include "vscf_api.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -92,8 +101,7 @@ typedef struct vscf_compute_shared_key_api_t vscf_compute_shared_key_api_t;
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_compute_shared_key(const vscf_impl_t *impl, const vscf_impl_t *public_key, const vscf_impl_t *private_key,
-        vsc_buffer_t *shared_key) VSCF_NODISCARD;
+vscf_compute_shared_key(const vscf_impl_t *impl, const vscf_impl_t *public_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 //
 //  Return number of bytes required to hold shared key.
@@ -126,18 +134,15 @@ vscf_compute_shared_key_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_compute_shared_key_api_tag(const vscf_compute_shared_key_api_t *compute_shared_key_api);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_COMPUTE_SHARED_KEY_H_INCLUDED

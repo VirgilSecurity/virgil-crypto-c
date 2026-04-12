@@ -79,7 +79,7 @@ vscf_asn1wr_find_api(vscf_api_tag_t api_tag);
 static const vscf_asn1_writer_api_t asn1_writer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'asn1_writer' MUST be equal to the 'vscf_api_tag_ASN1_WRITER'.
+    //  For interface 'asn1 writer' MUST be equal to the  'vscf_api_tag_ASN1_WRITER'.
     //
     vscf_api_tag_ASN1_WRITER,
     //
@@ -407,7 +407,7 @@ vscf_asn1wr_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ASN1_WRITER:
-            return (const vscf_api_t *) &asn1_writer_api;
+        return (const vscf_api_t *)                 &asn1_writer_api;
         default:
             return NULL;
     }

@@ -71,6 +71,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self);
+
 static const vscf_api_t *
 vscf_alg_info_der_deserializer_find_api(vscf_api_tag_t api_tag);
 
@@ -80,7 +99,7 @@ vscf_alg_info_der_deserializer_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_info_deserializer_api_t alg_info_deserializer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_deserializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_DESERIALIZER'.
+    //  For interface 'alg info deserializer' MUST be equal to the  'vscf_api_tag_ALG_INFO_DESERIALIZER'.
     //
     vscf_api_tag_ALG_INFO_DESERIALIZER,
     //
@@ -117,6 +136,48 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = asn1_reader;
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -128,6 +189,8 @@ vscf_alg_info_der_deserializer_init(vscf_alg_info_der_deserializer_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_alg_info_der_deserializer_init_ctx(self);
 }
 
 //
@@ -141,7 +204,7 @@ vscf_alg_info_der_deserializer_cleanup(vscf_alg_info_der_deserializer_t *self) {
         return;
     }
 
-    vscf_alg_info_der_deserializer_release_asn1_reader(self);
+    vscf_alg_info_der_deserializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_alg_info_der_deserializer_t));
 }
@@ -223,6 +286,28 @@ vscf_alg_info_der_deserializer_shallow_copy(vscf_alg_info_der_deserializer_t *se
 }
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_alg_info_der_deserializer_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_alg_info_der_deserializer_init_ctx(vscf_alg_info_der_deserializer_t *self) {
+
+    VSCF_UNUSED(self);
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_alg_info_der_deserializer_cleanup_ctx(vscf_alg_info_der_deserializer_t *self) {
+
+    vscf_alg_info_der_deserializer_release_asn1_reader(self);
+}
+
+//
 //  Return size of 'vscf_alg_info_der_deserializer_t' type.
 //
 VSCF_PUBLIC size_t
@@ -251,54 +336,12 @@ vscf_alg_info_der_deserializer_impl_const(const vscf_alg_info_der_deserializer_t
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 reader' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_deserializer_use_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT(self->asn1_reader == NULL);
-
-    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
-
-    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
-}
-
-//
-//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_deserializer_take_asn1_reader(vscf_alg_info_der_deserializer_t *self, vscf_impl_t *asn1_reader) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT(self->asn1_reader == NULL);
-
-    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
-
-    self->asn1_reader = asn1_reader;
-}
-
-//
-//  Release dependency to the interface 'asn1 reader'.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_reader);
-}
-
 static const vscf_api_t *
 vscf_alg_info_der_deserializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO_DESERIALIZER:
-            return (const vscf_api_t *) &alg_info_deserializer_api;
+        return (const vscf_api_t *)                 &alg_info_deserializer_api;
         default:
             return NULL;
     }

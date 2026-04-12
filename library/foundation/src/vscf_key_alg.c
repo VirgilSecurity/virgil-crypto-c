@@ -102,8 +102,7 @@ vscf_key_alg_import_public_key(const vscf_impl_t *impl, const vscf_raw_public_ke
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_import_public_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_key_alg_import_public_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
     VSCF_ASSERT_PTR (key_alg_api);
@@ -183,8 +182,7 @@ vscf_key_alg_import_private_key(const vscf_impl_t *impl, const vscf_raw_private_
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_import_private_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info,
-        vscf_error_t *error) {
+vscf_key_alg_import_private_key_data(const vscf_impl_t *impl, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error) {
 
     const vscf_key_alg_api_t *key_alg_api = vscf_key_alg_api(impl);
     VSCF_ASSERT_PTR (key_alg_api);

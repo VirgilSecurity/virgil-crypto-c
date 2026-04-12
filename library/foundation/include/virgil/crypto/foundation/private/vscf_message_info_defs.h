@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,6 +51,15 @@
 #ifndef VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
 #define VSCF_MESSAGE_INFO_DEFS_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_key_recipient_info_list.h"
@@ -61,14 +68,16 @@
 #include "vscf_footer_info.h"
 #include "vscf_impl.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -88,22 +97,14 @@ struct vscf_message_info_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-
     vscf_key_recipient_info_list_t *key_recipients;
-
     vscf_password_recipient_info_list_t *password_recipients;
-
     vscf_impl_t *data_encryption_alg_info;
-
     vscf_message_info_custom_params_t *custom_params;
-
     vscf_impl_t *cipher_kdf_alg_info;
-
     vscf_impl_t *cipher_padding_alg_info;
-
     vscf_footer_info_t *footer_info;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -111,11 +112,9 @@ struct vscf_message_info_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_DEFS_H_INCLUDED

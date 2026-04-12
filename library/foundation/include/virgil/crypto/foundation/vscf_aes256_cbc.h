@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCF_AES256_CBC_H_INCLUDED
 #define VSCF_AES256_CBC_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_cipher_info.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
-#include "vscf_cipher_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -73,11 +64,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_cipher_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+#include "vscf_cipher_state.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -170,12 +179,6 @@ vscf_aes256_cbc_destroy(vscf_aes256_cbc_t **self_ref);
 //
 VSCF_PUBLIC vscf_aes256_cbc_t *
 vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self);
-
-//
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_cbc_cipher_info_api(void);
 
 //
 //  Provide algorithm identificator.
@@ -291,18 +294,15 @@ vscf_aes256_cbc_decrypted_out_len(const vscf_aes256_cbc_t *self, size_t data_len
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_AES256_CBC_H_INCLUDED

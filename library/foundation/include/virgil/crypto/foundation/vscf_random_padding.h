@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,12 +50,6 @@
 
 #ifndef VSCF_RANDOM_PADDING_H_INCLUDED
 #define VSCF_RANDOM_PADDING_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_padding_params.h"
-#include "vscf_impl.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -72,17 +64,42 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_padding_params.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
+
+//
+//  Public integral constants.
+//
+enum {
+    vscf_random_padding_PADDING_SIZE_LEN = 4,
+    vscf_random_padding_PADDING_LEN_MIN = vscf_random_padding_PADDING_SIZE_LEN + 1
+};
 
 //
 //  Handles implementation details.
@@ -255,18 +272,15 @@ vscf_random_padding_finish_padded_data_processing_out_len(const vscf_random_padd
 VSCF_PUBLIC vscf_status_t
 vscf_random_padding_finish_padded_data_processing(vscf_random_padding_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_RANDOM_PADDING_H_INCLUDED

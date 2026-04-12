@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,16 +45,6 @@
 
 #ifndef VSCR_RATCHET_H_INCLUDED
 #define VSCR_RATCHET_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet.h"
-#include "vscr_status.h"
-
-#include <vscr_RatchetSession.pb.h>
-#include <vscr_RatchetMessage.pb.h>
-#include <pb_decode.h>
-#include <pb_encode.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -78,11 +67,32 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
+#include "vscr_ratchet.h"
+#include "vscr_status.h"
+
+#include <vscr_RatchetSession.pb.h>
+#include <vscr_RatchetMessage.pb.h>
+#include <pb_decode.h>
+#include <pb_encode.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -159,29 +169,22 @@ VSCR_PUBLIC void
 vscr_ratchet_release_rng(vscr_ratchet_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        vscr_ratchet_public_key_t receiver_long_term_public_key_first,
-        const vscf_impl_t *receiver_long_term_public_key_second, bool enable_post_quantum) VSCR_NODISCARD;
+vscr_ratchet_initiate(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key, vscr_ratchet_public_key_t receiver_long_term_public_key_first, const vscf_impl_t *receiver_long_term_public_key_second, bool enable_post_quantum) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key,
-        vscr_ratchet_private_key_t receiver_long_term_private_key_first,
-        const vscf_impl_t *receiver_long_term_private_key_second, const vscr_RegularMessage *message,
-        const vscr_RegularMessageHeader *regular_message_header, bool enable_post_quantum) VSCR_NODISCARD;
+vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_key, vscr_ratchet_private_key_t receiver_long_term_private_key_first, const vscf_impl_t *receiver_long_term_private_key_second, const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header, bool enable_post_quantum) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_encrypt_len(vscr_ratchet_t *self, size_t plain_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, vscr_RegularMessage *regular_message,
-        vscr_RegularMessageHeader *regular_message_header) VSCR_NODISCARD;
+vscr_ratchet_encrypt(vscr_ratchet_t *self, vsc_data_t plain_text, vscr_RegularMessage *regular_message, vscr_RegularMessageHeader *regular_message_header) VSCR_NODISCARD;
 
 VSCR_PUBLIC size_t
 vscr_ratchet_decrypt_len(vscr_ratchet_t *self, size_t cipher_text_len);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_message,
-        const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *plain_text) VSCR_NODISCARD;
+vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_message, const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb);
@@ -189,18 +192,15 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb);
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet) VSCR_NODISCARD;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_H_INCLUDED

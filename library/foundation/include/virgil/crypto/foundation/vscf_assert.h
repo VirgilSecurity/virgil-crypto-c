@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -56,16 +54,27 @@
 #ifndef VSCF_ASSERT_H_INCLUDED
 #define VSCF_ASSERT_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -144,7 +153,7 @@ extern "C" {
     } while (false)
 
 //
-//  This macros can be used as library 'mbedtls' error handlind post-condition.
+//  This macros can be used as library 'mbedtls' error handling post-condition.
 //
 #define VSCF_ASSERT_LIBRARY_MBEDTLS_UNHANDLED_ERROR(error)                                                      \
     do {                                                                                                        \
@@ -153,8 +162,7 @@ extern "C" {
     } while (0)
 
 //
-//  This macros can be used to ensure that library 'mbedtls' operation
-//  returns success status code.
+//  This macros can be used to ensure that library 'mbedtls' operation returns success status code.
 //
 #define VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status)              \
     do {                                                         \
@@ -193,18 +201,15 @@ vscf_assert_trigger(const char *message, const char *file, int line);
 VSCF_PUBLIC void
 vscf_assert_trigger_unhandled_error_of_library_mbedtls(int error, const char *file, int line);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ASSERT_H_INCLUDED

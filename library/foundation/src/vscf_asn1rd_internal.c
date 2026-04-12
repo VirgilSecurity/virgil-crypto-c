@@ -79,7 +79,7 @@ vscf_asn1rd_find_api(vscf_api_tag_t api_tag);
 static const vscf_asn1_reader_api_t asn1_reader_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'asn1_reader' MUST be equal to the 'vscf_api_tag_ASN1_READER'.
+    //  For interface 'asn1 reader' MUST be equal to the  'vscf_api_tag_ASN1_READER'.
     //
     vscf_api_tag_ASN1_READER,
     //
@@ -375,7 +375,7 @@ vscf_asn1rd_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ASN1_READER:
-            return (const vscf_api_t *) &asn1_reader_api;
+        return (const vscf_api_t *)                 &asn1_reader_api;
         default:
             return NULL;
     }

@@ -69,7 +69,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 VSCF_PRIVATE int
 vscf_mbedtls_bridge_entropy_poll(void *ctx, byte *data, size_t len, size_t *olen) {
 

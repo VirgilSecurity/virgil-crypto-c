@@ -83,7 +83,6 @@ vscr_error_ctx_size(void) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Reset context to the "no error" state.
 //

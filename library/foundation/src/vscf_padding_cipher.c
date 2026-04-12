@@ -94,10 +94,10 @@ static void
 vscf_padding_cipher_reset_buffer(vsc_buffer_t *buffer, size_t capacity);
 
 static vscf_status_t
-vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out);
 
 static vscf_status_t
-vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t *out);
 
 //
 //  Return size of 'vscf_padding_cipher_t'.
@@ -136,6 +136,7 @@ vscf_padding_cipher_cleanup(vscf_padding_cipher_t *self) {
     vscf_padding_cipher_cleanup_ctx(self);
 
     vscf_padding_cipher_release_cipher(self);
+
     vscf_padding_cipher_release_padding(self);
 
     vscf_zeroize(self, sizeof(vscf_padding_cipher_t));
@@ -324,7 +325,6 @@ vscf_padding_cipher_release_padding(vscf_padding_cipher_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_ALG_INFO_DER_DESERIALIZER_H_INCLUDED
 #define VSCF_ALG_INFO_DER_DESERIALIZER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -68,11 +62,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -164,6 +173,12 @@ VSCF_PUBLIC void
 vscf_alg_info_der_deserializer_release_asn1_reader(vscf_alg_info_der_deserializer_t *self);
 
 //
+//  Deserialize algorithm from the data.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t data, vscf_error_t *error);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
@@ -177,25 +192,15 @@ vscf_alg_info_der_deserializer_setup_defaults(vscf_alg_info_der_deserializer_t *
 VSCF_PUBLIC vscf_impl_t *
 vscf_alg_info_der_deserializer_deserialize_inplace(vscf_alg_info_der_deserializer_t *self, vscf_error_t *error);
 
-//
-//  Deserialize algorithm from the data.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_alg_info_der_deserializer_deserialize(vscf_alg_info_der_deserializer_t *self, vsc_data_t data,
-        vscf_error_t *error);
-
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ALG_INFO_DER_DESERIALIZER_H_INCLUDED

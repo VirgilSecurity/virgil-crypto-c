@@ -221,7 +221,6 @@ vscf_signer_list_shallow_copy(vscf_signer_list_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_signer_list_init() is called.

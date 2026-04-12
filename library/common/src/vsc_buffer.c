@@ -298,7 +298,6 @@ vsc_buffer_shallow_copy(vsc_buffer_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vsc_buffer_init() is called.

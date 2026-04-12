@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -54,18 +52,29 @@
 #ifndef VSCF_HYBRID_PRIVATE_KEY_INTERNAL_H_INCLUDED
 #define VSCF_HYBRID_PRIVATE_KEY_INTERNAL_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_hybrid_private_key.h"
 #include "vscf_impl.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -95,8 +104,7 @@ vscf_hybrid_private_key_cleanup_ctx(vscf_hybrid_private_key_t *self);
 //  Note, keys ownership is kept.
 //
 VSCF_PUBLIC void
-vscf_hybrid_private_key_init_ctx_with_keys(vscf_hybrid_private_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *first_key, const vscf_impl_t *second_key);
+vscf_hybrid_private_key_init_ctx_with_keys(vscf_hybrid_private_key_t *self, vscf_impl_t **alg_info_ref, const vscf_impl_t *first_key, const vscf_impl_t *second_key);
 
 //
 //  Create a hybrid private key with 2 keys.
@@ -104,9 +112,7 @@ vscf_hybrid_private_key_init_ctx_with_keys(vscf_hybrid_private_key_t *self, vscf
 //  Note, keys ownership is transferred.
 //
 VSCF_PUBLIC void
-vscf_hybrid_private_key_init_ctx_with_keys_disown(vscf_hybrid_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
-
+vscf_hybrid_private_key_init_ctx_with_keys_disown(vscf_hybrid_private_key_t *self, const vscf_impl_t *alg_info, vscf_impl_t **first_key_ref, vscf_impl_t **second_key_ref);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -114,11 +120,9 @@ vscf_hybrid_private_key_init_ctx_with_keys_disown(vscf_hybrid_private_key_t *sel
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_HYBRID_PRIVATE_KEY_INTERNAL_H_INCLUDED

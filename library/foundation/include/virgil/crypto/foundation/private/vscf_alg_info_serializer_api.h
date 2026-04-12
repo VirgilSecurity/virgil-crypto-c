@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_ALG_INFO_SERIALIZER_API_H_INCLUDED
 #define VSCF_ALG_INFO_SERIALIZER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -68,11 +62,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -88,8 +97,7 @@ typedef size_t (*vscf_alg_info_serializer_api_serialized_len_fn)(const vscf_impl
 //
 //  Callback. Serialize algorithm info to buffer class.
 //
-typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info,
-        vsc_buffer_t *out);
+typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, const vscf_impl_t *alg_info, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'alg info serializer'.
@@ -97,7 +105,7 @@ typedef void (*vscf_alg_info_serializer_api_serialize_fn)(vscf_impl_t *impl, con
 struct vscf_alg_info_serializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
+    //  For interface 'alg info serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -114,18 +122,15 @@ struct vscf_alg_info_serializer_api_t {
     vscf_alg_info_serializer_api_serialize_fn serialize_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ALG_INFO_SERIALIZER_API_H_INCLUDED

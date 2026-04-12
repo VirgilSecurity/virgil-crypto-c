@@ -220,7 +220,6 @@ vscf_key_recipient_info_list_shallow_copy(vscf_key_recipient_info_list_t *self) 
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_key_recipient_info_list_init() is called.

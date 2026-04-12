@@ -220,7 +220,6 @@ vscf_signed_data_info_shallow_copy(vscf_signed_data_info_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_signed_data_info_init() is called.

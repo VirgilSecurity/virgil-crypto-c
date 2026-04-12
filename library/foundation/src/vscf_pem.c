@@ -67,11 +67,17 @@
 
 static const size_t k_line_len_max = 64;
 
-static const char *const k_header_begin = "-----BEGIN ";
+static const char k_header_begin[] = {
+    "-----BEGIN "
+};
 
-static const char *const k_footer_begin = "-----END ";
+static const char k_footer_begin[] = {
+    "-----END "
+};
 
-static const char *const k_title_tail = "-----";
+static const char k_title_tail[] = {
+    "-----"
+};
 
 
 // --------------------------------------------------------------------------
@@ -79,7 +85,6 @@ static const char *const k_title_tail = "-----";
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Return length in bytes required to hold wrapped PEM format.

@@ -94,18 +94,13 @@ static void
 vscf_message_cipher_cleanup_ctx(vscf_message_cipher_t *self);
 
 static void
-vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt);
+vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt);
 
 static vscf_status_t
-vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
+vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer);
 
 static vscf_status_t
-vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
+vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data, vsc_buffer_t *buffer);
 
 //
 //  Return size of 'vscf_message_cipher_t'.
@@ -245,7 +240,6 @@ vscf_message_cipher_shallow_copy(vscf_message_cipher_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

@@ -62,15 +62,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Private integral constants.
-//
-enum {
-    vscf_message_info_custom_params_OF_INT_TYPE = 1,
-    vscf_message_info_custom_params_OF_STRING_TYPE = 2,
-    vscf_message_info_custom_params_OF_DATA_TYPE = 3
-};
-
-//
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_info_custom_params_init() is called.
 //  Note, that context is already zeroed.
@@ -224,7 +215,6 @@ vscf_message_info_custom_params_shallow_copy(vscf_message_info_custom_params_t *
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

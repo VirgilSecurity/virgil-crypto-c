@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -56,16 +54,27 @@
 #ifndef VSCR_ASSERT_H_INCLUDED
 #define VSCR_ASSERT_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscr_library.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -144,7 +153,7 @@ extern "C" {
     } while (false)
 
 //
-//  This macros can be used as project 'foundation' error handlind post-condition.
+//  This macros can be used as project 'foundation' error handling post-condition.
 //
 #define VSCR_ASSERT_PROJECT_FOUNDATION_UNHANDLED_ERROR(error)                                                      \
     do {                                                                                                           \
@@ -153,8 +162,7 @@ extern "C" {
     } while (0)
 
 //
-//  This macros can be used to ensure that project 'foundation' operation
-//  returns success status code.
+//  This macros can be used to ensure that project 'foundation' operation returns success status code.
 //
 #define VSCR_ASSERT_PROJECT_FOUNDATION_SUCCESS(status)              \
     do {                                                            \
@@ -193,18 +201,15 @@ vscr_assert_trigger(const char *message, const char *file, int line);
 VSCR_PUBLIC void
 vscr_assert_trigger_unhandled_error_of_project_foundation(int error, const char *file, int line);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_ASSERT_H_INCLUDED

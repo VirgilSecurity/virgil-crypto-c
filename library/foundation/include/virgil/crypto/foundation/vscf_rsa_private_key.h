@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,20 +51,31 @@
 #ifndef VSCF_RSA_PRIVATE_KEY_H_INCLUDED
 #define VSCF_RSA_PRIVATE_KEY_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_raw_private_key.h"
 #include "vscf_status.h"
 #include "vscf_alg_id.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -139,42 +148,6 @@ VSCF_PUBLIC vscf_rsa_private_key_t *
 vscf_rsa_private_key_shallow_copy(vscf_rsa_private_key_t *self);
 
 //
-//  Import public key from the raw binary format.
-//
-//  RSAPrivateKey ::= SEQUENCE {
-//       version Version,
-//       modulus INTEGER, -- n
-//       publicExponent INTEGER, -- e
-//       privateExponent INTEGER, -- d
-//       prime1 INTEGER, -- p
-//       prime2 INTEGER, -- q
-//       exponent1 INTEGER, -- d mod (p-1)
-//       exponent2 INTEGER, -- d mod (q-1)
-//       coefficient INTEGER -- (inverse of q) mod p
-//   }
-//
-VSCF_PRIVATE vscf_status_t
-vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private_key_t *raw_private_key) VSCF_NODISCARD;
-
-//
-//  Export public key in the raw binary format.
-//
-//  RSAPrivateKey ::= SEQUENCE {
-//       version Version,
-//       modulus INTEGER, -- n
-//       publicExponent INTEGER, -- e
-//       privateExponent INTEGER, -- d
-//       prime1 INTEGER, -- p
-//       prime2 INTEGER, -- q
-//       exponent1 INTEGER, -- d mod (p-1)
-//       exponent2 INTEGER, -- d mod (q-1)
-//       coefficient INTEGER -- (inverse of q) mod p
-//   }
-//
-VSCF_PRIVATE vscf_raw_private_key_t *
-vscf_rsa_private_key_export(const vscf_rsa_private_key_t *self);
-
-//
 //  Algorithm identifier the key belongs to.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -217,6 +190,41 @@ vscf_rsa_private_key_is_valid(const vscf_rsa_private_key_t *self);
 VSCF_PUBLIC vscf_impl_t *
 vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self);
 
+//
+//  Import public key from the raw binary format.
+//
+//  RSAPrivateKey ::= SEQUENCE {
+//       version Version,
+//       modulus INTEGER, -- n
+//       publicExponent INTEGER, -- e
+//       privateExponent INTEGER, -- d
+//       prime1 INTEGER, -- p
+//       prime2 INTEGER, -- q
+//       exponent1 INTEGER, -- d mod (p-1)
+//       exponent2 INTEGER, -- d mod (q-1)
+//       coefficient INTEGER -- (inverse of q) mod p
+//   }
+//
+VSCF_PRIVATE vscf_status_t
+vscf_rsa_private_key_import(vscf_rsa_private_key_t *self, const vscf_raw_private_key_t *raw_private_key) VSCF_NODISCARD;
+
+//
+//  Export public key in the raw binary format.
+//
+//  RSAPrivateKey ::= SEQUENCE {
+//       version Version,
+//       modulus INTEGER, -- n
+//       publicExponent INTEGER, -- e
+//       privateExponent INTEGER, -- d
+//       prime1 INTEGER, -- p
+//       prime2 INTEGER, -- q
+//       exponent1 INTEGER, -- d mod (p-1)
+//       exponent2 INTEGER, -- d mod (q-1)
+//       coefficient INTEGER -- (inverse of q) mod p
+//   }
+//
+VSCF_PRIVATE vscf_raw_private_key_t *
+vscf_rsa_private_key_export(const vscf_rsa_private_key_t *self);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -224,11 +232,9 @@ vscf_rsa_private_key_extract_public_key(const vscf_rsa_private_key_t *self);
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_RSA_PRIVATE_KEY_H_INCLUDED

@@ -217,7 +217,6 @@ vscf_simple_swu_shallow_copy(vscf_simple_swu_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_simple_swu_init() is called.

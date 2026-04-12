@@ -103,7 +103,6 @@ vscf_hybrid_key_alg_config_cipher(vscf_impl_t *cipher, vscf_impl_t *hash, vsc_da
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //

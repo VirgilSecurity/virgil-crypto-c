@@ -64,52 +64,52 @@
 
 #define COMMON_PREFIX 0x56, 0x52, 0x47, 0x4c, 0x50, 0x48, 0x45
 
-VSCE_PUBLIC const byte k_dhc0[8] = {
+VSCE_PUBLIC byte k_dhc0[8] = {
     COMMON_PREFIX,
     0x31
 };
 
-VSCE_PUBLIC const byte k_dhc1[8] = {
+VSCE_PUBLIC byte k_dhc1[8] = {
     COMMON_PREFIX,
     0x32
 };
 
-VSCE_PUBLIC const byte k_dhs0[8] = {
+VSCE_PUBLIC byte k_dhs0[8] = {
     COMMON_PREFIX,
     0x33
 };
 
-VSCE_PUBLIC const byte k_dhs1[8] = {
+VSCE_PUBLIC byte k_dhs1[8] = {
     COMMON_PREFIX,
     0x34
 };
 
-static const byte k_proof_ok_bytes[] = {
+static byte k_proof_ok_bytes[] = {
     COMMON_PREFIX,
     0x35
 };
 
-static const byte k_proof_error_bytes[] = {
+static byte k_proof_error_bytes[] = {
     COMMON_PREFIX,
     0x36
 };
 
-static const byte k_encrypt_bytes[] = {
+static byte k_encrypt_bytes[] = {
     COMMON_PREFIX,
     0x37
 };
 
-static const byte k_kdf_info_z_bytes[] = {
+static byte k_kdf_info_z_bytes[] = {
     COMMON_PREFIX,
     0x38
 };
 
-static const byte k_kdf_info_client_key_bytes[] = {
+static byte k_kdf_info_client_key_bytes[] = {
     COMMON_PREFIX,
     0x39
 };
 
-static const byte k_kdf_info_uokms_key_bytes[] = {
+static byte k_kdf_info_uokms_key_bytes[] = {
     COMMON_PREFIX,
     0x40
 };

@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCF_PKCS8_SERIALIZER_H_INCLUDED
 #define VSCF_PKCS8_SERIALIZER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_impl.h"
-#include "vscf_raw_public_key.h"
-#include "vscf_raw_private_key.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -71,11 +62,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_error.h"
+#include "vscf_impl.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -167,6 +176,38 @@ VSCF_PUBLIC void
 vscf_pkcs8_serializer_release_asn1_writer(vscf_pkcs8_serializer_t *self);
 
 //
+//  Calculate buffer size enough to hold serialized public key.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_serializer_serialized_public_key_len(const vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key);
+
+//
+//  Serialize given public key to an interchangeable format.
+//
+//  Precondition: public key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
+//  Calculate buffer size enough to hold serialized private key.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC size_t
+vscf_pkcs8_serializer_serialized_private_key_len(const vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key);
+
+//
+//  Serialize given private key to an interchangeable format.
+//
+//  Precondition: private key must be exportable.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
@@ -178,8 +219,7 @@ vscf_pkcs8_serializer_setup_defaults(vscf_pkcs8_serializer_t *self);
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self,
-        const vscf_raw_public_key_t *public_key, vscf_error_t *error);
+vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key, vscf_error_t *error);
 
 //
 //  Serialize Private Key by using internal ASN.1 writer.
@@ -187,45 +227,7 @@ vscf_pkcs8_serializer_serialize_public_key_inplace(vscf_pkcs8_serializer_t *self
 //  an output buffer.
 //
 VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialize_private_key_inplace(vscf_pkcs8_serializer_t *self,
-        const vscf_raw_private_key_t *private_key, vscf_error_t *error);
-
-//
-//  Calculate buffer size enough to hold serialized public key.
-//
-//  Precondition: public key must be exportable.
-//
-VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_public_key_len(const vscf_pkcs8_serializer_t *self,
-        const vscf_raw_public_key_t *public_key);
-
-//
-//  Serialize given public key to an interchangeable format.
-//
-//  Precondition: public key must be exportable.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_public_key(vscf_pkcs8_serializer_t *self, const vscf_raw_public_key_t *public_key,
-        vsc_buffer_t *out) VSCF_NODISCARD;
-
-//
-//  Calculate buffer size enough to hold serialized private key.
-//
-//  Precondition: private key must be exportable.
-//
-VSCF_PUBLIC size_t
-vscf_pkcs8_serializer_serialized_private_key_len(const vscf_pkcs8_serializer_t *self,
-        const vscf_raw_private_key_t *private_key);
-
-//
-//  Serialize given private key to an interchangeable format.
-//
-//  Precondition: private key must be exportable.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key,
-        vsc_buffer_t *out) VSCF_NODISCARD;
-
+vscf_pkcs8_serializer_serialize_private_key_inplace(vscf_pkcs8_serializer_t *self, const vscf_raw_private_key_t *private_key, vscf_error_t *error);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -233,11 +235,9 @@ vscf_pkcs8_serializer_serialize_private_key(vscf_pkcs8_serializer_t *self, const
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PKCS8_SERIALIZER_H_INCLUDED

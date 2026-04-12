@@ -128,6 +128,7 @@ vscf_signer_cleanup(vscf_signer_t *self) {
     vscf_signer_cleanup_ctx(self);
 
     vscf_signer_release_hash(self);
+
     vscf_signer_release_random(self);
 
     vscf_zeroize(self, sizeof(vscf_signer_t));
@@ -316,7 +317,6 @@ vscf_signer_release_random(vscf_signer_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

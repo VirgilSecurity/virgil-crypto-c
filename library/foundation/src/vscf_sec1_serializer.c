@@ -86,7 +86,6 @@ vscf_sec1_serializer_is_ec_key(const vscf_impl_t *key);
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_sec1_serializer_init() is called.

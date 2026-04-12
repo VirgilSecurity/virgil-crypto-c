@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,8 +45,6 @@
 
 #ifndef VSCF_HKDF_PRIVATE_H_INCLUDED
 #define VSCF_HKDF_PRIVATE_H_INCLUDED
-
-#include "vscf_hkdf.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -62,11 +59,24 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_hkdf.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -86,18 +96,15 @@ vscf_hkdf_extract(vscf_hkdf_t *self, vsc_data_t data, vsc_data_t salt, vsc_buffe
 VSCF_PRIVATE void
 vscf_hkdf_expand(vscf_hkdf_t *self, vsc_data_t pr_key, vsc_data_t info, vsc_buffer_t *key, size_t key_len);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_HKDF_PRIVATE_H_INCLUDED

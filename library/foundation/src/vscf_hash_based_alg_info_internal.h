@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -54,19 +52,30 @@
 #ifndef VSCF_HASH_BASED_ALG_INFO_INTERNAL_H_INCLUDED
 #define VSCF_HASH_BASED_ALG_INFO_INTERNAL_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_hash_based_alg_info.h"
 #include "vscf_alg_id.h"
 #include "vscf_impl.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -94,9 +103,7 @@ vscf_hash_based_alg_info_cleanup_ctx(vscf_hash_based_alg_info_t *self);
 //  Create algorithm info with identificator and HASH algorithm info.
 //
 VSCF_PUBLIC void
-vscf_hash_based_alg_info_init_ctx_with_members(vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **hash_alg_info_ref);
-
+vscf_hash_based_alg_info_init_ctx_with_members(vscf_hash_based_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -104,11 +111,9 @@ vscf_hash_based_alg_info_init_ctx_with_members(vscf_hash_based_alg_info_t *self,
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_HASH_BASED_ALG_INFO_INTERNAL_H_INCLUDED

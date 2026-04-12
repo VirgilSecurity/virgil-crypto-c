@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,14 +50,6 @@
 
 #ifndef VSCF_CURVE25519_H_INCLUDED
 #define VSCF_CURVE25519_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_ecies.h"
-#include "vscf_error.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
-#include "vscf_raw_public_key.h"
-#include "vscf_raw_private_key.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -74,11 +64,30 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_ecies.h"
+#include "vscf_error.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -211,19 +220,6 @@ VSCF_PUBLIC void
 vscf_curve25519_release_ecies(vscf_curve25519_t *self);
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_curve25519_setup_defaults(vscf_curve25519_t *self) VSCF_NODISCARD;
-
-//
-//  Generate new private key.
-//  Note, this operation might be slow.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_generate_key(const vscf_curve25519_t *self, vscf_error_t *error);
-
-//
 //  Generate ephemeral private key of the same type.
 //  Note, this operation might be slow.
 //
@@ -241,15 +237,13 @@ vscf_curve25519_generate_ephemeral_key(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key(const vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key,
-        vscf_error_t *error);
+vscf_curve25519_import_public_key(const vscf_curve25519_t *self, const vscf_raw_public_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import public key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_public_key_data(const vscf_curve25519_t *self, vsc_data_t key_data,
-        const vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_curve25519_import_public_key_data(const vscf_curve25519_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export public key to the raw binary format.
@@ -275,8 +269,7 @@ vscf_curve25519_exported_public_key_data_len(const vscf_curve25519_t *self, cons
 //  RFC 3447 Appendix A.1.1.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_export_public_key_data(const vscf_curve25519_t *self, const vscf_impl_t *public_key,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_curve25519_export_public_key_data(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Import private key from the raw binary format.
@@ -289,15 +282,13 @@ vscf_curve25519_export_public_key_data(const vscf_curve25519_t *self, const vscf
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key(const vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key,
-        vscf_error_t *error);
+vscf_curve25519_import_private_key(const vscf_curve25519_t *self, const vscf_raw_private_key_t *raw_key, vscf_error_t *error);
 
 //
 //  Import private key from the raw binary format.
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_curve25519_import_private_key_data(const vscf_curve25519_t *self, vsc_data_t key_data,
-        const vscf_impl_t *key_alg_info, vscf_error_t *error);
+vscf_curve25519_import_private_key_data(const vscf_curve25519_t *self, vsc_data_t key_data, const vscf_impl_t *key_alg_info, vscf_error_t *error);
 
 //
 //  Export private key in the raw binary format.
@@ -323,8 +314,7 @@ vscf_curve25519_exported_private_key_data_len(const vscf_curve25519_t *self, con
 //  RFC 3447 Appendix A.1.2.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_export_private_key_data(const vscf_curve25519_t *self, const vscf_impl_t *private_key,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_curve25519_export_private_key_data(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can encrypt data with a given key.
@@ -342,8 +332,7 @@ vscf_curve25519_encrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
 //  Encrypt data with a given public key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_curve25519_encrypt(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can decrypt data with a given key.
@@ -362,16 +351,14 @@ vscf_curve25519_decrypted_len(const vscf_curve25519_t *self, const vscf_impl_t *
 //  Decrypt given data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_curve25519_decrypt(const vscf_curve25519_t *self, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Compute shared key for 2 asymmetric keys.
 //  Note, computed shared key can be used only within symmetric cryptography.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_impl_t *public_key,
-        const vscf_impl_t *private_key, vsc_buffer_t *shared_key) VSCF_NODISCARD;
+vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_impl_t *public_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
 //
 //  Return number of bytes required to hold shared key.
@@ -396,16 +383,26 @@ vscf_curve25519_kem_encapsulated_key_len(const vscf_curve25519_t *self, const vs
 //  Generate a shared key and a key encapsulated message.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_kem_encapsulate(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key,
-        vsc_buffer_t *encapsulated_key) VSCF_NODISCARD;
+vscf_curve25519_kem_encapsulate(const vscf_curve25519_t *self, const vscf_impl_t *public_key, vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key) VSCF_NODISCARD;
 
 //
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_curve25519_kem_decapsulate(const vscf_curve25519_t *self, vsc_data_t encapsulated_key,
-        const vscf_impl_t *private_key, vsc_buffer_t *shared_key) VSCF_NODISCARD;
+vscf_curve25519_kem_decapsulate(const vscf_curve25519_t *self, vsc_data_t encapsulated_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key) VSCF_NODISCARD;
 
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_curve25519_setup_defaults(vscf_curve25519_t *self) VSCF_NODISCARD;
+
+//
+//  Generate new private key.
+//  Note, this operation might be slow.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_curve25519_generate_key(const vscf_curve25519_t *self, vscf_error_t *error);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -413,11 +410,9 @@ vscf_curve25519_kem_decapsulate(const vscf_curve25519_t *self, vsc_data_t encaps
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_CURVE25519_H_INCLUDED

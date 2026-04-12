@@ -85,7 +85,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Setup predefined values to the uninitialized class dependencies.
 //

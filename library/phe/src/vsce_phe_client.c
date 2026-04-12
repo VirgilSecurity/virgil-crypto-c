@@ -158,6 +158,7 @@ vsce_phe_client_cleanup(vsce_phe_client_t *self) {
     vsce_phe_client_cleanup_ctx(self);
 
     vsce_phe_client_release_random(self);
+
     vsce_phe_client_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_phe_client_t));
@@ -366,7 +367,6 @@ vsce_phe_client_release_operation_random(vsce_phe_client_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

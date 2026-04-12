@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,18 +51,29 @@
 #ifndef VSCF_PASSWORD_RECIPIENT_INFO_LIST_H_INCLUDED
 #define VSCF_PASSWORD_RECIPIENT_INFO_LIST_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_password_recipient_info.h"
 #include "vscf_password_recipient_info_list.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -126,8 +135,7 @@ vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list
 //  Note, ownership is transfered.
 //
 VSCF_PRIVATE void
-vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self,
-        vscf_password_recipient_info_t **password_recipient_info_ref);
+vscf_password_recipient_info_list_add(vscf_password_recipient_info_list_t *self, vscf_password_recipient_info_t **password_recipient_info_ref);
 
 //
 //  Return true if given list has item.
@@ -171,18 +179,15 @@ vscf_password_recipient_info_list_prev(const vscf_password_recipient_info_list_t
 VSCF_PUBLIC void
 vscf_password_recipient_info_list_clear(vscf_password_recipient_info_list_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PASSWORD_RECIPIENT_INFO_LIST_H_INCLUDED

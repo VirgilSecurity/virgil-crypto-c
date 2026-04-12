@@ -281,7 +281,6 @@ vscf_message_info_editor_release_random(vscf_message_info_editor_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_info_editor_init() is called.

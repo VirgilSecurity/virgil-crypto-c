@@ -156,6 +156,7 @@ vsce_uokms_server_cleanup(vsce_uokms_server_t *self) {
     vsce_uokms_server_cleanup_ctx(self);
 
     vsce_uokms_server_release_random(self);
+
     vsce_uokms_server_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_uokms_server_t));
@@ -364,7 +365,6 @@ vsce_uokms_server_release_operation_random(vsce_uokms_server_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

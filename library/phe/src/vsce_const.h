@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,18 +51,29 @@
 #ifndef VSCE_CONST_H_INCLUDED
 #define VSCE_CONST_H_INCLUDED
 
-#include "vsce_library.h"
-
 // clang-format on
 //  @end
 
-
 #include <virgil/crypto/common/vsc_data.h>
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -72,13 +81,13 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-VSCE_PUBLIC extern const byte k_dhc0[8];
+VSCE_PUBLIC extern byte k_dhc0[8];
 
-VSCE_PUBLIC extern const byte k_dhc1[8];
+VSCE_PUBLIC extern byte k_dhc1[8];
 
-VSCE_PUBLIC extern const byte k_dhs0[8];
+VSCE_PUBLIC extern byte k_dhs0[8];
 
-VSCE_PUBLIC extern const byte k_dhs1[8];
+VSCE_PUBLIC extern byte k_dhs1[8];
 
 VSCE_PUBLIC extern const vsc_data_t k_proof_ok;
 
@@ -92,18 +101,15 @@ VSCE_PUBLIC extern const vsc_data_t k_kdf_info_client_key;
 
 VSCE_PUBLIC extern const vsc_data_t k_kdf_info_uokms_key;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_CONST_H_INCLUDED

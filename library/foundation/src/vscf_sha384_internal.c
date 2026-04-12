@@ -81,7 +81,7 @@ vscf_sha384_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -108,7 +108,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_hash_api_t hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
+    //  For interface 'hash' MUST be equal to the  'vscf_api_tag_HASH'.
     //
     vscf_api_tag_HASH,
     //
@@ -306,9 +306,9 @@ vscf_sha384_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_HASH:
-            return (const vscf_api_t *) &hash_api;
+        return (const vscf_api_t *)                 &hash_api;
         default:
             return NULL;
     }

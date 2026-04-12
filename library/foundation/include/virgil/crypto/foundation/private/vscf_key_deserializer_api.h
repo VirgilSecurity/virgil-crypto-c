@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCF_KEY_DESERIALIZER_API_H_INCLUDED
 #define VSCF_KEY_DESERIALIZER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
-#include "vscf_raw_public_key.h"
-#include "vscf_raw_private_key.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -71,11 +62,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_error.h"
+#include "vscf_raw_public_key.h"
+#include "vscf_raw_private_key.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -86,14 +95,12 @@ extern "C" {
 //
 //  Callback. Deserialize given public key as an interchangeable format to the object.
 //
-typedef vscf_raw_public_key_t * (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl,
-        vsc_data_t public_key_data, vscf_error_t *error);
+typedef vscf_raw_public_key_t * (*vscf_key_deserializer_api_deserialize_public_key_fn)(vscf_impl_t *impl, vsc_data_t public_key_data, vscf_error_t *error);
 
 //
 //  Callback. Deserialize given private key as an interchangeable format to the object.
 //
-typedef vscf_raw_private_key_t * (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl,
-        vsc_data_t private_key_data, vscf_error_t *error);
+typedef vscf_raw_private_key_t * (*vscf_key_deserializer_api_deserialize_private_key_fn)(vscf_impl_t *impl, vsc_data_t private_key_data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'key deserializer'.
@@ -101,7 +108,7 @@ typedef vscf_raw_private_key_t * (*vscf_key_deserializer_api_deserialize_private
 struct vscf_key_deserializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
+    //  For interface 'key deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -118,18 +125,15 @@ struct vscf_key_deserializer_api_t {
     vscf_key_deserializer_api_deserialize_private_key_fn deserialize_private_key_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_DESERIALIZER_API_H_INCLUDED

@@ -76,6 +76,9 @@ vscr_ratchet_skipped_messages_init_ctx(vscr_ratchet_skipped_messages_t *self);
 static void
 vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self);
 
+static uint32_t
+vscr_ratchet_skipped_messages_find_public_key(const vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id);
+
 //
 //  Return size of 'vscr_ratchet_skipped_messages_t'.
 //
@@ -214,7 +217,6 @@ vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

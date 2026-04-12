@@ -73,7 +73,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Calculate length in bytes required to hold an encoded base64 string.
 //

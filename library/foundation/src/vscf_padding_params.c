@@ -262,7 +262,6 @@ vscf_padding_params_shallow_copy(vscf_padding_params_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_padding_params_init() is called.

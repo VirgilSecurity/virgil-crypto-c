@@ -75,22 +75,12 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Private integral constants.
-//
-enum {
-    vscf_falcon_SEED_LEN = 48,
-    vscf_falcon_LOGN_512 = 9,
-    vscf_falcon_LOGN_1024 = 10
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

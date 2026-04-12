@@ -103,7 +103,6 @@ vscf_alg_factory_restore_alg_info_and_return(vscf_impl_t **alg_ref, const vscf_i
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Create algorithm that implements "hash stream" interface.
 //

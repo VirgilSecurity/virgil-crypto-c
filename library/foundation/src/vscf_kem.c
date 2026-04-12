@@ -94,8 +94,7 @@ vscf_kem_kem_encapsulated_key_len(const vscf_impl_t *impl, const vscf_impl_t *pu
 //  Generate a shared key and a key encapsulated message.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_kem_kem_encapsulate(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key,
-        vsc_buffer_t *encapsulated_key) {
+vscf_kem_kem_encapsulate(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_buffer_t *shared_key, vsc_buffer_t *encapsulated_key) {
 
     const vscf_kem_api_t *kem_api = vscf_kem_api(impl);
     VSCF_ASSERT_PTR (kem_api);
@@ -108,8 +107,7 @@ vscf_kem_kem_encapsulate(const vscf_impl_t *impl, const vscf_impl_t *public_key,
 //  Decapsulate the shared key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_kem_kem_decapsulate(const vscf_impl_t *impl, vsc_data_t encapsulated_key, const vscf_impl_t *private_key,
-        vsc_buffer_t *shared_key) {
+vscf_kem_kem_decapsulate(const vscf_impl_t *impl, vsc_data_t encapsulated_key, const vscf_impl_t *private_key, vsc_buffer_t *shared_key) {
 
     const vscf_kem_api_t *kem_api = vscf_kem_api(impl);
     VSCF_ASSERT_PTR (kem_api);

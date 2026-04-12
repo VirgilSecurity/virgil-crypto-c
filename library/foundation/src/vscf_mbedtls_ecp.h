@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,20 +51,31 @@
 #ifndef VSCF_MBEDTLS_ECP_H_INCLUDED
 #define VSCF_MBEDTLS_ECP_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_alg_id.h"
 #include "vscf_status.h"
 
 #include <mbedtls/ecp.h>
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -81,7 +90,7 @@ VSCF_PUBLIC mbedtls_ecp_group_id
 vscf_mbedtls_ecp_group_id_from_alg_id(vscf_alg_id_t alg_id);
 
 //
-//  Map "mbedtls_ecp_group_id" to correspond "alg id".
+//  Map "mbedtls_ecp_group_id" to correspond  "alg id".
 //
 VSCF_PUBLIC vscf_alg_id_t
 vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id);
@@ -92,18 +101,15 @@ vscf_mbedtls_ecp_group_id_to_alg_id(mbedtls_ecp_group_id grp_id);
 VSCF_PUBLIC vscf_status_t
 vscf_mbedtls_ecp_group_load(vscf_alg_id_t alg_id, mbedtls_ecp_group *ecc_grp) VSCF_NODISCARD;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MBEDTLS_ECP_H_INCLUDED
