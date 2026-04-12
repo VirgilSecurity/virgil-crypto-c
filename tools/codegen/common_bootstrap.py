@@ -774,6 +774,49 @@ def generate_block(root: ET.Element, for_header: bool) -> str:
     return "\n".join(out) + "\n"
 
 
+def _find_first_untagged_end(lines: list[str]) -> int | None:
+    """Find the first ``//  @end`` not preceded by a ``@generated*`` marker."""
+    for i, line in enumerate(lines):
+        if line.rstrip("\n") != GENERATED_END:
+            continue
+        has_gen_start = False
+        for j in range(i - 1, -1, -1):
+            sj = lines[j].rstrip("\n")
+            if sj == GENERATED_START or sj == GENERATED_HEADER_INCLUDES_START:
+                has_gen_start = True
+                break
+            if sj == GENERATED_END:
+                break
+        if not has_gen_start:
+            return i
+    return None
+
+
+def _extract_old_header_includes(content: str) -> tuple[str, list[str]]:
+    """Extract ``#include`` lines from the first un-tagged ``@end`` block.
+
+    Returns (cleaned_content, extracted_include_lines).  The include lines are
+    stripped from the content and returned so they can be merged into the
+    ``@generated_header_includes`` section.
+    """
+    lines = content.splitlines(keepends=True)
+    first_end = _find_first_untagged_end(lines)
+    if first_end is None:
+        return content, []
+
+    extracted: list[str] = []
+    out: list[str] = []
+    for i, line in enumerate(lines):
+        if i < first_end and line.lstrip().startswith("#include "):
+            extracted.append(line.strip())
+            continue
+        out.append(line)
+    result = "".join(out)
+    while "\n\n\n" in result:
+        result = result.replace("\n\n\n", "\n\n")
+    return result, extracted
+
+
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path, *, project: str = "common") -> list[Path]:
     renderer = direct_c_renderers(repo_root, project).get(xml_path.name)
     if renderer is not None:
@@ -792,7 +835,42 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
         generated = generate_block(root, is_header)
         merged = merge_generated_section(existing, generated)
         if is_header:
+            # Extract existing includes from the legacy first @end block
+            # and merge them with codegen-produced system includes into a
+            # single @generated_header_includes section.
+            merged, old_includes = _extract_old_header_includes(merged)
             include_block = generate_header_includes_block(root)
+            # Build combined block: old project includes + system includes
+            sys_lines: list[str] = []
+            if include_block:
+                for ln in include_block.splitlines():
+                    if ln.strip().startswith("#include "):
+                        sys_lines.append(ln.strip())
+            # Deduplicate: keep old order, add system includes not already present
+            seen: set[str] = set()
+            combined: list[str] = []
+            for inc in old_includes:
+                if inc not in seen:
+                    combined.append(inc)
+                    seen.add(inc)
+            for inc in sys_lines:
+                if inc not in seen:
+                    combined.append(inc)
+                    seen.add(inc)
+            if combined:
+                # Separate project ("...") and system (<...>) includes
+                proj = [x for x in combined if x.startswith('#include "')]
+                sys = [x for x in combined if x.startswith("#include <")]
+                out_lines = _generated_block_header(GENERATED_HEADER_INCLUDES_START, "Generated header includes start.")
+                if proj:
+                    out_lines.extend(proj)
+                    if sys:
+                        out_lines.append("")
+                if sys:
+                    out_lines.extend(sys)
+                out_lines.append("")
+                out_lines.extend(_generated_block_footer())
+                include_block = "\n".join(out_lines) + "\n"
             merged = merge_or_insert_tagged_section(
                 merged,
                 include_block,

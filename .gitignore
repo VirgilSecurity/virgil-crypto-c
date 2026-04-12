@@ -63,3 +63,6 @@ wrappers/go/pkg/
 
 # Taskplane runtime artifacts (machine-specific, do not commit)
 .worktrees/
+
+# Compound Engineering local config
+.compound-engineering/*.local.yaml
