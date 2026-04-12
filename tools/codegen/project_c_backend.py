@@ -4544,9 +4544,9 @@ def render_implementation_defs_c_module(
     text_element(root, "c_include", file=impl_output.include_file, is_system="0", scope="public")
     text_element(root, "c_include", file=f"{prefix}_atomic.h", is_system="0", scope="public")
 
-    # Library header includes (from requirements)
+    # Library header includes (from requirements — only context/public scope belong in defs)
     for req in impl.requirements:
-        if req.kind == "header":
+        if req.kind == "header" and req.attrs.get("scope") in ("context", "public"):
             text_element(root, "c_include", file=req.name, is_system="1", scope="public")
         elif req.kind == "library" and "header" in req.attrs:
             # Library requirement with explicit header (e.g. from <context>)
