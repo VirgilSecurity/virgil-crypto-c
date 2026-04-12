@@ -175,6 +175,7 @@ class IRClass(IRCommented):
     # kind is 'field' or 'dep', index is into struct_fields or dependencies.
     macroses: list[IRClassMacro] = field(default_factory=list)
     requirements: list['IRRequirement'] = field(default_factory=list)
+    constants: list[IRCConstant] = field(default_factory=list)
     output: IROutputTarget | None = None
 
 
@@ -520,6 +521,7 @@ def class_to_ir(project: ProjectSource, src: ClassSource) -> IRClass:
             IRRequirement(kind=r.kind, name=r.name, attrs=r.attrs, description=r.description)
             for r in src.requirements
         ],
+        constants=[_constant_to_ir(c.name, c.attrs, c.description) for c in src.constants],
         output=build_output_target(project, entity_kind="class", entity_name=src.name, attrs=src.attrs),
     )
 

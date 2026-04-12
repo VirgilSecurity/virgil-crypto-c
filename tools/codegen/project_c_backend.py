@@ -2927,6 +2927,22 @@ def render_class_c_module(
     for macro in cls.macroses:
         _render_class_macro(root, macro, project_ir=project_ir, cls=cls)
 
+    # Constants — emit as anonymous enum
+    if cls.constants:
+        enum_elem = text_element(root, "c_enum", declaration="public", definition="public")
+        enum_elem.text = comment_text("Public integral constants.")
+        for constant in cls.constants:
+            const_suffix = snake_name(constant.name).upper()
+            const_symbol = f"{class_output.c_symbol}_{const_suffix}"
+            const_attrs: dict[str, str] = {"name": const_symbol}
+            value = constant.attrs.get("value")
+            if value:
+                const_attrs["value"] = value
+            const_attrs["definition"] = constant.attrs.get("definition", "public")
+            const_elem = text_element(enum_elem, "c_constant", **const_attrs)
+            if constant.description:
+                const_elem.text = comment_text(constant.description)
+
     if generate_ctx_size:
         _render_ctx_size_method(root, project_ir=project_ir, cls=cls)
 
@@ -2971,9 +2987,15 @@ def render_class_c_module(
                     method_args.insert(0, {"name": "self", "class": "self"})
             return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
             method_vis = method.attrs.get("visibility", "public")
+            # Handle of_class attribute: redirect method to a different namespace
+            of_class = method.attrs.get("of_class")
+            if of_class:
+                method_name = f"{project_ir.prefix}_{snake_name(of_class)}_{snake_name(method.name)}"
+            else:
+                method_name = class_method_symbol(project_ir, cls, method.name)
             _render_ir_method(
                 root,
-                name=class_method_symbol(project_ir, cls, method.name),
+                name=method_name,
                 description=method.description,
                 arguments=tuple(method_args),
                 return_attrs=return_attrs,
@@ -3020,14 +3042,15 @@ def render_class_internal_c_module(
             continue
         method_args = list(_method_arg_dict(arg) for arg in method.arguments)
         is_static_method = method.attrs.get("is_static") in {"1", "true"}
-        if has_context and not is_static_method:
-            if not is_value_type:
-                self_attrs: dict[str, str] = {"class": "self"}
-                if method.attrs.get("is_const") in {"1", "true"}:
-                    self_attrs["access"] = "readonly"
-                method_args.insert(0, {"name": "self", **self_attrs})
-        else:
-            method_args.insert(0, {"name": "self", "class": "self"})
+        if not is_static_method:
+            if has_context:
+                if not is_value_type:
+                    self_attrs: dict[str, str] = {"class": "self"}
+                    if method.attrs.get("is_const") in {"1", "true"}:
+                        self_attrs["access"] = "readonly"
+                    method_args.insert(0, {"name": "self", **self_attrs})
+            else:
+                method_args.insert(0, {"name": "self", "class": "self"})
         return_attrs = _method_arg_dict(method.returns[0]) if method.returns else {"type": "void"}
         _render_ir_method(
             root,
@@ -3189,10 +3212,19 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
             variable_attrs["array"] = "derived"
         if getattr(variable, "type_name", None) == "byte" and attrs.get("access") != "readwrite":
             variable_attrs["is_const_type"] = "1"
+        # String variables: emit as `const char *const` with quoted value
+        if getattr(variable, "type_name", None) == "string":
+            variable_attrs["type"] = "const char *const"
+            variable_attrs["type_is"] = "primitive"
+            variable_attrs["accessed_by"] = "value"
     var_elem = text_element(parent, "c_variable", **{k: v for k, v in variable_attrs.items() if v is not None})
     if getattr(variable, "value", None) is not None:
         value = cast(dict[str, str], getattr(variable, "value"))
-        text_element(var_elem, "c_value", value=value["value"], accessed_by="value", type=variable_attrs["type"], type_is=variable_attrs["type_is"])
+        raw_val = value["value"]
+        # Wrap string values in double quotes if not already quoted
+        if value.get("type") == "string" and not raw_val.startswith('"'):
+            raw_val = f'\"{ raw_val}\"'
+        text_element(var_elem, "c_value", value=raw_val, accessed_by="value", type=variable_attrs["type"], type_is=variable_attrs["type_is"])
     for modifier in [f"{project_ir.prefix.upper()}_PUBLIC"] if variable_attrs["visibility"] == "public" else []:
         text_element(var_elem, "c_modifier", value=modifier)
     if getattr(variable, "description", ""):
@@ -3258,11 +3290,13 @@ def _lifecycle_init_body(
 ) -> str:
     """Generate the body for the init() lifecycle method."""
     struct_type = class_type_symbol(project_ir, cls.name)
+    prefix = project_ir.prefix
+    PREFIX = prefix.upper()
     init_ctx = _class_runtime_symbol(project_ir, cls, "init_ctx")
     return (
-        f"VSC_ASSERT_PTR(self);\n"
+        f"{PREFIX}_ASSERT_PTR(self);\n"
         f"\n"
-        f"vsc_zeroize(self, sizeof({struct_type}));\n"
+        f"{prefix}_zeroize(self, sizeof({struct_type}));\n"
         f"\n"
         f"self->refcnt = 1;\n"
         f"\n"
@@ -3275,6 +3309,7 @@ def _lifecycle_cleanup_body(
     cls: IRClass,
 ) -> str:
     """Generate the body for the cleanup() lifecycle method."""
+    prefix = project_ir.prefix
     struct_type = class_type_symbol(project_ir, cls.name)
     cleanup_ctx = _class_runtime_symbol(project_ir, cls, "cleanup_ctx")
     class_symbol = entity_output(project_ir, entity_kind='class', entity_name=cls.name).c_symbol
@@ -3294,7 +3329,7 @@ def _lifecycle_cleanup_body(
         lines.append(f"{release_method}(self);")
 
     lines.append("")
-    lines.append(f"vsc_zeroize(self, sizeof({struct_type}));")
+    lines.append(f"{prefix}_zeroize(self, sizeof({struct_type}));")
 
     return "\n".join(lines)
 
@@ -3304,15 +3339,17 @@ def _lifecycle_new_body(
     cls: IRClass,
 ) -> str:
     """Generate the body for the new() lifecycle method."""
+    prefix = project_ir.prefix
+    PREFIX = prefix.upper()
     struct_type = class_type_symbol(project_ir, cls.name)
     init_method = _class_runtime_symbol(project_ir, cls, "init")
     return (
-        f"{struct_type} *self = ({struct_type} *) vsc_alloc(sizeof ({struct_type}));\n"
-        f"VSC_ASSERT_ALLOC(self);\n"
+        f"{struct_type} *self = ({struct_type} *) {prefix}_alloc(sizeof ({struct_type}));\n"
+        f"{PREFIX}_ASSERT_ALLOC(self);\n"
         f"\n"
         f"{init_method}(self);\n"
         f"\n"
-        f"self->self_dealloc_cb = vsc_dealloc;\n"
+        f"self->self_dealloc_cb = {prefix}_dealloc;\n"
         f"\n"
         f"return self;"
     )
@@ -3409,14 +3446,15 @@ def _lifecycle_constructor_init_body(
     ctor_arg_names: list[str],
 ) -> str:
     """Generate the body for the init_with_X() constructor lifecycle method."""
-    prefix_upper = project_ir.prefix.upper()
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
     struct_type = class_type_symbol(project_ir, cls.name)
     init_ctx_method = _class_runtime_symbol(project_ir, cls, f"init_ctx_with_{_reference_ctor_suffix(ctor_name)}")
     proxy_args = ", ".join(["self"] + ctor_arg_names)
     return (
         f"{prefix_upper}_ASSERT_PTR(self);\n"
         f"\n"
-        f"vsc_zeroize(self, sizeof({struct_type}));\n"
+        f"{prefix}_zeroize(self, sizeof({struct_type}));\n"
         f"\n"
         f"self->refcnt = 1;\n"
         f"\n"
@@ -3431,16 +3469,18 @@ def _lifecycle_constructor_new_body(
     ctor_arg_names: list[str],
 ) -> str:
     """Generate the body for the new_with_X() constructor lifecycle method."""
+    prefix = project_ir.prefix
+    PREFIX = prefix.upper()
     struct_type = class_type_symbol(project_ir, cls.name)
     init_method = class_constructor_symbol(project_ir, cls, ctor_name)
     proxy_args = ", ".join(["self"] + ctor_arg_names)
     return (
-        f"{struct_type} *self = ({struct_type} *) vsc_alloc(sizeof ({struct_type}));\n"
-        f"VSC_ASSERT_ALLOC(self);\n"
+        f"{struct_type} *self = ({struct_type} *) {prefix}_alloc(sizeof ({struct_type}));\n"
+        f"{PREFIX}_ASSERT_ALLOC(self);\n"
         f"\n"
         f"{init_method}({proxy_args});\n"
         f"\n"
-        f"self->self_dealloc_cb = vsc_dealloc;\n"
+        f"self->self_dealloc_cb = {prefix}_dealloc;\n"
         f"\n"
         f"return self;"
     )
@@ -3779,6 +3819,83 @@ def _render_dep_observer_method(
         text_element(method, "c_modifier", value="static")
         if description:
             method.text = comment_text(description)
+
+
+def _render_dependency_method_declarations(
+    parent: ET.Element,
+    *,
+    project_ir: IRProject,
+    impl: IRImplementation,
+) -> None:
+    """Render declaration-only entries for use/take/release dependency methods.
+
+    In the legacy codegen, dependency methods are declared in the public header
+    but defined in the internal source.  This function emits declaration-only
+    ``c_method`` elements (definition='external') so they appear in the public
+    header.
+    """
+    impl_output = cast(IROutputTarget, impl.output)
+    class_symbol = impl_output.c_symbol
+    impl_snake = snake_name(impl.name)
+    struct_type = f"{class_symbol}_t"
+    prefix_upper = project_ir.prefix.upper()
+
+    for dep in impl.dependencies:
+        dep_field = snake_name(dep.name)
+        dep_type = _dependency_type_symbol(project_ir, dep)
+
+        # --- use_X declaration ---
+        use_desc = dep.description.strip() + "\n\nNote, ownership is shared." if dep.description.strip() else f"Setup dependency to the {dep.type_kind} '{dep.type_name}' with shared ownership."
+        use_return_type = "void"
+        if dep.has_observers and dep.is_observers_return_status:
+            use_return_type = "status"
+        use_method = text_element(
+            parent, "c_method",
+            name=f"{class_symbol}_use_{dep_field}",
+            visibility="public", declaration="public", definition="external",
+            uid=f"public_{impl_snake}_use_{dep_field}",
+        )
+        text_element(use_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+        text_element(use_method, "c_argument", name=dep_field, accessed_by="pointer", type=dep_type, type_is="class")
+        if use_return_type == "status":
+            text_element(use_method, "c_return", accessed_by="value", type=f"{project_ir.prefix}_status_t", type_is="primitive")
+            text_element(use_method, "c_attribute", value=f"{prefix_upper}_NODISCARD")
+        else:
+            text_element(use_method, "c_return", accessed_by="value", type="void")
+        text_element(use_method, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+        use_method.text = comment_text(use_desc)
+
+        # --- take_X declaration ---
+        if dep.type_kind in {"interface", "class", "impl"}:
+            take_desc = dep.description.strip() + "\n\nNote, ownership is transfered.\nNote, transfer ownership does not mean that object is uniquely owned by the target object." if dep.description.strip() else f"Setup dependency to the {dep.type_kind} '{dep.type_name}' and transfer ownership.\nNote, transfer ownership does not mean that object is uniquely owned by the target object."
+            take_method = text_element(
+                parent, "c_method",
+                name=f"{class_symbol}_take_{dep_field}",
+                visibility="public", declaration="public", definition="external",
+                uid=f"public_{impl_snake}_take_{dep_field}",
+            )
+            text_element(take_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+            text_element(take_method, "c_argument", name=dep_field, accessed_by="pointer", type=dep_type, type_is="class")
+            if use_return_type == "status":
+                text_element(take_method, "c_return", accessed_by="value", type=f"{project_ir.prefix}_status_t", type_is="primitive")
+                text_element(take_method, "c_attribute", value=f"{prefix_upper}_NODISCARD")
+            else:
+                text_element(take_method, "c_return", accessed_by="value", type="void")
+            text_element(take_method, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+            take_method.text = comment_text(take_desc)
+
+        # --- release_X declaration ---
+        release_desc = f"Release dependency to the {dep.type_kind} '{dep.type_name}'."
+        release_method = text_element(
+            parent, "c_method",
+            name=f"{class_symbol}_release_{dep_field}",
+            visibility="public", declaration="public", definition="external",
+            uid=f"public_{impl_snake}_release_{dep_field}",
+        )
+        text_element(release_method, "c_argument", name="self", accessed_by="pointer", type=struct_type, type_is="class")
+        text_element(release_method, "c_return", accessed_by="value", type="void")
+        text_element(release_method, "c_modifier", value=f"{prefix_upper}_PUBLIC")
+        release_method.text = comment_text(release_desc)
 
 
 def _render_dependency_methods(
@@ -4120,20 +4237,24 @@ def _resolve_impl_property_type(
                 "accessed_by": "pointer" if prop.is_reference else "value",
             })
         else:
-            # Project class (e.g. buffer → vsc_buffer_t)
+            # Project class or impl (e.g. buffer → vsc_buffer_t, hmac → vscf_hmac_t)
             try:
                 type_sym = _resolve_class_type_symbol(
                     project_ir, prop.class_name, fallback_projects=fallback_projects
                 )
             except KeyError:
                 type_sym = f"{project_ir.prefix}_{snake_name(prop.class_name)}_t"
+            # When is_reference is explicitly False, store by value (e.g. embedded structs).
+            # Otherwise project classes/impls are accessed by pointer.
+            if prop.is_reference_explicit and not prop.is_reference:
+                accessed_by = "value"
+            else:
+                accessed_by = "pointer"
             attrs.update({
                 "type": type_sym,
                 "type_is": "class",
-                "accessed_by": "pointer" if not prop.is_reference else "pointer",
+                "accessed_by": accessed_by,
             })
-            # Project classes are always accessed by pointer in struct properties
-            attrs["accessed_by"] = "pointer"
     else:
         # Primitive type (byte, size, etc.)
         rendered_type, kind = type_map(prop.type_name)
@@ -4258,6 +4379,8 @@ def render_implementation_private_c_module(
             arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
             if arg.class_name:
                 arg_dict["class"] = arg.class_name
+                if arg.library:
+                    arg_dict["library"] = arg.library
                 effective_access = arg.access
                 if effective_access is None:
                     if arg.class_name == "buffer":
@@ -4265,31 +4388,51 @@ def render_implementation_private_c_module(
                     else:
                         effective_access = "readonly"
                 is_value = False
-                for fp in (fallback_projects or []):
-                    try:
-                        cls = class_ir(fp, arg.class_name)
-                        if cls.attrs.get("is_value_type") in {"1", "true"}:
-                            is_value = True
-                        break
-                    except KeyError:
-                        pass
-                if not is_value:
-                    try:
-                        cls = class_ir(project_ir, arg.class_name)
-                        if cls.attrs.get("is_value_type") in {"1", "true"}:
-                            is_value = True
-                    except KeyError:
-                        pass
-                arg_dict["accessed_by"] = "value" if is_value else "pointer"
-                if effective_access == "readonly" and not is_value:
-                    arg_dict["is_const"] = "1"
+                if not arg.library:
+                    for fp in (fallback_projects or []):
+                        try:
+                            cls = class_ir(fp, arg.class_name)
+                            if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                is_value = True
+                            break
+                        except KeyError:
+                            pass
+                    if not is_value:
+                        try:
+                            cls = class_ir(project_ir, arg.class_name)
+                            if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                is_value = True
+                        except KeyError:
+                            pass
+                if arg.library:
+                    # Library types default to pointer; only use value when is_reference="0"
+                    if getattr(arg, 'is_reference_explicit', False) and not arg.is_reference:
+                        arg_dict["accessed_by"] = "value"
+                    else:
+                        arg_dict["accessed_by"] = "pointer"
+                    if effective_access == "readonly":
+                        arg_dict["is_const"] = "1"
+                else:
+                    if effective_access == "disown" and not is_value:
+                        arg_dict["accessed_by"] = "reference"
+                        arg_dict["name"] = f"{snake_name(arg.name)}_ref"
+                    else:
+                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    if effective_access == "readonly" and not is_value:
+                        arg_dict["is_const"] = "1"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
                 if arg.access in ("readonly", None):
                     arg_dict["is_const"] = "1"
-                arg_dict["accessed_by"] = "pointer"
+                if arg.access == "disown":
+                    arg_dict["accessed_by"] = "reference"
+                    arg_dict["name"] = f"{snake_name(arg.name)}_ref"
+                else:
+                    arg_dict["accessed_by"] = "pointer"
             elif arg.enum_name:
                 arg_dict["enum"] = arg.enum_name
+                if arg.library:
+                    arg_dict["library"] = arg.library
             elif arg.type_name:
                 resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
                 arg_dict["type"] = resolved_arg_type
@@ -4307,9 +4450,15 @@ def render_implementation_private_c_module(
         if method.returns:
             ret = method.returns[0]
             if ret.enum_name:
-                ret_type = f"enum:{ret.enum_name}"
+                if ret.library:
+                    ret_type = f"library_enum:{ret.enum_name}"
+                else:
+                    ret_type = f"enum:{ret.enum_name}"
             elif ret.interface_name:
                 ret_class = "impl"
+                ret_accessed_by = "pointer"
+                if ret.access not in ("disown", "readwrite"):
+                    ret_is_const = True
             elif ret.class_name:
                 ret_class = ret.class_name
             elif ret.type_name:
@@ -4386,6 +4535,41 @@ def render_implementation_defs_c_module(
     for req in impl.requirements:
         if req.kind == "header":
             text_element(root, "c_include", file=req.name, is_system="1", scope="public")
+        elif req.kind == "library" and "header" in req.attrs:
+            # Library requirement with explicit header (e.g. from <context>)
+            text_element(root, "c_include", file=req.attrs["header"], is_system="1", scope="public")
+        elif req.kind == "module":
+            # Module requirement — include the module's header
+            try:
+                mod_out = entity_output(project_ir, entity_kind="module", entity_name=req.name)
+                text_element(root, "c_include", file=mod_out.include_file, is_system="0", scope="public")
+            except (KeyError, ValueError):
+                pass
+
+    # Include vscf_impl.h if there are interface dependencies
+    has_iface_dep = any(dep.type_kind in ("interface", "impl") for dep in impl.dependencies)
+    if has_iface_dep:
+        text_element(root, "c_include", file=f"{prefix}_impl.h", is_system="0", scope="public")
+
+    # Include headers for class-typed dependencies (concrete types)
+    for dep in impl.dependencies:
+        if dep.type_kind not in ("interface", "impl"):
+            try:
+                cls_out = entity_output(project_ir, entity_kind="class", entity_name=dep.type_name)
+                text_element(root, "c_include", file=cls_out.include_file, is_system="0", scope="public")
+            except (KeyError, ValueError):
+                # Try as implementation
+                try:
+                    impl_out_dep = entity_output(project_ir, entity_kind="implementation", entity_name=dep.type_name)
+                    text_element(root, "c_include", file=impl_out_dep.include_file, is_system="0", scope="public")
+                except (KeyError, ValueError):
+                    pass
+
+    # Include headers for library header requirements from requirements
+    for req in impl.requirements:
+        if req.kind == "library" and "header" in req.attrs:
+            # Already handled above — skip duplicate
+            pass
 
     # Struct definition
     struct_name = f"{impl_output.c_symbol}_t"
@@ -4439,16 +4623,17 @@ def render_implementation_defs_c_module(
         )
         prop_elem.text = comment_text("Implementation specific context.")
 
-    # Dependency fields — each dependency becomes a {prefix}_impl_t pointer
+    # Dependency fields — use concrete type for class deps, impl_t for interface deps
     for dep in impl.dependencies:
         dep_name = snake_name(dep.name)
         dep_uid = f"c_class_{snake_name(impl.name)}_struct_{snake_name(impl.name)}_property_{dep_name}"
+        dep_type_sym = _dependency_type_symbol(project_ir, dep)
         dep_elem = text_element(
             struct_elem,
             "c_property",
             name=dep_name,
             accessed_by="pointer",
-            type=f"{prefix}_impl_t",
+            type=dep_type_sym,
             type_is="class",
             uid=dep_uid,
         )
@@ -4838,6 +5023,9 @@ def _render_impl_method(
                 if cls_name == "self":
                     # class="self" refers to the owning implementation's concrete type
                     type_sym = struct_type
+                elif arg.get("library"):
+                    # External library type — use raw class name as-is
+                    type_sym = cls_name
                 else:
                     try:
                         type_sym = _resolve_class_type_symbol(
@@ -4859,11 +5047,15 @@ def _render_impl_method(
                 )
             elif arg.get("enum"):
                 enum_name = arg["enum"]
-                try:
-                    enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
-                    rendered_type = f"{enum_out.c_symbol}_t"
-                except (KeyError, ValueError):
-                    rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
+                if arg.get("library"):
+                    # External library enum type — use raw name as-is
+                    rendered_type = enum_name
+                else:
+                    try:
+                        enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
+                        rendered_type = f"{enum_out.c_symbol}_t"
+                    except (KeyError, ValueError):
+                        rendered_type = f"{project_ir.prefix}_{snake_name(enum_name)}_t"
                 text_element(
                     method, "c_argument",
                     name=arg_name,
@@ -4896,6 +5088,10 @@ def _render_impl_method(
         if return_type == "status":
             # Status is a project-specific enum type
             rendered_type = f"{project_ir.prefix}_status_t"
+            kind = "primitive"
+        elif return_type.startswith("library_enum:"):
+            # External library enum type — use raw name as-is
+            rendered_type = return_type[13:]
             kind = "primitive"
         elif return_type.startswith("enum:"):
             # Resolved enum type
@@ -5022,7 +5218,11 @@ def _render_impl_interface_methods(
                                     is_value = True
                             except KeyError:
                                 pass
-                    arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    if effective_access == "disown" and not is_value:
+                        arg_dict["accessed_by"] = "reference"
+                        arg_dict["name"] = f"{snake_name(arg.name)}_ref"
+                    else:
+                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
                     # Apply const for non-value readonly args
                     if effective_access == "readonly" and not is_value:
                         arg_dict["is_const"] = "1"
@@ -5031,7 +5231,11 @@ def _render_impl_interface_methods(
                     arg_dict["class"] = "impl"
                     if arg.access in ("readonly", None):
                         arg_dict["is_const"] = "1"
-                    arg_dict["accessed_by"] = "pointer"
+                    if arg.access == "disown":
+                        arg_dict["accessed_by"] = "reference"
+                        arg_dict["name"] = f"{snake_name(arg.name)}_ref"
+                    else:
+                        arg_dict["accessed_by"] = "pointer"
                 elif arg.enum_name:
                     # Enum-typed arguments — resolve to project-prefixed enum type
                     arg_dict["enum"] = arg.enum_name
@@ -5060,6 +5264,9 @@ def _render_impl_interface_methods(
                 elif ret.interface_name:
                     # Interface return — returns impl_t pointer
                     ret_class = "impl"
+                    ret_accessed_by = "pointer"
+                    if ret.access not in ("disown", "readwrite"):
+                        ret_is_const = True
                 elif ret.class_name:
                     ret_class = ret.class_name
                 elif ret.type_name:
@@ -5194,6 +5401,11 @@ def render_implementation_internal_c_module(
         text_element(did_release_method, "c_return", accessed_by="value", type="void")
         text_element(did_release_method, "c_modifier", value=f"{prefix_upper}_PRIVATE")
         did_release_method.text = comment_text(f"This method is called when {dep.type_kind} '{dep.type_name}' was released.")
+
+    # --- Dependency management methods: use/take/release (Pattern D) ---
+    # These are rendered in the internal module to match the legacy codegen layout.
+    if impl.dependencies:
+        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation", skip_observers=True)
 
     # --- API table variables (one per bound interface) ---
     api_var_names: list[tuple[str, str]] = []  # (iface_name, var_name)
@@ -5628,6 +5840,74 @@ def render_implementation_internal_c_module(
         text_element(accessor, "c_modifier", value=f"{prefix_upper}_PUBLIC")
         accessor.text = comment_text(f"Returns instance of the implemented interface '{binding.name}'.")
 
+    # --- scope="internal" methods (declarations in internal header, definitions external) ---
+    for method in impl.methods:
+        method_scope = method.attrs.get("scope", "")
+        if method_scope != "internal":
+            continue
+        # Skip methods with declaration="private" — they are hand-written
+        if method.attrs.get("declaration", "private") == "private":
+            continue
+        method_name = f"{impl_output.c_symbol}_{snake_name(method.name)}"
+        args: list[dict[str, str]] = []
+        is_static = method.attrs.get("is_static") == "1"
+        is_const_self = method.attrs.get("is_const") == "1"
+        if not is_static:
+            args.append({"name": "self", "is_self": "1", **(
+                {"is_const": "1"} if is_const_self else {})})
+        for arg in method.arguments:
+            arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
+            if arg.class_name:
+                arg_dict["class"] = arg.class_name
+                effective_access = arg.access
+                if effective_access is None:
+                    effective_access = "writeonly" if arg.class_name == "buffer" else "readonly"
+                if effective_access == "readonly":
+                    arg_dict["access"] = "readonly"
+                if effective_access == "disown":
+                    arg_dict["access"] = "disown"
+            elif arg.interface_name:
+                arg_dict["interface"] = arg.interface_name
+                if arg.access in ("readonly", None):
+                    arg_dict["access"] = "readonly"
+                if arg.access == "disown":
+                    arg_dict["access"] = "disown"
+            elif arg.enum_name:
+                arg_dict["enum"] = arg.enum_name
+            elif arg.type_name:
+                resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
+                arg_dict["type"] = resolved_arg_type
+                if arg.is_reference or arg.is_array:
+                    arg_dict["is_reference"] = "1"
+            args.append(arg_dict)
+        return_attrs: dict[str, str] | None = None
+        if method.returns:
+            ret = method.returns[0]
+            if ret.enum_name:
+                return_attrs = {"enum": ret.enum_name}
+            elif ret.interface_name:
+                return_attrs = {"interface": ret.interface_name, "access": ret.access or "readonly"}
+            elif ret.class_name:
+                return_attrs = {"class": ret.class_name}
+                if ret.access:
+                    return_attrs["access"] = ret.access
+            elif ret.type_name:
+                resolved_ret_type, _ = type_map(ret.type_name, getattr(ret, 'type_size', None))
+                return_attrs = {"type": resolved_ret_type}
+        _render_ir_method(
+            root,
+            name=method_name,
+            description=method.description,
+            arguments=tuple(args),
+            return_attrs=return_attrs,
+            project_ir=project_ir,
+            owner_class=impl.name,
+            visibility="private",
+            declaration="public",
+            definition="external",
+            uid=f"internal_{impl_snake}_method_{snake_name(method.name)}",
+        )
+
     root.text = comment_text(
         "This module contains logic for interface/implementation architecture.\n"
         "Do not use this module in any part of the code."
@@ -5924,9 +6204,11 @@ def render_implementation_c_module(
         definition="private",
     )
 
-    # --- Dependency management methods: use/take/release ---
+    # --- Dependency method DECLARATIONS (use/take/release) ---
+    # In the legacy codegen, dependency methods are declared in the public header
+    # but defined in the internal source. We emit declaration-only entries here.
     if impl.dependencies:
-        _render_dependency_methods(root, project_ir=project_ir, cls=impl, entity_kind="implementation", skip_observers=True)
+        _render_dependency_method_declarations(root, project_ir=project_ir, impl=impl)
 
     # --- Constructor methods (init_with_X, new_with_X) ---
     for ctor in impl.constructors:
@@ -5986,9 +6268,12 @@ def render_implementation_c_module(
         # Skip methods with explicit declaration="private" — their declarations are hand-written
         if "declaration" in method.attrs and method_decl == "private":
             continue
-        # Skip scope="private" methods — they belong in the private module
+        # Skip scope="private" and scope="internal" methods — they belong in the
+        # private or internal module respectively.
         method_scope = method.attrs.get("scope", "")
-        if method_scope == "private" and method_decl == "public":
+        if method_scope in ("private", "internal") and method_decl == "public":
+            continue
+        if method_scope == "internal":
             continue
 
         args: list[dict[str, str]] = []
@@ -6002,6 +6287,8 @@ def render_implementation_c_module(
             arg_dict: dict[str, str] = {"name": snake_name(arg.name)}
             if arg.class_name:
                 arg_dict["class"] = arg.class_name
+                if arg.library:
+                    arg_dict["library"] = arg.library
                 # Resolve effective access: legacy defaults to 'readonly' except
                 # buffer arguments which default to 'writeonly'
                 effective_access = arg.access
@@ -6012,32 +6299,52 @@ def render_implementation_c_module(
                         effective_access = "readonly"
                 # Determine accessed_by: value types (data) passed by value
                 is_value = False
-                for fp in (fallback_projects or []):
-                    try:
-                        cls = class_ir(fp, arg.class_name)
-                        if cls.attrs.get("is_value_type") in {"1", "true"}:
-                            is_value = True
-                        break
-                    except KeyError:
-                        pass
-                if not is_value:
-                    try:
-                        cls = class_ir(project_ir, arg.class_name)
-                        if cls.attrs.get("is_value_type") in {"1", "true"}:
-                            is_value = True
-                    except KeyError:
-                        pass
-                arg_dict["accessed_by"] = "value" if is_value else "pointer"
-                # Apply const for non-value readonly args
-                if effective_access == "readonly" and not is_value:
-                    arg_dict["is_const"] = "1"
+                if not arg.library:
+                    for fp in (fallback_projects or []):
+                        try:
+                            cls = class_ir(fp, arg.class_name)
+                            if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                is_value = True
+                            break
+                        except KeyError:
+                            pass
+                    if not is_value:
+                        try:
+                            cls = class_ir(project_ir, arg.class_name)
+                            if cls.attrs.get("is_value_type") in {"1", "true"}:
+                                is_value = True
+                        except KeyError:
+                            pass
+                if arg.library:
+                    # Library types default to pointer; only use value when is_reference="0"
+                    if getattr(arg, 'is_reference_explicit', False) and not arg.is_reference:
+                        arg_dict["accessed_by"] = "value"
+                    else:
+                        arg_dict["accessed_by"] = "pointer"
+                    if effective_access == "readonly":
+                        arg_dict["is_const"] = "1"
+                else:
+                    if effective_access == "disown" and not is_value:
+                        arg_dict["accessed_by"] = "reference"
+                        arg_dict["name"] = f"{snake_name(arg.name)}_ref"
+                    else:
+                        arg_dict["accessed_by"] = "value" if is_value else "pointer"
+                    # Apply const for non-value readonly args
+                    if effective_access == "readonly" and not is_value:
+                        arg_dict["is_const"] = "1"
             elif arg.interface_name:
                 arg_dict["class"] = "impl"
                 if arg.access in ("readonly", None):
                     arg_dict["is_const"] = "1"
-                arg_dict["accessed_by"] = "pointer"
+                if arg.access == "disown":
+                    arg_dict["accessed_by"] = "reference"
+                    arg_dict["name"] = f"{snake_name(arg.name)}_ref"
+                else:
+                    arg_dict["accessed_by"] = "pointer"
             elif arg.enum_name:
                 arg_dict["enum"] = arg.enum_name
+                if arg.library:
+                    arg_dict["library"] = arg.library
             elif arg.type_name:
                 resolved_arg_type, _ = type_map(arg.type_name, getattr(arg, 'type_size', None))
                 arg_dict["type"] = resolved_arg_type
@@ -6056,9 +6363,15 @@ def render_implementation_c_module(
         if method.returns:
             ret = method.returns[0]
             if ret.enum_name:
-                ret_type = f"enum:{ret.enum_name}"
+                if ret.library:
+                    ret_type = f"library_enum:{ret.enum_name}"
+                else:
+                    ret_type = f"enum:{ret.enum_name}"
             elif ret.interface_name:
                 ret_class = "impl"
+                ret_accessed_by = "pointer"
+                if ret.access not in ("disown", "readwrite"):
+                    ret_is_const = True
             elif ret.class_name:
                 ret_class = ret.class_name
             elif ret.type_name:
@@ -6202,6 +6515,9 @@ def argument_from_source(
             effective_access = "readonly"
         if effective_access == "readonly":
             extra["is_const_type"] = "1"
+        # Disown access → double pointer (reference) with _ref suffix
+        if effective_access == "disown":
+            return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
     if attrs.get("class") is not None:
         resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
@@ -6225,9 +6541,8 @@ def argument_from_source(
             accessed_by = "reference"
         elif attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
             accessed_by = "pointer"
-        elif attrs.get("library") and attrs.get("is_reference") not in {"1", "true"} and attrs.get("class") != "self":
-            accessed_by = "value"
         elif attrs.get("library") and attrs.get("class") != "self":
+            # Library types default to pointer; only value when explicitly is_reference="0"
             accessed_by = "pointer"
         elif attrs.get("class") != "self" and project_ir is not None:
             # Non-self class argument: check if target class is a value type
@@ -6241,6 +6556,9 @@ def argument_from_source(
                     pass
             if not target_is_value_type:
                 accessed_by = "pointer"
+        # Disown access → double pointer (reference) with _ref suffix
+        if attrs.get("access") == "disown" and attrs.get("class") != "self":
+            return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
         return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("callback") is not None:
         callback_type = callback_symbol(project_ir, callback_name_from_ref(attrs.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"
@@ -6259,7 +6577,10 @@ def argument_from_source(
     if attrs.get("enum") is not None:
         # Enum-typed argument → resolve to enum type
         enum_name = attrs["enum"]
-        if project_ir is not None:
+        if attrs.get("library"):
+            # External library enum type — use raw name as-is
+            rendered_type = enum_name
+        elif project_ir is not None:
             try:
                 enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
                 rendered_type = f"{enum_out.c_symbol}_t"
@@ -6290,11 +6611,17 @@ def return_from_source(
     if attrs.get("interface") is not None:
         # Interface return → {prefix}_impl_t pointer
         prefix = project_ir.prefix if project_ir is not None else "vscf"
-        return text_element(parent, "c_return", accessed_by="pointer", type=f"{prefix}_impl_t", type_is="class")
+        extra = {}
+        if attrs.get("access") not in ("disown", "readwrite"):
+            extra["is_const_type"] = "1"
+        return text_element(parent, "c_return", accessed_by="pointer", type=f"{prefix}_impl_t", type_is="class", **extra)
     if attrs.get("enum") is not None:
         # Enum return → resolve to enum type
         enum_name = attrs["enum"]
-        if project_ir is not None:
+        if attrs.get("library"):
+            # External library enum type — use raw name as-is
+            rendered_type = enum_name
+        elif project_ir is not None:
             try:
                 enum_out = entity_output(project_ir, entity_kind="enum", entity_name=enum_name)
                 rendered_type = f"{enum_out.c_symbol}_t"
@@ -6316,24 +6643,38 @@ def return_from_source(
             type_name = resolved_class_str
         else:
             type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
-        accessed_by = "value"
-        if attrs.get("class") == "self" and project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") not in {"1", "true"}:
-            accessed_by = "pointer"
-        elif attrs.get("library") and attrs.get("is_reference") in {"1", "true"} and attrs.get("class") != "self":
-            accessed_by = "pointer"
-        elif attrs.get("access") in {"disown", "readwrite"} and attrs.get("class") != "self":
-            # Ownership-transfer returns (disown) or mutable returns are by pointer,
-            # unless the class is a value type (e.g. vsc_data_t is returned by value)
-            is_value_type = False
-            if project_ir is not None:
-                try:
-                    is_value_type = class_ir(project_ir, resolved_class_str).attrs.get("is_value_type") in {"1", "true"}
-                except KeyError:
-                    # Name may refer to an implementation rather than a class;
-                    # implementations are never value types.
-                    pass
-            if not is_value_type:
+        # Determine accessed_by for class returns.
+        # Default: classes are returned by pointer (matching legacy behaviour).
+        # Value types (e.g. vsc_data_t) are returned by value.
+        is_value_type = False
+        if project_ir is not None and attrs.get("class") != "self":
+            try:
+                is_value_type = class_ir(project_ir, resolved_class_str).attrs.get("is_value_type") in {"1", "true"}
+            except KeyError:
+                # Cross-project class (e.g. 'data' from common in foundation).
+                # Check fallback projects if available.
+                for fp in getattr(project_ir, 'fallback_projects', []) or []:
+                    try:
+                        is_value_type = class_ir(fp, resolved_class_str).attrs.get("is_value_type") in {"1", "true"}
+                        break
+                    except KeyError:
+                        continue
+                # Known value types from common project (hardcoded fallback)
+                if not is_value_type and resolved_class_str == 'data':
+                    is_value_type = True
+
+        if is_value_type:
+            accessed_by = "value"
+        elif attrs.get("class") == "self":
+            if project_ir is not None and class_ir(project_ir, owner_class).attrs.get("is_value_type") in {"1", "true"}:
+                accessed_by = "value"
+            else:
                 accessed_by = "pointer"
+        else:
+            accessed_by = "pointer"
+            # Non-owning (readonly) class returns get const
+            if attrs.get("access") not in {"disown", "readwrite"}:
+                extra["is_const_type"] = "1"
         return text_element(parent, "c_return", accessed_by=accessed_by, type=type_name, type_is="class", **extra)
     if attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"}:
         extra = {"is_const_type": "1"} if attrs.get("access") != "readwrite" else {}

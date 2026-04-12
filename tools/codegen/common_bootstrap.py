@@ -362,14 +362,23 @@ def emit_comment_block(text: str | None) -> str:
 
 
 def c_decl(type_name: str, name: str, accessed_by: str = "value", is_const_type: str | None = None,
-           is_string: bool = False, is_array: bool = False, type_is: str | None = None) -> str:
+           is_string: bool = False, is_array: bool = False, type_is: str | None = None,
+           array_length: str | None = None) -> str:
     prefix = "const " if is_const_type == "1" else ""
     stars = ""
-    if is_string or is_array or accessed_by == "pointer":
+    if is_string or accessed_by == "pointer":
+        stars = "*"
+    elif is_array and not array_length:
+        # Dynamic array — render as pointer
         stars = "*"
     elif accessed_by == "reference":
         stars = "**" if type_is == "class" else "*"
     rendered_type = f"{prefix}{type_name}".strip()
+    # Fixed-length array: e.g. vscf_impl_t *name[LENGTH]
+    if array_length:
+        if stars:
+            return f"{rendered_type} {stars}{name}[{array_length}]".strip()
+        return f"{rendered_type} {name}[{array_length}]".strip()
     if stars:
         return f"{rendered_type} {stars}{name}".strip()
     return f"{rendered_type} {name}".strip()
@@ -508,7 +517,7 @@ def render_struct_full(elem: ET.Element) -> str:
         prop_comment = emit_comment_block(prop.text)
         if prop_comment:
             lines.append(indent(prop_comment.rstrip("\n"), 4))
-        decl = f"{c_decl(prop.attrib['type'], prop.attrib['name'], prop.attrib.get('accessed_by', 'value'), prop.attrib.get('is_const_type'), prop.attrib.get('string') is not None, prop.attrib.get('array') is not None, prop.attrib.get('type_is'))};"
+        decl = f"{c_decl(prop.attrib['type'], prop.attrib['name'], prop.attrib.get('accessed_by', 'value'), prop.attrib.get('is_const_type'), prop.attrib.get('string') is not None, prop.attrib.get('array') is not None, prop.attrib.get('type_is'), array_length=prop.attrib.get('length'))};"
         lines.append(f"    {decl}")
     if typedef_public and definition_public:
         lines.append("};")
