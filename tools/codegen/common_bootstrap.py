@@ -1125,6 +1125,25 @@ def main() -> int:
             out_path.write_text(content)
             written.append(out_path)
 
+        # --- Go wrapper files ---
+        # Only projects that declare ``go`` in their ``wrappers`` attribute
+        # ship Go bindings. Today that's foundation and phe; other projects
+        # (common, pythia, ratchet) get no Go output at all.
+        wrappers_attr = project_ir.attrs.get("wrappers", "")
+        wrappers_set = {w.strip() for w in wrappers_attr.split(",") if w.strip()}
+        if "go" in wrappers_set:
+            from tools.codegen.project_go_backend import generate_go_files
+            for rel_path, content in generate_go_files(project_ir, license_text=license_text):
+                out_path = out_root / rel_path
+                # Test files are handwritten and must NEVER be overwritten —
+                # the generator already refuses to emit them, so this is a
+                # belt-and-braces guard.
+                if out_path.name.endswith("_test.go"):
+                    continue
+                ensure_parent(out_path)
+                out_path.write_text(content)
+                written.append(out_path)
+
         unexpected_skips = [(n, e) for n, e in skipped if n not in KNOWN_SKIPS]
         known = [(n, e) for n, e in skipped if n in KNOWN_SKIPS]
 

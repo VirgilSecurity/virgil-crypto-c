@@ -76,6 +76,10 @@ ALL_PROJECTS="common foundation phe pythia ratchet"
 
 resolve_project_paths() {
   local proj="$1"
+  # GO_RESTORE_PATHS — directories that the Go backend writes into.
+  # Only foundation and phe ship Go wrappers today; the others leave
+  # this empty so verify mode skips the Go restore step.
+  GO_RESTORE_PATHS=()
   case "${proj}" in
     common)
       LIB_RESTORE_PATHS=(
@@ -90,6 +94,7 @@ resolve_project_paths() {
         "library/foundation/include/virgil/crypto/foundation"
         "library/foundation/src"
       )
+      GO_RESTORE_PATHS=("wrappers/go/foundation")
       CMAKE_TARGET="foundation"
       CMAKE_TEST_TARGET="test_foundation"
       ;;
@@ -98,6 +103,7 @@ resolve_project_paths() {
         "library/phe/include/virgil/crypto/phe"
         "library/phe/src"
       )
+      GO_RESTORE_PATHS=("wrappers/go/phe")
       CMAKE_TARGET="phe"
       CMAKE_TEST_TARGET="test_phe"
       ;;
@@ -149,6 +155,14 @@ if ${VERIFY}; then
       for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
         git -C "${ROOT_DIR}" checkout -- "${restore_path}" >/dev/null 2>&1 || true
         git -C "${ROOT_DIR}" clean -fd -- "${restore_path}" >/dev/null 2>&1 || true
+      done
+      # Go wrapper files are fully generated (no @generated markers, the
+      # whole file is owned by the codegen). Restore them too — but
+      # ``git clean`` is dangerous here because it would also remove any
+      # locally-added handwritten test files, so we only checkout
+      # tracked files and leave untracked ones alone.
+      for go_path in "${GO_RESTORE_PATHS[@]:+${GO_RESTORE_PATHS[@]}}"; do
+        git -C "${ROOT_DIR}" checkout -- "${go_path}" >/dev/null 2>&1 || true
       done
     done
     echo "restored generated files"
