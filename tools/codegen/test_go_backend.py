@@ -13,6 +13,7 @@ from tools.codegen.project_go_backend import (
     generate_go_enum,
     generate_go_files,
     generate_go_implementation_scaffold,
+    generate_go_static_class,
     go_arg_name,
     go_constant_name,
     go_method_name,
@@ -343,6 +344,112 @@ class ClassScaffoldTests(unittest.TestCase):
         self.assertNotIn("wrappers/go/foundation/base64.go", files)
         self.assertNotIn("wrappers/go/foundation/sha256.go", files)
         self.assertNotIn("wrappers/go/foundation/key_provider.go", files)
+
+
+class StaticClassGenerationTests(unittest.TestCase):
+    """Method-body generation for context="none" classes.
+
+    These classes are package-level helpers with no cCtx — the simplest
+    shape in the wrapper. Parity is measured modulo GSL tracer comments
+    (``/*pr4*/``, ``/* r7 */``, …) which are decoration only.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+
+    def _strip_tracers(self, text: str) -> str:
+        # Remove the GSL tracer comments but preserve neighbouring
+        # whitespace — the surrounding spacing IS part of the legacy
+        # layout we want to match.
+        import re as _re
+
+        text = _re.sub(r"/\*[a-zA-Z0-9_ ]+?\*/", "", text)
+        # Legacy GSL leaves isolated whitespace behind after a tracer,
+        # e.g. ``algId) /*pa7*/)`` → ``algId) )`` and
+        # ``getData() /* r7 */,`` → ``getData() ,``. Collapse those
+        # specific patterns so they don't cause spurious drift diffs.
+        text = _re.sub(r"\) \)", "))", text)
+        text = _re.sub(r"\) ,", "),", text)
+        # Tidy trailing spaces per line so rstripping differences don't
+        # cause spurious diffs.
+        text = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+        return text
+
+    def _static_class(self, name: str):
+        for c in self.ir.classes:
+            if c.name == name:
+                return c
+        raise AssertionError(f"class {name!r} not found")
+
+    def _assert_modulo_tracers(self, name: str, filename: str) -> None:
+        cls = self._static_class(name)
+        gen = generate_go_static_class(self.ir, cls)
+        legacy = (REPO_ROOT / "wrappers" / "go" / "foundation" / filename).read_text()
+        self.assertEqual(
+            self._strip_tracers(gen),
+            self._strip_tracers(legacy),
+            f"{filename} drift (modulo tracers)",
+        )
+
+    def test_base64_matches_legacy_modulo_tracers(self) -> None:
+        # Covers: primitive size args, data+buffer round-trip, buffer
+        # capacity resolved via <length method=…><proxy cast=data_length/>,
+        # status->error dispatch (decode).
+        self._assert_modulo_tracers("base64", "base64.go")
+
+    def test_oid_matches_legacy_modulo_tracers(self) -> None:
+        # Covers: enum args cast to C.vscf_<enum>_t, <return class=data/>
+        # rendered via helperExtractData, boolean return.
+        self._assert_modulo_tracers("oid", "oid.go")
+
+    def test_pem_matches_legacy_modulo_tracers(self) -> None:
+        # Covers: string args with C.CString + defer C.free + unsafe import,
+        # buffer capacity via proxy call that references the Go string.
+        self._assert_modulo_tracers("pem", "pem.go")
+
+    def test_non_static_class_raises(self) -> None:
+        # Guard: instance classes (context=public) must go through the
+        # instance generator, not this static path.
+        instance_cls = next(
+            c for c in self.ir.classes if c.attrs.get("context") != "none"
+        )
+        with self.assertRaises(ValueError):
+            generate_go_static_class(self.ir, instance_cls)
+
+    def test_static_generation_is_not_wired_into_orchestrator(self) -> None:
+        # Unit 4.2 ships the helper but leaves the orchestrator emitting
+        # only enum/interface/infrastructure files. Legacy GSL output
+        # remains authoritative for class files until integration.
+        files = dict(generate_go_files(self.ir))
+        for stem in ("base64", "oid", "pem"):
+            self.assertNotIn(
+                f"wrappers/go/foundation/{stem}.go", files,
+                f"{stem}.go should not be in orchestrator output yet",
+            )
+
+
+class BufferLengthMetadataTests(unittest.TestCase):
+    """The source parser must capture <length>/<proxy> metadata on buffer args."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+
+    def test_length_method_and_proxy_captured(self) -> None:
+        cls = next(c for c in self.ir.classes if c.name == "base64")
+        encode = next(m for m in cls.methods if m.name == "encode")
+        out_arg = next(a for a in encode.arguments if a.class_name == "buffer")
+        self.assertEqual(out_arg.length_attrs.get("method"), "encoded len")
+        self.assertEqual(out_arg.length_attrs.get("proxy_0_argument"), "data")
+        self.assertEqual(out_arg.length_attrs.get("proxy_0_to"), "data len")
+        self.assertEqual(out_arg.length_attrs.get("proxy_0_cast"), "data_length")
+
+    def test_non_buffer_args_have_empty_length_attrs(self) -> None:
+        cls = next(c for c in self.ir.classes if c.name == "base64")
+        encoded_len = next(m for m in cls.methods if m.name == "encoded len")
+        for arg in encoded_len.arguments:
+            self.assertEqual(arg.length_attrs, {})
 
 
 if __name__ == "__main__":

@@ -389,6 +389,17 @@ def _attrs_with_child_shapes(elem: ET.Element) -> dict[str, str]:
             attrs["string_length_constant"] = string.attrib["length_constant"]
         if string.attrib.get("access"):
             attrs["string_access"] = string.attrib["access"]
+    # Buffer-length metadata — consumed by wrapper backends (Go, etc.) to
+    # build ``newBuffer(capacity)`` calls. Flattened into the argument's
+    # attr dict as ``length_*`` keys with nested <proxy> elements encoded
+    # as positional ``length_proxy_N_<key>`` entries preserving XML order.
+    length = elem.find("length")
+    if length is not None:
+        for key, value in length.attrib.items():
+            attrs[f"length_{key}"] = value
+        for idx, proxy in enumerate(length.findall("proxy")):
+            for key, value in proxy.attrib.items():
+                attrs[f"length_proxy_{idx}_{key}"] = value
     return attrs
 
 

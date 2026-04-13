@@ -67,6 +67,13 @@ class IRCArgument(IRCommented):
     library: str | None = None
     project: str | None = None  # Source project for cross-project references
     type_size: str | None = None  # Bit-width for integer/unsigned: "1", "2", "4", "8"
+    # Buffer-length descriptor captured from ``<length>`` child elements on
+    # buffer-class arguments. Consumed by wrapper backends to build
+    # ``newBuffer(capacity)`` calls. Keys mirror XML attributes:
+    # ``method`` / ``constant`` / ``argument`` on the outer ``<length>``
+    # element, plus positional ``proxy_{N}_{key}`` entries preserving
+    # the XML order of nested ``<proxy>`` elements.
+    length_attrs: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -366,6 +373,13 @@ def _ref(kind: str, name: str, attrs: dict[str, str], description: str = "") -> 
 
 
 def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> IRCArgument:
+    # Strip the source-side ``length_*`` flattening back into a contained
+    # dict so backends can consume it without parsing prefixed keys.
+    length_attrs: dict[str, str] = {
+        key[len("length_"):]: value
+        for key, value in attrs.items()
+        if key.startswith("length_")
+    }
     return IRCArgument(
         name=name,
         description=description,
@@ -392,6 +406,7 @@ def _arg_from_attrs(name: str, attrs: dict[str, str], description: str = "") -> 
         library=attrs.get("library"),
         project=attrs.get("project"),
         type_size=attrs.get("size"),
+        length_attrs=length_attrs,
     )
 
 
