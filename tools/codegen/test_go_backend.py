@@ -12,6 +12,7 @@ from tools.codegen.project_go_backend import (
     generate_go_class_scaffold,
     generate_go_enum,
     generate_go_files,
+    generate_go_implementation,
     generate_go_implementation_scaffold,
     generate_go_instance_class,
     generate_go_static_class,
@@ -576,6 +577,112 @@ class InstanceClassSyntaxSurveyTests(unittest.TestCase):
                 self.assertEqual(
                     proc.returncode, 0,
                     f"gofmt rejected {cls.name!r}: {proc.stderr.decode()}",
+                )
+
+
+class ImplementationGenerationTests(unittest.TestCase):
+    """Method-body generation for IRImplementation entities.
+
+    Implementations share the struct/method shape of instance classes
+    plus interface-binding expansion (an impl's public Go API comes
+    primarily from the interfaces it implements). They also have a
+    distinct file layout: deps and impl-specific methods come BEFORE
+    the lifecycle block, then binding-expanded methods come after.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+
+    def _strip_tracers(self, text: str) -> str:
+        import re as _re
+
+        text = _re.sub(r"/\*[a-zA-Z0-9_. ]+?\*/", "", text)
+        text = _re.sub(r"\) \)", "))", text)
+        text = _re.sub(r"\) ,", "),", text)
+        text = _re.sub(r"([A-Za-z0-9_]) \)", r"\1)", text)
+        return "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+
+    def _impl(self, name: str):
+        for i in self.ir.implementations:
+            if i.name == name:
+                return i
+        raise AssertionError(f"impl {name!r} not found")
+
+    def _assert_modulo_tracers(self, name: str, filename: str) -> None:
+        gen = generate_go_implementation(self.ir, self._impl(name))
+        legacy = (REPO_ROOT / "wrappers" / "go" / "foundation" / filename).read_text()
+        self.assertEqual(
+            self._strip_tracers(gen),
+            self._strip_tracers(legacy),
+            f"{filename} drift",
+        )
+
+    def test_sha256_expands_alg_and_hash_bindings(self) -> None:
+        # Covers: per-binding constant-as-getter expansion, interface
+        # methods proxied through C, ``access="disown"`` -> Wrap (no Copy).
+        self._assert_modulo_tracers("sha256", "sha256.go")
+
+    def test_sha384_matches_legacy(self) -> None:
+        self._assert_modulo_tracers("sha384", "sha384.go")
+
+    def test_aes256_gcm_handles_buffer_blank_lines(self) -> None:
+        # Covers: multi-buffer blank-line ordering, dependency-free impl.
+        self._assert_modulo_tracers("aes256 gcm", "aes256_gcm.go")
+
+    def test_implementation_specific_method_filtered_unless_public(self) -> None:
+        # asn1rd has impl-specific methods (mbedtls_has_error, read_tag_data)
+        # that lack ``declaration="public"`` and should NOT surface on the
+        # Go side — the C layer keeps them but the wrapper hides them.
+        gen = generate_go_implementation(self.ir, self._impl("asn1rd"))
+        self.assertNotIn("MbedtlsHasError", gen)
+        self.assertNotIn("ReadTagData", gen)
+
+    def test_impl_specific_method_with_declaration_public_emits(self) -> None:
+        # rsa.setup_defaults has ``declaration="public"`` -> wrapped.
+        gen = generate_go_implementation(self.ir, self._impl("rsa"))
+        self.assertIn("func (obj *Rsa) SetupDefaults() error", gen)
+
+    def test_implementation_layout_orders_deps_before_lifecycle(self) -> None:
+        # On impls, dependency setters precede the Ctx/NewT lifecycle —
+        # opposite ordering from instance classes.
+        gen = generate_go_implementation(self.ir, self._impl("hmac"))
+        set_pos = gen.index("func (obj *Hmac) SetHash(")
+        ctx_pos = gen.index("func (obj *Hmac) Ctx() uintptr")
+        self.assertLess(
+            set_pos, ctx_pos,
+            "SetHash must appear before Ctx() in implementations",
+        )
+
+
+class ImplementationSyntaxSurveyTests(unittest.TestCase):
+    """Every generated implementation must parse via gofmt.
+
+    A regression here means we've produced something that won't compile,
+    even before CGo headers come into play.
+    """
+
+    def test_all_implementations_pass_gofmt(self) -> None:
+        import shutil
+        import subprocess
+        import tempfile
+
+        if shutil.which("gofmt") is None:
+            self.skipTest("gofmt not on PATH")
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            for impl in ir.implementations:
+                path = tmp_path / f"{impl.name.replace(' ', '_')}.go"
+                path.write_text(generate_go_implementation(ir, impl))
+                proc = subprocess.run(
+                    ["gofmt", "-e", str(path)],
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(
+                    proc.returncode, 0,
+                    f"gofmt rejected {impl.name!r}: {proc.stderr.decode()}",
                 )
 
 

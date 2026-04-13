@@ -791,6 +791,35 @@ def _lifecycle_block(
     parts.append(f"    cCtx {c_type}")
     parts.append("}")
     parts.append("")
+    parts.extend(
+        _lifecycle_methods_lines(
+            project_ir, type_name_go, class_name,
+            has_shallow_copy=has_shallow_copy,
+        )
+    )
+    return "\n".join(parts)
+
+
+def _lifecycle_methods_lines(
+    project_ir: IRProject,
+    type_name_go: str,
+    class_name: str,
+    *,
+    has_shallow_copy: bool = True,
+) -> list[str]:
+    """Render the lifecycle methods (Ctx + constructors + Delete pair).
+
+    Returns a list of source lines (no trailing blank). Used both by the
+    full :func:`_lifecycle_block` and by :func:`generate_go_implementation`,
+    which interleaves dependency setters and impl-specific methods
+    between the struct and these methods.
+    """
+    c_type = _class_c_type(project_ir, class_name)
+    new_sym = _class_c_symbol(project_ir, class_name, "new")
+    delete_sym = _class_c_symbol(project_ir, class_name, "delete")
+    shallow_copy_sym = _class_c_symbol(project_ir, class_name, "shallow_copy")
+
+    parts: list[str] = []
     parts.append("/* Handle underlying C context. */")
     parts.append(f"func (obj *{type_name_go}) Ctx() uintptr {{")
     parts.append("    return uintptr(unsafe.Pointer(obj.cCtx))")
@@ -859,7 +888,7 @@ def _lifecycle_block(
     parts.append(f"func (obj *{type_name_go}) delete() {{")
     parts.append(f"    {delete_sym}(obj.cCtx)")
     parts.append("}")
-    return "\n".join(parts)
+    return parts
 
 
 def generate_go_class_scaffold(project_ir: IRProject, cls: IRClass) -> str:
@@ -930,6 +959,20 @@ _PRIM_C_CASTS: dict[str, str] = {
     "byte": "C.byte",
 }
 
+# Sized C integer types — keyed by the source ``size="N"`` byte width.
+_C_SIZED_INT: dict[str, str] = {
+    "1": "C.int8_t",
+    "2": "C.int16_t",
+    "4": "C.int32_t",
+    "8": "C.int64_t",
+}
+_C_SIZED_UINT: dict[str, str] = {
+    "1": "C.uint8_t",
+    "2": "C.uint16_t",
+    "4": "C.uint32_t",
+    "8": "C.uint64_t",
+}
+
 
 def _c_enum_type(project_ir: IRProject, enum_name: str) -> str:
     """Canonical cgo type for an enum value (``C.vscf_alg_id_t``)."""
@@ -968,9 +1011,14 @@ def _go_to_c_arg_expr(
     if type_name == "boolean":
         return f"(C.bool)({go_local})"
     if type_name == "integer":
-        return f"({_PRIM_C_CASTS['integer']})({go_local})"
+        # ``type="integer"`` with no explicit ``size`` defaults to
+        # 4 bytes (matching the Go-side ``int32`` default in
+        # _go_integer_type). The cast must agree or cgo refuses.
+        sized = _C_SIZED_INT.get(arg.type_size or "4")
+        return f"({sized})({go_local})"
     if type_name == "unsigned":
-        return f"({_PRIM_C_CASTS['unsigned']})({go_local})"
+        sized = _C_SIZED_UINT.get(arg.type_size or "4")
+        return f"({sized})({go_local})"
     if type_name == "byte":
         return f"(C.byte)({go_local})"
     # Best-effort fallback — later slices replace this.
@@ -1053,14 +1101,21 @@ def _go_return_from_c_expr(
     if ret.interface_name:
         # Interface returns go through the project-wide impl-tag
         # dispatch in {project}_implementation.go — Unit 4.6 ships that
-        # file. Until it lands, the generator still emits these calls so
-        # downstream slices can iterate without rewriting this helper.
+        # file. ``access="disown"`` means the C side has transferred
+        # ownership so we wrap-without-copy; otherwise we shallow-copy.
         proj_prefix = go_type_name(project_ir.name)
-        return f"{proj_prefix}ImplementationWrap{go_type_name(ret.interface_name)}Copy({c_expr})"
+        suffix = "" if ret.access == "disown" else "Copy"
+        return (
+            f"{proj_prefix}ImplementationWrap"
+            f"{go_type_name(ret.interface_name)}{suffix}({c_expr})"
+        )
     if ret.class_name and ret.class_name not in {"data", "buffer"}:
-        # Class return — wrap the raw C context into a new Go value via
-        # the unexported copy constructor from the scaffold lifecycle.
-        return f"new{go_type_name(ret.class_name)}Copy({c_expr})"
+        # Class return — wrap the raw C context into a new Go value.
+        # ``access="disown"`` means the C side already gave up ownership
+        # so we use the non-copy ``newXxxWithCtx`` constructor; otherwise
+        # ``newXxxCopy`` shallow-copies and shares lifetime correctly.
+        wrap = "WithCtx" if ret.access == "disown" else "Copy"
+        return f"new{go_type_name(ret.class_name)}{wrap}({c_expr})"
     if ret.enum_name:
         return f"{go_type_name(ret.enum_name)}({c_expr})"
     type_name = (ret.type_name or "").lower()
@@ -1422,6 +1477,17 @@ def _instance_method_body(
         f"func (obj *{type_name}) {method_go_name}({args_str}){returns_str} {{"
     )
 
+    # Methods with an explicit ``class="error"`` argument allocate a
+    # local C-side error context up-front. The C function fills the
+    # status field which we drain through HandleStatus afterwards.
+    error_arg = next(
+        (a for a in resolved_args if a.class_name == "error"), None
+    )
+    if error_arg is not None:
+        lines.append(f"    var error C.{project_ir.prefix}_error_t")
+        lines.append(f"    C.{project_ir.prefix}_error_reset(&error)")
+        lines.append("")
+
     # Prologue (see _static_method_body for order rationale).
     has_string_prologue = False
     for arg in resolved_args:
@@ -1435,7 +1501,12 @@ def _instance_method_body(
     if has_string_prologue and buffer_outputs:
         lines.append("")
 
-    for buf_arg in buffer_outputs:
+    has_data_wrap = any(
+        a.class_name == "data"
+        for a in resolved_args
+        if not _arg_should_skip(a) and not _arg_is_buffer_output(a)
+    )
+    for idx, buf_arg in enumerate(buffer_outputs):
         buf_local = go_arg_name(buf_arg.name) + "Buf"
         err_local = buf_local + "Err"
         cap_expr = _buffer_length_expression(
@@ -1449,6 +1520,15 @@ def _instance_method_body(
         lines.append(f"        return {_zero_with_err(err_local)}")
         lines.append("    }")
         lines.append(f"    defer {buf_local}.delete()")
+        # Legacy GSL emits a blank line between consecutive buffer
+        # allocations and an extra blank after the LAST buffer when no
+        # data-wrap section follows. The single blank-before-call
+        # branch below handles the data-wrap case.
+        is_last = idx == len(buffer_outputs) - 1
+        if not is_last:
+            lines.append("")
+        elif not has_data_wrap:
+            lines.append("")
 
     for arg in resolved_args:
         if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
@@ -1457,10 +1537,17 @@ def _instance_method_body(
             local = locals_by_source[arg.name]
             lines.append(f"    {local}Data := helperWrapData ({local})")
 
-    # First C-call argument is always ``obj.cCtx``; the rest follow in
-    # XML order, with buffer outputs substituted.
-    call_args: list[str] = ["obj.cCtx"]
+    # First C-call argument is normally ``obj.cCtx``, but methods
+    # marked ``is_static="1"`` on the source interface bypass the
+    # instance pointer (e.g. ``Hash.hash`` is a stateless helper).
+    is_static_method = method.attrs.get("is_static") == "1"
+    call_args: list[str] = [] if is_static_method else ["obj.cCtx"]
     for arg in resolved_args:
+        if arg.class_name == "error":
+            # The C-side error context goes through as a pointer to the
+            # local ``error`` variable allocated above.
+            call_args.append("&error")
+            continue
         if _arg_should_skip(arg) and not _arg_is_buffer_output(arg):
             continue
         if _arg_is_buffer_output(arg):
@@ -1485,17 +1572,26 @@ def _instance_method_body(
     else:
         lines.append(f"    {call}")
 
-    # Status dispatch precedes KeepAlive — but we skip it when the
-    # error slot is filled by an interface-return Wrap function (which
-    # produces ``(T, error)`` directly) or by the class="error" argument
-    # the C side populated (the legacy wrapper doesn't call HandleStatus
-    # on non-status methods).
+    # Status dispatch precedes KeepAlive. Three sources of error:
+    # - ``status`` enum return -> HandleStatus(proxyResult)
+    # - ``class="error"`` arg -> HandleStatus(error.status)
+    # - interface return Wrap -> brings its own error pair, no dispatch
     has_status_return = any(r.enum_name == "status" for r in method.returns)
     has_interface_return = any(r.interface_name for r in method.returns)
-    error_slot_from_wrap = has_interface_return and not has_status_return
+    error_slot_from_wrap = (
+        has_interface_return
+        and not has_status_return
+        and error_arg is None
+    )
     if has_status_return:
         lines.append("")
         lines.append(f"    err := {error_type}HandleStatus(proxyResult)")
+        lines.append("    if err != nil {")
+        lines.append(f"        return {_zero_with_err('err')}")
+        lines.append("    }")
+    elif error_arg is not None:
+        lines.append("")
+        lines.append(f"    err := {error_type}HandleStatus(error.status)")
         lines.append("    if err != nil {")
         lines.append(f"        return {_zero_with_err('err')}")
         lines.append("    }")
@@ -1741,6 +1837,141 @@ def generate_go_instance_class(project_ir: IRProject, cls: IRClass) -> str:
             continue
         out_parts.append("")
         out_parts.append(_instance_method_body(project_ir, cls, method))
+
+    return "\n".join(out_parts) + "\n"
+
+
+def _binding_constant_getter(
+    type_name_go: str,
+    binding_name: str,
+    const,
+    interface_const,
+) -> str:
+    """Render a literal-valued ``GetXxx`` method for an impl-bound constant.
+
+    The interface constant supplies the type; the binding constant
+    supplies the per-impl literal value (e.g. ``GetDigestLen() uint
+    { return 32 }`` for sha256's hash binding).
+    """
+    type_attr = (interface_const.attrs.get("type") or "size").lower()
+    size = interface_const.attrs.get("size")
+    if type_attr == "size":
+        go_type = "uint"
+    elif type_attr == "boolean":
+        go_type = "bool"
+    elif type_attr == "integer":
+        go_type = _go_integer_type(size)
+    elif type_attr == "unsigned":
+        go_type = _go_unsigned_type(size)
+    else:
+        go_type = type_attr
+    getter = go_method_name("get " + const.name)
+    value = const.value or const.attrs.get("value", "0")
+
+    lines: list[str] = []
+    if interface_const.description:
+        lines.append(_doc_block(interface_const.description))
+    lines.append(f"func (obj *{type_name_go}) {getter}() {go_type} {{")
+    lines.append(f"    return {value}")
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def generate_go_implementation(project_ir: IRProject, impl: IRImplementation) -> str:
+    """Emit a complete Go file for an implementation.
+
+    Layout (matches the legacy GSL output):
+    1. Package + imports + class doc + struct
+    2. Dependency setters (``SetXxx``)
+    3. Impl-specific constructors and methods
+    4. Lifecycle block (Ctx, NewT, newTWithCtx, newTCopy, Delete, delete)
+    5. Per-binding expansion (interface constants as literal getters,
+       then interface methods proxied through C)
+
+    Note that this ordering differs from instance classes — on classes
+    the lifecycle comes immediately after the struct.
+    """
+    pkg = _package_name(project_ir)
+    include = _cgo_include_line(project_ir)
+    type_name = go_type_name(impl.name)
+
+    header_parts: list[str] = []
+    header_parts.append(f"package {pkg}")
+    header_parts.append("")
+    header_parts.append(include)
+    header_parts.append('import "C"')
+    # Legacy GSL emits these in import-discovery order which alternates
+    # between ``unsafe``-first and ``runtime``-first depending on which
+    # dependent symbol surfaced first during template expansion. We pick
+    # the more common ordering (``unsafe`` before ``runtime``) and accept
+    # a cosmetic diff on the minority — both orders compile identically.
+    header_parts.append('import unsafe "unsafe"')
+    header_parts.append('import "runtime"')
+    header_parts.append("")
+    header_parts.append("")
+    desc = _doc_block(impl.description)
+    if desc:
+        header_parts.append(desc)
+    header_parts.append(f"type {type_name} struct {{")
+    header_parts.append(f"    cCtx {_class_c_type(project_ir, impl.name)}")
+    header_parts.append("}")
+
+    out_parts: list[str] = ["\n".join(header_parts)]
+
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+
+    # Dependency setters — appear immediately after the struct.
+    for dep in impl.dependencies:
+        out_parts.append("")
+        out_parts.append(_dependency_setter(project_ir, impl, dep))
+
+    # Impl-specific constructors and methods come BEFORE the lifecycle
+    # block on implementations.
+    for ctor in impl.constructors:
+        if not _method_should_wrap(ctor):
+            continue
+        out_parts.append("")
+        out_parts.append(_instance_constructor_body(project_ir, impl, ctor))
+
+    for method in impl.methods:
+        # Impl-specific methods need an explicit ``declaration="public"``
+        # to surface in the wrapper. Without it they default to private
+        # at the C level too — only the implementor module sees them.
+        if method.attrs.get("declaration") != "public":
+            continue
+        if not _method_should_wrap(method):
+            continue
+        out_parts.append("")
+        out_parts.append(_instance_method_body(project_ir, impl, method))
+
+    # Lifecycle methods — Ctx + constructors + Delete pair (struct
+    # already emitted at the top of the file).
+    out_parts.append("")
+    out_parts.append("\n".join(
+        _lifecycle_methods_lines(
+            project_ir, type_name, impl.name, has_shallow_copy=True
+        )
+    ))
+
+    # Per-binding expansion: interface constants first, then methods.
+    for binding in impl.interface_bindings:
+        iface = iface_by_name.get(binding.name)
+        if iface is None:
+            continue
+        iface_const_by_name = {c.name: c for c in iface.constants}
+        for const in binding.constants:
+            iface_const = iface_const_by_name.get(const.name)
+            if iface_const is None:
+                continue
+            out_parts.append("")
+            out_parts.append(
+                _binding_constant_getter(type_name, binding.name, const, iface_const)
+            )
+        for method in iface.methods:
+            if not _method_should_wrap(method):
+                continue
+            out_parts.append("")
+            out_parts.append(_instance_method_body(project_ir, impl, method))
 
     return "\n".join(out_parts) + "\n"
 
