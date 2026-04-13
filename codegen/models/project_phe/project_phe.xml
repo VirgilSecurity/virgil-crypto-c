@@ -76,7 +76,7 @@
 
     <enum name="status"/>
 
-    <class name="error"/>
+    <class name="error" from="shared"/>
     <class name="phe common"/>
     <class name="phe hash"/>
     <class name="proof generator"/>

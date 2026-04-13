@@ -120,7 +120,7 @@
     <interface name="padding"/>
     <interface name="kem"/>
 
-    <class name="error"/>
+    <class name="error" from="shared"/>
     <class name="mbedtls bignum asn1 writer"/>
     <class name="mbedtls bignum asn1 reader"/>
     <class name="mbedtls md"/>

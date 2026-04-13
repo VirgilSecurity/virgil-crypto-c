@@ -76,13 +76,6 @@ vsce_error_ctx_size(void) {
     return sizeof(vsce_error_t);
 }
 
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 //
 //  Reset context to the "no error" state.
 //
@@ -114,7 +107,6 @@ VSCE_PUBLIC bool
 vsce_error_has_error(const vsce_error_t *self) {
 
     VSCE_ASSERT_PTR(self);
-
     return self->status != vsce_status_SUCCESS;
 }
 
@@ -125,6 +117,12 @@ VSCE_PUBLIC vsce_status_t
 vsce_error_status(const vsce_error_t *self) {
 
     VSCE_ASSERT_PTR(self);
-
     return self->status;
 }
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
