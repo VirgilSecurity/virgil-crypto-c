@@ -818,7 +818,119 @@ def _extract_old_header_includes(content: str) -> tuple[str, list[str]]:
     return result, extracted
 
 
-def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path, *, project: str = "common") -> list[Path]:
+def _create_file_skeleton(root: ET.Element, is_header: bool, *, license_text: str = "") -> str:
+    """Create a full C file skeleton matching the legacy GSL codegen template.
+
+    Produces files with the standard section ordering:
+    - Header: @license, @warning, @description, #ifndef guard, includes @end,
+              @generated_header_includes, extern C, @generated, extern C end, @footer
+    - Source: @license, @description, @warning, includes @end, @generated
+    """
+    name = root.attrib.get("name", "")
+    once_guard = root.attrib.get("once_guard", "").upper()
+
+    # Read description from the root element text
+    raw_desc = (root.text or "").strip()
+    desc_lines = [line.strip() for line in raw_desc.splitlines() if line.strip()]
+
+    # License block
+    lic: list[str] = []
+    if license_text:
+        lic.append("//  @license")
+        lic.append("// " + "-" * 74)
+        for line in license_text.strip().splitlines():
+            line = line.strip()
+            lic.append(f"//  {line}" if line else "//")
+        lic.append("// " + "-" * 74)
+        lic.append("// clang-format off")
+
+    # Warning block
+    warn = [
+        "//  @warning",
+        "// " + "-" * 74,
+        "//  This file is partially generated.",
+        "//  Generated blocks are enclosed between tags [@<tag>, @end].",
+        "//  User's code can be added between tags [@end, @<tag>].",
+        "// " + "-" * 74,
+    ]
+
+    # Description block
+    desc: list[str] = []
+    if desc_lines:
+        desc.append("//  @description")
+        desc.append("// " + "-" * 74)
+        for dl in desc_lines:
+            desc.append(f"//  {dl}")
+        desc.append("// " + "-" * 74)
+
+    lines: list[str] = []
+    if is_header:
+        # Header: @license, @warning, @description, guard, includes, extern C, @generated, footer
+        guard = once_guard or f"{name.upper()}_H_INCLUDED"
+        lines.extend(lic)
+        lines.append("")
+        lines.extend(warn)
+        lines.append("")
+        if desc:
+            lines.extend(desc)
+            lines.append("")
+        lines.append(f"#ifndef {guard}")
+        lines.append(f"#define {guard}")
+        lines.append("")
+        lines.append("// clang-format on")
+        lines.append("//  @end")
+        lines.append("")
+        lines.append("")
+        lines.append("#ifdef __cplusplus")
+        lines.append('extern "C" {')
+        lines.append("#endif")
+        lines.append("")
+        lines.append("")
+        lines.append("//  @generated")
+        lines.append("//  @end")
+        lines.append("")
+        lines.append("")
+        lines.append("#ifdef __cplusplus")
+        lines.append("}")
+        lines.append("#endif")
+        lines.append("")
+        lines.append("//  @footer")
+        lines.append(f"#endif // {guard}")
+        lines.append("//  @end")
+        lines.append("")
+    else:
+        # Source: @license, @description, @warning, includes, @generated
+        lines.extend(lic)
+        lines.append("")
+        lines.append("")
+        if desc:
+            lines.extend(desc)
+            lines.append("")
+            lines.append("")
+        lines.extend(warn)
+        lines.append("")
+        c_include_file = root.attrib.get("c_include_file", "")
+        if c_include_file:
+            lines.append(f'#include "{c_include_file}"')
+        # Add private-scope includes from the renderer
+        priv_includes = [render_include(c) for c in root
+                         if c.tag == "c_include" and c.attrib.get("scope") == "private"
+                         and c.attrib.get("file") != c_include_file]
+        for inc in priv_includes:
+            lines.append(inc)
+        lines.append("")
+        lines.append("// clang-format on")
+        lines.append("//  @end")
+        lines.append("")
+        lines.append("")
+        lines.append("//  @generated")
+        lines.append("//  @end")
+        lines.append("")
+
+    return "\n".join(lines)
+
+
+def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path, *, project: str = "common", license_text: str = "") -> list[Path]:
     renderer = direct_c_renderers(repo_root, project).get(xml_path.name)
     if renderer is not None:
         root = renderer(repo_root)
@@ -830,9 +942,11 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
         if not rel:
             continue
         target = (codegen_root / rel).resolve()
-        if not target.exists():
-            continue
-        existing = target.read_text()
+        is_new_file = not target.exists()
+        if is_new_file:
+            existing = _create_file_skeleton(root, is_header, license_text=license_text)
+        else:
+            existing = target.read_text()
         generated = generate_block(root, is_header)
         merged = merge_generated_section(existing, generated)
         if is_header:
@@ -860,13 +974,17 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                             existing_section_includes.append(stripped)
                 except ValueError:
                     pass
-            # Build combined block: old first-@end includes + existing section includes + system includes
+            # Build combined block: old includes + existing section includes + renderer includes + system includes
+            # For new files, include ALL public-scope includes from the renderer
+            renderer_pub_includes: list[str] = []
+            if is_new_file:
+                renderer_pub_includes = [render_include(c) for c in root if c.tag == 'c_include' and c.attrib.get('scope') == 'public']
             sys_lines: list[str] = []
             if include_block:
                 for ln in include_block.splitlines():
                     if ln.strip().startswith("#include "):
                         sys_lines.append(ln.strip())
-            # Deduplicate: keep old order, add system includes not already present
+            # Deduplicate: keep old order, add new includes not already present
             seen: set[str] = set()
             combined: list[str] = []
             for inc in old_includes:
@@ -874,6 +992,10 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                     combined.append(inc)
                     seen.add(inc)
             for inc in existing_section_includes:
+                if inc not in seen:
+                    combined.append(inc)
+                    seen.add(inc)
+            for inc in renderer_pub_includes:
                 if inc not in seen:
                     combined.append(inc)
                     seen.add(inc)
@@ -912,7 +1034,7 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
-    parser.add_argument("--project", default="common", choices=supported_projects())
+    parser.add_argument("--project", default="common", choices=[*supported_projects(), "all"])
     parser.add_argument("--out", default="build/new-codegen")
     parser.add_argument("--apply", action="store_true", help="write directly into repo source tree")
     parser.add_argument(
@@ -922,73 +1044,94 @@ def main() -> int:
     )
     args = parser.parse_args()
 
+    projects = list(supported_projects()) if args.project == "all" else [args.project]
+
     repo_root = Path(args.repo_root).resolve()
-    out_root = repo_root if args.apply else (repo_root / args.out).resolve()
     codegen_root = repo_root / "codegen"
-    project_dir = codegen_root / "generated" / args.project
+
     if not args.apply:
+        out_root = (repo_root / args.out).resolve()
         if out_root.exists():
             shutil.rmtree(out_root)
         out_root.mkdir(parents=True, exist_ok=True)
+    else:
+        out_root = repo_root
 
-    written = []
-    skipped = []
-    for xml_path in iter_project_xml_paths(
-        project_dir,
-        repo_root,
-        project=args.project,
-        include_legacy_fallback=args.legacy_c_modules,
-    ):
-        try:
-            written.extend(render_one(xml_path, repo_root, codegen_root, out_root, project=args.project))
-        except Exception as exc:
-            skipped.append((xml_path.name, str(exc)))
-
-    # --- Umbrella headers ---
-    project_ir = project_to_ir(load_named_project_source(args.project, repo_root))
-    umbrella_source = load_named_project_source(args.project, repo_root)
-    umbrella_fallbacks: list[IRProject] = []
-    for req in umbrella_source.library_requires:
-        if req.kind == "project":
-            umbrella_fallbacks.append(project_to_ir(load_named_project_source(req.name, repo_root)))
-    if umbrella_fallbacks:
-        project_ir.fallback_projects = umbrella_fallbacks
-    # Read license text from project XML model
-    project_xml_path = codegen_root / "models" / f"project_{args.project}" / f"project_{args.project}.xml"
-    license_text = ""
-    if project_xml_path.exists():
-        project_tree = ET.parse(project_xml_path)
-        lic_elem = project_tree.getroot().find("license")
-        if lic_elem is not None and lic_elem.text:
-            license_text = lic_elem.text
-    for rel_path, content in generate_umbrella_headers(project_ir, license_text=license_text):
-        # rel_path is relative to codegen root (e.g. ../library/...)
-        abs_path = (codegen_root / rel_path).resolve()
-        out_path = out_root / abs_path.relative_to(repo_root)
-        ensure_parent(out_path)
-        out_path.write_text(content)
-        written.append(out_path)
-
-    destination = repo_root if args.apply else out_root
-    print(f"generated {len(written)} files into {destination}")
-    for path in written:
-        print(path.relative_to(repo_root))
     # Known skips: modules that reference IR entities not yet available.
-    # These are expected and should not cause a non-zero exit code.
     KNOWN_SKIPS: set[str] = set()
 
-    unexpected_skips = [(n, e) for n, e in skipped if n not in KNOWN_SKIPS]
-    known = [(n, e) for n, e in skipped if n in KNOWN_SKIPS]
+    all_written: list[Path] = []
+    all_unexpected: list[tuple[str, str]] = []
 
-    if known:
-        print(f"\nskipped {len(known)} known module(s) (expected):")
-        for name, err in known:
-            print(f"  {name}: {err}")
-    if unexpected_skips:
-        print(f"\nskipped {len(unexpected_skips)} module(s) due to errors:")
-        for name, err in unexpected_skips:
-            print(f"  {name}: {err}")
-    return 1 if unexpected_skips else 0
+    for project in projects:
+        project_dir = codegen_root / "generated" / project
+
+        # Load license text from project XML model
+        project_xml_path = codegen_root / "models" / f"project_{project}" / f"project_{project}.xml"
+        project_license = ""
+        if project_xml_path.exists():
+            lic_elem = ET.parse(project_xml_path).getroot().find("license")
+            if lic_elem is not None and lic_elem.text:
+                project_license = lic_elem.text
+
+        written: list[Path] = []
+        skipped: list[tuple[str, str]] = []
+        for xml_path in iter_project_xml_paths(
+            project_dir,
+            repo_root,
+            project=project,
+            include_legacy_fallback=args.legacy_c_modules,
+        ):
+            try:
+                written.extend(render_one(xml_path, repo_root, codegen_root, out_root, project=project, license_text=project_license))
+            except Exception as exc:
+                skipped.append((xml_path.name, str(exc)))
+
+        # --- Umbrella headers ---
+        project_ir = project_to_ir(load_named_project_source(project, repo_root))
+        umbrella_source = load_named_project_source(project, repo_root)
+        umbrella_fallbacks: list[IRProject] = []
+        for req in umbrella_source.library_requires:
+            if req.kind == "project":
+                umbrella_fallbacks.append(project_to_ir(load_named_project_source(req.name, repo_root)))
+        if umbrella_fallbacks:
+            project_ir.fallback_projects = umbrella_fallbacks
+        # Read license text from project XML model
+        project_xml_path = codegen_root / "models" / f"project_{project}" / f"project_{project}.xml"
+        license_text = ""
+        if project_xml_path.exists():
+            project_tree = ET.parse(project_xml_path)
+            lic_elem = project_tree.getroot().find("license")
+            if lic_elem is not None and lic_elem.text:
+                license_text = lic_elem.text
+        for rel_path, content in generate_umbrella_headers(project_ir, license_text=license_text):
+            abs_path = (codegen_root / rel_path).resolve()
+            out_path = out_root / abs_path.relative_to(repo_root)
+            ensure_parent(out_path)
+            out_path.write_text(content)
+            written.append(out_path)
+
+        unexpected_skips = [(n, e) for n, e in skipped if n not in KNOWN_SKIPS]
+        known = [(n, e) for n, e in skipped if n in KNOWN_SKIPS]
+
+        if known:
+            print(f"\n[{project}] skipped {len(known)} known module(s) (expected):")
+            for name, err in known:
+                print(f"  {name}: {err}")
+        if unexpected_skips:
+            print(f"\n[{project}] skipped {len(unexpected_skips)} module(s) due to errors:")
+            for name, err in unexpected_skips:
+                print(f"  {name}: {err}")
+
+        all_written.extend(written)
+        all_unexpected.extend(unexpected_skips)
+
+    destination = repo_root if args.apply else out_root
+    print(f"generated {len(all_written)} files into {destination}")
+    for path in all_written:
+        print(path.relative_to(repo_root))
+
+    return 1 if all_unexpected else 0
 
 
 if __name__ == "__main__":

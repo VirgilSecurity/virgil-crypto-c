@@ -72,53 +72,71 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Resolve project paths ---
-case "${PROJECT}" in
-  common)
-    LIB_RESTORE_PATHS=(
-      "library/common/include/virgil/crypto/common"
-      "library/common/src"
-    )
-    CMAKE_TARGET="common"
-    CMAKE_TEST_TARGET="test_common"
-    ;;
-  foundation)
-    LIB_RESTORE_PATHS=(
-      "library/foundation/include/virgil/crypto/foundation"
-      "library/foundation/src"
-    )
-    CMAKE_TARGET="foundation"
-    CMAKE_TEST_TARGET="test_foundation"
-    ;;
-  phe)
-    LIB_RESTORE_PATHS=(
-      "library/phe/include/virgil/crypto/phe"
-      "library/phe/src"
-    )
-    CMAKE_TARGET="phe"
-    CMAKE_TEST_TARGET="test_phe"
-    ;;
-  pythia)
-    LIB_RESTORE_PATHS=(
-      "library/pythia/include/virgil/crypto/pythia"
-      "library/pythia/src"
-    )
-    CMAKE_TARGET="pythia"
-    CMAKE_TEST_TARGET="test_pythia"
-    ;;
-  ratchet)
-    LIB_RESTORE_PATHS=(
-      "library/ratchet/include/virgil/crypto/ratchet"
-      "library/ratchet/src"
-    )
-    CMAKE_TARGET="ratchet"
-    CMAKE_TEST_TARGET="test_ratchet"
-    ;;
-  *)
-    echo "error: unsupported project '${PROJECT}'" >&2
-    echo "supported projects: common, foundation, phe, pythia, ratchet" >&2
-    exit 1
-    ;;
-esac
+ALL_PROJECTS="common foundation phe pythia ratchet"
+
+resolve_project_paths() {
+  local proj="$1"
+  case "${proj}" in
+    common)
+      LIB_RESTORE_PATHS=(
+        "library/common/include/virgil/crypto/common"
+        "library/common/src"
+      )
+      CMAKE_TARGET="common"
+      CMAKE_TEST_TARGET="test_common"
+      ;;
+    foundation)
+      LIB_RESTORE_PATHS=(
+        "library/foundation/include/virgil/crypto/foundation"
+        "library/foundation/src"
+      )
+      CMAKE_TARGET="foundation"
+      CMAKE_TEST_TARGET="test_foundation"
+      ;;
+    phe)
+      LIB_RESTORE_PATHS=(
+        "library/phe/include/virgil/crypto/phe"
+        "library/phe/src"
+      )
+      CMAKE_TARGET="phe"
+      CMAKE_TEST_TARGET="test_phe"
+      ;;
+    pythia)
+      LIB_RESTORE_PATHS=(
+        "library/pythia/include/virgil/crypto/pythia"
+        "library/pythia/src"
+      )
+      CMAKE_TARGET="pythia"
+      CMAKE_TEST_TARGET="test_pythia"
+      ;;
+    ratchet)
+      LIB_RESTORE_PATHS=(
+        "library/ratchet/include/virgil/crypto/ratchet"
+        "library/ratchet/src"
+      )
+      CMAKE_TARGET="ratchet"
+      CMAKE_TEST_TARGET="test_ratchet"
+      ;;
+    *)
+      echo "error: unsupported project '${proj}'" >&2
+      echo "supported projects: ${ALL_PROJECTS} all" >&2
+      exit 1
+      ;;
+  esac
+}
+
+if [ "${PROJECT}" = "all" ]; then
+  PROJECTS="${ALL_PROJECTS}"
+else
+  PROJECTS="${PROJECT}"
+fi
+
+# Resolve paths for the first (or only) project — used by single-project mode.
+# For 'all' mode, paths are re-resolved per project in the loop below.
+for _p in ${PROJECTS}; do
+  resolve_project_paths "${_p}"
+  break
+done
 
 # --- Verify mode: restore generated files on exit ---
 if ${VERIFY}; then
@@ -126,97 +144,23 @@ if ${VERIFY}; then
     local exit_code=$?
     echo ""
     echo "--- Restoring generated files ---"
-    for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
-      git -C "${ROOT_DIR}" checkout -- "${restore_path}" >/dev/null 2>&1 || true
-      git -C "${ROOT_DIR}" clean -fd -- "${restore_path}" >/dev/null 2>&1 || true
+    for _proj in ${PROJECTS}; do
+      resolve_project_paths "${_proj}"
+      for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
+        git -C "${ROOT_DIR}" checkout -- "${restore_path}" >/dev/null 2>&1 || true
+        git -C "${ROOT_DIR}" clean -fd -- "${restore_path}" >/dev/null 2>&1 || true
+      done
     done
-    echo "restored ${PROJECT} generated files"
+    echo "restored generated files"
     exit ${exit_code}
   }
   trap cleanup EXIT
 fi
 
-# --- Build codegen arguments ---
-CODEGEN_ARGS=(
-  --repo-root "${ROOT_DIR}"
-  --project "${PROJECT}"
-)
-
-if ${APPLY}; then
-  CODEGEN_ARGS+=(--apply)
-elif [[ -n "${OUT_DIR}" ]]; then
-  CODEGEN_ARGS+=(--out "${OUT_DIR}")
-fi
-
-if ${LEGACY}; then
-  CODEGEN_ARGS+=(--legacy-c-modules)
-fi
-
-# --- Run ---
-echo "=== New Codegen: ${PROJECT} ==="
-echo "  apply:  ${APPLY}"
-echo "  build:  ${BUILD}"
-echo "  verify: ${VERIFY}"
-echo ""
-
-if ${DRY_RUN}; then
-  echo "[dry-run] would run: python3 ${ROOT_DIR}/tools/codegen/common_bootstrap.py ${CODEGEN_ARGS[*]}"
-  exit 0
-fi
-
-# ── Step 1: Codegen ──────────────────────────────────────────────────────────
-echo "--- Step 1: Codegen ---"
-python3 "${ROOT_DIR}/tools/codegen/common_bootstrap.py" "${CODEGEN_ARGS[@]}"
-
-if ! ${BUILD}; then
-  exit 0
-fi
-
-# ── Ensure cmake is configured ───────────────────────────────────────────────
-mkdir -p "${BUILD_DIR}"
-if [ ! -f "${BUILD_DIR}/CMakeCache.txt" ]; then
-  echo ""
-  echo "--- Configuring cmake ---"
-  cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}"
-fi
-
-# ── Step 2: Clang-format ─────────────────────────────────────────────────────
-echo ""
-echo "--- Step 2: Clang-format ---"
-if cmake --build "${BUILD_DIR}" --target "${CMAKE_TARGET}_clangformat" -- -j4 2>/dev/null; then
-  echo "clang-format applied"
-else
-  echo "clang-format target not available, skipping"
-fi
-
-# ── Step 3: Build ────────────────────────────────────────────────────────────
-echo ""
-echo "--- Step 3: Build ---"
-cmake --build "${BUILD_DIR}" --target "${CMAKE_TARGET}" -- -j4
-echo "${PROJECT} built successfully"
-
-if ! ${VERIFY}; then
-  exit 0
-fi
-
-# ── Step 4: Diff check ───────────────────────────────────────────────────────
-echo ""
-echo "--- Step 4: Diff check ---"
-DIFF_EXIT=0
-IMPL_CHANGES=""
-
-for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
-  # Get list of changed files
-  changed_files=$(git -C "${ROOT_DIR}" diff --name-only -- "${restore_path}" 2>/dev/null || true)
-  if [ -z "${changed_files}" ]; then
-    continue
-  fi
-
-  for file in ${changed_files}; do
-    # Compare only the non-generated portions of the file.
-    # This avoids false positives when diff hunks include generated lines but
-    # the @generated / @end markers themselves are unchanged context lines.
-    outside_generated=$(python3 - <<'PY' "${ROOT_DIR}" "${file}"
+# --- Inline diff checker (used by step 4) ---
+check_outside_generated() {
+  local root_dir="$1" file="$2"
+  python3 - <<'PY' "${root_dir}" "${file}"
 from __future__ import annotations
 import difflib
 import subprocess
@@ -279,58 +223,159 @@ for line in difflib.unified_diff(
     if line.startswith(("-", "+")) and not line.startswith(("---", "+++")):
         print(line)
 PY
-)
+}
 
-    if [ -n "${outside_generated}" ]; then
-      IMPL_CHANGES="${IMPL_CHANGES}\n⚠️  ${file} — changes OUTSIDE generated blocks:\n${outside_generated}\n"
-      DIFF_EXIT=1
+# --- Run one project through the full pipeline ---
+run_project() {
+  local proj="$1"
+  resolve_project_paths "${proj}"
+
+  # ── Build codegen arguments ──
+  local CODEGEN_ARGS=(
+    --repo-root "${ROOT_DIR}"
+    --project "${proj}"
+  )
+  if ${APPLY}; then
+    CODEGEN_ARGS+=(--apply)
+  elif [[ -n "${OUT_DIR}" ]]; then
+    CODEGEN_ARGS+=(--out "${OUT_DIR}")
+  fi
+  if ${LEGACY}; then
+    CODEGEN_ARGS+=(--legacy-c-modules)
+  fi
+
+  echo ""
+  echo "=== New Codegen: ${proj} ==="
+
+  if ${DRY_RUN}; then
+    echo "[dry-run] would run: python3 ${ROOT_DIR}/tools/codegen/common_bootstrap.py ${CODEGEN_ARGS[*]}"
+    return 0
+  fi
+
+  # ── Step 1: Codegen ──
+  echo "--- Step 1: Codegen ---"
+  python3 "${ROOT_DIR}/tools/codegen/common_bootstrap.py" "${CODEGEN_ARGS[@]}"
+
+  if ! ${BUILD}; then
+    return 0
+  fi
+
+  # ── Ensure cmake is configured ──
+  mkdir -p "${BUILD_DIR}"
+  if [ ! -f "${BUILD_DIR}/CMakeCache.txt" ]; then
+    echo ""
+    echo "--- Configuring cmake ---"
+    cmake -S "${ROOT_DIR}" -B "${BUILD_DIR}"
+  fi
+
+  # ── Step 2: Clang-format ──
+  echo ""
+  echo "--- Step 2: Clang-format ---"
+  if cmake --build "${BUILD_DIR}" --target "${CMAKE_TARGET}_clangformat" -- -j4 2>/dev/null; then
+    echo "clang-format applied"
+  else
+    echo "clang-format target not available, skipping"
+  fi
+
+  # ── Step 3: Build ──
+  echo ""
+  echo "--- Step 3: Build ---"
+  cmake --build "${BUILD_DIR}" --target "${CMAKE_TARGET}" -- -j4
+  echo "${proj} built successfully"
+
+  if ! ${VERIFY}; then
+    return 0
+  fi
+
+  # ── Step 4: Diff check ──
+  echo ""
+  echo "--- Step 4: Diff check ---"
+  local DIFF_EXIT=0
+  local IMPL_CHANGES=""
+
+  for restore_path in "${LIB_RESTORE_PATHS[@]}"; do
+    local changed_files
+    changed_files=$(git -C "${ROOT_DIR}" diff --name-only -- "${restore_path}" 2>/dev/null || true)
+    if [ -z "${changed_files}" ]; then
+      continue
     fi
+
+    for file in ${changed_files}; do
+      local outside_generated
+      outside_generated=$(check_outside_generated "${ROOT_DIR}" "${file}")
+      if [ -n "${outside_generated}" ]; then
+        IMPL_CHANGES="${IMPL_CHANGES}\n⚠️  ${file} — changes OUTSIDE generated blocks:\n${outside_generated}\n"
+        DIFF_EXIT=1
+      fi
+    done
   done
+
+  local changed_count
+  changed_count=$(git -C "${ROOT_DIR}" diff --name-only -- "${LIB_RESTORE_PATHS[@]}" 2>/dev/null | wc -l | tr -d ' ')
+  echo "${changed_count} file(s) changed by codegen"
+
+  if [ ${DIFF_EXIT} -ne 0 ]; then
+    echo ""
+    echo "╔══════════════════════════════════════════════════════════════╗"
+    echo "║  ⚠️  WARNING: Changes detected OUTSIDE generated blocks     ║"
+    echo "║  This may indicate codegen is modifying handwritten code.   ║"
+    echo "║  Review carefully before accepting.                         ║"
+    echo "╚══════════════════════════════════════════════════════════════╝"
+    echo ""
+    printf "${IMPL_CHANGES}"
+    echo ""
+    echo "Continuing with tests despite warnings..."
+  fi
+
+  # ── Step 5: Tests ──
+  echo ""
+  echo "--- Step 5: Tests ---"
+  if cmake --build "${BUILD_DIR}" --target "${CMAKE_TEST_TARGET}" -- -j4 2>/dev/null; then
+    echo "test target built"
+    ctest --test-dir "${BUILD_DIR}" -R "${proj}" --output-on-failure -j4 2>&1 || {
+      echo ""
+      echo "❌ Tests FAILED for ${proj}"
+      return 1
+    }
+    echo "✅ All ${proj} tests passed"
+  else
+    echo "test target '${CMAKE_TEST_TARGET}' not available, running ctest with project filter"
+    ctest --test-dir "${BUILD_DIR}" -R "${proj}" --output-on-failure -j4 2>&1 || {
+      echo ""
+      echo "❌ Tests FAILED for ${proj}"
+      return 1
+    }
+    echo "✅ All ${proj} tests passed"
+  fi
+
+  # ── Project summary ──
+  echo ""
+  echo "═══════════════════════════════════════"
+  echo "  ✅ ${proj} codegen verification complete"
+  echo "     Files changed: ${changed_count}"
+  if [ ${DIFF_EXIT} -ne 0 ]; then
+    echo "     ⚠️  Non-generated changes detected (review above)"
+  fi
+  echo "═══════════════════════════════════════"
+  return 0
+}
+
+# --- Main execution ---
+echo "=== New Codegen ==="
+echo "  projects: ${PROJECTS}"
+echo "  apply:    ${APPLY}"
+echo "  build:    ${BUILD}"
+echo "  verify:   ${VERIFY}"
+
+FAILED_PROJECTS=""
+for _proj in ${PROJECTS}; do
+  if ! run_project "${_proj}"; then
+    FAILED_PROJECTS="${FAILED_PROJECTS} ${_proj}"
+  fi
 done
 
-changed_count=$(git -C "${ROOT_DIR}" diff --name-only -- "${LIB_RESTORE_PATHS[@]}" 2>/dev/null | wc -l | tr -d ' ')
-echo "${changed_count} file(s) changed by codegen"
-
-if [ ${DIFF_EXIT} -ne 0 ]; then
+if [ -n "${FAILED_PROJECTS}" ]; then
   echo ""
-  echo "╔══════════════════════════════════════════════════════════════╗"
-  echo "║  ⚠️  WARNING: Changes detected OUTSIDE generated blocks     ║"
-  echo "║  This may indicate codegen is modifying handwritten code.   ║"
-  echo "║  Review carefully before accepting.                         ║"
-  echo "╚══════════════════════════════════════════════════════════════╝"
-  echo ""
-  printf "${IMPL_CHANGES}"
-  echo ""
-  echo "Continuing with tests despite warnings..."
+  echo "❌ FAILED projects:${FAILED_PROJECTS}"
+  exit 1
 fi
-
-# ── Step 5: Tests ────────────────────────────────────────────────────────────
-echo ""
-echo "--- Step 5: Tests ---"
-if cmake --build "${BUILD_DIR}" --target "${CMAKE_TEST_TARGET}" -- -j4 2>/dev/null; then
-  echo "test target built"
-  ctest --test-dir "${BUILD_DIR}" -R "${PROJECT}" --output-on-failure -j4 2>&1 || {
-    echo ""
-    echo "❌ Tests FAILED for ${PROJECT}"
-    exit 1
-  }
-  echo "✅ All ${PROJECT} tests passed"
-else
-  echo "test target '${CMAKE_TEST_TARGET}' not available, running ctest with project filter"
-  ctest --test-dir "${BUILD_DIR}" -R "${PROJECT}" --output-on-failure -j4 2>&1 || {
-    echo ""
-    echo "❌ Tests FAILED for ${PROJECT}"
-    exit 1
-  }
-  echo "✅ All ${PROJECT} tests passed"
-fi
-
-# ── Summary ──────────────────────────────────────────────────────────────────
-echo ""
-echo "═══════════════════════════════════════"
-echo "  ✅ ${PROJECT} codegen verification complete"
-echo "     Files changed: ${changed_count}"
-if [ ${DIFF_EXIT} -ne 0 ]; then
-  echo "     ⚠️  Non-generated changes detected (review above)"
-fi
-echo "═══════════════════════════════════════"

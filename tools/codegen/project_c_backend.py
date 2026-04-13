@@ -2902,6 +2902,11 @@ def render_class_c_module(
         root.set("feature", feature)
 
     resolved_private_includes = [class_output.include_file, *(private_includes or [])]
+    # Always include memory and assert as private includes (matches legacy GSL codegen)
+    for util_module in ("memory", "assert"):
+        util_include = f"{project_ir.prefix}_{util_module}.h"
+        if util_include not in resolved_private_includes:
+            resolved_private_includes.append(util_include)
     resolved_public_includes = list(public_includes or [])
     # Always include {prefix}_library.h (matches legacy GSL codegen behavior)
     library_include = include_file_for_entity(project_ir, entity_kind="module", entity_name="library")
@@ -3145,6 +3150,12 @@ def render_class_c_module(
                 method_name = f"{project_ir.prefix}_{snake_name(of_class)}_{snake_name(method.name)}"
             else:
                 method_name = class_method_symbol(project_ir, cls, method.name)
+            # Resolve method code body if present
+            method_code: str | None = None
+            if method.code_blocks:
+                raw_code = method.code_blocks[0].get("text", "")
+                if raw_code:
+                    method_code = _resolve_class_code_refs(project_ir, cls, raw_code)
             _render_ir_method(
                 root,
                 name=method_name,
@@ -3154,6 +3165,7 @@ def render_class_c_module(
                 owner_class=cls.name,
                 project_ir=project_ir,
                 visibility=method_vis,
+                code=method_code,
                 attributes=method_attributes,
                 uid=f"direct_{snake_name(cls.name)}_method_{snake_name(method.name)}",
             )
@@ -3436,21 +3448,77 @@ def _render_class_variable(parent: ET.Element, variable: object, *, project_ir: 
 
 
 
+def _resolve_class_code_refs(project_ir: IRProject, cls: IRClass, code: str) -> str:
+    """Resolve GSL-style references in class method/macro code bodies.
+
+    Handles patterns like:
+    - ``.(c_class_error_method_update)`` → ``vscp_error_update``
+    - ``.(c_class_assert_macros_ptr)`` → ``VSCP_ASSERT_PTR``
+    - ``.(c_class_status_enum_status_constant_success)`` → ``vscp_status_SUCCESS``
+    """
+    import re
+    cls_snake = snake_name(cls.name)
+
+    # Replace method references: .(c_class_<class>_method_<method>)
+    for method in cls.methods:
+        method_sym = class_method_symbol(project_ir, cls, method.name)
+        code = code.replace(f".(c_class_{cls_snake}_method_{snake_name(method.name)})", method_sym)
+
+    # Replace macro references: .(c_class_<class>_macros_<macro>)
+    for macro in cls.macroses:
+        class_output = cast(IROutputTarget, cls.output)
+        macro_upper = f"{class_output.c_symbol}_{snake_name(macro.name)}".upper()
+        code = code.replace(f".(c_class_{cls_snake}_macros_{snake_name(macro.name)}) ", f"{macro_upper}")
+        code = code.replace(f".(c_class_{cls_snake}_macros_{snake_name(macro.name)})", macro_upper)
+
+    # Replace cross-class references: .(c_class_<other_class>_...)
+    # Common patterns: assert macros, enum constants
+    def _resolve_ref(match: re.Match) -> str:
+        ref = match.group(1)
+        # Try assert macros: c_class_assert_macros_ptr → VSCP_ASSERT_PTR
+        for ir_cls in project_ir.classes:
+            ir_snake = snake_name(ir_cls.name)
+            ir_output = cast(IROutputTarget, ir_cls.output)
+            # Method refs
+            for m in ir_cls.methods:
+                if ref == f"c_class_{ir_snake}_method_{snake_name(m.name)}":
+                    return class_method_symbol(project_ir, ir_cls, m.name)
+            # Macro refs
+            for mac in ir_cls.macroses:
+                mac_sym = f"{ir_output.c_symbol}_{snake_name(mac.name)}".upper()
+                if ref == f"c_class_{ir_snake}_macros_{snake_name(mac.name)}":
+                    return mac_sym
+        # Try enum constant refs: c_class_status_enum_status_constant_success
+        for ir_enum in project_ir.enums:
+            ir_enum_output = cast(IROutputTarget, ir_enum.output)
+            enum_snake = snake_name(ir_enum.name)
+            for const in ir_enum.constants:
+                const_ref = f"c_class_{enum_snake}_enum_{enum_snake}_constant_{snake_name(const.name)}"
+                if ref == const_ref:
+                    return enum_constant_name(ir_enum_output, const.name)
+        # Try module macros (e.g. assert module)
+        for ir_mod in project_ir.modules:
+            mod_output = cast(IROutputTarget, ir_mod.output)
+            mod_snake = snake_name(ir_mod.name)
+            for mac in ir_mod.macros:
+                mac_sym = f"{mod_output.c_symbol}_{snake_name(mac.name)}".upper()
+                if ref == f"c_class_{mod_snake}_macros_{snake_name(mac.name)}":
+                    return mac_sym
+        return match.group(0)  # unresolved — return as-is
+
+    code = re.sub(r'\.\(([^)]+)\)', _resolve_ref, code)
+    return code
+
+
 def _render_class_macro(parent: ET.Element, macro, *, project_ir: IRProject, cls: IRClass) -> ET.Element:
     """Render a class macro (e.g. VSCF_ERROR_SAFE_UPDATE)."""
     from tools.codegen.project_ir import IRClassMacro
     class_output = cast(IROutputTarget, cls.output)
-    # Macro public name uses {PREFIX}_{CLASS}_{MACRO_NAME} without 'macros' infix
     macro_upper = f"{class_output.c_symbol}_{snake_name(macro.name)}".upper()
-    # Resolve code: replace .(c_class_X_macros_Y) and .(c_class_X_method_Z) references
-    code = macro.code
-    # Remove trailing space after GSL reference to avoid space before macro args
+    code = _resolve_class_code_refs(project_ir, cls, macro.code)
+    # Also resolve self-macro reference (name may not match class-level pattern)
     code = code.replace(f".(c_class_{snake_name(cls.name)}_macros_{snake_name(macro.name)}) ", f"{macro_upper}")
     code = code.replace(f".(c_class_{snake_name(cls.name)}_macros_{snake_name(macro.name)})", macro_upper)
-    # Replace method references like .(c_class_error_method_update)
-    for method in cls.methods:
-        method_sym = class_method_symbol(project_ir, cls, method.name)
-        code = code.replace(f".(c_class_{snake_name(cls.name)}_method_{snake_name(method.name)})", method_sym)
     macros_elem = text_element(
         parent,
         "c_macros",
