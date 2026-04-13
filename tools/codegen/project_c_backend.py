@@ -2935,6 +2935,11 @@ def render_class_c_module(
     has_explicit_ctx_public_sys = cls_scope == "internal" and cls.attrs.get("context") == "public"
     will_inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public_sys
     resolved_system_includes: list[str] = []
+    # Add scope="public" requirement headers (e.g. <require header="pb.h" scope="public"/>)
+    for req in cls.requirements:
+        if req.kind == "header" and req.attrs.get("scope") == "public":
+            if req.name not in resolved_system_includes:
+                resolved_system_includes.append(req.name)
     if will_inline_struct:
         # When the struct is inlined, we need all the includes that _defs.h would have
         atomic_inc = f"{project_ir.prefix}_atomic.h"
@@ -4858,9 +4863,10 @@ def render_implementation_defs_c_module(
     text_element(root, "c_include", file=impl_output.include_file, is_system="0", scope="public")
     text_element(root, "c_include", file=f"{prefix}_atomic.h", is_system="0", scope="public")
 
-    # Library header includes (from requirements — only context/public scope belong in defs)
+    # Library header includes (from requirements needed for struct layout).
+    # Only scope="context" belongs in _defs; scope="public" goes in the main module.
     for req in impl.requirements:
-        if req.kind == "header" and req.attrs.get("scope") in ("context", "public"):
+        if req.kind == "header" and req.attrs.get("scope") == "context":
             text_element(root, "c_include", file=req.name, is_system="1", scope="public")
         elif req.kind == "library" and "header" in req.attrs:
             # Library requirement with explicit header (e.g. from <context>)
@@ -5008,9 +5014,10 @@ def render_class_defs_c_module(
     text_element(root, "c_include", file=f"{prefix}_library.h", is_system="0", scope="public")
     text_element(root, "c_include", file=f"{prefix}_atomic.h", is_system="0", scope="public")
 
-    # Library header includes (from requirements, e.g. mbedtls headers)
+    # Library header includes (from requirements needed for struct layout).
+    # Only scope="context" belongs in _defs; scope="public" goes in the main module.
     for req in cls.requirements:
-        if req.kind == "header" and req.attrs.get("scope") in {"context", "public"}:
+        if req.kind == "header" and req.attrs.get("scope") == "context":
             text_element(root, "c_include", file=req.name, is_system="1", scope="public")
 
     # Collect includes needed for struct field types
