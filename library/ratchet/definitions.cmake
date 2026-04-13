@@ -8,17 +8,17 @@
 #   modification, are permitted provided that the following conditions are
 #   met:
 #
-#       (1) Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
+#   (1) Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
 #
-#       (2) Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in
-#       the documentation and/or other materials provided with the
-#       distribution.
+#   (2) Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in
+#   the documentation and/or other materials provided with the
+#   distribution.
 #
-#       (3) Neither the name of the copyright holder nor the names of its
-#       contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
+#   (3) Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -55,10 +55,10 @@ target_compile_definitions(ratchet
             "VSCR_SHARED_LIBRARY=$<BOOL:${BUILD_SHARED_LIBS}>"
             "VSCR_LIBRARY=$<BOOL:${VSCR_LIBRARY}>"
             "VSCR_MULTI_THREADING=$<BOOL:${VSCR_MULTI_THREADING}>"
+            "VSCR_ERROR=$<BOOL:${VSCR_ERROR}>"
             "VSCR_RATCHET_COMMON=$<BOOL:${VSCR_RATCHET_COMMON}>"
             "VSCR_RATCHET_COMMON_HIDDEN=$<BOOL:${VSCR_RATCHET_COMMON_HIDDEN}>"
             "VSCR_RATCHET_KEY_UTILS=$<BOOL:${VSCR_RATCHET_KEY_UTILS}>"
-            "VSCR_ERROR=$<BOOL:${VSCR_ERROR}>"
             "VSCR_RATCHET_XXDH=$<BOOL:${VSCR_RATCHET_XXDH}>"
             "VSCR_RATCHET_MESSAGE=$<BOOL:${VSCR_RATCHET_MESSAGE}>"
             "VSCR_RATCHET_CIPHER=$<BOOL:${VSCR_RATCHET_CIPHER}>"
