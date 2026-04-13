@@ -1976,6 +1976,131 @@ def generate_go_implementation(project_ir: IRProject, impl: IRImplementation) ->
     return "\n".join(out_parts) + "\n"
 
 
+def _impl_tag_symbol(prefix: str, impl_name: str) -> str:
+    """Render the cgo symbol for an implementation's impl-tag constant.
+
+    ``("vscf", "aes256 gcm")`` → ``"C.vscf_impl_tag_AES256_GCM"``.
+    """
+    return f"C.{prefix}_impl_tag_{impl_name.replace(' ', '_').upper()}"
+
+
+def generate_go_project_implementation(project_ir: IRProject) -> str:
+    """Generate the per-project ``{project}_implementation.go`` file.
+
+    For each interface that has at least one implementation, emit a
+    ``{Project}ImplementationWrap{Iface}`` function that switches on
+    ``C.{prefix}_impl_tag(ctx)`` to route the opaque ``vscf_impl_t``
+    pointer to the matching concrete Go wrapper, plus a ``...Copy``
+    variant that ``shallow_copy``s the C ctx before delegating.
+
+    This file makes the per-method ``FoundationImplementationWrapXxx``
+    calls emitted by class/impl method bodies actually link — without
+    it, generated wrapper code references undefined symbols.
+    """
+    pkg = _package_name(project_ir)
+    include = _cgo_include_line(project_ir)
+    project_pascal = go_type_name(project_ir.name)
+    error_type = _error_type_name(project_ir)
+    prefix = project_ir.prefix
+    impl_t = f"*C.{prefix}_impl_t"
+
+    # Group implementations by the interfaces they bind, AND track
+    # the order in which interfaces are first discovered while iterating
+    # implementations. Legacy GSL emits the dispatch table in this
+    # discovery order — interface declared in the project XML but
+    # without any binding doesn't appear at all, and an interface
+    # appears at the position where the first impl that binds it
+    # introduces it.
+    impls_per_iface: dict[str, list[str]] = {}
+    iface_order: list[str] = []
+    for impl in project_ir.implementations:
+        for binding in impl.interface_bindings:
+            if binding.name not in impls_per_iface:
+                iface_order.append(binding.name)
+            impls_per_iface.setdefault(binding.name, []).append(impl.name)
+
+    lines: list[str] = []
+    lines.append(f"package {pkg}")
+    lines.append("")
+    lines.append(include)
+    lines.append('import "C"')
+    lines.append("")
+    lines.append("")
+    lines.append(f"type {project_pascal}Implementation struct {{")
+    lines.append("}")
+
+    # Iterate interfaces in impl-binding-discovery order — see the
+    # comment on iface_order above for why this matches legacy.
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    for iface_name in iface_order:
+        iface = iface_by_name.get(iface_name)
+        if iface is None:
+            continue
+        impls = impls_per_iface[iface_name]
+        iface_pascal = go_type_name(iface.name)
+        is_implemented_sym = (
+            f"C.{prefix}_{iface.name.replace(' ', '_')}_is_implemented"
+        )
+        impl_tag_call = f"C.{prefix}_impl_tag(ctx)"
+
+        # Wrap function — the workhorse that does the actual switch.
+        lines.append("")
+        lines.append(
+            f"/* Wrap C implementation object to the Go object that "
+            f"implements interface {iface_pascal}. */"
+        )
+        lines.append(
+            f"func {project_pascal}ImplementationWrap{iface_pascal}"
+            f"(ctx {impl_t}) ({iface_pascal}, error) {{"
+        )
+        lines.append(f"    if (!{is_implemented_sym}(ctx)) {{")
+        lines.append(
+            f'        return nil, &{error_type}{{-1,'
+            f'"Given C implementation does not implement interface '
+            f'{iface_pascal}."}}'
+        )
+        lines.append("    }")
+        lines.append("")
+        lines.append(f"    implTag := {impl_tag_call}")
+        lines.append("    switch (implTag) {")
+        for impl_name in impls:
+            tag_sym = _impl_tag_symbol(prefix, impl_name)
+            impl_pascal = go_type_name(impl_name)
+            impl_c_type = _class_c_type(project_ir, impl_name)
+            lines.append(f"    case {tag_sym}:")
+            lines.append(
+                f"        return new{impl_pascal}WithCtx"
+                f"(({impl_c_type})(ctx)), nil"
+            )
+        lines.append("    default:")
+        lines.append(
+            f'        return nil, &{error_type}{{-1,'
+            f'"Unexpected C implementation cast to the Go implementation."}}'
+        )
+        lines.append("    }")
+        lines.append("}")
+
+        # Copy variant — shallow_copy the C ctx so the Go wrapper owns
+        # an independent reference, then delegate to the workhorse.
+        lines.append("")
+        lines.append(
+            f"/* Wrap C implementation object to the Go object that "
+            f"implements interface {iface_pascal}. */"
+        )
+        lines.append(
+            f"func {project_pascal}ImplementationWrap{iface_pascal}Copy"
+            f"(ctx {impl_t}) ({iface_pascal}, error) {{"
+        )
+        lines.append(f"    shallowCopy := C.{prefix}_impl_shallow_copy(ctx)")
+        lines.append(
+            f"    return {project_pascal}ImplementationWrap{iface_pascal}"
+            "(shallowCopy)"
+        )
+        lines.append("}")
+
+    return "\n".join(lines) + "\n"
+
+
 def generate_go_implementation_scaffold(
     project_ir: IRProject, impl: IRImplementation
 ) -> str:

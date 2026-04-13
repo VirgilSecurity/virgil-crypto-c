@@ -15,6 +15,7 @@ from tools.codegen.project_go_backend import (
     generate_go_implementation,
     generate_go_implementation_scaffold,
     generate_go_instance_class,
+    generate_go_project_implementation,
     generate_go_static_class,
     go_arg_name,
     go_constant_name,
@@ -684,6 +685,57 @@ class ImplementationSyntaxSurveyTests(unittest.TestCase):
                     proc.returncode, 0,
                     f"gofmt rejected {impl.name!r}: {proc.stderr.decode()}",
                 )
+
+
+class ProjectImplementationDispatchTests(unittest.TestCase):
+    """{project}_implementation.go must regenerate to legacy modulo tracers.
+
+    This file is the runtime glue that makes every per-method
+    ``FoundationImplementationWrap*`` call link — without it, all of
+    Unit 4.3/4.4's interface returns would reference undefined
+    symbols.
+    """
+
+    def _strip_tracers(self, text: str) -> str:
+        import re as _re
+
+        text = _re.sub(r"/\*[a-zA-Z0-9_. ]+?\*/", "", text)
+        text = _re.sub(r"\) \)", "))", text)
+        text = _re.sub(r"\) ,", "),", text)
+        text = _re.sub(r"([A-Za-z0-9_]) \)", r"\1)", text)
+        return "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+
+    def _assert_project_matches(self, project: str, filename: str) -> None:
+        ir = project_to_ir(load_named_project_source(project, str(REPO_ROOT)))
+        gen = generate_go_project_implementation(ir)
+        legacy = (REPO_ROOT / "wrappers" / "go" / project / filename).read_text()
+        self.assertEqual(
+            self._strip_tracers(gen),
+            self._strip_tracers(legacy),
+            f"{project}/{filename} drift",
+        )
+
+    def test_foundation_dispatch_matches_legacy(self) -> None:
+        # 33 interface dispatch pairs (Wrap + WrapCopy) routing 53
+        # implementations through C.vscf_impl_tag(ctx).
+        self._assert_project_matches("foundation", "foundation_implementation.go")
+
+    def test_phe_dispatch_matches_legacy(self) -> None:
+        # phe has no interface bindings — output is just the empty
+        # FoundationImplementation-style struct stub.
+        self._assert_project_matches("phe", "phe_implementation.go")
+
+    def test_dispatch_orders_interfaces_by_impl_discovery(self) -> None:
+        # The legacy GSL output lists interfaces in the order their
+        # FIRST binding implementation appears, NOT XML declaration
+        # order. Verify Alg/Hash/Encrypt show up in that sequence.
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        gen = generate_go_project_implementation(ir)
+        alg_pos = gen.index("FoundationImplementationWrapAlg(")
+        hash_pos = gen.index("FoundationImplementationWrapHash(")
+        encrypt_pos = gen.index("FoundationImplementationWrapEncrypt(")
+        self.assertLess(alg_pos, hash_pos)
+        self.assertLess(hash_pos, encrypt_pos)
 
 
 if __name__ == "__main__":
