@@ -276,17 +276,23 @@ def implementation_private_output(impl_output: IROutputTarget) -> IROutputTarget
     )
 
 
-def class_defs_output(class_output: IROutputTarget) -> IROutputTarget:
+def class_defs_output(class_output: IROutputTarget, *, context: str = "public") -> IROutputTarget:
     """Derive the defs module output target from a class's output target.
 
-    The defs module lives under the ``private`` include directory and uses
-    the ``<prefix>_<class>_defs`` stem convention.
+    For ``context='internal'`` classes the defs header lives in ``src/``
+    (matching legacy GSL behavior).  Otherwise it lives in ``include/private/``.
     """
     stem = f"{class_output.c_symbol}_defs"
-    header_path = class_output.header_path.replace(
-        f"/{class_output.include_file}",
-        f"/private/{stem}.h",
-    )
+    if context == "internal":
+        # Internal classes: defs header goes to src/ alongside the source
+        header_path = class_output.source_path.replace(
+            class_output.source_file, f"{stem}.h"
+        )
+    else:
+        header_path = class_output.header_path.replace(
+            f"/{class_output.include_file}",
+            f"/private/{stem}.h",
+        )
     source_path = class_output.source_path.replace(class_output.source_file, f"{stem}.c")
     generated_header_path = class_output.generated_header_path.replace(
         class_output.include_file.removesuffix(".h"),
@@ -1004,8 +1010,10 @@ def collect_umbrella_includes(
         is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
         context = cls.attrs.get("context", "public")
         has_lifecycle = cls.attrs.get("lifecycle") != "none"
-        if not is_value_type and context not in ("none", "internal") and cls_scope != "internal" and has_lifecycle:
-            private_includes.add(class_defs_output(cls.output).include_file)
+        if not is_value_type and context not in ("none",) and cls_scope != "internal" and has_lifecycle:
+            defs_out = class_defs_output(cls.output, context=context)
+            if context != "internal":
+                private_includes.add(defs_out.include_file)
         # Note: class _internal.h files live in src/, not include/private/
         # They should NOT be in the private umbrella header.
 
@@ -1243,7 +1251,7 @@ def discover_renderers(
             context = cls.attrs.get("context", "public")
             has_lifecycle = cls.attrs.get("lifecycle") != "none"
             if not is_value_type and context != "none" and has_lifecycle:
-                defs_out = class_defs_output(cast(IROutputTarget, cls.output))
+                defs_out = class_defs_output(cast(IROutputTarget, cls.output), context=context)
                 defs_xml = direct_xml_name(defs_out)
                 if defs_xml in overrides:
                     renderers[defs_xml] = overrides[defs_xml]
@@ -4926,11 +4934,11 @@ def render_class_defs_c_module(
     and dependency fields.
     """
     class_output = cast(IROutputTarget, cls.output)
-    defs_output = class_defs_output(class_output)
+    context = cls.attrs.get("context", "public")
+    defs_output = class_defs_output(class_output, context=context)
     prefix = project_ir.prefix
     prefix_upper = prefix.upper()
     is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
-    context = cls.attrs.get("context", "public")
 
     root = c_module_root(
         defs_output,
