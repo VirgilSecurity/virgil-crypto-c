@@ -3272,6 +3272,26 @@ def _method_arg_dict(arg: object) -> dict[str, str]:
 
 
 
+def _resolve_constant_ref(ref: str, *, project_ir: IRProject) -> str:
+    """Resolve a GSL-style constant reference to its C symbol.
+
+    E.g. ``.(class_phe_common_constant_phe_public_key_length)``
+    → ``vsce_phe_common_PHE_PUBLIC_KEY_LENGTH``
+    """
+    import re
+    m = re.match(r'\.\(class_(\w+)_constant_(\w+)\)', ref)
+    if m:
+        class_slug, const_slug = m.group(1), m.group(2)
+        # Find the class in project IR
+        for cls in project_ir.classes:
+            if snake_name(cls.name) == class_slug:
+                cls_output = cast(IROutputTarget, cls.output)
+                return f"{cls_output.c_symbol}_{const_slug.upper()}"
+        # Fallback: use project prefix
+        return f"{project_ir.prefix}_{class_slug}_{const_slug.upper()}"
+    return ref
+
+
 def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project_ir: IRProject, owner_class: str) -> ET.Element:
     attrs = dict(field.attrs)
     callback = attrs.get("callback")
@@ -3384,6 +3404,10 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
             field_attrs["is_const_type"] = "1"
         if attrs.get("array") == "given" or attrs.get("_array") == "given":
             field_attrs["array"] = "given"
+        elif attrs.get("array") == "fixed" and attrs.get("array_length_constant"):
+            length_ref = attrs["array_length_constant"]
+            resolved_length = _resolve_constant_ref(length_ref, project_ir=project_ir)
+            field_attrs["length"] = resolved_length
     prop = text_element(parent, "c_property", **field_attrs)
     if field.description:
         prop.text = comment_text(field.description)
@@ -5044,6 +5068,13 @@ def render_class_defs_c_module(
             is_ref_attrs = {"is_reference": "0"}
         else:
             is_ref_attrs = {}
+        # Build array attributes
+        array_attrs: dict[str, str] = {}
+        if field.is_array:
+            array_attrs["array"] = "given"
+        elif field.array_kind == "fixed" and field.array_length_constant:
+            array_attrs["array"] = "fixed"
+            array_attrs["array_length_constant"] = field.array_length_constant
         field_spec = ClassFieldSpec(
             name=field.name,
             attrs={
@@ -5053,7 +5084,7 @@ def render_class_defs_c_module(
                 **({"size": field.type_size} if getattr(field, "type_size", None) is not None else {}),
                 **({"access": field.access} if field.access is not None else {}),
                 **is_ref_attrs,
-                **({"array": "given"} if field.is_array else {}),
+                **array_attrs,
                 **({"library": field.library} if field.library is not None else {}),
                 **({"project": field.project} if getattr(field, "project", None) is not None else {}),
                 **({"interface": field.interface_name} if field.interface_name is not None else {}),
