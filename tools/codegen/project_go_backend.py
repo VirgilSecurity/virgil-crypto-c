@@ -2033,15 +2033,45 @@ def _dependency_setter(
         cast_target = f"*C.{cast_prefix}_{stem}_t"
 
     local = go_arg_name(dep.name)
-    return "\n".join([
-        f"func (obj *{type_name}) {dep_setter_name}({local} {dep_go_type}) {{",
-        f"    {release_sym}(obj.cCtx)",
-        f"    {use_sym}(obj.cCtx, ({cast_target})(unsafe.Pointer({local}.Ctx())))",
-        "",
-        f"    runtime.KeepAlive({local})",
-        "    runtime.KeepAlive(obj)",
-        "}",
-    ])
+    error_type = _error_type_name(project_ir)
+    # When the dep declares ``is_observers_return_status="1"``, the C
+    # ``use_*`` call returns a status (observer callbacks may fail).
+    # The Go setter then surfaces a trailing ``error`` and routes the
+    # status through HandleStatus.
+    returns_status = dep.is_observers_return_status
+
+    use_call = (
+        f"{use_sym}(obj.cCtx, ({cast_target})(unsafe.Pointer({local}.Ctx())))"
+    )
+    body: list[str] = []
+    if returns_status:
+        body.append(
+            f"func (obj *{type_name}) {dep_setter_name}({local} {dep_go_type}) error {{"
+        )
+        body.append(f"    {release_sym}(obj.cCtx)")
+        body.append(f"    proxyResult := {use_call}")
+        body.append("")
+        body.append(f"    err := {error_type}HandleStatus(proxyResult)")
+        body.append("    if err != nil {")
+        body.append("        return err")
+        body.append("    }")
+        body.append("")
+        body.append(f"    runtime.KeepAlive({local})")
+        body.append("    runtime.KeepAlive(obj)")
+        body.append("")
+        body.append("    return nil")
+        body.append("}")
+    else:
+        body.append(
+            f"func (obj *{type_name}) {dep_setter_name}({local} {dep_go_type}) {{"
+        )
+        body.append(f"    {release_sym}(obj.cCtx)")
+        body.append(f"    {use_call}")
+        body.append("")
+        body.append(f"    runtime.KeepAlive({local})")
+        body.append("    runtime.KeepAlive(obj)")
+        body.append("}")
+    return "\n".join(body)
 
 
 def _instance_constructor_body(
