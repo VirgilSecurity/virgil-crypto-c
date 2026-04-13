@@ -78,12 +78,14 @@ static mbedtls_ctr_drbg_context g_rng;
 //
 //  Create pythia_buf_t object initializer from common class 'buffer'.
 //
-#define VSCP_PYTHIA_BUFFER_FROM_DATA(X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+#define VSCP_PYTHIA_BUFFER_FROM_DATA(X) \
+        {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
 
 //
 //  Create pythia_buf_t object initializer from common class 'buffer'.
 //
-#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
+#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) \
+        {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
 
 //
 //  Callback for the pythia random.
@@ -97,7 +99,6 @@ vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Performs global initialization of the pythia library.

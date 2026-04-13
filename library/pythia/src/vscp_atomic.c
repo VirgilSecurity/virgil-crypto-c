@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,20 +44,11 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-//  @description
-// --------------------------------------------------------------------------
-//  Defines the library status codes.
-// --------------------------------------------------------------------------
-
-#ifndef VSCP_STATUS_H_INCLUDED
-#define VSCP_STATUS_H_INCLUDED
+#include "vscp_atomic.h"
 
 // clang-format on
 //  @end
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -64,39 +56,9 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Defines the library status codes.
-//
-enum vscp_status_t {
-    //
-    //  No errors was occurred.
-    //
-    vscp_status_SUCCESS = 0,
-    //
-    //  This error should not be returned if assertions is enabled.
-    //
-    vscp_status_ERROR_BAD_ARGUMENTS = -1,
-    //
-    //  Underlying pythia library returns -1.
-    //
-    vscp_status_ERROR_PYTHIA_INNER_FAIL = -200,
-    //
-    //  Underlying random number generator failed.
-    //
-    vscp_status_ERROR_RNG_FAILED = -202
-};
-typedef enum vscp_status_t vscp_status_t;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-#ifdef __cplusplus
-}
-#endif
-
-//  @footer
-#endif // VSCP_STATUS_H_INCLUDED
 //  @end

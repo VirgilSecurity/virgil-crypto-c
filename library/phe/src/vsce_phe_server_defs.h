@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,11 +50,6 @@
 
 #ifndef VSCE_PHE_SERVER_DEFS_H_INCLUDED
 #define VSCE_PHE_SERVER_DEFS_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_atomic.h"
-#include "vsce_phe_hash.h"
-#include "vsce_phe_proof_generator.h"
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -69,11 +62,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_atomic.h"
+#include "vsce_phe_hash.h"
+#include "vsce_phe_proof_generator.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -101,14 +110,10 @@ struct vsce_phe_server_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
-
     vsce_phe_hash_t *phe_hash;
-
     vsce_phe_proof_generator_t *proof_generator;
-
     mbedtls_ecp_group group;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -116,11 +121,9 @@ struct vsce_phe_server_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_PHE_SERVER_DEFS_H_INCLUDED

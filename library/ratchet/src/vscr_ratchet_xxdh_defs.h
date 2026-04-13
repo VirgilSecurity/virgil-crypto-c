@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,9 +50,6 @@
 
 #ifndef VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
 #define VSCR_RATCHET_XXDH_DEFS_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_atomic.h"
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -71,11 +66,25 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+#include "vscr_atomic.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -99,12 +108,9 @@ struct vscr_ratchet_xxdh_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *rng;
-
     vscf_round5_t *round5;
-
     vscf_falcon_t *falcon;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -112,11 +118,9 @@ struct vscr_ratchet_xxdh_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_XXDH_DEFS_H_INCLUDED

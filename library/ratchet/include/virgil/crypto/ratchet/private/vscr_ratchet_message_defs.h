@@ -70,6 +70,8 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -101,6 +103,7 @@ struct vscr_ratchet_message_t {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 #ifdef __cplusplus
 }
 #endif

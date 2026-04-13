@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,19 +51,30 @@
 #ifndef VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
 #define VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_simple_swu.h"
 #include "vscf_impl.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -85,6 +94,8 @@ struct vscf_brainkey_client_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
+    mbedtls_ecp_group group;
+    vscf_simple_swu_t *simple_swu;
     //
     //  Dependency to the interface 'random'.
     //
@@ -93,12 +104,7 @@ struct vscf_brainkey_client_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
-
-    mbedtls_ecp_group group;
-
-    vscf_simple_swu_t *simple_swu;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -106,11 +112,9 @@ struct vscf_brainkey_client_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_BRAINKEY_CLIENT_DEFS_H_INCLUDED

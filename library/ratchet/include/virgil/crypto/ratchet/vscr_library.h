@@ -77,6 +77,8 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -182,6 +184,7 @@ typedef void (*vscr_dealloc_fn)(void *mem);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 #ifdef __cplusplus
 }
 #endif

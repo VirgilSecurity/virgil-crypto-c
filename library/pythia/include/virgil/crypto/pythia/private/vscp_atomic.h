@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,8 +51,6 @@
 #ifndef VSCP_ATOMIC_H_INCLUDED
 #define VSCP_ATOMIC_H_INCLUDED
 
-#include "vscp_library.h"
-
 #if VSCP_HAVE_STDATOMIC_H
 #   include <stdatomic.h>
 #endif
@@ -62,11 +58,24 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscp_library.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -116,18 +125,15 @@ extern "C" {
 #   define VSCP_ATOMIC_CRITICAL_SECTION_END(name) do {} while(0)
 #endif
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCP_ATOMIC_H_INCLUDED
