@@ -3404,10 +3404,11 @@ def _render_class_property(parent: ET.Element, field: ClassFieldSpec, *, project
             field_attrs["is_const_type"] = "1"
         if attrs.get("array") == "given" or attrs.get("_array") == "given":
             field_attrs["array"] = "given"
-        elif attrs.get("array") == "fixed" and attrs.get("array_length_constant"):
-            length_ref = attrs["array_length_constant"]
-            resolved_length = _resolve_constant_ref(length_ref, project_ir=project_ir)
-            field_attrs["length"] = resolved_length
+    # Handle fixed-length arrays (applies to all field types: class, primitive, etc.)
+    if attrs.get("array") == "fixed" and attrs.get("array_length_constant"):
+        length_ref = attrs["array_length_constant"]
+        resolved_length = _resolve_constant_ref(length_ref, project_ir=project_ir)
+        field_attrs["length"] = resolved_length
     prop = text_element(parent, "c_property", **field_attrs)
     if field.description:
         prop.text = comment_text(field.description)
