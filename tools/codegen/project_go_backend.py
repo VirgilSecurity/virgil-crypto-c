@@ -235,6 +235,18 @@ def _arg_should_skip(arg: IRCArgument) -> bool:
     return False
 
 
+def _project_pkg_qualifier(arg: IRCArgument) -> str:
+    """Go package qualifier for cross-project entity refs (``"foundation."``).
+
+    Returns an empty string for same-project references. The IR's
+    ``project`` attribute on each argument tells us the source project
+    of an interface or class type; when set to a non-local project, the
+    Go code must qualify the type (e.g. ``foundation.Random``) and
+    import the package.
+    """
+    return f"{arg.project}." if arg.project else ""
+
+
 def _go_type_for_arg(arg: IRCArgument) -> str:
     """Map an IR argument / return descriptor to its Go type name.
 
@@ -243,10 +255,10 @@ def _go_type_for_arg(arg: IRCArgument) -> str:
     """
     # Enum references
     if arg.enum_name:
-        return go_type_name(arg.enum_name)
+        return _project_pkg_qualifier(arg) + go_type_name(arg.enum_name)
     # Interface references
     if arg.interface_name:
-        return go_type_name(arg.interface_name)
+        return _project_pkg_qualifier(arg) + go_type_name(arg.interface_name)
     # Class references (pointers to concrete Go structs)
     if arg.class_name == "data":
         return "[]byte"
@@ -255,7 +267,7 @@ def _go_type_for_arg(arg: IRCArgument) -> str:
         return "[]byte"
     if arg.class_name and arg.class_name not in {"data", "buffer"}:
         # Concrete C class → pointer to matching Go struct.
-        return f"*{go_type_name(arg.class_name)}"
+        return f"*{_project_pkg_qualifier(arg)}{go_type_name(arg.class_name)}"
     # Primitive types
     type_name = (arg.type_name or "").lower()
     if type_name == "size":
@@ -908,6 +920,13 @@ def generate_go_class_scaffold(project_ir: IRProject, cls: IRClass) -> str:
     include = _cgo_include_line(project_ir)
     type_name = go_type_name(cls.name)
 
+    foreign_projects = _foreign_projects_for_entity(
+        project_ir,
+        methods=cls.methods,
+        constructors=cls.constructors,
+        dependencies=cls.dependencies,
+    )
+
     header: list[str] = []
     header.append(f"package {pkg}")
     header.append("")
@@ -916,6 +935,7 @@ def generate_go_class_scaffold(project_ir: IRProject, cls: IRClass) -> str:
     header.append('import unsafe "unsafe"')
     if not _is_static_class(cls):
         header.append('import "runtime"')
+    header.extend(_foreign_import_lines(project_ir, foreign_projects))
     header.append("")
     header.append("")
     desc = _doc_block(cls.description)
@@ -980,6 +1000,93 @@ def _c_enum_type(project_ir: IRProject, enum_name: str) -> str:
     return f"C.{project_ir.prefix}_{stem}_t"
 
 
+# Static fallback prefixes for cross-project entity references so the
+# Go backend can still resolve cgo casts when the IR doesn't carry an
+# explicit fallback project. Mirrors the table used by the CMake backend.
+_PROJECT_PREFIX_FALLBACK = {
+    "common": "vsc",
+    "foundation": "vscf",
+    "pythia": "vscp",
+    "ratchet": "vscr",
+    "phe": "vsce",
+}
+
+
+def _resolve_project_prefix(project_ir: IRProject, project_name: str | None) -> str:
+    """Return the cgo prefix for the project that DEFINES an entity.
+
+    When an interface or class reference carries a non-local
+    ``project`` attribute, the cgo type cast must use that project's
+    prefix (foundation interfaces in phe code still cast through
+    ``vscf_impl_t``, never ``vsce_impl_t``).
+    """
+    if not project_name or project_name == project_ir.name:
+        return project_ir.prefix
+    for fp in getattr(project_ir, "fallback_projects", None) or []:
+        if fp.name == project_name:
+            return fp.prefix
+    return _PROJECT_PREFIX_FALLBACK.get(project_name, project_name)
+
+
+def _foreign_projects_for_entity(
+    project_ir: IRProject,
+    *,
+    methods: list = (),
+    constructors: list = (),
+    dependencies: list = (),
+    bindings: list = (),
+    interfaces_index: dict | None = None,
+) -> list[str]:
+    """Collect every foreign project name referenced by an entity.
+
+    Walks all method args/returns, dependency declarations, and (for
+    implementations) the methods inherited via interface bindings —
+    those bindings can pull in foundation methods from a phe impl.
+    Returns a sorted, deduplicated list.
+    """
+    found: set[str] = set()
+    local = project_ir.name
+
+    def _scan_arg(a) -> None:
+        if a.project and a.project != local:
+            found.add(a.project)
+
+    for m in methods:
+        for a in m.arguments:
+            _scan_arg(a)
+        for r in m.returns:
+            _scan_arg(r)
+    for c in constructors:
+        for a in c.arguments:
+            _scan_arg(a)
+        for r in c.returns:
+            _scan_arg(r)
+    for dep in dependencies:
+        dp = dep.attrs.get("project")
+        if dp and dp != local:
+            found.add(dp)
+    if bindings and interfaces_index is not None:
+        for b in bindings:
+            iface = interfaces_index.get(b.name)
+            if iface is None:
+                continue
+            for m in iface.methods:
+                for a in m.arguments:
+                    _scan_arg(a)
+                for r in m.returns:
+                    _scan_arg(r)
+    return sorted(found)
+
+
+def _foreign_import_lines(project_ir: IRProject, foreign: list[str]) -> list[str]:
+    """Render ``import foundation "virgil/foundation"`` lines for foreign refs.
+
+    Mirrors the legacy GSL output exactly — package alias matches
+    project name, path is ``virgil/<project>``.
+    """
+    return [f'import {p} "virgil/{p}"' for p in foreign]
+
+
 def _go_to_c_arg_expr(
     project_ir: IRProject, arg: IRCArgument, go_local: str
 ) -> str:
@@ -993,14 +1100,20 @@ def _go_to_c_arg_expr(
         # String args are pre-wrapped into a ``{name}Str`` local.
         return f"{go_local}Str"
     if arg.interface_name:
-        # Interface args flow through the project's universal impl
-        # pointer ``vscf_impl_t`` — downcasts happen on the C side.
-        return f"(*C.{project_ir.prefix}_impl_t)(unsafe.Pointer({go_local}.Ctx()))"
+        # Interface args flow through the impl pointer of the project
+        # that DEFINES the interface — phe's ``Random`` arg, for
+        # instance, comes from foundation, so the cast is
+        # ``*C.vscf_impl_t`` not ``*C.vsce_impl_t``.
+        cast_prefix = _resolve_project_prefix(project_ir, arg.project)
+        return f"(*C.{cast_prefix}_impl_t)(unsafe.Pointer({go_local}.Ctx()))"
     if arg.class_name and arg.class_name not in {"data", "buffer"}:
         # Concrete class args keep their own C type — Ctx() returns an
-        # opaque uintptr which we cast back to ``*C.<prefix>_<class>_t``.
+        # opaque uintptr which we cast back to ``*C.<prefix>_<class>_t``
+        # using the defining project's prefix.
+        cast_prefix = _resolve_project_prefix(project_ir, arg.project)
+        stem = arg.class_name.replace(" ", "_").lower()
         return (
-            f"({_class_c_type(project_ir, arg.class_name)})"
+            f"(*C.{cast_prefix}_{stem}_t)"
             f"(unsafe.Pointer({go_local}.Ctx()))"
         )
     if arg.enum_name:
@@ -1020,9 +1133,70 @@ def _go_to_c_arg_expr(
         sized = _C_SIZED_UINT.get(arg.type_size or "4")
         return f"({sized})({go_local})"
     if type_name == "byte":
+        if arg.is_array:
+            # ``type="byte"`` + ``<array>`` → Go ``[]byte`` argument
+            # passed as ``(*C.byte)(unsafe.Pointer(&local[0]))``.
+            return f"(*C.byte)(unsafe.Pointer(&{go_local}[0]))"
+        if arg.is_reference:
+            # Pointer-to-byte (``unsafe.Pointer`` Go type).
+            return f"(*C.byte)({go_local})"
         return f"(C.byte)({go_local})"
     # Best-effort fallback — later slices replace this.
     return go_local
+
+
+def _lookup_method_on_entity(
+    project_ir: IRProject, entity, method_name: str
+):
+    """Find a method by name on an entity (class/impl), including its
+    bound interfaces.
+
+    Used to recover proxy-target argument types so the buffer-length
+    expression can emit Go-required ``.(TargetType)`` type assertions
+    when an arg's source type is broader than the proxy expects.
+    """
+    if entity is None:
+        return None
+    for m in getattr(entity, "methods", []):
+        if m.name == method_name:
+            return m
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    for binding in getattr(entity, "interface_bindings", []):
+        iface = iface_by_name.get(binding.name)
+        if iface is None:
+            continue
+        for m in iface.methods:
+            if m.name == method_name:
+                return m
+    return None
+
+
+def _arg_interface_type(
+    project_ir: IRProject, src_arg_name: str, entity
+) -> str | None:
+    """Return the Go interface type name of an arg in the CURRENT method.
+
+    Looks up the arg by name across the entity's own methods/
+    constructors AND the methods inherited via interface bindings (so
+    impls can resolve args that came in through a Hash/Kem binding).
+    Returns None when the arg isn't an interface or can't be resolved.
+    """
+    if entity is None:
+        return None
+    candidates = (
+        list(getattr(entity, "methods", []))
+        + list(getattr(entity, "constructors", []))
+    )
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    for binding in getattr(entity, "interface_bindings", []):
+        iface = iface_by_name.get(binding.name)
+        if iface is not None:
+            candidates.extend(iface.methods)
+    for m in candidates:
+        for a in m.arguments:
+            if a.name == src_arg_name and a.interface_name:
+                return go_type_name(a.interface_name)
+    return None
 
 
 def _buffer_length_expression(
@@ -1032,6 +1206,7 @@ def _buffer_length_expression(
     method_arg_locals: dict[str, str],
     *,
     instance_prefix: str = "",
+    entity=None,
 ) -> str:
     """Resolve the Go expression used as capacity for ``newBuffer(...)``.
 
@@ -1053,19 +1228,31 @@ def _buffer_length_expression(
     if not la:
         return "0"
     if "method" in la:
-        method = la["method"]
+        method_name = la["method"]
         if instance_prefix:
             # Instance-bound method — call through the receiver.
-            call_name = f"{instance_prefix}{go_method_name(method)}"
+            call_name = f"{instance_prefix}{go_method_name(method_name)}"
         else:
             # Static-bound method — call via package-level function.
-            call_name = go_type_name(cls_name) + go_method_name(method)
+            call_name = go_type_name(cls_name) + go_method_name(method_name)
+        # Locate the proxy method to recover its argument signature.
+        # When the proxy targets a broader interface than the source
+        # arg's type, Go requires a ``.(TargetType)`` type assertion.
+        proxy_method = _lookup_method_on_entity(
+            project_ir, entity, method_name
+        )
+        proxy_target_types: dict[str, str] = {}
+        if proxy_method is not None:
+            for parg in proxy_method.arguments:
+                if parg.interface_name:
+                    proxy_target_types[parg.name] = go_type_name(parg.interface_name)
         proxy_args: list[str] = []
         idx = 0
         while f"proxy_{idx}_to" in la:
             cast = la.get(f"proxy_{idx}_cast")
             src_arg = la.get(f"proxy_{idx}_argument")
             src_const = la.get(f"proxy_{idx}_constant")
+            target_arg = la.get(f"proxy_{idx}_to")
             if src_const is not None:
                 proxy_args.append(src_const)
             elif src_arg is not None:
@@ -1073,19 +1260,40 @@ def _buffer_length_expression(
                 if cast == "data_length":
                     proxy_args.append(f"uint(len({local}))")
                 else:
-                    proxy_args.append(local)
+                    target_type = proxy_target_types.get(target_arg)
+                    # Source arg's type from the current method context.
+                    src_type = _arg_interface_type(project_ir, src_arg, entity)
+                    if target_type and src_type and target_type != src_type:
+                        proxy_args.append(f"{local}.({target_type})")
+                    else:
+                        proxy_args.append(local)
             idx += 1
         return f"{call_name}({', '.join(proxy_args)})"
     if "constant" in la:
-        # Constant getter on an instance — emit ``obj.GetXxx()`` so the
-        # buffer capacity resolves dynamically. Static callers currently
-        # have no such case; fall back to zero and let the caller error.
-        if instance_prefix:
-            return f"{instance_prefix}{go_method_name('get ' + la['constant'])}()"
-        return "0"
+        const_name = la["constant"]
+        # ``<length constant="X" class="other"/>`` tells us the
+        # constant lives on a sibling class — qualify it with that
+        # class's Go type name so we resolve to its package-level const.
+        owner_class = la.get("class")
+        if owner_class and owner_class != "self":
+            return go_type_name(owner_class) + go_type_name(const_name)
+        # Two resolution paths when the owner is the current class:
+        # - The constant is declared on the entity's own ``<constant>``
+        #   list (classes) → reference as a package-level identifier
+        # - Otherwise, on an instance, defer to the getter method
+        #   ``obj.GetXxx()`` — implementations get these from binding
+        #   constants and don't have a class-level ``const`` block
+        owns_const = entity is not None and any(
+            c.name == const_name for c in getattr(entity, "constants", [])
+        )
+        if owns_const or not instance_prefix:
+            return go_type_name(cls_name) + go_type_name(const_name)
+        return f"{instance_prefix}{go_method_name('get ' + const_name)}()"
     if "argument" in la:
         src = la["argument"]
         local = method_arg_locals.get(src, go_arg_name(src))
+        if la.get("cast") == "data_length":
+            return f"uint(len({local}))"
         return local
     return "0"
 
@@ -1127,6 +1335,10 @@ def _go_return_from_c_expr(
         return f"{_go_integer_type(ret.type_size)}({c_expr})"
     if type_name == "unsigned":
         return f"{_go_unsigned_type(ret.type_size)}({c_expr})"
+    if type_name == "byte" and ret.is_reference:
+        # ``return type="byte" is_reference="1"`` surfaces as Go
+        # ``unsafe.Pointer`` — wrap the cgo-side ``*C.byte``.
+        return f"unsafe.Pointer({c_expr})"
     return c_expr
 
 
@@ -1190,9 +1402,19 @@ def _static_method_body(
             return ""
         parts: list[str] = []
         for v in value_returns:
-            if v.startswith("[]") or v.startswith("*") or v == "error":
+            # ``nil`` covers slices, pointers, interface and class refs,
+            # and the trailing error slot. Note an unqualified named
+            # type starts with an uppercase letter — that's an interface
+            # value and ``nil`` is its zero.
+            if (
+                v.startswith("[]")
+                or v.startswith("*")
+                or v == "error"
+                or (v[:1].isupper() if v else False)
+                or "." in v  # qualified cross-project reference
+            ):
                 parts.append("nil")
-            elif v in {"bool"}:
+            elif v == "bool":
                 parts.append("false")
             else:
                 parts.append("0")
@@ -1233,7 +1455,8 @@ def _static_method_body(
         buf_local = go_arg_name(buf_arg.name) + "Buf"
         err_local = buf_local + "Err"
         cap_expr = _buffer_length_expression(
-            project_ir, cls.name, buf_arg, locals_by_source
+            project_ir, cls.name, buf_arg, locals_by_source,
+            entity=cls,
         )
         lines.append(
             f"    {buf_local}, {err_local} := newBuffer(int({cap_expr}))"
@@ -1242,6 +1465,18 @@ def _static_method_body(
         lines.append(f"        return {_zero_with_err(err_local)}")
         lines.append("    }")
         lines.append(f"    defer {buf_local}.delete()")
+
+    # Methods with an explicit ``class="error"`` argument allocate a
+    # local C-side error context up-front (same pattern as instance
+    # methods). The C function fills the status field which we drain
+    # through HandleStatus afterwards.
+    error_arg = next(
+        (a for a in resolved_args if a.class_name == "error"), None
+    )
+    if error_arg is not None:
+        lines.append(f"    var error C.{project_ir.prefix}_error_t")
+        lines.append(f"    C.{project_ir.prefix}_error_reset(&error)")
+        lines.append("")
 
     # Wrap ``data``-class inputs into cgo ``vsc_data_t`` locals.
     for arg in resolved_args:
@@ -1255,6 +1490,9 @@ def _static_method_body(
     # buffer-output args substituted by ``<buf>.ctx``.
     call_args: list[str] = []
     for arg in resolved_args:
+        if arg.class_name == "error":
+            call_args.append("&error")
+            continue
         if _arg_should_skip(arg) and not _arg_is_buffer_output(arg):
             continue
         if _arg_is_buffer_output(arg):
@@ -1267,12 +1505,17 @@ def _static_method_body(
             )
 
     # Insert a blank line before the C call only if we emitted prologue
-    # work (string allocs, buffer allocs, data wraps) above it — matches
-    # legacy shape.
-    has_prologue = has_string_prologue or bool(buffer_outputs) or any(
-        a.class_name == "data"
-        for a in method.arguments
-        if not _arg_should_skip(a) and not _arg_is_buffer_output(a)
+    # work (string allocs, buffer allocs, data wraps, error alloc) above
+    # it — matches legacy shape.
+    has_prologue = (
+        has_string_prologue
+        or bool(buffer_outputs)
+        or error_arg is not None
+        or any(
+            a.class_name == "data"
+            for a in method.arguments
+            if not _arg_should_skip(a) and not _arg_is_buffer_output(a)
+        )
     )
     if has_prologue:
         lines.append("")
@@ -1282,10 +1525,22 @@ def _static_method_body(
     else:
         lines.append(f"    {call}")
 
-    # Status dispatch.
-    if has_error:
+    # Status dispatch — three sources of error (status return, error
+    # arg, interface return Wrap call which is self-contained).
+    has_status_return = any(r.enum_name == "status" for r in resolved_returns)
+    has_interface_return = any(r.interface_name for r in resolved_returns)
+    error_slot_from_wrap = has_interface_return and len(resolved_returns) == 1
+    if has_status_return:
         lines.append("")
         lines.append(f"    err := {error_type}HandleStatus(proxyResult)")
+        lines.append("    if err != nil {")
+        zero = _zero_returns().rsplit("nil", 1)
+        zero_with_err = "err".join(zero) if len(zero) == 2 else _zero_returns()
+        lines.append(f"        return {zero_with_err}")
+        lines.append("    }")
+    elif error_arg is not None:
+        lines.append("")
+        lines.append(f"    err := {error_type}HandleStatus(error.status)")
         lines.append("    if err != nil {")
         zero = _zero_returns().rsplit("nil", 1)
         zero_with_err = "err".join(zero) if len(zero) == 2 else _zero_returns()
@@ -1300,7 +1555,10 @@ def _static_method_body(
         tail_parts.append(_go_return_from_c_expr(project_ir, ret, "proxyResult"))
     for buf_arg in buffer_outputs:
         tail_parts.append(f"{go_arg_name(buf_arg.name)}Buf.getData()")
-    if has_error:
+    # Add a trailing ``nil`` only when the error slot came from a
+    # status return or an explicit ``class="error"`` argument. Interface
+    # returns bring their own error pair via the Wrap call.
+    if has_error and not error_slot_from_wrap:
         tail_parts.append("nil")
 
     if tail_parts:
@@ -1314,16 +1572,23 @@ def _static_method_body(
 
 
 def _static_class_needs_unsafe(cls: IRClass) -> bool:
-    """True when any wrapped method takes a string input or returns unsafe.Pointer.
+    """True when any wrapped method needs the ``unsafe`` package.
 
-    String args go through ``C.CString`` + ``C.free(unsafe.Pointer(...))``
-    so the file needs ``import unsafe "unsafe"``.
+    Three triggers:
+    - String args go through ``C.CString`` + ``C.free(unsafe.Pointer(...))``
+    - Interface or class-pointer args use
+      ``unsafe.Pointer(arg.Ctx())`` casts
+    - Returns of ``type="byte" is_reference="1"`` surface ``unsafe.Pointer``
     """
     for method in cls.methods:
         if not _method_should_wrap(method):
             continue
         for arg in method.arguments:
             if arg.is_string or arg.type_name == "string":
+                return True
+            if arg.interface_name:
+                return True
+            if arg.class_name and arg.class_name not in {"data", "buffer", "error"}:
                 return True
         for ret in method.returns:
             if ret.type_name == "byte" and ret.is_reference:
@@ -1361,6 +1626,26 @@ def generate_go_static_class(project_ir: IRProject, cls: IRClass) -> str:
         lines.append(desc)
     lines.append(f"type {type_name} struct {{")
     lines.append("}")
+
+    # Public class constants — same const block shape as instance
+    # classes, just emitted on a static class for downstream lookups
+    # (e.g. ``<length constant="X" class="phe common"/>`` from another
+    # class refers to ``PheCommonX``).
+    publics = [c for c in cls.constants if c.attrs.get("definition") != "private"]
+    if publics:
+        lines.append("const (")
+        for const in publics:
+            const_name = type_name + go_type_name(const.name)
+            value = const.attrs.get("value", "0")
+            type_attr = const.attrs.get("type", "size").lower()
+            go_type = {
+                "size": "uint",
+                "boolean": "bool",
+                "integer": _go_integer_type(const.attrs.get("size")),
+                "unsigned": _go_unsigned_type(const.attrs.get("size")),
+            }.get(type_attr, type_attr or "uint")
+            lines.append(f"    {const_name} {go_type} = {value}")
+        lines.append(")")
 
     for method in cls.methods:
         if not _method_should_wrap(method):
@@ -1455,7 +1740,15 @@ def _instance_method_body(
             return ""
         parts: list[str] = []
         for v in value_returns:
-            if v.startswith("[]") or v.startswith("*") or v == "error":
+            # Same rule as in _static_method_body — anything that's a
+            # named type, slice, pointer, or qualified ref takes ``nil``.
+            if (
+                v.startswith("[]")
+                or v.startswith("*")
+                or v == "error"
+                or (v[:1].isupper() if v else False)
+                or "." in v
+            ):
                 parts.append("nil")
             elif v == "bool":
                 parts.append("false")
@@ -1511,7 +1804,7 @@ def _instance_method_body(
         err_local = buf_local + "Err"
         cap_expr = _buffer_length_expression(
             project_ir, cls.name, buf_arg, locals_by_source,
-            instance_prefix="obj.",
+            instance_prefix="obj.", entity=cls,
         )
         lines.append(
             f"    {buf_local}, {err_local} := newBuffer(int({cap_expr}))"
@@ -1537,6 +1830,35 @@ def _instance_method_body(
             local = locals_by_source[arg.name]
             lines.append(f"    {local}Data := helperWrapData ({local})")
 
+    # Ownership-transfer args (``access="disown"``) need a shallow-copy
+    # local that we can pass as ``&{name}Copy`` — the C side accepts
+    # ``T**`` so it can NULL the caller's pointer after taking the
+    # value. Same dance for both interface and class refs.
+    disown_locals: dict[str, str] = {}
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+            continue
+        if arg.access != "disown":
+            continue
+        if not (arg.interface_name or (
+            arg.class_name and arg.class_name not in {"data", "buffer"}
+        )):
+            continue
+        local = locals_by_source[arg.name]
+        copy_local = local + "Copy"
+        disown_locals[arg.name] = copy_local
+        cast_prefix = _resolve_project_prefix(project_ir, arg.project)
+        if arg.interface_name:
+            type_t = f"*C.{cast_prefix}_impl_t"
+            copy_sym = f"C.{cast_prefix}_impl_shallow_copy"
+        else:
+            stem = arg.class_name.replace(" ", "_").lower()
+            type_t = f"*C.{cast_prefix}_{stem}_t"
+            copy_sym = f"C.{cast_prefix}_{stem}_shallow_copy"
+        lines.append(
+            f"    {copy_local} := {copy_sym}(({type_t})(unsafe.Pointer({local}.Ctx())))"
+        )
+
     # First C-call argument is normally ``obj.cCtx``, but methods
     # marked ``is_static="1"`` on the source interface bypass the
     # instance pointer (e.g. ``Hash.hash`` is a stateless helper).
@@ -1554,6 +1876,8 @@ def _instance_method_body(
             call_args.append(f"{go_arg_name(arg.name)}Buf.ctx")
         elif arg.class_name == "data":
             call_args.append(locals_by_source[arg.name] + "Data")
+        elif arg.name in disown_locals:
+            call_args.append(f"&{disown_locals[arg.name]}")
         else:
             call_args.append(
                 _go_to_c_arg_expr(project_ir, arg, locals_by_source[arg.name])
@@ -1578,11 +1902,11 @@ def _instance_method_body(
     # - interface return Wrap -> brings its own error pair, no dispatch
     has_status_return = any(r.enum_name == "status" for r in method.returns)
     has_interface_return = any(r.interface_name for r in method.returns)
-    error_slot_from_wrap = (
-        has_interface_return
-        and not has_status_return
-        and error_arg is None
-    )
+    # ``error_slot_from_wrap`` controls whether to APPEND a trailing
+    # ``nil`` to the return statement. When an interface return is
+    # present, the Wrap call already produces ``(T, error)`` so any
+    # trailing nil would create a too-many-values error.
+    error_slot_from_wrap = has_interface_return and len(method.returns) == 1
     if has_status_return:
         lines.append("")
         lines.append(f"    err := {error_type}HandleStatus(proxyResult)")
@@ -1646,7 +1970,16 @@ def _dependency_setter(
     """
     type_name = go_type_name(cls.name)
     dep_setter_name = "Set" + go_type_name(dep.name)
-    dep_go_type = go_type_name(dep.type_name)
+    # Cross-project dep types (phe's ``Random`` from foundation) need a
+    # package-qualified Go type spelling AND the defining project's
+    # cgo prefix for the impl-pointer cast.
+    dep_project = dep.attrs.get("project")
+    dep_pkg_qualifier = f"{dep_project}." if dep_project else ""
+    # Class deps are wrapped Go structs so they take a pointer; interface
+    # deps are Go interfaces and stay value-typed.
+    dep_pointer = "*" if dep.type_kind != "interface" else ""
+    dep_go_type = dep_pointer + dep_pkg_qualifier + go_type_name(dep.type_name)
+    cast_prefix = _resolve_project_prefix(project_ir, dep_project)
 
     release_sym = _class_c_symbol(
         project_ir, cls.name, "release_" + dep.name.replace(" ", "_")
@@ -1655,9 +1988,10 @@ def _dependency_setter(
         project_ir, cls.name, "use_" + dep.name.replace(" ", "_")
     )
     if dep.type_kind == "interface":
-        cast_target = f"*C.{project_ir.prefix}_impl_t"
+        cast_target = f"*C.{cast_prefix}_impl_t"
     else:
-        cast_target = _class_c_type(project_ir, dep.type_name)
+        stem = dep.type_name.replace(" ", "_").lower()
+        cast_target = f"*C.{cast_prefix}_{stem}_t"
 
     local = go_arg_name(dep.name)
     return "\n".join([
@@ -1719,6 +2053,31 @@ def _instance_constructor_body(
         and not _arg_should_skip(a)
         for a in ctor.arguments
     )
+    # Disown args go first so their copy locals are in scope before
+    # the data wraps below.
+    disown_locals: dict[str, str] = {}
+    for arg in ctor.arguments:
+        if _arg_should_skip(arg) or arg.access != "disown":
+            continue
+        if not (arg.interface_name or (
+            arg.class_name and arg.class_name not in {"data", "buffer"}
+        )):
+            continue
+        local = locals_by_source[arg.name]
+        copy_local = local + "Copy"
+        disown_locals[arg.name] = copy_local
+        cast_prefix = _resolve_project_prefix(project_ir, arg.project)
+        if arg.interface_name:
+            type_t = f"*C.{cast_prefix}_impl_t"
+            copy_sym = f"C.{cast_prefix}_impl_shallow_copy"
+        else:
+            stem = arg.class_name.replace(" ", "_").lower()
+            type_t = f"*C.{cast_prefix}_{stem}_t"
+            copy_sym = f"C.{cast_prefix}_{stem}_shallow_copy"
+        lines.append(
+            f"    {copy_local} := {copy_sym}(({type_t})(unsafe.Pointer({local}.Ctx())))"
+        )
+
     for arg in ctor.arguments:
         if _arg_should_skip(arg):
             continue
@@ -1726,12 +2085,14 @@ def _instance_constructor_body(
             local = locals_by_source[arg.name]
             lines.append(f"    {local}Data := helperWrapData ({local})")
             call_args.append(local + "Data")
+        elif arg.name in disown_locals:
+            call_args.append(f"&{disown_locals[arg.name]}")
         else:
             call_args.append(
                 _go_to_c_arg_expr(project_ir, arg, locals_by_source[arg.name])
             )
 
-    if has_prologue:
+    if has_prologue or disown_locals:
         lines.append("")
     lines.append(f"    proxyResult := {ctor_sym}({', '.join(call_args)})")
 
@@ -1779,8 +2140,9 @@ def generate_go_instance_class(project_ir: IRProject, cls: IRClass) -> str:
 
     out_parts: list[str] = [scaffold.rstrip("\n")]
 
-    # Public constants appear as a const block immediately after the struct.
-    publics = [c for c in cls.constants if c.attrs.get("definition") == "public"]
+    # Class constants appear as a const block immediately after the struct.
+    # Default visibility is public — only ``definition="private"`` is hidden.
+    publics = [c for c in cls.constants if c.attrs.get("definition") != "private"]
     if publics:
         # Insert the const block into the scaffold output immediately
         # after the struct's closing brace. The scaffold's struct block
@@ -1895,6 +2257,16 @@ def generate_go_implementation(project_ir: IRProject, impl: IRImplementation) ->
     include = _cgo_include_line(project_ir)
     type_name = go_type_name(impl.name)
 
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    foreign_projects = _foreign_projects_for_entity(
+        project_ir,
+        methods=impl.methods,
+        constructors=impl.constructors,
+        dependencies=impl.dependencies,
+        bindings=impl.interface_bindings,
+        interfaces_index=iface_by_name,
+    )
+
     header_parts: list[str] = []
     header_parts.append(f"package {pkg}")
     header_parts.append("")
@@ -1907,6 +2279,7 @@ def generate_go_implementation(project_ir: IRProject, impl: IRImplementation) ->
     # a cosmetic diff on the minority — both orders compile identically.
     header_parts.append('import unsafe "unsafe"')
     header_parts.append('import "runtime"')
+    header_parts.extend(_foreign_import_lines(project_ir, foreign_projects))
     header_parts.append("")
     header_parts.append("")
     desc = _doc_block(impl.description)
@@ -1916,9 +2289,25 @@ def generate_go_implementation(project_ir: IRProject, impl: IRImplementation) ->
     header_parts.append(f"    cCtx {_class_c_type(project_ir, impl.name)}")
     header_parts.append("}")
 
-    out_parts: list[str] = ["\n".join(header_parts)]
+    # Public impl-level constants render as a const block right after
+    # the struct (e.g. ``KeyMaterialRngKeyMaterialLenMin``).
+    publics = [c for c in impl.constants if c.attrs.get("definition") == "public"]
+    if publics:
+        header_parts.append("const (")
+        for const in publics:
+            const_name = type_name + go_type_name(const.name)
+            value = const.attrs.get("value", "0")
+            type_attr = const.attrs.get("type", "size").lower()
+            go_type = {
+                "size": "uint",
+                "boolean": "bool",
+                "integer": _go_integer_type(const.attrs.get("size")),
+                "unsigned": _go_unsigned_type(const.attrs.get("size")),
+            }.get(type_attr, type_attr or "uint")
+            header_parts.append(f"    {const_name} {go_type} = {value}")
+        header_parts.append(")")
 
-    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    out_parts: list[str] = ["\n".join(header_parts)]
 
     # Dependency setters — appear immediately after the struct.
     for dep in impl.dependencies:
