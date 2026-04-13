@@ -975,10 +975,8 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                 except ValueError:
                     pass
             # Build combined block: old includes + existing section includes + renderer includes + system includes
-            # For new files, include ALL public-scope includes from the renderer
-            renderer_pub_includes: list[str] = []
-            if is_new_file:
-                renderer_pub_includes = [render_include(c) for c in root if c.tag == 'c_include' and c.attrib.get('scope') == 'public']
+            # Always include public-scope renderer includes (needed for inlined structs, new files, etc.)
+            renderer_pub_includes = [render_include(c) for c in root if c.tag == 'c_include' and c.attrib.get('scope') == 'public']
             sys_lines: list[str] = []
             if include_block:
                 for ln in include_block.splitlines():

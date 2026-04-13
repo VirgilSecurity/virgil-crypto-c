@@ -276,14 +276,15 @@ def implementation_private_output(impl_output: IROutputTarget) -> IROutputTarget
     )
 
 
-def class_defs_output(class_output: IROutputTarget, *, context: str = "public") -> IROutputTarget:
+def class_defs_output(class_output: IROutputTarget, *, context: str = "public", scope: str = "public") -> IROutputTarget:
     """Derive the defs module output target from a class's output target.
 
-    For ``context='internal'`` classes the defs header lives in ``src/``
-    (matching legacy GSL behavior).  Otherwise it lives in ``include/private/``.
+    For ``context='internal'`` or ``scope='internal'`` classes the defs header
+    lives in ``src/`` (matching legacy GSL behavior).  Otherwise it lives in
+    ``include/private/``.
     """
     stem = f"{class_output.c_symbol}_defs"
-    if context == "internal":
+    if context == "internal" or scope == "internal":
         # Internal classes: defs header goes to src/ alongside the source
         header_path = class_output.source_path.replace(
             class_output.source_file, f"{stem}.h"
@@ -1010,9 +1011,9 @@ def collect_umbrella_includes(
         is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
         context = cls.attrs.get("context", "public")
         has_lifecycle = cls.attrs.get("lifecycle") != "none"
-        if not is_value_type and context not in ("none",) and cls_scope != "internal" and has_lifecycle:
-            defs_out = class_defs_output(cls.output, context=context)
-            if context != "internal":
+        if not is_value_type and context not in ("none",) and has_lifecycle:
+            defs_out = class_defs_output(cls.output, context=context, scope=cls_scope)
+            if context != "internal" and cls_scope != "internal":
                 private_includes.add(defs_out.include_file)
         # Note: class _internal.h files live in src/, not include/private/
         # They should NOT be in the private umbrella header.
@@ -1249,9 +1250,10 @@ def discover_renderers(
             # Defs module for non-value-type classes with a struct context
             is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
             context = cls.attrs.get("context", "public")
+            cls_scope = cls.attrs.get("scope", "public")
             has_lifecycle = cls.attrs.get("lifecycle") != "none"
             if not is_value_type and context != "none" and has_lifecycle:
-                defs_out = class_defs_output(cast(IROutputTarget, cls.output), context=context)
+                defs_out = class_defs_output(cast(IROutputTarget, cls.output), context=context, scope=cls_scope)
                 defs_xml = direct_xml_name(defs_out)
                 if defs_xml in overrides:
                     renderers[defs_xml] = overrides[defs_xml]
@@ -2926,15 +2928,42 @@ def render_class_c_module(
     # Add system includes for external library types used in struct fields,
     # but only when the struct is inline in this module (not in a separate _defs.h).
     cls_scope = cls.attrs.get("scope", "public")
-    has_explicit_ctx_public = cls_scope == "internal" and cls.attrs.get("context") == "public"
-    will_inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public
+    has_explicit_ctx_public_sys = cls_scope == "internal" and cls.attrs.get("context") == "public"
+    will_inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public_sys
     resolved_system_includes: list[str] = []
     if will_inline_struct:
+        # When the struct is inlined, we need all the includes that _defs.h would have
+        atomic_inc = f"{project_ir.prefix}_atomic.h"
+        if atomic_inc not in resolved_public_includes:
+            resolved_public_includes.append(atomic_inc)
         for field in cls.struct_fields:
             if field.library and field.class_name:
                 lib_header = _library_type_header(field.class_name, field.library)
                 if lib_header and lib_header not in resolved_system_includes:
                     resolved_system_includes.append(lib_header)
+            elif field.class_name and field.class_name != "self" and field.class_name != cls.name:
+                try:
+                    inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=field.class_name)
+                    if inc not in resolved_public_includes:
+                        resolved_public_includes.append(inc)
+                except KeyError:
+                    pass
+            if field.interface_name:
+                impl_inc = f"{project_ir.prefix}_impl.h"
+                if impl_inc not in resolved_public_includes:
+                    resolved_public_includes.append(impl_inc)
+        for dep in cls.dependencies:
+            if dep.type_kind == "class":
+                try:
+                    dep_inc = include_file_for_entity(project_ir, entity_kind="class", entity_name=dep.type_name)
+                    if dep_inc not in resolved_public_includes:
+                        resolved_public_includes.append(dep_inc)
+                except KeyError:
+                    pass
+            elif dep.type_kind in {"interface", "impl"}:
+                impl_inc = f"{project_ir.prefix}_impl.h"
+                if impl_inc not in resolved_public_includes:
+                    resolved_public_includes.append(impl_inc)
     if include_own_header_public and class_output.include_file not in resolved_public_includes:
         resolved_public_includes.append(class_output.include_file)
 
@@ -2948,10 +2977,9 @@ def render_class_c_module(
     # Classes with context="none" should not have a struct or lifecycle methods
     context = cls.attrs.get("context", "public")
     # cls_scope already computed above for system includes
-    # Internal-scope classes with EXPLICIT context="public" have inline struct (no _defs.h)
-    # Note: check raw attr, not defaulted — unset context means use _defs.h
-    has_explicit_context_public = cls_scope == "internal" and cls.attrs.get("context") == "public"
-    inline_struct = is_value_type or not has_lifecycle or has_explicit_context_public
+    # Internal-scope classes with explicit context="public" have inline struct
+    has_explicit_ctx_public = cls_scope == "internal" and cls.attrs.get("context") == "public"
+    inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public
     skip_struct = context == "none"
 
     struct: ET.Element | None = None
@@ -3007,7 +3035,7 @@ def render_class_c_module(
 
         if inline_struct or extra_struct_fields:
             # Non-value-type inline structs need lifecycle base fields
-            if has_explicit_context_public and has_lifecycle and not extra_struct_fields:
+            if has_explicit_ctx_public and has_lifecycle and not extra_struct_fields:
                 prefix = project_ir.prefix
                 text_element(struct, "c_property", name="self_dealloc_cb",
                     type=f"{prefix}_dealloc_fn", accessed_by="value",
@@ -4960,7 +4988,8 @@ def render_class_defs_c_module(
     """
     class_output = cast(IROutputTarget, cls.output)
     context = cls.attrs.get("context", "public")
-    defs_output = class_defs_output(class_output, context=context)
+    cls_scope = cls.attrs.get("scope", "public")
+    defs_output = class_defs_output(class_output, context=context, scope=cls_scope)
     prefix = project_ir.prefix
     prefix_upper = prefix.upper()
     is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
