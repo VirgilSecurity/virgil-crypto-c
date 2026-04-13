@@ -1007,11 +1007,12 @@ def collect_umbrella_includes(
     for cls in project_ir.classes:
         cls_scope = cls.attrs.get("scope", "")
         _add(cls.output, scope=cls_scope)
-        # Defs module — always private
+        # Defs module — skip for inlined structs, otherwise add to private umbrella
         is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
         context = cls.attrs.get("context", "public")
         has_lifecycle = cls.attrs.get("lifecycle") != "none"
-        if not is_value_type and context not in ("none",) and has_lifecycle:
+        inline_struct = is_value_type or not has_lifecycle or (cls_scope == "internal" and context == "public")
+        if not inline_struct and context not in ("none",):
             defs_out = class_defs_output(cls.output, context=context, scope=cls_scope)
             if context != "internal" and cls_scope != "internal":
                 private_includes.add(defs_out.include_file)
@@ -1247,12 +1248,15 @@ def discover_renderers(
                 renderers[xml_name] = (
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
-            # Defs module for non-value-type classes with a struct context
+            # Defs module for non-value-type classes with a struct context.
+            # Skip when struct is inlined (value types, no lifecycle, or
+            # scope="internal" + context="public" which inlines the struct).
             is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
             context = cls.attrs.get("context", "public")
             cls_scope = cls.attrs.get("scope", "public")
             has_lifecycle = cls.attrs.get("lifecycle") != "none"
-            if not is_value_type and context != "none" and has_lifecycle:
+            inline_struct = is_value_type or not has_lifecycle or (cls_scope == "internal" and context == "public")
+            if not inline_struct and context != "none":
                 defs_out = class_defs_output(cast(IROutputTarget, cls.output), context=context, scope=cls_scope)
                 defs_xml = direct_xml_name(defs_out)
                 if defs_xml in overrides:
