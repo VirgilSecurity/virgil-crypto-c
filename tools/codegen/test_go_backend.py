@@ -338,15 +338,17 @@ class ClassScaffoldTests(unittest.TestCase):
         self.assertIn("C.vscf_sha256_shallow_copy(ctx)", out)
         self.assertIn("C.vscf_sha256_delete(obj.cCtx)", out)
 
-    def test_scaffold_does_not_appear_in_orchestrator_output(self) -> None:
-        # Class files must NOT be emitted yet — Unit 4 is incomplete and
-        # the legacy GSL output remains authoritative for classes/impls.
+    def test_scaffold_classes_appear_in_orchestrator_output(self) -> None:
+        # Unit 4.7 wires every class/impl + dispatch file into the
+        # orchestrator. The orchestrator must produce one file per
+        # public class/impl plus the project-wide dispatch file.
         files = dict(generate_go_files(self.ir))
-        # Pick a couple of well-known class/impl filenames that would be
-        # emitted once Unit 4 lands fully.
-        self.assertNotIn("wrappers/go/foundation/base64.go", files)
-        self.assertNotIn("wrappers/go/foundation/sha256.go", files)
-        self.assertNotIn("wrappers/go/foundation/key_provider.go", files)
+        self.assertIn("wrappers/go/foundation/base64.go", files)
+        self.assertIn("wrappers/go/foundation/sha256.go", files)
+        self.assertIn("wrappers/go/foundation/key_provider.go", files)
+        self.assertIn(
+            "wrappers/go/foundation/foundation_implementation.go", files,
+        )
 
 
 class StaticClassGenerationTests(unittest.TestCase):
@@ -423,16 +425,11 @@ class StaticClassGenerationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             generate_go_static_class(self.ir, instance_cls)
 
-    def test_static_generation_is_not_wired_into_orchestrator(self) -> None:
-        # Unit 4.2 ships the helper but leaves the orchestrator emitting
-        # only enum/interface/infrastructure files. Legacy GSL output
-        # remains authoritative for class files until integration.
+    def test_static_classes_appear_in_orchestrator_output(self) -> None:
+        # Unit 4.7 wires the static-class path into generate_go_files.
         files = dict(generate_go_files(self.ir))
         for stem in ("base64", "oid", "pem"):
-            self.assertNotIn(
-                f"wrappers/go/foundation/{stem}.go", files,
-                f"{stem}.go should not be in orchestrator output yet",
-            )
+            self.assertIn(f"wrappers/go/foundation/{stem}.go", files)
 
 
 class BufferLengthMetadataTests(unittest.TestCase):
@@ -525,12 +522,11 @@ class InstanceClassGenerationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             generate_go_instance_class(self.ir, static)
 
-    def test_instance_classes_are_not_yet_in_orchestrator_output(self) -> None:
-        # Unit 4.3 ships generation but the orchestrator still does not
-        # emit class files — the legacy GSL output remains authoritative.
+    def test_instance_classes_appear_in_orchestrator_output(self) -> None:
+        # Unit 4.7 wires the instance-class path into generate_go_files.
         files = dict(generate_go_files(self.ir))
         for stem in ("padding_params", "message_info", "key_recipient_info_list"):
-            self.assertNotIn(f"wrappers/go/foundation/{stem}.go", files)
+            self.assertIn(f"wrappers/go/foundation/{stem}.go", files)
 
     def test_dependency_setters_emit_release_then_use(self) -> None:
         cls = self._instance("signer")
@@ -736,6 +732,80 @@ class ProjectImplementationDispatchTests(unittest.TestCase):
         encrypt_pos = gen.index("FoundationImplementationWrapEncrypt(")
         self.assertLess(alg_pos, hash_pos)
         self.assertLess(hash_pos, encrypt_pos)
+
+
+class FullOrchestratorCoverageTests(unittest.TestCase):
+    """End-to-end: generate_go_files now covers the entire wrapper set."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.foundation_files = dict(generate_go_files(
+            project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        ))
+        cls.phe_files = dict(generate_go_files(
+            project_to_ir(load_named_project_source("phe", str(REPO_ROOT)))
+        ))
+
+    def test_foundation_emits_dispatch_and_infrastructure(self) -> None:
+        self.assertIn(
+            "wrappers/go/foundation/foundation_implementation.go",
+            self.foundation_files,
+        )
+        self.assertIn(
+            "wrappers/go/foundation/foundation_error.go", self.foundation_files,
+        )
+        self.assertIn("wrappers/go/foundation/context.go", self.foundation_files)
+        self.assertIn("wrappers/go/foundation/helper.go", self.foundation_files)
+
+    def test_foundation_emits_every_public_entity(self) -> None:
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        expected = set()
+        for enum in ir.enums:
+            if enum.name in {"status", "impl/tag"}:
+                continue
+            if enum.attrs.get("scope") == "private":
+                continue
+            expected.add(f"wrappers/go/foundation/{enum.name.replace(' ', '_')}.go")
+        for iface in ir.interfaces:
+            if iface.attrs.get("scope") == "private":
+                continue
+            expected.add(f"wrappers/go/foundation/{iface.name.replace(' ', '_')}.go")
+        for cls in ir.classes:
+            if cls.attrs.get("scope") in {"private", "internal"}:
+                continue
+            if cls.name == "error":
+                continue
+            expected.add(f"wrappers/go/foundation/{cls.name.replace(' ', '_')}.go")
+        for impl in ir.implementations:
+            if impl.attrs.get("scope") in {"private", "internal"}:
+                continue
+            expected.add(f"wrappers/go/foundation/{impl.name.replace(' ', '_')}.go")
+        missing = expected - set(self.foundation_files)
+        self.assertFalse(missing, f"orchestrator missing {sorted(missing)[:5]}")
+
+    def test_no_test_files_emitted(self) -> None:
+        # Test files (*_test.go) are handwritten and must NEVER be
+        # overwritten by the generator.
+        for path in self.foundation_files:
+            self.assertFalse(
+                path.endswith("_test.go"),
+                f"orchestrator must not emit test file: {path}",
+            )
+
+    def test_no_handwritten_crypto_layer_emitted(self) -> None:
+        # The high-level wrappers/go/crypto/ tree is owned by humans.
+        for path in self.foundation_files:
+            self.assertFalse(
+                path.startswith("wrappers/go/crypto/"),
+                f"orchestrator must not touch wrappers/go/crypto/: {path}",
+            )
+
+    def test_phe_emits_minimal_set(self) -> None:
+        # phe ships infra + a handful of class files + dispatch stub.
+        self.assertIn("wrappers/go/phe/context.go", self.phe_files)
+        self.assertIn("wrappers/go/phe/helper.go", self.phe_files)
+        self.assertIn("wrappers/go/phe/phe_error.go", self.phe_files)
+        self.assertIn("wrappers/go/phe/phe_implementation.go", self.phe_files)
 
 
 if __name__ == "__main__":

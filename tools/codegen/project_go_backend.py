@@ -2153,13 +2153,26 @@ def _wrapper_output_dir(project_ir: IRProject) -> str:
 def generate_go_files(
     project_ir: IRProject, license_text: str = ""
 ) -> list[tuple[str, str]]:
-    """Generate all Go wrapper files for a project.
+    """Generate every Go wrapper file for a project.
 
     Returns a list of ``(repo_relative_path, content)`` tuples — same
     contract as :func:`project_cmake_backend.generate_cmake_files`.
 
-    Unit 1 scope: enums only. Later units add interfaces, classes,
-    implementations, and infrastructure files.
+    Output set:
+    - One ``.go`` per public enum (status and impl/tag deferred to
+      infrastructure / dispatch files)
+    - One ``.go`` per public interface
+    - ``context.go``, ``helper.go``, ``{project}_error.go`` (when the
+      project declares a status enum)
+    - One ``.go`` per public class — static-only classes go through
+      :func:`generate_go_static_class`, the rest through
+      :func:`generate_go_instance_class`
+    - One ``.go`` per public implementation
+    - ``{project}_implementation.go`` — impl-tag dispatch glue
+
+    Test files (``*_test.go``) and the high-level handwritten layer
+    under ``wrappers/go/crypto/`` are intentionally never emitted by
+    this generator — they are owned by humans.
     """
     # ``license_text`` is accepted for API parity with other backends;
     # legacy Go output does not prepend a license block so it is ignored
@@ -2192,5 +2205,37 @@ def generate_go_files(
         files.append(
             (f"{output_dir}{project_ir.name}_error.go", generate_go_error(project_ir))
         )
+
+    # Classes — route static-only and instance variants through their
+    # respective generators. Skip:
+    # - ``scope`` of ``private`` or ``internal`` (not part of the public
+    #   wrapper API)
+    # - the shared ``error`` class — it's a C-side helper for
+    #   ``class="error"`` argument plumbing, not an end-user type
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in {"private", "internal"}:
+            continue
+        if cls.name == "error":
+            continue
+        stem = cls.name.replace(" ", "_").lower()
+        if _is_static_class(cls):
+            content = generate_go_static_class(project_ir, cls)
+        else:
+            content = generate_go_instance_class(project_ir, cls)
+        files.append((f"{output_dir}{stem}.go", content))
+
+    # Implementations.
+    for impl in project_ir.implementations:
+        if impl.attrs.get("scope") in {"private", "internal"}:
+            continue
+        stem = impl.name.replace(" ", "_").lower()
+        files.append((f"{output_dir}{stem}.go", generate_go_implementation(project_ir, impl)))
+
+    # Project-wide impl-tag dispatch — must follow the per-impl files
+    # since it references their unexported ``new<Impl>WithCtx``.
+    files.append((
+        f"{output_dir}{project_ir.name}_implementation.go",
+        generate_go_project_implementation(project_ir),
+    ))
 
     return files
