@@ -1547,6 +1547,20 @@ def _static_method_body(
         lines.append(f"        return {zero_with_err}")
         lines.append("    }")
 
+    # KeepAlive each reference-typed arg — even on static functions
+    # (no obj receiver) the GC could finalize a Go-wrapped reference
+    # between the cgo cast and the C call returning.
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+            continue
+        if arg.interface_name or (
+            arg.class_name and arg.class_name not in {"data", "buffer"}
+        ):
+            lines.append("")
+            lines.append(
+                f"    runtime.KeepAlive({locals_by_source[arg.name]})"
+            )
+
     # Return statement.
     tail_parts: list[str] = []
     for ret in resolved_returns:
@@ -1596,6 +1610,24 @@ def _static_class_needs_unsafe(cls: IRClass) -> bool:
     return False
 
 
+def _static_class_needs_runtime(cls: IRClass) -> bool:
+    """True when any wrapped method needs ``runtime.KeepAlive`` — i.e.
+    has at least one interface or class-pointer argument the GC could
+    finalize between cgo cast and C call returning.
+    """
+    for method in cls.methods:
+        if not _method_should_wrap(method):
+            continue
+        for arg in method.arguments:
+            if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+                continue
+            if arg.interface_name or (
+                arg.class_name and arg.class_name not in {"data", "buffer", "error"}
+            ):
+                return True
+    return False
+
+
 def generate_go_static_class(project_ir: IRProject, cls: IRClass) -> str:
     """Emit a complete Go file for a static-only class.
 
@@ -1611,6 +1643,10 @@ def generate_go_static_class(project_ir: IRProject, cls: IRClass) -> str:
     pkg = _package_name(project_ir)
     include = _cgo_include_line(project_ir)
     type_name = go_type_name(cls.name)
+    foreign_projects = _foreign_projects_for_entity(
+        project_ir,
+        methods=cls.methods,
+    )
 
     lines: list[str] = []
     lines.append(f"package {pkg}")
@@ -1619,6 +1655,9 @@ def generate_go_static_class(project_ir: IRProject, cls: IRClass) -> str:
     lines.append('import "C"')
     if _static_class_needs_unsafe(cls):
         lines.append('import unsafe "unsafe"')
+    if _static_class_needs_runtime(cls):
+        lines.append('import "runtime"')
+    lines.extend(_foreign_import_lines(project_ir, foreign_projects))
     lines.append("")
     lines.append("")
     desc = _doc_block(cls.description)
