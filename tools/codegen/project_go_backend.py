@@ -40,14 +40,31 @@ def _split_words(name: str) -> list[str]:
     return [w for w in name.replace("_", " ").split(" ") if w]
 
 
+def _pascalize_word(word: str) -> str:
+    """Convert a single word to its PascalCase spelling.
+
+    - All-uppercase acronyms (``"RNG"``, ``"AES"``) keep their case
+    - Already-mixed-case words (``"Protobuf"``, ``"IPv4"``) keep their case
+    - Lowercase words are title-cased (``"hash"`` → ``"Hash"``)
+    """
+    if not word:
+        return word
+    if len(word) > 1 and word.isupper():
+        return word
+    if word[:1].isupper():
+        return word
+    return word[:1].upper() + word[1:]
+
+
 def go_type_name(entity_name: str) -> str:
     """Derive the exported Go type name for an entity.
 
     ``"alg id"`` → ``"AlgId"``
     ``"asn1 reader"`` → ``"Asn1Reader"``
     ``"aes256 gcm"`` → ``"Aes256Gcm"``
+    ``"error RNG failed"`` → ``"ErrorRNGFailed"`` (uppercase acronym preserved)
     """
-    return "".join(w[:1].upper() + w[1:].lower() for w in _split_words(entity_name))
+    return "".join(_pascalize_word(w) for w in _split_words(entity_name))
 
 
 def go_method_name(method_name: str) -> str:
@@ -427,6 +444,268 @@ def generate_go_interface(project_ir: IRProject, iface: IRInterface) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Infrastructure file generators (context.go, helper.go, {project}_error.go)
+# ---------------------------------------------------------------------------
+
+def _cgo_include_line(project_ir: IRProject) -> str:
+    """Single-line cgo header include targeting the project's public umbrella."""
+    return (
+        f"// #include <{project_ir.include_namespace}/"
+        f"{project_ir.prefix}_{project_ir.name}_public.h>"
+    )
+
+
+def _error_type_name(project_ir: IRProject) -> str:
+    """Go struct name for the project's error type (e.g. ``FoundationError``)."""
+    return go_type_name(project_ir.name) + "Error"
+
+
+def _c_enum_symbol(prefix: str, enum_name: str, constant_name: str) -> str:
+    """Render a cgo-qualified enum constant symbol.
+
+    ``("vscf", "status", "error bad arguments")`` →
+    ``"C.vscf_status_ERROR_BAD_ARGUMENTS"``.
+    """
+    symbol_stub = constant_name.replace(" ", "_").upper()
+    return f"C.{prefix}_{enum_name.replace(' ', '_')}_{symbol_stub}"
+
+
+def _flatten_description(description: str) -> str:
+    """Collapse a multi-line description into a single space-joined line.
+
+    Used inside the ``HandleStatus`` switch messages, where the legacy
+    output emits the whole description on one line.
+    """
+    lines = [line.strip() for line in description.strip().splitlines()]
+    return " ".join(line for line in lines if line)
+
+
+def generate_go_context(project_ir: IRProject) -> str:
+    """Generate the per-project ``context.go`` file.
+
+    Template is constant across projects aside from the package name and
+    the cgo include pointing at the project's public umbrella header.
+    """
+    return (
+        f"package {_package_name(project_ir)}\n"
+        "\n"
+        f"{_cgo_include_line(project_ir)}\n"
+        'import "C"\n'
+        "\n"
+        "type context interface {\n"
+        "\n"
+        "    /* Get C context */\n"
+        "    Ctx () uintptr\n"
+        "}\n"
+        "\n"
+    )
+
+
+def generate_go_helper(project_ir: IRProject) -> str:
+    """Generate the per-project ``helper.go`` file.
+
+    Provides ``helperWrapData`` / ``helperExtractData`` for the
+    ``vsc_data_t`` bridge and the ``buffer`` wrapper around
+    ``vsc_buffer_t``. Only the package name, cgo include, and
+    project-specific error type name vary between projects.
+    """
+    pkg = _package_name(project_ir)
+    include = _cgo_include_line(project_ir)
+    error_type = _error_type_name(project_ir)
+    return (
+        f"package {pkg}\n"
+        "\n"
+        f"{include}\n"
+        'import "C"\n'
+        'import unsafe "unsafe"\n'
+        "\n"
+        "\n"
+        "type helper struct {\n"
+        "}\n"
+        "\n"
+        "func helperBytesToBytePtr(data []byte) *C.uint8_t {\n"
+        "    return (*C.uint8_t)(&data[0])\n"
+        "}\n"
+        "\n"
+        "func helperWrapData(data []byte) C.vsc_data_t {\n"
+        "    if len(data) == 0 {\n"
+        "        return C.vsc_data_empty()\n"
+        "    }\n"
+        "    return C.vsc_data((*C.uint8_t)(&data[0]), C.size_t(len(data)))\n"
+        "}\n"
+        "\n"
+        "func helperExtractData(data C.vsc_data_t) []byte {\n"
+        "    newSize := data.len\n"
+        "    //FIXME Verify data is not corrupted\n"
+        "    //if newSize < len(data.bytes) {\n"
+        '    //    panic("Underlying C buffer corrupt the memory.")\n'
+        "    //}\n"
+        "    return C.GoBytes(unsafe.Pointer(data.bytes), C.int(newSize))\n"
+        "}\n"
+        "\n"
+        "type buffer struct {\n"
+        "    memory []byte\n"
+        "    ctx *C.vsc_buffer_t\n"
+        "    data []byte\n"
+        "}\n"
+        "\n"
+        "func newBuffer(cap int) (*buffer, error) {\n"
+        "    capacity := C.size_t(cap)\n"
+        "    if capacity == 0 {\n"
+        f'        return nil, &{error_type}{{-1,"Buffer with zero capacity is not allowed."}}\n'
+        "    }\n"
+        "\n"
+        "    ctxLen := C.vsc_buffer_ctx_size()\n"
+        "    memory := make([]byte, int(ctxLen + capacity))\n"
+        "    ctx := (*C.vsc_buffer_t)(unsafe.Pointer(&memory[0]))\n"
+        "    data := memory[int(ctxLen):]\n"
+        "\n"
+        "    C.vsc_buffer_init(ctx)\n"
+        "    C.vsc_buffer_use(ctx, (*C.byte)(unsafe.Pointer(&data[0])), capacity)\n"
+        "\n"
+        "    return &buffer {\n"
+        "        memory: memory,\n"
+        "        ctx: ctx,\n"
+        "        data: data,\n"
+        "    }, nil\n"
+        "}\n"
+        "\n"
+        "func (obj *buffer) getData() []byte {\n"
+        "    newSize := int(C.vsc_buffer_len(obj.ctx))\n"
+        "    if newSize > len(obj.data) {\n"
+        '        panic ("Underlying C buffer corrupt the memory.")\n'
+        "    }\n"
+        "    return obj.data[:newSize]\n"
+        "}\n"
+        "\n"
+        "func (obj *buffer) cap() int {\n"
+        "    return int(C.vsc_buffer_capacity(obj.ctx))\n"
+        "}\n"
+        "\n"
+        "func (obj *buffer) len() int {\n"
+        "    return int(C.vsc_buffer_len(obj.ctx))\n"
+        "}\n"
+        "\n"
+        "/*\n"
+        "* Release underlying C context.\n"
+        "*/\n"
+        "func (obj *buffer) delete() {\n"
+        "    C.vsc_buffer_delete(obj.ctx)\n"
+        "}\n"
+    )
+
+
+def _find_status_enum(project_ir: IRProject) -> IREnum | None:
+    for enum in project_ir.enums:
+        if enum.name == "status":
+            return enum
+    return None
+
+
+def generate_go_error(project_ir: IRProject) -> str:
+    """Generate the per-project ``{project}_error.go`` file.
+
+    Uses the ``status`` enum from the IR as the single source of truth for
+    error codes, messages, and the switch dispatch inside
+    ``{ErrorType}HandleStatus``. Emitted only for projects that declare a
+    status enum (all current wrapper-bearing projects do).
+    """
+    status = _find_status_enum(project_ir)
+    if status is None:
+        raise ValueError(
+            f"project {project_ir.name!r} has no 'status' enum; "
+            "cannot generate error file"
+        )
+
+    pkg = _package_name(project_ir)
+    include = _cgo_include_line(project_ir)
+    error_type = _error_type_name(project_ir)
+    prefix = project_ir.prefix
+    status_type = f"C.{prefix}_status_t"
+    success_symbol = f"C.{prefix}_status_SUCCESS"
+
+    # Non-success constants — everything in the const block and the switch.
+    body_constants = [c for c in status.constants if c.name != "success"]
+
+    lines: list[str] = []
+    lines.append(f"package {pkg}")
+    lines.append("")
+    lines.append(include)
+    lines.append('import "C"')
+    lines.append('import "fmt"')
+    lines.append("")
+    lines.append("")
+    desc = _doc_block(status.description)
+    if desc:
+        lines.append(desc)
+    lines.append(f"type {error_type} struct {{")
+    lines.append("    Code int")
+    lines.append("    Message string")
+    lines.append("}")
+
+    # const() block — one entry per non-success status constant.
+    lines.append("const (")
+    for const in body_constants:
+        doc = _doc_block(const.description, indent="    ")
+        if doc:
+            lines.append(doc)
+        go_const = error_type + go_type_name(const.name)
+        value = (const.attrs.get("value") or "0").strip()
+        lines.append(f"    {go_const} int = {value}")
+    lines.append(")")
+    lines.append("")
+
+    # Error() method.
+    lines.append(f"func (obj *{error_type}) Error() string {{")
+    lines.append(
+        f'    return fmt.Sprintf("{error_type}{{code: %v message: %s}}", '
+        "obj.Code, obj.Message)"
+    )
+    lines.append("}")
+    lines.append("")
+
+    # HandleStatus dispatch.
+    lines.append(
+        '/* Check given C status, and if it\'s not "success" then raise correspond error. */'
+    )
+    lines.append(
+        f"func {error_type}HandleStatus(status {status_type}) error {{"
+    )
+    lines.append(f"    if status != {success_symbol} {{")
+    lines.append("        switch (status) {")
+    for const in body_constants:
+        symbol = _c_enum_symbol(prefix, "status", const.name)
+        message = _flatten_description(const.description).replace('\\', '\\\\').replace('"', '\\"')
+        lines.append(f"        case {symbol}:")
+        lines.append(
+            f'            return &{error_type} {{int(status), "{message}"}}'
+        )
+    lines.append("        }")
+    lines.append("    }")
+    lines.append("    return nil")
+    lines.append("}")
+    lines.append("")
+
+    # Trailing wrapError helper used by generated code.
+    lines.append("type wrapError struct {")
+    lines.append("    err error")
+    lines.append("    msg string")
+    lines.append("}")
+    lines.append("")
+    lines.append("func (obj *wrapError) Error() string {")
+    lines.append(
+        '    return fmt.Sprintf("%s: %v", obj.msg, obj.err)'
+    )
+    lines.append("}")
+    lines.append("")
+    lines.append("func (obj *wrapError) Unwrap() error {")
+    lines.append("    return obj.err")
+    lines.append("}")
+
+    return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 
@@ -477,5 +756,13 @@ def generate_go_files(
             continue
         stem = iface.name.replace(" ", "_").lower()
         files.append((f"{output_dir}{stem}.go", generate_go_interface(project_ir, iface)))
+
+    # Infrastructure files — emitted for every project that ships Go wrappers.
+    files.append((f"{output_dir}context.go", generate_go_context(project_ir)))
+    files.append((f"{output_dir}helper.go", generate_go_helper(project_ir)))
+    if _find_status_enum(project_ir) is not None:
+        files.append(
+            (f"{output_dir}{project_ir.name}_error.go", generate_go_error(project_ir))
+        )
 
     return files

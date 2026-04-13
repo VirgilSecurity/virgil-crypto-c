@@ -211,5 +211,60 @@ class FoundationInterfaceParityTests(unittest.TestCase):
         self.assertEqual(drift, [], f"interface drift: {drift}")
 
 
+class InfrastructureFileParityTests(unittest.TestCase):
+    """context.go, helper.go, and {project}_error.go must round-trip."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.files_by_project = {
+            proj: dict(
+                generate_go_files(
+                    project_to_ir(load_named_project_source(proj, str(REPO_ROOT)))
+                )
+            )
+            for proj in ("foundation", "phe")
+        }
+
+    def _assert_match(self, project: str, name: str) -> None:
+        path = f"wrappers/go/{project}/{name}"
+        gen = self.files_by_project[project][path]
+        legacy = (REPO_ROOT / path).read_text()
+        self.assertEqual(gen, legacy, f"{path} drift")
+
+    def test_foundation_context_matches_legacy(self) -> None:
+        self._assert_match("foundation", "context.go")
+
+    def test_phe_context_matches_legacy(self) -> None:
+        # Same template, different prefix + include path.
+        self._assert_match("phe", "context.go")
+
+    def test_foundation_helper_matches_legacy(self) -> None:
+        # buffer.newBuffer references FoundationError — error type must be
+        # substituted per project.
+        self._assert_match("foundation", "helper.go")
+
+    def test_phe_helper_uses_phe_error(self) -> None:
+        self._assert_match("phe", "helper.go")
+
+    def test_foundation_error_matches_legacy(self) -> None:
+        # Covers: status-enum-driven constants, switch dispatch with
+        # uppercase C symbol mapping, multi-line descriptions flattened
+        # in switch messages but preserved in const doc blocks.
+        self._assert_match("foundation", "foundation_error.go")
+
+    def test_phe_error_preserves_acronyms(self) -> None:
+        # phe has 'error RNG failed' -> PheErrorErrorRNGFailed (uppercase
+        # acronym retention).
+        self._assert_match("phe", "phe_error.go")
+
+
+class NameUtilityAcronymTests(unittest.TestCase):
+    def test_uppercase_acronym_preserved(self) -> None:
+        self.assertEqual(go_type_name("error RNG failed"), "ErrorRNGFailed")
+
+    def test_mixed_case_preserved(self) -> None:
+        self.assertEqual(go_type_name("error Protobuf decode failed"), "ErrorProtobufDecodeFailed")
+
+
 if __name__ == "__main__":
     unittest.main()
