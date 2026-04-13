@@ -13,6 +13,7 @@ from tools.codegen.project_go_backend import (
     generate_go_enum,
     generate_go_files,
     generate_go_implementation_scaffold,
+    generate_go_instance_class,
     generate_go_static_class,
     go_arg_name,
     go_constant_name,
@@ -364,13 +365,16 @@ class StaticClassGenerationTests(unittest.TestCase):
         # layout we want to match.
         import re as _re
 
-        text = _re.sub(r"/\*[a-zA-Z0-9_ ]+?\*/", "", text)
+        text = _re.sub(r"/\*[a-zA-Z0-9_. ]+?\*/", "", text)
         # Legacy GSL leaves isolated whitespace behind after a tracer,
-        # e.g. ``algId) /*pa7*/)`` → ``algId) )`` and
-        # ``getData() /* r7 */,`` → ``getData() ,``. Collapse those
-        # specific patterns so they don't cause spurious drift diffs.
+        # e.g. ``algId) /*pa7*/)`` → ``algId) )``;
+        # ``getData() /* r7 */,`` → ``getData() ,``;
+        # ``(ctx *C.xxx_t /*ct2*/)`` → ``(ctx *C.xxx_t )``.
+        # Collapse those specific patterns so they don't cause spurious
+        # drift diffs.
         text = _re.sub(r"\) \)", "))", text)
         text = _re.sub(r"\) ,", "),", text)
+        text = _re.sub(r"([A-Za-z0-9_]) \)", r"\1)", text)
         # Tidy trailing spaces per line so rstripping differences don't
         # cause spurious diffs.
         text = "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
@@ -450,6 +454,129 @@ class BufferLengthMetadataTests(unittest.TestCase):
         encoded_len = next(m for m in cls.methods if m.name == "encoded len")
         for arg in encoded_len.arguments:
             self.assertEqual(arg.length_attrs, {})
+
+
+class InstanceClassGenerationTests(unittest.TestCase):
+    """Method-body generation for context!="none" classes.
+
+    Covers the receiver pattern (``func (obj *T) Method``), cCtx
+    threading, KeepAlive emission, dependency setters, public class
+    constants, and named constructors. Parity is measured modulo GSL
+    tracer comments.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+
+    def _strip_tracers(self, text: str) -> str:
+        import re as _re
+
+        text = _re.sub(r"/\*[a-zA-Z0-9_. ]+?\*/", "", text)
+        text = _re.sub(r"\) \)", "))", text)
+        text = _re.sub(r"\) ,", "),", text)
+        text = _re.sub(r"([A-Za-z0-9_]) \)", r"\1)", text)
+        return "\n".join(line.rstrip() for line in text.splitlines()) + "\n"
+
+    def _instance(self, name: str):
+        for c in self.ir.classes:
+            if c.name == name:
+                return c
+        raise AssertionError(f"class {name!r} not found")
+
+    def _assert_modulo_tracers(self, name: str, filename: str) -> None:
+        cls = self._instance(name)
+        gen = generate_go_instance_class(self.ir, cls)
+        legacy = (REPO_ROOT / "wrappers" / "go" / "foundation" / filename).read_text()
+        self.assertEqual(
+            self._strip_tracers(gen),
+            self._strip_tracers(legacy),
+            f"{filename} drift",
+        )
+
+    def test_padding_params_matches_legacy_modulo_tracers(self) -> None:
+        # Covers: public const block, named constructor, instance methods.
+        self._assert_modulo_tracers("padding params", "padding_params.go")
+
+    def test_message_info_returns_class_and_interface_correctly(self) -> None:
+        # Covers: class returns -> newXxxCopy(); interface returns ->
+        # FoundationImplementationWrapXxxCopy() with implicit error pair.
+        self._assert_modulo_tracers("message info", "message_info.go")
+
+    def test_key_recipient_info_list_resolves_self_returns(self) -> None:
+        # Covers: class="self" resolution to the enclosing class type.
+        self._assert_modulo_tracers(
+            "key recipient info list", "key_recipient_info_list.go"
+        )
+
+    def test_static_call_path_rejects_instance_class(self) -> None:
+        instance = next(
+            c for c in self.ir.classes if c.attrs.get("context") != "none"
+        )
+        with self.assertRaises(ValueError):
+            generate_go_static_class(self.ir, instance)
+
+    def test_instance_call_path_rejects_static_class(self) -> None:
+        static = next(
+            c for c in self.ir.classes if c.attrs.get("context") == "none"
+        )
+        with self.assertRaises(ValueError):
+            generate_go_instance_class(self.ir, static)
+
+    def test_instance_classes_are_not_yet_in_orchestrator_output(self) -> None:
+        # Unit 4.3 ships generation but the orchestrator still does not
+        # emit class files — the legacy GSL output remains authoritative.
+        files = dict(generate_go_files(self.ir))
+        for stem in ("padding_params", "message_info", "key_recipient_info_list"):
+            self.assertNotIn(f"wrappers/go/foundation/{stem}.go", files)
+
+    def test_dependency_setters_emit_release_then_use(self) -> None:
+        cls = self._instance("signer")
+        gen = generate_go_instance_class(self.ir, cls)
+        # Both deps from class_signer.xml must surface as setter methods
+        # mapped through release_/use_ on the C side.
+        self.assertIn("func (obj *Signer) SetHash(hash Hash)", gen)
+        self.assertIn("C.vscf_signer_release_hash(obj.cCtx)", gen)
+        self.assertIn(
+            "C.vscf_signer_use_hash(obj.cCtx, "
+            "(*C.vscf_impl_t)(unsafe.Pointer(hash.Ctx())))",
+            gen,
+        )
+        self.assertIn("func (obj *Signer) SetRandom(random Random)", gen)
+
+
+class InstanceClassSyntaxSurveyTests(unittest.TestCase):
+    """Every generated instance class must be syntactically valid Go.
+
+    A regression here means the generator produced something gofmt
+    can't parse — the worst kind of breakage because it would surface
+    only when the file is integrated into the orchestrator output.
+    """
+
+    def test_all_instance_classes_pass_gofmt(self) -> None:
+        import shutil
+        import subprocess
+        import tempfile
+
+        if shutil.which("gofmt") is None:
+            self.skipTest("gofmt not on PATH")
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            for cls in ir.classes:
+                if cls.attrs.get("context") == "none":
+                    continue
+                path = tmp_path / f"{cls.name.replace(' ', '_')}.go"
+                path.write_text(generate_go_instance_class(ir, cls))
+                proc = subprocess.run(
+                    ["gofmt", "-e", str(path)],
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(
+                    proc.returncode, 0,
+                    f"gofmt rejected {cls.name!r}: {proc.stderr.decode()}",
+                )
 
 
 if __name__ == "__main__":

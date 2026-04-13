@@ -311,9 +311,15 @@ def _method_signature(method: IRCMethod) -> str:
     """
     method_name = go_method_name(method.name)
 
+    # Interface context — no enclosing class, so self-refs pass through
+    # untouched. Callers that need resolution should route through the
+    # instance-method path.
+    resolved_args = method.arguments
+    resolved_returns = method.returns
+
     input_args: list[str] = []
     buffer_return_count = 0
-    for arg in method.arguments:
+    for arg in resolved_args:
         # Buffer-class args are writeonly outputs — they must be promoted to
         # returns even though the writeonly filter would otherwise drop them.
         if _arg_is_buffer_output(arg):
@@ -324,19 +330,17 @@ def _method_signature(method: IRCMethod) -> str:
         input_args.append(f"{go_arg_name(arg.name)} {_go_type_for_arg(arg)}")
 
     value_returns: list[str] = []
-    has_error = False
-    for ret in method.returns:
+    has_error = _method_has_error_arg(method)
+    for ret in resolved_returns:
         if ret.enum_name == "status":
             has_error = True
             continue
-        # Interface and class returns always ride with an error companion
-        # — they can fail (NULL) and the legacy wrapper surfaces that.
-        if ret.interface_name or (
-            ret.class_name and ret.class_name not in {"data", "buffer"}
-        ):
-            value_returns.append(_go_type_for_arg(ret))
+        # Interface returns always ride with an error companion — they
+        # can fail (NULL via impl-tag dispatch). Class returns inherit
+        # error only when the method carries an explicit class="error"
+        # argument (handled by _method_has_error_arg above).
+        if ret.interface_name:
             has_error = True
-            continue
         value_returns.append(_go_type_for_arg(ret))
 
     # Buffer-class outputs always render as ``[]byte`` returns, preserving
@@ -357,6 +361,15 @@ def _method_signature(method: IRCMethod) -> str:
 
     args_str = ", ".join(input_args)
     return f"{method_name} ({args_str}){returns_str}"
+
+
+def _method_has_error_arg(method: IRCMethod) -> bool:
+    """True if the method has an explicit ``class="error"`` argument.
+
+    The C side takes a status pointer to signal failure; the Go wrapper
+    strips that arg and surfaces a trailing ``error`` return instead.
+    """
+    return any(arg.class_name == "error" for arg in method.arguments)
 
 
 def _method_should_wrap(method: IRCMethod) -> bool:
@@ -929,10 +942,6 @@ def _go_to_c_arg_expr(
 ) -> str:
     """Render the Go expression that converts a Go argument value to its
     cgo-facing form for a direct C function call.
-
-    Covers the primitive shapes that static-only classes rely on; richer
-    cases (interfaces, class pointers, impl downcasts) slot in with
-    later slices.
     """
     if arg.class_name == "data":
         # ``data`` arguments are pre-wrapped into a local named ``{name}Data``.
@@ -940,6 +949,17 @@ def _go_to_c_arg_expr(
     if arg.is_string or arg.type_name == "string":
         # String args are pre-wrapped into a ``{name}Str`` local.
         return f"{go_local}Str"
+    if arg.interface_name:
+        # Interface args flow through the project's universal impl
+        # pointer ``vscf_impl_t`` — downcasts happen on the C side.
+        return f"(*C.{project_ir.prefix}_impl_t)(unsafe.Pointer({go_local}.Ctx()))"
+    if arg.class_name and arg.class_name not in {"data", "buffer"}:
+        # Concrete class args keep their own C type — Ctx() returns an
+        # opaque uintptr which we cast back to ``*C.<prefix>_<class>_t``.
+        return (
+            f"({_class_c_type(project_ir, arg.class_name)})"
+            f"(unsafe.Pointer({go_local}.Ctx()))"
+        )
     if arg.enum_name:
         return f"{_c_enum_type(project_ir, arg.enum_name)}({go_local})"
     type_name = (arg.type_name or "").lower()
@@ -962,6 +982,8 @@ def _buffer_length_expression(
     cls_name: str,
     arg: IRCArgument,
     method_arg_locals: dict[str, str],
+    *,
+    instance_prefix: str = "",
 ) -> str:
     """Resolve the Go expression used as capacity for ``newBuffer(...)``.
 
@@ -970,20 +992,26 @@ def _buffer_length_expression(
     - ``method="name"`` + zero-or-more ``<proxy>`` entries with
       ``cast="data_length"`` (``uint(len(<local>))``) or plain argument
       pass-through
-    - ``constant="name"`` → refers to a class constant getter
+    - ``constant="name"`` → refers to a class constant getter method
     - ``argument="name"`` → passes through a method argument directly
+
+    ``instance_prefix`` is prepended to method-based length calls when
+    the resolved length method lives on an instance (``"obj."`` for
+    regular instance methods). Static callers omit it.
 
     Returns a raw Go expression suitable for wrapping in ``int(...)``.
     """
     la = arg.length_attrs
     if not la:
-        # Fall back to zero — unknown buffer size. Callers will surface
-        # this as a build error rather than silently producing wrong code.
         return "0"
     if "method" in la:
         method = la["method"]
-        call_name = go_type_name(cls_name) + go_method_name(method)
-        # Collect proxy call arguments in XML order.
+        if instance_prefix:
+            # Instance-bound method — call through the receiver.
+            call_name = f"{instance_prefix}{go_method_name(method)}"
+        else:
+            # Static-bound method — call via package-level function.
+            call_name = go_type_name(cls_name) + go_method_name(method)
         proxy_args: list[str] = []
         idx = 0
         while f"proxy_{idx}_to" in la:
@@ -1001,11 +1029,11 @@ def _buffer_length_expression(
             idx += 1
         return f"{call_name}({', '.join(proxy_args)})"
     if "constant" in la:
-        # Constant reference — static classes have no instance, so bind
-        # as the raw class-level constant in practice. (The C backend
-        # exposes these as module constants; the Go shape is TBD for
-        # now — falling back to zero is the safe behaviour until we hit
-        # a case that needs it.)
+        # Constant getter on an instance — emit ``obj.GetXxx()`` so the
+        # buffer capacity resolves dynamically. Static callers currently
+        # have no such case; fall back to zero and let the caller error.
+        if instance_prefix:
+            return f"{instance_prefix}{go_method_name('get ' + la['constant'])}()"
         return "0"
     if "argument" in la:
         src = la["argument"]
@@ -1014,12 +1042,25 @@ def _buffer_length_expression(
     return "0"
 
 
-def _go_return_from_c_expr(ret: IRCArgument, c_expr: str) -> str:
+def _go_return_from_c_expr(
+    project_ir: IRProject, ret: IRCArgument, c_expr: str
+) -> str:
     """Cast a cgo result back into the Go type returned by a method."""
     if ret.class_name == "data":
         # ``<return class="data"/>`` surfaces as a Go []byte — the C layer
         # returns a ``vsc_data_t`` that must be unpacked via the helper.
         return f"helperExtractData({c_expr})"
+    if ret.interface_name:
+        # Interface returns go through the project-wide impl-tag
+        # dispatch in {project}_implementation.go — Unit 4.6 ships that
+        # file. Until it lands, the generator still emits these calls so
+        # downstream slices can iterate without rewriting this helper.
+        proj_prefix = go_type_name(project_ir.name)
+        return f"{proj_prefix}ImplementationWrap{go_type_name(ret.interface_name)}Copy({c_expr})"
+    if ret.class_name and ret.class_name not in {"data", "buffer"}:
+        # Class return — wrap the raw C context into a new Go value via
+        # the unexported copy constructor from the scaffold lifecycle.
+        return f"new{go_type_name(ret.class_name)}Copy({c_expr})"
     if ret.enum_name:
         return f"{go_type_name(ret.enum_name)}({c_expr})"
     type_name = (ret.type_name or "").lower()
@@ -1044,11 +1085,15 @@ def _static_method_body(
     c_sym = _class_c_symbol(project_ir, cls.name, method.name.replace(" ", "_"))
     error_type = _error_type_name(project_ir)
 
+    # Resolve ``class="self"`` refs to the enclosing class before rendering.
+    resolved_args = [_resolve_self(cls, a) for a in method.arguments]
+    resolved_returns = [_resolve_self(cls, r) for r in method.returns]
+
     # Partition args / returns into the wrapper view.
     go_inputs: list[tuple[str, str]] = []  # (local_name, go_type)
     buffer_outputs: list[IRCArgument] = []
     locals_by_source: dict[str, str] = {}
-    for arg in method.arguments:
+    for arg in resolved_args:
         if _arg_is_buffer_output(arg):
             buffer_outputs.append(arg)
             continue
@@ -1059,12 +1104,16 @@ def _static_method_body(
         go_inputs.append((local, _go_type_for_arg(arg)))
 
     value_returns: list[str] = []
-    has_error = False
+    has_error = _method_has_error_arg(method)
     has_value_return = False
-    for ret in method.returns:
+    for ret in resolved_returns:
         if ret.enum_name == "status":
             has_error = True
             continue
+        # Interface returns always ride with an error companion — they
+        # can fail (NULL via impl-tag dispatch).
+        if ret.interface_name:
+            has_error = True
         value_returns.append(_go_type_for_arg(ret))
         has_value_return = True
     value_returns.extend(["[]byte"] * len(buffer_outputs))
@@ -1114,7 +1163,7 @@ def _static_method_body(
     #   2. newBuffer allocs + defers for buffer outputs
     #   3. helperWrapData wraps for data inputs
     has_string_prologue = False
-    for arg in method.arguments:
+    for arg in resolved_args:
         if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
             continue
         if arg.is_string or arg.type_name == "string":
@@ -1140,7 +1189,7 @@ def _static_method_body(
         lines.append(f"    defer {buf_local}.delete()")
 
     # Wrap ``data``-class inputs into cgo ``vsc_data_t`` locals.
-    for arg in method.arguments:
+    for arg in resolved_args:
         if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
             continue
         if arg.class_name == "data":
@@ -1150,7 +1199,7 @@ def _static_method_body(
     # Build the C call argument list — source args in XML order, with
     # buffer-output args substituted by ``<buf>.ctx``.
     call_args: list[str] = []
-    for arg in method.arguments:
+    for arg in resolved_args:
         if _arg_should_skip(arg) and not _arg_is_buffer_output(arg):
             continue
         if _arg_is_buffer_output(arg):
@@ -1190,10 +1239,10 @@ def _static_method_body(
 
     # Return statement.
     tail_parts: list[str] = []
-    for ret in method.returns:
+    for ret in resolved_returns:
         if ret.enum_name == "status":
             continue
-        tail_parts.append(_go_return_from_c_expr(ret, "proxyResult"))
+        tail_parts.append(_go_return_from_c_expr(project_ir, ret, "proxyResult"))
     for buf_arg in buffer_outputs:
         tail_parts.append(f"{go_arg_name(buf_arg.name)}Buf.getData()")
     if has_error:
@@ -1266,6 +1315,434 @@ def generate_go_static_class(project_ir: IRProject, cls: IRClass) -> str:
         lines.append(_static_method_body(project_ir, cls, method, func_name))
 
     return "\n".join(lines) + "\n"
+
+
+def _resolve_self(cls: IRClass, arg: IRCArgument) -> IRCArgument:
+    """Resolve ``class="self"`` references to the enclosing class name.
+
+    The IR leaves ``self``-typed returns with ``class_name="self"``; the
+    wrapper needs the concrete class name to emit the right Go type.
+    Returns a shallow-modified copy of ``arg`` — the original IR stays
+    untouched so the C backend keeps its semantics.
+    """
+    if arg.class_name == "self":
+        import copy as _copy
+
+        resolved = _copy.copy(arg)
+        resolved.class_name = cls.name
+        return resolved
+    return arg
+
+
+def _instance_method_body(
+    project_ir: IRProject,
+    cls: IRClass,
+    method: IRCMethod,
+) -> str:
+    """Render an instance method (``func (obj *T) Method(...)``).
+
+    Differs from :func:`_static_method_body` in three ways:
+    - Function signature uses an ``(obj *T)`` receiver
+    - The implicit ``obj.cCtx`` is the first C-call argument
+    - Every method emits ``runtime.KeepAlive(obj)`` after the C call
+    """
+    type_name = go_type_name(cls.name)
+    c_sym = _class_c_symbol(project_ir, cls.name, method.name.replace(" ", "_"))
+    error_type = _error_type_name(project_ir)
+    method_go_name = go_method_name(method.name)
+
+    # Resolve ``class="self"`` references to the enclosing class so
+    # downstream rendering emits the concrete Go type.
+    resolved_args = [_resolve_self(cls, a) for a in method.arguments]
+    resolved_returns = [_resolve_self(cls, r) for r in method.returns]
+
+    go_inputs: list[tuple[str, str]] = []
+    buffer_outputs: list[IRCArgument] = []
+    locals_by_source: dict[str, str] = {}
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg):
+            buffer_outputs.append(arg)
+            continue
+        if _arg_should_skip(arg):
+            continue
+        local = go_arg_name(arg.name)
+        locals_by_source[arg.name] = local
+        go_inputs.append((local, _go_type_for_arg(arg)))
+
+    value_returns: list[str] = []
+    has_error = _method_has_error_arg(method)
+    has_value_return = False
+    for ret in resolved_returns:
+        if ret.enum_name == "status":
+            has_error = True
+            continue
+        # Interface returns always ride with an error companion — they
+        # can fail (NULL via impl-tag dispatch).
+        if ret.interface_name:
+            has_error = True
+        value_returns.append(_go_type_for_arg(ret))
+        has_value_return = True
+    value_returns.extend(["[]byte"] * len(buffer_outputs))
+    if has_error:
+        value_returns.append("error")
+
+    if not value_returns:
+        returns_str = ""
+    elif len(value_returns) == 1:
+        returns_str = f" {value_returns[0]}"
+    else:
+        returns_str = f" ({', '.join(value_returns)})"
+
+    args_str = ", ".join(f"{n} {t}" for n, t in go_inputs)
+
+    def _zero_returns() -> str:
+        if not value_returns:
+            return ""
+        parts: list[str] = []
+        for v in value_returns:
+            if v.startswith("[]") or v.startswith("*") or v == "error":
+                parts.append("nil")
+            elif v == "bool":
+                parts.append("false")
+            else:
+                parts.append("0")
+        return ", ".join(parts)
+
+    def _zero_with_err(err_expr: str) -> str:
+        z = _zero_returns()
+        if not has_error or not z:
+            return z
+        parts = z.rsplit("nil", 1)
+        return err_expr.join(parts) if len(parts) == 2 else z
+
+    lines: list[str] = []
+    if method.description:
+        lines.append(_doc_block(method.description))
+    lines.append(
+        f"func (obj *{type_name}) {method_go_name}({args_str}){returns_str} {{"
+    )
+
+    # Prologue (see _static_method_body for order rationale).
+    has_string_prologue = False
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+            continue
+        if arg.is_string or arg.type_name == "string":
+            local = locals_by_source[arg.name]
+            lines.append(f"    {local}Str := C.CString({local})")
+            lines.append(f"    defer C.free(unsafe.Pointer({local}Str))")
+            has_string_prologue = True
+    if has_string_prologue and buffer_outputs:
+        lines.append("")
+
+    for buf_arg in buffer_outputs:
+        buf_local = go_arg_name(buf_arg.name) + "Buf"
+        err_local = buf_local + "Err"
+        cap_expr = _buffer_length_expression(
+            project_ir, cls.name, buf_arg, locals_by_source,
+            instance_prefix="obj.",
+        )
+        lines.append(
+            f"    {buf_local}, {err_local} := newBuffer(int({cap_expr}))"
+        )
+        lines.append(f"    if {err_local} != nil {{")
+        lines.append(f"        return {_zero_with_err(err_local)}")
+        lines.append("    }")
+        lines.append(f"    defer {buf_local}.delete()")
+
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+            continue
+        if arg.class_name == "data":
+            local = locals_by_source[arg.name]
+            lines.append(f"    {local}Data := helperWrapData ({local})")
+
+    # First C-call argument is always ``obj.cCtx``; the rest follow in
+    # XML order, with buffer outputs substituted.
+    call_args: list[str] = ["obj.cCtx"]
+    for arg in resolved_args:
+        if _arg_should_skip(arg) and not _arg_is_buffer_output(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            call_args.append(f"{go_arg_name(arg.name)}Buf.ctx")
+        elif arg.class_name == "data":
+            call_args.append(locals_by_source[arg.name] + "Data")
+        else:
+            call_args.append(
+                _go_to_c_arg_expr(project_ir, arg, locals_by_source[arg.name])
+            )
+
+    has_prologue = has_string_prologue or bool(buffer_outputs) or any(
+        a.class_name == "data"
+        for a in method.arguments
+        if not _arg_should_skip(a) and not _arg_is_buffer_output(a)
+    )
+    if has_prologue:
+        lines.append("")
+    call = f"{c_sym}({', '.join(call_args)})"
+    if has_error or has_value_return:
+        lines.append(f"    proxyResult := {call}")
+    else:
+        lines.append(f"    {call}")
+
+    # Status dispatch precedes KeepAlive — but we skip it when the
+    # error slot is filled by an interface-return Wrap function (which
+    # produces ``(T, error)`` directly) or by the class="error" argument
+    # the C side populated (the legacy wrapper doesn't call HandleStatus
+    # on non-status methods).
+    has_status_return = any(r.enum_name == "status" for r in method.returns)
+    has_interface_return = any(r.interface_name for r in method.returns)
+    error_slot_from_wrap = has_interface_return and not has_status_return
+    if has_status_return:
+        lines.append("")
+        lines.append(f"    err := {error_type}HandleStatus(proxyResult)")
+        lines.append("    if err != nil {")
+        lines.append(f"        return {_zero_with_err('err')}")
+        lines.append("    }")
+
+    lines.append("")
+    lines.append("    runtime.KeepAlive(obj)")
+    # KeepAlive each reference-typed arg too — the GC could otherwise
+    # finalize them between the Go-side wrap and the C call returning.
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+            continue
+        if arg.interface_name or (
+            arg.class_name and arg.class_name not in {"data", "buffer"}
+        ):
+            lines.append("")
+            lines.append(
+                f"    runtime.KeepAlive({locals_by_source[arg.name]})"
+            )
+
+    tail_parts: list[str] = []
+    for ret in resolved_returns:
+        if ret.enum_name == "status":
+            continue
+        tail_parts.append(_go_return_from_c_expr(project_ir, ret, "proxyResult"))
+    for buf_arg in buffer_outputs:
+        tail_parts.append(f"{go_arg_name(buf_arg.name)}Buf.getData()")
+    # Only add a trailing ``nil`` to the error slot when the method's
+    # error companion came from a status return or an explicit
+    # ``class="error"`` argument. Interface returns bring their own
+    # error pairing via the Wrap call.
+    if has_error and not error_slot_from_wrap:
+        tail_parts.append("nil")
+
+    if tail_parts:
+        lines.append("")
+        lines.append(f"    return {', '.join(tail_parts)}")
+    else:
+        lines.append("")
+        lines.append("    return")
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def _dependency_setter(
+    project_ir: IRProject, cls: IRClass, dep
+) -> str:
+    """Render a ``SetXxx`` method that swaps a dependency on the C context.
+
+    Each dependency emits ``release_{dep}`` immediately followed by
+    ``use_{dep}`` (the canonical Virgil idiom for non-leaking swap),
+    then KeepAlive's both the dep and the receiver.
+    """
+    type_name = go_type_name(cls.name)
+    dep_setter_name = "Set" + go_type_name(dep.name)
+    dep_go_type = go_type_name(dep.type_name)
+
+    release_sym = _class_c_symbol(
+        project_ir, cls.name, "release_" + dep.name.replace(" ", "_")
+    )
+    use_sym = _class_c_symbol(
+        project_ir, cls.name, "use_" + dep.name.replace(" ", "_")
+    )
+    if dep.type_kind == "interface":
+        cast_target = f"*C.{project_ir.prefix}_impl_t"
+    else:
+        cast_target = _class_c_type(project_ir, dep.type_name)
+
+    local = go_arg_name(dep.name)
+    return "\n".join([
+        f"func (obj *{type_name}) {dep_setter_name}({local} {dep_go_type}) {{",
+        f"    {release_sym}(obj.cCtx)",
+        f"    {use_sym}(obj.cCtx, ({cast_target})(unsafe.Pointer({local}.Ctx())))",
+        "",
+        f"    runtime.KeepAlive({local})",
+        "    runtime.KeepAlive(obj)",
+        "}",
+    ])
+
+
+def _instance_constructor_body(
+    project_ir: IRProject,
+    cls: IRClass,
+    ctor: IRCMethod,
+) -> str:
+    """Render a named-constructor function (``func NewTWithXxx(...) *T``).
+
+    Each constructor invokes ``{prefix}_{class}_new_with_{ctor_name}(...)``
+    and wraps the returned raw context into a Go value with the standard
+    SetFinalizer pairing.
+    """
+    type_name = go_type_name(cls.name)
+    ctor_sym = _class_c_symbol(
+        project_ir, cls.name, "new_" + ctor.name.replace(" ", "_")
+    )
+    func_name = f"New{type_name}" + go_type_name(ctor.name)
+
+    go_inputs: list[tuple[str, str]] = []
+    locals_by_source: dict[str, str] = {}
+    for arg in ctor.arguments:
+        if _arg_should_skip(arg):
+            continue
+        local = go_arg_name(arg.name)
+        locals_by_source[arg.name] = local
+        go_inputs.append((local, _go_type_for_arg(arg)))
+    args_str = ", ".join(f"{n} {t}" for n, t in go_inputs)
+
+    lines: list[str] = []
+    if ctor.description:
+        lines.append(_doc_block(ctor.description))
+    lines.append(f"func {func_name}({args_str}) *{type_name} {{")
+
+    # String prologue (rare on constructors but handled for completeness).
+    for arg in ctor.arguments:
+        if _arg_should_skip(arg):
+            continue
+        if arg.is_string or arg.type_name == "string":
+            local = locals_by_source[arg.name]
+            lines.append(f"    {local}Str := C.CString({local})")
+            lines.append(f"    defer C.free(unsafe.Pointer({local}Str))")
+
+    # Build the C call: no cCtx prefix; args in XML order.
+    call_args: list[str] = []
+    has_prologue = any(
+        (a.is_string or a.type_name == "string" or a.class_name == "data")
+        and not _arg_should_skip(a)
+        for a in ctor.arguments
+    )
+    for arg in ctor.arguments:
+        if _arg_should_skip(arg):
+            continue
+        if arg.class_name == "data":
+            local = locals_by_source[arg.name]
+            lines.append(f"    {local}Data := helperWrapData ({local})")
+            call_args.append(local + "Data")
+        else:
+            call_args.append(
+                _go_to_c_arg_expr(project_ir, arg, locals_by_source[arg.name])
+            )
+
+    if has_prologue:
+        lines.append("")
+    lines.append(f"    proxyResult := {ctor_sym}({', '.join(call_args)})")
+
+    # KeepAlive every reference-typed arg — the new wrapper takes
+    # ownership/reference at the C layer but the Go value may still be
+    # GC-finalized during the call window.
+    for arg in ctor.arguments:
+        if _arg_should_skip(arg):
+            continue
+        if arg.interface_name or (
+            arg.class_name and arg.class_name not in {"data", "buffer"}
+        ):
+            lines.append("")
+            lines.append(
+                f"    runtime.KeepAlive({locals_by_source[arg.name]})"
+            )
+
+    lines.append("")
+    lines.append(f"    obj := &{type_name} {{")
+    lines.append("        cCtx: proxyResult,")
+    lines.append("    }")
+    lines.append(f"    runtime.SetFinalizer(obj, (*{type_name}).Delete)")
+    lines.append("    return obj")
+    lines.append("}")
+    return "\n".join(lines)
+
+
+def generate_go_instance_class(project_ir: IRProject, cls: IRClass) -> str:
+    """Emit a complete Go file for an instance class (``context != "none"``).
+
+    Uses the scaffolding lifecycle helper for struct + lifecycle
+    boilerplate, then appends public class constants, constructors, and
+    instance methods.
+    """
+    if _is_static_class(cls):
+        raise ValueError(
+            f"{cls.name!r} is static-only — use generate_go_static_class"
+        )
+
+    type_name = go_type_name(cls.name)
+
+    # Header derived from the scaffold helper — fallback uses its exact
+    # output so the lifecycle block stays in one place.
+    scaffold = generate_go_class_scaffold(project_ir, cls)
+
+    out_parts: list[str] = [scaffold.rstrip("\n")]
+
+    # Public constants appear as a const block immediately after the struct.
+    publics = [c for c in cls.constants if c.attrs.get("definition") == "public"]
+    if publics:
+        # Insert the const block into the scaffold output immediately
+        # after the struct's closing brace. The scaffold's struct block
+        # ends with ``}`` on its own line followed by a blank line.
+        const_lines = ["const ("]
+        for const in publics:
+            const_name = type_name + go_type_name(const.name)
+            value = const.attrs.get("value", "0")
+            # The Go declaration form is ``Name type = value`` where the
+            # type matches the constant type. Default to ``uint`` (size).
+            type_attr = const.attrs.get("type", "size").lower()
+            go_type = {
+                "size": "uint",
+                "boolean": "bool",
+                "integer": _go_integer_type(const.attrs.get("size")),
+                "unsigned": _go_unsigned_type(const.attrs.get("size")),
+            }.get(type_attr, type_attr or "uint")
+            const_lines.append(f"    {const_name} {go_type} = {value}")
+        const_lines.append(")")
+        const_block = "\n".join(const_lines)
+
+        # Splice the const block in after ``type T struct { ... }``.
+        marker = "\n}\n"
+        # Find the first closing brace that belongs to the struct — this
+        # is directly after ``cCtx ...``. The scaffold ends the struct
+        # with a bare ``}``.
+        parts_scaffold = scaffold.split("\n")
+        for idx, line in enumerate(parts_scaffold):
+            if line == "}" and idx > 0 and "cCtx" in parts_scaffold[idx - 1]:
+                break
+        else:
+            idx = None  # pragma: no cover
+        if idx is not None:
+            parts_scaffold.insert(idx + 1, const_block)
+            scaffold = "\n".join(parts_scaffold)
+            out_parts[0] = scaffold.rstrip("\n")
+
+    # Dependencies → SetXxx setters. These live between the lifecycle
+    # block and the ordinary instance methods to mirror legacy ordering.
+    for dep in cls.dependencies:
+        out_parts.append("")
+        out_parts.append(_dependency_setter(project_ir, cls, dep))
+
+    # Constructors.
+    for ctor in cls.constructors:
+        if not _method_should_wrap(ctor):
+            continue
+        out_parts.append("")
+        out_parts.append(_instance_constructor_body(project_ir, cls, ctor))
+
+    # Instance methods.
+    for method in cls.methods:
+        if not _method_should_wrap(method):
+            continue
+        out_parts.append("")
+        out_parts.append(_instance_method_body(project_ir, cls, method))
+
+    return "\n".join(out_parts) + "\n"
 
 
 def generate_go_implementation_scaffold(
