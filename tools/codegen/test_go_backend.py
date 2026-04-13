@@ -9,8 +9,10 @@ import pathlib
 import unittest
 
 from tools.codegen.project_go_backend import (
+    generate_go_class_scaffold,
     generate_go_enum,
     generate_go_files,
+    generate_go_implementation_scaffold,
     go_arg_name,
     go_constant_name,
     go_method_name,
@@ -264,6 +266,83 @@ class NameUtilityAcronymTests(unittest.TestCase):
 
     def test_mixed_case_preserved(self) -> None:
         self.assertEqual(go_type_name("error Protobuf decode failed"), "ErrorProtobufDecodeFailed")
+
+
+class ClassScaffoldTests(unittest.TestCase):
+    """Scaffolding emits the struct+lifecycle shape every class shares.
+
+    These tests pin down the structural invariants. Byte-for-byte parity
+    against the full legacy file is NOT expected — method bodies,
+    dependency wiring, and interface bindings are out of scope for Unit 4.1.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+
+    def _class_ir(self, name: str):
+        for c in self.ir.classes:
+            if c.name == name:
+                return c
+        raise AssertionError(f"class {name!r} not in IR")
+
+    def _impl_ir(self, name: str):
+        for i in self.ir.implementations:
+            if i.name == name:
+                return i
+        raise AssertionError(f"impl {name!r} not in IR")
+
+    def test_static_class_has_empty_struct_and_no_lifecycle(self) -> None:
+        out = generate_go_class_scaffold(self.ir, self._class_ir("base64"))
+        self.assertIn("type Base64 struct {", out)
+        # No cCtx on static classes.
+        self.assertNotIn("cCtx", out)
+        # No lifecycle symbols.
+        self.assertNotIn("NewBase64(", out)
+        self.assertNotIn("SetFinalizer", out)
+        # No runtime import (no lifecycle uses it).
+        self.assertNotIn('import "runtime"', out)
+
+    def test_regular_class_struct_has_ccx_field(self) -> None:
+        out = generate_go_class_scaffold(self.ir, self._class_ir("key provider"))
+        self.assertIn("type KeyProvider struct {", out)
+        self.assertIn("cCtx *C.vscf_key_provider_t", out)
+
+    def test_regular_class_emits_full_lifecycle(self) -> None:
+        out = generate_go_class_scaffold(self.ir, self._class_ir("key provider"))
+        for needed in (
+            "func NewKeyProvider()",
+            "func newKeyProviderWithCtx(",
+            "func newKeyProviderCopy(",
+            "func (obj *KeyProvider) Delete()",
+            "func (obj *KeyProvider) delete()",
+            "func (obj *KeyProvider) Ctx() uintptr",
+            "C.vscf_key_provider_new()",
+            "C.vscf_key_provider_delete(obj.cCtx)",
+            "C.vscf_key_provider_shallow_copy(ctx)",
+            "runtime.SetFinalizer(obj, (*KeyProvider).Delete)",
+        ):
+            self.assertIn(needed, out, f"missing: {needed!r}")
+
+    def test_implementation_scaffold_matches_class_shape(self) -> None:
+        # sha256 is an implementation, not a class.
+        out = generate_go_implementation_scaffold(self.ir, self._impl_ir("sha256"))
+        self.assertIn("type Sha256 struct {", out)
+        self.assertIn("cCtx *C.vscf_sha256_t", out)
+        self.assertIn("func NewSha256()", out)
+        self.assertIn("C.vscf_sha256_new()", out)
+        self.assertIn("C.vscf_sha256_shallow_copy(ctx)", out)
+        self.assertIn("C.vscf_sha256_delete(obj.cCtx)", out)
+
+    def test_scaffold_does_not_appear_in_orchestrator_output(self) -> None:
+        # Class files must NOT be emitted yet — Unit 4 is incomplete and
+        # the legacy GSL output remains authoritative for classes/impls.
+        files = dict(generate_go_files(self.ir))
+        # Pick a couple of well-known class/impl filenames that would be
+        # emitted once Unit 4 lands fully.
+        self.assertNotIn("wrappers/go/foundation/base64.go", files)
+        self.assertNotIn("wrappers/go/foundation/sha256.go", files)
+        self.assertNotIn("wrappers/go/foundation/key_provider.go", files)
 
 
 if __name__ == "__main__":

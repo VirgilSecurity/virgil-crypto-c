@@ -13,6 +13,18 @@ All generation is model-driven — no per-project branching.
 Unit 1 scope: name utilities + enum generator + orchestrator skeleton.
 Unit 2 scope: interface wrappers — Go interface declarations with
 constant-backed getters, methods, context embedding, and Delete().
+
+Unit 3 scope: infrastructure files — context.go, helper.go, and the
+status-enum-driven {project}_error.go.
+
+Unit 4.1 scope (this change): class struct scaffolding — the struct
+declaration + CGo lifecycle methods (Ctx, NewXxx, newXxxWithCtx,
+newXxxCopy, Delete, delete). Method bodies, dependency wiring,
+interface-binding dispatch, and the {project}_implementation.go file
+are deferred to a follow-up slice (Unit 4.2+). The scaffolding
+generator is exposed for testing but is NOT yet wired into
+``generate_go_files`` — the legacy GSL output remains authoritative
+for class/implementation files until Unit 4 completes.
 """
 from __future__ import annotations
 
@@ -20,7 +32,9 @@ from tools.codegen.project_ir import (
     IRCArgument,
     IRCConstant,
     IRCMethod,
+    IRClass,
     IREnum,
+    IRImplementation,
     IRInterface,
     IRProject,
 )
@@ -703,6 +717,216 @@ def generate_go_error(project_ir: IRProject) -> str:
     lines.append("}")
 
     return "\n".join(lines) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Class / implementation scaffolding (Unit 4.1)
+# ---------------------------------------------------------------------------
+#
+# The class scaffolding covers the parts of a Go struct wrapper that are
+# uniform across every class: the struct declaration, the Ctx() accessor,
+# NewXxx / newXxxWithCtx / newXxxCopy constructors, and the Delete /
+# delete teardown pair. Method bodies, dependency setters, interface
+# bindings, and the {project}_implementation.go dispatch file require
+# the buffer-length proxy metadata and the impl_tag dispatch switch and
+# are explicitly out of scope for this slice.
+
+def _class_c_type(project_ir: IRProject, class_name: str) -> str:
+    """Canonical cgo type for a class instance pointer (``*C.vscf_xxx_t``)."""
+    stem = class_name.replace(" ", "_").lower()
+    return f"*C.{project_ir.prefix}_{stem}_t"
+
+
+def _class_c_symbol(project_ir: IRProject, class_name: str, suffix: str) -> str:
+    """Compose a cgo-qualified class symbol: ``C.vscf_xxx_{suffix}``."""
+    stem = class_name.replace(" ", "_").lower()
+    return f"C.{project_ir.prefix}_{stem}_{suffix}"
+
+
+def _is_static_class(cls: IRClass) -> bool:
+    """Static-only classes (``context="none"``) carry no cCtx and no lifecycle."""
+    return cls.attrs.get("context") == "none"
+
+
+def _lifecycle_block(
+    project_ir: IRProject,
+    type_name_go: str,
+    class_name: str,
+    *,
+    has_shallow_copy: bool = True,
+) -> str:
+    """Render the standard struct + lifecycle block for a class/impl.
+
+    Produces:
+    - ``type Xxx struct { cCtx *C.vscf_xxx_t }``
+    - ``Ctx()`` returning ``uintptr``
+    - ``NewXxx()`` default constructor
+    - ``newXxxWithCtx(ctx)`` (unexported; used by generated code)
+    - ``newXxxCopy(ctx)`` (unexported; uses shallow_copy — optional)
+    - ``Delete()`` + ``delete()`` teardown pair
+
+    The structure is the same for every wrapped class; only the Go type
+    name, C type name, and C symbol prefix change.
+    """
+    c_type = _class_c_type(project_ir, class_name)
+    new_sym = _class_c_symbol(project_ir, class_name, "new")
+    delete_sym = _class_c_symbol(project_ir, class_name, "delete")
+    shallow_copy_sym = _class_c_symbol(project_ir, class_name, "shallow_copy")
+
+    parts: list[str] = []
+    parts.append(f"type {type_name_go} struct {{")
+    parts.append(f"    cCtx {c_type}")
+    parts.append("}")
+    parts.append("")
+    parts.append("/* Handle underlying C context. */")
+    parts.append(f"func (obj *{type_name_go}) Ctx() uintptr {{")
+    parts.append("    return uintptr(unsafe.Pointer(obj.cCtx))")
+    parts.append("}")
+    parts.append("")
+    parts.append(f"func New{type_name_go}() *{type_name_go} {{")
+    parts.append(f"    ctx := {new_sym}()")
+    parts.append(f"    obj := &{type_name_go} {{")
+    parts.append("        cCtx: ctx,")
+    parts.append("    }")
+    parts.append(
+        f"    runtime.SetFinalizer(obj, (*{type_name_go}).Delete)"
+    )
+    parts.append("    return obj")
+    parts.append("}")
+    parts.append("")
+    parts.append("/* Acquire C context.")
+    parts.append(
+        "* Note. This method is used in generated code only, and SHOULD NOT be used in another way."
+    )
+    parts.append("*/")
+    parts.append(
+        f"func new{type_name_go}WithCtx(ctx {c_type}) *{type_name_go} {{"
+    )
+    parts.append(f"    obj := &{type_name_go} {{")
+    parts.append("        cCtx: ctx,")
+    parts.append("    }")
+    parts.append(
+        f"    runtime.SetFinalizer(obj, (*{type_name_go}).Delete)"
+    )
+    parts.append("    return obj")
+    parts.append("}")
+    parts.append("")
+    if has_shallow_copy:
+        parts.append("/* Acquire retained C context.")
+        parts.append(
+            "* Note. This method is used in generated code only, and SHOULD NOT be used in another way."
+        )
+        parts.append("*/")
+        parts.append(
+            f"func new{type_name_go}Copy(ctx {c_type}) *{type_name_go} {{"
+        )
+        parts.append(f"    obj := &{type_name_go} {{")
+        parts.append(f"        cCtx: {shallow_copy_sym}(ctx),")
+        parts.append("    }")
+        parts.append(
+            f"    runtime.SetFinalizer(obj, (*{type_name_go}).Delete)"
+        )
+        parts.append("    return obj")
+        parts.append("}")
+        parts.append("")
+    parts.append("/*")
+    parts.append("* Release underlying C context.")
+    parts.append("*/")
+    parts.append(f"func (obj *{type_name_go}) Delete() {{")
+    parts.append("    if obj == nil {")
+    parts.append("        return")
+    parts.append("    }")
+    parts.append("    runtime.SetFinalizer(obj, nil)")
+    parts.append("    obj.delete()")
+    parts.append("}")
+    parts.append("")
+    parts.append("/*")
+    parts.append("* Release underlying C context.")
+    parts.append("*/")
+    parts.append(f"func (obj *{type_name_go}) delete() {{")
+    parts.append(f"    {delete_sym}(obj.cCtx)")
+    parts.append("}")
+    return "\n".join(parts)
+
+
+def generate_go_class_scaffold(project_ir: IRProject, cls: IRClass) -> str:
+    """Emit the struct declaration + CGo lifecycle for a class.
+
+    Method bodies are NOT emitted here — they require buffer-length
+    proxy resolution and interface casting that land in the next slice.
+    Callers that need a complete, compilable file must fall back to the
+    legacy GSL output until Unit 4.2 ships.
+
+    For static-only classes (``context="none"``), the struct is empty,
+    methods are top-level functions, and there are no lifecycle methods.
+    This helper still produces the struct declaration + package header
+    so callers can test that part in isolation.
+    """
+    pkg = _package_name(project_ir)
+    include = _cgo_include_line(project_ir)
+    type_name = go_type_name(cls.name)
+
+    header: list[str] = []
+    header.append(f"package {pkg}")
+    header.append("")
+    header.append(include)
+    header.append('import "C"')
+    header.append('import unsafe "unsafe"')
+    if not _is_static_class(cls):
+        header.append('import "runtime"')
+    header.append("")
+    header.append("")
+    desc = _doc_block(cls.description)
+    if desc:
+        header.append(desc)
+
+    if _is_static_class(cls):
+        # Static classes have no cCtx and no lifecycle — just an empty struct
+        # so callers can hang package-level helper functions around it.
+        header.append(f"type {type_name} struct {{")
+        header.append("}")
+        header.append("")
+        return "\n".join(header) + "\n"
+
+    lifecycle = _lifecycle_block(
+        project_ir,
+        type_name,
+        cls.name,
+        has_shallow_copy=cls.attrs.get("lifecycle", "default") != "none",
+    )
+    return "\n".join(header) + "\n" + lifecycle + "\n"
+
+
+def generate_go_implementation_scaffold(
+    project_ir: IRProject, impl: IRImplementation
+) -> str:
+    """Emit the struct declaration + CGo lifecycle for an implementation.
+
+    Implementations share the same struct/lifecycle shape as classes;
+    the divergence (interface method bindings, the impl_tag dispatch
+    entry in the project-wide implementation file) is deferred.
+    """
+    pkg = _package_name(project_ir)
+    include = _cgo_include_line(project_ir)
+    type_name = go_type_name(impl.name)
+
+    header: list[str] = []
+    header.append(f"package {pkg}")
+    header.append("")
+    header.append(include)
+    header.append('import "C"')
+    header.append('import unsafe "unsafe"')
+    header.append('import "runtime"')
+    header.append("")
+    header.append("")
+    desc = _doc_block(impl.description)
+    if desc:
+        header.append(desc)
+
+    lifecycle = _lifecycle_block(
+        project_ir, type_name, impl.name, has_shallow_copy=True
+    )
+    return "\n".join(header) + "\n" + lifecycle + "\n"
 
 
 # ---------------------------------------------------------------------------
