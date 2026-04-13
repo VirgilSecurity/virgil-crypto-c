@@ -354,6 +354,9 @@ def ensure_parent(path: Path) -> None:
 
 def merge_generated_section(existing: str, generated: str) -> str:
     prefix, suffix = split_generated_sections(existing)
+    # Ensure blank line separation after the generated block
+    if generated and suffix and not suffix.startswith("\n"):
+        generated = generated.rstrip("\n") + "\n\n"
     return prefix + generated + suffix
 
 
@@ -362,7 +365,7 @@ def merge_or_insert_tagged_section(existing: str, generated: str, *, start_marke
         prefix, suffix = split_tagged_section(existing, start_marker)
         # Ensure blank line separation between sections
         if generated and suffix and not suffix.startswith("\n"):
-            generated = generated.rstrip("\n") + "\n\n"
+            generated = generated.rstrip("\n") + "\n\n\n"
         return prefix + generated + suffix
 
     if not generated:
