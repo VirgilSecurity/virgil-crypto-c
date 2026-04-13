@@ -159,5 +159,57 @@ class EnumGenerationEdgeCaseTests(unittest.TestCase):
         self.assertTrue(generate_go_enum(self._make_project(), enum).endswith("\n"))
 
 
+class FoundationInterfaceParityTests(unittest.TestCase):
+    """Every foundation interface file must round-trip byte-for-byte."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        cls.files = dict(generate_go_files(cls.ir))
+
+    def _assert_match(self, name: str) -> None:
+        gen = self.files[f"wrappers/go/foundation/{name}"]
+        legacy = (REPO_ROOT / "wrappers" / "go" / "foundation" / name).read_text()
+        self.assertEqual(gen, legacy, f"{name} drift")
+
+    def test_hash_matches_legacy(self) -> None:
+        # Constants → getter methods, buffer-class output returns []byte.
+        self._assert_match("hash.go")
+
+    def test_random_matches_legacy(self) -> None:
+        # Methods with status return → trailing error.
+        self._assert_match("random.go")
+
+    def test_cipher_matches_legacy(self) -> None:
+        # Inherit is ignored; private-visibility methods filtered.
+        self._assert_match("cipher.go")
+
+    def test_auth_encrypt_has_multi_buffer_returns(self) -> None:
+        # Two buffer outputs + status return -> ([]byte, []byte, error).
+        self._assert_match("auth_encrypt.go")
+
+    def test_key_alg_has_boolean_getters_and_class_returns(self) -> None:
+        # Covers boolean-typed constants and (*ClassType, error) returns.
+        self._assert_match("key_alg.go")
+
+    def test_asn1_writer_imports_unsafe_for_byte_reference(self) -> None:
+        # type="byte" is_reference="1" return -> unsafe.Pointer import.
+        self._assert_match("asn1_writer.go")
+
+    def test_all_foundation_interfaces_match_byte_for_byte(self) -> None:
+        drift = []
+        for iface in self.ir.interfaces:
+            if iface.attrs.get("scope") == "private":
+                continue
+            stem = iface.name.replace(" ", "_").lower()
+            gen_path = f"wrappers/go/foundation/{stem}.go"
+            legacy_path = REPO_ROOT / "wrappers" / "go" / "foundation" / f"{stem}.go"
+            if not legacy_path.exists():
+                continue
+            if self.files[gen_path] != legacy_path.read_text():
+                drift.append(stem)
+        self.assertEqual(drift, [], f"interface drift: {drift}")
+
+
 if __name__ == "__main__":
     unittest.main()
