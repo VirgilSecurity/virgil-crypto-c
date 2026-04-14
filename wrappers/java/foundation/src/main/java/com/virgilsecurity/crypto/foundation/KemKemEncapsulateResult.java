@@ -59,11 +59,11 @@ public class KemKemEncapsulateResult {
         this.encapsulatedKey = encapsulatedKey;
     }
 
-    package KemKemEncapsulateResult() {
+    KemKemEncapsulateResult() {
         super();
     }
 
-    package KemKemEncapsulateResult(byte[] sharedKey, byte[] encapsulatedKey) {
+    KemKemEncapsulateResult(byte[] sharedKey, byte[] encapsulatedKey) {
         super();
         this.sharedKey = sharedKey;
         this.encapsulatedKey = encapsulatedKey;

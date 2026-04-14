@@ -45,7 +45,7 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         this.cCtx = FoundationJNI.INSTANCE.seedEntropySource_new();
     }
 
-    package SeedEntropySource(FoundationContextHolder contextHolder) {
+    SeedEntropySource(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

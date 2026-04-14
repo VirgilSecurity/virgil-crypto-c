@@ -45,7 +45,7 @@ public class GroupSessionMessage implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.groupSessionMessage_new();
     }
 
-    package GroupSessionMessage(FoundationContextHolder contextHolder) {
+    GroupSessionMessage(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

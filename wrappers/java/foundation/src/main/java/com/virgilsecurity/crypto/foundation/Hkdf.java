@@ -45,7 +45,7 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
         this.cCtx = FoundationJNI.INSTANCE.hkdf_new();
     }
 
-    package Hkdf(FoundationContextHolder contextHolder) {
+    Hkdf(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -59,11 +59,11 @@ public class PythiaProveResult {
         this.proofValueU = proofValueU;
     }
 
-    package PythiaProveResult() {
+    PythiaProveResult() {
         super();
     }
 
-    package PythiaProveResult(byte[] proofValueC, byte[] proofValueU) {
+    PythiaProveResult(byte[] proofValueC, byte[] proofValueU) {
         super();
         this.proofValueC = proofValueC;
         this.proofValueU = proofValueU;

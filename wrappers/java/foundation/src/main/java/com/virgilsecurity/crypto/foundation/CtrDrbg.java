@@ -45,7 +45,7 @@ public class CtrDrbg implements AutoCloseable, Random {
         this.cCtx = FoundationJNI.INSTANCE.ctrDrbg_new();
     }
 
-    package CtrDrbg(FoundationContextHolder contextHolder) {
+    CtrDrbg(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -45,7 +45,7 @@ public class Ecies implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.ecies_new();
     }
 
-    package Ecies(FoundationContextHolder contextHolder) {
+    Ecies(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

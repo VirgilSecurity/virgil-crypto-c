@@ -59,11 +59,11 @@ public class UokmsClientGenerateDecryptRequestResult {
         this.decryptRequest = decryptRequest;
     }
 
-    package UokmsClientGenerateDecryptRequestResult() {
+    UokmsClientGenerateDecryptRequestResult() {
         super();
     }
 
-    package UokmsClientGenerateDecryptRequestResult(byte[] deblindFactor, byte[] decryptRequest) {
+    UokmsClientGenerateDecryptRequestResult(byte[] deblindFactor, byte[] decryptRequest) {
         super();
         this.deblindFactor = deblindFactor;
         this.decryptRequest = decryptRequest;

@@ -36,3 +36,5 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+public interface Cipher extends Encrypt, Decrypt, CipherInfo {
+}

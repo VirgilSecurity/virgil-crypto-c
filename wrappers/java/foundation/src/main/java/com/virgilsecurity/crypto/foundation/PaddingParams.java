@@ -45,7 +45,7 @@ public class PaddingParams implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.paddingParams_new();
     }
 
-    package PaddingParams(FoundationContextHolder contextHolder) {
+    PaddingParams(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -45,7 +45,7 @@ public class MessageInfoCustomParams implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.messageInfoCustomParams_new();
     }
 
-    package MessageInfoCustomParams(FoundationContextHolder contextHolder) {
+    MessageInfoCustomParams(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

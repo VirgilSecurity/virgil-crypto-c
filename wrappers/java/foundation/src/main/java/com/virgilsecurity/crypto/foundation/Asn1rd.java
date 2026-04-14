@@ -45,7 +45,7 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
         this.cCtx = FoundationJNI.INSTANCE.asn1rd_new();
     }
 
-    package Asn1rd(FoundationContextHolder contextHolder) {
+    Asn1rd(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

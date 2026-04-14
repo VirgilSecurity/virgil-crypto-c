@@ -45,7 +45,7 @@ public class GroupSessionTicket implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.groupSessionTicket_new();
     }
 
-    package GroupSessionTicket(FoundationContextHolder contextHolder) {
+    GroupSessionTicket(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

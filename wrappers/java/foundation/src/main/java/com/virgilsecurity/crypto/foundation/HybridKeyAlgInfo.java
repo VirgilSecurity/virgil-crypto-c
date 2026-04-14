@@ -45,7 +45,7 @@ public class HybridKeyAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.hybridKeyAlgInfo_new();
     }
 
-    package HybridKeyAlgInfo(FoundationContextHolder contextHolder) {
+    HybridKeyAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

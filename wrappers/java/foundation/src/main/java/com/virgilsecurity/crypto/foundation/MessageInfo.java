@@ -45,7 +45,7 @@ public class MessageInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.messageInfo_new();
     }
 
-    package MessageInfo(FoundationContextHolder contextHolder) {
+    MessageInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

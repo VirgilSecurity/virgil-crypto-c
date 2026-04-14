@@ -45,7 +45,7 @@ public class Sha256 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha256_new();
     }
 
-    package Sha256(FoundationContextHolder contextHolder) {
+    Sha256(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

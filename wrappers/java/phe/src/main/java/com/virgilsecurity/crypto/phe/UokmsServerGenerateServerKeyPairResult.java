@@ -59,11 +59,11 @@ public class UokmsServerGenerateServerKeyPairResult {
         this.serverPublicKey = serverPublicKey;
     }
 
-    package UokmsServerGenerateServerKeyPairResult() {
+    UokmsServerGenerateServerKeyPairResult() {
         super();
     }
 
-    package UokmsServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
+    UokmsServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
         super();
         this.serverPrivateKey = serverPrivateKey;
         this.serverPublicKey = serverPublicKey;

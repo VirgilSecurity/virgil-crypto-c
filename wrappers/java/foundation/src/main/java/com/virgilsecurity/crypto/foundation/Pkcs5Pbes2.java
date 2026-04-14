@@ -45,7 +45,7 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
         this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbes2_new();
     }
 
-    package Pkcs5Pbes2(FoundationContextHolder contextHolder) {
+    Pkcs5Pbes2(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

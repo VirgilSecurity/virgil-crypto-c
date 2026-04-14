@@ -45,7 +45,7 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
         this.cCtx = FoundationJNI.INSTANCE.keyAsn1Deserializer_new();
     }
 
-    package KeyAsn1Deserializer(FoundationContextHolder contextHolder) {
+    KeyAsn1Deserializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

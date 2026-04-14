@@ -59,11 +59,11 @@ public class PheServerGenerateServerKeyPairResult {
         this.serverPublicKey = serverPublicKey;
     }
 
-    package PheServerGenerateServerKeyPairResult() {
+    PheServerGenerateServerKeyPairResult() {
         super();
     }
 
-    package PheServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
+    PheServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
         super();
         this.serverPrivateKey = serverPrivateKey;
         this.serverPublicKey = serverPublicKey;

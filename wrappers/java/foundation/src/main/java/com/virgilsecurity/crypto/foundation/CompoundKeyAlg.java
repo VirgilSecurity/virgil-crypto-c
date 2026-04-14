@@ -45,7 +45,7 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
         this.cCtx = FoundationJNI.INSTANCE.compoundKeyAlg_new();
     }
 
-    package CompoundKeyAlg(FoundationContextHolder contextHolder) {
+    CompoundKeyAlg(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

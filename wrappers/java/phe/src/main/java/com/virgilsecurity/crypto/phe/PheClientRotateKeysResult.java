@@ -59,11 +59,11 @@ public class PheClientRotateKeysResult {
         this.newServerPublicKey = newServerPublicKey;
     }
 
-    package PheClientRotateKeysResult() {
+    PheClientRotateKeysResult() {
         super();
     }
 
-    package PheClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
+    PheClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
         super();
         this.newClientPrivateKey = newClientPrivateKey;
         this.newServerPublicKey = newServerPublicKey;

@@ -36,3 +36,19 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+public class CipherState {
+
+    public static final int INITIAL = 0;
+    public static final int ENCRYPTION = 1;
+    public static final int DECRYPTION = 2;
+
+    private final int code;
+
+    public CipherState(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return this.code;
+    }
+}

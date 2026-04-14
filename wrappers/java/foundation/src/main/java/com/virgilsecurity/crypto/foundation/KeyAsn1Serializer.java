@@ -45,7 +45,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.keyAsn1Serializer_new();
     }
 
-    package KeyAsn1Serializer(FoundationContextHolder contextHolder) {
+    KeyAsn1Serializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

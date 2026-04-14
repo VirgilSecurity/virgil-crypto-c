@@ -39,6 +39,6 @@ package com.virgilsecurity.crypto.pythia;
 
 public class PythiaJNI {
 
-    public PythiaJNI INSTANCE;
+    public static final PythiaJNI INSTANCE = new PythiaJNI();
 
 }

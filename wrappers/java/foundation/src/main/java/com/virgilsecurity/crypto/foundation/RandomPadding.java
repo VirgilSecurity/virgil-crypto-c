@@ -45,7 +45,7 @@ public class RandomPadding implements AutoCloseable, Alg, Padding {
         this.cCtx = FoundationJNI.INSTANCE.randomPadding_new();
     }
 
-    package RandomPadding(FoundationContextHolder contextHolder) {
+    RandomPadding(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -45,7 +45,7 @@ public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = FoundationJNI.INSTANCE.compoundPublicKey_new();
     }
 
-    package CompoundPublicKey(FoundationContextHolder contextHolder) {
+    CompoundPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

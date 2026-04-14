@@ -59,11 +59,11 @@ public class BrainkeyClientBlindResult {
         this.blindedPoint = blindedPoint;
     }
 
-    package BrainkeyClientBlindResult() {
+    BrainkeyClientBlindResult() {
         super();
     }
 
-    package BrainkeyClientBlindResult(byte[] deblindFactor, byte[] blindedPoint) {
+    BrainkeyClientBlindResult(byte[] deblindFactor, byte[] blindedPoint) {
         super();
         this.deblindFactor = deblindFactor;
         this.blindedPoint = blindedPoint;

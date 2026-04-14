@@ -45,7 +45,7 @@ public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Compute
         this.cCtx = FoundationJNI.INSTANCE.ecc_new();
     }
 
-    package Ecc(FoundationContextHolder contextHolder) {
+    Ecc(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

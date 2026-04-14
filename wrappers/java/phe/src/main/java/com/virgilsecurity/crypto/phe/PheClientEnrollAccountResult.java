@@ -59,11 +59,11 @@ public class PheClientEnrollAccountResult {
         this.accountKey = accountKey;
     }
 
-    package PheClientEnrollAccountResult() {
+    PheClientEnrollAccountResult() {
         super();
     }
 
-    package PheClientEnrollAccountResult(byte[] enrollmentRecord, byte[] accountKey) {
+    PheClientEnrollAccountResult(byte[] enrollmentRecord, byte[] accountKey) {
         super();
         this.enrollmentRecord = enrollmentRecord;
         this.accountKey = accountKey;

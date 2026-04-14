@@ -45,7 +45,7 @@ public class Signer implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.signer_new();
     }
 
-    package Signer(FoundationContextHolder contextHolder) {
+    Signer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

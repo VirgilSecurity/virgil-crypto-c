@@ -45,7 +45,7 @@ public class Sha512 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha512_new();
     }
 
-    package Sha512(FoundationContextHolder contextHolder) {
+    Sha512(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

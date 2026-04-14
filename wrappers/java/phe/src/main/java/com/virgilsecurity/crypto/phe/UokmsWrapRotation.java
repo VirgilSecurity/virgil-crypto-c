@@ -45,7 +45,7 @@ public class UokmsWrapRotation implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.uokmsWrapRotation_new();
     }
 
-    package UokmsWrapRotation(PheContextHolder contextHolder) {
+    UokmsWrapRotation(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

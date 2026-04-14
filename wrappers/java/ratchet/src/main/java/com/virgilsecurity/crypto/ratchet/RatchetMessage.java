@@ -45,7 +45,7 @@ public class RatchetMessage implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetMessage_new();
     }
 
-    package RatchetMessage(RatchetContextHolder contextHolder) {
+    RatchetMessage(RatchetContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

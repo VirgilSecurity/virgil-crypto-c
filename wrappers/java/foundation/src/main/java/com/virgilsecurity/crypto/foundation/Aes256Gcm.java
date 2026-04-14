@@ -45,7 +45,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = FoundationJNI.INSTANCE.aes256Gcm_new();
     }
 
-    package Aes256Gcm(FoundationContextHolder contextHolder) {
+    Aes256Gcm(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -45,7 +45,7 @@ public class KeyProvider implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyProvider_new();
     }
 
-    package KeyProvider(FoundationContextHolder contextHolder) {
+    KeyProvider(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

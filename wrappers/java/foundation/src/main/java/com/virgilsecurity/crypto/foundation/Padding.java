@@ -36,3 +36,5 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+public interface Padding {
+}

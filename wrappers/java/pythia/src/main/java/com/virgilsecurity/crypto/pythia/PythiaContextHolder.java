@@ -36,11 +36,11 @@
 
 package com.virgilsecurity.crypto.pythia;
 
-package class PythiaContextHolder {
+class PythiaContextHolder {
 
-    package long cCtx;
+    long cCtx;
 
-    package PythiaContextHolder(long cCtx) {
+    PythiaContextHolder(long cCtx) {
         this.cCtx = cCtx;
     }
 

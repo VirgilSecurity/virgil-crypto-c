@@ -59,11 +59,11 @@ public class UokmsClientRotateKeysResult {
         this.newServerPublicKey = newServerPublicKey;
     }
 
-    package UokmsClientRotateKeysResult() {
+    UokmsClientRotateKeysResult() {
         super();
     }
 
-    package UokmsClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
+    UokmsClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
         super();
         this.newClientPrivateKey = newClientPrivateKey;
         this.newServerPublicKey = newServerPublicKey;

@@ -45,7 +45,7 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new();
     }
 
-    package PbeAlgInfo(FoundationContextHolder contextHolder) {
+    PbeAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

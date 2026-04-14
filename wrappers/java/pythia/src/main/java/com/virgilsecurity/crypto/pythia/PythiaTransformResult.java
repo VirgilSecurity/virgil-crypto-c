@@ -59,11 +59,11 @@ public class PythiaTransformResult {
         this.transformedTweak = transformedTweak;
     }
 
-    package PythiaTransformResult() {
+    PythiaTransformResult() {
         super();
     }
 
-    package PythiaTransformResult(byte[] transformedPassword, byte[] transformedTweak) {
+    PythiaTransformResult(byte[] transformedPassword, byte[] transformedTweak) {
         super();
         this.transformedPassword = transformedPassword;
         this.transformedTweak = transformedTweak;

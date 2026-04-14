@@ -45,7 +45,7 @@ public class RawPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = FoundationJNI.INSTANCE.rawPublicKey_new();
     }
 
-    package RawPublicKey(FoundationContextHolder contextHolder) {
+    RawPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

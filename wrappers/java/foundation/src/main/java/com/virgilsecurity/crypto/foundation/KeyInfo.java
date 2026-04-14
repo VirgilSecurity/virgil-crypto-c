@@ -45,7 +45,7 @@ public class KeyInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyInfo_new();
     }
 
-    package KeyInfo(FoundationContextHolder contextHolder) {
+    KeyInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

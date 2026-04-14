@@ -45,7 +45,7 @@ public class EntropyAccumulator implements AutoCloseable, EntropySource {
         this.cCtx = FoundationJNI.INSTANCE.entropyAccumulator_new();
     }
 
-    package EntropyAccumulator(FoundationContextHolder contextHolder) {
+    EntropyAccumulator(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

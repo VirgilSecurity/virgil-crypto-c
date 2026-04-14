@@ -45,7 +45,7 @@ public class EccPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = FoundationJNI.INSTANCE.eccPrivateKey_new();
     }
 
-    package EccPrivateKey(FoundationContextHolder contextHolder) {
+    EccPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

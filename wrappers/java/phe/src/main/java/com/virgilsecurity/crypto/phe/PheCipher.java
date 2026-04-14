@@ -45,7 +45,7 @@ public class PheCipher implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.pheCipher_new();
     }
 
-    package PheCipher(PheContextHolder contextHolder) {
+    PheCipher(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

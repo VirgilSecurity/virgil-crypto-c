@@ -45,7 +45,7 @@ public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = FoundationJNI.INSTANCE.rsaPrivateKey_new();
     }
 
-    package RsaPrivateKey(FoundationContextHolder contextHolder) {
+    RsaPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

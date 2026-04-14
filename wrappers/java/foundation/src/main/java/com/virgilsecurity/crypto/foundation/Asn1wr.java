@@ -45,7 +45,7 @@ public class Asn1wr implements AutoCloseable, Asn1Writer {
         this.cCtx = FoundationJNI.INSTANCE.asn1wr_new();
     }
 
-    package Asn1wr(FoundationContextHolder contextHolder) {
+    Asn1wr(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

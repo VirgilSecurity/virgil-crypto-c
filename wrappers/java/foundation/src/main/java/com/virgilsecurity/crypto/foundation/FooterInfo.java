@@ -45,7 +45,7 @@ public class FooterInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.footerInfo_new();
     }
 
-    package FooterInfo(FoundationContextHolder contextHolder) {
+    FooterInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

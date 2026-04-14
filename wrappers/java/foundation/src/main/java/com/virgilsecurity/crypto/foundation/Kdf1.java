@@ -45,7 +45,7 @@ public class Kdf1 implements AutoCloseable, Alg, Kdf {
         this.cCtx = FoundationJNI.INSTANCE.kdf1_new();
     }
 
-    package Kdf1(FoundationContextHolder contextHolder) {
+    Kdf1(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

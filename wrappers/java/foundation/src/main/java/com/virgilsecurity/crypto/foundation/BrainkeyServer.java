@@ -45,7 +45,7 @@ public class BrainkeyServer implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.brainkeyServer_new();
     }
 
-    package BrainkeyServer(FoundationContextHolder contextHolder) {
+    BrainkeyServer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

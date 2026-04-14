@@ -45,7 +45,7 @@ public class SignedDataInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.signedDataInfo_new();
     }
 
-    package SignedDataInfo(FoundationContextHolder contextHolder) {
+    SignedDataInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -45,7 +45,7 @@ public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.compoundKeyAlgInfo_new();
     }
 
-    package CompoundKeyAlgInfo(FoundationContextHolder contextHolder) {
+    CompoundKeyAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

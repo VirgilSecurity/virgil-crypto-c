@@ -45,7 +45,7 @@ public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeShar
         this.cCtx = FoundationJNI.INSTANCE.curve25519_new();
     }
 
-    package Curve25519(FoundationContextHolder contextHolder) {
+    Curve25519(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

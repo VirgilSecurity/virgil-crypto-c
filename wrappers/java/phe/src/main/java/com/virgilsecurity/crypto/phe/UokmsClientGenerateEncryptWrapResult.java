@@ -59,11 +59,11 @@ public class UokmsClientGenerateEncryptWrapResult {
         this.encryptionKey = encryptionKey;
     }
 
-    package UokmsClientGenerateEncryptWrapResult() {
+    UokmsClientGenerateEncryptWrapResult() {
         super();
     }
 
-    package UokmsClientGenerateEncryptWrapResult(byte[] wrap, byte[] encryptionKey) {
+    UokmsClientGenerateEncryptWrapResult(byte[] wrap, byte[] encryptionKey) {
         super();
         this.wrap = wrap;
         this.encryptionKey = encryptionKey;

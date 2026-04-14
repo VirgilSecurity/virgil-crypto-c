@@ -325,15 +325,44 @@ def _method_camel(name: str) -> str:
 # ---------------------------------------------------------------------------
 
 def _generate_enum(project_ir: IRProject, enum: IREnum) -> str:
-    """Generate a Java file for an enum entity.
-
-    Enums become stub files with license + package (matching legacy output).
-    """
+    """Generate a Java file for an enum entity."""
+    enum_name = _pascal(enum.name)
     lines: list[str] = []
     lines.append(_LICENSE)
     lines.append("")
     lines.append(f"package {_java_package(project_ir.name)};")
     lines.append("")
+
+    lines.append(f"public class {enum_name} {{")
+    lines.append("")
+
+    # Enum constants
+    next_val = 0
+    for const in enum.constants:
+        value = const.attrs.get("value")
+        if value is not None and value != "":
+            val_str = resolve_constant_value(value, None, project_ir)
+        else:
+            val_str = str(next_val)
+        lines.append(f"    public static final int {_upper_snake(const.name)} = {val_str};")
+        try:
+            next_val = int(val_str, 0) + 1
+        except ValueError:
+            next_val += 1
+    lines.append("")
+
+    # fromCode / getCode
+    lines.append("    private final int code;")
+    lines.append("")
+    lines.append(f"    public {enum_name}(int code) {{")
+    lines.append("        this.code = code;")
+    lines.append("    }")
+    lines.append("")
+    lines.append("    public int getCode() {")
+    lines.append("        return this.code;")
+    lines.append("    }")
+
+    lines.append("}")
     lines.append("")
     return "\n".join(lines)
 
@@ -343,15 +372,20 @@ def _generate_enum(project_ir: IRProject, enum: IREnum) -> str:
 # ---------------------------------------------------------------------------
 
 def _generate_interface(project_ir: IRProject, iface: IRInterface) -> str:
-    """Generate a Java file for an interface entity.
-
-    Interfaces become stub files with license + package (matching legacy output).
-    """
+    """Generate a Java file for an interface entity."""
+    iface_name = _pascal(iface.name)
     lines: list[str] = []
     lines.append(_LICENSE)
     lines.append("")
     lines.append(f"package {_java_package(project_ir.name)};")
     lines.append("")
+
+    # Inheritance
+    inherits = [_pascal(p) for p in iface.inherits if p]
+    extends_str = f" extends {', '.join(inherits)}" if inherits else ""
+
+    lines.append(f"public interface {iface_name}{extends_str} {{")
+    lines.append("}")
     lines.append("")
     return "\n".join(lines)
 
@@ -522,8 +556,8 @@ def _generate_class_file(
         lines.append("    }")
         lines.append("")
 
-        # Package-private constructor from context holder
-        lines.append(f"    package {class_name}({ctx_holder} contextHolder) {{")
+        # Package-private constructor from context holder (no modifier = package-private)
+        lines.append(f"    {class_name}({ctx_holder} contextHolder) {{")
         lines.append("        this.cCtx = contextHolder.cCtx;")
         lines.append("    }")
         lines.append("")
@@ -693,15 +727,15 @@ def _generate_result_class(
         lines.append("    }")
         lines.append("")
 
-    # Package-private no-arg constructor
-    lines.append(f"    package {class_name}() {{")
+    # Package-private no-arg constructor (no modifier = package-private)
+    lines.append(f"    {class_name}() {{")
     lines.append("        super();")
     lines.append("    }")
     lines.append("")
 
-    # Package-private all-args constructor
+    # Package-private all-args constructor (no modifier = package-private)
     ctor_params = ", ".join(f"byte[] {_camel(b.name)}" for b in buf_outs)
-    lines.append(f"    package {class_name}({ctor_params}) {{")
+    lines.append(f"    {class_name}({ctor_params}) {{")
     lines.append("        super();")
     for buf in buf_outs:
         field_name = _camel(buf.name)
@@ -730,7 +764,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
     lines.append("")
     lines.append(f"public class {jni_class} {{")
     lines.append("")
-    lines.append(f"    public {jni_class} INSTANCE;")
+    lines.append(f"    public static final {jni_class} INSTANCE = new {jni_class}();")
     lines.append("")
     lines.append("}")
     lines.append("")
@@ -806,11 +840,11 @@ def _generate_context_holder(project_ir: IRProject) -> str:
     lines.append("")
     lines.append(f"package {_java_package(pname)};")
     lines.append("")
-    lines.append(f"package class {class_name} {{")
+    lines.append(f"class {class_name} {{")
     lines.append("")
-    lines.append("    package long cCtx;")
+    lines.append("    long cCtx;")
     lines.append("")
-    lines.append(f"    package {class_name}(long cCtx) {{")
+    lines.append(f"    {class_name}(long cCtx) {{")
     lines.append("        this.cCtx = cCtx;")
     lines.append("    }")
     lines.append("")

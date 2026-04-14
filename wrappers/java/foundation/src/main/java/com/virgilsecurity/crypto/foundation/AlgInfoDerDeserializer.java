@@ -45,7 +45,7 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
         this.cCtx = FoundationJNI.INSTANCE.algInfoDerDeserializer_new();
     }
 
-    package AlgInfoDerDeserializer(FoundationContextHolder contextHolder) {
+    AlgInfoDerDeserializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

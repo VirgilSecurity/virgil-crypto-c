@@ -45,7 +45,7 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         this.cCtx = FoundationJNI.INSTANCE.keyMaterialRng_new();
     }
 
-    package KeyMaterialRng(FoundationContextHolder contextHolder) {
+    KeyMaterialRng(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

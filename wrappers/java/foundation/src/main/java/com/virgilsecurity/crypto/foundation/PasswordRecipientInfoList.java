@@ -45,7 +45,7 @@ public class PasswordRecipientInfoList implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfoList_new();
     }
 
-    package PasswordRecipientInfoList(FoundationContextHolder contextHolder) {
+    PasswordRecipientInfoList(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

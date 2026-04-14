@@ -45,7 +45,7 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.hashBasedAlgInfo_new();
     }
 
-    package HashBasedAlgInfo(FoundationContextHolder contextHolder) {
+    HashBasedAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

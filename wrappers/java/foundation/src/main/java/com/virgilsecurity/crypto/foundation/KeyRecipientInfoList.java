@@ -45,7 +45,7 @@ public class KeyRecipientInfoList implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfoList_new();
     }
 
-    package KeyRecipientInfoList(FoundationContextHolder contextHolder) {
+    KeyRecipientInfoList(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

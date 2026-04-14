@@ -45,7 +45,7 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
         this.cCtx = FoundationJNI.INSTANCE.fakeRandom_new();
     }
 
-    package FakeRandom(FoundationContextHolder contextHolder) {
+    FakeRandom(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

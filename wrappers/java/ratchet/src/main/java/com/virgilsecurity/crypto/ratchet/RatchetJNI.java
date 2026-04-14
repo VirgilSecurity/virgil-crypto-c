@@ -39,6 +39,6 @@ package com.virgilsecurity.crypto.ratchet;
 
 public class RatchetJNI {
 
-    public RatchetJNI INSTANCE;
+    public static final RatchetJNI INSTANCE = new RatchetJNI();
 
 }

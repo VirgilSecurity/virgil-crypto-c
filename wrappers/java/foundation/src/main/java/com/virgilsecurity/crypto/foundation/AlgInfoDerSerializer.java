@@ -45,7 +45,7 @@ public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
         this.cCtx = FoundationJNI.INSTANCE.algInfoDerSerializer_new();
     }
 
-    package AlgInfoDerSerializer(FoundationContextHolder contextHolder) {
+    AlgInfoDerSerializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

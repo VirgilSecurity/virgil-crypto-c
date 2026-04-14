@@ -45,7 +45,7 @@ public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = FoundationJNI.INSTANCE.rawPrivateKey_new();
     }
 
-    package RawPrivateKey(FoundationContextHolder contextHolder) {
+    RawPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

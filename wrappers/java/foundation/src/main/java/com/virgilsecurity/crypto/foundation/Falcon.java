@@ -45,7 +45,7 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
         this.cCtx = FoundationJNI.INSTANCE.falcon_new();
     }
 
-    package Falcon(FoundationContextHolder contextHolder) {
+    Falcon(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

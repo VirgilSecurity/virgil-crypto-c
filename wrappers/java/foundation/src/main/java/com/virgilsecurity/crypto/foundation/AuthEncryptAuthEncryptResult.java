@@ -59,11 +59,11 @@ public class AuthEncryptAuthEncryptResult {
         this.tag = tag;
     }
 
-    package AuthEncryptAuthEncryptResult() {
+    AuthEncryptAuthEncryptResult() {
         super();
     }
 
-    package AuthEncryptAuthEncryptResult(byte[] out, byte[] tag) {
+    AuthEncryptAuthEncryptResult(byte[] out, byte[] tag) {
         super();
         this.out = out;
         this.tag = tag;

@@ -45,7 +45,7 @@ public class MessageInfoFooter implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.messageInfoFooter_new();
     }
 
-    package MessageInfoFooter(FoundationContextHolder contextHolder) {
+    MessageInfoFooter(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

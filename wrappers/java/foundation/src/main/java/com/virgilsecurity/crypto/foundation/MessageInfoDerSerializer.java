@@ -45,7 +45,7 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
         this.cCtx = FoundationJNI.INSTANCE.messageInfoDerSerializer_new();
     }
 
-    package MessageInfoDerSerializer(FoundationContextHolder contextHolder) {
+    MessageInfoDerSerializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

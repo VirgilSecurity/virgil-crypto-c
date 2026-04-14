@@ -45,7 +45,7 @@ public class PheClient implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.pheClient_new();
     }
 
-    package PheClient(PheContextHolder contextHolder) {
+    PheClient(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

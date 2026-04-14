@@ -36,3 +36,18 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
+public class MsgType {
+
+    public static final int REGULAR = 1;
+    public static final int PREKEY = 2;
+
+    private final int code;
+
+    public MsgType(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return this.code;
+    }
+}

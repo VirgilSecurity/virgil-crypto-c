@@ -45,7 +45,7 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.saltedKdfAlgInfo_new();
     }
 
-    package SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
+    SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

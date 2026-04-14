@@ -45,7 +45,7 @@ public class Sha224 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha224_new();
     }
 
-    package Sha224(FoundationContextHolder contextHolder) {
+    Sha224(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

@@ -36,3 +36,18 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
+public class GroupMsgType {
+
+    public static final int GROUP_INFO = 1;
+    public static final int REGULAR = 2;
+
+    private final int code;
+
+    public GroupMsgType(int code) {
+        this.code = code;
+    }
+
+    public int getCode() {
+        return this.code;
+    }
+}

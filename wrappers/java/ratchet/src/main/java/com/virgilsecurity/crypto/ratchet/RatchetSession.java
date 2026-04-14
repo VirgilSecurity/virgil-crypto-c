@@ -45,7 +45,7 @@ public class RatchetSession implements AutoCloseable {
         this.cCtx = RatchetJNI.INSTANCE.ratchetSession_new();
     }
 
-    package RatchetSession(RatchetContextHolder contextHolder) {
+    RatchetSession(RatchetContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

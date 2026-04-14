@@ -45,7 +45,7 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
         this.cCtx = FoundationJNI.INSTANCE.hybridKeyAlg_new();
     }
 
-    package HybridKeyAlg(FoundationContextHolder contextHolder) {
+    HybridKeyAlg(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

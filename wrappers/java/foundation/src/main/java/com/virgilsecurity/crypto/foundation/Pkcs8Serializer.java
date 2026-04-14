@@ -45,7 +45,7 @@ public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.pkcs8Serializer_new();
     }
 
-    package Pkcs8Serializer(FoundationContextHolder contextHolder) {
+    Pkcs8Serializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

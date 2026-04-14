@@ -45,7 +45,7 @@ public class RecipientCipher implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.recipientCipher_new();
     }
 
-    package RecipientCipher(FoundationContextHolder contextHolder) {
+    RecipientCipher(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

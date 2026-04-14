@@ -45,7 +45,7 @@ public class UokmsServer implements AutoCloseable {
         this.cCtx = PheJNI.INSTANCE.uokmsServer_new();
     }
 
-    package UokmsServer(PheContextHolder contextHolder) {
+    UokmsServer(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

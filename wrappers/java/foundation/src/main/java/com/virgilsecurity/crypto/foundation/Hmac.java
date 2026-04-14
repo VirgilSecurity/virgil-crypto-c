@@ -45,7 +45,7 @@ public class Hmac implements AutoCloseable, Alg, Mac {
         this.cCtx = FoundationJNI.INSTANCE.hmac_new();
     }
 
-    package Hmac(FoundationContextHolder contextHolder) {
+    Hmac(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

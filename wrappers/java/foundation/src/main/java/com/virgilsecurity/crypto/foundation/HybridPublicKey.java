@@ -45,7 +45,7 @@ public class HybridPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = FoundationJNI.INSTANCE.hybridPublicKey_new();
     }
 
-    package HybridPublicKey(FoundationContextHolder contextHolder) {
+    HybridPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

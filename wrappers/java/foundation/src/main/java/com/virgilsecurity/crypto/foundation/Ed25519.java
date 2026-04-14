@@ -45,7 +45,7 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
         this.cCtx = FoundationJNI.INSTANCE.ed25519_new();
     }
 
-    package Ed25519(FoundationContextHolder contextHolder) {
+    Ed25519(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

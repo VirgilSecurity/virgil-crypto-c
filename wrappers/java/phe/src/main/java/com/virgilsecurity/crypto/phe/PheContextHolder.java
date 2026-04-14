@@ -36,11 +36,11 @@
 
 package com.virgilsecurity.crypto.phe;
 
-package class PheContextHolder {
+class PheContextHolder {
 
-    package long cCtx;
+    long cCtx;
 
-    package PheContextHolder(long cCtx) {
+    PheContextHolder(long cCtx) {
         this.cCtx = cCtx;
     }
 

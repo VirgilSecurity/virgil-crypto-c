@@ -39,6 +39,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class FoundationJNI {
 
-    public FoundationJNI INSTANCE;
+    public static final FoundationJNI INSTANCE = new FoundationJNI();
 
 }

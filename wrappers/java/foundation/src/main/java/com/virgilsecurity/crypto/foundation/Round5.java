@@ -45,7 +45,7 @@ public class Round5 implements AutoCloseable, KeyAlg, Kem {
         this.cCtx = FoundationJNI.INSTANCE.round5_new();
     }
 
-    package Round5(FoundationContextHolder contextHolder) {
+    Round5(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

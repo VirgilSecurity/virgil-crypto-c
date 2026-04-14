@@ -69,11 +69,11 @@ public class PheServerRotateKeysResult {
         this.updateToken = updateToken;
     }
 
-    package PheServerRotateKeysResult() {
+    PheServerRotateKeysResult() {
         super();
     }
 
-    package PheServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
+    PheServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
         super();
         this.newServerPrivateKey = newServerPrivateKey;
         this.newServerPublicKey = newServerPublicKey;

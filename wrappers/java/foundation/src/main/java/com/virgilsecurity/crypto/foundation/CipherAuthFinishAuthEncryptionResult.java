@@ -59,11 +59,11 @@ public class CipherAuthFinishAuthEncryptionResult {
         this.tag = tag;
     }
 
-    package CipherAuthFinishAuthEncryptionResult() {
+    CipherAuthFinishAuthEncryptionResult() {
         super();
     }
 
-    package CipherAuthFinishAuthEncryptionResult(byte[] out, byte[] tag) {
+    CipherAuthFinishAuthEncryptionResult(byte[] out, byte[] tag) {
         super();
         this.out = out;
         this.tag = tag;

@@ -45,7 +45,7 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = FoundationJNI.INSTANCE.aes256Cbc_new();
     }
 
-    package Aes256Cbc(FoundationContextHolder contextHolder) {
+    Aes256Cbc(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

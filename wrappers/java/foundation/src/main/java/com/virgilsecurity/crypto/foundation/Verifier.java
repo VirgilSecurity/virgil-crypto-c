@@ -45,7 +45,7 @@ public class Verifier implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.verifier_new();
     }
 
-    package Verifier(FoundationContextHolder contextHolder) {
+    Verifier(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

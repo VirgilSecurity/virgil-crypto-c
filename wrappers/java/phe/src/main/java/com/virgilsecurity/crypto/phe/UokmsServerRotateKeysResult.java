@@ -69,11 +69,11 @@ public class UokmsServerRotateKeysResult {
         this.updateToken = updateToken;
     }
 
-    package UokmsServerRotateKeysResult() {
+    UokmsServerRotateKeysResult() {
         super();
     }
 
-    package UokmsServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
+    UokmsServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
         super();
         this.newServerPrivateKey = newServerPrivateKey;
         this.newServerPublicKey = newServerPublicKey;

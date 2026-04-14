@@ -45,7 +45,7 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
         this.cCtx = FoundationJNI.INSTANCE.sha384_new();
     }
 
-    package Sha384(FoundationContextHolder contextHolder) {
+    Sha384(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

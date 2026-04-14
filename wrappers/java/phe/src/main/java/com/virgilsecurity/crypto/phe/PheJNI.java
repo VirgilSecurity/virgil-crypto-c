@@ -39,6 +39,6 @@ package com.virgilsecurity.crypto.phe;
 
 public class PheJNI {
 
-    public PheJNI INSTANCE;
+    public static final PheJNI INSTANCE = new PheJNI();
 
 }

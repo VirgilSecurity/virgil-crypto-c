@@ -59,11 +59,11 @@ public class PythiaBlindResult {
         this.blindingSecret = blindingSecret;
     }
 
-    package PythiaBlindResult() {
+    PythiaBlindResult() {
         super();
     }
 
-    package PythiaBlindResult(byte[] blindedPassword, byte[] blindingSecret) {
+    PythiaBlindResult(byte[] blindedPassword, byte[] blindingSecret) {
         super();
         this.blindedPassword = blindedPassword;
         this.blindingSecret = blindingSecret;

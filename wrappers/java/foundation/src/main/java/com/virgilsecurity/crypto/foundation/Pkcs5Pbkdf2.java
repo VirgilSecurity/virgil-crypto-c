@@ -45,7 +45,7 @@ public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
         this.cCtx = FoundationJNI.INSTANCE.pkcs5Pbkdf2_new();
     }
 
-    package Pkcs5Pbkdf2(FoundationContextHolder contextHolder) {
+    Pkcs5Pbkdf2(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

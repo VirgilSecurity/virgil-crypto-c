@@ -45,7 +45,7 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = FoundationJNI.INSTANCE.sec1Serializer_new();
     }
 
-    package Sec1Serializer(FoundationContextHolder contextHolder) {
+    Sec1Serializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 

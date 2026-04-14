@@ -59,11 +59,11 @@ public class PythiaComputeTransformationKeyPairResult {
         this.transformationPublicKey = transformationPublicKey;
     }
 
-    package PythiaComputeTransformationKeyPairResult() {
+    PythiaComputeTransformationKeyPairResult() {
         super();
     }
 
-    package PythiaComputeTransformationKeyPairResult(byte[] transformationPrivateKey, byte[] transformationPublicKey) {
+    PythiaComputeTransformationKeyPairResult(byte[] transformationPrivateKey, byte[] transformationPublicKey) {
         super();
         this.transformationPrivateKey = transformationPrivateKey;
         this.transformationPublicKey = transformationPublicKey;

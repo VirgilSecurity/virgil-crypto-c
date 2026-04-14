@@ -45,7 +45,7 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
         this.cCtx = FoundationJNI.INSTANCE.rsa_new();
     }
 
-    package Rsa(FoundationContextHolder contextHolder) {
+    Rsa(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
