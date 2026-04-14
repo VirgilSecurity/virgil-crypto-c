@@ -35,7 +35,6 @@
 
 from ctypes import *
 from ._c_bridge import VscfSignerInfoList
-from .self import Self
 from .signer_info import SignerInfo
 
 

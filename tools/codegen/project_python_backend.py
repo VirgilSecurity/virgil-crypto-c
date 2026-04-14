@@ -77,6 +77,18 @@ def _upper_snake(name: str) -> str:
     return name.replace(" ", "_").upper()
 
 
+def _python_constant_value(value: str) -> str:
+    """Convert C-style constant values to Python syntax.
+
+    ``"true"`` → ``"True"``, ``"false"`` → ``"False"``.
+    """
+    if value.strip().lower() == "true":
+        return "True"
+    if value.strip().lower() == "false":
+        return "False"
+    return value
+
+
 def _bridge_class_name(project_ir: IRProject, entity_name: str) -> str:
     """``"sha256"`` with prefix ``vscf`` -> ``"VscfSha256"``."""
     prefix = project_ir.prefix.capitalize()
@@ -424,6 +436,11 @@ def _generate_bridge_class_body(
     imp_lines = _bridge_imports_for_entity(
         project_ir, methods, dependencies, has_context
     )
+    # Implementations always need impl_t for the _impl() method
+    if is_impl and has_context:
+        impl_import = f"from ._{project_ir.prefix}_impl import {project_ir.prefix}_impl_t"
+        if impl_import not in imp_lines:
+            imp_lines.insert(0, impl_import)
     for il in imp_lines:
         lines.append(il)
 
@@ -458,7 +475,7 @@ def _generate_bridge_class_body(
         if desc:
             for desc_line in desc.splitlines():
                 lines.append(f"    # {desc_line.strip()}")
-        lines.append(f"    {name} = {value}")
+        lines.append(f"    {name} = {_python_constant_value(value)}")
 
     # __init__
     lines.append("")
@@ -595,7 +612,7 @@ def _generate_bridge_enum(project_ir: IRProject, enum: IREnum) -> str:
         name = _upper_snake(const.name)
         value = const.attrs.get("value")
         if value is not None and value != "":
-            lines.append(f"    {name} = {value}")
+            lines.append(f"    {name} = {_python_constant_value(value)}")
             try:
                 next_val = int(value, 0) + 1
             except ValueError:
@@ -640,7 +657,7 @@ def _generate_bridge_status(project_ir: IRProject, status_enum: IREnum) -> str:
                 stripped = desc_line.strip()
                 if stripped:
                     lines.append(f"    # {stripped}")
-        lines.append(f"    {name} = {value}")
+        lines.append(f"    {name} = {_python_constant_value(value)}")
 
     # STATUS_DICT
     lines.append("")
@@ -884,7 +901,7 @@ def _generate_hl_enum(project_ir: IRProject, enum: IREnum) -> str:
                 if stripped:
                     lines.append(f"    # {stripped}")
         if value is not None and value != "":
-            lines.append(f"    {name} = {value}")
+            lines.append(f"    {name} = {_python_constant_value(value)}")
             try:
                 next_val = int(value, 0) + 1
             except ValueError:
@@ -927,7 +944,7 @@ def _generate_hl_status(project_ir: IRProject, status_enum: IREnum) -> str:
                 stripped = desc_line.strip()
                 if stripped:
                     lines.append(f"    # {stripped}")
-        lines.append(f"    {name} = {value}")
+        lines.append(f"    {name} = {_python_constant_value(value)}")
 
     lines.append("")
     lines.append("    STATUS_DICT = {")
@@ -983,7 +1000,7 @@ def _generate_hl_interface(project_ir: IRProject, iface: IRInterface) -> str:
                 stripped = desc_line.strip()
                 if stripped:
                     lines.append(f"    # {stripped}")
-        lines.append(f"    {name} = {value}")
+        lines.append(f"    {name} = {_python_constant_value(value)}")
 
     # Abstract methods
     for method in iface.methods:
@@ -1055,10 +1072,11 @@ def _hl_buffer_capacity_expr(
                 proxy_args.append(src_const)
             elif src_arg is not None:
                 local = _snake_name(src_arg)
+                target = _snake_name(la.get(f"proxy_{idx}_to", src_arg))
                 if cast == "data_length":
-                    proxy_args.append(f"{local}=len({local})")
+                    proxy_args.append(f"{target}=len({local})")
                 else:
-                    proxy_args.append(f"{local}={local}")
+                    proxy_args.append(f"{target}={local}")
             idx += 1
 
         if proxy_args:
@@ -1299,10 +1317,21 @@ def _generate_hl_class(
                 needs_impl_tag = True
             if r.class_name == "data":
                 needs_data = True
-            if r.class_name and r.class_name not in ("data", "buffer") and r.class_name != entity_name:
+            if (r.class_name
+                    and r.class_name not in ("data", "buffer", "self", "error")
+                    and r.class_name != entity_name
+                    and not (r.library and r.library not in _PROJECT_PREFIX_MAP)):
                 ret_hl = _hl_class_name(project_ir, r.class_name)
                 ret_file = _hl_file_stem(project_ir, r.class_name)
                 other_hl_imports.add(f"from .{ret_file} import {ret_hl}")
+        # Scan buffer output args for cross-class constant references
+        for a in m.arguments:
+            if _arg_is_buffer_output(a) and a.length_attrs:
+                owner_class = a.length_attrs.get("class")
+                if owner_class and owner_class != "self" and owner_class != entity_name:
+                    cap_hl = _hl_class_name(project_ir, owner_class)
+                    cap_file = _hl_file_stem(project_ir, owner_class)
+                    other_hl_imports.add(f"from .{cap_file} import {cap_hl}")
         if _method_returns_status(m) or _method_has_error_arg(m):
             needs_status = True
 
@@ -1382,7 +1411,7 @@ def _generate_hl_class(
                 stripped = desc_line.strip()
                 if stripped:
                     lines.append(f"    # {stripped}")
-        lines.append(f"    {name} = {value}")
+        lines.append(f"    {name} = {_python_constant_value(value)}")
 
     # __init__
     lines.append("")

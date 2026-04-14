@@ -35,6 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
+from ._vscf_impl import vscf_impl_t
 
 
 class vscf_simple_alg_info_t(Structure):

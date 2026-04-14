@@ -55,13 +55,13 @@ For algorithm details check https://falcon-sign.info."""
     LOGN_512 = 9
     LOGN_1024 = 10
     # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = true
+    CAN_IMPORT_PUBLIC_KEY = True
     # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = true
+    CAN_EXPORT_PUBLIC_KEY = True
     # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = true
+    CAN_IMPORT_PRIVATE_KEY = True
     # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = true
+    CAN_EXPORT_PRIVATE_KEY = True
 
     def __init__(self):
         """Create underlying C context."""

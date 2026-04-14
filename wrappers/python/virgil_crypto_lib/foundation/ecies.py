@@ -97,7 +97,7 @@ except random."""
     def encrypt(self, public_key, data):
         """Encrypt data with a given public key."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(public_key=public_key, data=len(data)))
+        out = Buffer(self.encrypted_len(public_key=public_key, data_len=len(data)))
         status = self._lib_vscf_ecies.vscf_ecies_encrypt(self.ctx, public_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -110,7 +110,7 @@ except random."""
     def decrypt(self, private_key, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(private_key=private_key, data=len(data)))
+        out = Buffer(self.decrypted_len(private_key=private_key, data_len=len(data)))
         status = self._lib_vscf_ecies.vscf_ecies_decrypt(self.ctx, private_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

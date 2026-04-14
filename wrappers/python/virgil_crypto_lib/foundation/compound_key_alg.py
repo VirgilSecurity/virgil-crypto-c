@@ -55,13 +55,13 @@ Compound key contains 2 keys - one for encryption/decryption and
 one for signing/verifying."""
 
     # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = true
+    CAN_IMPORT_PUBLIC_KEY = True
     # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = true
+    CAN_EXPORT_PUBLIC_KEY = True
     # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = true
+    CAN_IMPORT_PRIVATE_KEY = True
     # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = true
+    CAN_EXPORT_PRIVATE_KEY = True
 
     def __init__(self):
         """Create underlying C context."""
@@ -182,7 +182,7 @@ RFC 3447 Appendix A.1.2."""
     def encrypt(self, public_key, data):
         """Encrypt data with a given public key."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(public_key=public_key, data=len(data)))
+        out = Buffer(self.encrypted_len(public_key=public_key, data_len=len(data)))
         status = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_encrypt(self.ctx, public_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -201,7 +201,7 @@ However, success result of decryption is not guaranteed."""
     def decrypt(self, private_key, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(private_key=private_key, data=len(data)))
+        out = Buffer(self.decrypted_len(private_key=private_key, data_len=len(data)))
         status = self._lib_vscf_compound_key_alg.vscf_compound_key_alg_decrypt(self.ctx, private_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

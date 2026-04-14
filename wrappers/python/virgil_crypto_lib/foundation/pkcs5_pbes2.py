@@ -88,7 +88,7 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
     def encrypt(self, data):
         """Encrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(data=len(data)))
+        out = Buffer(self.encrypted_len(data_len=len(data)))
         status = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_encrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -106,7 +106,7 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(data=len(data)))
+        out = Buffer(self.decrypted_len(data_len=len(data)))
         status = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_decrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

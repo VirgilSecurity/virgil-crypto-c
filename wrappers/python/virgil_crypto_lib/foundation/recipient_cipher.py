@@ -148,7 +148,7 @@ algorithm information, etc."""
     def process_encryption(self, data):
         """Process encryption of a new portion of data."""
         d_data = Data(data)
-        out = Buffer(self.encryption_out_len(data=len(data)))
+        out = Buffer(self.encryption_out_len(data_len=len(data)))
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_process_encryption(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -189,7 +189,7 @@ If footer was embedded, method "start decryption with key" can be used."""
         """Process with a new portion of data.
 Return error if data can not be encrypted or decrypted."""
         d_data = Data(data)
-        out = Buffer(self.decryption_out_len(data=len(data)))
+        out = Buffer(self.decryption_out_len(data_len=len(data)))
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_process_decryption(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

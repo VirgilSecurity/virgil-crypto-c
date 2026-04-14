@@ -36,7 +36,6 @@
 from ctypes import *
 from ._c_bridge import VscfKeyRecipientInfoList
 from .key_recipient_info import KeyRecipientInfo
-from .self import Self
 
 
 class KeyRecipientInfoList(object):

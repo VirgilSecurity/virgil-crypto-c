@@ -90,7 +90,7 @@ this should be improved in the future releases."""
     def encrypt(self, data):
         """Encrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(data=len(data)))
+        out = Buffer(self.encrypted_len(data_len=len(data)))
         status = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_encrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -108,7 +108,7 @@ this should be improved in the future releases."""
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(data=len(data)))
+        out = Buffer(self.decrypted_len(data_len=len(data)))
         status = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_decrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -139,7 +139,7 @@ this should be improved in the future releases."""
     def update(self, data):
         """Process encryption or decryption of the given data chunk."""
         d_data = Data(data)
-        out = Buffer(self.out_len(data=len(data)))
+        out = Buffer(self.out_len(data_len=len(data)))
         self._lib_vscf_aes256_cbc.vscf_aes256_cbc_update(self.ctx, d_data.data, out.c_buffer)
         return out.get_bytes()
 

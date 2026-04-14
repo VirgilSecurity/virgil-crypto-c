@@ -36,7 +36,6 @@
 from ctypes import *
 from ._c_bridge import VscfPasswordRecipientInfoList
 from .password_recipient_info import PasswordRecipientInfo
-from .self import Self
 
 
 class PasswordRecipientInfoList(object):

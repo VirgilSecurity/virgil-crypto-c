@@ -39,7 +39,6 @@ from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge._vscf_error import vscf_error_t
-from .self import Self
 
 
 class GroupSessionMessage(object):

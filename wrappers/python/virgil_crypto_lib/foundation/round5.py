@@ -52,13 +52,13 @@ For algorithm details check https://github.com/round5/code"""
 
     SEED_LEN = 48
     # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = true
+    CAN_IMPORT_PUBLIC_KEY = True
     # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = true
+    CAN_EXPORT_PUBLIC_KEY = True
     # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = true
+    CAN_IMPORT_PRIVATE_KEY = True
     # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = true
+    CAN_EXPORT_PRIVATE_KEY = True
 
     def __init__(self):
         """Create underlying C context."""
@@ -161,7 +161,7 @@ RFC 3447 Appendix A.1.2."""
 
     def kem_encapsulate(self, public_key):
         """Generate a shared key and a key encapsulated message."""
-        shared_key = Buffer(self.kem_shared_key_len(public_key=public_key))
+        shared_key = Buffer(self.kem_shared_key_len(key=public_key))
         encapsulated_key = Buffer(self.kem_encapsulated_key_len(public_key=public_key))
         status = self._lib_vscf_round5.vscf_round5_kem_encapsulate(self.ctx, public_key.c_impl, shared_key.c_buffer, encapsulated_key.c_buffer)
         VscfStatus.handle_status(status)
@@ -170,7 +170,7 @@ RFC 3447 Appendix A.1.2."""
     def kem_decapsulate(self, encapsulated_key, private_key):
         """Decapsulate the shared key."""
         d_encapsulated_key = Data(encapsulated_key)
-        shared_key = Buffer(self.kem_shared_key_len(private_key=private_key))
+        shared_key = Buffer(self.kem_shared_key_len(key=private_key))
         status = self._lib_vscf_round5.vscf_round5_kem_decapsulate(self.ctx, d_encapsulated_key.data, private_key.c_impl, shared_key.c_buffer)
         VscfStatus.handle_status(status)
         return shared_key.get_bytes()

@@ -38,6 +38,7 @@ from ._c_bridge import VscePheServer
 from ._c_bridge import VsceStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from .common import Common
 
 
 class Server(object):
