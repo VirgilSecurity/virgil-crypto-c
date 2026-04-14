@@ -1144,6 +1144,24 @@ def main() -> int:
                 out_path.write_text(content)
                 written.append(out_path)
 
+        # --- Python wrapper files ---
+        if "python" in wrappers_set:
+            from tools.codegen.project_python_backend import generate_python_files
+            for rel_path, content in generate_python_files(
+                project_ir, license_text=license_text,
+                repo_root=str(repo_root),
+            ):
+                out_path = out_root / rel_path
+                # Test files are handwritten and must NOT be overwritten.
+                if "/tests/" in str(out_path):
+                    continue
+                # manual/ directory is a separate handwritten API layer.
+                if "/manual/" in str(out_path):
+                    continue
+                ensure_parent(out_path)
+                out_path.write_text(content)
+                written.append(out_path)
+
         # --- Swift wrapper files ---
         if "swift" in wrappers_set:
             from tools.codegen.project_swift_backend import generate_swift_files
