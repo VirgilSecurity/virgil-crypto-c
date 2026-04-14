@@ -88,6 +88,11 @@ set_property(
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_common_public.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
 target_sources(common
     PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_assert.h"
