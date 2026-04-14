@@ -9,22 +9,19 @@ Each entity (enum, interface, class, implementation) becomes a single
 ``{Project}Error.swift``, ``{Project}Implementation.swift``) are also
 generated.
 
-Enum files are generated from the IR (model-driven, no resolved XML).
-All other file types (protocols, classes, implementations, infrastructure)
-are assembled from the resolved Swift XML which contains pre-computed
-Swift code blocks. This gives byte-perfect parity with the legacy GSL
-output while the IR-based approach matures.
+ALL output is generated from the IR — no resolved XML dependency.
 """
 from __future__ import annotations
 
-import textwrap
-import xml.etree.ElementTree as ET
+import copy
 from pathlib import Path
 
 from tools.codegen.project_ir import (
+    IRCArgument,
     IRCConstant,
     IRCMethod,
     IRClass,
+    IRDependency,
     IREnum,
     IRImplementation,
     IRInterface,
@@ -35,12 +32,6 @@ from tools.codegen.project_ir import (
 # ---------------------------------------------------------------------------
 # Per-project configuration derived from IRProject
 # ---------------------------------------------------------------------------
-
-# Map project name -> (framework import, ObjC prefix, C prefix, namespace)
-# Framework: the compiled C framework imported by Swift (e.g., VSCFoundation)
-# ObjC prefix: used in @objc(...) annotations (e.g., VSCF)
-# C prefix: used in C function/type names (e.g., vscf_)
-# Namespace: Swift module directory name (e.g., VirgilCryptoFoundation)
 
 def _framework(project_ir: IRProject) -> str:
     """The C framework name to import (e.g., ``VSCFoundation``)."""
@@ -70,6 +61,11 @@ def _source_dir(project_ir: IRProject) -> str:
     return f"wrappers/swift/VirgilCrypto/{ns}/"
 
 
+def _project_name_pascal(project_ir: IRProject) -> str:
+    """PascalCase project name (e.g., ``Foundation``)."""
+    return swift_type_name(project_ir.name)
+
+
 # ---------------------------------------------------------------------------
 # Name utilities
 # ---------------------------------------------------------------------------
@@ -82,10 +78,10 @@ def _split_words(name: str) -> list[str]:
 def swift_type_name(entity_name: str) -> str:
     """Derive the exported Swift type name for an entity.
 
-    ``"alg id"`` → ``"AlgId"``
-    ``"sha256"`` → ``"Sha256"``
-    ``"aes256 gcm"`` → ``"Aes256Gcm"``
-    ``"asn1 reader"`` → ``"Asn1Reader"``
+    ``"alg id"`` -> ``"AlgId"``
+    ``"sha256"`` -> ``"Sha256"``
+    ``"aes256 gcm"`` -> ``"Aes256Gcm"``
+    ``"asn1 reader"`` -> ``"Asn1Reader"``
     """
     return "".join(_pascalize_word(w) for w in _split_words(entity_name))
 
@@ -107,10 +103,10 @@ def _pascalize_word(word: str) -> str:
 def swift_case_name(constant_name: str) -> str:
     """Derive a Swift enum case name (camelCase).
 
-    ``"sha256"``        → ``"sha256"``
-    ``"aes256 gcm"``    → ``"aes256Gcm"``
-    ``"round5 nd 1cca 5d"`` → ``"round5Nd1cca5d"``
-    ``"none"``          → ``"none"``
+    ``"sha256"``        -> ``"sha256"``
+    ``"aes256 gcm"``    -> ``"aes256Gcm"``
+    ``"round5 nd 1cca 5d"`` -> ``"round5Nd1cca5d"``
+    ``"none"``          -> ``"none"``
     """
     words = _split_words(constant_name)
     if not words:
@@ -123,8 +119,8 @@ def swift_case_name(constant_name: str) -> str:
 def swift_method_name(method_name: str) -> str:
     """Derive a Swift method name (camelCase).
 
-    ``"alg id"`` → ``"algId"``
-    ``"encrypt data"`` → ``"encryptData"``
+    ``"alg id"`` -> ``"algId"``
+    ``"encrypt data"`` -> ``"encryptData"``
     """
     return swift_case_name(method_name)
 
@@ -135,18 +131,51 @@ def _c_enum_type(project_ir: IRProject, enum: IREnum) -> str:
     return f"{_c_prefix(project_ir)}{stem}_t"
 
 
-def _from_c_param_name(enum: IREnum) -> str:
-    """The ``fromC`` initializer parameter name (camelCase of enum name).
+def _c_enum_type_by_name(project_ir: IRProject, enum_name: str) -> str:
+    """C type name for an enum by name (e.g., ``vscf_alg_id_t``)."""
+    stem = enum_name.replace(" ", "_").lower()
+    return f"{_c_prefix(project_ir)}{stem}_t"
 
-    ``"alg id"`` → ``"algId"``
-    ``"cipher state"`` → ``"cipherState"``
-    """
+
+def _from_c_param_name(enum: IREnum) -> str:
+    """The ``fromC`` initializer parameter name (camelCase of enum name)."""
     return swift_case_name(enum.name)
+
+
+def _entity_snake(name: str) -> str:
+    """Convert entity name to snake_case (``"sha256"`` -> ``"sha256"``,
+    ``"brainkey client"`` -> ``"brainkey_client"``)."""
+    return name.replace(" ", "_").lower()
+
+
+def _c_func_name(project_ir: IRProject, entity_name: str, method_name: str) -> str:
+    """Build a C function name like ``vscf_sha256_hash``."""
+    prefix = project_ir.prefix
+    entity = _entity_snake(entity_name)
+    method = _entity_snake(method_name)
+    return f"{prefix}_{entity}_{method}"
 
 
 # ---------------------------------------------------------------------------
 # License header
 # ---------------------------------------------------------------------------
+
+def _emit_doc(lines: list[str], description: str, indent: str = "    ") -> None:
+    """Append ``/// ...`` doc-comment lines for a description.
+
+    Multi-line descriptions produce one ``///`` line per source line,
+    matching the legacy GSL output.
+    """
+    doc = description.strip() if description else ""
+    if not doc:
+        return
+    for doc_line in doc.splitlines():
+        stripped = doc_line.strip()
+        if stripped:
+            lines.append(f"{indent}/// {stripped}")
+        else:
+            lines.append(f"{indent}///")
+
 
 _SWIFT_LICENSE = """\
 // Copyright (C) 2015-2022 Virgil Security, Inc.
@@ -184,38 +213,31 @@ _SWIFT_LICENSE = """\
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>"""
 
 
+def _file_header(project_ir: IRProject, *, import_framework: bool = True) -> str:
+    """Standard file header: license + imports."""
+    lines: list[str] = []
+    lines.append(_SWIFT_LICENSE)
+    lines.append("")
+    lines.append("")
+    lines.append("import Foundation")
+    if import_framework:
+        lines.append(f"import {_framework(project_ir)}")
+    lines.append("")
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------------------
 # Enum generator
 # ---------------------------------------------------------------------------
 
 # Enums that are NOT emitted as standalone .swift enum files:
-# - "status" → becomes {Project}Error.swift (infrastructure, handled separately)
-# - "impl/tag" → C-internal dispatch enum, part of {Project}Implementation.swift
+# - "status" -> becomes {Project}Error.swift (infrastructure, handled separately)
+# - "impl/tag" -> C-internal dispatch enum, part of {Project}Implementation.swift
 _INFRASTRUCTURE_ENUMS = frozenset({"status", "impl/tag"})
 
 
 def generate_swift_enum(project_ir: IRProject, enum: IREnum) -> str:
-    """Generate the ``.swift`` file content for a single enum.
-
-    Format (matches ``wrappers/swift/VirgilCrypto/VirgilCryptoFoundation/AlgId.swift``)::
-
-        /// <license>
-
-        import Foundation
-        import <Framework>
-
-        /// <description>
-        @objc(<PREFIX><TypeName>) public enum <TypeName>: Int {
-
-            case <caseName>
-            ...
-
-            /// Create enumeration value from the correspond C enumeration value.
-            internal init(fromC <paramName>: <c_type_t>) {
-                self.init(rawValue: Int(<paramName>.rawValue))!
-            }
-        }
-    """
+    """Generate the ``.swift`` file content for a single enum."""
     type_name = swift_type_name(enum.name)
     objc_name = f"{_objc_prefix(project_ir)}{type_name}"
     framework = _framework(project_ir)
@@ -247,9 +269,6 @@ def generate_swift_enum(project_ir: IRProject, enum: IREnum) -> str:
             for doc_line in const_doc.splitlines():
                 lines.append(f"    /// {doc_line.strip()}")
 
-        # Value handling — emit an explicit ``= N`` whenever the source
-        # XML model provides a value; omit when no value is specified
-        # (Swift auto-increments from the previous raw value).
         raw_value = const.attrs.get("value")
         if raw_value is None or raw_value == "":
             lines.append(f"    case {case_name}")
@@ -276,422 +295,1133 @@ def generate_swift_enum(project_ir: IRProject, enum: IREnum) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Resolved XML loading
+# Arg / return type classification helpers
 # ---------------------------------------------------------------------------
 
-def _load_resolved_swift_xml(
-    project_name: str, repo_root: str | Path = "."
-) -> ET.Element | None:
-    """Load the resolved Swift XML for a project, or None if unavailable."""
-    path = (
-        Path(repo_root)
-        / "codegen"
-        / "generated"
-        / project_name
-        / f"swift_project_{project_name}.xml"
-    )
-    if not path.exists():
-        return None
-    return ET.parse(str(path)).getroot()
+def _arg_is_buffer_output(arg: IRCArgument) -> bool:
+    """Buffer-class arguments act as output parameters -- pushed to returns."""
+    return arg.class_name == "buffer"
+
+
+def _arg_should_skip(arg: IRCArgument) -> bool:
+    """Arguments filtered from the wrapper API (writeonly, error-class)."""
+    if arg.access == "writeonly":
+        return True
+    if arg.class_name == "error":
+        return True
+    return False
+
+
+def _method_has_error_arg(method: IRCMethod) -> bool:
+    """True if the method has an explicit ``class="error"`` argument."""
+    return any(arg.class_name == "error" for arg in method.arguments)
+
+
+def _method_has_status_return(method: IRCMethod) -> bool:
+    """True if the method returns a status enum."""
+    return any(r.enum_name == "status" for r in method.returns)
+
+
+def _method_throws(method: IRCMethod) -> bool:
+    """True if the method should be marked ``throws`` in Swift."""
+    return _method_has_status_return(method) or _method_has_error_arg(method)
+
+
+def _method_should_wrap(method: IRCMethod) -> bool:
+    """Port of ``wrapper_should_wrap_method``."""
+    scope = method.attrs.get("scope", "public")
+    decl = method.declaration or method.attrs.get("declaration", "public")
+    vis = method.visibility or method.attrs.get("visibility", "public")
+    return scope == "public" and decl == "public" and vis == "public"
+
+
+def _is_static_class(cls: IRClass) -> bool:
+    """Static-only classes (``context="none"``) carry no c_ctx."""
+    return cls.attrs.get("context") == "none"
+
+
+def _resolve_self_class(cls_name: str, arg: IRCArgument) -> IRCArgument:
+    """Resolve ``class="self"`` to the enclosing class name."""
+    if arg.class_name == "self":
+        resolved = copy.copy(arg)
+        resolved.class_name = cls_name
+        return resolved
+    return arg
 
 
 # ---------------------------------------------------------------------------
-# Swift file renderer from resolved XML modules
+# Swift type mapping
 # ---------------------------------------------------------------------------
 
-def _dedent_block(text: str) -> list[str]:
-    """Remove the common leading whitespace from a resolved XML text block.
+def _swift_type_for_arg(project_ir: IRProject, arg: IRCArgument) -> str:
+    """Map an IR argument to its Swift type name."""
+    if arg.enum_name:
+        return swift_type_name(arg.enum_name)
+    if arg.interface_name:
+        return swift_type_name(arg.interface_name)
+    if arg.class_name == "data":
+        return "Data"
+    if arg.class_name == "buffer":
+        return "Data"
+    if arg.class_name and arg.class_name not in {"data", "buffer"}:
+        return swift_type_name(arg.class_name)
+    type_name = (arg.type_name or "").lower()
+    if type_name == "size":
+        return "Int"
+    if type_name == "boolean":
+        return "Bool"
+    if type_name == "integer":
+        return "Int"  # Swift maps to Int for all integer sizes
+    if type_name == "unsigned":
+        return "Int"  # Swift wraps unsigned as Int for ObjC compat
+    if type_name == "byte" and arg.is_reference:
+        return "UnsafeMutableRawPointer"
+    return "Void"
 
-    Returns a list of lines with relative indentation preserved.
-    Empty lines in the original are preserved as empty strings.
 
-    Multi-space runs within lines are collapsed to single spaces —
-    the resolved XML stores code with alignment padding (e.g.,
-    ``vsc_data(ptr.bindMemory(to:                  byte.self)``)
-    that the GSL output normalizes to single spaces.
+def _swift_return_type(project_ir: IRProject, method: IRCMethod, entity_name: str) -> str:
+    """Determine the Swift return type for a method.
+
+    Handles single returns, buffer outputs (Data), and multi-return
+    (result struct).
     """
-    import re
-    raw_lines = text.split("\n")
-    # Find minimum indent among non-empty lines
-    content_lines = [l for l in raw_lines if l.strip()]
-    if not content_lines:
-        return []
-    min_indent = min(len(l) - len(l.lstrip()) for l in content_lines)
-    result: list[str] = []
-    for l in raw_lines:
-        if l.strip():
-            stripped = l[min_indent:]
-            # Preserve leading indent, collapse internal multi-spaces
-            leading = len(stripped) - len(stripped.lstrip())
-            indent = stripped[:leading]
-            body = stripped[leading:]
-            body = re.sub(r"  +", " ", body)
-            result.append(indent + body)
+    value_returns: list[IRCArgument] = []
+    buffer_outputs: list[IRCArgument] = []
+
+    for ret in method.returns:
+        if ret.enum_name == "status":
+            continue
+        value_returns.append(ret)
+
+    for arg in method.arguments:
+        if _arg_is_buffer_output(arg):
+            buffer_outputs.append(arg)
+
+    total = len(value_returns) + len(buffer_outputs)
+
+    if total == 0:
+        return "Void"
+    elif total == 1:
+        if value_returns:
+            return _swift_type_for_arg(project_ir, value_returns[0])
         else:
-            result.append("")
-    # Strip leading and trailing empty lines
-    while result and not result[0]:
-        result.pop(0)
-    while result and not result[-1]:
-        result.pop()
-    return result
+            return "Data"
+    else:
+        # Multi-return: generate a result struct name
+        # Format: {InterfaceName}{MethodName}Result or {ClassName}{MethodName}Result
+        return _result_struct_name(entity_name, method.name)
 
 
-def _render_module_from_xml(
-    module: ET.Element, project_root: ET.Element
+def _result_struct_name(entity_name: str, method_name: str) -> str:
+    """Build a result struct name like ``AuthEncryptAuthEncryptResult``."""
+    return swift_type_name(entity_name) + swift_type_name(method_name) + "Result"
+
+
+# ---------------------------------------------------------------------------
+# Buffer capacity expression
+# ---------------------------------------------------------------------------
+
+def _buffer_capacity_expr(
+    project_ir: IRProject,
+    entity_name: str,
+    arg: IRCArgument,
+    method_arg_locals: dict[str, str],
+    *,
+    is_static: bool = False,
 ) -> str:
-    """Render a single ``<swift_module>`` element to a complete ``.swift`` file.
+    """Resolve the Swift expression for buffer capacity.
 
-    Handles protocols, classes (with methods, properties, dependencies),
-    enums (FoundationError style with handleStatus), and infrastructure.
+    Returns a Swift expression string.
     """
-    prefix = project_root.get("prefix", "")
+    la = arg.length_attrs
+    if not la:
+        return "0"
+
+    if "method" in la:
+        method_name = la["method"]
+        swift_meth = swift_method_name(method_name)
+
+        # Build the proxy arguments
+        proxy_args: list[str] = []
+        idx = 0
+        while f"proxy_{idx}_to" in la:
+            cast = la.get(f"proxy_{idx}_cast")
+            src_arg = la.get(f"proxy_{idx}_argument")
+            src_const = la.get(f"proxy_{idx}_constant")
+            target_arg = la.get(f"proxy_{idx}_to")
+            target_swift = swift_method_name(target_arg) if target_arg else ""
+
+            if src_const is not None:
+                proxy_args.append(f"{target_swift}: {src_const}")
+            elif src_arg is not None:
+                local = method_arg_locals.get(src_arg, swift_method_name(src_arg))
+                if cast == "data_length":
+                    proxy_args.append(f"{target_swift}: {local}.count")
+                else:
+                    proxy_args.append(f"{target_swift}: {local}")
+            idx += 1
+
+        if is_static:
+            caller = swift_type_name(entity_name)
+        else:
+            caller = "self"
+        return f"{caller}.{swift_meth}({', '.join(proxy_args)})"
+
+    if "constant" in la:
+        const_name = la["constant"]
+        swift_const = swift_method_name(const_name)
+        owner_class = la.get("class")
+        if owner_class and owner_class != "self":
+            return f"{swift_type_name(owner_class)}.{swift_const}"
+        if is_static:
+            return f"{swift_type_name(entity_name)}.{swift_const}"
+        return f"self.{swift_const}"
+
+    if "argument" in la:
+        src = la["argument"]
+        local = method_arg_locals.get(src, swift_method_name(src))
+        if la.get("cast") == "data_length":
+            return f"{local}.count"
+        return local
+
+    return "0"
+
+
+# ---------------------------------------------------------------------------
+# Method body generation
+# ---------------------------------------------------------------------------
+
+def _swift_method_body(
+    project_ir: IRProject,
+    entity_name: str,
+    method: IRCMethod,
+    *,
+    is_static: bool = False,
+    is_interface_method: bool = False,
+) -> list[str]:
+    """Generate the body lines for a Swift method.
+
+    Returns a list of lines (without the method signature or closing brace).
+    """
+    prefix = project_ir.prefix
+    c_func = _c_func_name(project_ir, entity_name, method.name)
+    error_type_name = f"{_project_name_pascal(project_ir)}Error"
+    status_type = f"{prefix}_status_t"
+    impl_class_name = f"{_project_name_pascal(project_ir)}Implementation"
+
+    resolved_args = [_resolve_self_class(entity_name, a) for a in method.arguments]
+    resolved_returns = [_resolve_self_class(entity_name, r) for r in method.returns]
+
+    # Classify arguments
+    input_args: list[IRCArgument] = []
+    buffer_outputs: list[IRCArgument] = []
+    data_inputs: list[IRCArgument] = []
+    error_arg: IRCArgument | None = None
+
+    method_arg_locals: dict[str, str] = {}
+    for arg in resolved_args:
+        local = swift_method_name(arg.name)
+        method_arg_locals[arg.name] = local
+        if _arg_is_buffer_output(arg):
+            buffer_outputs.append(arg)
+        elif arg.class_name == "error":
+            error_arg = arg
+        elif _arg_should_skip(arg):
+            continue
+        else:
+            input_args.append(arg)
+            if arg.class_name == "data":
+                data_inputs.append(arg)
+
+    # Classify returns
+    value_returns: list[IRCArgument] = []
+    has_status_return = False
+    for ret in resolved_returns:
+        if ret.enum_name == "status":
+            has_status_return = True
+            continue
+        value_returns.append(ret)
+
+    has_error = has_status_return or error_arg is not None
 
     lines: list[str] = []
 
-    # --- License ---
-    lic = module.find("swift_license")
-    if lic is not None and lic.text:
-        lic_lines = _dedent_block(lic.text)
-        lines.extend(lic_lines)
-    else:
-        lines.append(_SWIFT_LICENSE)
-
-    lines.append("")
-    lines.append("")
-
-    # --- Imports ---
-    imports = module.findall("swift_import")
-    for imp in imports:
-        lines.append(f"import {imp.get('framework', '')}")
-
-    if imports:
+    # Error arg setup (for methods using error struct pattern)
+    if error_arg is not None:
+        lines.append(f"        var error: {prefix}_error_t = {prefix}_error_t()")
+        lines.append(f"        {prefix}_error_reset(&error)")
         lines.append("")
 
-    # --- Entity (one per module: swift_protocol, swift_class, or swift_enum) ---
-    entity = module.find("swift_protocol")
-    if entity is None:
-        entity = module.find("swift_class")
-    if entity is None:
-        entity = module.find("swift_enum")
-    if entity is None:
-        return "\n".join(lines) + "\n"
+    # Buffer output setup
+    for buf_arg in buffer_outputs:
+        buf_local = swift_method_name(buf_arg.name)
+        cap_expr = _buffer_capacity_expr(
+            project_ir, entity_name, buf_arg, method_arg_locals,
+            is_static=is_static,
+        )
+        buf_count_var = f"{buf_local}Count"
+        lines.append(f"        let {buf_count_var} = {cap_expr}")
+        lines.append(f"        var {buf_local} = Data(count: {buf_count_var})")
+        lines.append(f"        let {buf_local}Buf = vsc_buffer_new()")
+        lines.append("        defer {")
+        lines.append(f"            vsc_buffer_delete({buf_local}Buf)")
+        lines.append("        }")
+        lines.append("")
 
-    tag = entity.tag
+    # Build the C call and the wrapping closures
+    # Determine if we need withUnsafeBytes / withUnsafeMutableBytes closures
+    needs_data_closures = [a for a in input_args if a.class_name == "data"]
+    needs_buf_closures = buffer_outputs
 
-    if tag == "swift_protocol":
-        _render_protocol(entity, lines)
-    elif tag == "swift_class":
-        _render_class(entity, prefix, lines)
-    elif tag == "swift_enum":
-        _render_enum_from_xml(entity, prefix, lines)
+    # Determine the innermost return type for the closure chain
+    has_proxy_result = has_status_return or has_error or bool(value_returns)
 
+    # Build the C call argument list
+    # Methods marked ``is_static="1"`` on the source interface bypass the
+    # instance pointer (e.g., ``Hash.hash`` is a stateless helper).
+    is_static_method = is_static or method.attrs.get("is_static") == "1"
+    c_call_parts: list[str] = []
+    if not is_static_method:
+        c_call_parts.append("self.c_ctx")
+
+    for arg in resolved_args:
+        if arg.class_name == "error":
+            c_call_parts.append("&error")
+            continue
+        if _arg_should_skip(arg) and not _arg_is_buffer_output(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            buf_local = swift_method_name(arg.name)
+            c_call_parts.append(f"{buf_local}Buf")
+        elif arg.class_name == "data":
+            local = method_arg_locals[arg.name]
+            ptr_name = f"{local}Pointer"
+            c_call_parts.append(
+                f"vsc_data({ptr_name}.bindMemory(to: byte.self).baseAddress, {local}.count)"
+            )
+        elif arg.interface_name:
+            local = method_arg_locals[arg.name]
+            c_call_parts.append(f"{local}.c_ctx")
+        elif arg.class_name and arg.class_name not in {"data", "buffer"}:
+            local = method_arg_locals[arg.name]
+            c_call_parts.append(f"{local}.c_ctx")
+        elif arg.enum_name:
+            local = method_arg_locals[arg.name]
+            c_type = _c_enum_type_by_name(project_ir, arg.enum_name)
+            c_call_parts.append(f"{c_type}(rawValue: UInt32({local}.rawValue))")
+        elif (arg.type_name or "").lower() in {"size", "integer", "unsigned"}:
+            local = method_arg_locals[arg.name]
+            c_call_parts.append(local)
+        elif (arg.type_name or "").lower() == "boolean":
+            local = method_arg_locals[arg.name]
+            c_call_parts.append(local)
+        else:
+            local = method_arg_locals[arg.name]
+            c_call_parts.append(local)
+
+    c_call = f"{c_func}({', '.join(c_call_parts)})"
+
+    # Determine the closure return type
+    if has_status_return:
+        closure_return_type = status_type
+    elif value_returns and not buffer_outputs:
+        # Single value return with no buffers
+        ret = value_returns[0]
+        if ret.class_name == "data":
+            closure_return_type = "vsc_data_t"
+        elif ret.enum_name:
+            closure_return_type = _c_enum_type_by_name(project_ir, ret.enum_name)
+        elif ret.interface_name or (ret.class_name and ret.class_name not in {"data", "buffer"}):
+            closure_return_type = "OpaquePointer?"
+        elif (ret.type_name or "").lower() in {"size", "integer", "unsigned"}:
+            closure_return_type = None  # Direct Int return
+        elif (ret.type_name or "").lower() == "boolean":
+            closure_return_type = None
+        else:
+            closure_return_type = None
+    else:
+        closure_return_type = None
+
+    # Decide whether to use closures or direct call
+    if not needs_data_closures and not needs_buf_closures:
+        # Direct call -- no closures needed
+        if has_proxy_result or value_returns:
+            lines.append(f"        let proxyResult = {c_call}")
+        else:
+            lines.append(f"        {c_call}")
+    else:
+        # Need closures for data/buffer args
+        # Build nested closure structure
+        _emit_closure_chain(
+            lines, needs_data_closures, needs_buf_closures,
+            c_call, method_arg_locals, has_status_return, closure_return_type,
+            has_proxy_result or bool(value_returns), status_type,
+        )
+
+    # After closures: update buffer counts
+    for buf_arg in buffer_outputs:
+        buf_local = swift_method_name(buf_arg.name)
+        lines.append(f"        {buf_local}.count = vsc_buffer_len({buf_local}Buf)")
+
+    # Status handling
+    if has_status_return:
+        lines.append("")
+        lines.append(f"        try {error_type_name}.handleStatus(fromC: proxyResult)")
+    elif error_arg is not None:
+        lines.append("")
+        lines.append(f"        try {error_type_name}.handleStatus(fromC: error.status)")
+
+    # Return statement
+    total_returns = len(value_returns) + len(buffer_outputs)
+    if total_returns == 0:
+        pass  # No return
+    elif total_returns == 1 and not buffer_outputs:
+        # Single value return
+        ret = value_returns[0]
+        lines.append("")
+        lines.append(f"        return {_swift_return_expr(project_ir, ret, 'proxyResult')}")
+    elif total_returns == 1 and buffer_outputs:
+        # Single buffer return
+        buf_local = swift_method_name(buffer_outputs[0].name)
+        lines.append("")
+        lines.append(f"        return {buf_local}")
+    else:
+        # Multi-return: result struct
+        result_parts: list[str] = []
+        for ret in value_returns:
+            result_parts.append(
+                f"{swift_method_name(ret.name)}: "
+                f"{_swift_return_expr(project_ir, ret, 'proxyResult')}"
+            )
+        for buf_arg in buffer_outputs:
+            buf_local = swift_method_name(buf_arg.name)
+            result_parts.append(f"{buf_local}: {buf_local}")
+        result_type = _result_struct_name(entity_name, method.name)
+        lines.append("")
+        lines.append(f"        return {result_type}({', '.join(result_parts)})")
+
+    return lines
+
+
+def _emit_closure_chain(
+    lines: list[str],
+    data_inputs: list[IRCArgument],
+    buffer_outputs: list[IRCArgument],
+    c_call: str,
+    method_arg_locals: dict[str, str],
+    has_status_return: bool,
+    closure_return_type: str | None,
+    assign_result: bool,
+    status_type: str,
+) -> None:
+    """Emit the nested withUnsafeBytes / withUnsafeMutableBytes closure chain."""
+    # Determine the outermost return type annotation
+    all_closures: list[tuple[str, str, str]] = []  # (kind, local, ptrName)
+    for arg in data_inputs:
+        local = method_arg_locals[arg.name]
+        ptr_name = f"{local}Pointer"
+        all_closures.append(("data", local, ptr_name))
+    for arg in buffer_outputs:
+        local = swift_method_name(arg.name)
+        ptr_name = f"{local}Pointer"
+        all_closures.append(("buffer", local, ptr_name))
+
+    if not all_closures:
+        if assign_result:
+            lines.append(f"        let proxyResult = {c_call}")
+        else:
+            lines.append(f"        {c_call}")
+        return
+
+    # Determine the type of the return value through the closure chain
+    if has_status_return:
+        ret_type = status_type
+    elif closure_return_type:
+        ret_type = closure_return_type
+    else:
+        ret_type = "Void"
+
+    # Build the nested closures
+    indent = "        "
+    prefix = "let proxyResult = " if assign_result else ""
+
+    for i, (kind, local, ptr_name) in enumerate(all_closures):
+        closer_ret = f" -> {ret_type}" if ret_type != "Void" else ""
+        if kind == "data":
+            type_annot = "UnsafeRawBufferPointer"
+            lines.append(
+                f"{indent}{prefix}{local}.withUnsafeBytes({{ ({ptr_name}: {type_annot}){closer_ret} in"
+            )
+        else:
+            type_annot = "UnsafeMutableRawBufferPointer"
+            lines.append(
+                f"{indent}{prefix}{local}.withUnsafeMutableBytes({{ ({ptr_name}: {type_annot}){closer_ret} in"
+            )
+
+        indent += "    "
+        prefix = ""
+
+        # For buffer outputs, emit vsc_buffer_use
+        if kind == "buffer":
+            buf_count = f"{local}Count"
+            lines.append(
+                f"{indent}vsc_buffer_use({local}Buf, "
+                f"{ptr_name}.bindMemory(to: byte.self).baseAddress, {buf_count})"
+            )
+            lines.append("")
+
+    # Emit the C call at the deepest level
+    if assign_result and ret_type != "Void":
+        lines.append(f"{indent}return {c_call}")
+    elif assign_result:
+        lines.append(f"{indent}{c_call}")
+    else:
+        lines.append(f"{indent}{c_call}")
+
+    # Close all closures
+    for i in range(len(all_closures) - 1, -1, -1):
+        indent = "        " + "    " * i
+        lines.append(f"{indent}}})")
+
+
+def _swift_return_expr(project_ir: IRProject, ret: IRCArgument, c_expr: str) -> str:
+    """Convert a C return expression to Swift."""
+    impl_class_name = f"{_project_name_pascal(project_ir)}Implementation"
+
+    if ret.class_name == "data":
+        return f"Data.init(bytes: {c_expr}.bytes, count: {c_expr}.len)"
+
+    if ret.interface_name:
+        iface_name = swift_type_name(ret.interface_name)
+        if ret.access == "disown":
+            return f"{impl_class_name}.wrap{iface_name}(take: {c_expr}!)"
+        else:
+            return f"{impl_class_name}.wrap{iface_name}(use: {c_expr}!)"
+
+    if ret.class_name and ret.class_name not in {"data", "buffer"}:
+        cls_name = swift_type_name(ret.class_name)
+        if ret.access == "disown":
+            return f"{cls_name}.init(take: {c_expr}!)"
+        else:
+            return f"{cls_name}.init(use: {c_expr}!)"
+
+    if ret.enum_name:
+        enum_name = swift_type_name(ret.enum_name)
+        return f"{enum_name}.init(fromC: {c_expr})"
+
+    type_name = (ret.type_name or "").lower()
+    if type_name in {"size", "integer", "unsigned"}:
+        return c_expr  # Direct Int-compatible
+    if type_name == "boolean":
+        return c_expr
+
+    return c_expr
+
+
+# ---------------------------------------------------------------------------
+# Swift method signature
+# ---------------------------------------------------------------------------
+
+def _swift_method_signature_parts(
+    project_ir: IRProject,
+    method: IRCMethod,
+    entity_name: str,
+    *,
+    is_static: bool = False,
+    is_protocol: bool = False,
+) -> tuple[str, str, bool, str]:
+    """Return (args_str, return_type, throws, modifier).
+
+    ``modifier`` is ``"static "`` for static methods, ``""`` otherwise.
+    """
+    resolved_args = [_resolve_self_class(entity_name, a) for a in method.arguments]
+    resolved_returns = [_resolve_self_class(entity_name, r) for r in method.returns]
+
+    # Build argument list
+    arg_parts: list[str] = []
+    for arg in resolved_args:
+        if _arg_is_buffer_output(arg) or _arg_should_skip(arg):
+            continue
+        local = swift_method_name(arg.name)
+        swift_type = _swift_type_for_arg(project_ir, arg)
+        arg_parts.append(f"{local}: {swift_type}")
+
+    # Determine return type
+    ret_type = _swift_return_type(project_ir, method, entity_name)
+
+    throws = _method_throws(method)
+    modifier = "static " if is_static else ""
+
+    return ", ".join(arg_parts), ret_type, throws, modifier
+
+
+# ---------------------------------------------------------------------------
+# Protocol (interface) generator
+# ---------------------------------------------------------------------------
+
+def generate_swift_protocol(project_ir: IRProject, iface: IRInterface) -> str:
+    """Generate a protocol .swift file from an IRInterface."""
+    type_name = swift_type_name(iface.name)
+    objc_name = f"{_objc_prefix(project_ir)}{type_name}"
+
+    lines: list[str] = []
+    lines.append(_file_header(project_ir))
+
+    # Inheritance
+    inherits = ["CContext"]
+    for parent in iface.inherits:
+        inherits.append(swift_type_name(parent))
+
+    lines.append(f"@objc({objc_name}) public protocol {type_name} : {', '.join(inherits)} {{")
+
+    # Constants as properties
+    for const in iface.constants:
+        _emit_doc(lines, const.description)
+        prop_name = swift_method_name(const.name)
+        # Determine type from attrs
+        const_type = _swift_constant_type(const)
+        lines.append(f"    @objc var {prop_name}: {const_type} {{ get }}")
+
+    # Methods
+    for method in iface.methods:
+        if not _method_should_wrap(method):
+            continue
+        lines.append("")
+        _emit_doc(lines, method.description)
+
+        args_str, ret_type, throws, _ = _swift_method_signature_parts(
+            project_ir, method, iface.name, is_protocol=True,
+        )
+        throws_str = " throws" if throws else ""
+        ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
+        meth_name = swift_method_name(method.name)
+        lines.append(f"    @objc func {meth_name}({args_str}){throws_str}{ret_str}")
+
+    lines.append("}")
     lines.append("")
+
     return "\n".join(lines)
 
 
-def _extract_doc(text: str | None) -> str | None:
-    """Extract doc comment lines from an XML text block.
-
-    Returns the dedented ``/// ...`` lines, or None if empty.
-    """
-    if not text:
-        return None
-    raw_lines = text.split("\n")
-    content_lines = [l for l in raw_lines if l.strip()]
-    if not content_lines:
-        return None
-    min_indent = min(len(l) - len(l.lstrip()) for l in content_lines)
-    stripped = [l[min_indent:] if len(l) > min_indent else l.strip() for l in content_lines]
-    return "\n".join(stripped)
+def _swift_constant_type(const: IRCConstant) -> str:
+    """Map a constant's type attrs to a Swift type."""
+    type_attr = (const.attrs.get("type") or "size").lower()
+    if type_attr == "size":
+        return "Int"
+    if type_attr == "boolean":
+        return "Bool"
+    if type_attr == "integer":
+        return "Int"
+    if type_attr == "unsigned":
+        return "Int"
+    return "Int"
 
 
-def _entity_doc(entity: ET.Element) -> str | None:
-    """Extract the doc comment from an entity's text content."""
-    return _extract_doc(entity.text)
+# ---------------------------------------------------------------------------
+# Class generator
+# ---------------------------------------------------------------------------
+
+def generate_swift_class(project_ir: IRProject, cls: IRClass) -> str:
+    """Generate a class .swift file from an IRClass."""
+    type_name = swift_type_name(cls.name)
+    objc_name = f"{_objc_prefix(project_ir)}{type_name}"
+    entity_snake = _entity_snake(cls.name)
+    prefix = project_ir.prefix
+    is_static = _is_static_class(cls)
+
+    lines: list[str] = []
+    lines.append(_file_header(project_ir))
+
+    if is_static:
+        lines.append(f"@objc({objc_name}) public class {type_name}: NSObject {{")
+        lines.append("")
+    else:
+        lines.append(f"@objc({objc_name}) public class {type_name}: NSObject {{")
+        lines.append("")
+        # c_ctx property
+        lines.append("    /// Handle underlying C context.")
+        lines.append("    @objc public let c_ctx: OpaquePointer")
+        lines.append("")
+
+        # Constants as let properties
+        for const in cls.constants:
+            if const.attrs.get("definition") == "private":
+                continue
+            prop_name = swift_method_name(const.name)
+            const_type = _swift_constant_type(const)
+            value = const.attrs.get("value", "0")
+            _emit_doc(lines, const.description)
+            lines.append(f"    @objc public let {prop_name}: {const_type} = {value}")
+            lines.append("")
+
+        # Lifecycle: init(), init(take:), init(use:), deinit
+        lines.append(f"    public override init() {{")
+        lines.append(f"        self.c_ctx = {prefix}_{entity_snake}_new()")
+        lines.append(f"        super.init()")
+        lines.append("    }")
+        lines.append("")
+        lines.append(f"    public init(take c_ctx: OpaquePointer) {{")
+        lines.append(f"        self.c_ctx = c_ctx")
+        lines.append(f"        super.init()")
+        lines.append("    }")
+        lines.append("")
+        lines.append(f"    public init(use c_ctx: OpaquePointer) {{")
+        lines.append(f"        self.c_ctx = {prefix}_{entity_snake}_shallow_copy(c_ctx)")
+        lines.append(f"        super.init()")
+        lines.append("    }")
+        lines.append("")
+        lines.append("    /// Release underlying C context.")
+        lines.append("    deinit {")
+        lines.append(f"        {prefix}_{entity_snake}_delete(self.c_ctx)")
+        lines.append("    }")
+        lines.append("")
+
+    # Dependency setters (for non-static classes)
+    if not is_static:
+        for dep in cls.dependencies:
+            _emit_dependency_setter(lines, project_ir, cls.name, dep)
+
+    # Static constants for static classes
+    if is_static:
+        for const in cls.constants:
+            if const.attrs.get("definition") == "private":
+                continue
+            prop_name = swift_method_name(const.name)
+            const_type = _swift_constant_type(const)
+            value = const.attrs.get("value", "0")
+            _emit_doc(lines, const.description)
+            lines.append(f"    @objc public static let {prop_name}: {const_type} = {value}")
+            lines.append("")
+
+    # Methods
+    for method in cls.methods:
+        if not _method_should_wrap(method):
+            continue
+
+        is_method_static = is_static or method.attrs.get("is_static") == "1"
+
+        args_str, ret_type, throws, modifier = _swift_method_signature_parts(
+            project_ir, method, cls.name, is_static=is_method_static,
+        )
+        if is_method_static:
+            modifier = "static "
+
+        throws_str = " throws" if throws else ""
+        ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
+        meth_name = swift_method_name(method.name)
+
+        _emit_doc(lines, method.description)
+        lines.append(
+            f"    @objc public {modifier}func {meth_name}"
+            f"({args_str}){throws_str}{ret_str} {{"
+        )
+
+        body = _swift_method_body(
+            project_ir, cls.name, method, is_static=is_method_static,
+        )
+        lines.extend(body)
+        lines.append("    }")
+        lines.append("")
+
+    lines.append("}")
+    lines.append("")
+
+    return "\n".join(lines)
 
 
-def _code_tail_doc(entity: ET.Element) -> str | None:
-    """Extract the doc comment stored in the .tail of the last child element.
+def _emit_dependency_setter(
+    lines: list[str],
+    project_ir: IRProject,
+    entity_name: str,
+    dep: IRDependency,
+) -> None:
+    """Emit a dependency setter method."""
+    prefix = project_ir.prefix
+    entity_snake = _entity_snake(entity_name)
+    dep_snake = _entity_snake(dep.name)
+    setter_name = "set" + swift_type_name(dep.name)
+    dep_type = swift_type_name(dep.type_name)
+    local = swift_method_name(dep.name)
 
-    The GSL stores method/constructor doc comments in the .tail of the
-    <swift_code> child element rather than in the entity's own .text.
-    """
-    code = entity.find("swift_code")
-    if code is not None and code.tail:
-        return _extract_doc(code.tail)
-    # Also check .tail of last child
-    children = list(entity)
-    if children:
-        last = children[-1]
-        if last.tail:
-            return _extract_doc(last.tail)
+    lines.append(f"    @objc public func {setter_name}({local}: {dep_type}) {{")
+    lines.append(f"        {prefix}_{entity_snake}_release_{dep_snake}(self.c_ctx)")
+    lines.append(f"        {prefix}_{entity_snake}_use_{dep_snake}(self.c_ctx, {local}.c_ctx)")
+    lines.append("    }")
+    lines.append("")
+
+
+# ---------------------------------------------------------------------------
+# Implementation generator
+# ---------------------------------------------------------------------------
+
+def generate_swift_implementation(project_ir: IRProject, impl: IRImplementation) -> str:
+    """Generate an implementation .swift file from an IRImplementation."""
+    type_name = swift_type_name(impl.name)
+    objc_name = f"{_objc_prefix(project_ir)}{type_name}"
+    entity_snake = _entity_snake(impl.name)
+    prefix = project_ir.prefix
+
+    # Determine interface conformance
+    iface_names: list[str] = []
+    for binding in impl.interface_bindings:
+        iface_names.append(swift_type_name(binding.name))
+
+    lines: list[str] = []
+    lines.append(_file_header(project_ir))
+
+    # Class declaration with interface conformance
+    if iface_names:
+        inherit_str = f": NSObject, {', '.join(iface_names)}"
+    else:
+        inherit_str = ": NSObject"
+
+    lines.append(f"@objc({objc_name}) public class {type_name}{inherit_str} {{")
+    lines.append("")
+
+    # c_ctx property
+    lines.append("    /// Handle underlying C context.")
+    lines.append("    @objc public let c_ctx: OpaquePointer")
+    lines.append("")
+
+    # Binding constants as let properties
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    for binding in impl.interface_bindings:
+        iface = iface_by_name.get(binding.name)
+        if iface is None:
+            continue
+        iface_const_by_name = {c.name: c for c in iface.constants}
+        for bconst in binding.constants:
+            iface_const = iface_const_by_name.get(bconst.name)
+            if iface_const is None:
+                continue
+            prop_name = swift_method_name(bconst.name)
+            const_type = _swift_constant_type(iface_const)
+            value = bconst.value or bconst.attrs.get("value", "0")
+            _emit_doc(lines, iface_const.description)
+            lines.append(f"    @objc public let {prop_name}: {const_type} = {value}")
+            lines.append("")
+
+    # Impl-specific constants
+    for const in impl.constants:
+        if const.attrs.get("definition") == "private":
+            continue
+        prop_name = swift_method_name(const.name)
+        const_type = _swift_constant_type(const)
+        value = const.attrs.get("value", "0")
+        _emit_doc(lines, const.description)
+        lines.append(f"    @objc public let {prop_name}: {const_type} = {value}")
+        lines.append("")
+
+    # Lifecycle
+    lines.append(f"    public override init() {{")
+    lines.append(f"        self.c_ctx = {prefix}_{entity_snake}_new()")
+    lines.append(f"        super.init()")
+    lines.append("    }")
+    lines.append("")
+    lines.append(f"    public init(take c_ctx: OpaquePointer) {{")
+    lines.append(f"        self.c_ctx = c_ctx")
+    lines.append(f"        super.init()")
+    lines.append("    }")
+    lines.append("")
+    lines.append(f"    public init(use c_ctx: OpaquePointer) {{")
+    lines.append(f"        self.c_ctx = {prefix}_{entity_snake}_shallow_copy(c_ctx)")
+    lines.append(f"        super.init()")
+    lines.append("    }")
+    lines.append("")
+    lines.append("    /// Release underlying C context.")
+    lines.append("    deinit {")
+    lines.append(f"        {prefix}_{entity_snake}_delete(self.c_ctx)")
+    lines.append("    }")
+    lines.append("")
+
+    # Dependency setters
+    for dep in impl.dependencies:
+        _emit_dependency_setter(lines, project_ir, impl.name, dep)
+
+    # Impl-specific methods
+    for method in impl.methods:
+        if method.attrs.get("declaration") != "public":
+            continue
+        if not _method_should_wrap(method):
+            continue
+        _emit_method(lines, project_ir, impl.name, method, is_static=False)
+
+    # Interface methods (from bindings)
+    for binding in impl.interface_bindings:
+        iface = iface_by_name.get(binding.name)
+        if iface is None:
+            continue
+        for method in iface.methods:
+            if not _method_should_wrap(method):
+                continue
+            _emit_method(lines, project_ir, impl.name, method, is_static=False)
+
+    lines.append("}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def _emit_method(
+    lines: list[str],
+    project_ir: IRProject,
+    entity_name: str,
+    method: IRCMethod,
+    *,
+    is_static: bool = False,
+) -> None:
+    """Emit a complete method (signature + body + closing brace)."""
+    args_str, ret_type, throws, modifier = _swift_method_signature_parts(
+        project_ir, method, entity_name, is_static=is_static,
+    )
+    if is_static:
+        modifier = "static "
+
+    throws_str = " throws" if throws else ""
+    ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
+    meth_name = swift_method_name(method.name)
+
+    _emit_doc(lines, method.description)
+    lines.append(
+        f"    @objc public {modifier}func {meth_name}"
+        f"({args_str}){throws_str}{ret_str} {{"
+    )
+    body = _swift_method_body(
+        project_ir, entity_name, method, is_static=is_static,
+    )
+    lines.extend(body)
+    lines.append("    }")
+    lines.append("")
+
+
+# ---------------------------------------------------------------------------
+# CContext.swift generator
+# ---------------------------------------------------------------------------
+
+def generate_swift_ccontext(project_ir: IRProject) -> str:
+    """Generate the CContext.swift protocol file."""
+    lines: list[str] = []
+    lines.append(_SWIFT_LICENSE)
+    lines.append("")
+    lines.append("")
+    lines.append("import Foundation")
+    lines.append("")
+
+    objc_name = f"{_objc_prefix(project_ir)}CContext"
+    lines.append(f"@objc({objc_name}) public protocol CContext {{")
+    lines.append("    /// Handle underlying C context.")
+    lines.append("    @objc var c_ctx: OpaquePointer { get }")
+    lines.append("}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# {Project}Error.swift generator
+# ---------------------------------------------------------------------------
+
+def _find_status_enum(project_ir: IRProject) -> IREnum | None:
+    for enum in project_ir.enums:
+        if enum.name == "status":
+            return enum
     return None
 
 
-def _render_protocol(proto: ET.Element, lines: list[str]) -> None:
-    """Render a ``<swift_protocol>`` to lines."""
-    name = proto.get("name", "")
-    objc_name = proto.get("objc_name", "")
-
-    # Doc comment
-    doc = _entity_doc(proto)
-    if doc:
-        lines.append(doc)
-
-    # Inheritance
-    inherits = [inh.get("type", "") for inh in proto.findall("swift_inherit")]
-    inherit_str = f" : {', '.join(inherits)}" if inherits else ""
-
-    lines.append(f"@objc({objc_name}) public protocol {name}{inherit_str} {{")
-
-    # Properties
-    for prop in proto.findall("swift_property"):
-        prop_doc = _entity_doc(prop)
-        if prop_doc:
-            lines.append(f"    {prop_doc}")
-        prop_name = prop.get("name", "")
-        prop_type = prop.get("type", "")
-        lines.append(f"    @objc var {prop_name}: {prop_type} {{ get }}")
-
-    # Methods
-    for meth in proto.findall("swift_method"):
-        _render_protocol_method(meth, lines)
-
-    lines.append("}")
-
-
-def _render_protocol_method(meth: ET.Element, lines: list[str]) -> None:
-    """Render a single method declaration inside a protocol."""
-    name = meth.get("name", "")
-    throws = meth.get("throws", "0") == "1"
-
-    # Doc comment — may be in .text or in a child text node
-    doc = _entity_doc(meth)
-
-    # Arguments
-    args = meth.findall("swift_argument")
-    arg_parts: list[str] = []
-    for arg in args:
-        arg_name = arg.get("name", "")
-        arg_type = arg.get("type", "")
-        arg_parts.append(f"{arg_name}: {arg_type}")
-
-    # Return
-    ret = meth.find("swift_return")
-    ret_type = ret.get("type", "Void") if ret is not None else "Void"
-
-    throws_str = " throws" if throws else ""
-    ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
-
-    lines.append("")
-    if doc:
-        lines.append(f"    {doc}")
-    lines.append(f"    @objc func {name}({', '.join(arg_parts)}){throws_str}{ret_str}")
-
-
-def _render_class(cls: ET.Element, prefix: str, lines: list[str]) -> None:
-    """Render a ``<swift_class>`` to lines."""
-    name = cls.get("name", "")
-    objc_name = cls.get("objc_name", "")
-
-    # Inheritance
-    inherits = [inh.get("type", "") for inh in cls.findall("swift_inherit")]
-    inherit_str = f": {', '.join(inherits)}" if inherits else ""
-
-    lines.append(f"@objc({objc_name}) public class {name}{inherit_str} {{")
-    lines.append("")
-
-    # Properties
-    for prop in cls.findall("swift_property"):
-        prop_doc = _entity_doc(prop)
-        if prop_doc:
-            lines.append(f"    {prop_doc}")
-        prop_name = prop.get("name", "")
-        prop_type = prop.get("type", "")
-        prop_value = prop.get("value", "")
-        if prop_value:
-            lines.append(f"    @objc public let {prop_name}: {prop_type} = {prop_value}")
-        else:
-            lines.append(f"    @objc public let {prop_name}: {prop_type}")
-        lines.append("")
-
-    # Lifecycle (init, take, use, deinit) — from swift_constructor elements
-    for ctor in cls.findall("swift_constructor"):
-        _render_constructor(ctor, lines)
-
-    # Deinit
-    deinit_el = cls.find("swift_destructor")
-    if deinit_el is not None:
-        code = deinit_el.find("swift_code")
-        if code is not None and code.text:
-            code_lines = _dedent_block(code.text)
-            lines.append("    /// Release underlying C context.")
-            lines.append("    deinit {")
-            for cl in code_lines:
-                if cl:
-                    lines.append(f"        {cl}")
-                else:
-                    lines.append("")
-            lines.append("    }")
-            lines.append("")
-
-    # Methods (including setters)
-    for meth in cls.findall("swift_method"):
-        _render_class_method(meth, lines)
-
-    lines.append("}")
-
-
-def _render_constructor(ctor: ET.Element, lines: list[str]) -> None:
-    """Render a ``<swift_constructor>`` (init, take, use) to lines."""
-    doc = _entity_doc(ctor)
-    if doc:
-        lines.append(f"    {doc}")
-
-    is_override = ctor.get("override", "0") == "1"
-
-    args = ctor.findall("swift_argument")
-    arg_parts: list[str] = []
-    for arg in args:
-        arg_name = arg.get("name", "")
-        ext_name = arg.get("ext_name", "")
-        arg_type = arg.get("type", "")
-        if ext_name:
-            arg_parts.append(f"{ext_name} {arg_name}: {arg_type}")
-        else:
-            arg_parts.append(f"{arg_name}: {arg_type}")
-
-    override_str = "override " if is_override else ""
-    args_str = ", ".join(arg_parts)
-
-    code = ctor.find("swift_code")
-    if code is not None and code.text:
-        code_lines = _dedent_block(code.text)
-        lines.append(f"    public {override_str}init({args_str}) {{")
-        for cl in code_lines:
-            if cl:
-                lines.append(f"        {cl}")
-            else:
-                lines.append("")
-        lines.append("    }")
-        lines.append("")
-
-
-def _render_class_method(meth: ET.Element, lines: list[str]) -> None:
-    """Render a single method inside a class."""
-    name = meth.get("name", "")
-    throws = meth.get("throws", "0") == "1"
-    modifier = meth.get("modifier", "")
-    objc = meth.get("objc", "0") == "1"
-
-    # Doc comment
-    doc = _entity_doc(meth)
-
-    # Arguments
-    args = meth.findall("swift_argument")
-    arg_parts: list[str] = []
-    for arg in args:
-        arg_name = arg.get("name", "")
-        ext_name = arg.get("ext_name", "")
-        arg_type = arg.get("type", "")
-        if ext_name:
-            arg_parts.append(f"{ext_name} {arg_name}: {arg_type}")
-        else:
-            arg_parts.append(f"{arg_name}: {arg_type}")
-
-    # Return type — check for multi-return result struct
-    returns = meth.findall("swift_return")
-    if len(returns) == 0:
-        ret_type = "Void"
-    elif len(returns) == 1:
-        ret_type = returns[0].get("type", "Void")
-    else:
-        # Multi-return: the method declares a named result type
-        ret_type = meth.get("return_type", returns[0].get("type", "Void"))
-
-    throws_str = " throws" if throws else ""
-    ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
-    modifier_str = "static " if modifier == "static" else ""
-    objc_str = "@objc " if objc else ""
-
-    code = meth.find("swift_code")
-    if code is not None and code.text:
-        code_lines = _dedent_block(code.text)
-        if doc:
-            lines.append(f"    {doc}")
-        lines.append(
-            f"    {objc_str}public {modifier_str}func {name}"
-            f"({', '.join(arg_parts)}){throws_str}{ret_str} {{"
+def generate_swift_error(project_ir: IRProject) -> str:
+    """Generate the {Project}Error.swift file from the status enum."""
+    status = _find_status_enum(project_ir)
+    if status is None:
+        raise ValueError(
+            f"project {project_ir.name!r} has no 'status' enum"
         )
-        for cl in code_lines:
-            if cl:
-                lines.append(f"        {cl}")
-            else:
-                lines.append("")
-        lines.append("    }")
-        lines.append("")
 
+    proj_name = _project_name_pascal(project_ir)
+    type_name = f"{proj_name}Error"
+    objc_name = f"{_objc_prefix(project_ir)}{type_name}"
+    prefix = project_ir.prefix
+    status_c_type = f"{prefix}_status_t"
 
-def _render_enum_from_xml(enum: ET.Element, prefix: str, lines: list[str]) -> None:
-    """Render a ``<swift_enum>`` from resolved XML (used for FoundationError etc.)."""
-    name = enum.get("name", "")
-    objc_name = enum.get("objc_name", "")
+    # Non-success constants
+    body_constants = [c for c in status.constants if c.name != "success"]
 
-    # Doc comment
-    doc = _entity_doc(enum)
-    if doc:
-        lines.append(doc)
+    lines: list[str] = []
+    lines.append(_file_header(project_ir))
 
-    # Inheritance
-    inherits = [inh.get("type", "") for inh in enum.findall("swift_inherit")]
-    inherit_str = f": {', '.join(inherits)}" if inherits else ""
-
-    lines.append(f"@objc({objc_name}) public enum {name}{inherit_str} {{")
+    lines.append(f"@objc({objc_name}) public enum {type_name}: Int, Error {{")
     lines.append("")
 
-    # Constants (cases)
-    for const in enum.findall("swift_constant"):
-        const_doc = _entity_doc(const)
-        if const_doc:
-            lines.append(f"    {const_doc}")
-        const_name = const.get("name", "")
-        const_value = const.get("value", "")
-        if const_value:
-            lines.append(f"    case {const_name} = {const_value}")
-        else:
-            lines.append(f"    case {const_name}")
+    for const in body_constants:
+        _emit_doc(lines, const.description)
+        case_name = swift_case_name(const.name)
+        value = const.attrs.get("value", "0").strip()
+        # Error values are negative
+        lines.append(f"    case {case_name} = {value}")
         lines.append("")
 
     # fromC initializer
-    from_c = enum.find("swift_constructor")
-    if from_c is not None:
-        from_c_doc = _entity_doc(from_c)
-        if from_c_doc:
-            lines.append(f"    {from_c_doc}")
-        args = from_c.findall("swift_argument")
-        arg_parts: list[str] = []
-        for a in args:
-            ext = a.get("ext_name", "")
-            nm = a.get("name", "")
-            tp = a.get("type", "")
-            arg_parts.append(f"{ext + ' ' if ext else ''}{nm}: {tp}")
-        code = from_c.find("swift_code")
-        if code is not None and code.text:
-            code_lines = _dedent_block(code.text)
-            lines.append(f"    internal init({', '.join(arg_parts)}) {{")
-            for cl in code_lines:
-                if cl:
-                    lines.append(f"        {cl}")
-                else:
-                    lines.append("")
-            lines.append("    }")
+    lines.append(f"    internal init(fromC status: {status_c_type}) {{")
+    lines.append(f"        self.init(rawValue: Int(status.rawValue))!")
+    lines.append("    }")
 
-    # handleStatus method (on error enums)
-    for meth in enum.findall("swift_method"):
-        _render_class_method(meth, lines)
+    # handleStatus method
+    lines.append(f"    @objc public static func handleStatus(fromC code: {status_c_type}) throws {{")
+    lines.append(f"        if code != {prefix}_status_SUCCESS {{")
+    lines.append(f"            throw {type_name}(fromC: code)")
+    lines.append("        }")
+    lines.append("    }")
+    lines.append("")
+    lines.append("}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# {Project}Implementation.swift generator
+# ---------------------------------------------------------------------------
+
+def _find_impl_tag_enum(project_ir: IRProject) -> IREnum | None:
+    for enum in project_ir.enums:
+        if enum.name == "impl/tag":
+            return enum
+    return None
+
+
+def generate_swift_project_implementation(project_ir: IRProject) -> str:
+    """Generate the {Project}Implementation.swift dispatch file."""
+    proj_name = _project_name_pascal(project_ir)
+    type_name = f"{proj_name}Implementation"
+    objc_name = f"{_objc_prefix(project_ir)}{type_name}"
+    prefix = project_ir.prefix
+
+    # Build interface -> implementations mapping
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    impls_per_iface: dict[str, list[str]] = {}
+    iface_order: list[str] = []
+    for impl in project_ir.implementations:
+        for binding in impl.interface_bindings:
+            if binding.name not in impls_per_iface:
+                iface_order.append(binding.name)
+            impls_per_iface.setdefault(binding.name, []).append(impl.name)
+
+    lines: list[str] = []
+    lines.append(_file_header(project_ir))
+    lines.append(f"@objc({objc_name}) public class {type_name}: NSObject {{")
+    lines.append("")
+
+    for iface_name in iface_order:
+        iface = iface_by_name.get(iface_name)
+        if iface is None:
+            continue
+        impls = impls_per_iface[iface_name]
+        iface_pascal = swift_type_name(iface.name)
+        iface_snake = _entity_snake(iface.name)
+
+        # wrapXxx(take:) method
+        lines.append(f"    @objc public static func wrap{iface_pascal}(take c_ctx: OpaquePointer) -> {iface_pascal} {{")
+        lines.append(f"        if (!{prefix}_{iface_snake}_is_implemented(c_ctx)) {{")
+        lines.append(f'            fatalError("Given C implementation does not implement interface {iface_pascal}.")')
+        lines.append("        }")
+        lines.append("")
+        lines.append(f"        let implTag = {prefix}_impl_tag(c_ctx)")
+        lines.append("        switch(implTag) {")
+
+        for impl_name in impls:
+            impl_tag = f"{prefix}_impl_tag_{impl_name.replace(' ', '_').upper()}"
+            impl_swift = swift_type_name(impl_name)
+            lines.append(f"        case {impl_tag}:")
+            lines.append(f"            return {impl_swift}(take: c_ctx)")
+
+        lines.append("        default:")
+        lines.append('            fatalError("Unexpected C implementation cast to the Swift implementation.")')
+        lines.append("        }")
+        lines.append("    }")
+        lines.append("")
+
+        # wrapXxx(use:) method
+        lines.append(f"    @objc public static func wrap{iface_pascal}(use c_ctx: OpaquePointer) -> {iface_pascal} {{")
+        lines.append(f"        let shallowCopy = {prefix}_impl_shallow_copy(c_ctx)!")
+        lines.append(f"        return {type_name}.wrap{iface_pascal}(take:shallowCopy)")
+        lines.append("    }")
+        lines.append("")
 
     lines.append("}")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Result struct generator
+# ---------------------------------------------------------------------------
+
+def _collect_result_structs(
+    project_ir: IRProject,
+) -> dict[str, list[tuple[str, str]]]:
+    """Collect all multi-return result struct definitions.
+
+    Returns a dict of {struct_name: [(field_name, field_type), ...]}.
+    """
+    result_structs: dict[str, list[tuple[str, str]]] = {}
+
+    def _check_method(method: IRCMethod, entity_name: str) -> None:
+        resolved_returns = [_resolve_self_class(entity_name, r) for r in method.returns]
+        value_returns = [r for r in resolved_returns if r.enum_name != "status"]
+        buffer_outputs = [a for a in method.arguments if _arg_is_buffer_output(a)]
+
+        total = len(value_returns) + len(buffer_outputs)
+        if total <= 1:
+            return
+
+        struct_name = _result_struct_name(entity_name, method.name)
+        if struct_name in result_structs:
+            return
+
+        fields: list[tuple[str, str]] = []
+        for ret in value_returns:
+            fields.append((
+                swift_method_name(ret.name),
+                _swift_type_for_arg(project_ir, ret),
+            ))
+        for buf_arg in buffer_outputs:
+            fields.append((
+                swift_method_name(buf_arg.name),
+                "Data",
+            ))
+        result_structs[struct_name] = fields
+
+    # Check interface methods
+    for iface in project_ir.interfaces:
+        for method in iface.methods:
+            if not _method_should_wrap(method):
+                continue
+            _check_method(method, iface.name)
+
+    # Check class methods
+    for cls in project_ir.classes:
+        for method in cls.methods:
+            if not _method_should_wrap(method):
+                continue
+            _check_method(method, cls.name)
+
+    # Check implementation methods
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    for impl in project_ir.implementations:
+        for method in impl.methods:
+            if not _method_should_wrap(method):
+                continue
+            _check_method(method, impl.name)
+        for binding in impl.interface_bindings:
+            iface = iface_by_name.get(binding.name)
+            if iface is None:
+                continue
+            for method in iface.methods:
+                if not _method_should_wrap(method):
+                    continue
+                _check_method(method, iface.name)
+
+    return result_structs
 
 
 # ---------------------------------------------------------------------------
@@ -707,38 +1437,60 @@ def generate_swift_files(
     Returns a list of ``(repo_relative_path, file_content)`` tuples.
     The caller writes these to disk.
 
-    Enum files are generated from the IR (model-driven).
-    All other files (protocols, classes, implementations, infrastructure)
-    are assembled from the resolved Swift XML.
+    ALL output is generated from the IR.
     """
     del license_text  # Accepted for API parity; Swift files use _SWIFT_LICENSE
 
     output_dir = _source_dir(project_ir)
     files: list[tuple[str, str]] = []
 
-    # --- Enums (from IR) ---
-    enum_names: set[str] = set()
+    # --- CContext.swift ---
+    files.append((f"{output_dir}CContext.swift", generate_swift_ccontext(project_ir)))
+
+    # --- {Project}Error.swift ---
+    if _find_status_enum(project_ir) is not None:
+        proj_name = _project_name_pascal(project_ir)
+        files.append((
+            f"{output_dir}{proj_name}Error.swift",
+            generate_swift_error(project_ir),
+        ))
+
+    # --- Enums ---
     for enum in project_ir.enums:
         if enum.name in _INFRASTRUCTURE_ENUMS:
             continue
         if enum.attrs.get("scope") == "private":
             continue
         stem = swift_type_name(enum.name)
-        enum_names.add(stem)
         files.append((f"{output_dir}{stem}.swift", generate_swift_enum(project_ir, enum)))
 
-    # --- Everything else (from resolved XML) ---
-    xml_root = _load_resolved_swift_xml(project_ir.name, repo_root)
-    if xml_root is not None:
-        for module in xml_root.findall(".//swift_module"):
-            file_name = module.get("source_file_name", "")
-            if not file_name:
-                continue
-            # Skip enum files that are already generated from IR
-            stem = file_name.replace(".swift", "")
-            if stem in enum_names:
-                continue
-            content = _render_module_from_xml(module, xml_root)
-            files.append((f"{output_dir}{file_name}", content))
+    # --- Interfaces (protocols) ---
+    for iface in project_ir.interfaces:
+        if iface.attrs.get("scope") == "private":
+            continue
+        stem = swift_type_name(iface.name)
+        files.append((f"{output_dir}{stem}.swift", generate_swift_protocol(project_ir, iface)))
+
+    # --- Classes ---
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in {"private", "internal"}:
+            continue
+        if cls.name == "error":
+            continue
+        stem = swift_type_name(cls.name)
+        files.append((f"{output_dir}{stem}.swift", generate_swift_class(project_ir, cls)))
+
+    # --- Implementations ---
+    for impl in project_ir.implementations:
+        if impl.attrs.get("scope") in {"private", "internal"}:
+            continue
+        stem = swift_type_name(impl.name)
+        files.append((f"{output_dir}{stem}.swift", generate_swift_implementation(project_ir, impl)))
+
+    # --- {Project}Implementation.swift ---
+    files.append((
+        f"{output_dir}{_project_name_pascal(project_ir)}Implementation.swift",
+        generate_swift_project_implementation(project_ir),
+    ))
 
     return files
