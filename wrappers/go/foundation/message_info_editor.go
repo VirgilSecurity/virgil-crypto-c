@@ -10,12 +10,12 @@ import "runtime"
 * Add and/or remove recipients and it's parameters within message info.
 *
 * Usage:
-* 1. Unpack binary message info that was obtained from RecipientCipher.
-* 2. Add and/or remove key recipients.
-* 3. Pack MessagInfo to the binary data.
+*   1. Unpack binary message info that was obtained from RecipientCipher.
+*   2. Add and/or remove key recipients.
+*   3. Pack MessagInfo to the binary data.
 */
 type MessageInfoEditor struct {
-    cCtx *C.vscf_message_info_editor_t /*ct2*/
+    cCtx *C.vscf_message_info_editor_t
 }
 
 /* Handle underlying C context. */
@@ -35,7 +35,7 @@ func NewMessageInfoEditor() *MessageInfoEditor {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoEditorWithCtx(ctx *C.vscf_message_info_editor_t /*ct2*/) *MessageInfoEditor {
+func newMessageInfoEditorWithCtx(ctx *C.vscf_message_info_editor_t) *MessageInfoEditor {
     obj := &MessageInfoEditor {
         cCtx: ctx,
     }
@@ -46,7 +46,7 @@ func newMessageInfoEditorWithCtx(ctx *C.vscf_message_info_editor_t /*ct2*/) *Mes
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoEditorCopy(ctx *C.vscf_message_info_editor_t /*ct2*/) *MessageInfoEditor {
+func newMessageInfoEditorCopy(ctx *C.vscf_message_info_editor_t) *MessageInfoEditor {
     obj := &MessageInfoEditor {
         cCtx: C.vscf_message_info_editor_shallow_copy(ctx),
     }
@@ -84,7 +84,7 @@ func (obj *MessageInfoEditor) SetRandom(random Random) {
 * Set dependencies to it's defaults.
 */
 func (obj *MessageInfoEditor) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_message_info_editor_setup_defaults(obj.cCtx)
+    proxyResult := C.vscf_message_info_editor_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -105,7 +105,7 @@ func (obj *MessageInfoEditor) SetupDefaults() error {
 func (obj *MessageInfoEditor) Unpack(messageInfoData []byte) error {
     messageInfoDataData := helperWrapData (messageInfoData)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_unpack(obj.cCtx, messageInfoDataData)
+    proxyResult := C.vscf_message_info_editor_unpack(obj.cCtx, messageInfoDataData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -123,7 +123,7 @@ func (obj *MessageInfoEditor) Unpack(messageInfoData []byte) error {
 func (obj *MessageInfoEditor) Unlock(ownerRecipientId []byte, ownerPrivateKey PrivateKey) error {
     ownerRecipientIdData := helperWrapData (ownerRecipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_unlock(obj.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(ownerPrivateKey.Ctx())))
+    proxyResult := C.vscf_message_info_editor_unlock(obj.cCtx, ownerRecipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(ownerPrivateKey.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -143,7 +143,7 @@ func (obj *MessageInfoEditor) Unlock(ownerRecipientId []byte, ownerPrivateKey Pr
 func (obj *MessageInfoEditor) AddKeyRecipient(recipientId []byte, publicKey PublicKey) error {
     recipientIdData := helperWrapData (recipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := C.vscf_message_info_editor_add_key_recipient(obj.cCtx, recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -164,11 +164,11 @@ func (obj *MessageInfoEditor) AddKeyRecipient(recipientId []byte, publicKey Publ
 func (obj *MessageInfoEditor) RemoveKeyRecipient(recipientId []byte) bool {
     recipientIdData := helperWrapData (recipientId)
 
-    proxyResult := /*pr4*/C.vscf_message_info_editor_remove_key_recipient(obj.cCtx, recipientIdData)
+    proxyResult := C.vscf_message_info_editor_remove_key_recipient(obj.cCtx, recipientIdData)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -187,11 +187,11 @@ func (obj *MessageInfoEditor) RemoveAll() {
 * Actual length can be obtained right after applying changes.
 */
 func (obj *MessageInfoEditor) PackedLen() uint {
-    proxyResult := /*pr4*/C.vscf_message_info_editor_packed_len(obj.cCtx)
+    proxyResult := C.vscf_message_info_editor_packed_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -199,7 +199,7 @@ func (obj *MessageInfoEditor) PackedLen() uint {
 * Precondition: this method can be called after "apply".
 */
 func (obj *MessageInfoEditor) Pack() []byte {
-    messageInfoBuf, messageInfoBufErr := newBuffer(int(obj.PackedLen() /* lg2 */))
+    messageInfoBuf, messageInfoBufErr := newBuffer(int(obj.PackedLen()))
     if messageInfoBufErr != nil {
         return nil
     }
@@ -210,5 +210,5 @@ func (obj *MessageInfoEditor) Pack() []byte {
 
     runtime.KeepAlive(obj)
 
-    return messageInfoBuf.getData() /* r7 */
+    return messageInfoBuf.getData()
 }

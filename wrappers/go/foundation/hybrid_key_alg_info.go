@@ -2,37 +2,37 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
 * Handle information about hybrid key algorithm.
 */
 type HybridKeyAlgInfo struct {
-    cCtx *C.vscf_hybrid_key_alg_info_t /*ct10*/
+    cCtx *C.vscf_hybrid_key_alg_info_t
 }
 
 /*
 * Return algorithm information about the first key.
 */
 func (obj *HybridKeyAlgInfo) FirstKeyAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_info_first_key_alg_info(obj.cCtx)
+    proxyResult := C.vscf_hybrid_key_alg_info_first_key_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /*
 * Return algorithm information about the second key.
 */
 func (obj *HybridKeyAlgInfo) SecondKeyAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_info_second_key_alg_info(obj.cCtx)
+    proxyResult := C.vscf_hybrid_key_alg_info_second_key_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -52,7 +52,7 @@ func NewHybridKeyAlgInfo() *HybridKeyAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHybridKeyAlgInfoWithCtx(ctx *C.vscf_hybrid_key_alg_info_t /*ct10*/) *HybridKeyAlgInfo {
+func newHybridKeyAlgInfoWithCtx(ctx *C.vscf_hybrid_key_alg_info_t) *HybridKeyAlgInfo {
     obj := &HybridKeyAlgInfo {
         cCtx: ctx,
     }
@@ -63,7 +63,7 @@ func newHybridKeyAlgInfoWithCtx(ctx *C.vscf_hybrid_key_alg_info_t /*ct10*/) *Hyb
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHybridKeyAlgInfoCopy(ctx *C.vscf_hybrid_key_alg_info_t /*ct10*/) *HybridKeyAlgInfo {
+func newHybridKeyAlgInfoCopy(ctx *C.vscf_hybrid_key_alg_info_t) *HybridKeyAlgInfo {
     obj := &HybridKeyAlgInfo {
         cCtx: C.vscf_hybrid_key_alg_info_shallow_copy(ctx),
     }
@@ -93,9 +93,9 @@ func (obj *HybridKeyAlgInfo) delete() {
 * Provide algorithm identificator.
 */
 func (obj *HybridKeyAlgInfo) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_info_alg_id(obj.cCtx)
+    proxyResult := C.vscf_hybrid_key_alg_info_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }

@@ -10,7 +10,7 @@ import "runtime"
 * Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
 */
 type Kdf2 struct {
-    cCtx *C.vscf_kdf2_t /*ct10*/
+    cCtx *C.vscf_kdf2_t
 }
 
 func (obj *Kdf2) SetHash(hash Hash) {
@@ -38,7 +38,7 @@ func NewKdf2() *Kdf2 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKdf2WithCtx(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
+func newKdf2WithCtx(ctx *C.vscf_kdf2_t) *Kdf2 {
     obj := &Kdf2 {
         cCtx: ctx,
     }
@@ -49,7 +49,7 @@ func newKdf2WithCtx(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKdf2Copy(ctx *C.vscf_kdf2_t /*ct10*/) *Kdf2 {
+func newKdf2Copy(ctx *C.vscf_kdf2_t) *Kdf2 {
     obj := &Kdf2 {
         cCtx: C.vscf_kdf2_shallow_copy(ctx),
     }
@@ -79,29 +79,29 @@ func (obj *Kdf2) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Kdf2) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_kdf2_alg_id(obj.cCtx)
+    proxyResult := C.vscf_kdf2_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Kdf2) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_kdf2_produce_alg_info(obj.cCtx)
+    proxyResult := C.vscf_kdf2_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult)
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Kdf2) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_kdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := C.vscf_kdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -126,9 +126,9 @@ func (obj *Kdf2) Derive(data []byte, keyLen uint) []byte {
     defer keyBuf.delete()
     dataData := helperWrapData (data)
 
-    C.vscf_kdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
+    C.vscf_kdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen), keyBuf.ctx)
 
     runtime.KeepAlive(obj)
 
-    return keyBuf.getData() /* r7 */
+    return keyBuf.getData()
 }

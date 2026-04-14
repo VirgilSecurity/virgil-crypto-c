@@ -11,7 +11,7 @@ import "runtime"
 * For algorithm details check https://github.com/round5/code
 */
 type Round5 struct {
-    cCtx *C.vscf_round5_t /*ct10*/
+    cCtx *C.vscf_round5_t
 }
 
 func (obj *Round5) SetRandom(random Random) {
@@ -26,7 +26,7 @@ func (obj *Round5) SetRandom(random Random) {
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (obj *Round5) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_round5_setup_defaults(obj.cCtx)
+    proxyResult := C.vscf_round5_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -46,7 +46,7 @@ func (obj *Round5) GenerateKey(algId AlgId) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_round5_generate_key(obj.cCtx, C.vscf_alg_id_t(algId) /*pa7*/, &error)
+    proxyResult := C.vscf_round5_generate_key(obj.cCtx, C.vscf_alg_id_t(algId), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -55,7 +55,7 @@ func (obj *Round5) GenerateKey(algId AlgId) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -75,7 +75,7 @@ func NewRound5() *Round5 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRound5WithCtx(ctx *C.vscf_round5_t /*ct10*/) *Round5 {
+func newRound5WithCtx(ctx *C.vscf_round5_t) *Round5 {
     obj := &Round5 {
         cCtx: ctx,
     }
@@ -86,7 +86,7 @@ func newRound5WithCtx(ctx *C.vscf_round5_t /*ct10*/) *Round5 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRound5Copy(ctx *C.vscf_round5_t /*ct10*/) *Round5 {
+func newRound5Copy(ctx *C.vscf_round5_t) *Round5 {
     obj := &Round5 {
         cCtx: C.vscf_round5_shallow_copy(ctx),
     }
@@ -148,7 +148,7 @@ func (obj *Round5) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_round5_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
+    proxyResult := C.vscf_round5_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -159,7 +159,7 @@ func (obj *Round5) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -176,7 +176,7 @@ func (obj *Round5) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_round5_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := C.vscf_round5_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -187,7 +187,7 @@ func (obj *Round5) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult)
 }
 
 /*
@@ -201,7 +201,7 @@ func (obj *Round5) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_round5_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := C.vscf_round5_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -212,7 +212,7 @@ func (obj *Round5) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
     runtime.KeepAlive(publicKey)
 
-    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+    return newRawPublicKeyWithCtx(proxyResult), nil
 }
 
 /*
@@ -229,7 +229,7 @@ func (obj *Round5) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_round5_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := C.vscf_round5_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -240,7 +240,7 @@ func (obj *Round5) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -254,7 +254,7 @@ func (obj *Round5) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_round5_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := C.vscf_round5_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -265,53 +265,53 @@ func (obj *Round5) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
 
     runtime.KeepAlive(privateKey)
 
-    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+    return newRawPrivateKeyWithCtx(proxyResult), nil
 }
 
 /*
 * Return length in bytes required to hold encapsulated shared key.
 */
 func (obj *Round5) KemSharedKeyLen(key Key) uint {
-    proxyResult := /*pr4*/C.vscf_round5_kem_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
+    proxyResult := C.vscf_round5_kem_shared_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(key)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Return length in bytes required to hold encapsulated key.
 */
 func (obj *Round5) KemEncapsulatedKeyLen(publicKey PublicKey) uint {
-    proxyResult := /*pr4*/C.vscf_round5_kem_encapsulated_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := C.vscf_round5_kem_encapsulated_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Generate a shared key and a key encapsulated message.
 */
 func (obj *Round5) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(publicKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(publicKey.(Key))))
     if sharedKeyBufErr != nil {
         return nil, nil, sharedKeyBufErr
     }
     defer sharedKeyBuf.delete()
 
-    encapsulatedKeyBuf, encapsulatedKeyBufErr := newBuffer(int(obj.KemEncapsulatedKeyLen(publicKey.(PublicKey)) /* lg2 */))
+    encapsulatedKeyBuf, encapsulatedKeyBufErr := newBuffer(int(obj.KemEncapsulatedKeyLen(publicKey)))
     if encapsulatedKeyBufErr != nil {
         return nil, nil, encapsulatedKeyBufErr
     }
     defer encapsulatedKeyBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_round5_kem_encapsulate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), sharedKeyBuf.ctx, encapsulatedKeyBuf.ctx)
+    proxyResult := C.vscf_round5_kem_encapsulate(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), sharedKeyBuf.ctx, encapsulatedKeyBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -322,21 +322,21 @@ func (obj *Round5) KemEncapsulate(publicKey PublicKey) ([]byte, []byte, error) {
 
     runtime.KeepAlive(publicKey)
 
-    return sharedKeyBuf.getData() /* r7 */, encapsulatedKeyBuf.getData() /* r7 */, nil
+    return sharedKeyBuf.getData(), encapsulatedKeyBuf.getData(), nil
 }
 
 /*
 * Decapsulate the shared key.
 */
 func (obj *Round5) KemDecapsulate(encapsulatedKey []byte, privateKey PrivateKey) ([]byte, error) {
-    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(privateKey.(Key)) /* lg2 */))
+    sharedKeyBuf, sharedKeyBufErr := newBuffer(int(obj.KemSharedKeyLen(privateKey.(Key))))
     if sharedKeyBufErr != nil {
         return nil, sharedKeyBufErr
     }
     defer sharedKeyBuf.delete()
     encapsulatedKeyData := helperWrapData (encapsulatedKey)
 
-    proxyResult := /*pr4*/C.vscf_round5_kem_decapsulate(obj.cCtx, encapsulatedKeyData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)
+    proxyResult := C.vscf_round5_kem_decapsulate(obj.cCtx, encapsulatedKeyData, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), sharedKeyBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -347,5 +347,5 @@ func (obj *Round5) KemDecapsulate(encapsulatedKey []byte, privateKey PrivateKey)
 
     runtime.KeepAlive(privateKey)
 
-    return sharedKeyBuf.getData() /* r7 */, nil
+    return sharedKeyBuf.getData(), nil
 }

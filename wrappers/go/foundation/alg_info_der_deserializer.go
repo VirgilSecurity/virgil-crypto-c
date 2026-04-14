@@ -10,7 +10,7 @@ import "runtime"
 * Provide DER deserializer of algorithm information.
 */
 type AlgInfoDerDeserializer struct {
-    cCtx *C.vscf_alg_info_der_deserializer_t /*ct10*/
+    cCtx *C.vscf_alg_info_der_deserializer_t
 }
 
 func (obj *AlgInfoDerDeserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
@@ -41,7 +41,7 @@ func (obj *AlgInfoDerDeserializer) DeserializeInplace() (AlgInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize_inplace(obj.cCtx, &error)
+    proxyResult := C.vscf_alg_info_der_deserializer_deserialize_inplace(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -50,7 +50,7 @@ func (obj *AlgInfoDerDeserializer) DeserializeInplace() (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -70,7 +70,7 @@ func NewAlgInfoDerDeserializer() *AlgInfoDerDeserializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAlgInfoDerDeserializerWithCtx(ctx *C.vscf_alg_info_der_deserializer_t /*ct10*/) *AlgInfoDerDeserializer {
+func newAlgInfoDerDeserializerWithCtx(ctx *C.vscf_alg_info_der_deserializer_t) *AlgInfoDerDeserializer {
     obj := &AlgInfoDerDeserializer {
         cCtx: ctx,
     }
@@ -81,7 +81,7 @@ func newAlgInfoDerDeserializerWithCtx(ctx *C.vscf_alg_info_der_deserializer_t /*
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAlgInfoDerDeserializerCopy(ctx *C.vscf_alg_info_der_deserializer_t /*ct10*/) *AlgInfoDerDeserializer {
+func newAlgInfoDerDeserializerCopy(ctx *C.vscf_alg_info_der_deserializer_t) *AlgInfoDerDeserializer {
     obj := &AlgInfoDerDeserializer {
         cCtx: C.vscf_alg_info_der_deserializer_shallow_copy(ctx),
     }
@@ -113,9 +113,10 @@ func (obj *AlgInfoDerDeserializer) delete() {
 func (obj *AlgInfoDerDeserializer) Deserialize(data []byte) (AlgInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_alg_info_der_deserializer_deserialize(obj.cCtx, dataData, &error)
+    proxyResult := C.vscf_alg_info_der_deserializer_deserialize(obj.cCtx, dataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -124,5 +125,5 @@ func (obj *AlgInfoDerDeserializer) Deserialize(data []byte) (AlgInfo, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult)
 }
