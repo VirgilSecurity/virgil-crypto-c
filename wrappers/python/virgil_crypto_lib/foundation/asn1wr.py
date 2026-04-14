@@ -275,6 +275,9 @@ Return count of written bytes."""
         result = self._lib_vscf_asn1wr.vscf_asn1wr_write_set(self.ctx, len)
         return result
 
+    def __len__(self):
+        return self.len()
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

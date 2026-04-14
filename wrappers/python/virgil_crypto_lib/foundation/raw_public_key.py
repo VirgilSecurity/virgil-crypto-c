@@ -89,6 +89,9 @@ Note, this operation can be slow."""
         result = self._lib_vscf_raw_public_key.vscf_raw_public_key_is_valid(self.ctx)
         return result
 
+    def __len__(self):
+        return self.len()
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

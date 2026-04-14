@@ -144,6 +144,9 @@ Return filtered data without padding."""
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
+    def __len__(self):
+        return self.len()
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

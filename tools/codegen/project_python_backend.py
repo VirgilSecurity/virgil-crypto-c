@@ -729,8 +729,10 @@ def _generate_bridge_impl_tag(project_ir: IRProject) -> str:
             break
 
     if impl_tag_enum:
-        # Build name -> index mapping from the enum constants
-        next_val = 0
+        # Build name -> index mapping from the enum constants.
+        # In C, the impl_tag enum starts with BEGIN = 0, then the first
+        # real tag is 1. The IR omits the BEGIN sentinel, so we start at 1.
+        next_val = 1
         for const in impl_tag_enum.constants:
             value = const.attrs.get("value")
             if value is not None and value != "":
@@ -1521,6 +1523,15 @@ def _generate_hl_class(
             dependencies, interface_bindings,
         )
         lines.extend(body)
+
+    # Add __len__ for classes that have a 'len' method (Python convention)
+    has_len_method = any(
+        m.name == "len" and _method_should_wrap(m) for m in all_methods
+    )
+    if has_len_method and has_context:
+        lines.append("")
+        lines.append("    def __len__(self):")
+        lines.append("        return self.len()")
 
     # take_c_ctx, use_c_ctx, ctx property, c_impl property
     if has_context:
