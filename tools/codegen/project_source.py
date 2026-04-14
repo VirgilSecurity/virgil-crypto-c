@@ -234,6 +234,7 @@ class ProjectSource:
     implementors: list[ImplementorSource] = field(default_factory=list)
     library_requires: list[LibraryRequireSource] = field(default_factory=list)
     error_message_getter: LibraryErrorMessageGetter | None = None
+    cgo_links: list[dict[str, str]] = field(default_factory=list)
 
     @property
     def namespace(self) -> str:
@@ -676,6 +677,7 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         enum_refs=[dict(e.attrib) for e in root.findall("enum")],
         interface_refs=[dict(e.attrib) for e in root.findall("interface")],
         implementor_refs=[dict(e.attrib) for e in root.findall("implementor")],
+        cgo_links=[dict(e.attrib) for e in root.findall("cgo_link")],
     )
 
     resolved_modules: dict[str, ModuleSource] = {}

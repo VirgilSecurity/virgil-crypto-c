@@ -15,6 +15,7 @@ from tools.codegen.project_go_backend import (
     generate_go_implementation,
     generate_go_implementation_scaffold,
     generate_go_instance_class,
+    generate_go_platform,
     generate_go_project_implementation,
     generate_go_static_class,
     go_arg_name,
@@ -864,6 +865,41 @@ class BootstrapWiringTests(unittest.TestCase):
             for required in ("context.go", "helper.go", "phe_error.go", "phe_implementation.go"):
                 self.assertIn(required, generated)
             self.assertFalse(any(n.endswith("_test.go") for n in generated))
+
+
+class PlatformGoTests(unittest.TestCase):
+    """platform.go generation — cgo CFLAGS/LDFLAGS directives."""
+
+    def test_foundation_byte_identical_to_legacy(self) -> None:
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        gen = generate_go_platform(ir)
+        legacy = (REPO_ROOT / "wrappers" / "go" / "foundation" / "platform.go").read_text()
+        self.assertEqual(gen, legacy)
+
+    def test_phe_byte_identical_to_legacy(self) -> None:
+        ir = project_to_ir(load_named_project_source("phe", str(REPO_ROOT)))
+        gen = generate_go_platform(ir)
+        legacy = (REPO_ROOT / "wrappers" / "go" / "phe" / "platform.go").read_text()
+        self.assertEqual(gen, legacy)
+
+    def test_unrecognized_platform_silently_skipped(self) -> None:
+        from tools.codegen.project_ir import IRProject
+        ir = IRProject(name="test", cgo_links=[
+            {"platform": "freebsd", "libraries": "-lfoo"},
+        ])
+        gen = generate_go_platform(ir)
+        self.assertNotIn("freebsd", gen)
+        self.assertIn('import "C"', gen)
+
+    def test_cgo_links_round_trip_through_ir(self) -> None:
+        ir = project_to_ir(load_named_project_source("foundation", str(REPO_ROOT)))
+        self.assertEqual(len(ir.cgo_links), 4)
+        platforms = [l["platform"] for l in ir.cgo_links]
+        self.assertEqual(platforms, ["darwin", "linux,!legacy", "linux,legacy", "windows"])
+
+    def test_common_has_no_cgo_links(self) -> None:
+        ir = project_to_ir(load_named_project_source("common", str(REPO_ROOT)))
+        self.assertEqual(ir.cgo_links, [])
 
 
 if __name__ == "__main__":

@@ -2559,6 +2559,93 @@ def generate_go_project_implementation(project_ir: IRProject) -> str:
     return "\n".join(lines) + "\n"
 
 
+# ---------------------------------------------------------------------------
+# platform.go generation — cgo CFLAGS / LDFLAGS directives
+# ---------------------------------------------------------------------------
+#
+# The source XML declares ~4 ``<cgo_link>`` entries per project. The
+# legacy ``platform.go`` files have 6 entries because darwin and linux
+# are auto-expanded to include both amd64 and arm64 targets. The
+# expansion is NOT symmetric:
+#   - ``darwin`` → amd64 + arm64 (two distinct paths)
+#   - ``linux,!legacy`` → amd64,!legacy + arm64 (arm64 has no legacy variant)
+#   - ``linux,legacy`` → amd64,legacy only
+#   - ``windows`` → keeps no arch suffix, path defaults to windows_amd64
+#
+# Adding new platforms (e.g. riscv64, freebsd) requires editing this
+# table. This was an explicit design choice (user chose "fully codegen
+# it" over enriching the source XML).
+
+_PLATFORM_EXPANSIONS: dict[str, list[tuple[str, str | None]]] = {
+    "darwin": [
+        ("darwin,amd64", "darwin_amd64"),
+        ("darwin,arm64", "darwin_arm64"),
+    ],
+    "linux,!legacy": [
+        ("linux,amd64,!legacy", None),   # use source path verbatim
+    ],
+    "linux,legacy": [
+        ("linux,amd64,legacy", None),    # use source path verbatim
+        # arm64 linux appears after the legacy variant in legacy output.
+        # Uses the same libraries as ``linux,legacy`` (both carry -lpthread).
+        ("linux,arm64", "linux_arm64"),
+    ],
+    "windows": [
+        ("windows", None),               # use source path or default
+    ],
+}
+
+
+def generate_go_platform(project_ir: IRProject) -> str:
+    """Generate the per-project ``platform.go`` file.
+
+    Emits ``// #cgo`` CFLAGS + LDFLAGS directive pairs for each
+    expanded platform target, followed by ``import "C"``. The expansion
+    table ``_PLATFORM_EXPANSIONS`` maps each source-XML platform spec
+    to the set of ``(emitted_platform_spec, path_override)`` pairs
+    that the legacy hand-tuned files declared.
+
+    Unrecognised platform specs are silently skipped so builds stay
+    functional when the source XML evolves ahead of the table.
+    """
+    pkg = _package_name(project_ir)
+
+    lines: list[str] = []
+    lines.append(f"package {pkg}")
+    lines.append("")
+
+    for link in project_ir.cgo_links:
+        platform = link.get("platform", "")
+        libraries = link.get("libraries", "")
+        src_path = link.get("path")
+
+        expansions = _PLATFORM_EXPANSIONS.get(platform)
+        if expansions is None:
+            continue
+
+        for spec, path_override in expansions:
+            if path_override is not None:
+                path = path_override
+            elif src_path:
+                path = src_path
+            else:
+                # Fallback: ``{platform}_amd64`` (legacy GSL default).
+                path = f"{platform}_amd64"
+
+            lines.append(
+                f"// #cgo {spec} CFLAGS: "
+                f"-I${{SRCDIR}}/../pkg/{path}/include/"
+            )
+            lines.append(
+                f"// #cgo {spec} LDFLAGS: "
+                f"-L${{SRCDIR}}/../pkg/{path}/lib {libraries}"
+            )
+
+    lines.append('import "C"')
+    lines.append("")
+    return "\n".join(lines) + "\n"
+
+
 def generate_go_implementation_scaffold(
     project_ir: IRProject, impl: IRImplementation
 ) -> str:
@@ -2663,6 +2750,7 @@ def generate_go_files(
         files.append(
             (f"{output_dir}{project_ir.name}_error.go", generate_go_error(project_ir))
         )
+    files.append((f"{output_dir}platform.go", generate_go_platform(project_ir)))
 
     # Classes — route static-only and instance variants through their
     # respective generators. Skip:

@@ -296,6 +296,7 @@ class IRProject:
     implementations: list[IRImplementation] = field(default_factory=list)
     library_requires: list[IRLibraryRequire] = field(default_factory=list)
     error_message_getter: IRLibraryErrorMessageGetter | None = None
+    cgo_links: list[dict[str, str]] = field(default_factory=list)
     fallback_projects: list[Any] = field(default_factory=list, repr=False)
 
     def to_dict(self) -> dict[str, Any]:
@@ -732,6 +733,7 @@ def project_to_ir(project: ProjectSource) -> IRProject:
             )
             if project.error_message_getter else None
         ),
+        cgo_links=list(project.cgo_links),
     )
     resolve_defaults(ir)
     return ir
