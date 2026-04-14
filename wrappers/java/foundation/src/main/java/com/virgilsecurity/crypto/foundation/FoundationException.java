@@ -36,155 +36,155 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class FoundationException {
+public class FoundationException extends Exception {
 
-    public int SUCCESS;
+    public static final int SUCCESS = 0;
 
-    public int ERROR_BAD_ARGUMENTS;
+    public static final int ERROR_BAD_ARGUMENTS = -1;
 
-    public int ERROR_UNINITIALIZED;
+    public static final int ERROR_UNINITIALIZED = -2;
 
-    public int ERROR_UNHANDLED_THIRDPARTY_ERROR;
+    public static final int ERROR_UNHANDLED_THIRDPARTY_ERROR = -3;
 
-    public int ERROR_SMALL_BUFFER;
+    public static final int ERROR_SMALL_BUFFER = -101;
 
-    public int ERROR_UNSUPPORTED_ALGORITHM;
+    public static final int ERROR_UNSUPPORTED_ALGORITHM = -200;
 
-    public int ERROR_AUTH_FAILED;
+    public static final int ERROR_AUTH_FAILED = -201;
 
-    public int ERROR_OUT_OF_DATA;
+    public static final int ERROR_OUT_OF_DATA = -202;
 
-    public int ERROR_BAD_ASN1;
+    public static final int ERROR_BAD_ASN1 = -203;
 
-    public int ERROR_ASN1_LOSSY_TYPE_NARROWING;
+    public static final int ERROR_ASN1_LOSSY_TYPE_NARROWING = -204;
 
-    public int ERROR_BAD_PKCS1_PUBLIC_KEY;
+    public static final int ERROR_BAD_PKCS1_PUBLIC_KEY = -205;
 
-    public int ERROR_BAD_PKCS1_PRIVATE_KEY;
+    public static final int ERROR_BAD_PKCS1_PRIVATE_KEY = -206;
 
-    public int ERROR_BAD_PKCS8_PUBLIC_KEY;
+    public static final int ERROR_BAD_PKCS8_PUBLIC_KEY = -207;
 
-    public int ERROR_BAD_PKCS8_PRIVATE_KEY;
+    public static final int ERROR_BAD_PKCS8_PRIVATE_KEY = -208;
 
-    public int ERROR_BAD_ENCRYPTED_DATA;
+    public static final int ERROR_BAD_ENCRYPTED_DATA = -209;
 
-    public int ERROR_RANDOM_FAILED;
+    public static final int ERROR_RANDOM_FAILED = -210;
 
-    public int ERROR_KEY_GENERATION_FAILED;
+    public static final int ERROR_KEY_GENERATION_FAILED = -211;
 
-    public int ERROR_ENTROPY_SOURCE_FAILED;
+    public static final int ERROR_ENTROPY_SOURCE_FAILED = -212;
 
-    public int ERROR_RNG_REQUESTED_DATA_TOO_BIG;
+    public static final int ERROR_RNG_REQUESTED_DATA_TOO_BIG = -213;
 
-    public int ERROR_BAD_BASE64;
+    public static final int ERROR_BAD_BASE64 = -214;
 
-    public int ERROR_BAD_PEM;
+    public static final int ERROR_BAD_PEM = -215;
 
-    public int ERROR_SHARED_KEY_EXCHANGE_FAILED;
+    public static final int ERROR_SHARED_KEY_EXCHANGE_FAILED = -216;
 
-    public int ERROR_BAD_ED25519_PUBLIC_KEY;
+    public static final int ERROR_BAD_ED25519_PUBLIC_KEY = -217;
 
-    public int ERROR_BAD_ED25519_PRIVATE_KEY;
+    public static final int ERROR_BAD_ED25519_PRIVATE_KEY = -218;
 
-    public int ERROR_BAD_CURVE25519_PUBLIC_KEY;
+    public static final int ERROR_BAD_CURVE25519_PUBLIC_KEY = -219;
 
-    public int ERROR_BAD_CURVE25519_PRIVATE_KEY;
+    public static final int ERROR_BAD_CURVE25519_PRIVATE_KEY = -220;
 
-    public int ERROR_BAD_SEC1_PUBLIC_KEY;
+    public static final int ERROR_BAD_SEC1_PUBLIC_KEY = -221;
 
-    public int ERROR_BAD_SEC1_PRIVATE_KEY;
+    public static final int ERROR_BAD_SEC1_PRIVATE_KEY = -222;
 
-    public int ERROR_BAD_DER_PUBLIC_KEY;
+    public static final int ERROR_BAD_DER_PUBLIC_KEY = -223;
 
-    public int ERROR_BAD_DER_PRIVATE_KEY;
+    public static final int ERROR_BAD_DER_PRIVATE_KEY = -224;
 
-    public int ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM;
+    public static final int ERROR_MISMATCH_PUBLIC_KEY_AND_ALGORITHM = -225;
 
-    public int ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM;
+    public static final int ERROR_MISMATCH_PRIVATE_KEY_AND_ALGORITHM = -226;
 
-    public int ERROR_BAD_FALCON_PUBLIC_KEY;
+    public static final int ERROR_BAD_FALCON_PUBLIC_KEY = -227;
 
-    public int ERROR_BAD_FALCON_PRIVATE_KEY;
+    public static final int ERROR_BAD_FALCON_PRIVATE_KEY = -228;
 
-    public int ERROR_ROUND5;
+    public static final int ERROR_ROUND5 = -229;
 
-    public int ERROR_BAD_ROUND5_PUBLIC_KEY;
+    public static final int ERROR_BAD_ROUND5_PUBLIC_KEY = -230;
 
-    public int ERROR_BAD_ROUND5_PRIVATE_KEY;
+    public static final int ERROR_BAD_ROUND5_PRIVATE_KEY = -231;
 
-    public int ERROR_BAD_COMPOUND_PUBLIC_KEY;
+    public static final int ERROR_BAD_COMPOUND_PUBLIC_KEY = -232;
 
-    public int ERROR_BAD_COMPOUND_PRIVATE_KEY;
+    public static final int ERROR_BAD_COMPOUND_PRIVATE_KEY = -233;
 
-    public int ERROR_BAD_HYBRID_PUBLIC_KEY;
+    public static final int ERROR_BAD_HYBRID_PUBLIC_KEY = -234;
 
-    public int ERROR_BAD_HYBRID_PRIVATE_KEY;
+    public static final int ERROR_BAD_HYBRID_PRIVATE_KEY = -235;
 
-    public int ERROR_BAD_ASN1_ALGORITHM;
+    public static final int ERROR_BAD_ASN1_ALGORITHM = -236;
 
-    public int ERROR_BAD_ASN1_ALGORITHM_ECC;
+    public static final int ERROR_BAD_ASN1_ALGORITHM_ECC = -237;
 
-    public int ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY;
+    public static final int ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238;
 
-    public int ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY;
+    public static final int ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239;
 
-    public int ERROR_NO_MESSAGE_INFO;
+    public static final int ERROR_NO_MESSAGE_INFO = -301;
 
-    public int ERROR_BAD_MESSAGE_INFO;
+    public static final int ERROR_BAD_MESSAGE_INFO = -302;
 
-    public int ERROR_KEY_RECIPIENT_IS_NOT_FOUND;
+    public static final int ERROR_KEY_RECIPIENT_IS_NOT_FOUND = -303;
 
-    public int ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG;
+    public static final int ERROR_KEY_RECIPIENT_PRIVATE_KEY_IS_WRONG = -304;
 
-    public int ERROR_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG;
+    public static final int ERROR_PASSWORD_RECIPIENT_PASSWORD_IS_WRONG = -305;
 
-    public int ERROR_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND;
+    public static final int ERROR_MESSAGE_INFO_CUSTOM_PARAM_NOT_FOUND = -306;
 
-    public int ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH;
+    public static final int ERROR_MESSAGE_INFO_CUSTOM_PARAM_TYPE_MISMATCH = -307;
 
-    public int ERROR_BAD_SIGNATURE;
+    public static final int ERROR_BAD_SIGNATURE = -308;
 
-    public int ERROR_BAD_MESSAGE_INFO_FOOTER;
+    public static final int ERROR_BAD_MESSAGE_INFO_FOOTER = -309;
 
-    public int ERROR_INVALID_BRAINKEY_PASSWORD_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_PASSWORD_LEN = -401;
 
-    public int ERROR_INVALID_BRAINKEY_FACTOR_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_FACTOR_LEN = -402;
 
-    public int ERROR_INVALID_BRAINKEY_POINT_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_POINT_LEN = -403;
 
-    public int ERROR_INVALID_BRAINKEY_KEY_NAME_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_KEY_NAME_LEN = -404;
 
-    public int ERROR_BRAINKEY_INTERNAL;
+    public static final int ERROR_BRAINKEY_INTERNAL = -405;
 
-    public int ERROR_BRAINKEY_INVALID_POINT;
+    public static final int ERROR_BRAINKEY_INVALID_POINT = -406;
 
-    public int ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN = -407;
 
-    public int ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_POINT_BUFFER_LEN = -408;
 
-    public int ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN;
+    public static final int ERROR_INVALID_BRAINKEY_SEED_BUFFER_LEN = -409;
 
-    public int ERROR_INVALID_IDENTITY_SECRET;
+    public static final int ERROR_INVALID_IDENTITY_SECRET = -410;
 
-    public int ERROR_INVALID_KEM_ENCAPSULATED_KEY;
+    public static final int ERROR_INVALID_KEM_ENCAPSULATED_KEY = -411;
 
-    public int ERROR_INVALID_PADDING;
+    public static final int ERROR_INVALID_PADDING = -501;
 
-    public int ERROR_PROTOBUF;
+    public static final int ERROR_PROTOBUF = -601;
 
-    public int ERROR_SESSION_ID_DOESNT_MATCH;
+    public static final int ERROR_SESSION_ID_DOESNT_MATCH = -701;
 
-    public int ERROR_EPOCH_NOT_FOUND;
+    public static final int ERROR_EPOCH_NOT_FOUND = -702;
 
-    public int ERROR_WRONG_KEY_TYPE;
+    public static final int ERROR_WRONG_KEY_TYPE = -703;
 
-    public int ERROR_INVALID_SIGNATURE;
+    public static final int ERROR_INVALID_SIGNATURE = -704;
 
-    public int ERROR_ED25519;
+    public static final int ERROR_ED25519 = -705;
 
-    public int ERROR_DUPLICATE_EPOCH;
+    public static final int ERROR_DUPLICATE_EPOCH = -706;
 
-    public int ERROR_PLAIN_TEXT_TOO_LONG;
+    public static final int ERROR_PLAIN_TEXT_TOO_LONG = -707;
 
     private int statusCode;
 

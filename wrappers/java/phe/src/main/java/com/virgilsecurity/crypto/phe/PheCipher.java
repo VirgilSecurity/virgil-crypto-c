@@ -36,6 +36,8 @@
 
 package com.virgilsecurity.crypto.phe;
 
+import com.virgilsecurity.crypto.foundation.*;
+
 public class PheCipher implements AutoCloseable {
 
     public long cCtx;

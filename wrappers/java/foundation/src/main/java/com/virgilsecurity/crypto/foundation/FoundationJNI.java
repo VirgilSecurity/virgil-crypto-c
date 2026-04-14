@@ -392,7 +392,7 @@ public class FoundationJNI {
 
     public native byte[] groupSessionMessage_serialize(long cCtx);
 
-    public native GroupSessionMessage groupSessionMessage_deserialize(long cCtx, byte[] input) throws FoundationException;
+    public native GroupSessionMessage groupSessionMessage_deserialize(byte[] input) throws FoundationException;
 
     public native long groupSessionTicket_new();
 
@@ -564,7 +564,7 @@ public class FoundationJNI {
 
     public native void sha224_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
-    public native byte[] sha224_hash(long cCtx, byte[] data);
+    public native byte[] sha224_hash(byte[] data);
 
     public native void sha224_start(long cCtx);
 
@@ -582,7 +582,7 @@ public class FoundationJNI {
 
     public native void sha256_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
-    public native byte[] sha256_hash(long cCtx, byte[] data);
+    public native byte[] sha256_hash(byte[] data);
 
     public native void sha256_start(long cCtx);
 
@@ -600,7 +600,7 @@ public class FoundationJNI {
 
     public native void sha384_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
-    public native byte[] sha384_hash(long cCtx, byte[] data);
+    public native byte[] sha384_hash(byte[] data);
 
     public native void sha384_start(long cCtx);
 
@@ -618,7 +618,7 @@ public class FoundationJNI {
 
     public native void sha512_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
-    public native byte[] sha512_hash(long cCtx, byte[] data);
+    public native byte[] sha512_hash(byte[] data);
 
     public native void sha512_start(long cCtx);
 
@@ -664,7 +664,7 @@ public class FoundationJNI {
 
     public native byte[] aes256Gcm_finish(long cCtx) throws FoundationException;
 
-    public native AuthEncryptAuthEncryptResult aes256Gcm_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
+    public native Aes256GcmAuthEncryptResult aes256Gcm_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
 
     public native int aes256Gcm_authEncryptedLen(long cCtx, int dataLen);
 
@@ -674,7 +674,7 @@ public class FoundationJNI {
 
     public native void aes256Gcm_setAuthData(long cCtx, byte[] authData);
 
-    public native CipherAuthFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
+    public native Aes256GcmFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
 
     public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
 
@@ -790,11 +790,11 @@ public class FoundationJNI {
 
     public native int asn1wr_writeTagData(long cCtx, byte[] data, int tag);
 
-    public native int asn1wr_getCurrentElementLen(long cCtx, byte curr, byte end);
+    public native int asn1wr_getCurrentElementLen(byte curr, byte end);
 
-    public native void asn1wr_swapElementsOfSet(long cCtx, byte toStart, int toLen, byte fromStart, int fromLen);
+    public native void asn1wr_swapElementsOfSet(byte toStart, int toLen, byte fromStart, int fromLen);
 
-    public native boolean asn1wr_secondElementOfSetIsLess(long cCtx, byte firstStart, int firstLen, byte secondStart, int secondLen);
+    public native boolean asn1wr_secondElementOfSetIsLess(byte firstStart, int firstLen, byte secondStart, int secondLen);
 
     public native void asn1wr_sortElementsOfSet(long cCtx, int len);
 
@@ -1018,7 +1018,7 @@ public class FoundationJNI {
 
     public native int ecc_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native KemKemEncapsulateResult ecc_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native EccKemEncapsulateResult ecc_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] ecc_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1278,7 +1278,7 @@ public class FoundationJNI {
 
     public native int sec1Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
-    public native boolean sec1Serializer_isEcKey(long cCtx, Key key);
+    public native boolean sec1Serializer_isEcKey(Key key);
 
     public native int sec1Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
 
@@ -1380,7 +1380,7 @@ public class FoundationJNI {
 
     public native int ed25519_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native KemKemEncapsulateResult ed25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native Ed25519KemEncapsulateResult ed25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] ed25519_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1426,7 +1426,7 @@ public class FoundationJNI {
 
     public native int curve25519_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native KemKemEncapsulateResult curve25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native Curve25519KemEncapsulateResult curve25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] curve25519_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1490,7 +1490,7 @@ public class FoundationJNI {
 
     public native int round5_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native KemKemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native Round5KemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] round5_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1652,7 +1652,7 @@ public class FoundationJNI {
 
     public native PrivateKey hybridKeyAlg_makeKey(long cCtx, PrivateKey firstKey, PrivateKey secondKey) throws FoundationException;
 
-    public native void hybridKeyAlg_configCipher(long cCtx, Cipher cipher, Hash hash, byte[] sharedKey);
+    public native void hybridKeyAlg_configCipher(Cipher cipher, Hash hash, byte[] sharedKey);
 
     public native PrivateKey hybridKeyAlg_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
@@ -1748,7 +1748,7 @@ public class FoundationJNI {
 
     public native void algInfoDerSerializer_setupDefaults(long cCtx);
 
-    public native boolean algInfoDerSerializer_isAlgRequireNullParams(long cCtx, AlgId algId);
+    public native boolean algInfoDerSerializer_isAlgRequireNullParams(AlgId algId);
 
     public native int algInfoDerSerializer_serializedSimpleAlgInfoLen(long cCtx, AlgInfo algInfo);
 

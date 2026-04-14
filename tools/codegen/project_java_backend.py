@@ -516,6 +516,59 @@ def _generate_method_body(
     return lines
 
 
+_JAVA_WRAPPER_PROJECTS = {"common", "foundation", "phe", "pythia", "ratchet"}
+
+
+def _collect_cross_project_imports(
+    project_ir: IRProject,
+    dependencies: list[IRDependency],
+    methods: list[tuple[IRCMethod, str]],
+) -> list[str]:
+    """Collect import statements for types from other projects.
+
+    Uses wildcard imports for external projects when cross-project
+    types are detected (matching the original GSL-generated style).
+    Only includes imports for known Java wrapper projects.
+    """
+    project_name = project_ir.name
+    # Build set of locally-defined type names
+    local_types: set[str] = set()
+    for iface in project_ir.interfaces:
+        local_types.add(iface.name)
+    for cls in project_ir.classes:
+        local_types.add(cls.name)
+    for enum in project_ir.enums:
+        local_types.add(enum.name)
+    for impl in project_ir.implementations:
+        local_types.add(impl.name)
+
+    external_projects: set[str] = set()
+
+    for dep in dependencies:
+        dep_project = dep.attrs.get("project", "")
+        if dep_project and dep_project != project_name and dep_project in _JAVA_WRAPPER_PROJECTS:
+            external_projects.add(dep_project)
+
+    for method, _ in methods:
+        for arg in method.arguments + method.returns:
+            lib = arg.library
+            if lib and lib != project_name and lib in _JAVA_WRAPPER_PROJECTS:
+                external_projects.add(lib)
+                continue
+            # If no library set, check if type is locally defined
+            type_ref = arg.interface_name or arg.class_name or arg.enum_name
+            if type_ref and type_ref not in ("data", "buffer", "error", "self"):
+                if type_ref not in local_types:
+                    # Assume foundation for unattributed external types
+                    if "foundation" in _JAVA_WRAPPER_PROJECTS and project_name != "foundation":
+                        external_projects.add("foundation")
+
+    return sorted(
+        f"import {_java_package(proj)}.*;"
+        for proj in external_projects
+    )
+
+
 def _generate_class_file(
     project_ir: IRProject,
     entity_name: str,
@@ -539,6 +592,13 @@ def _generate_class_file(
     lines.append("")
     lines.append(f"package {_java_package(pname)};")
     lines.append("")
+
+    # Cross-project imports
+    cross_imports = _collect_cross_project_imports(project_ir, dependencies, methods)
+    if cross_imports:
+        for imp in cross_imports:
+            lines.append(imp)
+        lines.append("")
 
     # Class declaration
     impl_str = ""
@@ -760,12 +820,32 @@ def _generate_jni_java(project_ir: IRProject) -> str:
     jni_class = _jni_class(pname)
     exception_class = _exception_class(pname)
 
+    # Collect cross-project imports from all entities
+    all_jni_imports: set[str] = set()
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in ("private", "internal"):
+            continue
+        if cls.name == "error":
+            continue
+        cls_methods = [(m, cls.name) for m in cls.methods if _method_should_wrap(m)]
+        for imp in _collect_cross_project_imports(project_ir, cls.dependencies, cls_methods):
+            all_jni_imports.add(imp)
+    for impl in project_ir.implementations:
+        if impl.attrs.get("scope") in ("private", "internal"):
+            continue
+        impl_methods = _collect_all_methods(project_ir, impl)
+        for imp in _collect_cross_project_imports(project_ir, impl.dependencies, impl_methods):
+            all_jni_imports.add(imp)
+
     lines: list[str] = []
     lines.append(_LICENSE)
     lines.append("")
     lines.append(f"package {_java_package(pname)};")
     lines.append("")
     lines.append("import com.virgilsecurity.crypto.common.utils.NativeUtils;")
+    if all_jni_imports:
+        for imp in sorted(all_jni_imports):
+            lines.append(imp)
     lines.append("")
     lines.append(f"public class {jni_class} {{")
     lines.append("")
@@ -819,7 +899,8 @@ def _generate_jni_java(project_ir: IRProject) -> str:
                     if m.name not in existing_names:
                         all_methods.append(m)
 
-        # Method declarations — track origin for result class naming
+        # Method declarations — use entity_name for result class naming
+        # to match _collect_all_methods() which uses impl.name for all methods
         method_origins: list[tuple[IRCMethod, str]] = []
         for m in methods:
             method_origins.append((m, entity_name))
@@ -831,7 +912,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
                 existing_names = {m.name for m, _ in method_origins}
                 for m in iface.methods:
                     if m.name not in existing_names:
-                        method_origins.append((m, binding.name))
+                        method_origins.append((m, entity_name))
 
         for method, origin_name in method_origins:
             if not _method_should_wrap(method):
@@ -847,7 +928,9 @@ def _generate_jni_java(project_ir: IRProject) -> str:
             method_camel = _camel(method.name)
             # Use the origin entity name for result class naming
             ret_type = _java_return_type(method, pname, origin_name)
-            include_ctx = not is_static
+            # Match class file logic: include cCtx unless entity or method is static
+            method_is_static = is_static or _is_static_method(method)
+            include_ctx = not method_is_static
             params = _java_param_list(method, pname, include_ctx=include_ctx)
             params_str = ", ".join(f"{t} {n}" for t, n in params)
             throws = _method_has_error(method)
@@ -898,11 +981,21 @@ def _generate_exception(project_ir: IRProject) -> str:
     lines.append("")
 
     if status is not None:
-        # Error code constants
+        # Error code constants -- must be static final for use in switch cases
+        next_val = 0
         for const in status.constants:
             field_name = _upper_snake(const.name)
-            lines.append(f"    public int {field_name};")
+            value = const.attrs.get("value")
+            if value is not None and value != "":
+                val_str = resolve_constant_value(value, None, project_ir)
+            else:
+                val_str = str(next_val)
+            lines.append(f"    public static final int {field_name} = {val_str};")
             lines.append("")
+            try:
+                next_val = int(val_str, 0) + 1
+            except ValueError:
+                next_val += 1
 
     # statusCode field
     lines.append("    private int statusCode;")
@@ -1711,7 +1804,8 @@ def generate_java_files(
             _generate_impl_file(project_ir, impl),
         ))
 
-        # Result classes for implementation interface bindings (duplicates per-impl)
+        # Result classes for implementation interface bindings
+        # Use impl.name (not iface.name) to match class file and JNI naming
         for binding in impl.interface_bindings:
             iface = iface_index.get(binding.name)
             if iface is None:
@@ -1720,10 +1814,10 @@ def generate_java_files(
                 if not _method_should_wrap(m):
                     continue
                 if _method_needs_result_class(m):
-                    result_name = f"{_pascal(iface.name)}{_pascal(m.name)}Result"
+                    result_name = f"{_pascal(impl.name)}{_pascal(m.name)}Result"
                     files.append((
                         f"{java_base}{result_name}.java",
-                        _generate_result_class(project_ir, iface.name, m),
+                        _generate_result_class(project_ir, impl.name, m),
                     ))
 
     # --- Infrastructure ---

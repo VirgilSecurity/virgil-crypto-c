@@ -36,23 +36,23 @@
 
 package com.virgilsecurity.crypto.phe;
 
-public class PheException {
+public class PheException extends Exception {
 
-    public int SUCCESS;
+    public static final int SUCCESS = 0;
 
-    public int ERROR_INVALID_SUCCESS_PROOF;
+    public static final int ERROR_INVALID_SUCCESS_PROOF = -1;
 
-    public int ERROR_INVALID_FAIL_PROOF;
+    public static final int ERROR_INVALID_FAIL_PROOF = -2;
 
-    public int ERROR_RNG_FAILED;
+    public static final int ERROR_RNG_FAILED = -3;
 
-    public int ERROR_PROTOBUF_DECODE_FAILED;
+    public static final int ERROR_PROTOBUF_DECODE_FAILED = -4;
 
-    public int ERROR_INVALID_PUBLIC_KEY;
+    public static final int ERROR_INVALID_PUBLIC_KEY = -5;
 
-    public int ERROR_INVALID_PRIVATE_KEY;
+    public static final int ERROR_INVALID_PRIVATE_KEY = -6;
 
-    public int ERROR_AES_FAILED;
+    public static final int ERROR_AES_FAILED = -7;
 
     private int statusCode;
 

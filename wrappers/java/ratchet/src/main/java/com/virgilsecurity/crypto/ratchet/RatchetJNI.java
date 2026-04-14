@@ -37,6 +37,7 @@
 package com.virgilsecurity.crypto.ratchet;
 
 import com.virgilsecurity.crypto.common.utils.NativeUtils;
+import com.virgilsecurity.crypto.foundation.*;
 
 public class RatchetJNI {
 
@@ -70,7 +71,7 @@ public class RatchetJNI {
 
     public native byte[] ratchetMessage_serialize(long cCtx);
 
-    public native RatchetMessage ratchetMessage_deserialize(long cCtx, byte[] input) throws RatchetException;
+    public native RatchetMessage ratchetMessage_deserialize(byte[] input) throws RatchetException;
 
     public native long ratchetSession_new();
 
@@ -104,6 +105,6 @@ public class RatchetJNI {
 
     public native byte[] ratchetSession_serialize(long cCtx);
 
-    public native RatchetSession ratchetSession_deserialize(long cCtx, byte[] input) throws RatchetException;
+    public native RatchetSession ratchetSession_deserialize(byte[] input) throws RatchetException;
 
 }

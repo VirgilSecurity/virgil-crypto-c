@@ -37,6 +37,7 @@
 package com.virgilsecurity.crypto.phe;
 
 import com.virgilsecurity.crypto.common.utils.NativeUtils;
+import com.virgilsecurity.crypto.foundation.*;
 
 public class PheJNI {
 

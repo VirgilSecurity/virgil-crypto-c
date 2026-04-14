@@ -36,6 +36,8 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
+import com.virgilsecurity.crypto.foundation.*;
+
 public class RatchetSession implements AutoCloseable {
 
     public long cCtx;

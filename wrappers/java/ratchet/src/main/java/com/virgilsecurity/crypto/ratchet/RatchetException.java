@@ -36,75 +36,75 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-public class RatchetException {
+public class RatchetException extends Exception {
 
-    public int SUCCESS;
+    public static final int SUCCESS = 0;
 
-    public int ERROR_PROTOBUF_DECODE;
+    public static final int ERROR_PROTOBUF_DECODE = -1;
 
-    public int ERROR_BAD_MESSAGE_TYPE;
+    public static final int ERROR_BAD_MESSAGE_TYPE = -2;
 
-    public int ERROR_AES;
+    public static final int ERROR_AES = -3;
 
-    public int ERROR_RNG_FAILED;
+    public static final int ERROR_RNG_FAILED = -4;
 
-    public int ERROR_CURVE25519;
+    public static final int ERROR_CURVE25519 = -5;
 
-    public int ERROR_ED25519;
+    public static final int ERROR_ED25519 = -6;
 
-    public int ERROR_KEY_DESERIALIZATION_FAILED;
+    public static final int ERROR_KEY_DESERIALIZATION_FAILED = -7;
 
-    public int ERROR_INVALID_KEY_TYPE;
+    public static final int ERROR_INVALID_KEY_TYPE = -8;
 
-    public int ERROR_IDENTITY_KEY_DOESNT_MATCH;
+    public static final int ERROR_IDENTITY_KEY_DOESNT_MATCH = -9;
 
-    public int ERROR_MESSAGE_ALREADY_DECRYPTED;
+    public static final int ERROR_MESSAGE_ALREADY_DECRYPTED = -10;
 
-    public int ERROR_TOO_MANY_LOST_MESSAGES;
+    public static final int ERROR_TOO_MANY_LOST_MESSAGES = -11;
 
-    public int ERROR_SENDER_CHAIN_MISSING;
+    public static final int ERROR_SENDER_CHAIN_MISSING = -12;
 
-    public int ERROR_SKIPPED_MESSAGE_MISSING;
+    public static final int ERROR_SKIPPED_MESSAGE_MISSING = -13;
 
-    public int ERROR_SESSION_IS_NOT_INITIALIZED;
+    public static final int ERROR_SESSION_IS_NOT_INITIALIZED = -14;
 
-    public int ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN;
+    public static final int ERROR_EXCEEDED_MAX_PLAIN_TEXT_LEN = -15;
 
-    public int ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN;
+    public static final int ERROR_TOO_MANY_MESSAGES_FOR_SENDER_CHAIN = -16;
 
-    public int ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN;
+    public static final int ERROR_TOO_MANY_MESSAGES_FOR_RECEIVER_CHAIN = -17;
 
-    public int ERROR_INVALID_PADDING;
+    public static final int ERROR_INVALID_PADDING = -18;
 
-    public int ERROR_TOO_MANY_PARTICIPANTS;
+    public static final int ERROR_TOO_MANY_PARTICIPANTS = -19;
 
-    public int ERROR_TOO_FEW_PARTICIPANTS;
+    public static final int ERROR_TOO_FEW_PARTICIPANTS = -20;
 
-    public int ERROR_SENDER_NOT_FOUND;
+    public static final int ERROR_SENDER_NOT_FOUND = -21;
 
-    public int ERROR_CANNOT_DECRYPT_OWN_MESSAGES;
+    public static final int ERROR_CANNOT_DECRYPT_OWN_MESSAGES = -22;
 
-    public int ERROR_INVALID_SIGNATURE;
+    public static final int ERROR_INVALID_SIGNATURE = -23;
 
-    public int ERROR_CANNOT_REMOVE_MYSELF;
+    public static final int ERROR_CANNOT_REMOVE_MYSELF = -24;
 
-    public int ERROR_EPOCH_MISMATCH;
+    public static final int ERROR_EPOCH_MISMATCH = -25;
 
-    public int ERROR_EPOCH_NOT_FOUND;
+    public static final int ERROR_EPOCH_NOT_FOUND = -26;
 
-    public int ERROR_SESSION_ID_MISMATCH;
+    public static final int ERROR_SESSION_ID_MISMATCH = -27;
 
-    public int ERROR_SIMULTANEOUS_GROUP_USER_OPERATION;
+    public static final int ERROR_SIMULTANEOUS_GROUP_USER_OPERATION = -28;
 
-    public int ERROR_MYSELF_IS_INCLUDED_IN_INFO;
+    public static final int ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29;
 
-    public int ERROR_ROUND5;
+    public static final int ERROR_ROUND5 = -30;
 
-    public int ERROR_FALCON;
+    public static final int ERROR_FALCON = -31;
 
-    public int ERROR_DECAPS_SIGNATURE_INVALID;
+    public static final int ERROR_DECAPS_SIGNATURE_INVALID = -32;
 
-    public int ERROR_ROUND5_IMPORT_KEY;
+    public static final int ERROR_ROUND5_IMPORT_KEY = -33;
 
     private int statusCode;
 

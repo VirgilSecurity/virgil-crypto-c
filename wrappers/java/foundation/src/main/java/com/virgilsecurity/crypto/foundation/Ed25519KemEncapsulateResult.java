@@ -34,42 +34,39 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-package com.virgilsecurity.crypto.pythia;
+package com.virgilsecurity.crypto.foundation;
 
-public class PythiaException extends Exception {
 
-    public static final int SUCCESS = 0;
+public class Ed25519KemEncapsulateResult {
 
-    public static final int ERROR_BAD_ARGUMENTS = -1;
+    private byte[] sharedKey;
 
-    public static final int ERROR_PYTHIA_INNER_FAIL = -200;
+    public byte[] getSharedKey() {
+        return this.sharedKey;
+    }
 
-    public static final int ERROR_RNG_FAILED = -202;
+    public void setSharedKey(byte[] sharedKey) {
+        this.sharedKey = sharedKey;
+    }
 
-    private int statusCode;
+    private byte[] encapsulatedKey;
 
-    public PythiaException(int statusCode) {
+    public byte[] getEncapsulatedKey() {
+        return this.encapsulatedKey;
+    }
+
+    public void setEncapsulatedKey(byte[] encapsulatedKey) {
+        this.encapsulatedKey = encapsulatedKey;
+    }
+
+    Ed25519KemEncapsulateResult() {
         super();
-        this.statusCode = statusCode;
     }
 
-    public int getStatusCode() {
-        return this.statusCode;
-    }
-
-    public String getMessage() {
-        switch (this.statusCode) {
-        case SUCCESS:
-            return "No errors was occurred.";
-        case ERROR_BAD_ARGUMENTS:
-            return "This error should not be returned if assertions is enabled.";
-        case ERROR_PYTHIA_INNER_FAIL:
-            return "Underlying pythia library returns -1.";
-        case ERROR_RNG_FAILED:
-            return "Underlying random number generator failed.";
-        default:
-            return "Unknown error";
-        }
+    Ed25519KemEncapsulateResult(byte[] sharedKey, byte[] encapsulatedKey) {
+        super();
+        this.sharedKey = sharedKey;
+        this.encapsulatedKey = encapsulatedKey;
     }
 
 }
