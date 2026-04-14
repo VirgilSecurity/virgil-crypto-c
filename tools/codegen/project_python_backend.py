@@ -27,6 +27,7 @@ from tools.codegen.project_ir import (
     IRImplementation,
     IRInterface,
     IRProject,
+    resolve_constant_value,
 )
 
 
@@ -434,14 +435,21 @@ def _generate_bridge_class_body(
     lines.append("")
 
     # Constants as class attributes
+    # Resolve entity for constant cross-references
+    _entity_ref = None
+    for _ent in list(project_ir.classes) + list(project_ir.implementations):
+        if _ent.name == entity_name:
+            _entity_ref = _ent
+            break
     for const in constants:
         name = _upper_snake(const.name)
-        value = const.attrs.get("value", "0")
+        value = resolve_constant_value(
+            const.attrs.get("value", "0"), _entity_ref, project_ir
+        )
         desc = const.description.strip() if const.description else ""
         if desc:
             for desc_line in desc.splitlines():
                 lines.append(f"    # {desc_line.strip()}")
-        # Handle special expression values (like "1024 * 1024 - 64")
         lines.append(f"    {name} = {value}")
 
     # __init__
@@ -1323,10 +1331,19 @@ def _generate_hl_class(
         lines.append(f'    """{description}"""')
 
     # Constants — no blank lines between them (matches legacy)
+    # entity_ref is the IR entity for constant resolution
+    entity_ref = None
+    for ent in list(project_ir.classes) + list(project_ir.implementations):
+        if ent.name == entity_name:
+            entity_ref = ent
+            break
+
     all_class_constants: list[tuple[str, str, str]] = []
     for const in constants:
         name = _upper_snake(const.name)
-        value = const.attrs.get("value", "0")
+        value = resolve_constant_value(
+            const.attrs.get("value", "0"), entity_ref, project_ir
+        )
         desc = const.description.strip() if const.description else ""
         all_class_constants.append((name, value, desc))
 
@@ -1341,7 +1358,9 @@ def _generate_hl_class(
             for iface_const in iface.constants:
                 name = _upper_snake(iface_const.name)
                 if iface_const.name in binding_const_map:
-                    value = binding_const_map[iface_const.name]
+                    value = resolve_constant_value(
+                        binding_const_map[iface_const.name], entity_ref, project_ir
+                    )
                 else:
                     value = iface_const.attrs.get("value", "0")
                 desc = iface_const.description.strip() if iface_const.description else ""

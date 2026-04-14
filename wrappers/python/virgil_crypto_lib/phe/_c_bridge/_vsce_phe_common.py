@@ -56,9 +56,9 @@ class VscePheCommon(object):
     # PHE hash length
     PHE_HASH_LEN = 32
     # Maximum data size to encrypt
-    PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64
+    PHE_MAX_ENCRYPT_LEN = 1048512
     # Maximum data size to decrypt
-    PHE_MAX_DECRYPT_LEN = 1024 * 1024
+    PHE_MAX_DECRYPT_LEN = 1048576
     # Maximum data to authenticate
     PHE_MAX_AUTH_LEN = 1024
 

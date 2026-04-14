@@ -47,7 +47,7 @@ class RandomPadding(Alg, Padding):
     """Append a random number of padding bytes to a data."""
 
     PADDING_SIZE_LEN = 4
-    PADDING_LEN_MIN = .(c_class_random_padding_constant_padding_size_len) + 1
+    PADDING_LEN_MIN = 5
 
     def __init__(self):
         """Create underlying C context."""

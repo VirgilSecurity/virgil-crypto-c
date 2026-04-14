@@ -27,6 +27,7 @@ from tools.codegen.project_ir import (
     IRImplementation,
     IRInterface,
     IRProject,
+    resolve_constant_value,
 )
 
 

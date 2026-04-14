@@ -940,3 +940,59 @@ def resolve_defaults(ir: IRProject) -> None:
 
     # --- Enums (no access/is_reference to resolve) ---
     # Enums only have constants, no access/is_reference attributes.
+
+
+# ---------------------------------------------------------------------------
+# Constant expression resolution
+# ---------------------------------------------------------------------------
+
+def resolve_constant_value(
+    value: str,
+    entity: IRClass | IRImplementation | None,
+    project: "IRProject",
+) -> str:
+    """Resolve GSL-style constant expressions to plain numeric values.
+
+    Handles:
+    - ``.(c_class_xxx_constant_yyy) + N`` → look up constant *yyy* on *xxx*
+    - ``1024 * 1024 - 64`` → evaluate safe arithmetic
+    - Plain integers / hex → pass through
+    """
+    import re as _re
+
+    if not value:
+        return "0"
+
+    # GSL reference: .(c_class_{entity}_constant_{name})
+    gsl_match = _re.search(r"\.\(c_class_(\w+)_constant_(\w+)\)", value)
+    if gsl_match:
+        ref_entity_snake = gsl_match.group(1)
+        ref_const_snake = gsl_match.group(2)
+        resolved_val = None
+        # Search in the same entity first
+        if entity is not None:
+            for c in getattr(entity, "constants", []):
+                if c.name.replace(" ", "_").lower() == ref_const_snake:
+                    resolved_val = c.attrs.get("value", "0")
+                    break
+        # Search in all classes/implementations
+        if resolved_val is None:
+            for ent in list(project.classes) + list(project.implementations):
+                if ent.name.replace(" ", "_").lower() == ref_entity_snake:
+                    for c in ent.constants:
+                        if c.name.replace(" ", "_").lower() == ref_const_snake:
+                            resolved_val = c.attrs.get("value", "0")
+                            break
+                    break
+        if resolved_val is not None:
+            value = value.replace(gsl_match.group(0), resolved_val)
+
+    # Safe arithmetic evaluation (digits, +, -, *, /, parens, spaces only)
+    stripped = value.strip()
+    if _re.match(r"^[\d\s+\-*/()]+$", stripped):
+        try:
+            return str(eval(stripped))  # noqa: S307 — safe: arithmetic only
+        except Exception:
+            pass
+
+    return value
