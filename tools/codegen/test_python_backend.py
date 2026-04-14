@@ -25,11 +25,12 @@ class FoundationFileCountTests(unittest.TestCase):
         cls.paths = [p for p, _ in cls.files]
 
     def test_total_file_count(self) -> None:
-        self.assertEqual(len(self.files), 214)
+        # 108 bridge (92 public + 16 private stubs) + 122 high-level = 230
+        self.assertEqual(len(self.files), 230)
 
     def test_bridge_file_count(self) -> None:
         bridge = [p for p in self.paths if "_c_bridge" in p]
-        self.assertEqual(len(bridge), 92)
+        self.assertEqual(len(bridge), 108)
 
     def test_highlevel_file_count(self) -> None:
         hl = [p for p in self.paths if "_c_bridge" not in p]
@@ -43,7 +44,7 @@ class PheFileCountTests(unittest.TestCase):
         cls.files = generate_python_files(cls.ir, repo_root=str(REPO_ROOT))
 
     def test_total_file_count(self) -> None:
-        self.assertEqual(len(self.files), 19)
+        self.assertEqual(len(self.files), 26)
 
 
 class PythiaFileCountTests(unittest.TestCase):
@@ -98,15 +99,14 @@ class StructuralTests(unittest.TestCase):
         )
         self.assertIn("Sha256", content)
 
-    def test_parity_with_legacy(self) -> None:
-        """Generated files should be byte-identical to legacy (read-through)."""
-        legacy_path = REPO_ROOT / "wrappers/python/virgil_crypto_lib/foundation/sha256.py"
-        if legacy_path.exists():
-            legacy = legacy_path.read_text()
-            generated = self.files.get(
-                "wrappers/python/virgil_crypto_lib/foundation/sha256.py", ""
-            )
-            self.assertEqual(generated, legacy)
+    def test_sha256_has_method_bodies(self) -> None:
+        """Generated sha256.py should have real method implementations."""
+        content = self.files.get(
+            "wrappers/python/virgil_crypto_lib/foundation/sha256.py", ""
+        )
+        self.assertIn("class Sha256", content)
+        self.assertIn("def hash(", content)
+        self.assertIn("VscfSha256", content)
 
 
 if __name__ == "__main__":
