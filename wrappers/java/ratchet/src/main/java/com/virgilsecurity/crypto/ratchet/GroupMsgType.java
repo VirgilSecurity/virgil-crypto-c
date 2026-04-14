@@ -36,4 +36,3 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-

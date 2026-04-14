@@ -83,203 +83,96 @@ const initKeyProvider = (Module, modules) => {
             Module._vscf_key_provider_set_rsa_params(this.ctxPtr, bitlen);
         }
 
-        generatePrivateKey(algId, error) {
+        generatePrivateKey(algId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('algId', algId);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_provider_generate_private_key(this.ctxPtr, algId, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_key_provider_generate_private_key(this.ctxPtr, algId);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        generatePostQuantumPrivateKey(error) {
+        generatePostQuantumPrivateKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_key_provider_generate_post_quantum_private_key(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        generateCompoundPrivateKey(cipherAlgId, signerAlgId, error) {
+        generateCompoundPrivateKey(cipherAlgId, signerAlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('cipherAlgId', cipherAlgId);
-            precondition.ensureNumber('signerAlgId', signerAlgId);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_provider_generate_compound_private_key(this.ctxPtr, cipherAlgId, signerAlgId, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_key_provider_generate_compound_private_key(this.ctxPtr, cipherAlgId, signerAlgId);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        generateHybridPrivateKey(firstKeyAlgId, secondKeyAlgId, error) {
+        generateHybridPrivateKey(firstKeyAlgId, secondKeyAlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('firstKeyAlgId', firstKeyAlgId);
-            precondition.ensureNumber('secondKeyAlgId', secondKeyAlgId);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_provider_generate_hybrid_private_key(this.ctxPtr, firstKeyAlgId, secondKeyAlgId, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_key_provider_generate_hybrid_private_key(this.ctxPtr, firstKeyAlgId, secondKeyAlgId);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        generateCompoundHybridPrivateKey(cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId, error) {
+        generateCompoundHybridPrivateKey(cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('cipherFirstKeyAlgId', cipherFirstKeyAlgId);
-            precondition.ensureNumber('cipherSecondKeyAlgId', cipherSecondKeyAlgId);
-            precondition.ensureNumber('signerFirstKeyAlgId', signerFirstKeyAlgId);
-            precondition.ensureNumber('signerSecondKeyAlgId', signerSecondKeyAlgId);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_provider_generate_compound_hybrid_private_key(this.ctxPtr, cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_key_provider_generate_compound_hybrid_private_key(this.ctxPtr, cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        importPrivateKey(keyData, error) {
+        importPrivateKey(keyData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_key_provider_import_private_key(this.ctxPtr, keyDataCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscf_key_provider_import_private_key(this.ctxPtr, keyDataCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(keyDataPtr);
                 Module._free(keyDataCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
-        importPublicKey(keyData, error) {
+        importPublicKey(keyData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_key_provider_import_public_key(this.ctxPtr, keyDataCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscf_key_provider_import_public_key(this.ctxPtr, keyDataCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(keyDataPtr);
                 Module._free(keyDataCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
         exportedPublicKeyLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_provider_exported_public_key_len(this.ctxPtr, publicKey.ctxPtr);
             return proxyResult;
@@ -288,14 +181,14 @@ const initKeyProvider = (Module, modules) => {
         exportPublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
+            
             const outCapacity = this.exportedPublicKeyLen(publicKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_key_provider_export_public_key(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -308,7 +201,7 @@ const initKeyProvider = (Module, modules) => {
         exportedPrivateKeyLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_provider_exported_private_key_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
@@ -317,14 +210,14 @@ const initKeyProvider = (Module, modules) => {
         exportPrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             const outCapacity = this.exportedPrivateKeyLen(privateKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_key_provider_export_private_key(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);

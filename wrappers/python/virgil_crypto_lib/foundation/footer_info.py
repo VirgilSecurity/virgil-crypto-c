@@ -58,8 +58,7 @@ class FooterInfo(object):
     def signed_data_info(self):
         """Return signed data info."""
         result = self._lib_vscf_footer_info.vscf_footer_info_signed_data_info(self.ctx)
-        instance = SignedDataInfo.use_c_ctx(result)
-        return instance
+        return SignedDataInfo.use_c_ctx(result)
 
     def set_data_size(self, data_size):
         """Set data size."""

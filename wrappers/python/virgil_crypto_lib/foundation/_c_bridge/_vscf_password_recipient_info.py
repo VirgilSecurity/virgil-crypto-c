@@ -46,6 +46,7 @@ class vscf_password_recipient_info_t(Structure):
 class VscfPasswordRecipientInfo(object):
     """Handle information about recipient that is defined by a password."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -63,16 +64,9 @@ class VscfPasswordRecipientInfo(object):
         vscf_password_recipient_info_delete.restype = None
         return vscf_password_recipient_info_delete(ctx)
 
-    def vscf_password_recipient_info_new_with_members(self, key_encryption_algorithm, encrypted_key):
-        """Create object and define all properties."""
-        vscf_password_recipient_info_new_with_members = self._lib.vscf_password_recipient_info_new_with_members
-        vscf_password_recipient_info_new_with_members.argtypes = [POINTER(vscf_impl_t), vsc_data_t]
-        vscf_password_recipient_info_new_with_members.restype = POINTER(vscf_password_recipient_info_t)
-        return vscf_password_recipient_info_new_with_members(key_encryption_algorithm, encrypted_key)
-
     def vscf_password_recipient_info_key_encryption_algorithm(self, ctx):
         """Return algorithm information that was used for encryption
-        a data encryption key."""
+a data encryption key."""
         vscf_password_recipient_info_key_encryption_algorithm = self._lib.vscf_password_recipient_info_key_encryption_algorithm
         vscf_password_recipient_info_key_encryption_algorithm.argtypes = [POINTER(vscf_password_recipient_info_t)]
         vscf_password_recipient_info_key_encryption_algorithm.restype = POINTER(vscf_impl_t)

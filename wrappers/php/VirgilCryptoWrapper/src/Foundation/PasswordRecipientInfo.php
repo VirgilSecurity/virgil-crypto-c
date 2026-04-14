@@ -46,17 +46,6 @@ class PasswordRecipientInfo
     private $ctx;
 
     /**
-    *
-    * @param AlgInfo $$keyEncryptionAlgorithm
-    * @param string $$encryptedKey
-    * @return PasswordRecipientInfo
-    */
-    public static function withMembers(AlgInfo $$keyEncryptionAlgorithm, string $$encryptedKey): PasswordRecipientInfo
-    {
-        return vscf_password_recipient_info_with_members_php($$keyEncryptionAlgorithm, $$encryptedKey);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void

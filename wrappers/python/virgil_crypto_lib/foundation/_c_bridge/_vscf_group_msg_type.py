@@ -39,8 +39,5 @@ from ctypes import *
 class VscfGroupMsgType(object):
     """Represents group message type"""
 
-    # Group info type with encryption key.
-    # This type of message should be encrypted before transferring.
     GROUP_INFO = 1
-    # Regular group message with encrypted text.
     REGULAR = 2

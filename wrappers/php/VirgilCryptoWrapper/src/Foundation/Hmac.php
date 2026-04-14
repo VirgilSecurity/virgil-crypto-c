@@ -102,7 +102,7 @@ class Hmac implements Alg, Mac
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_hmac_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_hmac_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

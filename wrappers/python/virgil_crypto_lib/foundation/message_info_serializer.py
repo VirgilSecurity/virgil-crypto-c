@@ -56,10 +56,10 @@ class MessageInfoSerializer(object):
     @abstractmethod
     def read_prefix(self, data):
         """Read message info prefix from the given data, and if it is valid,
-        return a length of bytes of the whole message info.
+return a length of bytes of the whole message info.
 
-        Zero returned if length can not be determined from the given data,
-        and this means that there is no message info at the data beginning."""
+Zero returned if length can not be determined from the given data,
+and this means that there is no message info at the data beginning."""
         raise NotImplementedError()
 
     @abstractmethod

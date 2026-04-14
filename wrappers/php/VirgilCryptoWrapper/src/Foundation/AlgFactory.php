@@ -47,7 +47,7 @@ class AlgFactory
     */
     public static function createHashFromInfo(AlgInfo $$algInfo): Hash
     {
-        $ctx = vscf_alg_factory_create_hash_from_info_php($$algInfo);
+        $ctx = vscf_alg_factory_create_hash_from_info_php($$algInfo->getCtx());
         return FoundationImplementation::wrapHash($ctx);
     }
 
@@ -58,7 +58,7 @@ class AlgFactory
     */
     public static function createMacFromInfo(AlgInfo $$algInfo): Mac
     {
-        $ctx = vscf_alg_factory_create_mac_from_info_php($$algInfo);
+        $ctx = vscf_alg_factory_create_mac_from_info_php($$algInfo->getCtx());
         return FoundationImplementation::wrapMac($ctx);
     }
 
@@ -69,7 +69,7 @@ class AlgFactory
     */
     public static function createKdfFromInfo(AlgInfo $$algInfo): Kdf
     {
-        $ctx = vscf_alg_factory_create_kdf_from_info_php($$algInfo);
+        $ctx = vscf_alg_factory_create_kdf_from_info_php($$algInfo->getCtx());
         return FoundationImplementation::wrapKdf($ctx);
     }
 
@@ -80,7 +80,7 @@ class AlgFactory
     */
     public static function createSaltedKdfFromInfo(AlgInfo $$algInfo): SaltedKdf
     {
-        $ctx = vscf_alg_factory_create_salted_kdf_from_info_php($$algInfo);
+        $ctx = vscf_alg_factory_create_salted_kdf_from_info_php($$algInfo->getCtx());
         return FoundationImplementation::wrapSaltedKdf($ctx);
     }
 
@@ -91,7 +91,7 @@ class AlgFactory
     */
     public static function createCipherFromInfo(AlgInfo $$algInfo): Cipher
     {
-        $ctx = vscf_alg_factory_create_cipher_from_info_php($$algInfo);
+        $ctx = vscf_alg_factory_create_cipher_from_info_php($$algInfo->getCtx());
         return FoundationImplementation::wrapCipher($ctx);
     }
 
@@ -103,7 +103,7 @@ class AlgFactory
     */
     public static function createPaddingFromInfo(AlgInfo $$algInfo, Random $$random): Padding
     {
-        $ctx = vscf_alg_factory_create_padding_from_info_php($$algInfo, $$random);
+        $ctx = vscf_alg_factory_create_padding_from_info_php($$algInfo->getCtx(), $$random->getCtx());
         return FoundationImplementation::wrapPadding($ctx);
     }
 

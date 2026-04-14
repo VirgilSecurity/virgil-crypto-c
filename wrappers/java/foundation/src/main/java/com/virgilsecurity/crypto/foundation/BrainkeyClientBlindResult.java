@@ -36,6 +36,7 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+
 public class BrainkeyClientBlindResult {
 
     private byte[] deblindFactor;

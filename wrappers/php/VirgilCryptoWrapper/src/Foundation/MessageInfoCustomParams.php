@@ -45,10 +45,6 @@ class MessageInfoCustomParams
     */
     private $ctx;
 
-    const OF_INT_TYPE = 1;
-    const OF_STRING_TYPE = 2;
-    const OF_DATA_TYPE = 3;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -114,6 +110,7 @@ class MessageInfoCustomParams
     *
     * @param string $$key
     * @return int
+    * @throws \Exception
     */
     public function findInt(string $$key): int
     {
@@ -124,6 +121,7 @@ class MessageInfoCustomParams
     *
     * @param string $$key
     * @return string
+    * @throws \Exception
     */
     public function findString(string $$key): string
     {
@@ -134,6 +132,7 @@ class MessageInfoCustomParams
     *
     * @param string $$key
     * @return string
+    * @throws \Exception
     */
     public function findData(string $$key): string
     {

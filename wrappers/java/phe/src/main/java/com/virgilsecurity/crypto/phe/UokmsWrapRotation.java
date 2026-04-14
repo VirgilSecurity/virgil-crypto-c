@@ -36,7 +36,6 @@
 
 package com.virgilsecurity.crypto.phe;
 
-
 public class UokmsWrapRotation implements AutoCloseable {
 
     public long cCtx;

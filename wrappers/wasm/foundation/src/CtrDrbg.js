@@ -37,22 +37,6 @@
 const initCtrDrbg = (Module, modules) => {
     class CtrDrbg {
 
-        static get RESEED_INTERVAL() {
-            return 10000;
-        }
-
-        get RESEED_INTERVAL() {
-            return 10000;
-        }
-
-        static get ENTROPY_LEN() {
-            return 48;
-        }
-
-        get ENTROPY_LEN() {
-            return 48;
-        }
-
         constructor(ctxPtr) {
             this.name = 'CtrDrbg';
 
@@ -84,21 +68,36 @@ const initCtrDrbg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('entropySource', entropySource, 'Foundation.EntropySource', modules.FoundationInterfaceTag.ENTROPY_SOURCE, modules.FoundationInterface);
             Module._vscf_ctr_drbg_release_entropy_source(this.ctxPtr)
-            const proxyStatus = Module._vscf_ctr_drbg_use_entropy_source(this.ctxPtr, entropySource.ctxPtr)
-            modules.FoundationError.handleStatusCode(proxyStatus)
+            Module._vscf_ctr_drbg_use_entropy_source(this.ctxPtr, entropySource.ctxPtr)
+        }
+
+        static get RESEED_INTERVAL() {
+            return 10000;
+        }
+
+        get RESEED_INTERVAL() {
+            return 10000;
+        }
+
+        static get ENTROPY_LEN() {
+            return 48;
+        }
+
+        get ENTROPY_LEN() {
+            return 48;
         }
 
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             const dataCapacity = dataLen;
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_ctr_drbg_random(this.ctxPtr, dataLen, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);

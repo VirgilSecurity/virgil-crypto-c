@@ -66,26 +66,6 @@ class CompoundPublicKey implements Key, PublicKey
 
     /**
     *
-    * @return PublicKey
-    */
-    public function cipherKey(): PublicKey
-    {
-        $ctx = vscf_compound_public_key_cipher_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @return PublicKey
-    */
-    public function signerKey(): PublicKey
-    {
-        $ctx = vscf_compound_public_key_signer_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -129,6 +109,26 @@ class CompoundPublicKey implements Key, PublicKey
     public function isValid(): bool
     {
         return vscf_compound_public_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function cipherKey(): PublicKey
+    {
+        $ctx = vscf_compound_public_key_cipher_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function signerKey(): PublicKey
+    {
+        $ctx = vscf_compound_public_key_signer_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**

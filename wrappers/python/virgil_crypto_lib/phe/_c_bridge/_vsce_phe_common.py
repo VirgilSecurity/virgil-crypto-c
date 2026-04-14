@@ -61,3 +61,8 @@ class VscePheCommon(object):
     PHE_MAX_DECRYPT_LEN = 1024 * 1024
     # Maximum data to authenticate
     PHE_MAX_AUTH_LEN = 1024
+
+    def __init__(self):
+        """Create underlying C context."""
+        self._ll = LowLevelLibs()
+        self._lib = self._ll.phe

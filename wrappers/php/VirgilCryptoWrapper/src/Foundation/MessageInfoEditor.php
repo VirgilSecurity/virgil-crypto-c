@@ -104,7 +104,7 @@ class MessageInfoEditor
     */
     public function unlock(string $$ownerRecipientId, PrivateKey $$ownerPrivateKey): void
     {
-        vscf_message_info_editor_unlock_php($this->ctx, $$ownerRecipientId, $$ownerPrivateKey);
+        vscf_message_info_editor_unlock_php($this->ctx, $$ownerRecipientId, $$ownerPrivateKey->getCtx());
     }
 
     /**
@@ -116,7 +116,7 @@ class MessageInfoEditor
     */
     public function addKeyRecipient(string $$recipientId, PublicKey $$publicKey): void
     {
-        vscf_message_info_editor_add_key_recipient_php($this->ctx, $$recipientId, $$publicKey);
+        vscf_message_info_editor_add_key_recipient_php($this->ctx, $$recipientId, $$publicKey->getCtx());
     }
 
     /**

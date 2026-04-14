@@ -73,7 +73,7 @@ const initKdf1 = (Module, modules) => {
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_kdf1_alg_id(this.ctxPtr);
             return proxyResult;
@@ -81,10 +81,10 @@ const initKdf1 = (Module, modules) => {
 
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_kdf1_produce_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
@@ -100,25 +100,25 @@ const initKdf1 = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureNumber('keyLen', keyLen);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const keyCapacity = keyLen;
             const keyCtxPtr = Module._vsc_buffer_new_with_capacity(keyCapacity);
-
+            
             try {
                 Module._vscf_kdf1_derive(this.ctxPtr, dataCtxPtr, keyLen, keyCtxPtr);
-
+            
                 const keyPtr = Module._vsc_buffer_bytes(keyCtxPtr);
                 const keyPtrLen = Module._vsc_buffer_len(keyCtxPtr);
                 const key = Module.HEAPU8.slice(keyPtr, keyPtr + keyPtrLen);

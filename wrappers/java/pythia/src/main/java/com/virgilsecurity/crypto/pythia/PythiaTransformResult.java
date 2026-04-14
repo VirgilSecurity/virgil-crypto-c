@@ -36,6 +36,7 @@
 
 package com.virgilsecurity.crypto.pythia;
 
+
 public class PythiaTransformResult {
 
     private byte[] transformedPassword;

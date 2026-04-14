@@ -45,12 +45,6 @@ class Aes256Gcm implements Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuth
     */
     private $ctx;
 
-    const NONCE_LEN = 12;
-    const KEY_LEN = 32;
-    const KEY_BITLEN = 256;
-    const BLOCK_LEN = 16;
-    const AUTH_TAG_LEN = 16;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -98,7 +92,7 @@ class Aes256Gcm implements Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuth
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_aes256_gcm_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_aes256_gcm_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**
@@ -248,7 +242,7 @@ class Aes256Gcm implements Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuth
     * @return array
     * @throws \Exception
     */
-    public function authEncrypt(string $$data, string $$authData): array
+    public function authEncrypt(string $$data, string $$authData)
     {
         return vscf_aes256_gcm_auth_encrypt_php($this->ctx, $$data, $$authData);
     }
@@ -301,7 +295,7 @@ class Aes256Gcm implements Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuth
     * @return array
     * @throws \Exception
     */
-    public function finishAuthEncryption(): array
+    public function finishAuthEncryption()
     {
         return vscf_aes256_gcm_finish_auth_encryption_php($this->ctx);
     }

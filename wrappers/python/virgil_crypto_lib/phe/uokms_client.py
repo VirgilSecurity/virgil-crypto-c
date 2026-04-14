@@ -37,7 +37,6 @@ from ctypes import *
 from ._c_bridge import VsceUokmsClient
 from ._c_bridge import VsceStatus
 from virgil_crypto_lib.common._c_bridge import Data
-from .common import Common
 from virgil_crypto_lib.common._c_bridge import Buffer
 
 
@@ -68,16 +67,16 @@ class UokmsClient(object):
 
     def set_keys_oneparty(self, client_private_key):
         """Sets client private
-        Call this method before any other methods
-        This function should be called only once"""
+Call this method before any other methods
+This function should be called only once"""
         d_client_private_key = Data(client_private_key)
         status = self._lib_vsce_uokms_client.vsce_uokms_client_set_keys_oneparty(self.ctx, d_client_private_key.data)
         VsceStatus.handle_status(status)
 
     def set_keys(self, client_private_key, server_public_key):
         """Sets client private and server public key
-        Call this method before any other methods
-        This function should be called only once"""
+Call this method before any other methods
+This function should be called only once"""
         d_client_private_key = Data(client_private_key)
         d_server_public_key = Data(server_public_key)
         status = self._lib_vsce_uokms_client.vsce_uokms_client_set_keys(self.ctx, d_client_private_key.data, d_server_public_key.data)
@@ -92,10 +91,10 @@ class UokmsClient(object):
 
     def generate_encrypt_wrap(self, encryption_key_len):
         """Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
-        of "encryption key len" that can be used for symmetric encryption"""
+of "encryption key len" that can be used for symmetric encryption"""
         wrap = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)
         encryption_key = Buffer(encryption_key_len)
-        status = self._lib_vsce_uokms_client.vsce_uokms_client_generate_encrypt_wrap(self.ctx, encryption_key_len, wrap.c_buffer, encryption_key.c_buffer)
+        status = self._lib_vsce_uokms_client.vsce_uokms_client_generate_encrypt_wrap(self.ctx, wrap.c_buffer, encryption_key_len, encryption_key.c_buffer)
         VsceStatus.handle_status(status)
         return wrap.get_bytes(), encryption_key.get_bytes()
 
@@ -109,7 +108,7 @@ class UokmsClient(object):
 
     def generate_decrypt_request(self, wrap):
         """Generates request to decrypt data, this request should be sent to the server.
-        Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
+Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
         d_wrap = Data(wrap)
         deblind_factor = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
         decrypt_request = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)

@@ -35,10 +35,10 @@
 
 from ctypes import *
 from ._c_bridge import VscfAlgInfoDerDeserializer
-from virgil_crypto_lib.common._c_bridge import Data
-from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
+from virgil_crypto_lib.common._c_bridge import Data
+from ._c_bridge._vscf_error import vscf_error_t
 from .alg_info_deserializer import AlgInfoDeserializer
 
 
@@ -59,25 +59,135 @@ class AlgInfoDerDeserializer(AlgInfoDeserializer):
     def set_asn1_reader(self, asn1_reader):
         self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_use_asn1_reader(self.ctx, asn1_reader.c_impl)
 
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_setup_defaults(self.ctx)
+
+    def deserialize_simple_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_kdf_alg_info(self, oid_id):
+        """Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_hkdf_alg_info(self, oid_id):
+        """Parse ASN.1 structure "KeyDevAlgs" from the
+https://tools.ietf.org/html/draft-housley-hkdf-oids-00."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_hmac_alg_info(self, oid_id):
+        """Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_cipher_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with AES parameters:
+    - defined in the RFC 3565;
+    - defined in the RFC 5084."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_pbkdf2_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
+defined in the RFC 8018."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_pbes2_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with PBES2 parameters
+defined in the RFC 8018."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_ecc_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
+parameters defined in the RFC 5480."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_compound_key_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with
+"CompoundKeyParams" parameters.
+
+CompoundKeyAlgorithms ALGORITHM ::= {
+    { OID id-CompoundKey parameters CompoundKeyParams }
+}
+
+id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
+
+CompoundKeyParams ::= SEQUENCE {
+    cipherAlgorithm AlgorithmIdentifier,
+    signerAlgorithm AlgorithmIdentifier
+}"""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_hybrid_key_alg_info(self, oid_id):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with
+"HybridKeyParams" parameters.
+
+HybridKeyAlgorithms ALGORITHM ::= {
+    { OID id-HybridKey parameters HybridKeyParams }
+}
+
+id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
+
+HybridKeyParams ::= SEQUENCE {
+    firstKeyAlgorithm AlgorithmIdentifier,
+    secondKeyAlgorithm AlgorithmIdentifier
+}"""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(self.ctx, oid_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def deserialize_inplace(self):
+        """Deserialize by using internal ASN.1 reader.
+Note, that caller code is responsible to reset ASN.1 reader with
+an input buffer."""
+        error = vscf_error_t()
+        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_inplace(self.ctx, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def deserialize(self, data):
         """Deserialize algorithm from the data."""
         d_data = Data(data)
         error = vscf_error_t()
         result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize(self.ctx, d_data.data, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_setup_defaults(self.ctx)
-
-    def deserialize_inplace(self):
-        """Deserialize by using internal ASN.1 reader.
-        Note, that caller code is responsible to reset ASN.1 reader with
-        an input buffer."""
-        error = vscf_error_t()
-        result = self._lib_vscf_alg_info_der_deserializer.vscf_alg_info_der_deserializer_deserialize_inplace(self.ctx, error)
         VscfStatus.handle_status(error.status)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance

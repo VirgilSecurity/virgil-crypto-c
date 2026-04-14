@@ -64,21 +64,9 @@ const initEccAlgInfo = (Module, modules) => {
             }
         }
 
-        static newWithMembers(algId, keyId, domainId) {
-            precondition.ensureNumber('algId', algId);
-            precondition.ensureNumber('keyId', keyId);
-            precondition.ensureNumber('domainId', domainId);
-
-            let proxyResult;
-            proxyResult = Module._vscf_ecc_alg_info_new_with_members(algId, keyId, domainId);
-
-            const jsResult = EccAlgInfo.newAndTakeCContext(proxyResult);
-            return jsResult;
-        }
-
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -86,7 +74,7 @@ const initEccAlgInfo = (Module, modules) => {
 
         keyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_alg_info_key_id(this.ctxPtr);
             return proxyResult;
@@ -94,7 +82,7 @@ const initEccAlgInfo = (Module, modules) => {
 
         domainId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_alg_info_domain_id(this.ctxPtr);
             return proxyResult;

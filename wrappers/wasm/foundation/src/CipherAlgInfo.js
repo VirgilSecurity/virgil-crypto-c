@@ -64,38 +64,9 @@ const initCipherAlgInfo = (Module, modules) => {
             }
         }
 
-        static newWithMembers(algId, nonce) {
-            precondition.ensureNumber('algId', algId);
-            precondition.ensureByteArray('nonce', nonce);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
-            const noncePtr = Module._malloc(nonceSize);
-            Module.HEAP8.set(nonce, noncePtr);
-
-            // Create C structure vsc_data_t.
-            const nonceCtxSize = Module._vsc_data_ctx_size();
-            const nonceCtxPtr = Module._malloc(nonceCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_cipher_alg_info_new_with_members(algId, nonceCtxPtr);
-
-                const jsResult = CipherAlgInfo.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(noncePtr);
-                Module._free(nonceCtxPtr);
-            }
-        }
-
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_cipher_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -103,21 +74,7 @@ const initCipherAlgInfo = (Module, modules) => {
 
         nonce() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_cipher_alg_info_nonce(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_cipher_alg_info_nonce(this.ctxPtr);
         }
 
     }

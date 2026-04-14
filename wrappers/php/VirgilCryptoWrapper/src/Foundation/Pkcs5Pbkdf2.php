@@ -76,15 +76,6 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
 
     /**
     *
-    * @return void
-    */
-    public function setupDefaults(): void
-    {
-        vscf_pkcs5_pbkdf2_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -111,7 +102,7 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_pkcs5_pbkdf2_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_pkcs5_pbkdf2_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**
@@ -144,6 +135,15 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     public function setInfo(string $$info): void
     {
         vscf_pkcs5_pbkdf2_set_info_php($this->ctx, $$info);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        vscf_pkcs5_pbkdf2_setup_defaults_php($this->ctx);
     }
 
     /**

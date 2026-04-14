@@ -36,7 +36,6 @@
 
 package com.virgilsecurity.crypto.phe;
 
-
 public class PheCipher implements AutoCloseable {
 
     public long cCtx;
@@ -73,6 +72,18 @@ public class PheCipher implements AutoCloseable {
 
     public void setRandom(Random random) {
         PheJNI.INSTANCE.pheCipher_setRandom(this.cCtx, random);
+    }
+
+    public int getSaltLen() {
+        return 32;
+    }
+
+    public int getKeyLen() {
+        return 32;
+    }
+
+    public int getNonceLen() {
+        return 12;
     }
 
     public void setupDefaults() throws PheException {

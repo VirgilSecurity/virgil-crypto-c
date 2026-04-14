@@ -37,22 +37,6 @@
 const initGroupSessionMessage = (Module, modules) => {
     class GroupSessionMessage {
 
-        static get MAX_MESSAGE_LEN() {
-            return 30188;
-        }
-
-        get MAX_MESSAGE_LEN() {
-            return 30188;
-        }
-
-        static get MESSAGE_VERSION() {
-            return 1;
-        }
-
-        get MESSAGE_VERSION() {
-            return 1;
-        }
-
         constructor(ctxPtr) {
             this.name = 'GroupSessionMessage';
 
@@ -80,9 +64,25 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
+        static get MAX_MESSAGE_LEN() {
+            return 30188;
+        }
+
+        get MAX_MESSAGE_LEN() {
+            return 30188;
+        }
+
+        static get MESSAGE_VERSION() {
+            return 1;
+        }
+
+        get MESSAGE_VERSION() {
+            return 1;
+        }
+
         getType() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_group_session_message_get_type(this.ctxPtr);
             return proxyResult;
@@ -90,26 +90,12 @@ const initGroupSessionMessage = (Module, modules) => {
 
         getSessionId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_group_session_message_get_session_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_group_session_message_get_session_id(this.ctxPtr);
         }
 
         getEpoch() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_group_session_message_get_epoch(this.ctxPtr);
             return proxyResult;
@@ -117,7 +103,7 @@ const initGroupSessionMessage = (Module, modules) => {
 
         serializeLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_group_session_message_serialize_len(this.ctxPtr);
             return proxyResult;
@@ -125,13 +111,13 @@ const initGroupSessionMessage = (Module, modules) => {
 
         serialize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const outputCapacity = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
-
+            
             try {
                 Module._vscf_group_session_message_serialize(this.ctxPtr, outputCtxPtr);
-
+            
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
                 const outputPtrLen = Module._vsc_buffer_len(outputCtxPtr);
                 const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputPtrLen);
@@ -141,39 +127,30 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
-        static deserialize(input, error) {
+        static deserialize(input) {
             precondition.ensureByteArray('input', input);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;
             const inputPtr = Module._malloc(inputSize);
             Module.HEAP8.set(input, inputPtr);
-
+            
             // Create C structure vsc_data_t.
             const inputCtxSize = Module._vsc_data_ctx_size();
             const inputCtxPtr = Module._malloc(inputCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_group_session_message_deserialize(inputCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = GroupSessionMessage.newAndTakeCContext(proxyResult);
+                const proxyResult = Module._vscf_group_session_message_deserialize(inputCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const jsResult = modules.Self.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
                 Module._free(inputCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 

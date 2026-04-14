@@ -36,8 +36,8 @@
 
 const initGroupMsgType = (Module, modules) => {
     const GroupMsgType = Object.freeze({
-        GROUP_INFO: 0,
-        REGULAR: 1,
+        GROUP_INFO: 1,
+        REGULAR: 2,
     });
 
     return GroupMsgType;

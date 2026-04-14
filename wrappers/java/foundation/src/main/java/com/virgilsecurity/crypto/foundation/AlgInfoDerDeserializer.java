@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserializer {
 
-    public void setAsn1Reader(Asn1Reader asn1Reader) {
-        FoundationJNI.INSTANCE.algInfoDerDeserializer_setAsn1Reader(this.cCtx, asn1Reader);
-    }
-
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.algInfoDerDeserializer_setupDefaults(this.cCtx);
-    }
-
-    public AlgInfo deserializeInplace() throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeInplace(this.cCtx);
-    }
-
     public long cCtx;
 
     public AlgInfoDerDeserializer() {
@@ -82,8 +70,60 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
         clearResources();
     }
 
+    public void setAsn1Reader(Asn1Reader asn1Reader) {
+        FoundationJNI.INSTANCE.algInfoDerDeserializer_setAsn1Reader(this.cCtx, asn1Reader);
+    }
+
     public AlgInfo deserialize(byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserialize(this.cCtx, data);
+    }
+
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.algInfoDerDeserializer_setupDefaults(this.cCtx);
+    }
+
+    public AlgInfo deserializeSimpleAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeSimpleAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeKdfAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeKdfAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeHkdfAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeHkdfAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeHmacAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeHmacAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeCipherAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeCipherAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializePbkdf2AlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializePbkdf2AlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializePbes2AlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializePbes2AlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeEccAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeEccAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeCompoundKeyAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeCompoundKeyAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeHybridKeyAlgInfo(OidId oidId) throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeHybridKeyAlgInfo(this.cCtx, oidId);
+    }
+
+    public AlgInfo deserializeInplace() throws FoundationException {
+        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeInplace(this.cCtx);
     }
 
 }

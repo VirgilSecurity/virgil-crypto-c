@@ -71,77 +71,59 @@ const initKeyAsn1Deserializer = (Module, modules) => {
             Module._vscf_key_asn1_deserializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
 
-        deserializePublicKey(publicKeyData, error) {
+        deserializePublicKey(publicKeyData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('publicKeyData', publicKeyData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const publicKeyDataSize = publicKeyData.length * publicKeyData.BYTES_PER_ELEMENT;
             const publicKeyDataPtr = Module._malloc(publicKeyDataSize);
             Module.HEAP8.set(publicKeyData, publicKeyDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const publicKeyDataCtxSize = Module._vsc_data_ctx_size();
             const publicKeyDataCtxPtr = Module._malloc(publicKeyDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(publicKeyDataCtxPtr, publicKeyDataPtr, publicKeyDataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_key_asn1_deserializer_deserialize_public_key(this.ctxPtr, publicKeyDataCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscf_key_asn1_deserializer_deserialize_public_key(this.ctxPtr, publicKeyDataCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.RawPublicKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(publicKeyDataPtr);
                 Module._free(publicKeyDataCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
-        deserializePrivateKey(privateKeyData, error) {
+        deserializePrivateKey(privateKeyData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('privateKeyData', privateKeyData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const privateKeyDataSize = privateKeyData.length * privateKeyData.BYTES_PER_ELEMENT;
             const privateKeyDataPtr = Module._malloc(privateKeyDataSize);
             Module.HEAP8.set(privateKeyData, privateKeyDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const privateKeyDataCtxSize = Module._vsc_data_ctx_size();
             const privateKeyDataCtxPtr = Module._malloc(privateKeyDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(privateKeyDataCtxPtr, privateKeyDataPtr, privateKeyDataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_key_asn1_deserializer_deserialize_private_key(this.ctxPtr, privateKeyDataCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscf_key_asn1_deserializer_deserialize_private_key(this.ctxPtr, privateKeyDataCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.RawPrivateKey.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(privateKeyDataPtr);
                 Module._free(privateKeyDataCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
@@ -150,48 +132,33 @@ const initKeyAsn1Deserializer = (Module, modules) => {
             Module._vscf_key_asn1_deserializer_setup_defaults(this.ctxPtr);
         }
 
-        deserializePublicKeyInplace(error) {
+        deserializePublicKeyInplace() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_asn1_deserializer_deserialize_public_key_inplace(this.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.RawPublicKey.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_key_asn1_deserializer_deserialize_public_key_inplace(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        deserializePrivateKeyInplace(error) {
+        deserializePrivateKeyInplace() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_key_asn1_deserializer_deserialize_private_key_inplace(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
+        deserializePkcs8PrivateKeyInplace(seqLeftLen, version) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('seqLeftLen', seqLeftLen);
+            precondition.ensureNumber('version', version);
+            const proxyResult = Module._vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(this.ctxPtr, seqLeftLen, version);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_asn1_deserializer_deserialize_private_key_inplace(this.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.RawPrivateKey.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+        deserializeSec1PrivateKeyInplace(seqLeftLen, version, algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('seqLeftLen', seqLeftLen);
+            precondition.ensureNumber('version', version);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            const proxyResult = Module._vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(this.ctxPtr, seqLeftLen, version, algInfo.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
     }

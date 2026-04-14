@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class CompoundPrivateKey implements AutoCloseable, Key, PrivateKey {
 
-    public PrivateKey cipherKey() {
-        return FoundationJNI.INSTANCE.compoundPrivateKey_cipherKey(this.cCtx);
-    }
-
-    public PrivateKey signerKey() {
-        return FoundationJNI.INSTANCE.compoundPrivateKey_signerKey(this.cCtx);
-    }
-
     public long cCtx;
 
     public CompoundPrivateKey() {
@@ -100,6 +92,14 @@ public class CompoundPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.compoundPrivateKey_extractPublicKey(this.cCtx);
+    }
+
+    public PrivateKey cipherKey() {
+        return FoundationJNI.INSTANCE.compoundPrivateKey_cipherKey(this.cCtx);
+    }
+
+    public PrivateKey signerKey() {
+        return FoundationJNI.INSTANCE.compoundPrivateKey_signerKey(this.cCtx);
     }
 
 }

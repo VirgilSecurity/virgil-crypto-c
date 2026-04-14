@@ -66,20 +66,20 @@ const initFooterInfo = (Module, modules) => {
 
         hasSignedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_footer_info_has_signed_data_info(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         signedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_footer_info_signed_data_info(this.ctxPtr);
-
+            
             const jsResult = modules.SignedDataInfo.newAndUseCContext(proxyResult);
             return jsResult;
         }
@@ -92,7 +92,7 @@ const initFooterInfo = (Module, modules) => {
 
         dataSize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_footer_info_data_size(this.ctxPtr);
             return proxyResult;

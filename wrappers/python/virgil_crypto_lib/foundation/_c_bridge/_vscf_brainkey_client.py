@@ -38,6 +38,7 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_mbedtls_ecp_group import vscf_mbedtls_ecp_group_t
 
 
 class vscf_brainkey_client_t(Structure):
@@ -70,14 +71,12 @@ class VscfBrainkeyClient(object):
         return vscf_brainkey_client_delete(ctx)
 
     def vscf_brainkey_client_use_random(self, ctx, random):
-        """Random used for key generation, proofs, etc."""
         vscf_brainkey_client_use_random = self._lib.vscf_brainkey_client_use_random
         vscf_brainkey_client_use_random.argtypes = [POINTER(vscf_brainkey_client_t), POINTER(vscf_impl_t)]
         vscf_brainkey_client_use_random.restype = None
         return vscf_brainkey_client_use_random(ctx, random)
 
     def vscf_brainkey_client_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vscf_brainkey_client_use_operation_random = self._lib.vscf_brainkey_client_use_operation_random
         vscf_brainkey_client_use_operation_random.argtypes = [POINTER(vscf_brainkey_client_t), POINTER(vscf_impl_t)]
         vscf_brainkey_client_use_operation_random.restype = None

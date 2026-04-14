@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class RandomPadding implements AutoCloseable, Alg, Padding {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.randomPadding_setRandom(this.cCtx, random);
-    }
-
     public long cCtx;
 
     public RandomPadding() {
@@ -72,6 +68,10 @@ public class RandomPadding implements AutoCloseable, Alg, Padding {
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.randomPadding_setRandom(this.cCtx, random);
     }
 
     public AlgId algId() {

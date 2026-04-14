@@ -37,7 +37,6 @@ from ctypes import *
 from ._c_bridge import VsceUokmsWrapRotation
 from ._c_bridge import VsceStatus
 from virgil_crypto_lib.common._c_bridge import Data
-from .common import Common
 from virgil_crypto_lib.common._c_bridge import Buffer
 
 

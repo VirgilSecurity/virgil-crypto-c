@@ -41,6 +41,150 @@ const initFoundationInterface = (Module, modules) => {
             const implTag = Module._vscf_impl_tag(ctxPtr);
             switch(implTag) {
 
+                case modules.FoundationImplTag.AES256_CBC:
+                    return modules.Aes256Cbc.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.AES256_GCM:
+                    return modules.Aes256Gcm.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ALG_INFO_DER_DESERIALIZER:
+                    return modules.AlgInfoDerDeserializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ALG_INFO_DER_SERIALIZER:
+                    return modules.AlgInfoDerSerializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ASN1RD:
+                    return modules.Asn1rd.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ASN1WR:
+                    return modules.Asn1wr.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CIPHER_ALG_INFO:
+                    return modules.CipherAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_KEY_ALG:
+                    return modules.CompoundKeyAlg.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_KEY_ALG_INFO:
+                    return modules.CompoundKeyAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_PRIVATE_KEY:
+                    return modules.CompoundPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.COMPOUND_PUBLIC_KEY:
+                    return modules.CompoundPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CTR_DRBG:
+                    return modules.CtrDrbg.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.CURVE25519:
+                    return modules.Curve25519.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ECC:
+                    return modules.Ecc.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ECC_ALG_INFO:
+                    return modules.EccAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ECC_PRIVATE_KEY:
+                    return modules.EccPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ECC_PUBLIC_KEY:
+                    return modules.EccPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ED25519:
+                    return modules.Ed25519.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ENTROPY_ACCUMULATOR:
+                    return modules.EntropyAccumulator.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.FAKE_RANDOM:
+                    return modules.FakeRandom.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.FALCON:
+                    return modules.Falcon.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HASH_BASED_ALG_INFO:
+                    return modules.HashBasedAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HKDF:
+                    return modules.Hkdf.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HMAC:
+                    return modules.Hmac.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HYBRID_KEY_ALG:
+                    return modules.HybridKeyAlg.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HYBRID_KEY_ALG_INFO:
+                    return modules.HybridKeyAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HYBRID_PRIVATE_KEY:
+                    return modules.HybridPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.HYBRID_PUBLIC_KEY:
+                    return modules.HybridPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.KDF1:
+                    return modules.Kdf1.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.KDF2:
+                    return modules.Kdf2.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.KEY_ASN1_DESERIALIZER:
+                    return modules.KeyAsn1Deserializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.KEY_ASN1_SERIALIZER:
+                    return modules.KeyAsn1Serializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.KEY_MATERIAL_RNG:
+                    return modules.KeyMaterialRng.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
+                    return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.PBE_ALG_INFO:
+                    return modules.PbeAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.PKCS5_PBES2:
+                    return modules.Pkcs5Pbes2.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.PKCS5_PBKDF2:
+                    return modules.Pkcs5Pbkdf2.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.PKCS8_SERIALIZER:
+                    return modules.Pkcs8Serializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RANDOM_PADDING:
+                    return modules.RandomPadding.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RAW_PRIVATE_KEY:
+                    return modules.RawPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RAW_PUBLIC_KEY:
+                    return modules.RawPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ROUND5:
+                    return modules.Round5.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RSA:
+                    return modules.Rsa.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RSA_PRIVATE_KEY:
+                    return modules.RsaPrivateKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.RSA_PUBLIC_KEY:
+                    return modules.RsaPublicKey.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.SALTED_KDF_ALG_INFO:
+                    return modules.SaltedKdfAlgInfo.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.SEC1_SERIALIZER:
+                    return modules.Sec1Serializer.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.SEED_ENTROPY_SOURCE:
+                    return modules.SeedEntropySource.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.SHA224:
                     return modules.Sha224.newAndTakeCContext(ctxPtr);
 
@@ -53,152 +197,8 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.SHA512:
                     return modules.Sha512.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.AES256_GCM:
-                    return modules.Aes256Gcm.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.AES256_CBC:
-                    return modules.Aes256Cbc.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ASN1RD:
-                    return modules.Asn1rd.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ASN1WR:
-                    return modules.Asn1wr.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.RSA_PUBLIC_KEY:
-                    return modules.RsaPublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.RSA_PRIVATE_KEY:
-                    return modules.RsaPrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.RSA:
-                    return modules.Rsa.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ECC_PUBLIC_KEY:
-                    return modules.EccPublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ECC_PRIVATE_KEY:
-                    return modules.EccPrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ECC:
-                    return modules.Ecc.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ENTROPY_ACCUMULATOR:
-                    return modules.EntropyAccumulator.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.CTR_DRBG:
-                    return modules.CtrDrbg.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HMAC:
-                    return modules.Hmac.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HKDF:
-                    return modules.Hkdf.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.KDF1:
-                    return modules.Kdf1.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.KDF2:
-                    return modules.Kdf2.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.FAKE_RANDOM:
-                    return modules.FakeRandom.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.PKCS5_PBKDF2:
-                    return modules.Pkcs5Pbkdf2.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.PKCS5_PBES2:
-                    return modules.Pkcs5Pbes2.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.SEED_ENTROPY_SOURCE:
-                    return modules.SeedEntropySource.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.KEY_MATERIAL_RNG:
-                    return modules.KeyMaterialRng.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.RAW_PUBLIC_KEY:
-                    return modules.RawPublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.RAW_PRIVATE_KEY:
-                    return modules.RawPrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.PKCS8_SERIALIZER:
-                    return modules.Pkcs8Serializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.SEC1_SERIALIZER:
-                    return modules.Sec1Serializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.KEY_ASN1_SERIALIZER:
-                    return modules.KeyAsn1Serializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.KEY_ASN1_DESERIALIZER:
-                    return modules.KeyAsn1Deserializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ED25519:
-                    return modules.Ed25519.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.CURVE25519:
-                    return modules.Curve25519.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.FALCON:
-                    return modules.Falcon.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ROUND5:
-                    return modules.Round5.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.COMPOUND_KEY_ALG_INFO:
-                    return modules.CompoundKeyAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.COMPOUND_PUBLIC_KEY:
-                    return modules.CompoundPublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.COMPOUND_PRIVATE_KEY:
-                    return modules.CompoundPrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.COMPOUND_KEY_ALG:
-                    return modules.CompoundKeyAlg.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HYBRID_KEY_ALG_INFO:
-                    return modules.HybridKeyAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HYBRID_PUBLIC_KEY:
-                    return modules.HybridPublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HYBRID_PRIVATE_KEY:
-                    return modules.HybridPrivateKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HYBRID_KEY_ALG:
-                    return modules.HybridKeyAlg.newAndTakeCContext(ctxPtr);
-
                 case modules.FoundationImplTag.SIMPLE_ALG_INFO:
                     return modules.SimpleAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.HASH_BASED_ALG_INFO:
-                    return modules.HashBasedAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.CIPHER_ALG_INFO:
-                    return modules.CipherAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.SALTED_KDF_ALG_INFO:
-                    return modules.SaltedKdfAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.PBE_ALG_INFO:
-                    return modules.PbeAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ECC_ALG_INFO:
-                    return modules.EccAlgInfo.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ALG_INFO_DER_SERIALIZER:
-                    return modules.AlgInfoDerSerializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ALG_INFO_DER_DESERIALIZER:
-                    return modules.AlgInfoDerDeserializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
-                    return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.RANDOM_PADDING:
-                    return modules.RandomPadding.newAndTakeCContext(ctxPtr);
 
                 default:
                     throw new Error('Unexpected implementation tag found: ' + implTag);

@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
 
-    public PublicKey cipherKey() {
-        return FoundationJNI.INSTANCE.compoundPublicKey_cipherKey(this.cCtx);
-    }
-
-    public PublicKey signerKey() {
-        return FoundationJNI.INSTANCE.compoundPublicKey_signerKey(this.cCtx);
-    }
-
     public long cCtx;
 
     public CompoundPublicKey() {
@@ -96,6 +88,14 @@ public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
 
     public boolean isValid() {
         return FoundationJNI.INSTANCE.compoundPublicKey_isValid(this.cCtx);
+    }
+
+    public PublicKey cipherKey() {
+        return FoundationJNI.INSTANCE.compoundPublicKey_cipherKey(this.cCtx);
+    }
+
+    public PublicKey signerKey() {
+        return FoundationJNI.INSTANCE.compoundPublicKey_signerKey(this.cCtx);
     }
 
 }

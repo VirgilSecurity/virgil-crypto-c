@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.rsa_setRandom(this.cCtx, random);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.rsa_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey generateKey(int bitlen) throws FoundationException {
-        return FoundationJNI.INSTANCE.rsa_generateKey(this.cCtx, bitlen);
-    }
-
     public long cCtx;
 
     public Rsa() {
@@ -80,6 +68,10 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.rsa_setRandom(this.cCtx, random);
     }
 
     public boolean getCanImportPublicKey() {
@@ -160,6 +152,14 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
 
     public boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature) {
         return FoundationJNI.INSTANCE.rsa_verifyHash(this.cCtx, publicKey, hashId, digest, signature);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.rsa_setupDefaults(this.cCtx);
+    }
+
+    public PrivateKey generateKey(int bitlen) throws FoundationException {
+        return FoundationJNI.INSTANCE.rsa_generateKey(this.cCtx, bitlen);
     }
 
 }

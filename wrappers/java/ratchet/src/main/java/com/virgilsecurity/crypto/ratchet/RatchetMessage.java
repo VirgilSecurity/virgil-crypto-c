@@ -36,7 +36,6 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-
 public class RatchetMessage implements AutoCloseable {
 
     public long cCtx;
@@ -75,7 +74,7 @@ public class RatchetMessage implements AutoCloseable {
         return RatchetJNI.INSTANCE.ratchetMessage_getType(this.cCtx);
     }
 
-    public long getCounter() {
+    public int getCounter() {
         return RatchetJNI.INSTANCE.ratchetMessage_getCounter(this.cCtx);
     }
 
@@ -103,7 +102,7 @@ public class RatchetMessage implements AutoCloseable {
         return RatchetJNI.INSTANCE.ratchetMessage_serialize(this.cCtx);
     }
 
-    public RatchetMessage deserialize(byte[] input) throws RatchetException {
+    public Self deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetMessage_deserialize(input);
     }
 

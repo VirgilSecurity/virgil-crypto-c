@@ -45,9 +45,6 @@ class Sha256 implements Alg, Hash
     */
     private $ctx;
 
-    const DIGEST_LEN = 32;
-    const BLOCK_LEN = 64;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -95,7 +92,7 @@ class Sha256 implements Alg, Hash
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_sha256_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_sha256_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

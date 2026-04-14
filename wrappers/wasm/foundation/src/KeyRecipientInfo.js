@@ -64,96 +64,24 @@ const initKeyRecipientInfo = (Module, modules) => {
             }
         }
 
-        static newWithData(recipientId, keyEncryptionAlgorithm, encryptedKey) {
-            precondition.ensureByteArray('recipientId', recipientId);
-            precondition.ensureImplementInterface('keyEncryptionAlgorithm', keyEncryptionAlgorithm, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            precondition.ensureByteArray('encryptedKey', encryptedKey);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
-            const recipientIdPtr = Module._malloc(recipientIdSize);
-            Module.HEAP8.set(recipientId, recipientIdPtr);
-
-            // Create C structure vsc_data_t.
-            const recipientIdCtxSize = Module._vsc_data_ctx_size();
-            const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const encryptedKeySize = encryptedKey.length * encryptedKey.BYTES_PER_ELEMENT;
-            const encryptedKeyPtr = Module._malloc(encryptedKeySize);
-            Module.HEAP8.set(encryptedKey, encryptedKeyPtr);
-
-            // Create C structure vsc_data_t.
-            const encryptedKeyCtxSize = Module._vsc_data_ctx_size();
-            const encryptedKeyCtxPtr = Module._malloc(encryptedKeyCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(encryptedKeyCtxPtr, encryptedKeyPtr, encryptedKeySize);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_key_recipient_info_new_with_data(recipientIdCtxPtr, keyEncryptionAlgorithm.ctxPtr, encryptedKeyCtxPtr);
-
-                const jsResult = KeyRecipientInfo.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(recipientIdPtr);
-                Module._free(recipientIdCtxPtr);
-                Module._free(encryptedKeyPtr);
-                Module._free(encryptedKeyCtxPtr);
-            }
-        }
-
         recipientId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_key_recipient_info_recipient_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_key_recipient_info_recipient_id(this.ctxPtr);
         }
 
         keyEncryptionAlgorithm() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_key_encryption_algorithm(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         encryptedKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_key_recipient_info_encrypted_key(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_key_recipient_info_encrypted_key(this.ctxPtr);
         }
 
     }

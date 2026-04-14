@@ -36,6 +36,7 @@
 from ctypes import *
 from ._c_bridge import VscfPasswordRecipientInfoList
 from .password_recipient_info import PasswordRecipientInfo
+from .self import Self
 
 
 class PasswordRecipientInfoList(object):
@@ -58,8 +59,7 @@ class PasswordRecipientInfoList(object):
     def item(self):
         """Return list item."""
         result = self._lib_vscf_password_recipient_info_list.vscf_password_recipient_info_list_item(self.ctx)
-        instance = PasswordRecipientInfo.use_c_ctx(result)
-        return instance
+        return PasswordRecipientInfo.use_c_ctx(result)
 
     def has_next(self):
         """Return true if list has next item."""
@@ -69,8 +69,7 @@ class PasswordRecipientInfoList(object):
     def next(self):
         """Return next list node if exists, or NULL otherwise."""
         result = self._lib_vscf_password_recipient_info_list.vscf_password_recipient_info_list_next(self.ctx)
-        instance = PasswordRecipientInfoList.use_c_ctx(result)
-        return instance
+        return Self.use_c_ctx(result)
 
     def has_prev(self):
         """Return true if list has previous item."""
@@ -80,8 +79,7 @@ class PasswordRecipientInfoList(object):
     def prev(self):
         """Return previous list node if exists, or NULL otherwise."""
         result = self._lib_vscf_password_recipient_info_list.vscf_password_recipient_info_list_prev(self.ctx)
-        instance = PasswordRecipientInfoList.use_c_ctx(result)
-        return instance
+        return Self.use_c_ctx(result)
 
     def clear(self):
         """Remove all items."""

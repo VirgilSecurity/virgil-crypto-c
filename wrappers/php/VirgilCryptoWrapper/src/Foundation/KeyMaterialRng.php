@@ -69,16 +69,6 @@ class KeyMaterialRng implements Random
 
     /**
     *
-    * @param string $$keyMaterial
-    * @return void
-    */
-    public function resetKeyMaterial(string $$keyMaterial): void
-    {
-        vscf_key_material_rng_reset_key_material_php($this->ctx, $$keyMaterial);
-    }
-
-    /**
-    *
     * @param int $$dataLen
     * @return string
     * @throws \Exception
@@ -96,6 +86,16 @@ class KeyMaterialRng implements Random
     public function reseed(): void
     {
         vscf_key_material_rng_reseed_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param string $$keyMaterial
+    * @return void
+    */
+    public function resetKeyMaterial(string $$keyMaterial): void
+    {
+        vscf_key_material_rng_reset_key_material_php($this->ctx, $$keyMaterial);
     }
 
     /**

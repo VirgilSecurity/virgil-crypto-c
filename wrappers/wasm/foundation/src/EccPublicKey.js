@@ -66,7 +66,7 @@ const initEccPublicKey = (Module, modules) => {
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_public_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -74,17 +74,17 @@ const initEccPublicKey = (Module, modules) => {
 
         algInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_public_key_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_public_key_len(this.ctxPtr);
             return proxyResult;
@@ -92,26 +92,18 @@ const initEccPublicKey = (Module, modules) => {
 
         bitlen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_public_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
 
-        implTag() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_ecc_public_key_impl_tag(this.ctxPtr);
-            return proxyResult;
-        }
-
         isValid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_public_key_is_valid(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }

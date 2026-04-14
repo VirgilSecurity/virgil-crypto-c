@@ -64,6 +64,7 @@ interface MessageInfoFooterSerializer extends Ctx
     *
     * @param string $$data
     * @return MessageInfoFooter
+    * @throws \Exception
     */
     public function deserializeFooter(string $$data): MessageInfoFooter
     {

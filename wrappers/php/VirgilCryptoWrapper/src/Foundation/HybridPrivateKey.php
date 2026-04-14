@@ -66,26 +66,6 @@ class HybridPrivateKey implements Key, PrivateKey
 
     /**
     *
-    * @return PrivateKey
-    */
-    public function firstKey(): PrivateKey
-    {
-        $ctx = vscf_hybrid_private_key_first_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @return PrivateKey
-    */
-    public function secondKey(): PrivateKey
-    {
-        $ctx = vscf_hybrid_private_key_second_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -139,6 +119,26 @@ class HybridPrivateKey implements Key, PrivateKey
     {
         $ctx = vscf_hybrid_private_key_extract_public_key_php($this->ctx);
         return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return PrivateKey
+    */
+    public function firstKey(): PrivateKey
+    {
+        $ctx = vscf_hybrid_private_key_first_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @return PrivateKey
+    */
+    public function secondKey(): PrivateKey
+    {
+        $ctx = vscf_hybrid_private_key_second_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**

@@ -66,6 +66,16 @@ class SaltedKdfAlgInfo implements AlgInfo
 
     /**
     *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_salted_kdf_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
+    *
     * @return AlgInfo
     */
     public function hashAlgInfo(): AlgInfo
@@ -90,16 +100,6 @@ class SaltedKdfAlgInfo implements AlgInfo
     public function iterationCount(): int
     {
         return vscf_salted_kdf_alg_info_iteration_count_php($this->ctx);
-    }
-
-    /**
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_salted_kdf_alg_info_alg_id_php($this->ctx);
-        return new AlgId($enum);
     }
 
     /**

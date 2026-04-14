@@ -69,5 +69,5 @@ class Mac(object):
     @abstractmethod
     def reset(self):
         """Prepare to authenticate a new message with the same key
-        as the previous MAC operation."""
+as the previous MAC operation."""
         raise NotImplementedError()

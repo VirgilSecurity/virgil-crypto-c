@@ -35,29 +35,30 @@
 
 from ctypes import *
 from ._c_bridge import VscfRound5
-from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
-from .raw_public_key import RawPublicKey
-from .raw_private_key import RawPrivateKey
-from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscf_error import vscf_error_t
+from .raw_private_key import RawPrivateKey
+from .raw_public_key import RawPublicKey
 from .key_alg import KeyAlg
 from .kem import Kem
 
 
 class Round5(KeyAlg, Kem):
     """Provide post-quantum encryption based on the round5 implementation.
-    For algorithm details check https://github.com/round5/code"""
+For algorithm details check https://github.com/round5/code"""
 
+    SEED_LEN = 48
     # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = True
+    CAN_IMPORT_PUBLIC_KEY = true
     # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = True
+    CAN_EXPORT_PUBLIC_KEY = true
     # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = True
+    CAN_IMPORT_PRIVATE_KEY = true
     # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = True
+    CAN_EXPORT_PRIVATE_KEY = true
 
     def __init__(self):
         """Create underlying C context."""
@@ -73,9 +74,23 @@ class Round5(KeyAlg, Kem):
     def set_random(self, random):
         self._lib_vscf_round5.vscf_round5_use_random(self.ctx, random.c_impl)
 
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        status = self._lib_vscf_round5.vscf_round5_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
+
+    def generate_key(self, alg_id):
+        """Generate new private key.
+Note, this operation might be slow."""
+        error = vscf_error_t()
+        result = self._lib_vscf_round5.vscf_round5_generate_key(self.ctx, alg_id, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def generate_ephemeral_key(self, key):
         """Generate ephemeral private key of the same type.
-        Note, this operation might be slow."""
+Note, this operation might be slow."""
         error = vscf_error_t()
         result = self._lib_vscf_round5.vscf_round5_generate_ephemeral_key(self.ctx, key.c_impl, error)
         VscfStatus.handle_status(error.status)
@@ -85,12 +100,12 @@ class Round5(KeyAlg, Kem):
     def import_public_key(self, raw_key):
         """Import public key from the raw binary format.
 
-        Return public key that is adopted and optimized to be used
-        with this particular algorithm.
+Return public key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be imported from the format defined in
+RFC 3447 Appendix A.1.1."""
         error = vscf_error_t()
         result = self._lib_vscf_round5.vscf_round5_import_public_key(self.ctx, raw_key.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -100,24 +115,23 @@ class Round5(KeyAlg, Kem):
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be exported in format defined in
+RFC 3447 Appendix A.1.1."""
         error = vscf_error_t()
         result = self._lib_vscf_round5.vscf_round5_export_public_key(self.ctx, public_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        instance = RawPublicKey.take_c_ctx(result)
-        return instance
+        return RawPublicKey.take_c_ctx(result)
 
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
 
-        Return private key that is adopted and optimized to be used
-        with this particular algorithm.
+Return private key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be imported from the format defined in
+RFC 3447 Appendix A.1.2."""
         error = vscf_error_t()
         result = self._lib_vscf_round5.vscf_round5_import_private_key(self.ctx, raw_key.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -127,14 +141,13 @@ class Round5(KeyAlg, Kem):
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be exported in format defined in
+RFC 3447 Appendix A.1.2."""
         error = vscf_error_t()
         result = self._lib_vscf_round5.vscf_round5_export_private_key(self.ctx, private_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        instance = RawPrivateKey.take_c_ctx(result)
-        return instance
+        return RawPrivateKey.take_c_ctx(result)
 
     def kem_shared_key_len(self, key):
         """Return length in bytes required to hold encapsulated shared key."""
@@ -148,7 +161,7 @@ class Round5(KeyAlg, Kem):
 
     def kem_encapsulate(self, public_key):
         """Generate a shared key and a key encapsulated message."""
-        shared_key = Buffer(self.kem_shared_key_len(key=public_key))
+        shared_key = Buffer(self.kem_shared_key_len(public_key=public_key))
         encapsulated_key = Buffer(self.kem_encapsulated_key_len(public_key=public_key))
         status = self._lib_vscf_round5.vscf_round5_kem_encapsulate(self.ctx, public_key.c_impl, shared_key.c_buffer, encapsulated_key.c_buffer)
         VscfStatus.handle_status(status)
@@ -157,24 +170,10 @@ class Round5(KeyAlg, Kem):
     def kem_decapsulate(self, encapsulated_key, private_key):
         """Decapsulate the shared key."""
         d_encapsulated_key = Data(encapsulated_key)
-        shared_key = Buffer(self.kem_shared_key_len(key=private_key))
+        shared_key = Buffer(self.kem_shared_key_len(private_key=private_key))
         status = self._lib_vscf_round5.vscf_round5_kem_decapsulate(self.ctx, d_encapsulated_key.data, private_key.c_impl, shared_key.c_buffer)
         VscfStatus.handle_status(status)
         return shared_key.get_bytes()
-
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        status = self._lib_vscf_round5.vscf_round5_setup_defaults(self.ctx)
-        VscfStatus.handle_status(status)
-
-    def generate_key(self, alg_id):
-        """Generate new private key.
-        Note, this operation might be slow."""
-        error = vscf_error_t()
-        result = self._lib_vscf_round5.vscf_round5_generate_key(self.ctx, alg_id, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

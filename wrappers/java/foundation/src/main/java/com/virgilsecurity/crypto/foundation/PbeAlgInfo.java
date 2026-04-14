@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class PbeAlgInfo implements AutoCloseable, AlgInfo {
 
-    public AlgInfo kdfAlgInfo() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_kdfAlgInfo(this.cCtx);
-    }
-
-    public AlgInfo cipherAlgInfo() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_cipherAlgInfo(this.cCtx);
-    }
-
     public long cCtx;
 
     public PbeAlgInfo() {
@@ -80,6 +72,14 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
 
     public AlgId algId() {
         return FoundationJNI.INSTANCE.pbeAlgInfo_algId(this.cCtx);
+    }
+
+    public AlgInfo kdfAlgInfo() {
+        return FoundationJNI.INSTANCE.pbeAlgInfo_kdfAlgInfo(this.cCtx);
+    }
+
+    public AlgInfo cipherAlgInfo() {
+        return FoundationJNI.INSTANCE.pbeAlgInfo_cipherAlgInfo(this.cCtx);
     }
 
 }

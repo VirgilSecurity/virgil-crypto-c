@@ -45,9 +45,10 @@ class vscf_compound_private_key_t(Structure):
 class VscfCompoundPrivateKey(object):
     """Handles compound private key.
 
-    Compound private key contains 2 private keys and signature:
-        - cipher key - is used for decryption;
-        - signer key - is used for signing."""
+Compound private key contains 2 private keys and signature:
+    - cipher key - is used for decryption;
+    - signer key - is used for signing."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -65,6 +66,20 @@ class VscfCompoundPrivateKey(object):
         vscf_compound_private_key_delete.argtypes = [POINTER(vscf_compound_private_key_t)]
         vscf_compound_private_key_delete.restype = None
         return vscf_compound_private_key_delete(ctx)
+
+    def vscf_compound_private_key_cipher_key(self, ctx):
+        """Return primary private key suitable for a final decryption."""
+        vscf_compound_private_key_cipher_key = self._lib.vscf_compound_private_key_cipher_key
+        vscf_compound_private_key_cipher_key.argtypes = [POINTER(vscf_compound_private_key_t)]
+        vscf_compound_private_key_cipher_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_private_key_cipher_key(ctx)
+
+    def vscf_compound_private_key_signer_key(self, ctx):
+        """Return private key suitable for signing."""
+        vscf_compound_private_key_signer_key = self._lib.vscf_compound_private_key_signer_key
+        vscf_compound_private_key_signer_key.argtypes = [POINTER(vscf_compound_private_key_t)]
+        vscf_compound_private_key_signer_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_private_key_signer_key(ctx)
 
     def vscf_compound_private_key_alg_id(self, ctx):
         """Algorithm identifier the key belongs to."""
@@ -96,7 +111,7 @@ class VscfCompoundPrivateKey(object):
 
     def vscf_compound_private_key_is_valid(self, ctx):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         vscf_compound_private_key_is_valid = self._lib.vscf_compound_private_key_is_valid
         vscf_compound_private_key_is_valid.argtypes = [POINTER(vscf_compound_private_key_t)]
         vscf_compound_private_key_is_valid.restype = c_bool
@@ -108,20 +123,6 @@ class VscfCompoundPrivateKey(object):
         vscf_compound_private_key_extract_public_key.argtypes = [POINTER(vscf_compound_private_key_t)]
         vscf_compound_private_key_extract_public_key.restype = POINTER(vscf_impl_t)
         return vscf_compound_private_key_extract_public_key(ctx)
-
-    def vscf_compound_private_key_cipher_key(self, ctx):
-        """Return primary private key suitable for a final decryption."""
-        vscf_compound_private_key_cipher_key = self._lib.vscf_compound_private_key_cipher_key
-        vscf_compound_private_key_cipher_key.argtypes = [POINTER(vscf_compound_private_key_t)]
-        vscf_compound_private_key_cipher_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_private_key_cipher_key(ctx)
-
-    def vscf_compound_private_key_signer_key(self, ctx):
-        """Return private key suitable for signing."""
-        vscf_compound_private_key_signer_key = self._lib.vscf_compound_private_key_signer_key
-        vscf_compound_private_key_signer_key.argtypes = [POINTER(vscf_compound_private_key_t)]
-        vscf_compound_private_key_signer_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_private_key_signer_key(ctx)
 
     def vscf_compound_private_key_shallow_copy(self, ctx):
         vscf_compound_private_key_shallow_copy = self._lib.vscf_compound_private_key_shallow_copy

@@ -64,19 +64,9 @@ const initSimpleAlgInfo = (Module, modules) => {
             }
         }
 
-        static newWithAlgId(algId) {
-            precondition.ensureNumber('algId', algId);
-
-            let proxyResult;
-            proxyResult = Module._vscf_simple_alg_info_new_with_alg_id(algId);
-
-            const jsResult = SimpleAlgInfo.newAndTakeCContext(proxyResult);
-            return jsResult;
-        }
-
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_simple_alg_info_alg_id(this.ctxPtr);
             return proxyResult;

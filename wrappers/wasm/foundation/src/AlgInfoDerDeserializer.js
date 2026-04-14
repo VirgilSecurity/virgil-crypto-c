@@ -71,40 +71,31 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             Module._vscf_alg_info_der_deserializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
 
-        deserialize(data, error) {
+        deserialize(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_alg_info_der_deserializer_deserialize(this.ctxPtr, dataCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize(this.ctxPtr, dataCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
@@ -113,26 +104,70 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             Module._vscf_alg_info_der_deserializer_setup_defaults(this.ctxPtr);
         }
 
-        deserializeInplace(error) {
+        deserializeSimpleAlgInfo(oidId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_simple_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
+        deserializeKdfAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-            let proxyResult;
+        deserializeHkdfAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-            try {
-                proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_inplace(this.ctxPtr, errorCtxPtr);
+        deserializeHmacAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
+        deserializeCipherAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+        deserializePbkdf2AlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        deserializePbes2AlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        deserializeEccAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        deserializeCompoundKeyAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        deserializeHybridKeyAlgInfo(oidId) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(this.ctxPtr, oidId);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        deserializeInplace() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            const proxyResult = Module._vscf_alg_info_der_deserializer_deserialize_inplace(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
     }

@@ -64,62 +64,19 @@ const initPasswordRecipientInfo = (Module, modules) => {
             }
         }
 
-        static newWithMembers(keyEncryptionAlgorithm, encryptedKey) {
-            precondition.ensureImplementInterface('keyEncryptionAlgorithm', keyEncryptionAlgorithm, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            precondition.ensureByteArray('encryptedKey', encryptedKey);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const encryptedKeySize = encryptedKey.length * encryptedKey.BYTES_PER_ELEMENT;
-            const encryptedKeyPtr = Module._malloc(encryptedKeySize);
-            Module.HEAP8.set(encryptedKey, encryptedKeyPtr);
-
-            // Create C structure vsc_data_t.
-            const encryptedKeyCtxSize = Module._vsc_data_ctx_size();
-            const encryptedKeyCtxPtr = Module._malloc(encryptedKeyCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(encryptedKeyCtxPtr, encryptedKeyPtr, encryptedKeySize);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_password_recipient_info_new_with_members(keyEncryptionAlgorithm.ctxPtr, encryptedKeyCtxPtr);
-
-                const jsResult = PasswordRecipientInfo.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(encryptedKeyPtr);
-                Module._free(encryptedKeyCtxPtr);
-            }
-        }
-
         keyEncryptionAlgorithm() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_password_recipient_info_key_encryption_algorithm(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         encryptedKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_password_recipient_info_encrypted_key(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_password_recipient_info_encrypted_key(this.ctxPtr);
         }
 
     }

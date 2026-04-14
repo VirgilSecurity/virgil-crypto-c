@@ -38,22 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, ComputeSharedKey, Kem {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.ecc_setRandom(this.cCtx, random);
-    }
-
-    public void setEcies(Ecies ecies) {
-        FoundationJNI.INSTANCE.ecc_setEcies(this.cCtx, ecies);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.ecc_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey generateKey(AlgId algId) throws FoundationException {
-        return FoundationJNI.INSTANCE.ecc_generateKey(this.cCtx, algId);
-    }
-
     public long cCtx;
 
     public Ecc() {
@@ -84,6 +68,14 @@ public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Compute
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.ecc_setRandom(this.cCtx, random);
+    }
+
+    public void setEcies(Ecies ecies) {
+        FoundationJNI.INSTANCE.ecc_setEcies(this.cCtx, ecies);
     }
 
     public boolean getCanImportPublicKey() {
@@ -182,12 +174,32 @@ public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Compute
         return FoundationJNI.INSTANCE.ecc_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public EccKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.ecc_kemEncapsulate(this.cCtx, publicKey);
     }
 
     public byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.ecc_kemDecapsulate(this.cCtx, encapsulatedKey, privateKey);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.ecc_setupDefaults(this.cCtx);
+    }
+
+    public byte[] writeSignature(MbedtlsMpi r, MbedtlsMpi s) {
+        return FoundationJNI.INSTANCE.ecc_writeSignature(r, s);
+    }
+
+    public void readSignature(byte[] signature, MbedtlsMpi r, MbedtlsMpi s) throws FoundationException {
+        FoundationJNI.INSTANCE.ecc_readSignature(signature, r, s);
+    }
+
+    public PrivateKey generateKey(AlgId algId) throws FoundationException {
+        return FoundationJNI.INSTANCE.ecc_generateKey(this.cCtx, algId);
+    }
+
+    public AlgInfo produceAlgInfoForKey(Key key) {
+        return FoundationJNI.INSTANCE.ecc_produceAlgInfoForKey(this.cCtx, key);
     }
 
 }

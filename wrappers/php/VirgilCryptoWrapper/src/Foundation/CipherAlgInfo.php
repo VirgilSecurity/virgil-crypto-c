@@ -46,17 +46,6 @@ class CipherAlgInfo implements AlgInfo
     private $ctx;
 
     /**
-    *
-    * @param AlgId $$algId
-    * @param string $$nonce
-    * @return CipherAlgInfo
-    */
-    public static function withMembers(AlgId $$algId, string $$nonce): CipherAlgInfo
-    {
-        return vscf_cipher_alg_info_with_members_php($$algId, $$nonce);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void
@@ -77,21 +66,21 @@ class CipherAlgInfo implements AlgInfo
 
     /**
     *
-    * @return string
-    */
-    public function nonce(): string
-    {
-        return vscf_cipher_alg_info_nonce_php($this->ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
     {
         $enum = vscf_cipher_alg_info_alg_id_php($this->ctx);
         return new AlgId($enum);
+    }
+
+    /**
+    *
+    * @return string
+    */
+    public function nonce(): string
+    {
+        return vscf_cipher_alg_info_nonce_php($this->ctx);
     }
 
     /**

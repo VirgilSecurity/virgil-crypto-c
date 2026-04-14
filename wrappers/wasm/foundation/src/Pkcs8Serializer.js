@@ -74,7 +74,7 @@ const initPkcs8Serializer = (Module, modules) => {
         serializedPublicKeyLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pkcs8_serializer_serialized_public_key_len(this.ctxPtr, publicKey.ctxPtr);
             return proxyResult;
@@ -83,14 +83,14 @@ const initPkcs8Serializer = (Module, modules) => {
         serializePublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
-
+            
             const outCapacity = this.serializedPublicKeyLen(publicKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_pkcs8_serializer_serialize_public_key(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -103,7 +103,7 @@ const initPkcs8Serializer = (Module, modules) => {
         serializedPrivateKeyLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pkcs8_serializer_serialized_private_key_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
@@ -112,14 +112,14 @@ const initPkcs8Serializer = (Module, modules) => {
         serializePrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
-
+            
             const outCapacity = this.serializedPrivateKeyLen(privateKey);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_pkcs8_serializer_serialize_private_key(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -134,46 +134,18 @@ const initPkcs8Serializer = (Module, modules) => {
             Module._vscf_pkcs8_serializer_setup_defaults(this.ctxPtr);
         }
 
-        serializePublicKeyInplace(publicKey, error) {
+        serializePublicKeyInplace(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_pkcs8_serializer_serialize_public_key_inplace(this.ctxPtr, publicKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-                return proxyResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_pkcs8_serializer_serialize_public_key_inplace(this.ctxPtr, publicKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        serializePrivateKeyInplace(privateKey, error) {
+        serializePrivateKeyInplace(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_pkcs8_serializer_serialize_private_key_inplace(this.ctxPtr, privateKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-                return proxyResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_pkcs8_serializer_serialize_private_key_inplace(this.ctxPtr, privateKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
     }

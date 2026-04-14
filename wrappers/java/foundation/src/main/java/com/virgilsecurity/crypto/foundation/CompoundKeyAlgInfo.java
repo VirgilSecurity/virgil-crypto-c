@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
 
-    public AlgInfo cipherAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_cipherAlgInfo(this.cCtx);
-    }
-
-    public AlgInfo signerAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signerAlgInfo(this.cCtx);
-    }
-
     public long cCtx;
 
     public CompoundKeyAlgInfo() {
@@ -80,6 +72,14 @@ public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
 
     public AlgId algId() {
         return FoundationJNI.INSTANCE.compoundKeyAlgInfo_algId(this.cCtx);
+    }
+
+    public AlgInfo cipherAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_cipherAlgInfo(this.cCtx);
+    }
+
+    public AlgInfo signerAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signerAlgInfo(this.cCtx);
     }
 
 }

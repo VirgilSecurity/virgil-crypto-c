@@ -47,10 +47,6 @@ class vscf_sha512_t(Structure):
 class VscfSha512(object):
     """This is MbedTLS implementation of SHA512."""
 
-    # Length of the digest (hashing output) in bytes.
-    DIGEST_LEN = 64
-    # Block length of the digest function in bytes.
-    BLOCK_LEN = 128
 
     def __init__(self):
         """Create underlying C context."""

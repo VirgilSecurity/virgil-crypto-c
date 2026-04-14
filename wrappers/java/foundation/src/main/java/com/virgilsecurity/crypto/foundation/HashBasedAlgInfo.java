@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
 
-    public AlgInfo hashAlgInfo() {
-        return FoundationJNI.INSTANCE.hashBasedAlgInfo_hashAlgInfo(this.cCtx);
-    }
-
     public long cCtx;
 
     public HashBasedAlgInfo() {
@@ -76,6 +72,10 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
 
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hashBasedAlgInfo_algId(this.cCtx);
+    }
+
+    public AlgInfo hashAlgInfo() {
+        return FoundationJNI.INSTANCE.hashBasedAlgInfo_hashAlgInfo(this.cCtx);
     }
 
 }

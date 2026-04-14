@@ -39,9 +39,6 @@ from ctypes import *
 class VscfCipherState(object):
     """Enumerates possible sequentail cipher's states."""
 
-    # Cipher is ready for new encryption / decryption operation.
     INITIAL = 0
-    # Cipher is configured for encryption.
     ENCRYPTION = 1
-    # Cipher is configured for decryption.
     DECRYPTION = 2

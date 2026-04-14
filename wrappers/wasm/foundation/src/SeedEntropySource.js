@@ -64,12 +64,20 @@ const initSeedEntropySource = (Module, modules) => {
             }
         }
 
+        static get GATHER_LEN_MAX() {
+            return 48;
+        }
+
+        get GATHER_LEN_MAX() {
+            return 48;
+        }
+
         isStrong() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_seed_entropy_source_is_strong(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -77,14 +85,14 @@ const initSeedEntropySource = (Module, modules) => {
         gather(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             const outCapacity = len;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_seed_entropy_source_gather(this.ctxPtr, len, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -97,25 +105,30 @@ const initSeedEntropySource = (Module, modules) => {
         resetSeed(seed) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('seed', seed);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const seedSize = seed.length * seed.BYTES_PER_ELEMENT;
             const seedPtr = Module._malloc(seedSize);
             Module.HEAP8.set(seed, seedPtr);
-
+            
             // Create C structure vsc_data_t.
             const seedCtxSize = Module._vsc_data_ctx_size();
             const seedCtxPtr = Module._malloc(seedCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(seedCtxPtr, seedPtr, seedSize);
-
+            
             try {
                 Module._vscf_seed_entropy_source_reset_seed(this.ctxPtr, seedCtxPtr);
             } finally {
                 Module._free(seedPtr);
                 Module._free(seedCtxPtr);
             }
+        }
+
+        moveForward() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            Module._vscf_seed_entropy_source_move_forward(this.ctxPtr);
         }
 
     }

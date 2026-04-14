@@ -45,11 +45,6 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     private $ctx;
 
-    const CAN_IMPORT_PUBLIC_KEY = true;
-    const CAN_EXPORT_PUBLIC_KEY = true;
-    const CAN_IMPORT_PRIVATE_KEY = true;
-    const CAN_EXPORT_PRIVATE_KEY = true;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -81,28 +76,6 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
 
     /**
     *
-    * @return void
-    * @throws \Exception
-    */
-    public function setupDefaults(): void
-    {
-        vscf_compound_key_alg_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param PrivateKey $$cipherKey
-    * @param PrivateKey $$signerKey
-    * @return PrivateKey
-    */
-    public function makeKey(PrivateKey $$cipherKey, PrivateKey $$signerKey): PrivateKey
-    {
-        $ctx = vscf_compound_key_alg_make_key_php($this->ctx, $$cipherKey, $$signerKey);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -129,17 +102,18 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_compound_key_alg_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_compound_key_alg_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**
     *
     * @param Key $$key
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = vscf_compound_key_alg_generate_ephemeral_key_php($this->ctx, $$key);
+        $ctx = vscf_compound_key_alg_generate_ephemeral_key_php($this->ctx, $$key->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
@@ -147,6 +121,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     *
     * @param RawPublicKey $$rawKey
     * @return PublicKey
+    * @throws \Exception
     */
     public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
@@ -158,10 +133,11 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     *
     * @param PublicKey $$publicKey
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = vscf_compound_key_alg_export_public_key_php($this->ctx, $$publicKey);
+        $ctx = vscf_compound_key_alg_export_public_key_php($this->ctx, $$publicKey->getCtx());
         return new RawPublicKey($ctx);
     }
 
@@ -169,6 +145,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     *
     * @param RawPrivateKey $$rawKey
     * @return PrivateKey
+    * @throws \Exception
     */
     public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
@@ -180,10 +157,11 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     *
     * @param PrivateKey $$privateKey
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = vscf_compound_key_alg_export_private_key_php($this->ctx, $$privateKey);
+        $ctx = vscf_compound_key_alg_export_private_key_php($this->ctx, $$privateKey->getCtx());
         return new RawPrivateKey($ctx);
     }
 
@@ -195,7 +173,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canEncrypt(PublicKey $$publicKey, int $$dataLen): bool
     {
-        return vscf_compound_key_alg_can_encrypt_php($this->ctx, $$publicKey, $$dataLen);
+        return vscf_compound_key_alg_can_encrypt_php($this->ctx, $$publicKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -206,7 +184,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
     {
-        return vscf_compound_key_alg_encrypted_len_php($this->ctx, $$publicKey, $$dataLen);
+        return vscf_compound_key_alg_encrypted_len_php($this->ctx, $$publicKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -218,7 +196,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function encrypt(PublicKey $$publicKey, string $$data): string
     {
-        return vscf_compound_key_alg_encrypt_php($this->ctx, $$publicKey, $$data);
+        return vscf_compound_key_alg_encrypt_php($this->ctx, $$publicKey->getCtx(), $$data);
     }
 
     /**
@@ -229,7 +207,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canDecrypt(PrivateKey $$privateKey, int $$dataLen): bool
     {
-        return vscf_compound_key_alg_can_decrypt_php($this->ctx, $$privateKey, $$dataLen);
+        return vscf_compound_key_alg_can_decrypt_php($this->ctx, $$privateKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -240,7 +218,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
     {
-        return vscf_compound_key_alg_decrypted_len_php($this->ctx, $$privateKey, $$dataLen);
+        return vscf_compound_key_alg_decrypted_len_php($this->ctx, $$privateKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -252,7 +230,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function decrypt(PrivateKey $$privateKey, string $$data): string
     {
-        return vscf_compound_key_alg_decrypt_php($this->ctx, $$privateKey, $$data);
+        return vscf_compound_key_alg_decrypt_php($this->ctx, $$privateKey->getCtx(), $$data);
     }
 
     /**
@@ -262,7 +240,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canSign(PrivateKey $$privateKey): bool
     {
-        return vscf_compound_key_alg_can_sign_php($this->ctx, $$privateKey);
+        return vscf_compound_key_alg_can_sign_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -272,7 +250,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function signatureLen(PrivateKey $$privateKey): int
     {
-        return vscf_compound_key_alg_signature_len_php($this->ctx, $$privateKey);
+        return vscf_compound_key_alg_signature_len_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -285,7 +263,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
     {
-        return vscf_compound_key_alg_sign_hash_php($this->ctx, $$privateKey, $$hashId, $$digest);
+        return vscf_compound_key_alg_sign_hash_php($this->ctx, $$privateKey->getCtx(), $$hashId, $$digest);
     }
 
     /**
@@ -295,7 +273,7 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function canVerify(PublicKey $$publicKey): bool
     {
-        return vscf_compound_key_alg_can_verify_php($this->ctx, $$publicKey);
+        return vscf_compound_key_alg_can_verify_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -308,7 +286,30 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     */
     public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
     {
-        return vscf_compound_key_alg_verify_hash_php($this->ctx, $$publicKey, $$hashId, $$digest, $$signature);
+        return vscf_compound_key_alg_verify_hash_php($this->ctx, $$publicKey->getCtx(), $$hashId, $$digest, $$signature);
+    }
+
+    /**
+    *
+    * @return void
+    * @throws \Exception
+    */
+    public function setupDefaults(): void
+    {
+        vscf_compound_key_alg_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param PrivateKey $$cipherKey
+    * @param PrivateKey $$signerKey
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function makeKey(PrivateKey $$cipherKey, PrivateKey $$signerKey): PrivateKey
+    {
+        $ctx = vscf_compound_key_alg_make_key_php($this->ctx, $$cipherKey->getCtx(), $$signerKey->getCtx());
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**

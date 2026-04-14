@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
 
-    public int keyExponent() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_keyExponent(this.cCtx);
-    }
-
     public long cCtx;
 
     public RsaPublicKey() {
@@ -92,6 +88,10 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
 
     public boolean isValid() {
         return FoundationJNI.INSTANCE.rsaPublicKey_isValid(this.cCtx);
+    }
+
+    public int keyExponent() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_keyExponent(this.cCtx);
     }
 
 }

@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from ._vscf_impl import vscf_impl_t
 
 
 class vscf_asn1wr_t(Structure):
@@ -45,6 +44,7 @@ class vscf_asn1wr_t(Structure):
 
 class VscfAsn1wr(object):
     """This is MbedTLS implementation of ASN.1 writer."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -63,21 +63,66 @@ class VscfAsn1wr(object):
         vscf_asn1wr_delete.restype = None
         return vscf_asn1wr_delete(ctx)
 
+    def vscf_asn1wr_mbedtls_has_error(self, ctx, code):
+        """If given mbedtls code is equal to zero, then setup correspond error
+to the context and return true, otherwise return false."""
+        vscf_asn1wr_mbedtls_has_error = self._lib.vscf_asn1wr_mbedtls_has_error
+        vscf_asn1wr_mbedtls_has_error.argtypes = [POINTER(vscf_asn1wr_t), c_int]
+        vscf_asn1wr_mbedtls_has_error.restype = c_bool
+        return vscf_asn1wr_mbedtls_has_error(ctx, code)
+
+    def vscf_asn1wr_write_tag_data(self, ctx, data, tag):
+        """Write raw data and with given tag the to ASN.1 structure."""
+        vscf_asn1wr_write_tag_data = self._lib.vscf_asn1wr_write_tag_data
+        vscf_asn1wr_write_tag_data.argtypes = [POINTER(vscf_asn1wr_t), vsc_data_t, c_int]
+        vscf_asn1wr_write_tag_data.restype = c_size_t
+        return vscf_asn1wr_write_tag_data(ctx, data, tag)
+
+    def vscf_asn1wr_get_current_element_len(self, curr, end):
+        """Get length of the current ASN.1 element with tag and length itself."""
+        vscf_asn1wr_get_current_element_len = self._lib.vscf_asn1wr_get_current_element_len
+        vscf_asn1wr_get_current_element_len.argtypes = [POINTER(c_byte), POINTER(c_byte)]
+        vscf_asn1wr_get_current_element_len.restype = c_size_t
+        return vscf_asn1wr_get_current_element_len(curr, end)
+
+    def vscf_asn1wr_swap_elements_of_set(self, to_start, to_len, from_start, from_len):
+        """Swap positions of the given ASN.1 elements.
+Note, "from" element must be behind "to" element.
+Note, algorithm complexity is O^2."""
+        vscf_asn1wr_swap_elements_of_set = self._lib.vscf_asn1wr_swap_elements_of_set
+        vscf_asn1wr_swap_elements_of_set.argtypes = [POINTER(c_byte), c_size_t, POINTER(c_byte), c_size_t]
+        vscf_asn1wr_swap_elements_of_set.restype = None
+        return vscf_asn1wr_swap_elements_of_set(to_start, to_len, from_start, from_len)
+
+    def vscf_asn1wr_second_element_of_set_is_less(self, first_start, first_len, second_start, second_len):
+        """Return true if second element is lexicographical less then first."""
+        vscf_asn1wr_second_element_of_set_is_less = self._lib.vscf_asn1wr_second_element_of_set_is_less
+        vscf_asn1wr_second_element_of_set_is_less.argtypes = [POINTER(c_byte), c_size_t, POINTER(c_byte), c_size_t]
+        vscf_asn1wr_second_element_of_set_is_less.restype = c_bool
+        return vscf_asn1wr_second_element_of_set_is_less(first_start, first_len, second_start, second_len)
+
+    def vscf_asn1wr_sort_elements_of_set(self, ctx, len):
+        """Perform lexicographical sorting of the given elements of set."""
+        vscf_asn1wr_sort_elements_of_set = self._lib.vscf_asn1wr_sort_elements_of_set
+        vscf_asn1wr_sort_elements_of_set.argtypes = [POINTER(vscf_asn1wr_t), c_size_t]
+        vscf_asn1wr_sort_elements_of_set.restype = None
+        return vscf_asn1wr_sort_elements_of_set(ctx, len)
+
     def vscf_asn1wr_reset(self, ctx, out, out_len):
         """Reset all internal states and prepare to new ASN.1 writing operations."""
         vscf_asn1wr_reset = self._lib.vscf_asn1wr_reset
-        vscf_asn1wr_reset.argtypes = [POINTER(vscf_asn1wr_t), POINTER(c_byte), c_size_t]
+        vscf_asn1wr_reset.argtypes = [POINTER(vscf_asn1wr_t), c_byte, c_size_t]
         vscf_asn1wr_reset.restype = None
         return vscf_asn1wr_reset(ctx, out, out_len)
 
     def vscf_asn1wr_finish(self, ctx, do_not_adjust):
         """Finalize writing and forbid further operations.
 
-        Note, that ASN.1 structure is always written to the buffer end, and
-        if argument "do not adjust" is false, then data is moved to the
-        beginning, otherwise - data is left at the buffer end.
+Note, that ASN.1 structure is always written to the buffer end, and
+if argument "do not adjust" is false, then data is moved to the
+beginning, otherwise - data is left at the buffer end.
 
-        Returns length of the written bytes."""
+Returns length of the written bytes."""
         vscf_asn1wr_finish = self._lib.vscf_asn1wr_finish
         vscf_asn1wr_finish.argtypes = [POINTER(vscf_asn1wr_t), c_bool]
         vscf_asn1wr_finish.restype = c_size_t
@@ -87,7 +132,7 @@ class VscfAsn1wr(object):
         """Returns pointer to the inner buffer."""
         vscf_asn1wr_bytes = self._lib.vscf_asn1wr_bytes
         vscf_asn1wr_bytes.argtypes = [POINTER(vscf_asn1wr_t)]
-        vscf_asn1wr_bytes.restype = POINTER(POINTER(c_byte))
+        vscf_asn1wr_bytes.restype = POINTER(c_byte)
         return vscf_asn1wr_bytes(ctx)
 
     def vscf_asn1wr_len(self, ctx):
@@ -127,15 +172,15 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_reserve(self, ctx, len):
         """Move writing position backward for the given length.
-        Return current writing position."""
+Return current writing position."""
         vscf_asn1wr_reserve = self._lib.vscf_asn1wr_reserve
         vscf_asn1wr_reserve.argtypes = [POINTER(vscf_asn1wr_t), c_size_t]
-        vscf_asn1wr_reserve.restype = POINTER(POINTER(c_byte))
+        vscf_asn1wr_reserve.restype = POINTER(c_byte)
         return vscf_asn1wr_reserve(ctx, len)
 
     def vscf_asn1wr_write_tag(self, ctx, tag):
         """Write ASN.1 tag.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_tag = self._lib.vscf_asn1wr_write_tag
         vscf_asn1wr_write_tag.argtypes = [POINTER(vscf_asn1wr_t), c_int]
         vscf_asn1wr_write_tag.restype = c_size_t
@@ -143,7 +188,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_context_tag(self, ctx, tag, len):
         """Write context-specific ASN.1 tag.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_context_tag = self._lib.vscf_asn1wr_write_context_tag
         vscf_asn1wr_write_context_tag.argtypes = [POINTER(vscf_asn1wr_t), c_int, c_size_t]
         vscf_asn1wr_write_context_tag.restype = c_size_t
@@ -151,7 +196,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_len(self, ctx, len):
         """Write length of the following data.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_len = self._lib.vscf_asn1wr_write_len
         vscf_asn1wr_write_len.argtypes = [POINTER(vscf_asn1wr_t), c_size_t]
         vscf_asn1wr_write_len.restype = c_size_t
@@ -159,7 +204,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_int(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_int = self._lib.vscf_asn1wr_write_int
         vscf_asn1wr_write_int.argtypes = [POINTER(vscf_asn1wr_t), c_int]
         vscf_asn1wr_write_int.restype = c_size_t
@@ -167,7 +212,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_int8(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_int8 = self._lib.vscf_asn1wr_write_int8
         vscf_asn1wr_write_int8.argtypes = [POINTER(vscf_asn1wr_t), c_int]
         vscf_asn1wr_write_int8.restype = c_size_t
@@ -175,7 +220,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_int16(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_int16 = self._lib.vscf_asn1wr_write_int16
         vscf_asn1wr_write_int16.argtypes = [POINTER(vscf_asn1wr_t), c_int]
         vscf_asn1wr_write_int16.restype = c_size_t
@@ -183,7 +228,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_int32(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_int32 = self._lib.vscf_asn1wr_write_int32
         vscf_asn1wr_write_int32.argtypes = [POINTER(vscf_asn1wr_t), c_int]
         vscf_asn1wr_write_int32.restype = c_size_t
@@ -191,7 +236,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_int64(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_int64 = self._lib.vscf_asn1wr_write_int64
         vscf_asn1wr_write_int64.argtypes = [POINTER(vscf_asn1wr_t), c_int]
         vscf_asn1wr_write_int64.restype = c_size_t
@@ -199,7 +244,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_uint(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_uint = self._lib.vscf_asn1wr_write_uint
         vscf_asn1wr_write_uint.argtypes = [POINTER(vscf_asn1wr_t), c_uint]
         vscf_asn1wr_write_uint.restype = c_size_t
@@ -207,7 +252,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_uint8(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_uint8 = self._lib.vscf_asn1wr_write_uint8
         vscf_asn1wr_write_uint8.argtypes = [POINTER(vscf_asn1wr_t), c_uint]
         vscf_asn1wr_write_uint8.restype = c_size_t
@@ -215,7 +260,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_uint16(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_uint16 = self._lib.vscf_asn1wr_write_uint16
         vscf_asn1wr_write_uint16.argtypes = [POINTER(vscf_asn1wr_t), c_uint]
         vscf_asn1wr_write_uint16.restype = c_size_t
@@ -223,7 +268,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_uint32(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_uint32 = self._lib.vscf_asn1wr_write_uint32
         vscf_asn1wr_write_uint32.argtypes = [POINTER(vscf_asn1wr_t), c_uint]
         vscf_asn1wr_write_uint32.restype = c_size_t
@@ -231,7 +276,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_uint64(self, ctx, value):
         """Write ASN.1 type: INTEGER.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_uint64 = self._lib.vscf_asn1wr_write_uint64
         vscf_asn1wr_write_uint64.argtypes = [POINTER(vscf_asn1wr_t), c_uint]
         vscf_asn1wr_write_uint64.restype = c_size_t
@@ -239,7 +284,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_bool(self, ctx, value):
         """Write ASN.1 type: BOOLEAN.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_bool = self._lib.vscf_asn1wr_write_bool
         vscf_asn1wr_write_bool.argtypes = [POINTER(vscf_asn1wr_t), c_bool]
         vscf_asn1wr_write_bool.restype = c_size_t
@@ -254,7 +299,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_octet_str(self, ctx, value):
         """Write ASN.1 type: OCTET STRING.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_octet_str = self._lib.vscf_asn1wr_write_octet_str
         vscf_asn1wr_write_octet_str.argtypes = [POINTER(vscf_asn1wr_t), vsc_data_t]
         vscf_asn1wr_write_octet_str.restype = c_size_t
@@ -263,7 +308,7 @@ class VscfAsn1wr(object):
     def vscf_asn1wr_write_octet_str_as_bitstring(self, ctx, value):
         """Write ASN.1 type: BIT STRING with all zero unused bits.
 
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_octet_str_as_bitstring = self._lib.vscf_asn1wr_write_octet_str_as_bitstring
         vscf_asn1wr_write_octet_str_as_bitstring.argtypes = [POINTER(vscf_asn1wr_t), vsc_data_t]
         vscf_asn1wr_write_octet_str_as_bitstring.restype = c_size_t
@@ -271,8 +316,8 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_data(self, ctx, data):
         """Write raw data directly to the ASN.1 structure.
-        Return count of written bytes.
-        Note, use this method carefully."""
+Return count of written bytes.
+Note, use this method carefully."""
         vscf_asn1wr_write_data = self._lib.vscf_asn1wr_write_data
         vscf_asn1wr_write_data.argtypes = [POINTER(vscf_asn1wr_t), vsc_data_t]
         vscf_asn1wr_write_data.restype = c_size_t
@@ -280,7 +325,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_utf8_str(self, ctx, value):
         """Write ASN.1 type: UTF8String.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_utf8_str = self._lib.vscf_asn1wr_write_utf8_str
         vscf_asn1wr_write_utf8_str.argtypes = [POINTER(vscf_asn1wr_t), vsc_data_t]
         vscf_asn1wr_write_utf8_str.restype = c_size_t
@@ -288,7 +333,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_oid(self, ctx, value):
         """Write ASN.1 type: OID.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_oid = self._lib.vscf_asn1wr_write_oid
         vscf_asn1wr_write_oid.argtypes = [POINTER(vscf_asn1wr_t), vsc_data_t]
         vscf_asn1wr_write_oid.restype = c_size_t
@@ -296,7 +341,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_sequence(self, ctx, len):
         """Mark previously written data of given length as ASN.1 type: SEQUENCE.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_sequence = self._lib.vscf_asn1wr_write_sequence
         vscf_asn1wr_write_sequence.argtypes = [POINTER(vscf_asn1wr_t), c_size_t]
         vscf_asn1wr_write_sequence.restype = c_size_t
@@ -304,7 +349,7 @@ class VscfAsn1wr(object):
 
     def vscf_asn1wr_write_set(self, ctx, len):
         """Mark previously written data of given length as ASN.1 type: SET.
-        Return count of written bytes."""
+Return count of written bytes."""
         vscf_asn1wr_write_set = self._lib.vscf_asn1wr_write_set
         vscf_asn1wr_write_set.argtypes = [POINTER(vscf_asn1wr_t), c_size_t]
         vscf_asn1wr_write_set.restype = c_size_t

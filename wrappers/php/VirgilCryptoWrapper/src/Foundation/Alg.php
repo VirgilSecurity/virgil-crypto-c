@@ -68,7 +68,7 @@ interface Alg extends Ctx
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        ($this->ctx, $$algInfo);
+        ($this->ctx, $$algInfo->getCtx());
     }
 
 }

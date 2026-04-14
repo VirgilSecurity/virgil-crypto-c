@@ -66,26 +66,6 @@ class FakeRandom implements Random, EntropySource
 
     /**
     *
-    * @param int $$byteSource
-    * @return void
-    */
-    public function setupSourceByte(int $$byteSource): void
-    {
-        vscf_fake_random_setup_source_byte_php($this->ctx, $$byteSource);
-    }
-
-    /**
-    *
-    * @param string $$dataSource
-    * @return void
-    */
-    public function setupSourceData(string $$dataSource): void
-    {
-        vscf_fake_random_setup_source_data_php($this->ctx, $$dataSource);
-    }
-
-    /**
-    *
     * @param int $$dataLen
     * @return string
     * @throws \Exception
@@ -123,6 +103,26 @@ class FakeRandom implements Random, EntropySource
     public function gather(int $$len): string
     {
         return vscf_fake_random_gather_php($this->ctx, $$len);
+    }
+
+    /**
+    *
+    * @param string $$byteSource
+    * @return void
+    */
+    public function setupSourceByte(string $$byteSource): void
+    {
+        vscf_fake_random_setup_source_byte_php($this->ctx, $$byteSource);
+    }
+
+    /**
+    *
+    * @param string $$dataSource
+    * @return void
+    */
+    public function setupSourceData(string $$dataSource): void
+    {
+        vscf_fake_random_setup_source_data_php($this->ctx, $$dataSource);
     }
 
     /**

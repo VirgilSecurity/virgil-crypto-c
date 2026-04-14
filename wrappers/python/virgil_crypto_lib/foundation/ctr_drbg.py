@@ -35,15 +35,15 @@
 
 from ctypes import *
 from ._c_bridge import VscfCtrDrbg
-from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge import VscfStatus
+from virgil_crypto_lib.common._c_bridge import Buffer
 from .random import Random
 
 
 class CtrDrbg(Random):
     """Implementation of the RNG using deterministic random bit generators
-    based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-    This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled."""
+based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
+This class is thread-safe if the build option .(c_global_macros_multi_threading) was enabled."""
 
     # The interval before reseed is performed by default.
     RESEED_INTERVAL = 10000
@@ -62,19 +62,7 @@ class CtrDrbg(Random):
         self._lib_vscf_ctr_drbg.vscf_ctr_drbg_delete(self.ctx)
 
     def set_entropy_source(self, entropy_source):
-        self._lib_vscf_ctr_drbg.vscf_ctr_drbg_use_entropy_source(self.ctx, entropy_source.c_impl)
-
-    def random(self, data_len):
-        """Generate random bytes.
-        All RNG implementations must be thread-safe."""
-        data = Buffer(data_len)
-        status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_random(self.ctx, data_len, data.c_buffer)
-        VscfStatus.handle_status(status)
-        return data.get_bytes()
-
-    def reseed(self):
-        """Retrieve new seed data from the entropy sources."""
-        status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_reseed(self.ctx)
+        status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_use_entropy_source(self.ctx, entropy_source.c_impl)
         VscfStatus.handle_status(status)
 
     def setup_defaults(self):
@@ -84,19 +72,32 @@ class CtrDrbg(Random):
 
     def enable_prediction_resistance(self):
         """Force entropy to be gathered at the beginning of every call to
-        the random() method.
-        Note, use this if your entropy source has sufficient throughput."""
+the .(class_ctr_drbg_method_random)() method.
+Note, use this if your entropy source has sufficient throughput."""
         self._lib_vscf_ctr_drbg.vscf_ctr_drbg_enable_prediction_resistance(self.ctx)
 
     def set_reseed_interval(self, interval):
         """Sets the reseed interval.
-        Default value is reseed interval."""
+Default value is .(class_ctr_drbg_constant_reseed_interval)."""
         self._lib_vscf_ctr_drbg.vscf_ctr_drbg_set_reseed_interval(self.ctx, interval)
 
     def set_entropy_len(self, len):
         """Sets the amount of entropy grabbed on each seed or reseed.
-        The default value is entropy len."""
+The default value is .(class_ctr_drbg_constant_entropy_len)."""
         self._lib_vscf_ctr_drbg.vscf_ctr_drbg_set_entropy_len(self.ctx, len)
+
+    def random(self, data_len):
+        """Generate random bytes.
+All RNG implementations must be thread-safe."""
+        data = Buffer(data_len)
+        status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_random(self.ctx, data_len, data.c_buffer)
+        VscfStatus.handle_status(status)
+        return data.get_bytes()
+
+    def reseed(self):
+        """Retrieve new seed data from the entropy sources."""
+        status = self._lib_vscf_ctr_drbg.vscf_ctr_drbg_reseed(self.ctx)
+        VscfStatus.handle_status(status)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

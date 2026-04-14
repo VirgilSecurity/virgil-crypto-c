@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class EccAlgInfo implements AutoCloseable, AlgInfo {
 
-    public OidId keyId() {
-        return FoundationJNI.INSTANCE.eccAlgInfo_keyId(this.cCtx);
-    }
-
-    public OidId domainId() {
-        return FoundationJNI.INSTANCE.eccAlgInfo_domainId(this.cCtx);
-    }
-
     public long cCtx;
 
     public EccAlgInfo() {
@@ -78,13 +70,16 @@ public class EccAlgInfo implements AutoCloseable, AlgInfo {
         clearResources();
     }
 
-    public EccAlgInfo(AlgId algId, OidId keyId, OidId domainId) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.eccAlgInfo_new(algId, keyId, domainId);
-    }
-
     public AlgId algId() {
         return FoundationJNI.INSTANCE.eccAlgInfo_algId(this.cCtx);
+    }
+
+    public OidId keyId() {
+        return FoundationJNI.INSTANCE.eccAlgInfo_keyId(this.cCtx);
+    }
+
+    public OidId domainId() {
+        return FoundationJNI.INSTANCE.eccAlgInfo_domainId(this.cCtx);
     }
 
 }

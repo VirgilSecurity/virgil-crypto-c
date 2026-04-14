@@ -76,6 +76,18 @@ class AlgInfoDerDeserializer implements AlgInfoDeserializer
 
     /**
     *
+    * @param string $$data
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserialize(string $$data): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_php($this->ctx, $$data);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
     * @return void
     */
     public function setupDefaults(): void
@@ -85,22 +97,132 @@ class AlgInfoDerDeserializer implements AlgInfoDeserializer
 
     /**
     *
+    * @param OidId $$oidId
     * @return AlgInfo
+    * @throws \Exception
     */
-    public function deserializeInplace(): AlgInfo
+    public function deserializeSimpleAlgInfo(OidId $$oidId): AlgInfo
     {
-        $ctx = vscf_alg_info_der_deserializer_deserialize_inplace_php($this->ctx);
+        $ctx = vscf_alg_info_der_deserializer_deserialize_simple_alg_info_php($this->ctx, $$oidId);
         return FoundationImplementation::wrapAlgInfo($ctx);
     }
 
     /**
     *
-    * @param string $$data
+    * @param OidId $$oidId
     * @return AlgInfo
+    * @throws \Exception
     */
-    public function deserialize(string $$data): AlgInfo
+    public function deserializeKdfAlgInfo(OidId $$oidId): AlgInfo
     {
-        $ctx = vscf_alg_info_der_deserializer_deserialize_php($this->ctx, $$data);
+        $ctx = vscf_alg_info_der_deserializer_deserialize_kdf_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeHkdfAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeHmacAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_hmac_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeCipherAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_cipher_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializePbkdf2AlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializePbes2AlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeEccAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_ecc_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeCompoundKeyAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @param OidId $$oidId
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeHybridKeyAlgInfo(OidId $$oidId): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info_php($this->ctx, $$oidId);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    *
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function deserializeInplace(): AlgInfo
+    {
+        $ctx = vscf_alg_info_der_deserializer_deserialize_inplace_php($this->ctx);
         return FoundationImplementation::wrapAlgInfo($ctx);
     }
 

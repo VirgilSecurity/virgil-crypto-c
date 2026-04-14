@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class HybridPublicKey implements AutoCloseable, Key, PublicKey {
 
-    public PublicKey firstKey() {
-        return FoundationJNI.INSTANCE.hybridPublicKey_firstKey(this.cCtx);
-    }
-
-    public PublicKey secondKey() {
-        return FoundationJNI.INSTANCE.hybridPublicKey_secondKey(this.cCtx);
-    }
-
     public long cCtx;
 
     public HybridPublicKey() {
@@ -96,6 +88,14 @@ public class HybridPublicKey implements AutoCloseable, Key, PublicKey {
 
     public boolean isValid() {
         return FoundationJNI.INSTANCE.hybridPublicKey_isValid(this.cCtx);
+    }
+
+    public PublicKey firstKey() {
+        return FoundationJNI.INSTANCE.hybridPublicKey_firstKey(this.cCtx);
+    }
+
+    public PublicKey secondKey() {
+        return FoundationJNI.INSTANCE.hybridPublicKey_secondKey(this.cCtx);
     }
 
 }

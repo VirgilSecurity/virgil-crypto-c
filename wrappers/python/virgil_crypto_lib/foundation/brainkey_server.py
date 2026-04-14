@@ -36,8 +36,8 @@
 from ctypes import *
 from ._c_bridge import VscfBrainkeyServer
 from ._c_bridge import VscfStatus
-from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
 
 
 class BrainkeyServer(object):

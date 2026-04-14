@@ -37,22 +37,6 @@
 const initBrainkeyServer = (Module, modules) => {
     class BrainkeyServer {
 
-        static get POINT_LEN() {
-            return 65;
-        }
-
-        get POINT_LEN() {
-            return 65;
-        }
-
-        static get MPI_LEN() {
-            return 32;
-        }
-
-        get MPI_LEN() {
-            return 32;
-        }
-
         constructor(ctxPtr) {
             this.name = 'BrainkeyServer';
 
@@ -94,6 +78,22 @@ const initBrainkeyServer = (Module, modules) => {
             Module._vscf_brainkey_server_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
+        static get POINT_LEN() {
+            return 65;
+        }
+
+        get POINT_LEN() {
+            return 65;
+        }
+
+        static get MPI_LEN() {
+            return 32;
+        }
+
+        get MPI_LEN() {
+            return 32;
+        }
+
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_brainkey_server_setup_defaults(this.ctxPtr);
@@ -102,14 +102,14 @@ const initBrainkeyServer = (Module, modules) => {
 
         generateIdentitySecret() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            const identitySecretCapacity = modules.BrainkeyServer.MPI_LEN;
+            
+            const identitySecretCapacity = this.MPI_LEN;
             const identitySecretCtxPtr = Module._vsc_buffer_new_with_capacity(identitySecretCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_brainkey_server_generate_identity_secret(this.ctxPtr, identitySecretCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const identitySecretPtr = Module._vsc_buffer_bytes(identitySecretCtxPtr);
                 const identitySecretPtrLen = Module._vsc_buffer_len(identitySecretCtxPtr);
                 const identitySecret = Module.HEAPU8.slice(identitySecretPtr, identitySecretPtr + identitySecretPtrLen);
@@ -123,38 +123,38 @@ const initBrainkeyServer = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('identitySecret', identitySecret);
             precondition.ensureByteArray('blindedPoint', blindedPoint);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const identitySecretSize = identitySecret.length * identitySecret.BYTES_PER_ELEMENT;
             const identitySecretPtr = Module._malloc(identitySecretSize);
             Module.HEAP8.set(identitySecret, identitySecretPtr);
-
+            
             // Create C structure vsc_data_t.
             const identitySecretCtxSize = Module._vsc_data_ctx_size();
             const identitySecretCtxPtr = Module._malloc(identitySecretCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(identitySecretCtxPtr, identitySecretPtr, identitySecretSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const blindedPointSize = blindedPoint.length * blindedPoint.BYTES_PER_ELEMENT;
             const blindedPointPtr = Module._malloc(blindedPointSize);
             Module.HEAP8.set(blindedPoint, blindedPointPtr);
-
+            
             // Create C structure vsc_data_t.
             const blindedPointCtxSize = Module._vsc_data_ctx_size();
             const blindedPointCtxPtr = Module._malloc(blindedPointCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindedPointCtxPtr, blindedPointPtr, blindedPointSize);
-
-            const hardenedPointCapacity = modules.BrainkeyServer.POINT_LEN;
+            
+            const hardenedPointCapacity = this.POINT_LEN;
             const hardenedPointCtxPtr = Module._vsc_buffer_new_with_capacity(hardenedPointCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_brainkey_server_harden(this.ctxPtr, identitySecretCtxPtr, blindedPointCtxPtr, hardenedPointCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const hardenedPointPtr = Module._vsc_buffer_bytes(hardenedPointCtxPtr);
                 const hardenedPointPtrLen = Module._vsc_buffer_len(hardenedPointCtxPtr);
                 const hardenedPoint = Module.HEAPU8.slice(hardenedPointPtr, hardenedPointPtr + hardenedPointPtrLen);

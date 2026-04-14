@@ -67,19 +67,19 @@ const initVerifier = (Module, modules) => {
         reset(signature) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('signature', signature);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const signatureSize = signature.length * signature.BYTES_PER_ELEMENT;
             const signaturePtr = Module._malloc(signatureSize);
             Module.HEAP8.set(signature, signaturePtr);
-
+            
             // Create C structure vsc_data_t.
             const signatureCtxSize = Module._vsc_data_ctx_size();
             const signatureCtxPtr = Module._malloc(signatureCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(signatureCtxPtr, signaturePtr, signatureSize);
-
+            
             try {
                 const proxyResult = Module._vscf_verifier_reset(this.ctxPtr, signatureCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
@@ -92,19 +92,19 @@ const initVerifier = (Module, modules) => {
         appendData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             try {
                 Module._vscf_verifier_append_data(this.ctxPtr, dataCtxPtr);
             } finally {
@@ -116,10 +116,10 @@ const initVerifier = (Module, modules) => {
         verify(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_verifier_verify(this.ctxPtr, publicKey.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }

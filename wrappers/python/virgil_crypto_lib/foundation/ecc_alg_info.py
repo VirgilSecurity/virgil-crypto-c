@@ -52,19 +52,6 @@ class EccAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_ecc_alg_info.vscf_ecc_alg_info_delete(self.ctx)
 
-    @classmethod
-    def with_members(cls, alg_id, key_id, domain_id):
-        """Create algorithm info with EC generic key identificator, EC domain group identificator."""
-        inst = cls.__new__(cls)
-        inst._lib_vscf_ecc_alg_info = VscfEccAlgInfo()
-        inst.ctx = inst._lib_vscf_ecc_alg_info.vscf_ecc_alg_info_new_with_members(alg_id, key_id, domain_id)
-        return inst
-
-    def alg_id(self):
-        """Provide algorithm identificator."""
-        result = self._lib_vscf_ecc_alg_info.vscf_ecc_alg_info_alg_id(self.ctx)
-        return result
-
     def key_id(self):
         """Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}."""
         result = self._lib_vscf_ecc_alg_info.vscf_ecc_alg_info_key_id(self.ctx)
@@ -73,6 +60,11 @@ class EccAlgInfo(AlgInfo):
     def domain_id(self):
         """Return EC domain group identificator."""
         result = self._lib_vscf_ecc_alg_info.vscf_ecc_alg_info_domain_id(self.ctx)
+        return result
+
+    def alg_id(self):
+        """Provide algorithm identificator."""
+        result = self._lib_vscf_ecc_alg_info.vscf_ecc_alg_info_alg_id(self.ctx)
         return result
 
     @classmethod

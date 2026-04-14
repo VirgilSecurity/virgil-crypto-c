@@ -43,57 +43,60 @@ class KeyAlg(object):
 
     # Defines whether a public key can be imported or not.
     CAN_IMPORT_PUBLIC_KEY = 0
+
     # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = 1
+    CAN_EXPORT_PUBLIC_KEY = 0
+
     # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = 2
+    CAN_IMPORT_PRIVATE_KEY = 0
+
     # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = 3
+    CAN_EXPORT_PRIVATE_KEY = 0
 
     @abstractmethod
     def generate_ephemeral_key(self, key):
         """Generate ephemeral private key of the same type.
-        Note, this operation might be slow."""
+Note, this operation might be slow."""
         raise NotImplementedError()
 
     @abstractmethod
     def import_public_key(self, raw_key):
         """Import public key from the raw binary format.
 
-        Return public key that is adopted and optimized to be used
-        with this particular algorithm.
+Return public key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be imported from the format defined in
+RFC 3447 Appendix A.1.1."""
         raise NotImplementedError()
 
     @abstractmethod
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be exported in format defined in
+RFC 3447 Appendix A.1.1."""
         raise NotImplementedError()
 
     @abstractmethod
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
 
-        Return private key that is adopted and optimized to be used
-        with this particular algorithm.
+Return private key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be imported from the format defined in
+RFC 3447 Appendix A.1.2."""
         raise NotImplementedError()
 
     @abstractmethod
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be exported in format defined in
+RFC 3447 Appendix A.1.2."""
         raise NotImplementedError()

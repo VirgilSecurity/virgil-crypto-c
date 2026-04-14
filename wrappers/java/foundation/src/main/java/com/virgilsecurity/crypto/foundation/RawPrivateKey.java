@@ -38,22 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
 
-    public byte[] data() {
-        return FoundationJNI.INSTANCE.rawPrivateKey_data(this.cCtx);
-    }
-
-    public boolean hasPublicKey() {
-        return FoundationJNI.INSTANCE.rawPrivateKey_hasPublicKey(this.cCtx);
-    }
-
-    public void setPublicKey(RawPublicKey rawPublicKey) {
-        FoundationJNI.INSTANCE.rawPrivateKey_setPublicKey(this.cCtx, rawPublicKey);
-    }
-
-    public RawPublicKey getPublicKey() {
-        return FoundationJNI.INSTANCE.rawPrivateKey_getPublicKey(this.cCtx);
-    }
-
     public long cCtx;
 
     public RawPrivateKey() {
@@ -108,6 +92,22 @@ public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.rawPrivateKey_extractPublicKey(this.cCtx);
+    }
+
+    public byte[] data() {
+        return FoundationJNI.INSTANCE.rawPrivateKey_data(this.cCtx);
+    }
+
+    public boolean hasPublicKey() {
+        return FoundationJNI.INSTANCE.rawPrivateKey_hasPublicKey(this.cCtx);
+    }
+
+    public void setPublicKey(RawPublicKey rawPublicKey) {
+        FoundationJNI.INSTANCE.rawPrivateKey_setPublicKey(this.cCtx, rawPublicKey);
+    }
+
+    public RawPublicKey getPublicKey() {
+        return FoundationJNI.INSTANCE.rawPrivateKey_getPublicKey(this.cCtx);
     }
 
 }

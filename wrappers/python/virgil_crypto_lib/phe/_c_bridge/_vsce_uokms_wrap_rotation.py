@@ -35,9 +35,10 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
+from ._vsce_impl import vsce_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vsce_mbedtls_ecp_group import vsce_mbedtls_ecp_group_t
 
 
 class vsce_uokms_wrap_rotation_t(Structure):
@@ -46,6 +47,7 @@ class vsce_uokms_wrap_rotation_t(Structure):
 
 class VsceUokmsWrapRotation(object):
     """Implements wrap rotation."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -65,7 +67,6 @@ class VsceUokmsWrapRotation(object):
         return vsce_uokms_wrap_rotation_delete(ctx)
 
     def vsce_uokms_wrap_rotation_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vsce_uokms_wrap_rotation_use_operation_random = self._lib.vsce_uokms_wrap_rotation_use_operation_random
         vsce_uokms_wrap_rotation_use_operation_random.argtypes = [POINTER(vsce_uokms_wrap_rotation_t), POINTER(vscf_impl_t)]
         vsce_uokms_wrap_rotation_use_operation_random.restype = None

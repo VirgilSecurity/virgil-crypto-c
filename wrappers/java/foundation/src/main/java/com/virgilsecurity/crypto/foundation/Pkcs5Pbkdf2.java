@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
 
-    public void setHmac(Mac hmac) {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setHmac(this.cCtx, hmac);
-    }
-
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setupDefaults(this.cCtx);
-    }
-
     public long cCtx;
 
     public Pkcs5Pbkdf2() {
@@ -78,6 +70,10 @@ public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
         clearResources();
     }
 
+    public void setHmac(Mac hmac) {
+        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setHmac(this.cCtx, hmac);
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.pkcs5Pbkdf2_algId(this.cCtx);
     }
@@ -100,6 +96,10 @@ public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
 
     public void setInfo(byte[] info) {
         FoundationJNI.INSTANCE.pkcs5Pbkdf2_setInfo(this.cCtx, info);
+    }
+
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.pkcs5Pbkdf2_setupDefaults(this.cCtx);
     }
 
 }

@@ -99,7 +99,7 @@ class PheServer
     * @return array
     * @throws \Exception
     */
-    public function generateServerKeyPair(): array
+    public function generateServerKeyPair()
     {
         return vsce_phe_server_generate_server_key_pair_php($this->ctx);
     }
@@ -162,7 +162,7 @@ class PheServer
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $$serverPrivateKey): array
+    public function rotateKeys(string $$serverPrivateKey)
     {
         return vsce_phe_server_rotate_keys_php($this->ctx, $$serverPrivateKey);
     }

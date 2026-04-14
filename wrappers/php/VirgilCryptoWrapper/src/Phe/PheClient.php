@@ -132,7 +132,7 @@ class PheClient
     * @return array
     * @throws \Exception
     */
-    public function enrollAccount(string $$enrollmentResponse, string $$password): array
+    public function enrollAccount(string $$enrollmentResponse, string $$password)
     {
         return vsce_phe_client_enroll_account_php($this->ctx, $$enrollmentResponse, $$password);
     }
@@ -177,7 +177,7 @@ class PheClient
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $$updateToken): array
+    public function rotateKeys(string $$updateToken)
     {
         return vsce_phe_client_rotate_keys_php($this->ctx, $$updateToken);
     }

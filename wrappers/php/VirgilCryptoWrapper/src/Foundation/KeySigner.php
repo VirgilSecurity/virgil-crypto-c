@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface KeySigner extends Ctx
+interface KeySigner extends Ctx, KeyAlg
 {
 
     /**
@@ -47,7 +47,7 @@ interface KeySigner extends Ctx
     */
     public function canSign(PrivateKey $$privateKey): bool
     {
-        return ($this->ctx, $$privateKey);
+        return ($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -57,7 +57,7 @@ interface KeySigner extends Ctx
     */
     public function signatureLen(PrivateKey $$privateKey): int
     {
-        return ($this->ctx, $$privateKey);
+        return ($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -70,7 +70,7 @@ interface KeySigner extends Ctx
     */
     public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
     {
-        return ($this->ctx, $$privateKey, $$hashId, $$digest);
+        return ($this->ctx, $$privateKey->getCtx(), $$hashId, $$digest);
     }
 
     /**
@@ -80,7 +80,7 @@ interface KeySigner extends Ctx
     */
     public function canVerify(PublicKey $$publicKey): bool
     {
-        return ($this->ctx, $$publicKey);
+        return ($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -93,7 +93,7 @@ interface KeySigner extends Ctx
     */
     public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
     {
-        return ($this->ctx, $$publicKey, $$hashId, $$digest, $$signature);
+        return ($this->ctx, $$publicKey->getCtx(), $$hashId, $$digest, $$signature);
     }
 
 }

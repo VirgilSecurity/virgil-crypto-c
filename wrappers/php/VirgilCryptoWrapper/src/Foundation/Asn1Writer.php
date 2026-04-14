@@ -42,11 +42,11 @@ interface Asn1Writer extends Ctx
 
     /**
     *
-    * @param int $$out
+    * @param string $$out
     * @param int $$outLen
     * @return void
     */
-    public function reset(int $$out, int $$outLen): void
+    public function reset(string $$out, int $$outLen): void
     {
         ($this->ctx, $$out, $$outLen);
     }

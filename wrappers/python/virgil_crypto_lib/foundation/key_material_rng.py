@@ -35,16 +35,16 @@
 
 from ctypes import *
 from ._c_bridge import VscfKeyMaterialRng
-from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
 from .random import Random
 
 
 class KeyMaterialRng(Random):
     """Random number generator that generate deterministic sequence based
-    on a given seed.
-    This RNG can be used to transform key material rial to the private key."""
+on a given seed.
+This RNG can be used to transform key material rial to the private key."""
 
     # Minimum length in bytes for the key material.
     KEY_MATERIAL_LEN_MIN = 32
@@ -62,9 +62,14 @@ class KeyMaterialRng(Random):
         """Destroy underlying C context."""
         self._lib_vscf_key_material_rng.vscf_key_material_rng_delete(self.ctx)
 
+    def reset_key_material(self, key_material):
+        """Set a new key material."""
+        d_key_material = Data(key_material)
+        self._lib_vscf_key_material_rng.vscf_key_material_rng_reset_key_material(self.ctx, d_key_material.data)
+
     def random(self, data_len):
         """Generate random bytes.
-        All RNG implementations must be thread-safe."""
+All RNG implementations must be thread-safe."""
         data = Buffer(data_len)
         status = self._lib_vscf_key_material_rng.vscf_key_material_rng_random(self.ctx, data_len, data.c_buffer)
         VscfStatus.handle_status(status)
@@ -74,11 +79,6 @@ class KeyMaterialRng(Random):
         """Retrieve new seed data from the entropy sources."""
         status = self._lib_vscf_key_material_rng.vscf_key_material_rng_reseed(self.ctx)
         VscfStatus.handle_status(status)
-
-    def reset_key_material(self, key_material):
-        """Set a new key material."""
-        d_key_material = Data(key_material)
-        self._lib_vscf_key_material_rng.vscf_key_material_rng_reset_key_material(self.ctx, d_key_material.data)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

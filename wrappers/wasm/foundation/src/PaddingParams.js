@@ -37,30 +37,6 @@
 const initPaddingParams = (Module, modules) => {
     class PaddingParams {
 
-        static get DEFAULT_FRAME_MIN() {
-            return 32;
-        }
-
-        get DEFAULT_FRAME_MIN() {
-            return 32;
-        }
-
-        static get DEFAULT_FRAME() {
-            return 160;
-        }
-
-        get DEFAULT_FRAME() {
-            return 160;
-        }
-
-        static get DEFAULT_FRAME_MAX() {
-            return 256;
-        }
-
-        get DEFAULT_FRAME_MAX() {
-            return 256;
-        }
-
         constructor(ctxPtr) {
             this.name = 'PaddingParams';
 
@@ -88,20 +64,33 @@ const initPaddingParams = (Module, modules) => {
             }
         }
 
-        static newWithConstraints(frame, frameMax) {
-            precondition.ensureNumber('frame', frame);
-            precondition.ensureNumber('frameMax', frameMax);
+        static get DEFAULT_FRAME_MIN() {
+            return 32;
+        }
 
-            let proxyResult;
-            proxyResult = Module._vscf_padding_params_new_with_constraints(frame, frameMax);
+        get DEFAULT_FRAME_MIN() {
+            return 32;
+        }
 
-            const jsResult = PaddingParams.newAndTakeCContext(proxyResult);
-            return jsResult;
+        static get DEFAULT_FRAME() {
+            return 160;
+        }
+
+        get DEFAULT_FRAME() {
+            return 160;
+        }
+
+        static get DEFAULT_FRAME_MAX() {
+            return 256;
+        }
+
+        get DEFAULT_FRAME_MAX() {
+            return 256;
         }
 
         frame() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_padding_params_frame(this.ctxPtr);
             return proxyResult;
@@ -109,7 +98,7 @@ const initPaddingParams = (Module, modules) => {
 
         frameMax() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_padding_params_frame_max(this.ctxPtr);
             return proxyResult;

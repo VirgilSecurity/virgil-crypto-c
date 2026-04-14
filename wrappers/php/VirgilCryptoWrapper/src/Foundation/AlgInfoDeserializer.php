@@ -44,6 +44,7 @@ interface AlgInfoDeserializer extends Ctx
     *
     * @param string $$data
     * @return AlgInfo
+    * @throws \Exception
     */
     public function deserialize(string $$data): AlgInfo
     {

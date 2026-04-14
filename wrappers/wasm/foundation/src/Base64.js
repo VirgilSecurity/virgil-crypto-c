@@ -39,7 +39,7 @@ const initBase64 = (Module, modules) => {
 
         static encodedLen(dataLen) {
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_base64_encoded_len(dataLen);
             return proxyResult;
@@ -47,25 +47,25 @@ const initBase64 = (Module, modules) => {
 
         static encode(data) {
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const strCapacity = modules.Base64.encodedLen(data.length);
             const strCtxPtr = Module._vsc_buffer_new_with_capacity(strCapacity);
-
+            
             try {
                 Module._vscf_base64_encode(dataCtxPtr, strCtxPtr);
-
+            
                 const strPtr = Module._vsc_buffer_bytes(strCtxPtr);
                 const strPtrLen = Module._vsc_buffer_len(strCtxPtr);
                 const str = Module.HEAPU8.slice(strPtr, strPtr + strPtrLen);
@@ -79,7 +79,7 @@ const initBase64 = (Module, modules) => {
 
         static decodedLen(strLen) {
             precondition.ensureNumber('strLen', strLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_base64_decoded_len(strLen);
             return proxyResult;
@@ -87,26 +87,26 @@ const initBase64 = (Module, modules) => {
 
         static decode(str) {
             precondition.ensureByteArray('str', str);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const strSize = str.length * str.BYTES_PER_ELEMENT;
             const strPtr = Module._malloc(strSize);
             Module.HEAP8.set(str, strPtr);
-
+            
             // Create C structure vsc_data_t.
             const strCtxSize = Module._vsc_data_ctx_size();
             const strCtxPtr = Module._malloc(strCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(strCtxPtr, strPtr, strSize);
-
+            
             const dataCapacity = modules.Base64.decodedLen(str.length);
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_base64_decode(strCtxPtr, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);

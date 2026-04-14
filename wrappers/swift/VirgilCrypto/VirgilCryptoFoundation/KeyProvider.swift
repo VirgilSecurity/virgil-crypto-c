@@ -1,36 +1,36 @@
-/// Copyright (C) 2015-2022 Virgil Security, Inc.
-///
-/// All rights reserved.
-///
-/// Redistribution and use in source and binary forms, with or without
-/// modification, are permitted provided that the following conditions are
-/// met:
-///
-/// (1) Redistributions of source code must retain the above copyright
-/// notice, this list of conditions and the following disclaimer.
-///
-/// (2) Redistributions in binary form must reproduce the above copyright
-/// notice, this list of conditions and the following disclaimer in
-/// the documentation and/or other materials provided with the
-/// distribution.
-///
-/// (3) Neither the name of the copyright holder nor the names of its
-/// contributors may be used to endorse or promote products derived from
-/// this software without specific prior written permission.
-///
-/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-/// POSSIBILITY OF SUCH DAMAGE.
-///
-/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// Copyright (C) 2015-2022 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
@@ -66,16 +66,19 @@ import VSCFoundation
         vscf_key_provider_use_random(self.c_ctx, random.c_ctx)
     }
 
+    /// Setup predefined values to the uninitialized class dependencies.
     @objc public func setupDefaults() throws {
         let proxyResult = vscf_key_provider_setup_defaults(self.c_ctx)
 
         try FoundationError.handleStatus(fromC: proxyResult)
     }
 
+    /// Setup parameters that is used during RSA key generation.
     @objc public func setRsaParams(bitlen: Int) {
         vscf_key_provider_set_rsa_params(self.c_ctx, bitlen)
     }
 
+    /// Generate new private key with a given algorithm.
     @objc public func generatePrivateKey(algId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -87,6 +90,16 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Generate new post-quantum private key with default algorithms.
+    /// Note, that a post-quantum key combines classic private keys
+    /// alongside with post-quantum private keys.
+    /// Current structure is "compound private key" is:
+    /// - cipher private key is "hybrid private key" where:
+    /// - first key is a classic private key;
+    /// - second key is a post-quantum private key;
+    /// - signer private key "hybrid private key" where:
+    /// - first key is a classic private key;
+    /// - second key is a post-quantum private key.
     @objc public func generatePostQuantumPrivateKey() throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -98,6 +111,7 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Generate new compound private key with given algorithms.
     @objc public func generateCompoundPrivateKey(cipherAlgId: AlgId, signerAlgId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -109,6 +123,7 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Generate new hybrid private key with given algorithms.
     @objc public func generateHybridPrivateKey(firstKeyAlgId: AlgId, secondKeyAlgId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -120,6 +135,10 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Generate new compound private key with nested hybrid private keys.
+    ///
+    /// Note, second key algorithm identifiers can be NONE, in this case,
+    /// a regular key will be crated instead of a hybrid key.
     @objc public func generateCompoundHybridPrivateKey(cipherFirstKeyAlgId: AlgId, cipherSecondKeyAlgId: AlgId, signerFirstKeyAlgId: AlgId, signerSecondKeyAlgId: AlgId) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -131,12 +150,12 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Import private key from the PKCS#8 format.
     @objc public func importPrivateKey(keyData: Data) throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
-
+        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
             return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), &error)
         })
 
@@ -145,12 +164,12 @@ import VSCFoundation
         return FoundationImplementation.wrapPrivateKey(take: proxyResult!)
     }
 
+    /// Import public key from the PKCS#8 format.
     @objc public func importPublicKey(keyData: Data) throws -> PublicKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
-
+        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
             return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), &error)
         })
 
@@ -159,12 +178,18 @@ import VSCFoundation
         return FoundationImplementation.wrapPublicKey(take: proxyResult!)
     }
 
+    /// Calculate buffer size enough to hold exported public key.
+    ///
+    /// Precondition: public key must be exportable.
     @objc public func exportedPublicKeyLen(publicKey: PublicKey) -> Int {
         let proxyResult = vscf_key_provider_exported_public_key_len(self.c_ctx, publicKey.c_ctx)
 
         return proxyResult
     }
 
+    /// Export given public key to the PKCS#8 DER format.
+    ///
+    /// Precondition: public key must be exportable.
     @objc public func exportPublicKey(publicKey: PublicKey) throws -> Data {
         let outCount = self.exportedPublicKeyLen(publicKey: publicKey)
         var out = Data(count: outCount)
@@ -185,12 +210,18 @@ import VSCFoundation
         return out
     }
 
+    /// Calculate buffer size enough to hold exported private key.
+    ///
+    /// Precondition: private key must be exportable.
     @objc public func exportedPrivateKeyLen(privateKey: PrivateKey) -> Int {
         let proxyResult = vscf_key_provider_exported_private_key_len(self.c_ctx, privateKey.c_ctx)
 
         return proxyResult
     }
 
+    /// Export given private key to the PKCS#8 or SEC1 DER format.
+    ///
+    /// Precondition: private key must be exportable.
     @objc public func exportPrivateKey(privateKey: PrivateKey) throws -> Data {
         let outCount = self.exportedPrivateKeyLen(privateKey: privateKey)
         var out = Data(count: outCount)

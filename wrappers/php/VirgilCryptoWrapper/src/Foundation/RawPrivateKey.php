@@ -66,44 +66,6 @@ class RawPrivateKey implements Key, PrivateKey
 
     /**
     *
-    * @return string
-    */
-    public function data(): string
-    {
-        return vscf_raw_private_key_data_php($this->ctx);
-    }
-
-    /**
-    *
-    * @return bool
-    */
-    public function hasPublicKey(): bool
-    {
-        return vscf_raw_private_key_has_public_key_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param RawPublicKey $$rawPublicKey
-    * @return void
-    */
-    public function setPublicKey(RawPublicKey $$rawPublicKey): void
-    {
-        vscf_raw_private_key_set_public_key_php($this->ctx, $$rawPublicKey);
-    }
-
-    /**
-    *
-    * @return RawPublicKey
-    */
-    public function getPublicKey(): RawPublicKey
-    {
-        $ctx = vscf_raw_private_key_get_public_key_php($this->ctx);
-        return new RawPublicKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -157,6 +119,44 @@ class RawPrivateKey implements Key, PrivateKey
     {
         $ctx = vscf_raw_private_key_extract_public_key_php($this->ctx);
         return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return string
+    */
+    public function data(): string
+    {
+        return vscf_raw_private_key_data_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return bool
+    */
+    public function hasPublicKey(): bool
+    {
+        return vscf_raw_private_key_has_public_key_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param RawPublicKey $$rawPublicKey
+    * @return void
+    */
+    public function setPublicKey(RawPublicKey $$rawPublicKey): void
+    {
+        vscf_raw_private_key_set_public_key_php($this->ctx, $$rawPublicKey);
+    }
+
+    /**
+    *
+    * @return RawPublicKey
+    */
+    public function getPublicKey(): RawPublicKey
+    {
+        $ctx = vscf_raw_private_key_get_public_key_php($this->ctx);
+        return new RawPublicKey($ctx);
     }
 
     /**

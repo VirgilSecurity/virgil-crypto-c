@@ -38,36 +38,36 @@ const initPem = (Module, modules) => {
     class Pem {
 
         static wrappedLen(title, dataLen) {
-            precondition.ensureNumber('title', title);
+            precondition.ensureString('title', title);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pem_wrapped_len(title, dataLen);
             return proxyResult;
         }
 
         static wrap(title, data) {
-            precondition.ensureNumber('title', title);
+            precondition.ensureString('title', title);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const pemCapacity = modules.Pem.wrappedLen(title, data.length);
             const pemCtxPtr = Module._vsc_buffer_new_with_capacity(pemCapacity);
-
+            
             try {
                 Module._vscf_pem_wrap(title, dataCtxPtr, pemCtxPtr);
-
+            
                 const pemPtr = Module._vsc_buffer_bytes(pemCtxPtr);
                 const pemPtrLen = Module._vsc_buffer_len(pemCtxPtr);
                 const pem = Module.HEAPU8.slice(pemPtr, pemPtr + pemPtrLen);
@@ -81,7 +81,7 @@ const initPem = (Module, modules) => {
 
         static unwrappedLen(pemLen) {
             precondition.ensureNumber('pemLen', pemLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pem_unwrapped_len(pemLen);
             return proxyResult;
@@ -89,26 +89,26 @@ const initPem = (Module, modules) => {
 
         static unwrap(pem) {
             precondition.ensureByteArray('pem', pem);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const pemSize = pem.length * pem.BYTES_PER_ELEMENT;
             const pemPtr = Module._malloc(pemSize);
             Module.HEAP8.set(pem, pemPtr);
-
+            
             // Create C structure vsc_data_t.
             const pemCtxSize = Module._vsc_data_ctx_size();
             const pemCtxPtr = Module._malloc(pemCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pemCtxPtr, pemPtr, pemSize);
-
+            
             const dataCapacity = modules.Pem.unwrappedLen(pem.length);
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_pem_unwrap(pemCtxPtr, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);
@@ -122,34 +122,24 @@ const initPem = (Module, modules) => {
 
         static title(pem) {
             precondition.ensureByteArray('pem', pem);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const pemSize = pem.length * pem.BYTES_PER_ELEMENT;
             const pemPtr = Module._malloc(pemSize);
             Module.HEAP8.set(pem, pemPtr);
-
+            
             // Create C structure vsc_data_t.
             const pemCtxSize = Module._vsc_data_ctx_size();
             const pemCtxPtr = Module._malloc(pemCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pemCtxPtr, pemPtr, pemSize);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
+            
             try {
-                Module._vscf_pem_title(dataResultCtxPtr, pemCtxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
+                const proxyResult = Module._vscf_pem_title(pemCtxPtr);
             } finally {
                 Module._free(pemPtr);
                 Module._free(pemCtxPtr);
-                Module._free(dataResultCtxPtr);
             }
         }
 

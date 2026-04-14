@@ -71,9 +71,25 @@ const initRandomPadding = (Module, modules) => {
             Module._vscf_random_padding_use_random(this.ctxPtr, random.ctxPtr)
         }
 
+        static get PADDING_SIZE_LEN() {
+            return 4;
+        }
+
+        get PADDING_SIZE_LEN() {
+            return 4;
+        }
+
+        static get PADDING_LEN_MIN() {
+            return .(c_class_random_padding_constant_padding_size_len) + 1;
+        }
+
+        get PADDING_LEN_MIN() {
+            return .(c_class_random_padding_constant_padding_size_len) + 1;
+        }
+
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_random_padding_alg_id(this.ctxPtr);
             return proxyResult;
@@ -81,10 +97,10 @@ const initRandomPadding = (Module, modules) => {
 
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_random_padding_produce_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
@@ -105,7 +121,7 @@ const initRandomPadding = (Module, modules) => {
         paddedDataLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_random_padding_padded_data_len(this.ctxPtr, dataLen);
             return proxyResult;
@@ -113,7 +129,7 @@ const initRandomPadding = (Module, modules) => {
 
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_random_padding_len(this.ctxPtr);
             return proxyResult;
@@ -121,7 +137,7 @@ const initRandomPadding = (Module, modules) => {
 
         lenMax() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_random_padding_len_max(this.ctxPtr);
             return proxyResult;
@@ -135,47 +151,37 @@ const initRandomPadding = (Module, modules) => {
         processData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
+            
             try {
-                Module._vscf_random_padding_process_data(dataResultCtxPtr, this.ctxPtr, dataCtxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
+                const proxyResult = Module._vscf_random_padding_process_data(this.ctxPtr, dataCtxPtr);
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
-                Module._free(dataResultCtxPtr);
             }
         }
 
         finishDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const outCapacity = this.len();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_random_padding_finish_data_processing(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -193,25 +199,25 @@ const initRandomPadding = (Module, modules) => {
         processPaddedData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            const outCapacity = dataSize;
+            
+            const outCapacity = data.length;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 Module._vscf_random_padding_process_padded_data(this.ctxPtr, dataCtxPtr, outCtxPtr);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -225,7 +231,7 @@ const initRandomPadding = (Module, modules) => {
 
         finishPaddedDataProcessingOutLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_random_padding_finish_padded_data_processing_out_len(this.ctxPtr);
             return proxyResult;
@@ -233,14 +239,14 @@ const initRandomPadding = (Module, modules) => {
 
         finishPaddedDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const outCapacity = this.finishPaddedDataProcessingOutLen();
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_random_padding_finish_padded_data_processing(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);

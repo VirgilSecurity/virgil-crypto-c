@@ -39,50 +39,50 @@ const initAlgFactory = (Module, modules) => {
 
         static createHashFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_hash_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
         static createMacFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_mac_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
         static createKdfFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_kdf_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
         static createSaltedKdfFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_salted_kdf_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
         static createCipherFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_cipher_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
@@ -90,10 +90,10 @@ const initAlgFactory = (Module, modules) => {
         static createPaddingFromInfo(algInfo, random) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_padding_from_info(algInfo.ctxPtr, random.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }

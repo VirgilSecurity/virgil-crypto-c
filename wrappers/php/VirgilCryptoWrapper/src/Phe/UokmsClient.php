@@ -133,7 +133,7 @@ class UokmsClient
     * @return array
     * @throws \Exception
     */
-    public function generateEncryptWrap(int $$encryptionKeyLen): array
+    public function generateEncryptWrap(int $$encryptionKeyLen)
     {
         return vsce_uokms_client_generate_encrypt_wrap_php($this->ctx, $$encryptionKeyLen);
     }
@@ -156,7 +156,7 @@ class UokmsClient
     * @return array
     * @throws \Exception
     */
-    public function generateDecryptRequest(string $$wrap): array
+    public function generateDecryptRequest(string $$wrap)
     {
         return vsce_uokms_client_generate_decrypt_request_php($this->ctx, $$wrap);
     }
@@ -203,7 +203,7 @@ class UokmsClient
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $$updateToken): array
+    public function rotateKeys(string $$updateToken)
     {
         return vsce_uokms_client_rotate_keys_php($this->ctx, $$updateToken);
     }

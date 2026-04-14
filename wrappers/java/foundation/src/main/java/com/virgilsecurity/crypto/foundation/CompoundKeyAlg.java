@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, KeySigner {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.compoundKeyAlg_setRandom(this.cCtx, random);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.compoundKeyAlg_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey makeKey(PrivateKey cipherKey, PrivateKey signerKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.compoundKeyAlg_makeKey(this.cCtx, cipherKey, signerKey);
-    }
-
     public long cCtx;
 
     public CompoundKeyAlg() {
@@ -82,16 +70,8 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
         clearResources();
     }
 
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.compoundKeyAlg_algId(this.cCtx);
-    }
-
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlg_produceAlgInfo(this.cCtx);
-    }
-
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.compoundKeyAlg_restoreAlgInfo(this.cCtx, algInfo);
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.compoundKeyAlg_setRandom(this.cCtx, random);
     }
 
     public boolean getCanImportPublicKey() {
@@ -108,6 +88,18 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
 
     public boolean getCanExportPrivateKey() {
         return true;
+    }
+
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.compoundKeyAlg_algId(this.cCtx);
+    }
+
+    public AlgInfo produceAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlg_produceAlgInfo(this.cCtx);
+    }
+
+    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
+        FoundationJNI.INSTANCE.compoundKeyAlg_restoreAlgInfo(this.cCtx, algInfo);
     }
 
     public PrivateKey generateEphemeralKey(Key key) throws FoundationException {
@@ -172,6 +164,14 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
 
     public boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature) {
         return FoundationJNI.INSTANCE.compoundKeyAlg_verifyHash(this.cCtx, publicKey, hashId, digest, signature);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.compoundKeyAlg_setupDefaults(this.cCtx);
+    }
+
+    public PrivateKey makeKey(PrivateKey cipherKey, PrivateKey signerKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.compoundKeyAlg_makeKey(this.cCtx, cipherKey, signerKey);
     }
 
 }

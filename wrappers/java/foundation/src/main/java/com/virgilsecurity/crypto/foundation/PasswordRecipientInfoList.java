@@ -82,7 +82,7 @@ public class PasswordRecipientInfoList implements AutoCloseable {
         return FoundationJNI.INSTANCE.passwordRecipientInfoList_hasNext(this.cCtx);
     }
 
-    public PasswordRecipientInfoList next() {
+    public Self next() {
         return FoundationJNI.INSTANCE.passwordRecipientInfoList_next(this.cCtx);
     }
 
@@ -90,7 +90,7 @@ public class PasswordRecipientInfoList implements AutoCloseable {
         return FoundationJNI.INSTANCE.passwordRecipientInfoList_hasPrev(this.cCtx);
     }
 
-    public PasswordRecipientInfoList prev() {
+    public Self prev() {
         return FoundationJNI.INSTANCE.passwordRecipientInfoList_prev(this.cCtx);
     }
 

@@ -86,16 +86,6 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
 
     /**
     *
-    * @param string $$pwd
-    * @return void
-    */
-    public function reset(string $$pwd): void
-    {
-        vscf_pkcs5_pbes2_reset_php($this->ctx, $$pwd);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -122,7 +112,7 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_pkcs5_pbes2_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_pkcs5_pbes2_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**
@@ -175,6 +165,16 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
     public function decryptedLen(int $$dataLen): int
     {
         return vscf_pkcs5_pbes2_decrypted_len_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @param string $$pwd
+    * @return void
+    */
+    public function reset(string $$pwd): void
+    {
+        vscf_pkcs5_pbes2_reset_php($this->ctx, $$pwd);
     }
 
     /**

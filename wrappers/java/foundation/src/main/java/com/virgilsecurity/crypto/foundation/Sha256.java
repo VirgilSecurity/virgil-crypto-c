@@ -70,6 +70,14 @@ public class Sha256 implements AutoCloseable, Alg, Hash {
         clearResources();
     }
 
+    public int getDigestLen() {
+        return 32;
+    }
+
+    public int getBlockLen() {
+        return 64;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.sha256_algId(this.cCtx);
     }
@@ -80,14 +88,6 @@ public class Sha256 implements AutoCloseable, Alg, Hash {
 
     public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
         FoundationJNI.INSTANCE.sha256_restoreAlgInfo(this.cCtx, algInfo);
-    }
-
-    public int getDigestLen() {
-        return 32;
-    }
-
-    public int getBlockLen() {
-        return 64;
     }
 
     public byte[] hash(byte[] data) {

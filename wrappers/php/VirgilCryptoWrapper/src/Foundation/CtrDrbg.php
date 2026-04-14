@@ -71,11 +71,31 @@ class CtrDrbg implements Random
     *
     * @param EntropySource $$entropySource
     * @return void
-    * @throws \Exception
     */
     public function useEntropySource(EntropySource $$entropySource): void
     {
         vscf_ctr_drbg_use_entropy_source_php($this->ctx, $$entropySource);
+    }
+
+    /**
+    *
+    * @param int $$dataLen
+    * @return string
+    * @throws \Exception
+    */
+    public function random(int $$dataLen): string
+    {
+        return vscf_ctr_drbg_random_php($this->ctx, $$dataLen);
+    }
+
+    /**
+    *
+    * @return void
+    * @throws \Exception
+    */
+    public function reseed(): void
+    {
+        vscf_ctr_drbg_reseed_php($this->ctx);
     }
 
     /**
@@ -115,27 +135,6 @@ class CtrDrbg implements Random
     public function setEntropyLen(int $$len): void
     {
         vscf_ctr_drbg_set_entropy_len_php($this->ctx, $$len);
-    }
-
-    /**
-    *
-    * @param int $$dataLen
-    * @return string
-    * @throws \Exception
-    */
-    public function random(int $$dataLen): string
-    {
-        return vscf_ctr_drbg_random_php($this->ctx, $$dataLen);
-    }
-
-    /**
-    *
-    * @return void
-    * @throws \Exception
-    */
-    public function reseed(): void
-    {
-        vscf_ctr_drbg_reseed_php($this->ctx);
     }
 
     /**

@@ -80,19 +80,19 @@ const initUokmsWrapRotation = (Module, modules) => {
         setUpdateToken(updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
             const updateTokenPtr = Module._malloc(updateTokenSize);
             Module.HEAP8.set(updateToken, updateTokenPtr);
-
+            
             // Create C structure vsc_data_t.
             const updateTokenCtxSize = Module._vsc_data_ctx_size();
             const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
-
+            
             try {
                 const proxyResult = Module._vsce_uokms_wrap_rotation_set_update_token(this.ctxPtr, updateTokenCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
@@ -105,26 +105,26 @@ const initUokmsWrapRotation = (Module, modules) => {
         updateWrap(wrap) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('wrap', wrap);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
             const wrapPtr = Module._malloc(wrapSize);
             Module.HEAP8.set(wrap, wrapPtr);
-
+            
             // Create C structure vsc_data_t.
             const wrapCtxSize = Module._vsc_data_ctx_size();
             const wrapCtxPtr = Module._malloc(wrapCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
-
+            
             const newWrapCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
             const newWrapCtxPtr = Module._vsc_buffer_new_with_capacity(newWrapCapacity);
-
+            
             try {
                 const proxyResult = Module._vsce_uokms_wrap_rotation_update_wrap(this.ctxPtr, wrapCtxPtr, newWrapCtxPtr);
                 modules.PheError.handleStatusCode(proxyResult);
-
+            
                 const newWrapPtr = Module._vsc_buffer_bytes(newWrapCtxPtr);
                 const newWrapPtrLen = Module._vsc_buffer_len(newWrapCtxPtr);
                 const newWrap = Module.HEAPU8.slice(newWrapPtr, newWrapPtr + newWrapPtrLen);

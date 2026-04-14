@@ -36,7 +36,6 @@
 
 package com.virgilsecurity.crypto.phe;
 
-
 public class PheCommon {
 
     public int getPhePointLength() {

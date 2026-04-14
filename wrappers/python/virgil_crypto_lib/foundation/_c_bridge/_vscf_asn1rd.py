@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from ._vscf_impl import vscf_impl_t
 
 
 class vscf_asn1rd_t(Structure):
@@ -45,6 +44,7 @@ class vscf_asn1rd_t(Structure):
 
 class VscfAsn1rd(object):
     """This is MbedTLS implementation of ASN.1 reader."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -62,6 +62,21 @@ class VscfAsn1rd(object):
         vscf_asn1rd_delete.argtypes = [POINTER(vscf_asn1rd_t)]
         vscf_asn1rd_delete.restype = None
         return vscf_asn1rd_delete(ctx)
+
+    def vscf_asn1rd_mbedtls_has_error(self, ctx, code):
+        """If given mbedtls code is equal to zero, then setup correspond error
+to the context and return true, otherwise return false."""
+        vscf_asn1rd_mbedtls_has_error = self._lib.vscf_asn1rd_mbedtls_has_error
+        vscf_asn1rd_mbedtls_has_error.argtypes = [POINTER(vscf_asn1rd_t), c_int]
+        vscf_asn1rd_mbedtls_has_error.restype = c_bool
+        return vscf_asn1rd_mbedtls_has_error(ctx, code)
+
+    def vscf_asn1rd_read_tag_data(self, ctx, tag):
+        """Read raw data of specific tag the from the buffer."""
+        vscf_asn1rd_read_tag_data = self._lib.vscf_asn1rd_read_tag_data
+        vscf_asn1rd_read_tag_data.argtypes = [POINTER(vscf_asn1rd_t), c_int]
+        vscf_asn1rd_read_tag_data.restype = vsc_data_t
+        return vscf_asn1rd_read_tag_data(ctx, tag)
 
     def vscf_asn1rd_reset(self, ctx, data):
         """Reset all internal states and prepare to new ASN.1 reading operations."""
@@ -114,7 +129,7 @@ class VscfAsn1rd(object):
 
     def vscf_asn1rd_read_tag(self, ctx, tag):
         """Read ASN.1 type: TAG.
-        Return element length."""
+Return element length."""
         vscf_asn1rd_read_tag = self._lib.vscf_asn1rd_read_tag
         vscf_asn1rd_read_tag.argtypes = [POINTER(vscf_asn1rd_t), c_int]
         vscf_asn1rd_read_tag.restype = c_size_t
@@ -122,8 +137,8 @@ class VscfAsn1rd(object):
 
     def vscf_asn1rd_read_context_tag(self, ctx, tag):
         """Read ASN.1 type: context-specific TAG.
-        Return element length.
-        Return 0 if current position do not points to the requested tag."""
+Return element length.
+Return 0 if current position do not points to the requested tag."""
         vscf_asn1rd_read_context_tag = self._lib.vscf_asn1rd_read_context_tag
         vscf_asn1rd_read_context_tag.argtypes = [POINTER(vscf_asn1rd_t), c_int]
         vscf_asn1rd_read_context_tag.restype = c_size_t
@@ -215,7 +230,7 @@ class VscfAsn1rd(object):
 
     def vscf_asn1rd_read_null_optional(self, ctx):
         """Read ASN.1 type: NULL, only if it exists.
-        Note, this method is safe to call even no more data is left for reading."""
+Note, this method is safe to call even no more data is left for reading."""
         vscf_asn1rd_read_null_optional = self._lib.vscf_asn1rd_read_null_optional
         vscf_asn1rd_read_null_optional.argtypes = [POINTER(vscf_asn1rd_t)]
         vscf_asn1rd_read_null_optional.restype = None
@@ -258,7 +273,7 @@ class VscfAsn1rd(object):
 
     def vscf_asn1rd_read_sequence(self, ctx):
         """Read ASN.1 type: SEQUENCE.
-        Return element length."""
+Return element length."""
         vscf_asn1rd_read_sequence = self._lib.vscf_asn1rd_read_sequence
         vscf_asn1rd_read_sequence.argtypes = [POINTER(vscf_asn1rd_t)]
         vscf_asn1rd_read_sequence.restype = c_size_t
@@ -266,7 +281,7 @@ class VscfAsn1rd(object):
 
     def vscf_asn1rd_read_set(self, ctx):
         """Read ASN.1 type: SET.
-        Return element length."""
+Return element length."""
         vscf_asn1rd_read_set = self._lib.vscf_asn1rd_read_set
         vscf_asn1rd_read_set.argtypes = [POINTER(vscf_asn1rd_t)]
         vscf_asn1rd_read_set.restype = c_size_t

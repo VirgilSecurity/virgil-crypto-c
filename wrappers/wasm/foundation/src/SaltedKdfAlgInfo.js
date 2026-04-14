@@ -66,7 +66,7 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -74,36 +74,22 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
 
         hashAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_hash_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         salt() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_salted_kdf_alg_info_salt(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_salted_kdf_alg_info_salt(this.ctxPtr);
         }
 
         iterationCount() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_salted_kdf_alg_info_iteration_count(this.ctxPtr);
             return proxyResult;

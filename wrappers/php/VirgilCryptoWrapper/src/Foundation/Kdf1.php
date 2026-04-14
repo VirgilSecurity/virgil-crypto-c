@@ -102,7 +102,7 @@ class Kdf1 implements Alg, Kdf
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_kdf1_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_kdf1_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

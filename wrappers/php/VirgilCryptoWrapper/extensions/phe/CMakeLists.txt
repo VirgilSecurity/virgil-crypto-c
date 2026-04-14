@@ -1,34 +1,23 @@
-#define VSCE_HANDLE_STATUS(status) do { if(status != vsce_status_SUCCESS) { vsce_handle_throw_exception(status); } } while (false)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-zend_class_entry* vsce_exception_ce;
+project(vsce_phe_php)
 
-void
-vsce_handle_throw_exception(vsce_status_t status) {
+find_package(PHP REQUIRED)
 
-    switch(status) {
+add_library(vsce_phe_php SHARED
+    vsce_phe_php.c
+)
 
-    case vsce_status_SUCCESS:
-        break;
-    case vsce_status_ERROR_INVALID_SUCCESS_PROOF:
-        zend_throw_exception_ex(vsce_exception_ce, -1, "Success proof check failed.");
-        break;
-    case vsce_status_ERROR_INVALID_FAIL_PROOF:
-        zend_throw_exception_ex(vsce_exception_ce, -2, "Failure proof check failed.");
-        break;
-    case vsce_status_ERROR_RNG_FAILED:
-        zend_throw_exception_ex(vsce_exception_ce, -3, "RNG returned error.");
-        break;
-    case vsce_status_ERROR_PROTOBUF_DECODE_FAILED:
-        zend_throw_exception_ex(vsce_exception_ce, -4, "Protobuf decode failed.");
-        break;
-    case vsce_status_ERROR_INVALID_PUBLIC_KEY:
-        zend_throw_exception_ex(vsce_exception_ce, -5, "Invalid public key.");
-        break;
-    case vsce_status_ERROR_INVALID_PRIVATE_KEY:
-        zend_throw_exception_ex(vsce_exception_ce, -6, "Invalid private key.");
-        break;
-    case vsce_status_ERROR_AES_FAILED:
-        zend_throw_exception_ex(vsce_exception_ce, -7, "AES error occurred.");
-        break;
-    }
-}
+target_include_directories(vsce_phe_php PRIVATE
+    ${PHP_INCLUDE_DIRS}
+)
+
+target_link_libraries(vsce_phe_php
+    vsce_phe
+)
+
+set_target_properties(vsce_phe_php PROPERTIES
+    OUTPUT_NAME "vsce_phe_php"
+    PREFIX ""
+    SUFFIX ".so"
+)

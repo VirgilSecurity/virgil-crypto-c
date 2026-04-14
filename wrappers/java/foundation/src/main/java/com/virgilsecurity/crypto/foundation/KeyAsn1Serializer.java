@@ -38,22 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
 
-    public void setAsn1Writer(Asn1Writer asn1Writer) {
-        FoundationJNI.INSTANCE.keyAsn1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
-    }
-
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.keyAsn1Serializer_setupDefaults(this.cCtx);
-    }
-
-    public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
-    }
-
-    public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
-    }
-
     public long cCtx;
 
     public KeyAsn1Serializer() {
@@ -86,6 +70,10 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
         clearResources();
     }
 
+    public void setAsn1Writer(Asn1Writer asn1Writer) {
+        FoundationJNI.INSTANCE.keyAsn1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
+    }
+
     public int serializedPublicKeyLen(RawPublicKey publicKey) {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
@@ -100,6 +88,18 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
 
     public byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKey(this.cCtx, privateKey);
+    }
+
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.keyAsn1Serializer_setupDefaults(this.cCtx);
+    }
+
+    public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
+    }
+
+    public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
 }

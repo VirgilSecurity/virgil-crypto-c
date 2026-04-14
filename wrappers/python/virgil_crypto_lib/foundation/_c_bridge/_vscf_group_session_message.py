@@ -38,6 +38,7 @@ from ctypes import *
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from ._vscf_error import vscf_error_t
+from ._vscf_self import vscf_self_t
 
 
 class vscf_group_session_message_t(Structure):
@@ -78,7 +79,7 @@ class VscfGroupSessionMessage(object):
 
     def vscf_group_session_message_get_session_id(self, ctx):
         """Returns session id.
-        This method should be called only for group info type."""
+This method should be called only for group info type."""
         vscf_group_session_message_get_session_id = self._lib.vscf_group_session_message_get_session_id
         vscf_group_session_message_get_session_id.argtypes = [POINTER(vscf_group_session_message_t)]
         vscf_group_session_message_get_session_id.restype = vsc_data_t
@@ -109,7 +110,7 @@ class VscfGroupSessionMessage(object):
         """Deserializes instance."""
         vscf_group_session_message_deserialize = self._lib.vscf_group_session_message_deserialize
         vscf_group_session_message_deserialize.argtypes = [vsc_data_t, POINTER(vscf_error_t)]
-        vscf_group_session_message_deserialize.restype = POINTER(vscf_group_session_message_t)
+        vscf_group_session_message_deserialize.restype = POINTER(vscf_self_t)
         return vscf_group_session_message_deserialize(input, error)
 
     def vscf_group_session_message_shallow_copy(self, ctx):

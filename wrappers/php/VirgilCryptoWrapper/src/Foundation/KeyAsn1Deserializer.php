@@ -76,37 +76,9 @@ class KeyAsn1Deserializer implements KeyDeserializer
 
     /**
     *
-    * @return void
-    */
-    public function setupDefaults(): void
-    {
-        vscf_key_asn1_deserializer_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @return RawPublicKey
-    */
-    public function deserializePublicKeyInplace(): RawPublicKey
-    {
-        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_inplace_php($this->ctx);
-        return new RawPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @return RawPrivateKey
-    */
-    public function deserializePrivateKeyInplace(): RawPrivateKey
-    {
-        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_inplace_php($this->ctx);
-        return new RawPrivateKey($ctx);
-    }
-
-    /**
-    *
     * @param string $$publicKeyData
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function deserializePublicKey(string $$publicKeyData): RawPublicKey
     {
@@ -118,10 +90,69 @@ class KeyAsn1Deserializer implements KeyDeserializer
     *
     * @param string $$privateKeyData
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function deserializePrivateKey(string $$privateKeyData): RawPrivateKey
     {
         $ctx = vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $$privateKeyData);
+        return new RawPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        vscf_key_asn1_deserializer_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return RawPublicKey
+    * @throws \Exception
+    */
+    public function deserializePublicKeyInplace(): RawPublicKey
+    {
+        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_inplace_php($this->ctx);
+        return new RawPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return RawPrivateKey
+    * @throws \Exception
+    */
+    public function deserializePrivateKeyInplace(): RawPrivateKey
+    {
+        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_inplace_php($this->ctx);
+        return new RawPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @param int $$seqLeftLen
+    * @param int $$version
+    * @return RawPrivateKey
+    * @throws \Exception
+    */
+    public function deserializePkcs8PrivateKeyInplace(int $$seqLeftLen, int $$version): RawPrivateKey
+    {
+        $ctx = vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace_php($this->ctx, $$seqLeftLen, $$version);
+        return new RawPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @param int $$seqLeftLen
+    * @param int $$version
+    * @param AlgInfo $$algInfo
+    * @return RawPrivateKey
+    * @throws \Exception
+    */
+    public function deserializeSec1PrivateKeyInplace(int $$seqLeftLen, int $$version, AlgInfo $$algInfo): RawPrivateKey
+    {
+        $ctx = vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace_php($this->ctx, $$seqLeftLen, $$version, $$algInfo->getCtx());
         return new RawPrivateKey($ctx);
     }
 

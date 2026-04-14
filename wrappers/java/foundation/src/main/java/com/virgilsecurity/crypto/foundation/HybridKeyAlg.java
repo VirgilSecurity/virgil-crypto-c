@@ -38,26 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.hybridKeyAlg_setRandom(this.cCtx, random);
-    }
-
-    public void setCipher(CipherAuth cipher) {
-        FoundationJNI.INSTANCE.hybridKeyAlg_setCipher(this.cCtx, cipher);
-    }
-
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.hybridKeyAlg_setHash(this.cCtx, hash);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.hybridKeyAlg_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey makeKey(PrivateKey firstKey, PrivateKey secondKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.hybridKeyAlg_makeKey(this.cCtx, firstKey, secondKey);
-    }
-
     public long cCtx;
 
     public HybridKeyAlg() {
@@ -88,6 +68,18 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.hybridKeyAlg_setRandom(this.cCtx, random);
+    }
+
+    public void setCipher(CipherAuth cipher) {
+        FoundationJNI.INSTANCE.hybridKeyAlg_setCipher(this.cCtx, cipher);
+    }
+
+    public void setHash(Hash hash) {
+        FoundationJNI.INSTANCE.hybridKeyAlg_setHash(this.cCtx, hash);
     }
 
     public boolean getCanImportPublicKey() {
@@ -168,6 +160,18 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
 
     public boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_verifyHash(this.cCtx, publicKey, hashId, digest, signature);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.hybridKeyAlg_setupDefaults(this.cCtx);
+    }
+
+    public PrivateKey makeKey(PrivateKey firstKey, PrivateKey secondKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.hybridKeyAlg_makeKey(this.cCtx, firstKey, secondKey);
+    }
+
+    public void configCipher(Cipher cipher, Hash hash, byte[] sharedKey) {
+        FoundationJNI.INSTANCE.hybridKeyAlg_configCipher(cipher, hash, sharedKey);
     }
 
 }

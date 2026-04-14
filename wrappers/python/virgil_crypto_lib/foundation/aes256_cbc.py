@@ -48,8 +48,8 @@ from .cipher import Cipher
 
 class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     """Implementation of the symmetric cipher AES-256 bit in a CBC mode.
-    Note, this implementation contains dynamic memory allocations,
-    this should be improved in the future releases."""
+Note, this implementation contains dynamic memory allocations,
+this should be improved in the future releases."""
 
     # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     NONCE_LEN = 16
@@ -90,7 +90,7 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     def encrypt(self, data):
         """Encrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(data_len=len(data)))
+        out = Buffer(self.encrypted_len(data=len(data)))
         status = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_encrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -108,7 +108,7 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(data_len=len(data)))
+        out = Buffer(self.decrypted_len(data=len(data)))
         status = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_decrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -139,34 +139,34 @@ class Aes256Cbc(Alg, Encrypt, Decrypt, CipherInfo, Cipher):
     def update(self, data):
         """Process encryption or decryption of the given data chunk."""
         d_data = Data(data)
-        out = Buffer(self.out_len(data_len=len(data)))
+        out = Buffer(self.out_len(data=len(data)))
         self._lib_vscf_aes256_cbc.vscf_aes256_cbc_update(self.ctx, d_data.data, out.c_buffer)
         return out.get_bytes()
 
     def out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an current mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an current mode.
+Pass zero length to define buffer length of the method "finish"."""
         result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_out_len(self.ctx, data_len)
         return result
 
     def encrypted_out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an encryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an encryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_encrypted_out_len(self.ctx, data_len)
         return result
 
     def decrypted_out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an decryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an decryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         result = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_decrypted_out_len(self.ctx, data_len)
         return result
 
     def finish(self):
         """Accomplish encryption or decryption process."""
-        out = Buffer(self.out_len(data_len=0))
+        out = Buffer(self.out_len(0))
         status = self._lib_vscf_aes256_cbc.vscf_aes256_cbc_finish(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

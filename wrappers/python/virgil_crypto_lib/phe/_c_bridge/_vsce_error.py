@@ -45,9 +45,9 @@ class vsce_error_t(Structure):
 
 class VsceError(object):
     """Error context.
-    Can be used for sequential operations, i.e. parsers, to accumulate error.
-    In this way operation is successful if all steps are successful, otherwise
-    last occurred error code can be obtained."""
+Can be used for sequential operations, i.e. parsers, to accumulate error.
+In this way operation is successful if all steps are successful, otherwise
+last occurred error code can be obtained."""
 
     def __init__(self):
         """Create underlying C context."""

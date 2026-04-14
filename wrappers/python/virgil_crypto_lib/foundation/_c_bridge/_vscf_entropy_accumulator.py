@@ -35,8 +35,8 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
 
 class vscf_entropy_accumulator_t(Structure):
@@ -65,6 +65,22 @@ class VscfEntropyAccumulator(object):
         vscf_entropy_accumulator_delete.restype = None
         return vscf_entropy_accumulator_delete(ctx)
 
+    def vscf_entropy_accumulator_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_entropy_accumulator_setup_defaults = self._lib.vscf_entropy_accumulator_setup_defaults
+        vscf_entropy_accumulator_setup_defaults.argtypes = [POINTER(vscf_entropy_accumulator_t)]
+        vscf_entropy_accumulator_setup_defaults.restype = None
+        return vscf_entropy_accumulator_setup_defaults(ctx)
+
+    def vscf_entropy_accumulator_add_source(self, ctx, source, threshold):
+        """Add given entropy source to the accumulator.
+Threshold defines minimum number of bytes that must be gathered
+from the source during accumulation."""
+        vscf_entropy_accumulator_add_source = self._lib.vscf_entropy_accumulator_add_source
+        vscf_entropy_accumulator_add_source.argtypes = [POINTER(vscf_entropy_accumulator_t), POINTER(vscf_impl_t), c_size_t]
+        vscf_entropy_accumulator_add_source.restype = None
+        return vscf_entropy_accumulator_add_source(ctx, source, threshold)
+
     def vscf_entropy_accumulator_is_strong(self, ctx):
         """Defines that implemented source is strong."""
         vscf_entropy_accumulator_is_strong = self._lib.vscf_entropy_accumulator_is_strong
@@ -78,22 +94,6 @@ class VscfEntropyAccumulator(object):
         vscf_entropy_accumulator_gather.argtypes = [POINTER(vscf_entropy_accumulator_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_entropy_accumulator_gather.restype = c_int
         return vscf_entropy_accumulator_gather(ctx, len, out)
-
-    def vscf_entropy_accumulator_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_entropy_accumulator_setup_defaults = self._lib.vscf_entropy_accumulator_setup_defaults
-        vscf_entropy_accumulator_setup_defaults.argtypes = [POINTER(vscf_entropy_accumulator_t)]
-        vscf_entropy_accumulator_setup_defaults.restype = None
-        return vscf_entropy_accumulator_setup_defaults(ctx)
-
-    def vscf_entropy_accumulator_add_source(self, ctx, source, threshold):
-        """Add given entropy source to the accumulator.
-        Threshold defines minimum number of bytes that must be gathered
-        from the source during accumulation."""
-        vscf_entropy_accumulator_add_source = self._lib.vscf_entropy_accumulator_add_source
-        vscf_entropy_accumulator_add_source.argtypes = [POINTER(vscf_entropy_accumulator_t), POINTER(vscf_impl_t), c_size_t]
-        vscf_entropy_accumulator_add_source.restype = None
-        return vscf_entropy_accumulator_add_source(ctx, source, threshold)
 
     def vscf_entropy_accumulator_shallow_copy(self, ctx):
         vscf_entropy_accumulator_shallow_copy = self._lib.vscf_entropy_accumulator_shallow_copy

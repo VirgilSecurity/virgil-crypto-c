@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class RawPublicKey implements AutoCloseable, Key, PublicKey {
 
-    public byte[] data() {
-        return FoundationJNI.INSTANCE.rawPublicKey_data(this.cCtx);
-    }
-
     public long cCtx;
 
     public RawPublicKey() {
@@ -92,6 +88,10 @@ public class RawPublicKey implements AutoCloseable, Key, PublicKey {
 
     public boolean isValid() {
         return FoundationJNI.INSTANCE.rawPublicKey_isValid(this.cCtx);
+    }
+
+    public byte[] data() {
+        return FoundationJNI.INSTANCE.rawPublicKey_data(this.cCtx);
     }
 
 }

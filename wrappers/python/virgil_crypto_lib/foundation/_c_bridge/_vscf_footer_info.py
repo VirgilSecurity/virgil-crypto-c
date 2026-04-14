@@ -45,6 +45,7 @@ class vscf_footer_info_t(Structure):
 class VscfFooterInfo(object):
     """Handle meta information about footer."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

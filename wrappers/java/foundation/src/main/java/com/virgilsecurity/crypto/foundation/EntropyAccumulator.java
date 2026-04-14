@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class EntropyAccumulator implements AutoCloseable, EntropySource {
 
-    public int getSourcesMax() {
-        return 15;
-    }
-
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.entropyAccumulator_setupDefaults(this.cCtx);
-    }
-
-    public void addSource(EntropySource source, int threshold) {
-        FoundationJNI.INSTANCE.entropyAccumulator_addSource(this.cCtx, source, threshold);
-    }
-
     public long cCtx;
 
     public EntropyAccumulator() {
@@ -88,6 +76,14 @@ public class EntropyAccumulator implements AutoCloseable, EntropySource {
 
     public byte[] gather(int len) throws FoundationException {
         return FoundationJNI.INSTANCE.entropyAccumulator_gather(this.cCtx, len);
+    }
+
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.entropyAccumulator_setupDefaults(this.cCtx);
+    }
+
+    public void addSource(EntropySource source, int threshold) {
+        FoundationJNI.INSTANCE.entropyAccumulator_addSource(this.cCtx, source, threshold);
     }
 
 }

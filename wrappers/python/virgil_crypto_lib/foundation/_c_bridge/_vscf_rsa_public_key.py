@@ -36,6 +36,7 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
 
 
 class vscf_rsa_public_key_t(Structure):
@@ -44,6 +45,7 @@ class vscf_rsa_public_key_t(Structure):
 
 class VscfRsaPublicKey(object):
     """Handles RSA public key."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -61,6 +63,13 @@ class VscfRsaPublicKey(object):
         vscf_rsa_public_key_delete.argtypes = [POINTER(vscf_rsa_public_key_t)]
         vscf_rsa_public_key_delete.restype = None
         return vscf_rsa_public_key_delete(ctx)
+
+    def vscf_rsa_public_key_key_exponent(self, ctx):
+        """Return public key exponent."""
+        vscf_rsa_public_key_key_exponent = self._lib.vscf_rsa_public_key_key_exponent
+        vscf_rsa_public_key_key_exponent.argtypes = [POINTER(vscf_rsa_public_key_t)]
+        vscf_rsa_public_key_key_exponent.restype = c_size_t
+        return vscf_rsa_public_key_key_exponent(ctx)
 
     def vscf_rsa_public_key_alg_id(self, ctx):
         """Algorithm identifier the key belongs to."""
@@ -92,18 +101,11 @@ class VscfRsaPublicKey(object):
 
     def vscf_rsa_public_key_is_valid(self, ctx):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         vscf_rsa_public_key_is_valid = self._lib.vscf_rsa_public_key_is_valid
         vscf_rsa_public_key_is_valid.argtypes = [POINTER(vscf_rsa_public_key_t)]
         vscf_rsa_public_key_is_valid.restype = c_bool
         return vscf_rsa_public_key_is_valid(ctx)
-
-    def vscf_rsa_public_key_key_exponent(self, ctx):
-        """Return public key exponent."""
-        vscf_rsa_public_key_key_exponent = self._lib.vscf_rsa_public_key_key_exponent
-        vscf_rsa_public_key_key_exponent.argtypes = [POINTER(vscf_rsa_public_key_t)]
-        vscf_rsa_public_key_key_exponent.restype = c_size_t
-        return vscf_rsa_public_key_key_exponent(ctx)
 
     def vscf_rsa_public_key_shallow_copy(self, ctx):
         vscf_rsa_public_key_shallow_copy = self._lib.vscf_rsa_public_key_shallow_copy

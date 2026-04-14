@@ -41,6 +41,7 @@ from virgil_crypto_lib.common._c_bridge import vsc_data_t
 class VscfOid(object):
     """Provide conversion logic between OID and algorithm tags."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

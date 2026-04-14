@@ -70,6 +70,14 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
         clearResources();
     }
 
+    public int getDigestLen() {
+        return 48;
+    }
+
+    public int getBlockLen() {
+        return 128;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.sha384_algId(this.cCtx);
     }
@@ -80,14 +88,6 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
 
     public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
         FoundationJNI.INSTANCE.sha384_restoreAlgInfo(this.cCtx, algInfo);
-    }
-
-    public int getDigestLen() {
-        return 48;
-    }
-
-    public int getBlockLen() {
-        return 128;
     }
 
     public byte[] hash(byte[] data) {

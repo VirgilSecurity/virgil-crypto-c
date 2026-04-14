@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
 
-    public void setKdf(SaltedKdf kdf) {
-        FoundationJNI.INSTANCE.pkcs5Pbes2_setKdf(this.cCtx, kdf);
-    }
-
-    public void setCipher(Cipher cipher) {
-        FoundationJNI.INSTANCE.pkcs5Pbes2_setCipher(this.cCtx, cipher);
-    }
-
-    public void reset(byte[] pwd) {
-        FoundationJNI.INSTANCE.pkcs5Pbes2_reset(this.cCtx, pwd);
-    }
-
     public long cCtx;
 
     public Pkcs5Pbes2() {
@@ -82,6 +70,14 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
         clearResources();
     }
 
+    public void setKdf(SaltedKdf kdf) {
+        FoundationJNI.INSTANCE.pkcs5Pbes2_setKdf(this.cCtx, kdf);
+    }
+
+    public void setCipher(Cipher cipher) {
+        FoundationJNI.INSTANCE.pkcs5Pbes2_setCipher(this.cCtx, cipher);
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.pkcs5Pbes2_algId(this.cCtx);
     }
@@ -112,6 +108,10 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
 
     public int decryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.pkcs5Pbes2_decryptedLen(this.cCtx, dataLen);
+    }
+
+    public void reset(byte[] pwd) {
+        FoundationJNI.INSTANCE.pkcs5Pbes2_reset(this.cCtx, pwd);
     }
 
 }

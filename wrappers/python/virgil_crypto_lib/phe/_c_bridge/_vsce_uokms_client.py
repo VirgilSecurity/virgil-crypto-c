@@ -35,9 +35,10 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
+from ._vsce_impl import vsce_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vsce_mbedtls_ecp_group import vsce_mbedtls_ecp_group_t
 
 
 class vsce_uokms_client_t(Structure):
@@ -46,6 +47,7 @@ class vsce_uokms_client_t(Structure):
 
 class VsceUokmsClient(object):
     """Class implements UOKMS for client-side."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -65,14 +67,12 @@ class VsceUokmsClient(object):
         return vsce_uokms_client_delete(ctx)
 
     def vsce_uokms_client_use_random(self, ctx, random):
-        """Random used for key generation, proofs, etc."""
         vsce_uokms_client_use_random = self._lib.vsce_uokms_client_use_random
         vsce_uokms_client_use_random.argtypes = [POINTER(vsce_uokms_client_t), POINTER(vscf_impl_t)]
         vsce_uokms_client_use_random.restype = None
         return vsce_uokms_client_use_random(ctx, random)
 
     def vsce_uokms_client_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vsce_uokms_client_use_operation_random = self._lib.vsce_uokms_client_use_operation_random
         vsce_uokms_client_use_operation_random.argtypes = [POINTER(vsce_uokms_client_t), POINTER(vscf_impl_t)]
         vsce_uokms_client_use_operation_random.restype = None
@@ -87,8 +87,8 @@ class VsceUokmsClient(object):
 
     def vsce_uokms_client_set_keys_oneparty(self, ctx, client_private_key):
         """Sets client private
-        Call this method before any other methods
-        This function should be called only once"""
+Call this method before any other methods
+This function should be called only once"""
         vsce_uokms_client_set_keys_oneparty = self._lib.vsce_uokms_client_set_keys_oneparty
         vsce_uokms_client_set_keys_oneparty.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t]
         vsce_uokms_client_set_keys_oneparty.restype = c_int
@@ -96,8 +96,8 @@ class VsceUokmsClient(object):
 
     def vsce_uokms_client_set_keys(self, ctx, client_private_key, server_public_key):
         """Sets client private and server public key
-        Call this method before any other methods
-        This function should be called only once"""
+Call this method before any other methods
+This function should be called only once"""
         vsce_uokms_client_set_keys = self._lib.vsce_uokms_client_set_keys
         vsce_uokms_client_set_keys.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, vsc_data_t]
         vsce_uokms_client_set_keys.restype = c_int
@@ -112,7 +112,7 @@ class VsceUokmsClient(object):
 
     def vsce_uokms_client_generate_encrypt_wrap(self, ctx, wrap, encryption_key_len, encryption_key):
         """Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
-        of "encryption key len" that can be used for symmetric encryption"""
+of "encryption key len" that can be used for symmetric encryption"""
         vsce_uokms_client_generate_encrypt_wrap = self._lib.vsce_uokms_client_generate_encrypt_wrap
         vsce_uokms_client_generate_encrypt_wrap.argtypes = [POINTER(vsce_uokms_client_t), POINTER(vsc_buffer_t), c_size_t, POINTER(vsc_buffer_t)]
         vsce_uokms_client_generate_encrypt_wrap.restype = c_int
@@ -127,7 +127,7 @@ class VsceUokmsClient(object):
 
     def vsce_uokms_client_generate_decrypt_request(self, ctx, wrap, deblind_factor, decrypt_request):
         """Generates request to decrypt data, this request should be sent to the server.
-        Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
+Server response is then passed to "process decrypt response" where encryption key can be decapsulated"""
         vsce_uokms_client_generate_decrypt_request = self._lib.vsce_uokms_client_generate_decrypt_request
         vsce_uokms_client_generate_decrypt_request.argtypes = [POINTER(vsce_uokms_client_t), vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vsce_uokms_client_generate_decrypt_request.restype = c_int

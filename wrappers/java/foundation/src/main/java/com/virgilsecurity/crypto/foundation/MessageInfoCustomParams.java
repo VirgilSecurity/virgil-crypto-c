@@ -70,6 +70,18 @@ public class MessageInfoCustomParams implements AutoCloseable {
         clearResources();
     }
 
+    public int getOfIntType() {
+        return 1;
+    }
+
+    public int getOfStringType() {
+        return 2;
+    }
+
+    public int getOfDataType() {
+        return 3;
+    }
+
     public void addInt(byte[] key, int value) {
         FoundationJNI.INSTANCE.messageInfoCustomParams_addInt(this.cCtx, key, value);
     }

@@ -46,6 +46,8 @@ from ._vscf_error import VscfError
 from ._vscf_oid import VscfOid
 from ._vscf_base64 import VscfBase64
 from ._vscf_pem import VscfPem
+from ._vscf_alg_factory import VscfAlgFactory
+from ._vscf_key_alg_factory import VscfKeyAlgFactory
 from ._vscf_message_info import vscf_message_info_t
 from ._vscf_message_info import VscfMessageInfo
 from ._vscf_key_recipient_info import vscf_key_recipient_info_t
@@ -56,8 +58,6 @@ from ._vscf_password_recipient_info import vscf_password_recipient_info_t
 from ._vscf_password_recipient_info import VscfPasswordRecipientInfo
 from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 from ._vscf_password_recipient_info_list import VscfPasswordRecipientInfoList
-from ._vscf_alg_factory import VscfAlgFactory
-from ._vscf_key_alg_factory import VscfKeyAlgFactory
 from ._vscf_ecies import vscf_ecies_t
 from ._vscf_ecies import VscfEcies
 from ._vscf_recipient_cipher import vscf_recipient_cipher_t

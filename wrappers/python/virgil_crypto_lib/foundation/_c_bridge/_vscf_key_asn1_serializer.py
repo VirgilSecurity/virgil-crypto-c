@@ -36,10 +36,10 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_raw_public_key import vscf_raw_public_key_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
 from ._vscf_error import vscf_error_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
 
 
 class vscf_key_asn1_serializer_t(Structure):
@@ -48,8 +48,9 @@ class vscf_key_asn1_serializer_t(Structure):
 
 class VscfKeyAsn1Serializer(object):
     """Implements key serialization in the ASN.1 format (DER / PEM):
-        - SEC1 - for EC private keys;
-        - PKCS#8 - for other keys."""
+    - SEC1 - for EC private keys;
+    - PKCS#8 - for other keys."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -74,42 +75,6 @@ class VscfKeyAsn1Serializer(object):
         vscf_key_asn1_serializer_use_asn1_writer.restype = None
         return vscf_key_asn1_serializer_use_asn1_writer(ctx, asn1_writer)
 
-    def vscf_key_asn1_serializer_serialized_public_key_len(self, ctx, public_key):
-        """Calculate buffer size enough to hold serialized public key.
-
-        Precondition: public key must be exportable."""
-        vscf_key_asn1_serializer_serialized_public_key_len = self._lib.vscf_key_asn1_serializer_serialized_public_key_len
-        vscf_key_asn1_serializer_serialized_public_key_len.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_public_key_t)]
-        vscf_key_asn1_serializer_serialized_public_key_len.restype = c_size_t
-        return vscf_key_asn1_serializer_serialized_public_key_len(ctx, public_key)
-
-    def vscf_key_asn1_serializer_serialize_public_key(self, ctx, public_key, out):
-        """Serialize given public key to an interchangeable format.
-
-        Precondition: public key must be exportable."""
-        vscf_key_asn1_serializer_serialize_public_key = self._lib.vscf_key_asn1_serializer_serialize_public_key
-        vscf_key_asn1_serializer_serialize_public_key.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_public_key_t), POINTER(vsc_buffer_t)]
-        vscf_key_asn1_serializer_serialize_public_key.restype = c_int
-        return vscf_key_asn1_serializer_serialize_public_key(ctx, public_key, out)
-
-    def vscf_key_asn1_serializer_serialized_private_key_len(self, ctx, private_key):
-        """Calculate buffer size enough to hold serialized private key.
-
-        Precondition: private key must be exportable."""
-        vscf_key_asn1_serializer_serialized_private_key_len = self._lib.vscf_key_asn1_serializer_serialized_private_key_len
-        vscf_key_asn1_serializer_serialized_private_key_len.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_private_key_t)]
-        vscf_key_asn1_serializer_serialized_private_key_len.restype = c_size_t
-        return vscf_key_asn1_serializer_serialized_private_key_len(ctx, private_key)
-
-    def vscf_key_asn1_serializer_serialize_private_key(self, ctx, private_key, out):
-        """Serialize given private key to an interchangeable format.
-
-        Precondition: private key must be exportable."""
-        vscf_key_asn1_serializer_serialize_private_key = self._lib.vscf_key_asn1_serializer_serialize_private_key
-        vscf_key_asn1_serializer_serialize_private_key.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_private_key_t), POINTER(vsc_buffer_t)]
-        vscf_key_asn1_serializer_serialize_private_key.restype = c_int
-        return vscf_key_asn1_serializer_serialize_private_key(ctx, private_key, out)
-
     def vscf_key_asn1_serializer_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""
         vscf_key_asn1_serializer_setup_defaults = self._lib.vscf_key_asn1_serializer_setup_defaults
@@ -119,8 +84,8 @@ class VscfKeyAsn1Serializer(object):
 
     def vscf_key_asn1_serializer_serialize_public_key_inplace(self, ctx, public_key, error):
         """Serialize Public Key by using internal ASN.1 writer.
-        Note, that caller code is responsible to reset ASN.1 writer with
-        an output buffer."""
+Note, that caller code is responsible to reset ASN.1 writer with
+an output buffer."""
         vscf_key_asn1_serializer_serialize_public_key_inplace = self._lib.vscf_key_asn1_serializer_serialize_public_key_inplace
         vscf_key_asn1_serializer_serialize_public_key_inplace.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_public_key_t), POINTER(vscf_error_t)]
         vscf_key_asn1_serializer_serialize_public_key_inplace.restype = c_size_t
@@ -128,12 +93,48 @@ class VscfKeyAsn1Serializer(object):
 
     def vscf_key_asn1_serializer_serialize_private_key_inplace(self, ctx, private_key, error):
         """Serialize Private Key by using internal ASN.1 writer.
-        Note, that caller code is responsible to reset ASN.1 writer with
-        an output buffer."""
+Note, that caller code is responsible to reset ASN.1 writer with
+an output buffer."""
         vscf_key_asn1_serializer_serialize_private_key_inplace = self._lib.vscf_key_asn1_serializer_serialize_private_key_inplace
         vscf_key_asn1_serializer_serialize_private_key_inplace.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_private_key_t), POINTER(vscf_error_t)]
         vscf_key_asn1_serializer_serialize_private_key_inplace.restype = c_size_t
         return vscf_key_asn1_serializer_serialize_private_key_inplace(ctx, private_key, error)
+
+    def vscf_key_asn1_serializer_serialized_public_key_len(self, ctx, public_key):
+        """Calculate buffer size enough to hold serialized public key.
+
+Precondition: public key must be exportable."""
+        vscf_key_asn1_serializer_serialized_public_key_len = self._lib.vscf_key_asn1_serializer_serialized_public_key_len
+        vscf_key_asn1_serializer_serialized_public_key_len.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_public_key_t)]
+        vscf_key_asn1_serializer_serialized_public_key_len.restype = c_size_t
+        return vscf_key_asn1_serializer_serialized_public_key_len(ctx, public_key)
+
+    def vscf_key_asn1_serializer_serialize_public_key(self, ctx, public_key, out):
+        """Serialize given public key to an interchangeable format.
+
+Precondition: public key must be exportable."""
+        vscf_key_asn1_serializer_serialize_public_key = self._lib.vscf_key_asn1_serializer_serialize_public_key
+        vscf_key_asn1_serializer_serialize_public_key.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_public_key_t), POINTER(vsc_buffer_t)]
+        vscf_key_asn1_serializer_serialize_public_key.restype = c_int
+        return vscf_key_asn1_serializer_serialize_public_key(ctx, public_key, out)
+
+    def vscf_key_asn1_serializer_serialized_private_key_len(self, ctx, private_key):
+        """Calculate buffer size enough to hold serialized private key.
+
+Precondition: private key must be exportable."""
+        vscf_key_asn1_serializer_serialized_private_key_len = self._lib.vscf_key_asn1_serializer_serialized_private_key_len
+        vscf_key_asn1_serializer_serialized_private_key_len.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_private_key_t)]
+        vscf_key_asn1_serializer_serialized_private_key_len.restype = c_size_t
+        return vscf_key_asn1_serializer_serialized_private_key_len(ctx, private_key)
+
+    def vscf_key_asn1_serializer_serialize_private_key(self, ctx, private_key, out):
+        """Serialize given private key to an interchangeable format.
+
+Precondition: private key must be exportable."""
+        vscf_key_asn1_serializer_serialize_private_key = self._lib.vscf_key_asn1_serializer_serialize_private_key
+        vscf_key_asn1_serializer_serialize_private_key.argtypes = [POINTER(vscf_key_asn1_serializer_t), POINTER(vscf_raw_private_key_t), POINTER(vsc_buffer_t)]
+        vscf_key_asn1_serializer_serialize_private_key.restype = c_int
+        return vscf_key_asn1_serializer_serialize_private_key(ctx, private_key, out)
 
     def vscf_key_asn1_serializer_shallow_copy(self, ctx):
         vscf_key_asn1_serializer_shallow_copy = self._lib.vscf_key_asn1_serializer_shallow_copy

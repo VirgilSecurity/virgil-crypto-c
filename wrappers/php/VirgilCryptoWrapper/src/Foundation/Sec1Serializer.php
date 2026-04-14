@@ -76,35 +76,6 @@ class Sec1Serializer implements KeySerializer
 
     /**
     *
-    * @return void
-    */
-    public function setupDefaults(): void
-    {
-        vscf_sec1_serializer_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param RawPublicKey $$publicKey
-    * @return int
-    */
-    public function serializePublicKeyInplace(RawPublicKey $$publicKey): int
-    {
-        return vscf_sec1_serializer_serialize_public_key_inplace_php($this->ctx, $$publicKey);
-    }
-
-    /**
-    *
-    * @param RawPrivateKey $$privateKey
-    * @return int
-    */
-    public function serializePrivateKeyInplace(RawPrivateKey $$privateKey): int
-    {
-        return vscf_sec1_serializer_serialize_private_key_inplace_php($this->ctx, $$privateKey);
-    }
-
-    /**
-    *
     * @param RawPublicKey $$publicKey
     * @return int
     */
@@ -143,6 +114,47 @@ class Sec1Serializer implements KeySerializer
     public function serializePrivateKey(RawPrivateKey $$privateKey): string
     {
         return vscf_sec1_serializer_serialize_private_key_php($this->ctx, $$privateKey);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        vscf_sec1_serializer_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param RawPublicKey $$publicKey
+    * @return int
+    * @throws \Exception
+    */
+    public function serializePublicKeyInplace(RawPublicKey $$publicKey): int
+    {
+        return vscf_sec1_serializer_serialize_public_key_inplace_php($this->ctx, $$publicKey);
+    }
+
+    /**
+    *
+    * @param RawPrivateKey $$privateKey
+    * @return int
+    * @throws \Exception
+    */
+    public function serializePrivateKeyInplace(RawPrivateKey $$privateKey): int
+    {
+        return vscf_sec1_serializer_serialize_private_key_inplace_php($this->ctx, $$privateKey);
+    }
+
+    /**
+    *
+    * @param Key $$key
+    * @return bool
+    */
+    public static function isEcKey(Key $$key): bool
+    {
+        return vscf_sec1_serializer_is_ec_key_php($$key->getCtx());
     }
 
     /**

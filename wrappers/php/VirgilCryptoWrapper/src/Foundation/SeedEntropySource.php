@@ -45,8 +45,6 @@ class SeedEntropySource implements EntropySource
     */
     private $ctx;
 
-    const GATHER_LEN_MAX = 48;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -68,16 +66,6 @@ class SeedEntropySource implements EntropySource
 
     /**
     *
-    * @param string $$seed
-    * @return void
-    */
-    public function resetSeed(string $$seed): void
-    {
-        vscf_seed_entropy_source_reset_seed_php($this->ctx, $$seed);
-    }
-
-    /**
-    *
     * @return bool
     */
     public function isStrong(): bool
@@ -94,6 +82,25 @@ class SeedEntropySource implements EntropySource
     public function gather(int $$len): string
     {
         return vscf_seed_entropy_source_gather_php($this->ctx, $$len);
+    }
+
+    /**
+    *
+    * @param string $$seed
+    * @return void
+    */
+    public function resetSeed(string $$seed): void
+    {
+        vscf_seed_entropy_source_reset_seed_php($this->ctx, $$seed);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function moveForward(): void
+    {
+        vscf_seed_entropy_source_move_forward_php($this->ctx);
     }
 
     /**

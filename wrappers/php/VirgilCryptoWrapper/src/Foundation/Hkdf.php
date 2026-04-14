@@ -104,7 +104,7 @@ class Hkdf implements Alg, Kdf, SaltedKdf
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_hkdf_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_hkdf_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

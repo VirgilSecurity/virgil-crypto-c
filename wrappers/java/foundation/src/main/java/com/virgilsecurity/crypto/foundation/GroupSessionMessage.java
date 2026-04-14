@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class GroupSessionMessage implements AutoCloseable {
 
-    public int getMaxMessageLen() {
-        return 30188;
-    }
-
-    public int getMessageVersion() {
-        return 1;
-    }
-
     public long cCtx;
 
     public GroupSessionMessage() {
@@ -78,6 +70,14 @@ public class GroupSessionMessage implements AutoCloseable {
         clearResources();
     }
 
+    public int getMaxMessageLen() {
+        return 30188;
+    }
+
+    public int getMessageVersion() {
+        return 1;
+    }
+
     public GroupMsgType getType() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getType(this.cCtx);
     }
@@ -86,7 +86,7 @@ public class GroupSessionMessage implements AutoCloseable {
         return FoundationJNI.INSTANCE.groupSessionMessage_getSessionId(this.cCtx);
     }
 
-    public long getEpoch() {
+    public int getEpoch() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getEpoch(this.cCtx);
     }
 
@@ -98,7 +98,7 @@ public class GroupSessionMessage implements AutoCloseable {
         return FoundationJNI.INSTANCE.groupSessionMessage_serialize(this.cCtx);
     }
 
-    public GroupSessionMessage deserialize(byte[] input) throws FoundationException {
+    public Self deserialize(byte[] input) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSessionMessage_deserialize(input);
     }
 

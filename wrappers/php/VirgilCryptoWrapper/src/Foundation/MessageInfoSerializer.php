@@ -74,6 +74,7 @@ interface MessageInfoSerializer extends Ctx
     *
     * @param string $$data
     * @return MessageInfo
+    * @throws \Exception
     */
     public function deserialize(string $$data): MessageInfo
     {

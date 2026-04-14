@@ -43,6 +43,7 @@ from ._vscp_error import vscp_error_t
 class VscpPythia(object):
     """Provide Pythia implementation based on the Virgil Security."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -50,7 +51,7 @@ class VscpPythia(object):
 
     def vscp_pythia_configure(self):
         """Performs global initialization of the pythia library.
-        Must be called once for entire application at startup."""
+Must be called once for entire application at startup."""
         vscp_pythia_configure = self._lib.vscp_pythia_configure
         vscp_pythia_configure.argtypes = []
         vscp_pythia_configure.restype = c_int
@@ -58,7 +59,7 @@ class VscpPythia(object):
 
     def vscp_pythia_cleanup(self):
         """Performs global cleanup of the pythia library.
-        Must be called once for entire application before exit."""
+Must be called once for entire application before exit."""
         vscp_pythia_cleanup = self._lib.vscp_pythia_cleanup
         vscp_pythia_cleanup.argtypes = []
         vscp_pythia_cleanup.restype = None
@@ -129,7 +130,7 @@ class VscpPythia(object):
 
     def vscp_pythia_blind(self, password, blinded_password, blinding_secret):
         """Blinds password. Turns password into a pseudo-random string.
-        This step is necessary to prevent 3rd-parties from knowledge of end user's password."""
+This step is necessary to prevent 3rd-parties from knowledge of end user's password."""
         vscp_pythia_blind = self._lib.vscp_pythia_blind
         vscp_pythia_blind.argtypes = [vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vscp_pythia_blind.restype = c_int
@@ -165,7 +166,7 @@ class VscpPythia(object):
 
     def vscp_pythia_verify(self, transformed_password, blinded_password, tweak, transformation_public_key, proof_value_c, proof_value_u, error):
         """This operation allows client to verify that the output of transform() is correct,
-        assuming that client has previously stored transformation public key."""
+assuming that client has previously stored transformation public key."""
         vscp_pythia_verify = self._lib.vscp_pythia_verify
         vscp_pythia_verify.argtypes = [vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vscp_error_t)]
         vscp_pythia_verify.restype = c_bool
@@ -173,9 +174,9 @@ class VscpPythia(object):
 
     def vscp_pythia_get_password_update_token(self, previous_transformation_private_key, new_transformation_private_key, password_update_token):
         """Rotates old transformation key to new transformation key and generates 'password update token',
-        that can update 'deblinded password'(s).
+that can update 'deblinded password'(s).
 
-        This action should increment version of the 'pythia scope secret'."""
+This action should increment version of the 'pythia scope secret'."""
         vscp_pythia_get_password_update_token = self._lib.vscp_pythia_get_password_update_token
         vscp_pythia_get_password_update_token.argtypes = [vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vscp_pythia_get_password_update_token.restype = c_int
@@ -183,7 +184,7 @@ class VscpPythia(object):
 
     def vscp_pythia_update_deblinded_with_token(self, deblinded_password, password_update_token, updated_deblinded_password):
         """Updates previously stored 'deblinded password' with 'password update token'.
-        After this call, 'transform()' called with new arguments will return corresponding values."""
+After this call, 'transform()' called with new arguments will return corresponding values."""
         vscp_pythia_update_deblinded_with_token = self._lib.vscp_pythia_update_deblinded_with_token
         vscp_pythia_update_deblinded_with_token.argtypes = [vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vscp_pythia_update_deblinded_with_token.restype = c_int

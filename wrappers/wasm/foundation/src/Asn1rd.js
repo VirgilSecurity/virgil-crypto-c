@@ -67,19 +67,19 @@ const initAsn1rd = (Module, modules) => {
         reset(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             try {
                 Module._vscf_asn1rd_reset(this.ctxPtr, dataCtxPtr);
             } finally {
@@ -90,7 +90,7 @@ const initAsn1rd = (Module, modules) => {
 
         leftLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_left_len(this.ctxPtr);
             return proxyResult;
@@ -98,10 +98,10 @@ const initAsn1rd = (Module, modules) => {
 
         hasError() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_has_error(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -114,7 +114,7 @@ const initAsn1rd = (Module, modules) => {
 
         getTag() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_tag(this.ctxPtr);
             return proxyResult;
@@ -122,7 +122,7 @@ const initAsn1rd = (Module, modules) => {
 
         getLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_len(this.ctxPtr);
             return proxyResult;
@@ -130,7 +130,7 @@ const initAsn1rd = (Module, modules) => {
 
         getDataLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_get_data_len(this.ctxPtr);
             return proxyResult;
@@ -139,7 +139,7 @@ const initAsn1rd = (Module, modules) => {
         readTag(tag) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_tag(this.ctxPtr, tag);
             return proxyResult;
@@ -148,7 +148,7 @@ const initAsn1rd = (Module, modules) => {
         readContextTag(tag) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_context_tag(this.ctxPtr, tag);
             return proxyResult;
@@ -156,7 +156,7 @@ const initAsn1rd = (Module, modules) => {
 
         readInt() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int(this.ctxPtr);
             return proxyResult;
@@ -164,7 +164,7 @@ const initAsn1rd = (Module, modules) => {
 
         readInt8() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int8(this.ctxPtr);
             return proxyResult;
@@ -172,7 +172,7 @@ const initAsn1rd = (Module, modules) => {
 
         readInt16() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int16(this.ctxPtr);
             return proxyResult;
@@ -180,7 +180,7 @@ const initAsn1rd = (Module, modules) => {
 
         readInt32() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int32(this.ctxPtr);
             return proxyResult;
@@ -188,7 +188,7 @@ const initAsn1rd = (Module, modules) => {
 
         readInt64() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_int64(this.ctxPtr);
             return proxyResult;
@@ -196,7 +196,7 @@ const initAsn1rd = (Module, modules) => {
 
         readUint() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint(this.ctxPtr);
             return proxyResult;
@@ -204,7 +204,7 @@ const initAsn1rd = (Module, modules) => {
 
         readUint8() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint8(this.ctxPtr);
             return proxyResult;
@@ -212,7 +212,7 @@ const initAsn1rd = (Module, modules) => {
 
         readUint16() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint16(this.ctxPtr);
             return proxyResult;
@@ -220,7 +220,7 @@ const initAsn1rd = (Module, modules) => {
 
         readUint32() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint32(this.ctxPtr);
             return proxyResult;
@@ -228,7 +228,7 @@ const initAsn1rd = (Module, modules) => {
 
         readUint64() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_uint64(this.ctxPtr);
             return proxyResult;
@@ -236,10 +236,10 @@ const initAsn1rd = (Module, modules) => {
 
         readBool() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_bool(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -256,103 +256,33 @@ const initAsn1rd = (Module, modules) => {
 
         readOctetStr() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_asn1rd_read_octet_str(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_asn1rd_read_octet_str(this.ctxPtr);
         }
 
         readBitstringAsOctetStr() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_asn1rd_read_bitstring_as_octet_str(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_asn1rd_read_bitstring_as_octet_str(this.ctxPtr);
         }
 
         readUtf8Str() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_asn1rd_read_utf8_str(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_asn1rd_read_utf8_str(this.ctxPtr);
         }
 
         readOid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_asn1rd_read_oid(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_asn1rd_read_oid(this.ctxPtr);
         }
 
         readData(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_asn1rd_read_data(dataResultCtxPtr, this.ctxPtr, len);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_asn1rd_read_data(this.ctxPtr, len);
         }
 
         readSequence() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_sequence(this.ctxPtr);
             return proxyResult;
@@ -360,10 +290,27 @@ const initAsn1rd = (Module, modules) => {
 
         readSet() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1rd_read_set(this.ctxPtr);
             return proxyResult;
+        }
+
+        mbedtlsHasError(code) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('code', code);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_asn1rd_mbedtls_has_error(this.ctxPtr, code);
+            
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        readTagData(tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('tag', tag);
+            Module._vscf_asn1rd_read_tag_data(this.ctxPtr, tag);
         }
 
     }

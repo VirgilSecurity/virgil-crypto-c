@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class CipherAlgInfo implements AutoCloseable, AlgInfo {
 
-    public byte[] nonce() {
-        return FoundationJNI.INSTANCE.cipherAlgInfo_nonce(this.cCtx);
-    }
-
     public long cCtx;
 
     public CipherAlgInfo() {
@@ -74,13 +70,12 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
         clearResources();
     }
 
-    public CipherAlgInfo(AlgId algId, byte[] nonce) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.cipherAlgInfo_new(algId, nonce);
-    }
-
     public AlgId algId() {
         return FoundationJNI.INSTANCE.cipherAlgInfo_algId(this.cCtx);
+    }
+
+    public byte[] nonce() {
+        return FoundationJNI.INSTANCE.cipherAlgInfo_nonce(this.cCtx);
     }
 
 }

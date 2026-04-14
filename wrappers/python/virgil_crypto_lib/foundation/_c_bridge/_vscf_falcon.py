@@ -36,11 +36,11 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_error import vscf_error_t
-from ._vscf_raw_public_key import vscf_raw_public_key_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_error import vscf_error_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
 
 
 class vscf_falcon_t(Structure):
@@ -49,16 +49,11 @@ class vscf_falcon_t(Structure):
 
 class VscfFalcon(object):
     """Provide post-quantum signature based on the falcon implementation.
-    For algorithm details check https://falcon-sign.info."""
+For algorithm details check https://falcon-sign.info."""
 
-    # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = True
-    # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = True
-    # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = True
-    # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = True
+    SEED_LEN = 48
+    LOGN_512 = 9
+    LOGN_1024 = 10
 
     def __init__(self):
         """Create underlying C context."""
@@ -83,6 +78,21 @@ class VscfFalcon(object):
         vscf_falcon_use_random.restype = None
         return vscf_falcon_use_random(ctx, random)
 
+    def vscf_falcon_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_falcon_setup_defaults = self._lib.vscf_falcon_setup_defaults
+        vscf_falcon_setup_defaults.argtypes = [POINTER(vscf_falcon_t)]
+        vscf_falcon_setup_defaults.restype = c_int
+        return vscf_falcon_setup_defaults(ctx)
+
+    def vscf_falcon_generate_key(self, ctx, error):
+        """Generate new private key.
+Note, this operation might be slow."""
+        vscf_falcon_generate_key = self._lib.vscf_falcon_generate_key
+        vscf_falcon_generate_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_error_t)]
+        vscf_falcon_generate_key.restype = POINTER(vscf_impl_t)
+        return vscf_falcon_generate_key(ctx, error)
+
     def vscf_falcon_alg_id(self, ctx):
         """Provide algorithm identificator."""
         vscf_falcon_alg_id = self._lib.vscf_falcon_alg_id
@@ -106,7 +116,7 @@ class VscfFalcon(object):
 
     def vscf_falcon_generate_ephemeral_key(self, ctx, key, error):
         """Generate ephemeral private key of the same type.
-        Note, this operation might be slow."""
+Note, this operation might be slow."""
         vscf_falcon_generate_ephemeral_key = self._lib.vscf_falcon_generate_ephemeral_key
         vscf_falcon_generate_ephemeral_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_falcon_generate_ephemeral_key.restype = POINTER(vscf_impl_t)
@@ -115,12 +125,12 @@ class VscfFalcon(object):
     def vscf_falcon_import_public_key(self, ctx, raw_key, error):
         """Import public key from the raw binary format.
 
-        Return public key that is adopted and optimized to be used
-        with this particular algorithm.
+Return public key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be imported from the format defined in
+RFC 3447 Appendix A.1.1."""
         vscf_falcon_import_public_key = self._lib.vscf_falcon_import_public_key
         vscf_falcon_import_public_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_raw_public_key_t), POINTER(vscf_error_t)]
         vscf_falcon_import_public_key.restype = POINTER(vscf_impl_t)
@@ -129,9 +139,9 @@ class VscfFalcon(object):
     def vscf_falcon_export_public_key(self, ctx, public_key, error):
         """Export public key to the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be exported in format defined in
+RFC 3447 Appendix A.1.1."""
         vscf_falcon_export_public_key = self._lib.vscf_falcon_export_public_key
         vscf_falcon_export_public_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_falcon_export_public_key.restype = POINTER(vscf_raw_public_key_t)
@@ -140,12 +150,12 @@ class VscfFalcon(object):
     def vscf_falcon_import_private_key(self, ctx, raw_key, error):
         """Import private key from the raw binary format.
 
-        Return private key that is adopted and optimized to be used
-        with this particular algorithm.
+Return private key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be imported from the format defined in
+RFC 3447 Appendix A.1.2."""
         vscf_falcon_import_private_key = self._lib.vscf_falcon_import_private_key
         vscf_falcon_import_private_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_raw_private_key_t), POINTER(vscf_error_t)]
         vscf_falcon_import_private_key.restype = POINTER(vscf_impl_t)
@@ -154,9 +164,9 @@ class VscfFalcon(object):
     def vscf_falcon_export_private_key(self, ctx, private_key, error):
         """Export private key in the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be exported in format defined in
+RFC 3447 Appendix A.1.2."""
         vscf_falcon_export_private_key = self._lib.vscf_falcon_export_private_key
         vscf_falcon_export_private_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_falcon_export_private_key.restype = POINTER(vscf_raw_private_key_t)
@@ -171,7 +181,7 @@ class VscfFalcon(object):
 
     def vscf_falcon_signature_len(self, ctx, private_key):
         """Return length in bytes required to hold signature.
-        Return zero if a given private key can not produce signatures."""
+Return zero if a given private key can not produce signatures."""
         vscf_falcon_signature_len = self._lib.vscf_falcon_signature_len
         vscf_falcon_signature_len.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_impl_t)]
         vscf_falcon_signature_len.restype = c_size_t
@@ -197,21 +207,6 @@ class VscfFalcon(object):
         vscf_falcon_verify_hash.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_impl_t), c_int, vsc_data_t, vsc_data_t]
         vscf_falcon_verify_hash.restype = c_bool
         return vscf_falcon_verify_hash(ctx, public_key, hash_id, digest, signature)
-
-    def vscf_falcon_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_falcon_setup_defaults = self._lib.vscf_falcon_setup_defaults
-        vscf_falcon_setup_defaults.argtypes = [POINTER(vscf_falcon_t)]
-        vscf_falcon_setup_defaults.restype = c_int
-        return vscf_falcon_setup_defaults(ctx)
-
-    def vscf_falcon_generate_key(self, ctx, error):
-        """Generate new private key.
-        Note, this operation might be slow."""
-        vscf_falcon_generate_key = self._lib.vscf_falcon_generate_key
-        vscf_falcon_generate_key.argtypes = [POINTER(vscf_falcon_t), POINTER(vscf_error_t)]
-        vscf_falcon_generate_key.restype = POINTER(vscf_impl_t)
-        return vscf_falcon_generate_key(ctx, error)
 
     def vscf_falcon_shallow_copy(self, ctx):
         vscf_falcon_shallow_copy = self._lib.vscf_falcon_shallow_copy

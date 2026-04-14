@@ -35,7 +35,6 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from ._vscf_impl import vscf_impl_t
 
 
 class vscf_ecc_alg_info_t(Structure):
@@ -44,6 +43,7 @@ class vscf_ecc_alg_info_t(Structure):
 
 class VscfEccAlgInfo(object):
     """Handle algorithm information about ECP."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -62,20 +62,6 @@ class VscfEccAlgInfo(object):
         vscf_ecc_alg_info_delete.restype = None
         return vscf_ecc_alg_info_delete(ctx)
 
-    def vscf_ecc_alg_info_new_with_members(self, alg_id, key_id, domain_id):
-        """Create algorithm info with EC generic key identificator, EC domain group identificator."""
-        vscf_ecc_alg_info_new_with_members = self._lib.vscf_ecc_alg_info_new_with_members
-        vscf_ecc_alg_info_new_with_members.argtypes = [c_int, c_int, c_int]
-        vscf_ecc_alg_info_new_with_members.restype = POINTER(vscf_ecc_alg_info_t)
-        return vscf_ecc_alg_info_new_with_members(alg_id, key_id, domain_id)
-
-    def vscf_ecc_alg_info_alg_id(self, ctx):
-        """Provide algorithm identificator."""
-        vscf_ecc_alg_info_alg_id = self._lib.vscf_ecc_alg_info_alg_id
-        vscf_ecc_alg_info_alg_id.argtypes = [POINTER(vscf_ecc_alg_info_t)]
-        vscf_ecc_alg_info_alg_id.restype = c_int
-        return vscf_ecc_alg_info_alg_id(ctx)
-
     def vscf_ecc_alg_info_key_id(self, ctx):
         """Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}."""
         vscf_ecc_alg_info_key_id = self._lib.vscf_ecc_alg_info_key_id
@@ -89,6 +75,13 @@ class VscfEccAlgInfo(object):
         vscf_ecc_alg_info_domain_id.argtypes = [POINTER(vscf_ecc_alg_info_t)]
         vscf_ecc_alg_info_domain_id.restype = c_int
         return vscf_ecc_alg_info_domain_id(ctx)
+
+    def vscf_ecc_alg_info_alg_id(self, ctx):
+        """Provide algorithm identificator."""
+        vscf_ecc_alg_info_alg_id = self._lib.vscf_ecc_alg_info_alg_id
+        vscf_ecc_alg_info_alg_id.argtypes = [POINTER(vscf_ecc_alg_info_t)]
+        vscf_ecc_alg_info_alg_id.restype = c_int
+        return vscf_ecc_alg_info_alg_id(ctx)
 
     def vscf_ecc_alg_info_shallow_copy(self, ctx):
         vscf_ecc_alg_info_shallow_copy = self._lib.vscf_ecc_alg_info_shallow_copy

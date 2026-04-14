@@ -46,16 +46,6 @@ class SimpleAlgInfo implements AlgInfo
     private $ctx;
 
     /**
-    *
-    * @param AlgId $$algId
-    * @return SimpleAlgInfo
-    */
-    public static function withAlgId(AlgId $$algId): SimpleAlgInfo
-    {
-        return vscf_simple_alg_info_with_alg_id_php($$algId);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void

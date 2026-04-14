@@ -45,11 +45,6 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     private $ctx;
 
-    const CAN_IMPORT_PUBLIC_KEY = true;
-    const CAN_EXPORT_PUBLIC_KEY = true;
-    const CAN_IMPORT_PRIVATE_KEY = true;
-    const CAN_EXPORT_PRIVATE_KEY = true;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -81,33 +76,13 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
 
     /**
     *
-    * @return void
-    * @throws \Exception
-    */
-    public function setupDefaults(): void
-    {
-        vscf_rsa_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param int $$bitlen
-    * @return PrivateKey
-    */
-    public function generateKey(int $$bitlen): PrivateKey
-    {
-        $ctx = vscf_rsa_generate_key_php($this->ctx, $$bitlen);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
     * @param Key $$key
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = vscf_rsa_generate_ephemeral_key_php($this->ctx, $$key);
+        $ctx = vscf_rsa_generate_ephemeral_key_php($this->ctx, $$key->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
@@ -115,6 +90,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     *
     * @param RawPublicKey $$rawKey
     * @return PublicKey
+    * @throws \Exception
     */
     public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
@@ -126,10 +102,11 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     *
     * @param PublicKey $$publicKey
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = vscf_rsa_export_public_key_php($this->ctx, $$publicKey);
+        $ctx = vscf_rsa_export_public_key_php($this->ctx, $$publicKey->getCtx());
         return new RawPublicKey($ctx);
     }
 
@@ -137,6 +114,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     *
     * @param RawPrivateKey $$rawKey
     * @return PrivateKey
+    * @throws \Exception
     */
     public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
@@ -148,10 +126,11 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     *
     * @param PrivateKey $$privateKey
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = vscf_rsa_export_private_key_php($this->ctx, $$privateKey);
+        $ctx = vscf_rsa_export_private_key_php($this->ctx, $$privateKey->getCtx());
         return new RawPrivateKey($ctx);
     }
 
@@ -163,7 +142,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function canEncrypt(PublicKey $$publicKey, int $$dataLen): bool
     {
-        return vscf_rsa_can_encrypt_php($this->ctx, $$publicKey, $$dataLen);
+        return vscf_rsa_can_encrypt_php($this->ctx, $$publicKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -174,7 +153,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
     {
-        return vscf_rsa_encrypted_len_php($this->ctx, $$publicKey, $$dataLen);
+        return vscf_rsa_encrypted_len_php($this->ctx, $$publicKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -186,7 +165,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function encrypt(PublicKey $$publicKey, string $$data): string
     {
-        return vscf_rsa_encrypt_php($this->ctx, $$publicKey, $$data);
+        return vscf_rsa_encrypt_php($this->ctx, $$publicKey->getCtx(), $$data);
     }
 
     /**
@@ -197,7 +176,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function canDecrypt(PrivateKey $$privateKey, int $$dataLen): bool
     {
-        return vscf_rsa_can_decrypt_php($this->ctx, $$privateKey, $$dataLen);
+        return vscf_rsa_can_decrypt_php($this->ctx, $$privateKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -208,7 +187,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
     {
-        return vscf_rsa_decrypted_len_php($this->ctx, $$privateKey, $$dataLen);
+        return vscf_rsa_decrypted_len_php($this->ctx, $$privateKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -220,7 +199,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function decrypt(PrivateKey $$privateKey, string $$data): string
     {
-        return vscf_rsa_decrypt_php($this->ctx, $$privateKey, $$data);
+        return vscf_rsa_decrypt_php($this->ctx, $$privateKey->getCtx(), $$data);
     }
 
     /**
@@ -230,7 +209,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function canSign(PrivateKey $$privateKey): bool
     {
-        return vscf_rsa_can_sign_php($this->ctx, $$privateKey);
+        return vscf_rsa_can_sign_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -240,7 +219,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function signatureLen(PrivateKey $$privateKey): int
     {
-        return vscf_rsa_signature_len_php($this->ctx, $$privateKey);
+        return vscf_rsa_signature_len_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -253,7 +232,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
     {
-        return vscf_rsa_sign_hash_php($this->ctx, $$privateKey, $$hashId, $$digest);
+        return vscf_rsa_sign_hash_php($this->ctx, $$privateKey->getCtx(), $$hashId, $$digest);
     }
 
     /**
@@ -263,7 +242,7 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function canVerify(PublicKey $$publicKey): bool
     {
-        return vscf_rsa_can_verify_php($this->ctx, $$publicKey);
+        return vscf_rsa_can_verify_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -276,7 +255,29 @@ class Rsa implements KeyAlg, KeyCipher, KeySigner
     */
     public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
     {
-        return vscf_rsa_verify_hash_php($this->ctx, $$publicKey, $$hashId, $$digest, $$signature);
+        return vscf_rsa_verify_hash_php($this->ctx, $$publicKey->getCtx(), $$hashId, $$digest, $$signature);
+    }
+
+    /**
+    *
+    * @return void
+    * @throws \Exception
+    */
+    public function setupDefaults(): void
+    {
+        vscf_rsa_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param int $$bitlen
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateKey(int $$bitlen): PrivateKey
+    {
+        $ctx = vscf_rsa_generate_key_php($this->ctx, $$bitlen);
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**

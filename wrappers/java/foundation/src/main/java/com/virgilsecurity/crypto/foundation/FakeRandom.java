@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class FakeRandom implements AutoCloseable, Random, EntropySource {
 
-    public void setupSourceByte(byte byteSource) {
-        FoundationJNI.INSTANCE.fakeRandom_setupSourceByte(this.cCtx, byteSource);
-    }
-
-    public void setupSourceData(byte[] dataSource) {
-        FoundationJNI.INSTANCE.fakeRandom_setupSourceData(this.cCtx, dataSource);
-    }
-
     public long cCtx;
 
     public FakeRandom() {
@@ -92,6 +84,14 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
 
     public byte[] gather(int len) throws FoundationException {
         return FoundationJNI.INSTANCE.fakeRandom_gather(this.cCtx, len);
+    }
+
+    public void setupSourceByte(byte byteSource) {
+        FoundationJNI.INSTANCE.fakeRandom_setupSourceByte(this.cCtx, byteSource);
+    }
+
+    public void setupSourceData(byte[] dataSource) {
+        FoundationJNI.INSTANCE.fakeRandom_setupSourceData(this.cCtx, dataSource);
     }
 
 }

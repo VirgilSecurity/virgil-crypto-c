@@ -68,26 +68,6 @@ class EntropyAccumulator implements EntropySource
 
     /**
     *
-    * @return void
-    */
-    public function setupDefaults(): void
-    {
-        vscf_entropy_accumulator_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param EntropySource $$source
-    * @param int $$threshold
-    * @return void
-    */
-    public function addSource(EntropySource $$source, int $$threshold): void
-    {
-        vscf_entropy_accumulator_add_source_php($this->ctx, $$source, $$threshold);
-    }
-
-    /**
-    *
     * @return bool
     */
     public function isStrong(): bool
@@ -104,6 +84,26 @@ class EntropyAccumulator implements EntropySource
     public function gather(int $$len): string
     {
         return vscf_entropy_accumulator_gather_php($this->ctx, $$len);
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        vscf_entropy_accumulator_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param EntropySource $$source
+    * @param int $$threshold
+    * @return void
+    */
+    public function addSource(EntropySource $$source, int $$threshold): void
+    {
+        vscf_entropy_accumulator_add_source_php($this->ctx, $$source->getCtx(), $$threshold);
     }
 
     /**

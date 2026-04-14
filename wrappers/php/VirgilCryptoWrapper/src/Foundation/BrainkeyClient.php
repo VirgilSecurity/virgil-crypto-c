@@ -106,7 +106,7 @@ class BrainkeyClient
     * @return array
     * @throws \Exception
     */
-    public function blind(string $$password): array
+    public function blind(string $$password)
     {
         return vscf_brainkey_client_blind_php($this->ctx, $$password);
     }

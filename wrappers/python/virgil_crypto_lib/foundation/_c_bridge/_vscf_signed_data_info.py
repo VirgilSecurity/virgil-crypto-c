@@ -45,6 +45,7 @@ class vscf_signed_data_info_t(Structure):
 class VscfSignedDataInfo(object):
     """Handle meta information about signed data."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

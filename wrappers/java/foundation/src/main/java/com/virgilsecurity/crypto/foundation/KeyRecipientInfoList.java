@@ -82,7 +82,7 @@ public class KeyRecipientInfoList implements AutoCloseable {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_hasNext(this.cCtx);
     }
 
-    public KeyRecipientInfoList next() {
+    public Self next() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_next(this.cCtx);
     }
 
@@ -90,7 +90,7 @@ public class KeyRecipientInfoList implements AutoCloseable {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_hasPrev(this.cCtx);
     }
 
-    public KeyRecipientInfoList prev() {
+    public Self prev() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_prev(this.cCtx);
     }
 

@@ -54,15 +54,10 @@ class SaltedKdfAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_delete(self.ctx)
 
-    def alg_id(self):
-        """Provide algorithm identificator."""
-        result = self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_alg_id(self.ctx)
-        return result
-
     def hash_alg_info(self):
         """Return hash algorithm information."""
         result = self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_hash_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def salt(self):
@@ -74,8 +69,13 @@ class SaltedKdfAlgInfo(AlgInfo):
 
     def iteration_count(self):
         """Return KDF iteration count.
-        Note, can be 0 if KDF does not need the iteration count."""
+Note, can be 0 if KDF does not need the iteration count."""
         result = self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_iteration_count(self.ctx)
+        return result
+
+    def alg_id(self):
+        """Provide algorithm identificator."""
+        result = self._lib_vscf_salted_kdf_alg_info.vscf_salted_kdf_alg_info_alg_id(self.ctx)
         return result
 
     @classmethod

@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Hmac implements AutoCloseable, Alg, Mac {
 
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.hmac_setHash(this.cCtx, hash);
-    }
-
     public long cCtx;
 
     public Hmac() {
@@ -72,6 +68,10 @@ public class Hmac implements AutoCloseable, Alg, Mac {
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setHash(Hash hash) {
+        FoundationJNI.INSTANCE.hmac_setHash(this.cCtx, hash);
     }
 
     public AlgId algId() {

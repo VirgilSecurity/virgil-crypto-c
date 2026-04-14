@@ -37,6 +37,7 @@ from virgil_crypto_lib._libs import *
 from ctypes import *
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_error import vscf_error_t
+from ._vscf_list_key_value_node import vscf_list_key_value_node_t
 
 
 class vscf_message_info_custom_params_t(Structure):
@@ -44,6 +45,10 @@ class vscf_message_info_custom_params_t(Structure):
 
 
 class VscfMessageInfoCustomParams(object):
+
+    OF_INT_TYPE = 1
+    OF_STRING_TYPE = 2
+    OF_DATA_TYPE = 3
 
     def __init__(self):
         """Create underlying C context."""

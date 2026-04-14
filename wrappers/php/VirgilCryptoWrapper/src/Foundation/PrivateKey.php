@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface PrivateKey extends Ctx
+interface PrivateKey extends Ctx, Key
 {
 
     /**

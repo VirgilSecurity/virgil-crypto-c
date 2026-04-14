@@ -36,7 +36,6 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-
 public class RatchetSession implements AutoCloseable {
 
     public long cCtx;
@@ -127,7 +126,7 @@ public class RatchetSession implements AutoCloseable {
         return RatchetJNI.INSTANCE.ratchetSession_serialize(this.cCtx);
     }
 
-    public RatchetSession deserialize(byte[] input) throws RatchetException {
+    public Self deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetSession_deserialize(input);
     }
 

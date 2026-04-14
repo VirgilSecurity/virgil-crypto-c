@@ -52,9 +52,9 @@ class Padding(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def __len__(self):
+    def len(self):
         """Return an actual number of padding in bytes.
-        Note, this method might be called right before "finish data processing"."""
+Note, this method might be called right before "finish data processing"."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -70,7 +70,7 @@ class Padding(object):
     @abstractmethod
     def process_data(self, data):
         """Only data length is needed to produce padding later.
-        Return data that should be further proceeded."""
+Return data that should be further proceeded."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -86,13 +86,13 @@ class Padding(object):
     @abstractmethod
     def process_padded_data(self, data):
         """Process padded data.
-        Return filtered data without padding."""
+Return filtered data without padding."""
         raise NotImplementedError()
 
     @abstractmethod
     def finish_padded_data_processing_out_len(self):
         """Return length in bytes required hold output of the method
-        "finish padded data processing"."""
+"finish padded data processing"."""
         raise NotImplementedError()
 
     @abstractmethod

@@ -43,9 +43,12 @@ class CipherInfo(object):
 
     # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     NONCE_LEN = 0
+
     # Cipher key length in bytes.
-    KEY_LEN = 1
+    KEY_LEN = 0
+
     # Cipher key length in bits.
-    KEY_BITLEN = 2
+    KEY_BITLEN = 0
+
     # Cipher block length in bytes.
-    BLOCK_LEN = 3
+    BLOCK_LEN = 0

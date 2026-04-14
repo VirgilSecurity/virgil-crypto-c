@@ -46,18 +46,6 @@ class KeyRecipientInfo
     private $ctx;
 
     /**
-    *
-    * @param string $$recipientId
-    * @param AlgInfo $$keyEncryptionAlgorithm
-    * @param string $$encryptedKey
-    * @return KeyRecipientInfo
-    */
-    public static function withData(string $$recipientId, AlgInfo $$keyEncryptionAlgorithm, string $$encryptedKey): KeyRecipientInfo
-    {
-        return vscf_key_recipient_info_with_data_php($$recipientId, $$keyEncryptionAlgorithm, $$encryptedKey);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void

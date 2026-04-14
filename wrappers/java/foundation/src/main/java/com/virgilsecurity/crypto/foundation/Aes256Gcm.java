@@ -70,6 +70,26 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         clearResources();
     }
 
+    public int getNonceLen() {
+        return 12;
+    }
+
+    public int getKeyLen() {
+        return 32;
+    }
+
+    public int getKeyBitlen() {
+        return 256;
+    }
+
+    public int getBlockLen() {
+        return 16;
+    }
+
+    public int getAuthTagLen() {
+        return 16;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.aes256Gcm_algId(this.cCtx);
     }
@@ -100,22 +120,6 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
 
     public int decryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.aes256Gcm_decryptedLen(this.cCtx, dataLen);
-    }
-
-    public int getNonceLen() {
-        return 12;
-    }
-
-    public int getKeyLen() {
-        return 32;
-    }
-
-    public int getKeyBitlen() {
-        return 256;
-    }
-
-    public int getBlockLen() {
-        return 16;
     }
 
     public void setNonce(byte[] nonce) {
@@ -154,11 +158,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         return FoundationJNI.INSTANCE.aes256Gcm_finish(this.cCtx);
     }
 
-    public int getAuthTagLen() {
-        return 16;
-    }
-
-    public AuthEncryptAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException {
+    public Aes256GcmAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException {
         return FoundationJNI.INSTANCE.aes256Gcm_authEncrypt(this.cCtx, data, authData);
     }
 
@@ -178,7 +178,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         FoundationJNI.INSTANCE.aes256Gcm_setAuthData(this.cCtx, authData);
     }
 
-    public CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException {
+    public Aes256GcmFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException {
         return FoundationJNI.INSTANCE.aes256Gcm_finishAuthEncryption(this.cCtx);
     }
 

@@ -46,7 +46,7 @@ class RandomPadding implements Alg, Padding
     private $ctx;
 
     const PADDING_SIZE_LEN = 4;
-    const PADDING_LEN_MIN = vscf_random_padding_PADDING_SIZE_LEN + 1;
+    const PADDING_LEN_MIN = .(c_class_random_padding_constant_padding_size_len) + 1;
 
     /**
     * Create underlying C context.
@@ -105,7 +105,7 @@ class RandomPadding implements Alg, Padding
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_random_padding_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_random_padding_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

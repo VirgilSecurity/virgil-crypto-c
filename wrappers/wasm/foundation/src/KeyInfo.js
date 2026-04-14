@@ -64,99 +64,89 @@ const initKeyInfo = (Module, modules) => {
             }
         }
 
-        static newWithAlgInfo(algInfo) {
-            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
-            let proxyResult;
-            proxyResult = Module._vscf_key_info_new_with_alg_info(algInfo.ctxPtr);
-
-            const jsResult = KeyInfo.newAndTakeCContext(proxyResult);
-            return jsResult;
-        }
-
         isCompound() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_compound(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isHybrid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_hybrid(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isCompoundHybrid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_compound_hybrid(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isCompoundHybridCipher() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_compound_hybrid_cipher(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isCompoundHybridSigner() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_compound_hybrid_signer(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isHybridPostQuantum() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_hybrid_post_quantum(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isHybridPostQuantumCipher() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_hybrid_post_quantum_cipher(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isHybridPostQuantumSigner() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_is_hybrid_post_quantum_signer(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -164,7 +154,7 @@ const initKeyInfo = (Module, modules) => {
 
         compoundCipherAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_compound_cipher_alg_id(this.ctxPtr);
             return proxyResult;
@@ -172,7 +162,7 @@ const initKeyInfo = (Module, modules) => {
 
         compoundSignerAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_compound_signer_alg_id(this.ctxPtr);
             return proxyResult;
@@ -180,7 +170,7 @@ const initKeyInfo = (Module, modules) => {
 
         hybridFirstKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_hybrid_first_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -188,7 +178,7 @@ const initKeyInfo = (Module, modules) => {
 
         hybridSecondKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_hybrid_second_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -196,7 +186,7 @@ const initKeyInfo = (Module, modules) => {
 
         compoundHybridCipherFirstKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_compound_hybrid_cipher_first_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -204,7 +194,7 @@ const initKeyInfo = (Module, modules) => {
 
         compoundHybridCipherSecondKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_compound_hybrid_cipher_second_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -212,7 +202,7 @@ const initKeyInfo = (Module, modules) => {
 
         compoundHybridSignerFirstKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_compound_hybrid_signer_first_key_alg_id(this.ctxPtr);
             return proxyResult;
@@ -220,7 +210,7 @@ const initKeyInfo = (Module, modules) => {
 
         compoundHybridSignerSecondKeyAlgId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_info_compound_hybrid_signer_second_key_alg_id(this.ctxPtr);
             return proxyResult;

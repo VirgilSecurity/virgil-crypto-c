@@ -80,19 +80,19 @@ const initMessageInfoEditor = (Module, modules) => {
         unpack(messageInfoData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('messageInfoData', messageInfoData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const messageInfoDataSize = messageInfoData.length * messageInfoData.BYTES_PER_ELEMENT;
             const messageInfoDataPtr = Module._malloc(messageInfoDataSize);
             Module.HEAP8.set(messageInfoData, messageInfoDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const messageInfoDataCtxSize = Module._vsc_data_ctx_size();
             const messageInfoDataCtxPtr = Module._malloc(messageInfoDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(messageInfoDataCtxPtr, messageInfoDataPtr, messageInfoDataSize);
-
+            
             try {
                 const proxyResult = Module._vscf_message_info_editor_unpack(this.ctxPtr, messageInfoDataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
@@ -106,19 +106,19 @@ const initMessageInfoEditor = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('ownerRecipientId', ownerRecipientId);
             precondition.ensureImplementInterface('ownerPrivateKey', ownerPrivateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const ownerRecipientIdSize = ownerRecipientId.length * ownerRecipientId.BYTES_PER_ELEMENT;
             const ownerRecipientIdPtr = Module._malloc(ownerRecipientIdSize);
             Module.HEAP8.set(ownerRecipientId, ownerRecipientIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const ownerRecipientIdCtxSize = Module._vsc_data_ctx_size();
             const ownerRecipientIdCtxPtr = Module._malloc(ownerRecipientIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(ownerRecipientIdCtxPtr, ownerRecipientIdPtr, ownerRecipientIdSize);
-
+            
             try {
                 const proxyResult = Module._vscf_message_info_editor_unlock(this.ctxPtr, ownerRecipientIdCtxPtr, ownerPrivateKey.ctxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
@@ -132,19 +132,19 @@ const initMessageInfoEditor = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('recipientId', recipientId);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
             const recipientIdPtr = Module._malloc(recipientIdSize);
             Module.HEAP8.set(recipientId, recipientIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const recipientIdCtxSize = Module._vsc_data_ctx_size();
             const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
-
+            
             try {
                 const proxyResult = Module._vscf_message_info_editor_add_key_recipient(this.ctxPtr, recipientIdCtxPtr, publicKey.ctxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
@@ -157,24 +157,22 @@ const initMessageInfoEditor = (Module, modules) => {
         removeKeyRecipient(recipientId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('recipientId', recipientId);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
             const recipientIdPtr = Module._malloc(recipientIdSize);
             Module.HEAP8.set(recipientId, recipientIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const recipientIdCtxSize = Module._vsc_data_ctx_size();
             const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_message_info_editor_remove_key_recipient(this.ctxPtr, recipientIdCtxPtr);
-
+                const proxyResult = Module._vscf_message_info_editor_remove_key_recipient(this.ctxPtr, recipientIdCtxPtr);
+            
                 const booleanResult = !!proxyResult;
                 return booleanResult;
             } finally {
@@ -190,7 +188,7 @@ const initMessageInfoEditor = (Module, modules) => {
 
         packedLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_editor_packed_len(this.ctxPtr);
             return proxyResult;
@@ -198,13 +196,13 @@ const initMessageInfoEditor = (Module, modules) => {
 
         pack() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const messageInfoCapacity = this.packedLen();
             const messageInfoCtxPtr = Module._vsc_buffer_new_with_capacity(messageInfoCapacity);
-
+            
             try {
                 Module._vscf_message_info_editor_pack(this.ctxPtr, messageInfoCtxPtr);
-
+            
                 const messageInfoPtr = Module._vsc_buffer_bytes(messageInfoCtxPtr);
                 const messageInfoPtrLen = Module._vsc_buffer_len(messageInfoCtxPtr);
                 const messageInfo = Module.HEAPU8.slice(messageInfoPtr, messageInfoPtr + messageInfoPtrLen);

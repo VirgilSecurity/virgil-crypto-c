@@ -66,26 +66,6 @@ class HybridPublicKey implements Key, PublicKey
 
     /**
     *
-    * @return PublicKey
-    */
-    public function firstKey(): PublicKey
-    {
-        $ctx = vscf_hybrid_public_key_first_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @return PublicKey
-    */
-    public function secondKey(): PublicKey
-    {
-        $ctx = vscf_hybrid_public_key_second_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -129,6 +109,26 @@ class HybridPublicKey implements Key, PublicKey
     public function isValid(): bool
     {
         return vscf_hybrid_public_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function firstKey(): PublicKey
+    {
+        $ctx = vscf_hybrid_public_key_first_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function secondKey(): PublicKey
+    {
+        $ctx = vscf_hybrid_public_key_second_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**

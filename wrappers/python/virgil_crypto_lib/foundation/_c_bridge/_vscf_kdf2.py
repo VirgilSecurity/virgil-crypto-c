@@ -47,6 +47,7 @@ class vscf_kdf2_t(Structure):
 class VscfKdf2(object):
     """Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

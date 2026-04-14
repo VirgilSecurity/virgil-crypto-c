@@ -66,22 +66,22 @@ class HashBasedAlgInfo implements AlgInfo
 
     /**
     *
-    * @return AlgInfo
-    */
-    public function hashAlgInfo(): AlgInfo
-    {
-        $ctx = vscf_hash_based_alg_info_hash_alg_info_php($this->ctx);
-        return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
     {
         $enum = vscf_hash_based_alg_info_alg_id_php($this->ctx);
         return new AlgId($enum);
+    }
+
+    /**
+    *
+    * @return AlgInfo
+    */
+    public function hashAlgInfo(): AlgInfo
+    {
+        $ctx = vscf_hash_based_alg_info_hash_alg_info_php($this->ctx);
+        return FoundationImplementation::wrapAlgInfo($ctx);
     }
 
     /**

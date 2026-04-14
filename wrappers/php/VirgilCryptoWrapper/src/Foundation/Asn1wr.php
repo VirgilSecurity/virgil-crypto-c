@@ -66,11 +66,11 @@ class Asn1wr implements Asn1Writer
 
     /**
     *
-    * @param int $$out
+    * @param string $$out
     * @param int $$outLen
     * @return void
     */
-    public function reset(int $$out, int $$outLen): void
+    public function reset(string $$out, int $$outLen): void
     {
         vscf_asn1wr_reset_php($this->ctx, $$out, $$outLen);
     }
@@ -368,6 +368,74 @@ class Asn1wr implements Asn1Writer
     public function writeSet(int $$len): int
     {
         return vscf_asn1wr_write_set_php($this->ctx, $$len);
+    }
+
+    /**
+    *
+    * @param int $$code
+    * @return bool
+    */
+    public function mbedtlsHasError(int $$code): bool
+    {
+        return vscf_asn1wr_mbedtls_has_error_php($this->ctx, $$code);
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @param int $$tag
+    * @return int
+    */
+    public function writeTagData(string $$data, int $$tag): int
+    {
+        return vscf_asn1wr_write_tag_data_php($this->ctx, $$data, $$tag);
+    }
+
+    /**
+    *
+    * @param string $$curr
+    * @param string $$end
+    * @return int
+    */
+    public static function getCurrentElementLen(string $$curr, string $$end): int
+    {
+        return vscf_asn1wr_get_current_element_len_php($$curr, $$end);
+    }
+
+    /**
+    *
+    * @param string $$toStart
+    * @param int $$toLen
+    * @param string $$fromStart
+    * @param int $$fromLen
+    * @return void
+    */
+    public static function swapElementsOfSet(string $$toStart, int $$toLen, string $$fromStart, int $$fromLen): void
+    {
+        vscf_asn1wr_swap_elements_of_set_php($$toStart, $$toLen, $$fromStart, $$fromLen);
+    }
+
+    /**
+    *
+    * @param string $$firstStart
+    * @param int $$firstLen
+    * @param string $$secondStart
+    * @param int $$secondLen
+    * @return bool
+    */
+    public static function secondElementOfSetIsLess(string $$firstStart, int $$firstLen, string $$secondStart, int $$secondLen): bool
+    {
+        return vscf_asn1wr_second_element_of_set_is_less_php($$firstStart, $$firstLen, $$secondStart, $$secondLen);
+    }
+
+    /**
+    *
+    * @param int $$len
+    * @return void
+    */
+    public function sortElementsOfSet(int $$len): void
+    {
+        vscf_asn1wr_sort_elements_of_set_php($this->ctx, $$len);
     }
 
     /**

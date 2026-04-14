@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class SeedEntropySource implements AutoCloseable, EntropySource {
 
-    public void resetSeed(byte[] seed) {
-        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
-    }
-
     public long cCtx;
 
     public SeedEntropySource() {
@@ -80,6 +76,14 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
 
     public byte[] gather(int len) throws FoundationException {
         return FoundationJNI.INSTANCE.seedEntropySource_gather(this.cCtx, len);
+    }
+
+    public void resetSeed(byte[] seed) {
+        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
+    }
+
+    public void moveForward() {
+        FoundationJNI.INSTANCE.seedEntropySource_moveForward(this.cCtx);
     }
 
 }

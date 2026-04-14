@@ -38,22 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeSharedKey, Kem {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.curve25519_setRandom(this.cCtx, random);
-    }
-
-    public void setEcies(Ecies ecies) {
-        FoundationJNI.INSTANCE.curve25519_setEcies(this.cCtx, ecies);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.curve25519_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey generateKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.curve25519_generateKey(this.cCtx);
-    }
-
     public long cCtx;
 
     public Curve25519() {
@@ -84,6 +68,14 @@ public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeShar
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.curve25519_setRandom(this.cCtx, random);
+    }
+
+    public void setEcies(Ecies ecies) {
+        FoundationJNI.INSTANCE.curve25519_setEcies(this.cCtx, ecies);
     }
 
     public boolean getCanImportPublicKey() {
@@ -162,12 +154,20 @@ public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeShar
         return FoundationJNI.INSTANCE.curve25519_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public Curve25519KemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.curve25519_kemEncapsulate(this.cCtx, publicKey);
     }
 
     public byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.curve25519_kemDecapsulate(this.cCtx, encapsulatedKey, privateKey);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.curve25519_setupDefaults(this.cCtx);
+    }
+
+    public PrivateKey generateKey() throws FoundationException {
+        return FoundationJNI.INSTANCE.curve25519_generateKey(this.cCtx);
     }
 
 }

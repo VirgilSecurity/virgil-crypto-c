@@ -98,6 +98,7 @@ class KeyProvider
     *
     * @param AlgId $$algId
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generatePrivateKey(AlgId $$algId): PrivateKey
     {
@@ -108,6 +109,7 @@ class KeyProvider
     /**
     *
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generatePostQuantumPrivateKey(): PrivateKey
     {
@@ -120,6 +122,7 @@ class KeyProvider
     * @param AlgId $$cipherAlgId
     * @param AlgId $$signerAlgId
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateCompoundPrivateKey(AlgId $$cipherAlgId, AlgId $$signerAlgId): PrivateKey
     {
@@ -132,6 +135,7 @@ class KeyProvider
     * @param AlgId $$firstKeyAlgId
     * @param AlgId $$secondKeyAlgId
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateHybridPrivateKey(AlgId $$firstKeyAlgId, AlgId $$secondKeyAlgId): PrivateKey
     {
@@ -146,6 +150,7 @@ class KeyProvider
     * @param AlgId $$signerFirstKeyAlgId
     * @param AlgId $$signerSecondKeyAlgId
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateCompoundHybridPrivateKey(AlgId $$cipherFirstKeyAlgId, AlgId $$cipherSecondKeyAlgId, AlgId $$signerFirstKeyAlgId, AlgId $$signerSecondKeyAlgId): PrivateKey
     {
@@ -157,6 +162,7 @@ class KeyProvider
     *
     * @param string $$keyData
     * @return PrivateKey
+    * @throws \Exception
     */
     public function importPrivateKey(string $$keyData): PrivateKey
     {
@@ -168,6 +174,7 @@ class KeyProvider
     *
     * @param string $$keyData
     * @return PublicKey
+    * @throws \Exception
     */
     public function importPublicKey(string $$keyData): PublicKey
     {
@@ -182,7 +189,7 @@ class KeyProvider
     */
     public function exportedPublicKeyLen(PublicKey $$publicKey): int
     {
-        return vscf_key_provider_exported_public_key_len_php($this->ctx, $$publicKey);
+        return vscf_key_provider_exported_public_key_len_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -193,7 +200,7 @@ class KeyProvider
     */
     public function exportPublicKey(PublicKey $$publicKey): string
     {
-        return vscf_key_provider_export_public_key_php($this->ctx, $$publicKey);
+        return vscf_key_provider_export_public_key_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -203,7 +210,7 @@ class KeyProvider
     */
     public function exportedPrivateKeyLen(PrivateKey $$privateKey): int
     {
-        return vscf_key_provider_exported_private_key_len_php($this->ctx, $$privateKey);
+        return vscf_key_provider_exported_private_key_len_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -214,7 +221,7 @@ class KeyProvider
     */
     public function exportPrivateKey(PrivateKey $$privateKey): string
     {
-        return vscf_key_provider_export_private_key_php($this->ctx, $$privateKey);
+        return vscf_key_provider_export_private_key_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**

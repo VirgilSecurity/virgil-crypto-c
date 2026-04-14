@@ -35,10 +35,11 @@
 
 from ctypes import *
 from ._c_bridge import VscfGroupSessionMessage
+from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge._vscf_error import vscf_error_t
-from ._c_bridge import VscfStatus
+from .self import Self
 
 
 class GroupSessionMessage(object):
@@ -65,7 +66,7 @@ class GroupSessionMessage(object):
 
     def get_session_id(self):
         """Returns session id.
-        This method should be called only for group info type."""
+This method should be called only for group info type."""
         result = self._lib_vscf_group_session_message.vscf_group_session_message_get_session_id(self.ctx)
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
@@ -93,8 +94,7 @@ class GroupSessionMessage(object):
         error = vscf_error_t()
         result = self._lib_vscf_group_session_message.vscf_group_session_message_deserialize(d_input.data, error)
         VscfStatus.handle_status(error.status)
-        instance = GroupSessionMessage.take_c_ctx(result)
-        return instance
+        return Self.take_c_ctx(result)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

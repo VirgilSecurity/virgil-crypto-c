@@ -45,10 +45,11 @@ class KeyAlgFactory
     * @param AlgId $$algId
     * @param Random $$random
     * @return KeyAlg
+    * @throws \Exception
     */
     public static function createFromAlgId(AlgId $$algId, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_alg_id_php($$algId, $$random);
+        $ctx = vscf_key_alg_factory_create_from_alg_id_php($$algId, $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 
@@ -57,10 +58,11 @@ class KeyAlgFactory
     * @param Key $$key
     * @param Random $$random
     * @return KeyAlg
+    * @throws \Exception
     */
     public static function createFromKey(Key $$key, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_key_php($$key, $$random);
+        $ctx = vscf_key_alg_factory_create_from_key_php($$key->getCtx(), $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 
@@ -69,10 +71,11 @@ class KeyAlgFactory
     * @param RawPublicKey $$publicKey
     * @param Random $$random
     * @return KeyAlg
+    * @throws \Exception
     */
     public static function createFromRawPublicKey(RawPublicKey $$publicKey, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_raw_public_key_php($$publicKey, $$random);
+        $ctx = vscf_key_alg_factory_create_from_raw_public_key_php($$publicKey, $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 
@@ -81,10 +84,11 @@ class KeyAlgFactory
     * @param RawPrivateKey $$privateKey
     * @param Random $$random
     * @return KeyAlg
+    * @throws \Exception
     */
     public static function createFromRawPrivateKey(RawPrivateKey $$privateKey, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_raw_private_key_php($$privateKey, $$random);
+        $ctx = vscf_key_alg_factory_create_from_raw_private_key_php($$privateKey, $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 

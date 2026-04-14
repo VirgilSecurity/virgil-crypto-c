@@ -43,7 +43,7 @@ from .private_key import PrivateKey
 class HybridPrivateKey(Key, PrivateKey):
     """Handles a hybrid private key.
 
-    The hybrid private key contains 2 private keys."""
+The hybrid private key contains 2 private keys."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -56,20 +56,32 @@ class HybridPrivateKey(Key, PrivateKey):
         """Destroy underlying C context."""
         self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_delete(self.ctx)
 
-    def __len__(self):
-        """Length of the key in bytes."""
-        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_len(self.ctx)
-        return result
+    def first_key(self):
+        """Return first private key."""
+        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_first_key(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
 
-    def alg_info(self):
-        """Return algorithm information that can be used for serialization."""
-        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+    def second_key(self):
+        """Return second private key."""
+        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_second_key(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def alg_id(self):
         """Algorithm identifier the key belongs to."""
         result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_alg_id(self.ctx)
+        return result
+
+    def alg_info(self):
+        """Return algorithm information that can be used for serialization."""
+        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def len(self):
+        """Length of the key in bytes."""
+        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_len(self.ctx)
         return result
 
     def bitlen(self):
@@ -79,7 +91,7 @@ class HybridPrivateKey(Key, PrivateKey):
 
     def is_valid(self):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_is_valid(self.ctx)
         return result
 
@@ -87,18 +99,6 @@ class HybridPrivateKey(Key, PrivateKey):
         """Extract public key from the private key."""
         result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_extract_public_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def first_key(self):
-        """Return first private key."""
-        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_first_key(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def second_key(self):
-        """Return second private key."""
-        result = self._lib_vscf_hybrid_private_key.vscf_hybrid_private_key_second_key(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     @classmethod

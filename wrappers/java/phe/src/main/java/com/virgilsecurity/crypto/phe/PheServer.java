@@ -36,7 +36,6 @@
 
 package com.virgilsecurity.crypto.phe;
 
-
 public class PheServer implements AutoCloseable {
 
     public long cCtx;

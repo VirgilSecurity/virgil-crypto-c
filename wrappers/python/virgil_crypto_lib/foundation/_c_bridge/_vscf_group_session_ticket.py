@@ -47,6 +47,7 @@ class vscf_group_session_ticket_t(Structure):
 class VscfGroupSessionTicket(object):
     """Group ticket used to start group session, remove participants or proactive to rotate encryption key."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -65,7 +66,6 @@ class VscfGroupSessionTicket(object):
         return vscf_group_session_ticket_delete(ctx)
 
     def vscf_group_session_ticket_use_rng(self, ctx, rng):
-        """Random used to generate keys"""
         vscf_group_session_ticket_use_rng = self._lib.vscf_group_session_ticket_use_rng
         vscf_group_session_ticket_use_rng.argtypes = [POINTER(vscf_group_session_ticket_t), POINTER(vscf_impl_t)]
         vscf_group_session_ticket_use_rng.restype = None
@@ -73,7 +73,7 @@ class VscfGroupSessionTicket(object):
 
     def vscf_group_session_ticket_setup_defaults(self, ctx):
         """Setups default dependencies:
-        - RNG: CTR DRBG"""
+- RNG: CTR DRBG"""
         vscf_group_session_ticket_setup_defaults = self._lib.vscf_group_session_ticket_setup_defaults
         vscf_group_session_ticket_setup_defaults.argtypes = [POINTER(vscf_group_session_ticket_t)]
         vscf_group_session_ticket_setup_defaults.restype = c_int

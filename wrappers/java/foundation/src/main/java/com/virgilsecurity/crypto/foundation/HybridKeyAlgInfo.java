@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class HybridKeyAlgInfo implements AutoCloseable, AlgInfo {
 
-    public AlgInfo firstKeyAlgInfo() {
-        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_firstKeyAlgInfo(this.cCtx);
-    }
-
-    public AlgInfo secondKeyAlgInfo() {
-        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_secondKeyAlgInfo(this.cCtx);
-    }
-
     public long cCtx;
 
     public HybridKeyAlgInfo() {
@@ -80,6 +72,14 @@ public class HybridKeyAlgInfo implements AutoCloseable, AlgInfo {
 
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hybridKeyAlgInfo_algId(this.cCtx);
+    }
+
+    public AlgInfo firstKeyAlgInfo() {
+        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_firstKeyAlgInfo(this.cCtx);
+    }
+
+    public AlgInfo secondKeyAlgInfo() {
+        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_secondKeyAlgInfo(this.cCtx);
     }
 
 }

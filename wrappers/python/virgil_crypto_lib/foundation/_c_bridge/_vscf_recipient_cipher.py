@@ -36,12 +36,12 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_padding_params import vscf_padding_params_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from ._vscf_signer_info_list import vscf_signer_info_list_t
+from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
+from ._vscf_padding_params import vscf_padding_params_t
 from ._vscf_signer_info import vscf_signer_info_t
+from ._vscf_signer_info_list import vscf_signer_info_list_t
 
 
 class vscf_recipient_cipher_t(Structure):
@@ -50,8 +50,9 @@ class vscf_recipient_cipher_t(Structure):
 
 class VscfRecipientCipher(object):
     """This class provides hybrid encryption algorithm that combines symmetric
-    cipher for data encryption and asymmetric cipher and password based
-    cipher for symmetric key encryption."""
+cipher for data encryption and asymmetric cipher and password based
+cipher for symmetric key encryption."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -102,7 +103,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_has_key_recipient(self, ctx, recipient_id):
         """Return true if a key recipient with a given id has been added.
-        Note, operation has O(N) time complexity."""
+Note, operation has O(N) time complexity."""
         vscf_recipient_cipher_has_key_recipient = self._lib.vscf_recipient_cipher_has_key_recipient
         vscf_recipient_cipher_has_key_recipient.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t]
         vscf_recipient_cipher_has_key_recipient.restype = c_bool
@@ -124,7 +125,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_add_signer(self, ctx, signer_id, private_key):
         """Add identifier and private key to sign initial plain text.
-        Return error if the private key can not sign."""
+Return error if the private key can not sign."""
         vscf_recipient_cipher_add_signer = self._lib.vscf_recipient_cipher_add_signer
         vscf_recipient_cipher_add_signer.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vscf_impl_t)]
         vscf_recipient_cipher_add_signer.restype = c_int
@@ -139,7 +140,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_custom_params(self, ctx):
         """Provide access to the custom params object.
-        The returned object can be used to add custom params or read it."""
+The returned object can be used to add custom params or read it."""
         vscf_recipient_cipher_custom_params = self._lib.vscf_recipient_cipher_custom_params
         vscf_recipient_cipher_custom_params.argtypes = [POINTER(vscf_recipient_cipher_t)]
         vscf_recipient_cipher_custom_params.restype = POINTER(vscf_message_info_custom_params_t)
@@ -155,8 +156,8 @@ class VscfRecipientCipher(object):
     def vscf_recipient_cipher_start_signed_encryption(self, ctx, data_size):
         """Start encryption process with known plain text size.
 
-        Precondition: At least one signer should be added.
-        Note, store message info footer as well."""
+Precondition: At least one signer should be added.
+Note, store message info footer as well."""
         vscf_recipient_cipher_start_signed_encryption = self._lib.vscf_recipient_cipher_start_signed_encryption
         vscf_recipient_cipher_start_signed_encryption.argtypes = [POINTER(vscf_recipient_cipher_t), c_size_t]
         vscf_recipient_cipher_start_signed_encryption.restype = c_int
@@ -164,8 +165,8 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_message_info_len(self, ctx):
         """Return buffer length required to hold message info returned by the
-        "pack message info" method.
-        Precondition: all recipients and custom parameters should be set."""
+"pack message info" method.
+Precondition: all recipients and custom parameters should be set."""
         vscf_recipient_cipher_message_info_len = self._lib.vscf_recipient_cipher_message_info_len
         vscf_recipient_cipher_message_info_len.argtypes = [POINTER(vscf_recipient_cipher_t)]
         vscf_recipient_cipher_message_info_len.restype = c_size_t
@@ -174,14 +175,14 @@ class VscfRecipientCipher(object):
     def vscf_recipient_cipher_pack_message_info(self, ctx, message_info):
         """Return serialized message info to the buffer.
 
-        Precondition: this method should be called after "start encryption".
-        Precondition: this method should be called before "finish encryption".
+Precondition: this method should be called after "start encryption".
+Precondition: this method should be called before "finish encryption".
 
-        Note, store message info to use it for decryption process,
-        or place it at the encrypted data beginning (embedding).
+Note, store message info to use it for decryption process,
+or place it at the encrypted data beginning (embedding).
 
-        Return message info - recipients public information,
-        algorithm information, etc."""
+Return message info - recipients public information,
+algorithm information, etc."""
         vscf_recipient_cipher_pack_message_info = self._lib.vscf_recipient_cipher_pack_message_info
         vscf_recipient_cipher_pack_message_info.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
         vscf_recipient_cipher_pack_message_info.restype = None
@@ -189,7 +190,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_encryption_out_len(self, ctx, data_len):
         """Return buffer length required to hold output of the method
-        "process encryption" and method "finish" during encryption."""
+"process encryption" and method "finish" during encryption."""
         vscf_recipient_cipher_encryption_out_len = self._lib.vscf_recipient_cipher_encryption_out_len
         vscf_recipient_cipher_encryption_out_len.argtypes = [POINTER(vscf_recipient_cipher_t), c_size_t]
         vscf_recipient_cipher_encryption_out_len.restype = c_size_t
@@ -211,7 +212,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_start_decryption_with_key(self, ctx, recipient_id, private_key, message_info):
         """Initiate decryption process with a recipient private key.
-        Message Info can be empty if it was embedded to encrypted data."""
+Message Info can be empty if it was embedded to encrypted data."""
         vscf_recipient_cipher_start_decryption_with_key = self._lib.vscf_recipient_cipher_start_decryption_with_key
         vscf_recipient_cipher_start_decryption_with_key.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t]
         vscf_recipient_cipher_start_decryption_with_key.restype = c_int
@@ -219,9 +220,9 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_start_verified_decryption_with_key(self, ctx, recipient_id, private_key, message_info, message_info_footer):
         """Initiate decryption process with a recipient private key.
-        Message Info can be empty if it was embedded to encrypted data.
-        Message Info footer can be empty if it was embedded to encrypted data.
-        If footer was embedded, method "start decryption with key" can be used."""
+Message Info can be empty if it was embedded to encrypted data.
+Message Info footer can be empty if it was embedded to encrypted data.
+If footer was embedded, method "start decryption with key" can be used."""
         vscf_recipient_cipher_start_verified_decryption_with_key = self._lib.vscf_recipient_cipher_start_verified_decryption_with_key
         vscf_recipient_cipher_start_verified_decryption_with_key.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vscf_impl_t), vsc_data_t, vsc_data_t]
         vscf_recipient_cipher_start_verified_decryption_with_key.restype = c_int
@@ -229,7 +230,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_decryption_out_len(self, ctx, data_len):
         """Return buffer length required to hold output of the method
-        "process decryption" and method "finish" during decryption."""
+"process decryption" and method "finish" during decryption."""
         vscf_recipient_cipher_decryption_out_len = self._lib.vscf_recipient_cipher_decryption_out_len
         vscf_recipient_cipher_decryption_out_len.argtypes = [POINTER(vscf_recipient_cipher_t), c_size_t]
         vscf_recipient_cipher_decryption_out_len.restype = c_size_t
@@ -237,7 +238,7 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_process_decryption(self, ctx, data, out):
         """Process with a new portion of data.
-        Return error if data can not be encrypted or decrypted."""
+Return error if data can not be encrypted or decrypted."""
         vscf_recipient_cipher_process_decryption = self._lib.vscf_recipient_cipher_process_decryption
         vscf_recipient_cipher_process_decryption.argtypes = [POINTER(vscf_recipient_cipher_t), vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_recipient_cipher_process_decryption.restype = c_int
@@ -253,7 +254,7 @@ class VscfRecipientCipher(object):
     def vscf_recipient_cipher_is_data_signed(self, ctx):
         """Return true if data was signed by a sender.
 
-        Precondition: this method should be called after "finish decryption"."""
+Precondition: this method should be called after "finish decryption"."""
         vscf_recipient_cipher_is_data_signed = self._lib.vscf_recipient_cipher_is_data_signed
         vscf_recipient_cipher_is_data_signed.argtypes = [POINTER(vscf_recipient_cipher_t)]
         vscf_recipient_cipher_is_data_signed.restype = c_bool
@@ -262,8 +263,8 @@ class VscfRecipientCipher(object):
     def vscf_recipient_cipher_signer_infos(self, ctx):
         """Return information about signers that sign data.
 
-        Precondition: this method should be called after "finish decryption".
-        Precondition: method "is data signed" returns true."""
+Precondition: this method should be called after "finish decryption".
+Precondition: method "is data signed" returns true."""
         vscf_recipient_cipher_signer_infos = self._lib.vscf_recipient_cipher_signer_infos
         vscf_recipient_cipher_signer_infos.argtypes = [POINTER(vscf_recipient_cipher_t)]
         vscf_recipient_cipher_signer_infos.restype = POINTER(vscf_signer_info_list_t)
@@ -278,9 +279,9 @@ class VscfRecipientCipher(object):
 
     def vscf_recipient_cipher_message_info_footer_len(self, ctx):
         """Return buffer length required to hold message footer returned by the
-        "pack message footer" method.
+"pack message footer" method.
 
-        Precondition: this method should be called after "finish encryption"."""
+Precondition: this method should be called after "finish encryption"."""
         vscf_recipient_cipher_message_info_footer_len = self._lib.vscf_recipient_cipher_message_info_footer_len
         vscf_recipient_cipher_message_info_footer_len.argtypes = [POINTER(vscf_recipient_cipher_t)]
         vscf_recipient_cipher_message_info_footer_len.restype = c_size_t
@@ -289,12 +290,12 @@ class VscfRecipientCipher(object):
     def vscf_recipient_cipher_pack_message_info_footer(self, ctx, out):
         """Return serialized message info footer to the buffer.
 
-        Precondition: this method should be called after "finish encryption".
+Precondition: this method should be called after "finish encryption".
 
-        Note, store message info to use it for verified decryption process,
-        or place it at the encrypted data ending (embedding).
+Note, store message info to use it for verified decryption process,
+or place it at the encrypted data ending (embedding).
 
-        Return message info footer - signers public information, etc."""
+Return message info footer - signers public information, etc."""
         vscf_recipient_cipher_pack_message_info_footer = self._lib.vscf_recipient_cipher_pack_message_info_footer
         vscf_recipient_cipher_pack_message_info_footer.argtypes = [POINTER(vscf_recipient_cipher_t), POINTER(vsc_buffer_t)]
         vscf_recipient_cipher_pack_message_info_footer.restype = c_int

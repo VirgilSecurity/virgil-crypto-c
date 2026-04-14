@@ -73,16 +73,11 @@ extern "C" {
 //
 // Constants
 //
+VSCP_PHP_PUBLIC const char*
+vscp_pythia_t_php_res_name(void);
 
-//
-// Registered resources
-//
-
-//
-// Extension init functions declaration
-//
-PHP_MINIT_FUNCTION(vscp_pythia_php);
-PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php);
+VSCP_PHP_PUBLIC const char*
+vscp_impl_t_php_res_name(void);
 
 #ifdef __cplusplus
 }

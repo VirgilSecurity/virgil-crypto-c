@@ -66,26 +66,6 @@ class CompoundPrivateKey implements Key, PrivateKey
 
     /**
     *
-    * @return PrivateKey
-    */
-    public function cipherKey(): PrivateKey
-    {
-        $ctx = vscf_compound_private_key_cipher_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @return PrivateKey
-    */
-    public function signerKey(): PrivateKey
-    {
-        $ctx = vscf_compound_private_key_signer_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -139,6 +119,26 @@ class CompoundPrivateKey implements Key, PrivateKey
     {
         $ctx = vscf_compound_private_key_extract_public_key_php($this->ctx);
         return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return PrivateKey
+    */
+    public function cipherKey(): PrivateKey
+    {
+        $ctx = vscf_compound_private_key_cipher_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @return PrivateKey
+    */
+    public function signerKey(): PrivateKey
+    {
+        $ctx = vscf_compound_private_key_signer_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**

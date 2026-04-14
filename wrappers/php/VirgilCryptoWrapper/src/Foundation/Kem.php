@@ -47,7 +47,7 @@ interface Kem extends Ctx
     */
     public function kemSharedKeyLen(Key $$key): int
     {
-        return ($this->ctx, $$key);
+        return ($this->ctx, $$key->getCtx());
     }
 
     /**
@@ -57,7 +57,7 @@ interface Kem extends Ctx
     */
     public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
     {
-        return ($this->ctx, $$publicKey);
+        return ($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -66,9 +66,9 @@ interface Kem extends Ctx
     * @return array
     * @throws \Exception
     */
-    public function kemEncapsulate(PublicKey $$publicKey): array
+    public function kemEncapsulate(PublicKey $$publicKey)
     {
-        return ($this->ctx, $$publicKey);
+        return ($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -80,7 +80,7 @@ interface Kem extends Ctx
     */
     public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
     {
-        return ($this->ctx, $$encapsulatedKey, $$privateKey);
+        return ($this->ctx, $$encapsulatedKey, $$privateKey->getCtx());
     }
 
 }

@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface KeyCipher extends Ctx
+interface KeyCipher extends Ctx, KeyAlg
 {
 
     /**
@@ -48,7 +48,7 @@ interface KeyCipher extends Ctx
     */
     public function canEncrypt(PublicKey $$publicKey, int $$dataLen): bool
     {
-        return ($this->ctx, $$publicKey, $$dataLen);
+        return ($this->ctx, $$publicKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -59,7 +59,7 @@ interface KeyCipher extends Ctx
     */
     public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
     {
-        return ($this->ctx, $$publicKey, $$dataLen);
+        return ($this->ctx, $$publicKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -71,7 +71,7 @@ interface KeyCipher extends Ctx
     */
     public function encrypt(PublicKey $$publicKey, string $$data): string
     {
-        return ($this->ctx, $$publicKey, $$data);
+        return ($this->ctx, $$publicKey->getCtx(), $$data);
     }
 
     /**
@@ -82,7 +82,7 @@ interface KeyCipher extends Ctx
     */
     public function canDecrypt(PrivateKey $$privateKey, int $$dataLen): bool
     {
-        return ($this->ctx, $$privateKey, $$dataLen);
+        return ($this->ctx, $$privateKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -93,7 +93,7 @@ interface KeyCipher extends Ctx
     */
     public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
     {
-        return ($this->ctx, $$privateKey, $$dataLen);
+        return ($this->ctx, $$privateKey->getCtx(), $$dataLen);
     }
 
     /**
@@ -105,7 +105,7 @@ interface KeyCipher extends Ctx
     */
     public function decrypt(PrivateKey $$privateKey, string $$data): string
     {
-        return ($this->ctx, $$privateKey, $$data);
+        return ($this->ctx, $$privateKey->getCtx(), $$data);
     }
 
 }

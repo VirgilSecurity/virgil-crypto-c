@@ -35,17 +35,17 @@
 
 from ctypes import *
 from ._c_bridge import VscfRecipientCipher
-from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge import VscfStatus
-from .message_info_custom_params import MessageInfoCustomParams
+from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from .message_info_custom_params import MessageInfoCustomParams
 from .signer_info_list import SignerInfoList
 
 
 class RecipientCipher(object):
     """This class provides hybrid encryption algorithm that combines symmetric
-    cipher for data encryption and asymmetric cipher and password based
-    cipher for symmetric key encryption."""
+cipher for data encryption and asymmetric cipher and password based
+cipher for symmetric key encryption."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -73,7 +73,7 @@ class RecipientCipher(object):
 
     def has_key_recipient(self, recipient_id):
         """Return true if a key recipient with a given id has been added.
-        Note, operation has O(N) time complexity."""
+Note, operation has O(N) time complexity."""
         d_recipient_id = Data(recipient_id)
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_has_key_recipient(self.ctx, d_recipient_id.data)
         return result
@@ -89,7 +89,7 @@ class RecipientCipher(object):
 
     def add_signer(self, signer_id, private_key):
         """Add identifier and private key to sign initial plain text.
-        Return error if the private key can not sign."""
+Return error if the private key can not sign."""
         d_signer_id = Data(signer_id)
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_add_signer(self.ctx, d_signer_id.data, private_key.c_impl)
         VscfStatus.handle_status(status)
@@ -100,10 +100,9 @@ class RecipientCipher(object):
 
     def custom_params(self):
         """Provide access to the custom params object.
-        The returned object can be used to add custom params or read it."""
+The returned object can be used to add custom params or read it."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_custom_params(self.ctx)
-        instance = MessageInfoCustomParams.use_c_ctx(result)
-        return instance
+        return MessageInfoCustomParams.use_c_ctx(result)
 
     def start_encryption(self):
         """Start encryption process."""
@@ -113,57 +112,57 @@ class RecipientCipher(object):
     def start_signed_encryption(self, data_size):
         """Start encryption process with known plain text size.
 
-        Precondition: At least one signer should be added.
-        Note, store message info footer as well."""
+Precondition: At least one signer should be added.
+Note, store message info footer as well."""
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_start_signed_encryption(self.ctx, data_size)
         VscfStatus.handle_status(status)
 
     def message_info_len(self):
         """Return buffer length required to hold message info returned by the
-        "pack message info" method.
-        Precondition: all recipients and custom parameters should be set."""
+"pack message info" method.
+Precondition: all recipients and custom parameters should be set."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_message_info_len(self.ctx)
         return result
 
     def pack_message_info(self):
         """Return serialized message info to the buffer.
 
-        Precondition: this method should be called after "start encryption".
-        Precondition: this method should be called before "finish encryption".
+Precondition: this method should be called after "start encryption".
+Precondition: this method should be called before "finish encryption".
 
-        Note, store message info to use it for decryption process,
-        or place it at the encrypted data beginning (embedding).
+Note, store message info to use it for decryption process,
+or place it at the encrypted data beginning (embedding).
 
-        Return message info - recipients public information,
-        algorithm information, etc."""
+Return message info - recipients public information,
+algorithm information, etc."""
         message_info = Buffer(self.message_info_len())
         self._lib_vscf_recipient_cipher.vscf_recipient_cipher_pack_message_info(self.ctx, message_info.c_buffer)
         return message_info.get_bytes()
 
     def encryption_out_len(self, data_len):
         """Return buffer length required to hold output of the method
-        "process encryption" and method "finish" during encryption."""
+"process encryption" and method "finish" during encryption."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_encryption_out_len(self.ctx, data_len)
         return result
 
     def process_encryption(self, data):
         """Process encryption of a new portion of data."""
         d_data = Data(data)
-        out = Buffer(self.encryption_out_len(data_len=len(data)))
+        out = Buffer(self.encryption_out_len(data=len(data)))
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_process_encryption(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
     def finish_encryption(self):
         """Accomplish encryption."""
-        out = Buffer(self.encryption_out_len(data_len=0))
+        out = Buffer(self.encryption_out_len(0))
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_finish_encryption(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
     def start_decryption_with_key(self, recipient_id, private_key, message_info):
         """Initiate decryption process with a recipient private key.
-        Message Info can be empty if it was embedded to encrypted data."""
+Message Info can be empty if it was embedded to encrypted data."""
         d_recipient_id = Data(recipient_id)
         d_message_info = Data(message_info)
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_start_decryption_with_key(self.ctx, d_recipient_id.data, private_key.c_impl, d_message_info.data)
@@ -171,9 +170,9 @@ class RecipientCipher(object):
 
     def start_verified_decryption_with_key(self, recipient_id, private_key, message_info, message_info_footer):
         """Initiate decryption process with a recipient private key.
-        Message Info can be empty if it was embedded to encrypted data.
-        Message Info footer can be empty if it was embedded to encrypted data.
-        If footer was embedded, method "start decryption with key" can be used."""
+Message Info can be empty if it was embedded to encrypted data.
+Message Info footer can be empty if it was embedded to encrypted data.
+If footer was embedded, method "start decryption with key" can be used."""
         d_recipient_id = Data(recipient_id)
         d_message_info = Data(message_info)
         d_message_info_footer = Data(message_info_footer)
@@ -182,22 +181,22 @@ class RecipientCipher(object):
 
     def decryption_out_len(self, data_len):
         """Return buffer length required to hold output of the method
-        "process decryption" and method "finish" during decryption."""
+"process decryption" and method "finish" during decryption."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_decryption_out_len(self.ctx, data_len)
         return result
 
     def process_decryption(self, data):
         """Process with a new portion of data.
-        Return error if data can not be encrypted or decrypted."""
+Return error if data can not be encrypted or decrypted."""
         d_data = Data(data)
-        out = Buffer(self.decryption_out_len(data_len=len(data)))
+        out = Buffer(self.decryption_out_len(data=len(data)))
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_process_decryption(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
     def finish_decryption(self):
         """Accomplish decryption."""
-        out = Buffer(self.decryption_out_len(data_len=0))
+        out = Buffer(self.decryption_out_len(0))
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_finish_decryption(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -205,18 +204,17 @@ class RecipientCipher(object):
     def is_data_signed(self):
         """Return true if data was signed by a sender.
 
-        Precondition: this method should be called after "finish decryption"."""
+Precondition: this method should be called after "finish decryption"."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_is_data_signed(self.ctx)
         return result
 
     def signer_infos(self):
         """Return information about signers that sign data.
 
-        Precondition: this method should be called after "finish decryption".
-        Precondition: method "is data signed" returns true."""
+Precondition: this method should be called after "finish decryption".
+Precondition: method "is data signed" returns true."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_signer_infos(self.ctx)
-        instance = SignerInfoList.use_c_ctx(result)
-        return instance
+        return SignerInfoList.use_c_ctx(result)
 
     def verify_signer_info(self, signer_info, public_key):
         """Verify given cipher info."""
@@ -225,21 +223,21 @@ class RecipientCipher(object):
 
     def message_info_footer_len(self):
         """Return buffer length required to hold message footer returned by the
-        "pack message footer" method.
+"pack message footer" method.
 
-        Precondition: this method should be called after "finish encryption"."""
+Precondition: this method should be called after "finish encryption"."""
         result = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_message_info_footer_len(self.ctx)
         return result
 
     def pack_message_info_footer(self):
         """Return serialized message info footer to the buffer.
 
-        Precondition: this method should be called after "finish encryption".
+Precondition: this method should be called after "finish encryption".
 
-        Note, store message info to use it for verified decryption process,
-        or place it at the encrypted data ending (embedding).
+Note, store message info to use it for verified decryption process,
+or place it at the encrypted data ending (embedding).
 
-        Return message info footer - signers public information, etc."""
+Return message info footer - signers public information, etc."""
         out = Buffer(self.message_info_footer_len())
         status = self._lib_vscf_recipient_cipher.vscf_recipient_cipher_pack_message_info_footer(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)

@@ -66,110 +66,110 @@ const initMessageInfo = (Module, modules) => {
 
         dataEncryptionAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_data_encryption_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         keyRecipientInfoList() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_key_recipient_info_list(this.ctxPtr);
-
+            
             const jsResult = modules.KeyRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         passwordRecipientInfoList() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_password_recipient_info_list(this.ctxPtr);
-
+            
             const jsResult = modules.PasswordRecipientInfoList.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         hasCustomParams() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_has_custom_params(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         customParams() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_custom_params(this.ctxPtr);
-
+            
             const jsResult = modules.MessageInfoCustomParams.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         hasCipherKdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_has_cipher_kdf_alg_info(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         cipherKdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_cipher_kdf_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         hasCipherPaddingAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_has_cipher_padding_alg_info(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         cipherPaddingAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_cipher_padding_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         hasFooterInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_has_footer_info(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         footerInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_message_info_footer_info(this.ctxPtr);
-
+            
             const jsResult = modules.FooterInfo.newAndUseCContext(proxyResult);
             return jsResult;
         }

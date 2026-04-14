@@ -70,6 +70,22 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         clearResources();
     }
 
+    public int getNonceLen() {
+        return 16;
+    }
+
+    public int getKeyLen() {
+        return 32;
+    }
+
+    public int getKeyBitlen() {
+        return 256;
+    }
+
+    public int getBlockLen() {
+        return 16;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.aes256Cbc_algId(this.cCtx);
     }
@@ -100,22 +116,6 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
 
     public int decryptedLen(int dataLen) {
         return FoundationJNI.INSTANCE.aes256Cbc_decryptedLen(this.cCtx, dataLen);
-    }
-
-    public int getNonceLen() {
-        return 16;
-    }
-
-    public int getKeyLen() {
-        return 32;
-    }
-
-    public int getKeyBitlen() {
-        return 256;
-    }
-
-    public int getBlockLen() {
-        return 16;
     }
 
     public void setNonce(byte[] nonce) {

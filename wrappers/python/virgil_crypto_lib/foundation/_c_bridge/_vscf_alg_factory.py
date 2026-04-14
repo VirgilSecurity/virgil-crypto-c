@@ -41,6 +41,7 @@ from ._vscf_impl import vscf_impl_t
 class VscfAlgFactory(object):
     """Create algorithms based on the given information."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()

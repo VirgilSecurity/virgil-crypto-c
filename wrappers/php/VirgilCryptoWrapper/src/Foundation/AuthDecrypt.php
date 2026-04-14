@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface AuthDecrypt extends Ctx
+interface AuthDecrypt extends Ctx, CipherAuthInfo
 {
 
     /**

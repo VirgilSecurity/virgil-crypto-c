@@ -36,6 +36,7 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+
 public class AuthEncryptAuthEncryptResult {
 
     private byte[] out;

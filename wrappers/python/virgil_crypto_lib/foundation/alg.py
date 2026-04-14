@@ -39,7 +39,7 @@ from abc import *
 
 class Alg(object):
     """Provide interface to persist algorithm information and it parameters
-    and then restore the algorithm from it."""
+and then restore the algorithm from it."""
     __metaclass__ = ABCMeta
 
     @abstractmethod

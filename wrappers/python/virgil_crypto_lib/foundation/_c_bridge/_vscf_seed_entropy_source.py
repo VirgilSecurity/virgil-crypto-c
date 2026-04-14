@@ -35,9 +35,8 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
 
 class vscf_seed_entropy_source_t(Structure):
@@ -46,6 +45,9 @@ class vscf_seed_entropy_source_t(Structure):
 
 class VscfSeedEntropySource(object):
     """Deterministic entropy source that is based only on the given seed."""
+
+    # The maximum length of the entropy requested at once.
+    GATHER_LEN_MAX = 48
 
     def __init__(self):
         """Create underlying C context."""
@@ -64,6 +66,20 @@ class VscfSeedEntropySource(object):
         vscf_seed_entropy_source_delete.restype = None
         return vscf_seed_entropy_source_delete(ctx)
 
+    def vscf_seed_entropy_source_reset_seed(self, ctx, seed):
+        """Set a new seed as an entropy source."""
+        vscf_seed_entropy_source_reset_seed = self._lib.vscf_seed_entropy_source_reset_seed
+        vscf_seed_entropy_source_reset_seed.argtypes = [POINTER(vscf_seed_entropy_source_t), vsc_data_t]
+        vscf_seed_entropy_source_reset_seed.restype = None
+        return vscf_seed_entropy_source_reset_seed(ctx, seed)
+
+    def vscf_seed_entropy_source_move_forward(self, ctx):
+        """Current source is exhausted and must be refreshed."""
+        vscf_seed_entropy_source_move_forward = self._lib.vscf_seed_entropy_source_move_forward
+        vscf_seed_entropy_source_move_forward.argtypes = [POINTER(vscf_seed_entropy_source_t)]
+        vscf_seed_entropy_source_move_forward.restype = None
+        return vscf_seed_entropy_source_move_forward(ctx)
+
     def vscf_seed_entropy_source_is_strong(self, ctx):
         """Defines that implemented source is strong."""
         vscf_seed_entropy_source_is_strong = self._lib.vscf_seed_entropy_source_is_strong
@@ -77,13 +93,6 @@ class VscfSeedEntropySource(object):
         vscf_seed_entropy_source_gather.argtypes = [POINTER(vscf_seed_entropy_source_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_seed_entropy_source_gather.restype = c_int
         return vscf_seed_entropy_source_gather(ctx, len, out)
-
-    def vscf_seed_entropy_source_reset_seed(self, ctx, seed):
-        """Set a new seed as an entropy source."""
-        vscf_seed_entropy_source_reset_seed = self._lib.vscf_seed_entropy_source_reset_seed
-        vscf_seed_entropy_source_reset_seed.argtypes = [POINTER(vscf_seed_entropy_source_t), vsc_data_t]
-        vscf_seed_entropy_source_reset_seed.restype = None
-        return vscf_seed_entropy_source_reset_seed(ctx, seed)
 
     def vscf_seed_entropy_source_shallow_copy(self, ctx):
         vscf_seed_entropy_source_shallow_copy = self._lib.vscf_seed_entropy_source_shallow_copy

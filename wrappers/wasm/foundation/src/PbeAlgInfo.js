@@ -66,7 +66,7 @@ const initPbeAlgInfo = (Module, modules) => {
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
@@ -74,20 +74,20 @@ const initPbeAlgInfo = (Module, modules) => {
 
         kdfAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_kdf_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         cipherAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pbe_alg_info_cipher_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }

@@ -66,15 +66,6 @@ class RsaPublicKey implements Key, PublicKey
 
     /**
     *
-    * @return int
-    */
-    public function keyExponent(): int
-    {
-        return vscf_rsa_public_key_key_exponent_php($this->ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -118,6 +109,15 @@ class RsaPublicKey implements Key, PublicKey
     public function isValid(): bool
     {
         return vscf_rsa_public_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return int
+    */
+    public function keyExponent(): int
+    {
+        return vscf_rsa_public_key_key_exponent_php($this->ctx);
     }
 
     /**

@@ -52,8 +52,8 @@ from .cipher_auth import CipherAuth
 
 class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthEncrypt, AuthDecrypt, CipherAuth):
     """Implementation of the symmetric cipher AES-256 bit in a GCM mode.
-    Note, this implementation contains dynamic memory allocations,
-    this should be improved in the future releases."""
+Note, this implementation contains dynamic memory allocations,
+this should be improved in the future releases."""
 
     # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
     NONCE_LEN = 12
@@ -96,7 +96,7 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
     def encrypt(self, data):
         """Encrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(data_len=len(data)))
+        out = Buffer(self.encrypted_len(data=len(data)))
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_encrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -114,7 +114,7 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(data_len=len(data)))
+        out = Buffer(self.decrypted_len(data=len(data)))
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_decrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -145,44 +145,44 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
     def update(self, data):
         """Process encryption or decryption of the given data chunk."""
         d_data = Data(data)
-        out = Buffer(self.out_len(data_len=len(data)))
+        out = Buffer(self.out_len(data=len(data)))
         self._lib_vscf_aes256_gcm.vscf_aes256_gcm_update(self.ctx, d_data.data, out.c_buffer)
         return out.get_bytes()
 
     def out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an current mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an current mode.
+Pass zero length to define buffer length of the method "finish"."""
         result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_out_len(self.ctx, data_len)
         return result
 
     def encrypted_out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an encryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an encryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_encrypted_out_len(self.ctx, data_len)
         return result
 
     def decrypted_out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an decryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an decryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         result = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_decrypted_out_len(self.ctx, data_len)
         return result
 
     def finish(self):
         """Accomplish encryption or decryption process."""
-        out = Buffer(self.out_len(data_len=0))
+        out = Buffer(self.out_len(0))
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_finish(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
 
     def auth_encrypt(self, data, auth_data):
         """Encrypt given data.
-        If 'tag' is not given, then it will written to the 'enc'."""
+If 'tag' is not given, then it will written to the 'enc'."""
         d_data = Data(data)
         d_auth_data = Data(auth_data)
-        out = Buffer(self.auth_encrypted_len(data_len=len(data)))
+        out = Buffer(self.auth_encrypted_len(data=len(data)))
         tag = Buffer(self.AUTH_TAG_LEN)
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_auth_encrypt(self.ctx, d_data.data, d_auth_data.data, out.c_buffer, tag.c_buffer)
         VscfStatus.handle_status(status)
@@ -195,11 +195,11 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
 
     def auth_decrypt(self, data, auth_data, tag):
         """Decrypt given data.
-        If 'tag' is not given, then it will be taken from the 'enc'."""
+If 'tag' is not given, then it will be taken from the 'enc'."""
         d_data = Data(data)
         d_auth_data = Data(auth_data)
         d_tag = Data(tag)
-        out = Buffer(self.auth_decrypted_len(data_len=len(data)))
+        out = Buffer(self.auth_decrypted_len(data=len(data)))
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_auth_decrypt(self.ctx, d_data.data, d_auth_data.data, d_tag.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -217,9 +217,9 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
     def finish_auth_encryption(self):
         """Accomplish an authenticated encryption and place tag separately.
 
-        Note, if authentication tag should be added to an encrypted data,
-        method "finish" can be used."""
-        out = Buffer(self.out_len(data_len=0))
+Note, if authentication tag should be added to an encrypted data,
+method "finish" can be used."""
+        out = Buffer(self.out_len(0))
         tag = Buffer(self.AUTH_TAG_LEN)
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_finish_auth_encryption(self.ctx, out.c_buffer, tag.c_buffer)
         VscfStatus.handle_status(status)
@@ -228,10 +228,10 @@ class Aes256Gcm(Alg, Encrypt, Decrypt, CipherInfo, Cipher, CipherAuthInfo, AuthE
     def finish_auth_decryption(self, tag):
         """Accomplish an authenticated decryption with explicitly given tag.
 
-        Note, if authentication tag is a part of an encrypted data then,
-        method "finish" can be used for simplicity."""
+Note, if authentication tag is a part of an encrypted data then,
+method "finish" can be used for simplicity."""
         d_tag = Data(tag)
-        out = Buffer(self.out_len(data_len=0))
+        out = Buffer(self.out_len(0))
         status = self._lib_vscf_aes256_gcm.vscf_aes256_gcm_finish_auth_decryption(self.ctx, d_tag.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

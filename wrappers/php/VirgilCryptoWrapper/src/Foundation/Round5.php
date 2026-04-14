@@ -46,10 +46,6 @@ class Round5 implements KeyAlg, Kem
     private $ctx;
 
     const SEED_LEN = 48;
-    const CAN_IMPORT_PUBLIC_KEY = true;
-    const CAN_EXPORT_PUBLIC_KEY = true;
-    const CAN_IMPORT_PRIVATE_KEY = true;
-    const CAN_EXPORT_PRIVATE_KEY = true;
 
     /**
     * Create underlying C context.
@@ -82,6 +78,109 @@ class Round5 implements KeyAlg, Kem
 
     /**
     *
+    * @param Key $$key
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateEphemeralKey(Key $$key): PrivateKey
+    {
+        $ctx = vscf_round5_generate_ephemeral_key_php($this->ctx, $$key->getCtx());
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @param RawPublicKey $$rawKey
+    * @return PublicKey
+    * @throws \Exception
+    */
+    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
+    {
+        $ctx = vscf_round5_import_public_key_php($this->ctx, $$rawKey);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @param PublicKey $$publicKey
+    * @return RawPublicKey
+    * @throws \Exception
+    */
+    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
+    {
+        $ctx = vscf_round5_export_public_key_php($this->ctx, $$publicKey->getCtx());
+        return new RawPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @param RawPrivateKey $$rawKey
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
+    {
+        $ctx = vscf_round5_import_private_key_php($this->ctx, $$rawKey);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @param PrivateKey $$privateKey
+    * @return RawPrivateKey
+    * @throws \Exception
+    */
+    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
+    {
+        $ctx = vscf_round5_export_private_key_php($this->ctx, $$privateKey->getCtx());
+        return new RawPrivateKey($ctx);
+    }
+
+    /**
+    *
+    * @param Key $$key
+    * @return int
+    */
+    public function kemSharedKeyLen(Key $$key): int
+    {
+        return vscf_round5_kem_shared_key_len_php($this->ctx, $$key->getCtx());
+    }
+
+    /**
+    *
+    * @param PublicKey $$publicKey
+    * @return int
+    */
+    public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
+    {
+        return vscf_round5_kem_encapsulated_key_len_php($this->ctx, $$publicKey->getCtx());
+    }
+
+    /**
+    *
+    * @param PublicKey $$publicKey
+    * @return array
+    * @throws \Exception
+    */
+    public function kemEncapsulate(PublicKey $$publicKey)
+    {
+        return vscf_round5_kem_encapsulate_php($this->ctx, $$publicKey->getCtx());
+    }
+
+    /**
+    *
+    * @param string $$encapsulatedKey
+    * @param PrivateKey $$privateKey
+    * @return string
+    * @throws \Exception
+    */
+    public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
+    {
+        return vscf_round5_kem_decapsulate_php($this->ctx, $$encapsulatedKey, $$privateKey->getCtx());
+    }
+
+    /**
+    *
     * @return void
     * @throws \Exception
     */
@@ -94,109 +193,12 @@ class Round5 implements KeyAlg, Kem
     *
     * @param AlgId $$algId
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateKey(AlgId $$algId): PrivateKey
     {
         $ctx = vscf_round5_generate_key_php($this->ctx, $$algId);
         return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param Key $$key
-    * @return PrivateKey
-    */
-    public function generateEphemeralKey(Key $$key): PrivateKey
-    {
-        $ctx = vscf_round5_generate_ephemeral_key_php($this->ctx, $$key);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param RawPublicKey $$rawKey
-    * @return PublicKey
-    */
-    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
-    {
-        $ctx = vscf_round5_import_public_key_php($this->ctx, $$rawKey);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @param PublicKey $$publicKey
-    * @return RawPublicKey
-    */
-    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
-    {
-        $ctx = vscf_round5_export_public_key_php($this->ctx, $$publicKey);
-        return new RawPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @param RawPrivateKey $$rawKey
-    * @return PrivateKey
-    */
-    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
-    {
-        $ctx = vscf_round5_import_private_key_php($this->ctx, $$rawKey);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param PrivateKey $$privateKey
-    * @return RawPrivateKey
-    */
-    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
-    {
-        $ctx = vscf_round5_export_private_key_php($this->ctx, $$privateKey);
-        return new RawPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param Key $$key
-    * @return int
-    */
-    public function kemSharedKeyLen(Key $$key): int
-    {
-        return vscf_round5_kem_shared_key_len_php($this->ctx, $$key);
-    }
-
-    /**
-    *
-    * @param PublicKey $$publicKey
-    * @return int
-    */
-    public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
-    {
-        return vscf_round5_kem_encapsulated_key_len_php($this->ctx, $$publicKey);
-    }
-
-    /**
-    *
-    * @param PublicKey $$publicKey
-    * @return array
-    * @throws \Exception
-    */
-    public function kemEncapsulate(PublicKey $$publicKey): array
-    {
-        return vscf_round5_kem_encapsulate_php($this->ctx, $$publicKey);
-    }
-
-    /**
-    *
-    * @param string $$encapsulatedKey
-    * @param PrivateKey $$privateKey
-    * @return string
-    * @throws \Exception
-    */
-    public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
-    {
-        return vscf_round5_kem_decapsulate_php($this->ctx, $$encapsulatedKey, $$privateKey);
     }
 
     /**

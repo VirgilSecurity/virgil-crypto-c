@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
 
-    public AlgInfo hashAlgInfo() {
-        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_hashAlgInfo(this.cCtx);
-    }
-
-    public byte[] salt() {
-        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_salt(this.cCtx);
-    }
-
-    public int iterationCount() {
-        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_iterationCount(this.cCtx);
-    }
-
     public long cCtx;
 
     public SaltedKdfAlgInfo() {
@@ -84,6 +72,18 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
 
     public AlgId algId() {
         return FoundationJNI.INSTANCE.saltedKdfAlgInfo_algId(this.cCtx);
+    }
+
+    public AlgInfo hashAlgInfo() {
+        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_hashAlgInfo(this.cCtx);
+    }
+
+    public byte[] salt() {
+        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_salt(this.cCtx);
+    }
+
+    public int iterationCount() {
+        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_iterationCount(this.cCtx);
     }
 
 }

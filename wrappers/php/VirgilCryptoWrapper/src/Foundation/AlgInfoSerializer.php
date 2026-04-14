@@ -47,7 +47,7 @@ interface AlgInfoSerializer extends Ctx
     */
     public function serializedLen(AlgInfo $$algInfo): int
     {
-        return ($this->ctx, $$algInfo);
+        return ($this->ctx, $$algInfo->getCtx());
     }
 
     /**
@@ -57,7 +57,7 @@ interface AlgInfoSerializer extends Ctx
     */
     public function serialize(AlgInfo $$algInfo): string
     {
-        return ($this->ctx, $$algInfo);
+        return ($this->ctx, $$algInfo->getCtx());
     }
 
 }

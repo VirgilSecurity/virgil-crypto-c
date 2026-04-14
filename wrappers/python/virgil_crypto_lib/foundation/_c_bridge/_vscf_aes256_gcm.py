@@ -46,19 +46,9 @@ class vscf_aes256_gcm_t(Structure):
 
 class VscfAes256Gcm(object):
     """Implementation of the symmetric cipher AES-256 bit in a GCM mode.
-    Note, this implementation contains dynamic memory allocations,
-    this should be improved in the future releases."""
+Note, this implementation contains dynamic memory allocations,
+this should be improved in the future releases."""
 
-    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    NONCE_LEN = 12
-    # Cipher key length in bytes.
-    KEY_LEN = 32
-    # Cipher key length in bits.
-    KEY_BITLEN = 256
-    # Cipher block length in bytes.
-    BLOCK_LEN = 16
-    # Defines authentication tag length in bytes.
-    AUTH_TAG_LEN = 16
 
     def __init__(self):
         """Create underlying C context."""
@@ -170,8 +160,8 @@ class VscfAes256Gcm(object):
 
     def vscf_aes256_gcm_out_len(self, ctx, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an current mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an current mode.
+Pass zero length to define buffer length of the method "finish"."""
         vscf_aes256_gcm_out_len = self._lib.vscf_aes256_gcm_out_len
         vscf_aes256_gcm_out_len.argtypes = [POINTER(vscf_aes256_gcm_t), c_size_t]
         vscf_aes256_gcm_out_len.restype = c_size_t
@@ -179,8 +169,8 @@ class VscfAes256Gcm(object):
 
     def vscf_aes256_gcm_encrypted_out_len(self, ctx, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an encryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an encryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         vscf_aes256_gcm_encrypted_out_len = self._lib.vscf_aes256_gcm_encrypted_out_len
         vscf_aes256_gcm_encrypted_out_len.argtypes = [POINTER(vscf_aes256_gcm_t), c_size_t]
         vscf_aes256_gcm_encrypted_out_len.restype = c_size_t
@@ -188,8 +178,8 @@ class VscfAes256Gcm(object):
 
     def vscf_aes256_gcm_decrypted_out_len(self, ctx, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an decryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an decryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         vscf_aes256_gcm_decrypted_out_len = self._lib.vscf_aes256_gcm_decrypted_out_len
         vscf_aes256_gcm_decrypted_out_len.argtypes = [POINTER(vscf_aes256_gcm_t), c_size_t]
         vscf_aes256_gcm_decrypted_out_len.restype = c_size_t
@@ -204,7 +194,7 @@ class VscfAes256Gcm(object):
 
     def vscf_aes256_gcm_auth_encrypt(self, ctx, data, auth_data, out, tag):
         """Encrypt given data.
-        If 'tag' is not given, then it will written to the 'enc'."""
+If 'tag' is not given, then it will written to the 'enc'."""
         vscf_aes256_gcm_auth_encrypt = self._lib.vscf_aes256_gcm_auth_encrypt
         vscf_aes256_gcm_auth_encrypt.argtypes = [POINTER(vscf_aes256_gcm_t), vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vscf_aes256_gcm_auth_encrypt.restype = c_int
@@ -219,7 +209,7 @@ class VscfAes256Gcm(object):
 
     def vscf_aes256_gcm_auth_decrypt(self, ctx, data, auth_data, tag, out):
         """Decrypt given data.
-        If 'tag' is not given, then it will be taken from the 'enc'."""
+If 'tag' is not given, then it will be taken from the 'enc'."""
         vscf_aes256_gcm_auth_decrypt = self._lib.vscf_aes256_gcm_auth_decrypt
         vscf_aes256_gcm_auth_decrypt.argtypes = [POINTER(vscf_aes256_gcm_t), vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_aes256_gcm_auth_decrypt.restype = c_int
@@ -242,8 +232,8 @@ class VscfAes256Gcm(object):
     def vscf_aes256_gcm_finish_auth_encryption(self, ctx, out, tag):
         """Accomplish an authenticated encryption and place tag separately.
 
-        Note, if authentication tag should be added to an encrypted data,
-        method "finish" can be used."""
+Note, if authentication tag should be added to an encrypted data,
+method "finish" can be used."""
         vscf_aes256_gcm_finish_auth_encryption = self._lib.vscf_aes256_gcm_finish_auth_encryption
         vscf_aes256_gcm_finish_auth_encryption.argtypes = [POINTER(vscf_aes256_gcm_t), POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vscf_aes256_gcm_finish_auth_encryption.restype = c_int
@@ -252,8 +242,8 @@ class VscfAes256Gcm(object):
     def vscf_aes256_gcm_finish_auth_decryption(self, ctx, tag, out):
         """Accomplish an authenticated decryption with explicitly given tag.
 
-        Note, if authentication tag is a part of an encrypted data then,
-        method "finish" can be used for simplicity."""
+Note, if authentication tag is a part of an encrypted data then,
+method "finish" can be used for simplicity."""
         vscf_aes256_gcm_finish_auth_decryption = self._lib.vscf_aes256_gcm_finish_auth_decryption
         vscf_aes256_gcm_finish_auth_decryption.argtypes = [POINTER(vscf_aes256_gcm_t), vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_aes256_gcm_finish_auth_decryption.restype = c_int

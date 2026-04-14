@@ -117,263 +117,49 @@ const initHybridKeyAlg = (Module, modules) => {
             return true;
         }
 
-        generateEphemeralKey(key, error) {
+        generateEphemeralKey(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_generate_ephemeral_key(this.ctxPtr, key.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_hybrid_key_alg_generate_ephemeral_key(this.ctxPtr, key.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        importPublicKey(rawKey, error) {
+        importPublicKey(rawKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPublicKey);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_import_public_key(this.ctxPtr, rawKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_hybrid_key_alg_import_public_key(this.ctxPtr, rawKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        importPublicKeyData(keyData, keyAlgInfo, error) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('keyData', keyData);
-            precondition.ensureImplementInterface('keyAlgInfo', keyAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
-            const keyDataPtr = Module._malloc(keyDataSize);
-            Module.HEAP8.set(keyData, keyDataPtr);
-
-            // Create C structure vsc_data_t.
-            const keyDataCtxSize = Module._vsc_data_ctx_size();
-            const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_import_public_key_data(this.ctxPtr, keyDataCtxPtr, keyAlgInfo.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(keyDataPtr);
-                Module._free(keyDataCtxPtr);
-                Module._free(errorCtxPtr);
-            }
-        }
-
-        exportPublicKey(publicKey, error) {
+        exportPublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_export_public_key(this.ctxPtr, publicKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.RawPublicKey.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_hybrid_key_alg_export_public_key(this.ctxPtr, publicKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        exportedPublicKeyDataLen(publicKey) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
-            let proxyResult;
-            proxyResult = Module._vscf_hybrid_key_alg_exported_public_key_data_len(this.ctxPtr, publicKey.ctxPtr);
-            return proxyResult;
-        }
-
-        exportPublicKeyData(publicKey) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
-            const outCapacity = this.exportedPublicKeyDataLen(publicKey);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
-            try {
-                const proxyResult = Module._vscf_hybrid_key_alg_export_public_key_data(this.ctxPtr, publicKey.ctxPtr, outCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-                return out;
-            } finally {
-                Module._vsc_buffer_delete(outCtxPtr);
-            }
-        }
-
-        importPrivateKey(rawKey, error) {
+        importPrivateKey(rawKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPrivateKey);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_import_private_key(this.ctxPtr, rawKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_hybrid_key_alg_import_private_key(this.ctxPtr, rawKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        importPrivateKeyData(keyData, keyAlgInfo, error) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('keyData', keyData);
-            precondition.ensureImplementInterface('keyAlgInfo', keyAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
-            const keyDataPtr = Module._malloc(keyDataSize);
-            Module.HEAP8.set(keyData, keyDataPtr);
-
-            // Create C structure vsc_data_t.
-            const keyDataCtxSize = Module._vsc_data_ctx_size();
-            const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_import_private_key_data(this.ctxPtr, keyDataCtxPtr, keyAlgInfo.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(keyDataPtr);
-                Module._free(keyDataCtxPtr);
-                Module._free(errorCtxPtr);
-            }
-        }
-
-        exportPrivateKey(privateKey, error) {
+        exportPrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_hybrid_key_alg_export_private_key(this.ctxPtr, privateKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.RawPrivateKey.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
-        }
-
-        exportedPrivateKeyDataLen(privateKey) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
-            let proxyResult;
-            proxyResult = Module._vscf_hybrid_key_alg_exported_private_key_data_len(this.ctxPtr, privateKey.ctxPtr);
-            return proxyResult;
-        }
-
-        exportPrivateKeyData(privateKey) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
-            const outCapacity = this.exportedPrivateKeyDataLen(privateKey);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
-            try {
-                const proxyResult = Module._vscf_hybrid_key_alg_export_private_key_data(this.ctxPtr, privateKey.ctxPtr, outCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-                return out;
-            } finally {
-                Module._vsc_buffer_delete(outCtxPtr);
-            }
+            const proxyResult = Module._vscf_hybrid_key_alg_export_private_key(this.ctxPtr, privateKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
         canEncrypt(publicKey, dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_can_encrypt(this.ctxPtr, publicKey.ctxPtr, dataLen);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -382,7 +168,7 @@ const initHybridKeyAlg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_encrypted_len(this.ctxPtr, publicKey.ctxPtr, dataLen);
             return proxyResult;
@@ -392,26 +178,26 @@ const initHybridKeyAlg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const outCapacity = this.encryptedLen(publicKey, data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_hybrid_key_alg_encrypt(this.ctxPtr, publicKey.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -427,10 +213,10 @@ const initHybridKeyAlg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_can_decrypt(this.ctxPtr, privateKey.ctxPtr, dataLen);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -439,7 +225,7 @@ const initHybridKeyAlg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_decrypted_len(this.ctxPtr, privateKey.ctxPtr, dataLen);
             return proxyResult;
@@ -449,26 +235,26 @@ const initHybridKeyAlg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const outCapacity = this.decryptedLen(privateKey, data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_hybrid_key_alg_decrypt(this.ctxPtr, privateKey.ctxPtr, dataCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -483,10 +269,10 @@ const initHybridKeyAlg = (Module, modules) => {
         canSign(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_can_sign(this.ctxPtr, privateKey.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -494,7 +280,7 @@ const initHybridKeyAlg = (Module, modules) => {
         signatureLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_signature_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
@@ -503,28 +289,27 @@ const initHybridKeyAlg = (Module, modules) => {
         signHash(privateKey, hashId, digest) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            precondition.ensureNumber('hashId', hashId);
             precondition.ensureByteArray('digest', digest);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const digestSize = digest.length * digest.BYTES_PER_ELEMENT;
             const digestPtr = Module._malloc(digestSize);
             Module.HEAP8.set(digest, digestPtr);
-
+            
             // Create C structure vsc_data_t.
             const digestCtxSize = Module._vsc_data_ctx_size();
             const digestCtxPtr = Module._malloc(digestCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(digestCtxPtr, digestPtr, digestSize);
-
+            
             const signatureCapacity = this.signatureLen(privateKey);
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_hybrid_key_alg_sign_hash(this.ctxPtr, privateKey.ctxPtr, hashId, digestCtxPtr, signatureCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
                 const signaturePtrLen = Module._vsc_buffer_len(signatureCtxPtr);
                 const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signaturePtrLen);
@@ -539,10 +324,10 @@ const initHybridKeyAlg = (Module, modules) => {
         canVerify(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hybrid_key_alg_can_verify(this.ctxPtr, publicKey.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -550,39 +335,36 @@ const initHybridKeyAlg = (Module, modules) => {
         verifyHash(publicKey, hashId, digest, signature) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            precondition.ensureNumber('hashId', hashId);
             precondition.ensureByteArray('digest', digest);
             precondition.ensureByteArray('signature', signature);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const digestSize = digest.length * digest.BYTES_PER_ELEMENT;
             const digestPtr = Module._malloc(digestSize);
             Module.HEAP8.set(digest, digestPtr);
-
+            
             // Create C structure vsc_data_t.
             const digestCtxSize = Module._vsc_data_ctx_size();
             const digestCtxPtr = Module._malloc(digestCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(digestCtxPtr, digestPtr, digestSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const signatureSize = signature.length * signature.BYTES_PER_ELEMENT;
             const signaturePtr = Module._malloc(signatureSize);
             Module.HEAP8.set(signature, signaturePtr);
-
+            
             // Create C structure vsc_data_t.
             const signatureCtxSize = Module._vsc_data_ctx_size();
             const signatureCtxPtr = Module._malloc(signatureCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(signatureCtxPtr, signaturePtr, signatureSize);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_hybrid_key_alg_verify_hash(this.ctxPtr, publicKey.ctxPtr, hashId, digestCtxPtr, signatureCtxPtr);
-
+                const proxyResult = Module._vscf_hybrid_key_alg_verify_hash(this.ctxPtr, publicKey.ctxPtr, hashId, digestCtxPtr, signatureCtxPtr);
+            
                 const booleanResult = !!proxyResult;
                 return booleanResult;
             } finally {
@@ -599,27 +381,36 @@ const initHybridKeyAlg = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        makeKey(firstKey, secondKey, error) {
+        makeKey(firstKey, secondKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('firstKey', firstKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureImplementInterface('secondKey', secondKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
+            const proxyResult = Module._vscf_hybrid_key_alg_make_key(this.ctxPtr, firstKey.ctxPtr, secondKey.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
 
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+        static configCipher(cipher, hash, sharedKey) {
+            precondition.ensureImplementInterface('cipher', cipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
+            precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
+            precondition.ensureByteArray('sharedKey', sharedKey);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const sharedKeySize = sharedKey.length * sharedKey.BYTES_PER_ELEMENT;
+            const sharedKeyPtr = Module._malloc(sharedKeySize);
+            Module.HEAP8.set(sharedKey, sharedKeyPtr);
+            
+            // Create C structure vsc_data_t.
+            const sharedKeyCtxSize = Module._vsc_data_ctx_size();
+            const sharedKeyCtxPtr = Module._malloc(sharedKeyCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(sharedKeyCtxPtr, sharedKeyPtr, sharedKeySize);
+            
             try {
-                proxyResult = Module._vscf_hybrid_key_alg_make_key(this.ctxPtr, firstKey.ctxPtr, secondKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-                return jsResult;
+                Module._vscf_hybrid_key_alg_config_cipher(cipher.ctxPtr, hash.ctxPtr, sharedKeyCtxPtr);
             } finally {
-                Module._free(errorCtxPtr);
+                Module._free(sharedKeyPtr);
+                Module._free(sharedKeyCtxPtr);
             }
         }
 

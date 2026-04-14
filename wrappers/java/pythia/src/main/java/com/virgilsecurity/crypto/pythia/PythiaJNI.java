@@ -41,12 +41,4 @@ public class PythiaJNI {
 
     public PythiaJNI INSTANCE;
 
-    /*
-    * Performs global initialization of the pythia library.
-    * Must be called once for entire application at startup.
-    */
-    /*
-    * Performs global cleanup of the pythia library.
-    * Must be called once for entire application before exit.
-    */
 }

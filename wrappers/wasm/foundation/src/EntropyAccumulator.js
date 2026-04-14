@@ -37,14 +37,6 @@
 const initEntropyAccumulator = (Module, modules) => {
     class EntropyAccumulator {
 
-        static get SOURCES_MAX() {
-            return 15;
-        }
-
-        get SOURCES_MAX() {
-            return 15;
-        }
-
         constructor(ctxPtr) {
             this.name = 'EntropyAccumulator';
 
@@ -72,12 +64,20 @@ const initEntropyAccumulator = (Module, modules) => {
             }
         }
 
+        static get SOURCES_MAX() {
+            return 15;
+        }
+
+        get SOURCES_MAX() {
+            return 15;
+        }
+
         isStrong() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_entropy_accumulator_is_strong(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -85,14 +85,14 @@ const initEntropyAccumulator = (Module, modules) => {
         gather(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             const outCapacity = len;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_entropy_accumulator_gather(this.ctxPtr, len, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);

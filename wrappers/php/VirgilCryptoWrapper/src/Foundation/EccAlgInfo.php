@@ -46,18 +46,6 @@ class EccAlgInfo implements AlgInfo
     private $ctx;
 
     /**
-    *
-    * @param AlgId $$algId
-    * @param OidId $$keyId
-    * @param OidId $$domainId
-    * @return EccAlgInfo
-    */
-    public static function withMembers(AlgId $$algId, OidId $$keyId, OidId $$domainId): EccAlgInfo
-    {
-        return vscf_ecc_alg_info_with_members_php($$algId, $$keyId, $$domainId);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void
@@ -78,6 +66,16 @@ class EccAlgInfo implements AlgInfo
 
     /**
     *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_ecc_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
+    *
     * @return OidId
     */
     public function keyId(): OidId
@@ -94,16 +92,6 @@ class EccAlgInfo implements AlgInfo
     {
         $enum = vscf_ecc_alg_info_domain_id_php($this->ctx);
         return new OidId($enum);
-    }
-
-    /**
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_ecc_alg_info_alg_id_php($this->ctx);
-        return new AlgId($enum);
     }
 
     /**

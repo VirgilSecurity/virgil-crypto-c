@@ -36,6 +36,7 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_password_recipient_info import vscf_password_recipient_info_t
+from ._vscf_self import vscf_self_t
 
 
 class vscf_password_recipient_info_list_t(Structure):
@@ -44,6 +45,7 @@ class vscf_password_recipient_info_list_t(Structure):
 
 class VscfPasswordRecipientInfoList(object):
     """Handles a list of "password recipient info" class objects."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -87,7 +89,7 @@ class VscfPasswordRecipientInfoList(object):
         """Return next list node if exists, or NULL otherwise."""
         vscf_password_recipient_info_list_next = self._lib.vscf_password_recipient_info_list_next
         vscf_password_recipient_info_list_next.argtypes = [POINTER(vscf_password_recipient_info_list_t)]
-        vscf_password_recipient_info_list_next.restype = POINTER(vscf_password_recipient_info_list_t)
+        vscf_password_recipient_info_list_next.restype = POINTER(vscf_self_t)
         return vscf_password_recipient_info_list_next(ctx)
 
     def vscf_password_recipient_info_list_has_prev(self, ctx):
@@ -101,7 +103,7 @@ class VscfPasswordRecipientInfoList(object):
         """Return previous list node if exists, or NULL otherwise."""
         vscf_password_recipient_info_list_prev = self._lib.vscf_password_recipient_info_list_prev
         vscf_password_recipient_info_list_prev.argtypes = [POINTER(vscf_password_recipient_info_list_t)]
-        vscf_password_recipient_info_list_prev.restype = POINTER(vscf_password_recipient_info_list_t)
+        vscf_password_recipient_info_list_prev.restype = POINTER(vscf_self_t)
         return vscf_password_recipient_info_list_prev(ctx)
 
     def vscf_password_recipient_info_list_clear(self, ctx):

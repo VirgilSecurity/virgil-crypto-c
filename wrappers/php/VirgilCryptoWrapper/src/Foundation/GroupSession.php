@@ -123,10 +123,11 @@ class GroupSession
     * @param string $$plainText
     * @param PrivateKey $$privateKey
     * @return GroupSessionMessage
+    * @throws \Exception
     */
     public function encrypt(string $$plainText, PrivateKey $$privateKey): GroupSessionMessage
     {
-        $ctx = vscf_group_session_encrypt_php($this->ctx, $$plainText, $$privateKey);
+        $ctx = vscf_group_session_encrypt_php($this->ctx, $$plainText, $$privateKey->getCtx());
         return new GroupSessionMessage($ctx);
     }
 
@@ -149,12 +150,13 @@ class GroupSession
     */
     public function decrypt(GroupSessionMessage $$message, PublicKey $$publicKey): string
     {
-        return vscf_group_session_decrypt_php($this->ctx, $$message, $$publicKey);
+        return vscf_group_session_decrypt_php($this->ctx, $$message, $$publicKey->getCtx());
     }
 
     /**
     *
     * @return GroupSessionTicket
+    * @throws \Exception
     */
     public function createGroupTicket(): GroupSessionTicket
     {

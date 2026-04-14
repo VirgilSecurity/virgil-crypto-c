@@ -38,22 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class GroupSession implements AutoCloseable {
 
-    public int getSenderIdLen() {
-        return 32;
-    }
-
-    public int getMaxPlainTextLen() {
-        return 30000;
-    }
-
-    public int getMaxEpochsCount() {
-        return 50;
-    }
-
-    public int getSaltSize() {
-        return 32;
-    }
-
     public long cCtx;
 
     public GroupSession() {
@@ -90,7 +74,23 @@ public class GroupSession implements AutoCloseable {
         FoundationJNI.INSTANCE.groupSession_setRng(this.cCtx, rng);
     }
 
-    public long getCurrentEpoch() {
+    public int getSenderIdLen() {
+        return 32;
+    }
+
+    public int getMaxPlainTextLen() {
+        return 30000;
+    }
+
+    public int getMaxEpochsCount() {
+        return 50;
+    }
+
+    public int getSaltSize() {
+        return 32;
+    }
+
+    public int getCurrentEpoch() {
         return FoundationJNI.INSTANCE.groupSession_getCurrentEpoch(this.cCtx);
     }
 

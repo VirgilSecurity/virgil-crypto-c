@@ -66,61 +66,61 @@ const initKeyRecipientInfoList = (Module, modules) => {
 
         hasItem() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_has_item(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         item() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_item(this.ctxPtr);
-
+            
             const jsResult = modules.KeyRecipientInfo.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         hasNext() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_has_next(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         next() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_next(this.ctxPtr);
-
-            const jsResult = KeyRecipientInfoList.newAndUseCContext(proxyResult);
+            
+            const jsResult = modules.Self.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
         hasPrev() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_has_prev(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         prev() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_key_recipient_info_list_prev(this.ctxPtr);
-
-            const jsResult = KeyRecipientInfoList.newAndUseCContext(proxyResult);
+            
+            const jsResult = modules.Self.newAndUseCContext(proxyResult);
             return jsResult;
         }
 

@@ -38,14 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class BrainkeyServer implements AutoCloseable {
 
-    public int getPointLen() {
-        return 65;
-    }
-
-    public int getMpiLen() {
-        return 32;
-    }
-
     public long cCtx;
 
     public BrainkeyServer() {
@@ -84,6 +76,14 @@ public class BrainkeyServer implements AutoCloseable {
 
     public void setOperationRandom(Random operationRandom) {
         FoundationJNI.INSTANCE.brainkeyServer_setOperationRandom(this.cCtx, operationRandom);
+    }
+
+    public int getPointLen() {
+        return 65;
+    }
+
+    public int getMpiLen() {
+        return 32;
     }
 
     public void setupDefaults() throws FoundationException {

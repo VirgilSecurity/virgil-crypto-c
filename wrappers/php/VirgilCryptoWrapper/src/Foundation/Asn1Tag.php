@@ -40,24 +40,24 @@ namespace Virgil\CryptoWrapper\Foundation;
 class Asn1Tag extends Enum
 {
 
-    private const BOOLEAN = "0x01";
-    private const INTEGER = "0x02";
-    private const BIT_STRING = "0x03";
-    private const OCTET_STRING = "0x04";
-    private const NULL = "0x05";
-    private const OID = "0x06";
-    private const UTF8_STRING = "0x0C";
-    private const SEQUENCE = "0x10";
-    private const SET = "0x11";
-    private const PRINTABLE_STRING = "0x13";
-    private const T61_STRING = "0x14";
-    private const IA5_STRING = "0x16";
-    private const UTC_TIME = "0x17";
-    private const GENERALIZED_TIME = "0x18";
-    private const UNIVERSAL_STRING = "0x1C";
-    private const BMP_STRING = "0x1E";
-    private const PRIMITIVE = "0x00";
-    private const CONSTRUCTED = "0x20";
-    private const CONTEXT_SPECIFIC = "0x80";
+    private const BOOLEAN = 0x01;
+    private const INTEGER = 0x02;
+    private const BIT_STRING = 0x03;
+    private const OCTET_STRING = 0x04;
+    private const NULL = 0x05;
+    private const OID = 0x06;
+    private const UTF8_STRING = 0x0C;
+    private const SEQUENCE = 0x10;
+    private const SET = 0x11;
+    private const PRINTABLE_STRING = 0x13;
+    private const T61_STRING = 0x14;
+    private const IA5_STRING = 0x16;
+    private const UTC_TIME = 0x17;
+    private const GENERALIZED_TIME = 0x18;
+    private const UNIVERSAL_STRING = 0x1C;
+    private const BMP_STRING = 0x1E;
+    private const PRIMITIVE = 0x00;
+    private const CONSTRUCTED = 0x20;
+    private const CONTEXT_SPECIFIC = 0x80;
 
 }

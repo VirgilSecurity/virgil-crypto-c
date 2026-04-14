@@ -44,6 +44,7 @@ interface KeyDeserializer extends Ctx
     *
     * @param string $$publicKeyData
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function deserializePublicKey(string $$publicKeyData): RawPublicKey
     {
@@ -55,6 +56,7 @@ interface KeyDeserializer extends Ctx
     *
     * @param string $$privateKeyData
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function deserializePrivateKey(string $$privateKeyData): RawPrivateKey
     {

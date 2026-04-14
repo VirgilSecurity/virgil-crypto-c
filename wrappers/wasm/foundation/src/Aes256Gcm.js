@@ -64,126 +64,6 @@ const initAes256Gcm = (Module, modules) => {
             }
         }
 
-        algId() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_alg_id(this.ctxPtr);
-            return proxyResult;
-        }
-
-        produceAlgInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_produce_alg_info(this.ctxPtr);
-
-            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-            return jsResult;
-        }
-
-        restoreAlgInfo(algInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            const proxyResult = Module._vscf_aes256_gcm_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
-        }
-
-        encrypt(data) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('data', data);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            Module.HEAP8.set(data, dataPtr);
-
-            // Create C structure vsc_data_t.
-            const dataCtxSize = Module._vsc_data_ctx_size();
-            const dataCtxPtr = Module._malloc(dataCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            const outCapacity = this.encryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
-            try {
-                const proxyResult = Module._vscf_aes256_gcm_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-                return out;
-            } finally {
-                Module._free(dataPtr);
-                Module._free(dataCtxPtr);
-                Module._vsc_buffer_delete(outCtxPtr);
-            }
-        }
-
-        encryptedLen(dataLen) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('dataLen', dataLen);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_encrypted_len(this.ctxPtr, dataLen);
-            return proxyResult;
-        }
-
-        preciseEncryptedLen(dataLen) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('dataLen', dataLen);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_precise_encrypted_len(this.ctxPtr, dataLen);
-            return proxyResult;
-        }
-
-        decrypt(data) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureByteArray('data', data);
-
-            // Copy bytes from JS memory to the WASM memory.
-            const dataSize = data.length * data.BYTES_PER_ELEMENT;
-            const dataPtr = Module._malloc(dataSize);
-            Module.HEAP8.set(data, dataPtr);
-
-            // Create C structure vsc_data_t.
-            const dataCtxSize = Module._vsc_data_ctx_size();
-            const dataCtxPtr = Module._malloc(dataCtxSize);
-
-            // Point created vsc_data_t object to the copied bytes.
-            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
-            const outCapacity = this.decryptedLen(data.length);
-            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
-            try {
-                const proxyResult = Module._vscf_aes256_gcm_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
-
-                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
-                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
-                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-                return out;
-            } finally {
-                Module._free(dataPtr);
-                Module._free(dataCtxPtr);
-                Module._vsc_buffer_delete(outCtxPtr);
-            }
-        }
-
-        decryptedLen(dataLen) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('dataLen', dataLen);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_decrypted_len(this.ctxPtr, dataLen);
-            return proxyResult;
-        }
-
         static get NONCE_LEN() {
             return 12;
         }
@@ -216,22 +96,150 @@ const initAes256Gcm = (Module, modules) => {
             return 16;
         }
 
+        static get AUTH_TAG_LEN() {
+            return 16;
+        }
+
+        get AUTH_TAG_LEN() {
+            return 16;
+        }
+
+        algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_alg_id(this.ctxPtr);
+            return proxyResult;
+        }
+
+        produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_produce_alg_info(this.ctxPtr);
+            
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            const proxyResult = Module._vscf_aes256_gcm_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        encrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+            
+            // Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            const outCapacity = this.encryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                const proxyResult = Module._vscf_aes256_gcm_encrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        encryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        preciseEncryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_precise_encrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
+        decrypt(data) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+            
+            // Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            const outCapacity = this.decryptedLen(data.length);
+            const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
+            
+            try {
+                const proxyResult = Module._vscf_aes256_gcm_decrypt(this.ctxPtr, dataCtxPtr, outCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
+                const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
+                const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
+                const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
+                return out;
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+                Module._vsc_buffer_delete(outCtxPtr);
+            }
+        }
+
+        decryptedLen(dataLen) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('dataLen', dataLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_aes256_gcm_decrypted_len(this.ctxPtr, dataLen);
+            return proxyResult;
+        }
+
         setNonce(nonce) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('nonce', nonce);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
             const noncePtr = Module._malloc(nonceSize);
             Module.HEAP8.set(nonce, noncePtr);
-
+            
             // Create C structure vsc_data_t.
             const nonceCtxSize = Module._vsc_data_ctx_size();
             const nonceCtxPtr = Module._malloc(nonceCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
-
+            
             try {
                 Module._vscf_aes256_gcm_set_nonce(this.ctxPtr, nonceCtxPtr);
             } finally {
@@ -243,33 +251,25 @@ const initAes256Gcm = (Module, modules) => {
         setKey(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
-
+            
             // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
-
+            
             try {
                 Module._vscf_aes256_gcm_set_key(this.ctxPtr, keyCtxPtr);
             } finally {
                 Module._free(keyPtr);
                 Module._free(keyCtxPtr);
             }
-        }
-
-        state() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_aes256_gcm_state(this.ctxPtr);
-            return proxyResult;
         }
 
         startEncryption() {
@@ -285,25 +285,25 @@ const initAes256Gcm = (Module, modules) => {
         update(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const outCapacity = this.outLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 Module._vscf_aes256_gcm_update(this.ctxPtr, dataCtxPtr, outCtxPtr);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -318,7 +318,7 @@ const initAes256Gcm = (Module, modules) => {
         outLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_out_len(this.ctxPtr, dataLen);
             return proxyResult;
@@ -327,7 +327,7 @@ const initAes256Gcm = (Module, modules) => {
         encryptedOutLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_encrypted_out_len(this.ctxPtr, dataLen);
             return proxyResult;
@@ -336,7 +336,7 @@ const initAes256Gcm = (Module, modules) => {
         decryptedOutLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_decrypted_out_len(this.ctxPtr, dataLen);
             return proxyResult;
@@ -344,14 +344,14 @@ const initAes256Gcm = (Module, modules) => {
 
         finish() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const outCapacity = this.outLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_aes256_gcm_finish(this.ctxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -361,61 +361,53 @@ const initAes256Gcm = (Module, modules) => {
             }
         }
 
-        static get AUTH_TAG_LEN() {
-            return 16;
-        }
-
-        get AUTH_TAG_LEN() {
-            return 16;
-        }
-
         authEncrypt(data, authData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureByteArray('authData', authData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const authDataSize = authData.length * authData.BYTES_PER_ELEMENT;
             const authDataPtr = Module._malloc(authDataSize);
             Module.HEAP8.set(authData, authDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const authDataCtxSize = Module._vsc_data_ctx_size();
             const authDataCtxPtr = Module._malloc(authDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(authDataCtxPtr, authDataPtr, authDataSize);
-
+            
             const outCapacity = this.authEncryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             const tagCapacity = this.AUTH_TAG_LEN;
             const tagCtxPtr = Module._vsc_buffer_new_with_capacity(tagCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_aes256_gcm_auth_encrypt(this.ctxPtr, dataCtxPtr, authDataCtxPtr, outCtxPtr, tagCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-
+            
                 const tagPtr = Module._vsc_buffer_bytes(tagCtxPtr);
                 const tagPtrLen = Module._vsc_buffer_len(tagCtxPtr);
                 const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagPtrLen);
-                return { out, tag };
+                return out;
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -429,7 +421,7 @@ const initAes256Gcm = (Module, modules) => {
         authEncryptedLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_auth_encrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
@@ -440,50 +432,50 @@ const initAes256Gcm = (Module, modules) => {
             precondition.ensureByteArray('data', data);
             precondition.ensureByteArray('authData', authData);
             precondition.ensureByteArray('tag', tag);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const authDataSize = authData.length * authData.BYTES_PER_ELEMENT;
             const authDataPtr = Module._malloc(authDataSize);
             Module.HEAP8.set(authData, authDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const authDataCtxSize = Module._vsc_data_ctx_size();
             const authDataCtxPtr = Module._malloc(authDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(authDataCtxPtr, authDataPtr, authDataSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const tagSize = tag.length * tag.BYTES_PER_ELEMENT;
             const tagPtr = Module._malloc(tagSize);
             Module.HEAP8.set(tag, tagPtr);
-
+            
             // Create C structure vsc_data_t.
             const tagCtxSize = Module._vsc_data_ctx_size();
             const tagCtxPtr = Module._malloc(tagCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(tagCtxPtr, tagPtr, tagSize);
-
+            
             const outCapacity = this.authDecryptedLen(data.length);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_aes256_gcm_auth_decrypt(this.ctxPtr, dataCtxPtr, authDataCtxPtr, tagCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -502,7 +494,7 @@ const initAes256Gcm = (Module, modules) => {
         authDecryptedLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_aes256_gcm_auth_decrypted_len(this.ctxPtr, dataLen);
             return proxyResult;
@@ -511,19 +503,19 @@ const initAes256Gcm = (Module, modules) => {
         setAuthData(authData) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('authData', authData);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const authDataSize = authData.length * authData.BYTES_PER_ELEMENT;
             const authDataPtr = Module._malloc(authDataSize);
             Module.HEAP8.set(authData, authDataPtr);
-
+            
             // Create C structure vsc_data_t.
             const authDataCtxSize = Module._vsc_data_ctx_size();
             const authDataCtxPtr = Module._malloc(authDataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(authDataCtxPtr, authDataPtr, authDataSize);
-
+            
             try {
                 Module._vscf_aes256_gcm_set_auth_data(this.ctxPtr, authDataCtxPtr);
             } finally {
@@ -534,25 +526,25 @@ const initAes256Gcm = (Module, modules) => {
 
         finishAuthEncryption() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const outCapacity = this.outLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             const tagCapacity = this.AUTH_TAG_LEN;
             const tagCtxPtr = Module._vsc_buffer_new_with_capacity(tagCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_aes256_gcm_finish_auth_encryption(this.ctxPtr, outCtxPtr, tagCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
-
+            
                 const tagPtr = Module._vsc_buffer_bytes(tagCtxPtr);
                 const tagPtrLen = Module._vsc_buffer_len(tagCtxPtr);
                 const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagPtrLen);
-                return { out, tag };
+                return out;
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
                 Module._vsc_buffer_delete(tagCtxPtr);
@@ -562,26 +554,26 @@ const initAes256Gcm = (Module, modules) => {
         finishAuthDecryption(tag) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('tag', tag);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const tagSize = tag.length * tag.BYTES_PER_ELEMENT;
             const tagPtr = Module._malloc(tagSize);
             Module.HEAP8.set(tag, tagPtr);
-
+            
             // Create C structure vsc_data_t.
             const tagCtxSize = Module._vsc_data_ctx_size();
             const tagCtxPtr = Module._malloc(tagCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(tagCtxPtr, tagPtr, tagSize);
-
+            
             const outCapacity = this.outLen(0);
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_aes256_gcm_finish_auth_decryption(this.ctxPtr, tagCtxPtr, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);

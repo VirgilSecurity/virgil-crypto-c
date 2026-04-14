@@ -38,34 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class CtrDrbg implements AutoCloseable, Random {
 
-    public int getReseedInterval() {
-        return 10000;
-    }
-
-    public int getEntropyLen() {
-        return 48;
-    }
-
-    public void setEntropySource(EntropySource entropySource) throws FoundationException {
-        FoundationJNI.INSTANCE.ctrDrbg_setEntropySource(this.cCtx, entropySource);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.ctrDrbg_setupDefaults(this.cCtx);
-    }
-
-    public void enablePredictionResistance() {
-        FoundationJNI.INSTANCE.ctrDrbg_enablePredictionResistance(this.cCtx);
-    }
-
-    public void setReseedInterval(int interval) {
-        FoundationJNI.INSTANCE.ctrDrbg_setReseedInterval(this.cCtx, interval);
-    }
-
-    public void setEntropyLen(int len) {
-        FoundationJNI.INSTANCE.ctrDrbg_setEntropyLen(this.cCtx, len);
-    }
-
     public long cCtx;
 
     public CtrDrbg() {
@@ -98,12 +70,32 @@ public class CtrDrbg implements AutoCloseable, Random {
         clearResources();
     }
 
+    public void setEntropySource(EntropySource entropySource) {
+        FoundationJNI.INSTANCE.ctrDrbg_setEntropySource(this.cCtx, entropySource);
+    }
+
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.ctrDrbg_random(this.cCtx, dataLen);
     }
 
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.ctrDrbg_reseed(this.cCtx);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.ctrDrbg_setupDefaults(this.cCtx);
+    }
+
+    public void enablePredictionResistance() {
+        FoundationJNI.INSTANCE.ctrDrbg_enablePredictionResistance(this.cCtx);
+    }
+
+    public void setReseedInterval(int interval) {
+        FoundationJNI.INSTANCE.ctrDrbg_setReseedInterval(this.cCtx, interval);
+    }
+
+    public void setEntropyLen(int len) {
+        FoundationJNI.INSTANCE.ctrDrbg_setEntropyLen(this.cCtx, len);
     }
 
 }

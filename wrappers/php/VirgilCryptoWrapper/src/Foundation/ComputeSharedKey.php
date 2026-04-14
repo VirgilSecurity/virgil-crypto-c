@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface ComputeSharedKey extends Ctx
+interface ComputeSharedKey extends Ctx, KeyAlg
 {
 
     /**
@@ -49,7 +49,7 @@ interface ComputeSharedKey extends Ctx
     */
     public function computeSharedKey(PublicKey $$publicKey, PrivateKey $$privateKey): string
     {
-        return ($this->ctx, $$publicKey, $$privateKey);
+        return ($this->ctx, $$publicKey->getCtx(), $$privateKey->getCtx());
     }
 
     /**
@@ -59,7 +59,7 @@ interface ComputeSharedKey extends Ctx
     */
     public function sharedKeyLen(Key $$key): int
     {
-        return ($this->ctx, $$key);
+        return ($this->ctx, $$key->getCtx());
     }
 
 }

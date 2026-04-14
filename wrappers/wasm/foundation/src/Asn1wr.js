@@ -66,7 +66,6 @@ const initAsn1wr = (Module, modules) => {
 
         reset(out, outLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('out', out);
             precondition.ensureNumber('outLen', outLen);
             Module._vscf_asn1wr_reset(this.ctxPtr, out, outLen);
         }
@@ -74,7 +73,7 @@ const initAsn1wr = (Module, modules) => {
         finish(doNotAdjust) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureBoolean('doNotAdjust', doNotAdjust);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_finish(this.ctxPtr, doNotAdjust);
             return proxyResult;
@@ -82,7 +81,7 @@ const initAsn1wr = (Module, modules) => {
 
         bytes() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_bytes(this.ctxPtr);
             return proxyResult;
@@ -90,7 +89,7 @@ const initAsn1wr = (Module, modules) => {
 
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_len(this.ctxPtr);
             return proxyResult;
@@ -98,7 +97,7 @@ const initAsn1wr = (Module, modules) => {
 
         writtenLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_written_len(this.ctxPtr);
             return proxyResult;
@@ -106,7 +105,7 @@ const initAsn1wr = (Module, modules) => {
 
         unwrittenLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_unwritten_len(this.ctxPtr);
             return proxyResult;
@@ -114,10 +113,10 @@ const initAsn1wr = (Module, modules) => {
 
         hasError() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_has_error(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -131,7 +130,7 @@ const initAsn1wr = (Module, modules) => {
         reserve(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_reserve(this.ctxPtr, len);
             return proxyResult;
@@ -140,7 +139,7 @@ const initAsn1wr = (Module, modules) => {
         writeTag(tag) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_tag(this.ctxPtr, tag);
             return proxyResult;
@@ -150,7 +149,7 @@ const initAsn1wr = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
             precondition.ensureNumber('len', len);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_context_tag(this.ctxPtr, tag, len);
             return proxyResult;
@@ -159,7 +158,7 @@ const initAsn1wr = (Module, modules) => {
         writeLen(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_len(this.ctxPtr, len);
             return proxyResult;
@@ -168,7 +167,7 @@ const initAsn1wr = (Module, modules) => {
         writeInt(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int(this.ctxPtr, value);
             return proxyResult;
@@ -177,7 +176,7 @@ const initAsn1wr = (Module, modules) => {
         writeInt8(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int8(this.ctxPtr, value);
             return proxyResult;
@@ -186,7 +185,7 @@ const initAsn1wr = (Module, modules) => {
         writeInt16(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int16(this.ctxPtr, value);
             return proxyResult;
@@ -195,7 +194,7 @@ const initAsn1wr = (Module, modules) => {
         writeInt32(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int32(this.ctxPtr, value);
             return proxyResult;
@@ -204,7 +203,7 @@ const initAsn1wr = (Module, modules) => {
         writeInt64(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_int64(this.ctxPtr, value);
             return proxyResult;
@@ -213,7 +212,7 @@ const initAsn1wr = (Module, modules) => {
         writeUint(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint(this.ctxPtr, value);
             return proxyResult;
@@ -222,7 +221,7 @@ const initAsn1wr = (Module, modules) => {
         writeUint8(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint8(this.ctxPtr, value);
             return proxyResult;
@@ -231,7 +230,7 @@ const initAsn1wr = (Module, modules) => {
         writeUint16(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint16(this.ctxPtr, value);
             return proxyResult;
@@ -240,7 +239,7 @@ const initAsn1wr = (Module, modules) => {
         writeUint32(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint32(this.ctxPtr, value);
             return proxyResult;
@@ -249,7 +248,7 @@ const initAsn1wr = (Module, modules) => {
         writeUint64(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_uint64(this.ctxPtr, value);
             return proxyResult;
@@ -258,7 +257,7 @@ const initAsn1wr = (Module, modules) => {
         writeBool(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureBoolean('value', value);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_bool(this.ctxPtr, value);
             return proxyResult;
@@ -266,7 +265,7 @@ const initAsn1wr = (Module, modules) => {
 
         writeNull() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_null(this.ctxPtr);
             return proxyResult;
@@ -275,24 +274,23 @@ const initAsn1wr = (Module, modules) => {
         writeOctetStr(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
-
+            
             // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
-
+            
             let proxyResult;
-
+            
             try {
                 proxyResult = Module._vscf_asn1wr_write_octet_str(this.ctxPtr, valueCtxPtr);
-                return proxyResult;
             } finally {
                 Module._free(valuePtr);
                 Module._free(valueCtxPtr);
@@ -302,24 +300,23 @@ const initAsn1wr = (Module, modules) => {
         writeOctetStrAsBitstring(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
-
+            
             // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
-
+            
             let proxyResult;
-
+            
             try {
                 proxyResult = Module._vscf_asn1wr_write_octet_str_as_bitstring(this.ctxPtr, valueCtxPtr);
-                return proxyResult;
             } finally {
                 Module._free(valuePtr);
                 Module._free(valueCtxPtr);
@@ -329,24 +326,23 @@ const initAsn1wr = (Module, modules) => {
         writeData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             let proxyResult;
-
+            
             try {
                 proxyResult = Module._vscf_asn1wr_write_data(this.ctxPtr, dataCtxPtr);
-                return proxyResult;
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -356,24 +352,23 @@ const initAsn1wr = (Module, modules) => {
         writeUtf8Str(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
-
+            
             // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
-
+            
             let proxyResult;
-
+            
             try {
                 proxyResult = Module._vscf_asn1wr_write_utf8_str(this.ctxPtr, valueCtxPtr);
-                return proxyResult;
             } finally {
                 Module._free(valuePtr);
                 Module._free(valueCtxPtr);
@@ -383,24 +378,23 @@ const initAsn1wr = (Module, modules) => {
         writeOid(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
-
+            
             // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
-
+            
             let proxyResult;
-
+            
             try {
                 proxyResult = Module._vscf_asn1wr_write_oid(this.ctxPtr, valueCtxPtr);
-                return proxyResult;
             } finally {
                 Module._free(valuePtr);
                 Module._free(valueCtxPtr);
@@ -410,7 +404,7 @@ const initAsn1wr = (Module, modules) => {
         writeSequence(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_sequence(this.ctxPtr, len);
             return proxyResult;
@@ -419,10 +413,78 @@ const initAsn1wr = (Module, modules) => {
         writeSet(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_asn1wr_write_set(this.ctxPtr, len);
             return proxyResult;
+        }
+
+        mbedtlsHasError(code) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('code', code);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_asn1wr_mbedtls_has_error(this.ctxPtr, code);
+            
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        writeTagData(data, tag) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('data', data);
+            precondition.ensureNumber('tag', tag);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const dataSize = data.length * data.BYTES_PER_ELEMENT;
+            const dataPtr = Module._malloc(dataSize);
+            Module.HEAP8.set(data, dataPtr);
+            
+            // Create C structure vsc_data_t.
+            const dataCtxSize = Module._vsc_data_ctx_size();
+            const dataCtxPtr = Module._malloc(dataCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_asn1wr_write_tag_data(this.ctxPtr, dataCtxPtr, tag);
+            } finally {
+                Module._free(dataPtr);
+                Module._free(dataCtxPtr);
+            }
+        }
+
+        static getCurrentElementLen(curr, end) {
+            
+            let proxyResult;
+            proxyResult = Module._vscf_asn1wr_get_current_element_len(curr, end);
+            return proxyResult;
+        }
+
+        static swapElementsOfSet(toStart, toLen, fromStart, fromLen) {
+            precondition.ensureNumber('toLen', toLen);
+            precondition.ensureNumber('fromLen', fromLen);
+            Module._vscf_asn1wr_swap_elements_of_set(toStart, toLen, fromStart, fromLen);
+        }
+
+        static secondElementOfSetIsLess(firstStart, firstLen, secondStart, secondLen) {
+            precondition.ensureNumber('firstLen', firstLen);
+            precondition.ensureNumber('secondLen', secondLen);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_asn1wr_second_element_of_set_is_less(firstStart, firstLen, secondStart, secondLen);
+            
+            const booleanResult = !!proxyResult;
+            return booleanResult;
+        }
+
+        sortElementsOfSet(len) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureNumber('len', len);
+            Module._vscf_asn1wr_sort_elements_of_set(this.ctxPtr, len);
         }
 
     }

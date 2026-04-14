@@ -1,22 +1,23 @@
-#define VSCP_HANDLE_STATUS(status) do { if(status != vscp_status_SUCCESS) { vscp_handle_throw_exception(status); } } while (false)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-zend_class_entry* vscp_exception_ce;
+project(vscp_pythia_php)
 
-void
-vscp_handle_throw_exception(vscp_status_t status) {
+find_package(PHP REQUIRED)
 
-    switch(status) {
+add_library(vscp_pythia_php SHARED
+    vscp_pythia_php.c
+)
 
-    case vscp_status_SUCCESS:
-        break;
-    case vscp_status_ERROR_BAD_ARGUMENTS:
-        zend_throw_exception_ex(vscp_exception_ce, -1, "This error should not be returned if assertions is enabled.");
-        break;
-    case vscp_status_ERROR_PYTHIA_INNER_FAIL:
-        zend_throw_exception_ex(vscp_exception_ce, -200, "Underlying pythia library returns -1.");
-        break;
-    case vscp_status_ERROR_RNG_FAILED:
-        zend_throw_exception_ex(vscp_exception_ce, -202, "Underlying random number generator failed.");
-        break;
-    }
-}
+target_include_directories(vscp_pythia_php PRIVATE
+    ${PHP_INCLUDE_DIRS}
+)
+
+target_link_libraries(vscp_pythia_php
+    vscp_pythia
+)
+
+set_target_properties(vscp_pythia_php PROPERTIES
+    OUTPUT_NAME "vscp_pythia_php"
+    PREFIX ""
+    SUFFIX ".so"
+)

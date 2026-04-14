@@ -37,38 +37,6 @@
 const initGroupSession = (Module, modules) => {
     class GroupSession {
 
-        static get SENDER_ID_LEN() {
-            return 32;
-        }
-
-        get SENDER_ID_LEN() {
-            return 32;
-        }
-
-        static get MAX_PLAIN_TEXT_LEN() {
-            return 30000;
-        }
-
-        get MAX_PLAIN_TEXT_LEN() {
-            return 30000;
-        }
-
-        static get MAX_EPOCHS_COUNT() {
-            return 50;
-        }
-
-        get MAX_EPOCHS_COUNT() {
-            return 50;
-        }
-
-        static get SALT_SIZE() {
-            return 32;
-        }
-
-        get SALT_SIZE() {
-            return 32;
-        }
-
         constructor(ctxPtr) {
             this.name = 'GroupSession';
 
@@ -103,9 +71,41 @@ const initGroupSession = (Module, modules) => {
             Module._vscf_group_session_use_rng(this.ctxPtr, rng.ctxPtr)
         }
 
+        static get SENDER_ID_LEN() {
+            return 32;
+        }
+
+        get SENDER_ID_LEN() {
+            return 32;
+        }
+
+        static get MAX_PLAIN_TEXT_LEN() {
+            return 30000;
+        }
+
+        get MAX_PLAIN_TEXT_LEN() {
+            return 30000;
+        }
+
+        static get MAX_EPOCHS_COUNT() {
+            return 50;
+        }
+
+        get MAX_EPOCHS_COUNT() {
+            return 50;
+        }
+
+        static get SALT_SIZE() {
+            return 32;
+        }
+
+        get SALT_SIZE() {
+            return 32;
+        }
+
         getCurrentEpoch() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_group_session_get_current_epoch(this.ctxPtr);
             return proxyResult;
@@ -119,21 +119,7 @@ const initGroupSession = (Module, modules) => {
 
         getSessionId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscf_group_session_get_session_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscf_group_session_get_session_id(this.ctxPtr);
         }
 
         addEpoch(message) {
@@ -143,48 +129,39 @@ const initGroupSession = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        encrypt(plainText, privateKey, error) {
+        encrypt(plainText, privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
             const plainTextPtr = Module._malloc(plainTextSize);
             Module.HEAP8.set(plainText, plainTextPtr);
-
+            
             // Create C structure vsc_data_t.
             const plainTextCtxSize = Module._vsc_data_ctx_size();
             const plainTextCtxPtr = Module._malloc(plainTextCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.GroupSessionMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(plainTextPtr);
                 Module._free(plainTextCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
         decryptLen(message) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.GroupSessionMessage);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_group_session_decrypt_len(this.ctxPtr, message.ctxPtr);
             return proxyResult;
@@ -194,14 +171,14 @@ const initGroupSession = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.GroupSessionMessage);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-
+            
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_group_session_decrypt(this.ctxPtr, message.ctxPtr, publicKey.ctxPtr, plainTextCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
                 const plainTextPtrLen = Module._vsc_buffer_len(plainTextCtxPtr);
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
@@ -211,26 +188,10 @@ const initGroupSession = (Module, modules) => {
             }
         }
 
-        createGroupTicket(error) {
+        createGroupTicket() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            const errorCtxSize = Module._vscf_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscf_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
-            try {
-                proxyResult = Module._vscf_group_session_create_group_ticket(this.ctxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscf_error_status(errorCtxPtr);
-                modules.FoundationError.handleStatusCode(errorStatus);
-
-                const jsResult = modules.GroupSessionTicket.newAndTakeCContext(proxyResult);
-                return jsResult;
-            } finally {
-                Module._free(errorCtxPtr);
-            }
+            const proxyResult = Module._vscf_group_session_create_group_ticket(this.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
         }
 
     }

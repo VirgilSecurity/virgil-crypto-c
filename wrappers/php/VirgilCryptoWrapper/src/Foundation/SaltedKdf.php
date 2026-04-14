@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface SaltedKdf extends Ctx
+interface SaltedKdf extends Ctx, Kdf
 {
 
     /**

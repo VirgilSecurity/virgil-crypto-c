@@ -40,7 +40,7 @@ namespace Virgil\CryptoWrapper\Foundation;
 class GroupMsgType extends Enum
 {
 
-    private const GROUP_INFO = "1";
-    private const REGULAR = "2";
+    private const GROUP_INFO = 1;
+    private const REGULAR = 2;
 
 }

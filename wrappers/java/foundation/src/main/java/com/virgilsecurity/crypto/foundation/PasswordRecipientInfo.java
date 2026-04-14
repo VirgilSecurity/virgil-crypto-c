@@ -70,11 +70,6 @@ public class PasswordRecipientInfo implements AutoCloseable {
         clearResources();
     }
 
-    public PasswordRecipientInfo(AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfo_new(keyEncryptionAlgorithm, encryptedKey);
-    }
-
     public AlgInfo keyEncryptionAlgorithm() {
         return FoundationJNI.INSTANCE.passwordRecipientInfo_keyEncryptionAlgorithm(this.cCtx);
     }

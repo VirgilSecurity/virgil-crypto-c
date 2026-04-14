@@ -331,6 +331,26 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    *
+    * @param int $$code
+    * @return bool
+    */
+    public function mbedtlsHasError(int $$code): bool
+    {
+        return vscf_asn1rd_mbedtls_has_error_php($this->ctx, $$code);
+    }
+
+    /**
+    *
+    * @param int $$tag
+    * @return string
+    */
+    public function readTagData(int $$tag): string
+    {
+        return vscf_asn1rd_read_tag_data_php($this->ctx, $$tag);
+    }
+
+    /**
     * Get C context.
     *
     * @return resource

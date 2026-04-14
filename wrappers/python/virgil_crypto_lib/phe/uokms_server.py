@@ -36,9 +36,8 @@
 from ctypes import *
 from ._c_bridge import VsceUokmsServer
 from ._c_bridge import VsceStatus
-from .common import Common
-from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
 
 
 class UokmsServer(object):

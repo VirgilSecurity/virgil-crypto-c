@@ -37,7 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface CipherAuth extends Ctx
+interface CipherAuth extends Ctx, Cipher, AuthEncrypt, AuthDecrypt
 {
 
     /**
@@ -55,7 +55,7 @@ interface CipherAuth extends Ctx
     * @return array
     * @throws \Exception
     */
-    public function finishAuthEncryption(): array
+    public function finishAuthEncryption()
     {
         return ($this->ctx);
     }

@@ -64,31 +64,6 @@ const initSha384 = (Module, modules) => {
             }
         }
 
-        algId() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_sha384_alg_id(this.ctxPtr);
-            return proxyResult;
-        }
-
-        produceAlgInfo() {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            let proxyResult;
-            proxyResult = Module._vscf_sha384_produce_alg_info(this.ctxPtr);
-
-            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
-            return jsResult;
-        }
-
-        restoreAlgInfo(algInfo) {
-            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-            const proxyResult = Module._vscf_sha384_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
-        }
-
         static get DIGEST_LEN() {
             return 48;
         }
@@ -105,27 +80,52 @@ const initSha384 = (Module, modules) => {
             return 128;
         }
 
-        hash(data) {
-            precondition.ensureByteArray('data', data);
+        algId() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_sha384_alg_id(this.ctxPtr);
+            return proxyResult;
+        }
 
+        produceAlgInfo() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            
+            let proxyResult;
+            proxyResult = Module._vscf_sha384_produce_alg_info(this.ctxPtr);
+            
+            const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+            return jsResult;
+        }
+
+        restoreAlgInfo(algInfo) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
+            const proxyResult = Module._vscf_sha384_restore_alg_info(this.ctxPtr, algInfo.ctxPtr);
+            modules.FoundationError.handleStatusCode(proxyResult);
+        }
+
+        static hash(data) {
+            precondition.ensureByteArray('data', data);
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const digestCapacity = this.DIGEST_LEN;
             const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestCapacity);
-
+            
             try {
                 Module._vscf_sha384_hash(dataCtxPtr, digestCtxPtr);
-
+            
                 const digestPtr = Module._vsc_buffer_bytes(digestCtxPtr);
                 const digestPtrLen = Module._vsc_buffer_len(digestCtxPtr);
                 const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestPtrLen);
@@ -145,19 +145,19 @@ const initSha384 = (Module, modules) => {
         update(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             try {
                 Module._vscf_sha384_update(this.ctxPtr, dataCtxPtr);
             } finally {
@@ -168,13 +168,13 @@ const initSha384 = (Module, modules) => {
 
         finish() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const digestCapacity = this.DIGEST_LEN;
             const digestCtxPtr = Module._vsc_buffer_new_with_capacity(digestCapacity);
-
+            
             try {
                 Module._vscf_sha384_finish(this.ctxPtr, digestCtxPtr);
-
+            
                 const digestPtr = Module._vsc_buffer_bytes(digestCtxPtr);
                 const digestPtrLen = Module._vsc_buffer_len(digestCtxPtr);
                 const digest = Module.HEAPU8.slice(digestPtr, digestPtr + digestPtrLen);

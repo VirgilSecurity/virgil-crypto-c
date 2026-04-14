@@ -43,7 +43,7 @@ Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1close(jlong );
 JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1getType(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL
+JNIEXPORT jint JNICALL
 Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetMessage_1getCounter(jlong c_ctx);
 
 JNIEXPORT jbyteArray JNICALL
@@ -72,9 +72,6 @@ Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1new__(void);
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1close(jlong );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1setRng(jlong , jobject );
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1setupDefaults(jlong c_ctx);

@@ -48,10 +48,6 @@ class Falcon implements Alg, KeyAlg, KeySigner
     const SEED_LEN = 48;
     const LOGN_512 = 9;
     const LOGN_1024 = 10;
-    const CAN_IMPORT_PUBLIC_KEY = true;
-    const CAN_EXPORT_PUBLIC_KEY = true;
-    const CAN_IMPORT_PRIVATE_KEY = true;
-    const CAN_EXPORT_PRIVATE_KEY = true;
 
     /**
     * Create underlying C context.
@@ -84,26 +80,6 @@ class Falcon implements Alg, KeyAlg, KeySigner
 
     /**
     *
-    * @return void
-    * @throws \Exception
-    */
-    public function setupDefaults(): void
-    {
-        vscf_falcon_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @return PrivateKey
-    */
-    public function generateKey(): PrivateKey
-    {
-        $ctx = vscf_falcon_generate_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -130,17 +106,18 @@ class Falcon implements Alg, KeyAlg, KeySigner
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_falcon_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_falcon_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**
     *
     * @param Key $$key
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = vscf_falcon_generate_ephemeral_key_php($this->ctx, $$key);
+        $ctx = vscf_falcon_generate_ephemeral_key_php($this->ctx, $$key->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
@@ -148,6 +125,7 @@ class Falcon implements Alg, KeyAlg, KeySigner
     *
     * @param RawPublicKey $$rawKey
     * @return PublicKey
+    * @throws \Exception
     */
     public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
@@ -159,10 +137,11 @@ class Falcon implements Alg, KeyAlg, KeySigner
     *
     * @param PublicKey $$publicKey
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = vscf_falcon_export_public_key_php($this->ctx, $$publicKey);
+        $ctx = vscf_falcon_export_public_key_php($this->ctx, $$publicKey->getCtx());
         return new RawPublicKey($ctx);
     }
 
@@ -170,6 +149,7 @@ class Falcon implements Alg, KeyAlg, KeySigner
     *
     * @param RawPrivateKey $$rawKey
     * @return PrivateKey
+    * @throws \Exception
     */
     public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
@@ -181,10 +161,11 @@ class Falcon implements Alg, KeyAlg, KeySigner
     *
     * @param PrivateKey $$privateKey
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = vscf_falcon_export_private_key_php($this->ctx, $$privateKey);
+        $ctx = vscf_falcon_export_private_key_php($this->ctx, $$privateKey->getCtx());
         return new RawPrivateKey($ctx);
     }
 
@@ -195,7 +176,7 @@ class Falcon implements Alg, KeyAlg, KeySigner
     */
     public function canSign(PrivateKey $$privateKey): bool
     {
-        return vscf_falcon_can_sign_php($this->ctx, $$privateKey);
+        return vscf_falcon_can_sign_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -205,7 +186,7 @@ class Falcon implements Alg, KeyAlg, KeySigner
     */
     public function signatureLen(PrivateKey $$privateKey): int
     {
-        return vscf_falcon_signature_len_php($this->ctx, $$privateKey);
+        return vscf_falcon_signature_len_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -218,7 +199,7 @@ class Falcon implements Alg, KeyAlg, KeySigner
     */
     public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
     {
-        return vscf_falcon_sign_hash_php($this->ctx, $$privateKey, $$hashId, $$digest);
+        return vscf_falcon_sign_hash_php($this->ctx, $$privateKey->getCtx(), $$hashId, $$digest);
     }
 
     /**
@@ -228,7 +209,7 @@ class Falcon implements Alg, KeyAlg, KeySigner
     */
     public function canVerify(PublicKey $$publicKey): bool
     {
-        return vscf_falcon_can_verify_php($this->ctx, $$publicKey);
+        return vscf_falcon_can_verify_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**
@@ -241,7 +222,28 @@ class Falcon implements Alg, KeyAlg, KeySigner
     */
     public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
     {
-        return vscf_falcon_verify_hash_php($this->ctx, $$publicKey, $$hashId, $$digest, $$signature);
+        return vscf_falcon_verify_hash_php($this->ctx, $$publicKey->getCtx(), $$hashId, $$digest, $$signature);
+    }
+
+    /**
+    *
+    * @return void
+    * @throws \Exception
+    */
+    public function setupDefaults(): void
+    {
+        vscf_falcon_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateKey(): PrivateKey
+    {
+        $ctx = vscf_falcon_generate_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**

@@ -73,7 +73,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbkdf2_alg_id(this.ctxPtr);
             return proxyResult;
@@ -81,10 +81,10 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
 
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_pkcs5_pbkdf2_produce_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
@@ -100,25 +100,25 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureNumber('keyLen', keyLen);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const keyCapacity = keyLen;
             const keyCtxPtr = Module._vsc_buffer_new_with_capacity(keyCapacity);
-
+            
             try {
                 Module._vscf_pkcs5_pbkdf2_derive(this.ctxPtr, dataCtxPtr, keyLen, keyCtxPtr);
-
+            
                 const keyPtr = Module._vsc_buffer_bytes(keyCtxPtr);
                 const keyPtrLen = Module._vsc_buffer_len(keyCtxPtr);
                 const key = Module.HEAPU8.slice(keyPtr, keyPtr + keyPtrLen);
@@ -134,19 +134,19 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('salt', salt);
             precondition.ensureNumber('iterationCount', iterationCount);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const saltSize = salt.length * salt.BYTES_PER_ELEMENT;
             const saltPtr = Module._malloc(saltSize);
             Module.HEAP8.set(salt, saltPtr);
-
+            
             // Create C structure vsc_data_t.
             const saltCtxSize = Module._vsc_data_ctx_size();
             const saltCtxPtr = Module._malloc(saltCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(saltCtxPtr, saltPtr, saltSize);
-
+            
             try {
                 Module._vscf_pkcs5_pbkdf2_reset(this.ctxPtr, saltCtxPtr, iterationCount);
             } finally {
@@ -158,19 +158,19 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
         setInfo(info) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('info', info);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const infoSize = info.length * info.BYTES_PER_ELEMENT;
             const infoPtr = Module._malloc(infoSize);
             Module.HEAP8.set(info, infoPtr);
-
+            
             // Create C structure vsc_data_t.
             const infoCtxSize = Module._vsc_data_ctx_size();
             const infoCtxPtr = Module._malloc(infoCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(infoCtxPtr, infoPtr, infoSize);
-
+            
             try {
                 Module._vscf_pkcs5_pbkdf2_set_info(this.ctxPtr, infoCtxPtr);
             } finally {

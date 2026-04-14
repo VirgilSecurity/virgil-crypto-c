@@ -66,10 +66,10 @@ const initSignedDataInfo = (Module, modules) => {
 
         hashAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_signed_data_info_hash_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }

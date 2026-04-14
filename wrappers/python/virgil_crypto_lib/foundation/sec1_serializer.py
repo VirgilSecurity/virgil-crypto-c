@@ -35,15 +35,15 @@
 
 from ctypes import *
 from ._c_bridge import VscfSec1Serializer
-from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge import VscfStatus
+from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge._vscf_error import vscf_error_t
 from .key_serializer import KeySerializer
 
 
 class Sec1Serializer(KeySerializer):
     """Implements SEC 1 key serialization to DER format.
-    See also RFC 5480 and RFC 5915."""
+See also RFC 5480 and RFC 5915."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -59,17 +59,44 @@ class Sec1Serializer(KeySerializer):
     def set_asn1_writer(self, asn1_writer):
         self._lib_vscf_sec1_serializer.vscf_sec1_serializer_use_asn1_writer(self.ctx, asn1_writer.c_impl)
 
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        self._lib_vscf_sec1_serializer.vscf_sec1_serializer_setup_defaults(self.ctx)
+
+    def serialize_public_key_inplace(self, public_key):
+        """Serialize Public Key by using internal ASN.1 writer.
+Note, that caller code is responsible to reset ASN.1 writer with
+an output buffer."""
+        error = vscf_error_t()
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key_inplace(self.ctx, public_key.ctx, error)
+        VscfStatus.handle_status(error.status)
+        return result
+
+    def serialize_private_key_inplace(self, private_key):
+        """Serialize Private Key by using internal ASN.1 writer.
+Note, that caller code is responsible to reset ASN.1 writer with
+an output buffer."""
+        error = vscf_error_t()
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key_inplace(self.ctx, private_key.ctx, error)
+        VscfStatus.handle_status(error.status)
+        return result
+
+    def is_ec_key(self, key):
+        """Return true if given key is an Elliptic Curve key defined in the SEC 1."""
+        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_is_ec_key(key.c_impl)
+        return result
+
     def serialized_public_key_len(self, public_key):
         """Calculate buffer size enough to hold serialized public key.
 
-        Precondition: public key must be exportable."""
+Precondition: public key must be exportable."""
         result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialized_public_key_len(self.ctx, public_key.ctx)
         return result
 
     def serialize_public_key(self, public_key):
         """Serialize given public key to an interchangeable format.
 
-        Precondition: public key must be exportable."""
+Precondition: public key must be exportable."""
         out = Buffer(self.serialized_public_key_len(public_key=public_key))
         status = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key(self.ctx, public_key.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
@@ -78,40 +105,18 @@ class Sec1Serializer(KeySerializer):
     def serialized_private_key_len(self, private_key):
         """Calculate buffer size enough to hold serialized private key.
 
-        Precondition: private key must be exportable."""
+Precondition: private key must be exportable."""
         result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialized_private_key_len(self.ctx, private_key.ctx)
         return result
 
     def serialize_private_key(self, private_key):
         """Serialize given private key to an interchangeable format.
 
-        Precondition: private key must be exportable."""
+Precondition: private key must be exportable."""
         out = Buffer(self.serialized_private_key_len(private_key=private_key))
         status = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key(self.ctx, private_key.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
-
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        self._lib_vscf_sec1_serializer.vscf_sec1_serializer_setup_defaults(self.ctx)
-
-    def serialize_public_key_inplace(self, public_key):
-        """Serialize Public Key by using internal ASN.1 writer.
-        Note, that caller code is responsible to reset ASN.1 writer with
-        an output buffer."""
-        error = vscf_error_t()
-        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_public_key_inplace(self.ctx, public_key.ctx, error)
-        VscfStatus.handle_status(error.status)
-        return result
-
-    def serialize_private_key_inplace(self, private_key):
-        """Serialize Private Key by using internal ASN.1 writer.
-        Note, that caller code is responsible to reset ASN.1 writer with
-        an output buffer."""
-        error = vscf_error_t()
-        result = self._lib_vscf_sec1_serializer.vscf_sec1_serializer_serialize_private_key_inplace(self.ctx, private_key.ctx, error)
-        VscfStatus.handle_status(error.status)
-        return result
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

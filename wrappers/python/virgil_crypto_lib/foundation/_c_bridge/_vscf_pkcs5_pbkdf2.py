@@ -47,6 +47,7 @@ class vscf_pkcs5_pbkdf2_t(Structure):
 class VscfPkcs5Pbkdf2(object):
     """Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -69,6 +70,13 @@ class VscfPkcs5Pbkdf2(object):
         vscf_pkcs5_pbkdf2_use_hmac.argtypes = [POINTER(vscf_pkcs5_pbkdf2_t), POINTER(vscf_impl_t)]
         vscf_pkcs5_pbkdf2_use_hmac.restype = None
         return vscf_pkcs5_pbkdf2_use_hmac(ctx, hmac)
+
+    def vscf_pkcs5_pbkdf2_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_pkcs5_pbkdf2_setup_defaults = self._lib.vscf_pkcs5_pbkdf2_setup_defaults
+        vscf_pkcs5_pbkdf2_setup_defaults.argtypes = [POINTER(vscf_pkcs5_pbkdf2_t)]
+        vscf_pkcs5_pbkdf2_setup_defaults.restype = None
+        return vscf_pkcs5_pbkdf2_setup_defaults(ctx)
 
     def vscf_pkcs5_pbkdf2_alg_id(self, ctx):
         """Provide algorithm identificator."""
@@ -107,18 +115,11 @@ class VscfPkcs5Pbkdf2(object):
 
     def vscf_pkcs5_pbkdf2_set_info(self, ctx, info):
         """Setup application specific information (optional).
-        Can be empty."""
+Can be empty."""
         vscf_pkcs5_pbkdf2_set_info = self._lib.vscf_pkcs5_pbkdf2_set_info
         vscf_pkcs5_pbkdf2_set_info.argtypes = [POINTER(vscf_pkcs5_pbkdf2_t), vsc_data_t]
         vscf_pkcs5_pbkdf2_set_info.restype = None
         return vscf_pkcs5_pbkdf2_set_info(ctx, info)
-
-    def vscf_pkcs5_pbkdf2_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_pkcs5_pbkdf2_setup_defaults = self._lib.vscf_pkcs5_pbkdf2_setup_defaults
-        vscf_pkcs5_pbkdf2_setup_defaults.argtypes = [POINTER(vscf_pkcs5_pbkdf2_t)]
-        vscf_pkcs5_pbkdf2_setup_defaults.restype = None
-        return vscf_pkcs5_pbkdf2_setup_defaults(ctx)
 
     def vscf_pkcs5_pbkdf2_shallow_copy(self, ctx):
         vscf_pkcs5_pbkdf2_shallow_copy = self._lib.vscf_pkcs5_pbkdf2_shallow_copy

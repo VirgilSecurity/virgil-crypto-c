@@ -36,12 +36,13 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_ecies import vscf_ecies_t
-from ._vscf_error import vscf_error_t
-from ._vscf_raw_public_key import vscf_raw_public_key_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_error import vscf_error_t
+from ._vscf_ecies import vscf_ecies_t
+from ._vscf_mbedtls_mpi import vscf_mbedtls_mpi_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
 
 
 class vscf_ecc_t(Structure):
@@ -50,17 +51,9 @@ class vscf_ecc_t(Structure):
 
 class VscfEcc(object):
     """Elliptic curve cryptography implementation.
-    Supported curves:
-        - secp256r1."""
+Supported curves:
+    - secp256r1."""
 
-    # Defines whether a public key can be imported or not.
-    CAN_IMPORT_PUBLIC_KEY = True
-    # Define whether a public key can be exported or not.
-    CAN_EXPORT_PUBLIC_KEY = True
-    # Define whether a private key can be imported or not.
-    CAN_IMPORT_PRIVATE_KEY = True
-    # Define whether a private key can be exported or not.
-    CAN_EXPORT_PRIVATE_KEY = True
 
     def __init__(self):
         """Create underlying C context."""
@@ -91,9 +84,58 @@ class VscfEcc(object):
         vscf_ecc_use_ecies.restype = None
         return vscf_ecc_use_ecies(ctx, ecies)
 
+    def vscf_ecc_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_ecc_setup_defaults = self._lib.vscf_ecc_setup_defaults
+        vscf_ecc_setup_defaults.argtypes = [POINTER(vscf_ecc_t)]
+        vscf_ecc_setup_defaults.restype = c_int
+        return vscf_ecc_setup_defaults(ctx)
+
+    def vscf_ecc_write_signature(self, r, s, signature):
+        """Write R and S to ASN.1 structure.
+
+ECDSA-Sig-Value ::= SEQUENCE {
+    r INTEGER,
+    s INTEGER
+}"""
+        vscf_ecc_write_signature = self._lib.vscf_ecc_write_signature
+        vscf_ecc_write_signature.argtypes = [POINTER(vscf_mbedtls_mpi_t), POINTER(vscf_mbedtls_mpi_t), POINTER(vsc_buffer_t)]
+        vscf_ecc_write_signature.restype = None
+        return vscf_ecc_write_signature(r, s, signature)
+
+    def vscf_ecc_read_signature(self, signature, r, s):
+        """Read R and S from ASN.1 structure.
+
+ECDSA-Sig-Value ::= SEQUENCE {
+    r INTEGER,
+    s INTEGER
+}"""
+        vscf_ecc_read_signature = self._lib.vscf_ecc_read_signature
+        vscf_ecc_read_signature.argtypes = [vsc_data_t, POINTER(vscf_mbedtls_mpi_t), POINTER(vscf_mbedtls_mpi_t)]
+        vscf_ecc_read_signature.restype = c_int
+        return vscf_ecc_read_signature(signature, r, s)
+
+    def vscf_ecc_generate_key(self, ctx, alg_id, error):
+        """Generate new private key.
+Supported algorithm ids:
+    - secp256r1.
+
+Note, this operation might be slow."""
+        vscf_ecc_generate_key = self._lib.vscf_ecc_generate_key
+        vscf_ecc_generate_key.argtypes = [POINTER(vscf_ecc_t), c_int, POINTER(vscf_error_t)]
+        vscf_ecc_generate_key.restype = POINTER(vscf_impl_t)
+        return vscf_ecc_generate_key(ctx, alg_id, error)
+
+    def vscf_ecc_produce_alg_info_for_key(self, ctx, key):
+        """Produce algorithm information for public or private key."""
+        vscf_ecc_produce_alg_info_for_key = self._lib.vscf_ecc_produce_alg_info_for_key
+        vscf_ecc_produce_alg_info_for_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t)]
+        vscf_ecc_produce_alg_info_for_key.restype = POINTER(vscf_impl_t)
+        return vscf_ecc_produce_alg_info_for_key(ctx, key)
+
     def vscf_ecc_generate_ephemeral_key(self, ctx, key, error):
         """Generate ephemeral private key of the same type.
-        Note, this operation might be slow."""
+Note, this operation might be slow."""
         vscf_ecc_generate_ephemeral_key = self._lib.vscf_ecc_generate_ephemeral_key
         vscf_ecc_generate_ephemeral_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_ecc_generate_ephemeral_key.restype = POINTER(vscf_impl_t)
@@ -102,12 +144,12 @@ class VscfEcc(object):
     def vscf_ecc_import_public_key(self, ctx, raw_key, error):
         """Import public key from the raw binary format.
 
-        Return public key that is adopted and optimized to be used
-        with this particular algorithm.
+Return public key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be imported from the format defined in
+RFC 3447 Appendix A.1.1."""
         vscf_ecc_import_public_key = self._lib.vscf_ecc_import_public_key
         vscf_ecc_import_public_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_raw_public_key_t), POINTER(vscf_error_t)]
         vscf_ecc_import_public_key.restype = POINTER(vscf_impl_t)
@@ -116,9 +158,9 @@ class VscfEcc(object):
     def vscf_ecc_export_public_key(self, ctx, public_key, error):
         """Export public key to the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be exported in format defined in
+RFC 3447 Appendix A.1.1."""
         vscf_ecc_export_public_key = self._lib.vscf_ecc_export_public_key
         vscf_ecc_export_public_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_ecc_export_public_key.restype = POINTER(vscf_raw_public_key_t)
@@ -127,12 +169,12 @@ class VscfEcc(object):
     def vscf_ecc_import_private_key(self, ctx, raw_key, error):
         """Import private key from the raw binary format.
 
-        Return private key that is adopted and optimized to be used
-        with this particular algorithm.
+Return private key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be imported from the format defined in
+RFC 3447 Appendix A.1.2."""
         vscf_ecc_import_private_key = self._lib.vscf_ecc_import_private_key
         vscf_ecc_import_private_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_raw_private_key_t), POINTER(vscf_error_t)]
         vscf_ecc_import_private_key.restype = POINTER(vscf_impl_t)
@@ -141,9 +183,9 @@ class VscfEcc(object):
     def vscf_ecc_export_private_key(self, ctx, private_key, error):
         """Export private key in the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be exported in format defined in
+RFC 3447 Appendix A.1.2."""
         vscf_ecc_export_private_key = self._lib.vscf_ecc_export_private_key
         vscf_ecc_export_private_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_ecc_export_private_key.restype = POINTER(vscf_raw_private_key_t)
@@ -172,7 +214,7 @@ class VscfEcc(object):
 
     def vscf_ecc_can_decrypt(self, ctx, private_key, data_len):
         """Check if algorithm can decrypt data with a given key.
-        However, success result of decryption is not guaranteed."""
+However, success result of decryption is not guaranteed."""
         vscf_ecc_can_decrypt = self._lib.vscf_ecc_can_decrypt
         vscf_ecc_can_decrypt.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t), c_size_t]
         vscf_ecc_can_decrypt.restype = c_bool
@@ -201,7 +243,7 @@ class VscfEcc(object):
 
     def vscf_ecc_signature_len(self, ctx, private_key):
         """Return length in bytes required to hold signature.
-        Return zero if a given private key can not produce signatures."""
+Return zero if a given private key can not produce signatures."""
         vscf_ecc_signature_len = self._lib.vscf_ecc_signature_len
         vscf_ecc_signature_len.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t)]
         vscf_ecc_signature_len.restype = c_size_t
@@ -230,7 +272,7 @@ class VscfEcc(object):
 
     def vscf_ecc_compute_shared_key(self, ctx, public_key, private_key, shared_key):
         """Compute shared key for 2 asymmetric keys.
-        Note, computed shared key can be used only within symmetric cryptography."""
+Note, computed shared key can be used only within symmetric cryptography."""
         vscf_ecc_compute_shared_key = self._lib.vscf_ecc_compute_shared_key
         vscf_ecc_compute_shared_key.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
         vscf_ecc_compute_shared_key.restype = c_int
@@ -238,7 +280,7 @@ class VscfEcc(object):
 
     def vscf_ecc_shared_key_len(self, ctx, key):
         """Return number of bytes required to hold shared key.
-        Expect Public Key or Private Key."""
+Expect Public Key or Private Key."""
         vscf_ecc_shared_key_len = self._lib.vscf_ecc_shared_key_len
         vscf_ecc_shared_key_len.argtypes = [POINTER(vscf_ecc_t), POINTER(vscf_impl_t)]
         vscf_ecc_shared_key_len.restype = c_size_t
@@ -271,24 +313,6 @@ class VscfEcc(object):
         vscf_ecc_kem_decapsulate.argtypes = [POINTER(vscf_ecc_t), vsc_data_t, POINTER(vscf_impl_t), POINTER(vsc_buffer_t)]
         vscf_ecc_kem_decapsulate.restype = c_int
         return vscf_ecc_kem_decapsulate(ctx, encapsulated_key, private_key, shared_key)
-
-    def vscf_ecc_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_ecc_setup_defaults = self._lib.vscf_ecc_setup_defaults
-        vscf_ecc_setup_defaults.argtypes = [POINTER(vscf_ecc_t)]
-        vscf_ecc_setup_defaults.restype = c_int
-        return vscf_ecc_setup_defaults(ctx)
-
-    def vscf_ecc_generate_key(self, ctx, alg_id, error):
-        """Generate new private key.
-        Supported algorithm ids:
-            - secp256r1.
-
-        Note, this operation might be slow."""
-        vscf_ecc_generate_key = self._lib.vscf_ecc_generate_key
-        vscf_ecc_generate_key.argtypes = [POINTER(vscf_ecc_t), c_int, POINTER(vscf_error_t)]
-        vscf_ecc_generate_key.restype = POINTER(vscf_impl_t)
-        return vscf_ecc_generate_key(ctx, alg_id, error)
 
     def vscf_ecc_shallow_copy(self, ctx):
         vscf_ecc_shallow_copy = self._lib.vscf_ecc_shallow_copy

@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class KeyMaterialRng implements AutoCloseable, Random {
 
-    public int getKeyMaterialLenMin() {
-        return 32;
-    }
-
-    public int getKeyMaterialLenMax() {
-        return 512;
-    }
-
-    public void resetKeyMaterial(byte[] keyMaterial) {
-        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
-    }
-
     public long cCtx;
 
     public KeyMaterialRng() {
@@ -88,6 +76,10 @@ public class KeyMaterialRng implements AutoCloseable, Random {
 
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.keyMaterialRng_reseed(this.cCtx);
+    }
+
+    public void resetKeyMaterial(byte[] keyMaterial) {
+        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
     }
 
 }

@@ -126,11 +126,11 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
         return FoundationJNI.INSTANCE.asn1rd_readInt64(this.cCtx);
     }
 
-    public long readUint() {
+    public int readUint() {
         return FoundationJNI.INSTANCE.asn1rd_readUint(this.cCtx);
     }
 
-    public short readUint8() {
+    public int readUint8() {
         return FoundationJNI.INSTANCE.asn1rd_readUint8(this.cCtx);
     }
 
@@ -138,7 +138,7 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
         return FoundationJNI.INSTANCE.asn1rd_readUint16(this.cCtx);
     }
 
-    public long readUint32() {
+    public int readUint32() {
         return FoundationJNI.INSTANCE.asn1rd_readUint32(this.cCtx);
     }
 
@@ -184,6 +184,14 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
 
     public int readSet() {
         return FoundationJNI.INSTANCE.asn1rd_readSet(this.cCtx);
+    }
+
+    public boolean mbedtlsHasError(int code) {
+        return FoundationJNI.INSTANCE.asn1rd_mbedtlsHasError(this.cCtx, code);
+    }
+
+    public byte[] readTagData(int tag) {
+        return FoundationJNI.INSTANCE.asn1rd_readTagData(this.cCtx, tag);
     }
 
 }

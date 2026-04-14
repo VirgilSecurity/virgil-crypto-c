@@ -70,11 +70,6 @@ public class KeyInfo implements AutoCloseable {
         clearResources();
     }
 
-    public KeyInfo(AlgInfo algInfo) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.keyInfo_new(algInfo);
-    }
-
     public boolean isCompound() {
         return FoundationJNI.INSTANCE.keyInfo_isCompound(this.cCtx);
     }

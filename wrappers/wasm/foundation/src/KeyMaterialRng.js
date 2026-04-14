@@ -37,22 +37,6 @@
 const initKeyMaterialRng = (Module, modules) => {
     class KeyMaterialRng {
 
-        static get KEY_MATERIAL_LEN_MIN() {
-            return 32;
-        }
-
-        get KEY_MATERIAL_LEN_MIN() {
-            return 32;
-        }
-
-        static get KEY_MATERIAL_LEN_MAX() {
-            return 512;
-        }
-
-        get KEY_MATERIAL_LEN_MAX() {
-            return 512;
-        }
-
         constructor(ctxPtr) {
             this.name = 'KeyMaterialRng';
 
@@ -80,17 +64,33 @@ const initKeyMaterialRng = (Module, modules) => {
             }
         }
 
+        static get KEY_MATERIAL_LEN_MIN() {
+            return 32;
+        }
+
+        get KEY_MATERIAL_LEN_MIN() {
+            return 32;
+        }
+
+        static get KEY_MATERIAL_LEN_MAX() {
+            return 512;
+        }
+
+        get KEY_MATERIAL_LEN_MAX() {
+            return 512;
+        }
+
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             const dataCapacity = dataLen;
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_key_material_rng_random(this.ctxPtr, dataLen, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);
@@ -109,19 +109,19 @@ const initKeyMaterialRng = (Module, modules) => {
         resetKeyMaterial(keyMaterial) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyMaterial', keyMaterial);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const keyMaterialSize = keyMaterial.length * keyMaterial.BYTES_PER_ELEMENT;
             const keyMaterialPtr = Module._malloc(keyMaterialSize);
             Module.HEAP8.set(keyMaterial, keyMaterialPtr);
-
+            
             // Create C structure vsc_data_t.
             const keyMaterialCtxSize = Module._vsc_data_ctx_size();
             const keyMaterialCtxPtr = Module._malloc(keyMaterialCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyMaterialCtxPtr, keyMaterialPtr, keyMaterialSize);
-
+            
             try {
                 Module._vscf_key_material_rng_reset_key_material(this.ctxPtr, keyMaterialCtxPtr);
             } finally {

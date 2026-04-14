@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
 
-    public void setAsn1Writer(Asn1Writer asn1Writer) {
-        FoundationJNI.INSTANCE.algInfoDerSerializer_setAsn1Writer(this.cCtx, asn1Writer);
-    }
-
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.algInfoDerSerializer_setupDefaults(this.cCtx);
-    }
-
-    public int serializeInplace(AlgInfo algInfo) {
-        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeInplace(this.cCtx, algInfo);
-    }
-
     public long cCtx;
 
     public AlgInfoDerSerializer() {
@@ -82,12 +70,108 @@ public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
         clearResources();
     }
 
+    public void setAsn1Writer(Asn1Writer asn1Writer) {
+        FoundationJNI.INSTANCE.algInfoDerSerializer_setAsn1Writer(this.cCtx, asn1Writer);
+    }
+
     public int serializedLen(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedLen(this.cCtx, algInfo);
     }
 
     public byte[] serialize(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algInfoDerSerializer_serialize(this.cCtx, algInfo);
+    }
+
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.algInfoDerSerializer_setupDefaults(this.cCtx);
+    }
+
+    public boolean isAlgRequireNullParams(AlgId algId) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_isAlgRequireNullParams(algId);
+    }
+
+    public int serializedSimpleAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedSimpleAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeSimpleAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeSimpleAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedKdfAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedKdfAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeKdfAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeKdfAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedHkdfAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedHkdfAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeHkdfAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeHkdfAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedHmacAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedHmacAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeHmacAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeHmacAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedCipherAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedCipherAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeCipherAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeCipherAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedPbkdf2AlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedPbkdf2AlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializePbkdf2AlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializePbkdf2AlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedPbes2AlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedPbes2AlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializePbes2AlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializePbes2AlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedEccAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedEccAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeEccAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeEccAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedCompoundKeyAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedCompoundKeyAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeCompoundKeyAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeCompoundKeyAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializedHybridKeyAlgInfoLen(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedHybridKeyAlgInfoLen(this.cCtx, algInfo);
+    }
+
+    public int serializeHybridKeyAlgInfo(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeHybridKeyAlgInfo(this.cCtx, algInfo);
+    }
+
+    public int serializeInplace(AlgInfo algInfo) {
+        return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeInplace(this.cCtx, algInfo);
     }
 
 }

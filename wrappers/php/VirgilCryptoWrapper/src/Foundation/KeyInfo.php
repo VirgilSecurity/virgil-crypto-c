@@ -46,16 +46,6 @@ class KeyInfo
     private $ctx;
 
     /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return KeyInfo
-    */
-    public static function withAlgInfo(AlgInfo $$algInfo): KeyInfo
-    {
-        return vscf_key_info_with_alg_info_php($$algInfo);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void

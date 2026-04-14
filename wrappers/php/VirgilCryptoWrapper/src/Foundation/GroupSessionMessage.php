@@ -117,6 +117,7 @@ class GroupSessionMessage
     *
     * @param string $$input
     * @return GroupSessionMessage
+    * @throws \Exception
     */
     public static function deserialize(string $$input): GroupSessionMessage
     {

@@ -35,7 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
+from ._vsce_impl import vsce_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
@@ -46,7 +46,11 @@ class vsce_phe_cipher_t(Structure):
 
 class VscePheCipher(object):
     """Class for encryption using PHE account key
-    This class is thread-safe."""
+This class is thread-safe."""
+
+    SALT_LEN = 32
+    KEY_LEN = 32
+    NONCE_LEN = 12
 
     def __init__(self):
         """Create underlying C context."""
@@ -66,7 +70,6 @@ class VscePheCipher(object):
         return vsce_phe_cipher_delete(ctx)
 
     def vsce_phe_cipher_use_random(self, ctx, random):
-        """Random used for salt generation"""
         vsce_phe_cipher_use_random = self._lib.vsce_phe_cipher_use_random
         vsce_phe_cipher_use_random.argtypes = [POINTER(vsce_phe_cipher_t), POINTER(vscf_impl_t)]
         vsce_phe_cipher_use_random.restype = None

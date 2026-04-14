@@ -47,6 +47,7 @@ class vscf_pkcs5_pbes2_t(Structure):
 class VscfPkcs5Pbes2(object):
     """Virgil Security implementation of the PBES2 (RFC 8018) algorithm."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -75,6 +76,13 @@ class VscfPkcs5Pbes2(object):
         vscf_pkcs5_pbes2_use_cipher.argtypes = [POINTER(vscf_pkcs5_pbes2_t), POINTER(vscf_impl_t)]
         vscf_pkcs5_pbes2_use_cipher.restype = None
         return vscf_pkcs5_pbes2_use_cipher(ctx, cipher)
+
+    def vscf_pkcs5_pbes2_reset(self, ctx, pwd):
+        """Configure cipher with a new password."""
+        vscf_pkcs5_pbes2_reset = self._lib.vscf_pkcs5_pbes2_reset
+        vscf_pkcs5_pbes2_reset.argtypes = [POINTER(vscf_pkcs5_pbes2_t), vsc_data_t]
+        vscf_pkcs5_pbes2_reset.restype = None
+        return vscf_pkcs5_pbes2_reset(ctx, pwd)
 
     def vscf_pkcs5_pbes2_alg_id(self, ctx):
         """Provide algorithm identificator."""
@@ -131,13 +139,6 @@ class VscfPkcs5Pbes2(object):
         vscf_pkcs5_pbes2_decrypted_len.argtypes = [POINTER(vscf_pkcs5_pbes2_t), c_size_t]
         vscf_pkcs5_pbes2_decrypted_len.restype = c_size_t
         return vscf_pkcs5_pbes2_decrypted_len(ctx, data_len)
-
-    def vscf_pkcs5_pbes2_reset(self, ctx, pwd):
-        """Configure cipher with a new password."""
-        vscf_pkcs5_pbes2_reset = self._lib.vscf_pkcs5_pbes2_reset
-        vscf_pkcs5_pbes2_reset.argtypes = [POINTER(vscf_pkcs5_pbes2_t), vsc_data_t]
-        vscf_pkcs5_pbes2_reset.restype = None
-        return vscf_pkcs5_pbes2_reset(ctx, pwd)
 
     def vscf_pkcs5_pbes2_shallow_copy(self, ctx):
         vscf_pkcs5_pbes2_shallow_copy = self._lib.vscf_pkcs5_pbes2_shallow_copy

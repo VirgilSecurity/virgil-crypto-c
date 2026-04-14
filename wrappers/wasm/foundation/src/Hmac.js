@@ -73,7 +73,7 @@ const initHmac = (Module, modules) => {
 
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hmac_alg_id(this.ctxPtr);
             return proxyResult;
@@ -81,10 +81,10 @@ const initHmac = (Module, modules) => {
 
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hmac_produce_alg_info(this.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
@@ -98,7 +98,7 @@ const initHmac = (Module, modules) => {
 
         digestLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_hmac_digest_len(this.ctxPtr);
             return proxyResult;
@@ -108,37 +108,37 @@ const initHmac = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
-
+            
             // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             const macCapacity = this.digestLen();
             const macCtxPtr = Module._vsc_buffer_new_with_capacity(macCapacity);
-
+            
             try {
                 Module._vscf_hmac_mac(this.ctxPtr, keyCtxPtr, dataCtxPtr, macCtxPtr);
-
+            
                 const macPtr = Module._vsc_buffer_bytes(macCtxPtr);
                 const macPtrLen = Module._vsc_buffer_len(macCtxPtr);
                 const mac = Module.HEAPU8.slice(macPtr, macPtr + macPtrLen);
@@ -155,19 +155,19 @@ const initHmac = (Module, modules) => {
         start(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
-
+            
             // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
-
+            
             try {
                 Module._vscf_hmac_start(this.ctxPtr, keyCtxPtr);
             } finally {
@@ -179,19 +179,19 @@ const initHmac = (Module, modules) => {
         update(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             try {
                 Module._vscf_hmac_update(this.ctxPtr, dataCtxPtr);
             } finally {
@@ -202,13 +202,13 @@ const initHmac = (Module, modules) => {
 
         finish() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const macCapacity = this.digestLen();
             const macCtxPtr = Module._vsc_buffer_new_with_capacity(macCapacity);
-
+            
             try {
                 Module._vscf_hmac_finish(this.ctxPtr, macCtxPtr);
-
+            
                 const macPtr = Module._vsc_buffer_bytes(macCtxPtr);
                 const macPtrLen = Module._vsc_buffer_len(macCtxPtr);
                 const mac = Module.HEAPU8.slice(macPtr, macPtr + macPtrLen);

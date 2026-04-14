@@ -76,31 +76,12 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
 
     /**
     *
-    * @return void
-    */
-    public function setupDefaults(): void
-    {
-        vscf_alg_info_der_serializer_setup_defaults_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeInplace(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_inplace_php($this->ctx, $$algInfo);
-    }
-
-    /**
-    *
     * @param AlgInfo $$algInfo
     * @return int
     */
     public function serializedLen(AlgInfo $$algInfo): int
     {
-        return vscf_alg_info_der_serializer_serialized_len_php($this->ctx, $$algInfo);
+        return vscf_alg_info_der_serializer_serialized_len_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**
@@ -110,7 +91,236 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
     */
     public function serialize(AlgInfo $$algInfo): string
     {
-        return vscf_alg_info_der_serializer_serialize_php($this->ctx, $$algInfo);
+        return vscf_alg_info_der_serializer_serialize_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        vscf_alg_info_der_serializer_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param AlgId $$algId
+    * @return bool
+    */
+    public static function isAlgRequireNullParams(AlgId $$algId): bool
+    {
+        return vscf_alg_info_der_serializer_is_alg_require_null_params_php($$algId);
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedSimpleAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_simple_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeSimpleAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_simple_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedKdfAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_kdf_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeKdfAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_kdf_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedHkdfAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeHkdfAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_hkdf_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedHmacAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_hmac_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeHmacAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_hmac_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedCipherAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeCipherAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_cipher_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedPbkdf2AlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializePbkdf2AlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedPbes2AlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializePbes2AlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_pbes2_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedEccAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_ecc_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeEccAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_ecc_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedCompoundKeyAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeCompoundKeyAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_compound_key_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializedHybridKeyAlgInfoLen(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeHybridKeyAlgInfo(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info_php($this->ctx, $$algInfo->getCtx());
+    }
+
+    /**
+    *
+    * @param AlgInfo $$algInfo
+    * @return int
+    */
+    public function serializeInplace(AlgInfo $$algInfo): int
+    {
+        return vscf_alg_info_der_serializer_serialize_inplace_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

@@ -44,7 +44,7 @@ class AuthDecrypt(object):
     @abstractmethod
     def auth_decrypt(self, data, auth_data, tag):
         """Decrypt given data.
-        If 'tag' is not given, then it will be taken from the 'enc'."""
+If 'tag' is not given, then it will be taken from the 'enc'."""
         raise NotImplementedError()
 
     @abstractmethod

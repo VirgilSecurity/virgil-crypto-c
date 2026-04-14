@@ -146,7 +146,7 @@ class Pythia
     * @return array
     * @throws \Exception
     */
-    public static function blind(string $$password): array
+    public static function blind(string $$password)
     {
         return vscp_pythia_blind_php($$password);
     }
@@ -171,7 +171,7 @@ class Pythia
     * @return array
     * @throws \Exception
     */
-    public static function computeTransformationKeyPair(string $$transformationKeyId, string $$pythiaSecret, string $$pythiaScopeSecret): array
+    public static function computeTransformationKeyPair(string $$transformationKeyId, string $$pythiaSecret, string $$pythiaScopeSecret)
     {
         return vscp_pythia_compute_transformation_key_pair_php($$transformationKeyId, $$pythiaSecret, $$pythiaScopeSecret);
     }
@@ -184,7 +184,7 @@ class Pythia
     * @return array
     * @throws \Exception
     */
-    public static function transform(string $$blindedPassword, string $$tweak, string $$transformationPrivateKey): array
+    public static function transform(string $$blindedPassword, string $$tweak, string $$transformationPrivateKey)
     {
         return vscp_pythia_transform_php($$blindedPassword, $$tweak, $$transformationPrivateKey);
     }
@@ -199,7 +199,7 @@ class Pythia
     * @return array
     * @throws \Exception
     */
-    public static function prove(string $$transformedPassword, string $$blindedPassword, string $$transformedTweak, string $$transformationPrivateKey, string $$transformationPublicKey): array
+    public static function prove(string $$transformedPassword, string $$blindedPassword, string $$transformedTweak, string $$transformationPrivateKey, string $$transformationPublicKey)
     {
         return vscp_pythia_prove_php($$transformedPassword, $$blindedPassword, $$transformedTweak, $$transformationPrivateKey, $$transformationPublicKey);
     }
@@ -213,6 +213,7 @@ class Pythia
     * @param string $$proofValueC
     * @param string $$proofValueU
     * @return bool
+    * @throws \Exception
     */
     public static function verify(string $$transformedPassword, string $$blindedPassword, string $$tweak, string $$transformationPublicKey, string $$proofValueC, string $$proofValueU): bool
     {

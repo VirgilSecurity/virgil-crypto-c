@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class PaddingParams implements AutoCloseable {
 
-    public int getDefaultFrameMin() {
-        return 32;
-    }
-
-    public int getDefaultFrame() {
-        return 160;
-    }
-
-    public int getDefaultFrameMax() {
-        return 256;
-    }
-
     public long cCtx;
 
     public PaddingParams() {
@@ -82,9 +70,16 @@ public class PaddingParams implements AutoCloseable {
         clearResources();
     }
 
-    public PaddingParams(int frame, int frameMax) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new(frame, frameMax);
+    public int getDefaultFrameMin() {
+        return 32;
+    }
+
+    public int getDefaultFrame() {
+        return 160;
+    }
+
+    public int getDefaultFrameMax() {
+        return 256;
     }
 
     public int frame() {

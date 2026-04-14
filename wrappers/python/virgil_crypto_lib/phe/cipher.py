@@ -42,7 +42,11 @@ from virgil_crypto_lib.common._c_bridge import Buffer
 
 class Cipher(object):
     """Class for encryption using PHE account key
-    This class is thread-safe."""
+This class is thread-safe."""
+
+    SALT_LEN = 32
+    KEY_LEN = 32
+    NONCE_LEN = 12
 
     def __init__(self):
         """Create underlying C context."""
@@ -76,7 +80,7 @@ class Cipher(object):
         """Encrypts data using account key"""
         d_plain_text = Data(plain_text)
         d_account_key = Data(account_key)
-        cipher_text = Buffer(self.encrypt_len(plain_text_len=len(plain_text)))
+        cipher_text = Buffer(self.encrypt_len(plain_text=len(plain_text)))
         status = self._lib_vsce_phe_cipher.vsce_phe_cipher_encrypt(self.ctx, d_plain_text.data, d_account_key.data, cipher_text.c_buffer)
         VsceStatus.handle_status(status)
         return cipher_text.get_bytes()
@@ -85,7 +89,7 @@ class Cipher(object):
         """Decrypts data using account key"""
         d_cipher_text = Data(cipher_text)
         d_account_key = Data(account_key)
-        plain_text = Buffer(self.decrypt_len(cipher_text_len=len(cipher_text)))
+        plain_text = Buffer(self.decrypt_len(cipher_text=len(cipher_text)))
         status = self._lib_vsce_phe_cipher.vsce_phe_cipher_decrypt(self.ctx, d_cipher_text.data, d_account_key.data, plain_text.c_buffer)
         VsceStatus.handle_status(status)
         return plain_text.get_bytes()
@@ -95,7 +99,7 @@ class Cipher(object):
         d_plain_text = Data(plain_text)
         d_additional_data = Data(additional_data)
         d_account_key = Data(account_key)
-        cipher_text = Buffer(self.encrypt_len(plain_text_len=len(plain_text)))
+        cipher_text = Buffer(self.encrypt_len(plain_text=len(plain_text)))
         status = self._lib_vsce_phe_cipher.vsce_phe_cipher_auth_encrypt(self.ctx, d_plain_text.data, d_additional_data.data, d_account_key.data, cipher_text.c_buffer)
         VsceStatus.handle_status(status)
         return cipher_text.get_bytes()
@@ -105,7 +109,7 @@ class Cipher(object):
         d_cipher_text = Data(cipher_text)
         d_additional_data = Data(additional_data)
         d_account_key = Data(account_key)
-        plain_text = Buffer(self.decrypt_len(cipher_text_len=len(cipher_text)))
+        plain_text = Buffer(self.decrypt_len(cipher_text=len(cipher_text)))
         status = self._lib_vsce_phe_cipher.vsce_phe_cipher_auth_decrypt(self.ctx, d_cipher_text.data, d_additional_data.data, d_account_key.data, plain_text.c_buffer)
         VsceStatus.handle_status(status)
         return plain_text.get_bytes()

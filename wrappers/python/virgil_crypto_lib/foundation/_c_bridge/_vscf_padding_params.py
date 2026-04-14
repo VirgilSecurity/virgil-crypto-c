@@ -65,14 +65,6 @@ class VscfPaddingParams(object):
         vscf_padding_params_delete.restype = None
         return vscf_padding_params_delete(ctx)
 
-    def vscf_padding_params_new_with_constraints(self, frame, frame_max):
-        """Build padding params with given constraints.
-        Next formula can clarify what frame is: padding_length = data_length MOD frame"""
-        vscf_padding_params_new_with_constraints = self._lib.vscf_padding_params_new_with_constraints
-        vscf_padding_params_new_with_constraints.argtypes = [c_size_t, c_size_t]
-        vscf_padding_params_new_with_constraints.restype = POINTER(vscf_padding_params_t)
-        return vscf_padding_params_new_with_constraints(frame, frame_max)
-
     def vscf_padding_params_frame(self, ctx):
         """Return padding frame in bytes."""
         vscf_padding_params_frame = self._lib.vscf_padding_params_frame

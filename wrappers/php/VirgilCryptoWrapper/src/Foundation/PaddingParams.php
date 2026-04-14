@@ -50,17 +50,6 @@ class PaddingParams
     const DEFAULT_FRAME_MAX = 256;
 
     /**
-    *
-    * @param int $$frame
-    * @param int $$frameMax
-    * @return PaddingParams
-    */
-    public static function withConstraints(int $$frame, int $$frameMax): PaddingParams
-    {
-        return vscf_padding_params_with_constraints_php($$frame, $$frameMax);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void

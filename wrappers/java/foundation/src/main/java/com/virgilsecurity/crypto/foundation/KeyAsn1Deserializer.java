@@ -38,22 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
 
-    public void setAsn1Reader(Asn1Reader asn1Reader) {
-        FoundationJNI.INSTANCE.keyAsn1Deserializer_setAsn1Reader(this.cCtx, asn1Reader);
-    }
-
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.keyAsn1Deserializer_setupDefaults(this.cCtx);
-    }
-
-    public RawPublicKey deserializePublicKeyInplace() throws FoundationException {
-        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKeyInplace(this.cCtx);
-    }
-
-    public RawPrivateKey deserializePrivateKeyInplace() throws FoundationException {
-        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKeyInplace(this.cCtx);
-    }
-
     public long cCtx;
 
     public KeyAsn1Deserializer() {
@@ -86,12 +70,36 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
         clearResources();
     }
 
+    public void setAsn1Reader(Asn1Reader asn1Reader) {
+        FoundationJNI.INSTANCE.keyAsn1Deserializer_setAsn1Reader(this.cCtx, asn1Reader);
+    }
+
     public RawPublicKey deserializePublicKey(byte[] publicKeyData) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKey(this.cCtx, publicKeyData);
     }
 
     public RawPrivateKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKey(this.cCtx, privateKeyData);
+    }
+
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.keyAsn1Deserializer_setupDefaults(this.cCtx);
+    }
+
+    public RawPublicKey deserializePublicKeyInplace() throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKeyInplace(this.cCtx);
+    }
+
+    public RawPrivateKey deserializePrivateKeyInplace() throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKeyInplace(this.cCtx);
+    }
+
+    public RawPrivateKey deserializePkcs8PrivateKeyInplace(int seqLeftLen, int version) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePkcs8PrivateKeyInplace(this.cCtx, seqLeftLen, version);
+    }
+
+    public RawPrivateKey deserializeSec1PrivateKeyInplace(int seqLeftLen, int version, AlgInfo algInfo) throws FoundationException {
+        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializeSec1PrivateKeyInplace(this.cCtx, seqLeftLen, version, algInfo);
     }
 
 }

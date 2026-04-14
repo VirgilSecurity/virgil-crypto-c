@@ -38,10 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Kdf2 implements AutoCloseable, Alg, Kdf {
 
-    public void setHash(Hash hash) {
-        FoundationJNI.INSTANCE.kdf2_setHash(this.cCtx, hash);
-    }
-
     public long cCtx;
 
     public Kdf2() {
@@ -72,6 +68,10 @@ public class Kdf2 implements AutoCloseable, Alg, Kdf {
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setHash(Hash hash) {
+        FoundationJNI.INSTANCE.kdf2_setHash(this.cCtx, hash);
     }
 
     public AlgId algId() {

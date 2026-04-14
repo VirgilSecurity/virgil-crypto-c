@@ -92,7 +92,7 @@ class Verifier
     */
     public function verify(PublicKey $$publicKey): bool
     {
-        return vscf_verifier_verify_php($this->ctx, $$publicKey);
+        return vscf_verifier_verify_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**

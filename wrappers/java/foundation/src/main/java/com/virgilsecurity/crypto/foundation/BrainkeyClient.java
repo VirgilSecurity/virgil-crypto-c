@@ -38,26 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class BrainkeyClient implements AutoCloseable {
 
-    public int getPointLen() {
-        return 65;
-    }
-
-    public int getMpiLen() {
-        return 32;
-    }
-
-    public int getSeedLen() {
-        return 32;
-    }
-
-    public int getMaxPasswordLen() {
-        return 128;
-    }
-
-    public int getMaxKeyNameLen() {
-        return 128;
-    }
-
     public long cCtx;
 
     public BrainkeyClient() {
@@ -96,6 +76,26 @@ public class BrainkeyClient implements AutoCloseable {
 
     public void setOperationRandom(Random operationRandom) {
         FoundationJNI.INSTANCE.brainkeyClient_setOperationRandom(this.cCtx, operationRandom);
+    }
+
+    public int getPointLen() {
+        return 65;
+    }
+
+    public int getMpiLen() {
+        return 32;
+    }
+
+    public int getSeedLen() {
+        return 32;
+    }
+
+    public int getMaxPasswordLen() {
+        return 128;
+    }
+
+    public int getMaxKeyNameLen() {
+        return 128;
     }
 
     public void setupDefaults() throws FoundationException {

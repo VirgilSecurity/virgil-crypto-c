@@ -44,10 +44,11 @@ interface KeyAlg extends Ctx
     *
     * @param Key $$key
     * @return PrivateKey
+    * @throws \Exception
     */
     public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = ($this->ctx, $$key);
+        $ctx = ($this->ctx, $$key->getCtx());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
@@ -55,6 +56,7 @@ interface KeyAlg extends Ctx
     *
     * @param RawPublicKey $$rawKey
     * @return PublicKey
+    * @throws \Exception
     */
     public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
@@ -66,10 +68,11 @@ interface KeyAlg extends Ctx
     *
     * @param PublicKey $$publicKey
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = ($this->ctx, $$publicKey);
+        $ctx = ($this->ctx, $$publicKey->getCtx());
         return new RawPublicKey($ctx);
     }
 
@@ -77,6 +80,7 @@ interface KeyAlg extends Ctx
     *
     * @param RawPrivateKey $$rawKey
     * @return PrivateKey
+    * @throws \Exception
     */
     public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
@@ -88,10 +92,11 @@ interface KeyAlg extends Ctx
     *
     * @param PrivateKey $$privateKey
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = ($this->ctx, $$privateKey);
+        $ctx = ($this->ctx, $$privateKey->getCtx());
         return new RawPrivateKey($ctx);
     }
 

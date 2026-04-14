@@ -67,14 +67,14 @@ const initFakeRandom = (Module, modules) => {
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
-
+            
             const dataCapacity = dataLen;
             const dataCtxPtr = Module._vsc_buffer_new_with_capacity(dataCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_fake_random_random(this.ctxPtr, dataLen, dataCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const dataPtr = Module._vsc_buffer_bytes(dataCtxPtr);
                 const dataPtrLen = Module._vsc_buffer_len(dataCtxPtr);
                 const data = Module.HEAPU8.slice(dataPtr, dataPtr + dataPtrLen);
@@ -92,10 +92,10 @@ const initFakeRandom = (Module, modules) => {
 
         isStrong() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_fake_random_is_strong(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
@@ -103,14 +103,14 @@ const initFakeRandom = (Module, modules) => {
         gather(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
-
+            
             const outCapacity = len;
             const outCtxPtr = Module._vsc_buffer_new_with_capacity(outCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_fake_random_gather(this.ctxPtr, len, outCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const outPtr = Module._vsc_buffer_bytes(outCtxPtr);
                 const outPtrLen = Module._vsc_buffer_len(outCtxPtr);
                 const out = Module.HEAPU8.slice(outPtr, outPtr + outPtrLen);
@@ -122,26 +122,25 @@ const initFakeRandom = (Module, modules) => {
 
         setupSourceByte(byteSource) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            precondition.ensureNumber('byteSource', byteSource);
             Module._vscf_fake_random_setup_source_byte(this.ctxPtr, byteSource);
         }
 
         setupSourceData(dataSource) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('dataSource', dataSource);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSourceSize = dataSource.length * dataSource.BYTES_PER_ELEMENT;
             const dataSourcePtr = Module._malloc(dataSourceSize);
             Module.HEAP8.set(dataSource, dataSourcePtr);
-
+            
             // Create C structure vsc_data_t.
             const dataSourceCtxSize = Module._vsc_data_ctx_size();
             const dataSourceCtxPtr = Module._malloc(dataSourceCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataSourceCtxPtr, dataSourcePtr, dataSourceSize);
-
+            
             try {
                 Module._vscf_fake_random_setup_source_data(this.ctxPtr, dataSourceCtxPtr);
             } finally {

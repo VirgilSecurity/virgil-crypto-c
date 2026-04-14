@@ -80,19 +80,19 @@ const initGroupSessionTicket = (Module, modules) => {
         setupTicketAsNew(sessionId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('sessionId', sessionId);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const sessionIdSize = sessionId.length * sessionId.BYTES_PER_ELEMENT;
             const sessionIdPtr = Module._malloc(sessionIdSize);
             Module.HEAP8.set(sessionId, sessionIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const sessionIdCtxSize = Module._vsc_data_ctx_size();
             const sessionIdCtxPtr = Module._malloc(sessionIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(sessionIdCtxPtr, sessionIdPtr, sessionIdSize);
-
+            
             try {
                 const proxyResult = Module._vscf_group_session_ticket_setup_ticket_as_new(this.ctxPtr, sessionIdCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
@@ -104,10 +104,10 @@ const initGroupSessionTicket = (Module, modules) => {
 
         getTicketMessage() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_group_session_ticket_get_ticket_message(this.ctxPtr);
-
+            
             const jsResult = modules.GroupSessionMessage.newAndUseCContext(proxyResult);
             return jsResult;
         }

@@ -88,55 +88,55 @@ const initRatchetSession = (Module, modules) => {
             precondition.ensureImplementInterface('receiverOneTimePublicKey', receiverOneTimePublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('receiverOneTimeKeyId', receiverOneTimeKeyId);
             precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const senderIdentityKeyIdSize = senderIdentityKeyId.length * senderIdentityKeyId.BYTES_PER_ELEMENT;
             const senderIdentityKeyIdPtr = Module._malloc(senderIdentityKeyIdSize);
             Module.HEAP8.set(senderIdentityKeyId, senderIdentityKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const senderIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
             const senderIdentityKeyIdCtxPtr = Module._malloc(senderIdentityKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(senderIdentityKeyIdCtxPtr, senderIdentityKeyIdPtr, senderIdentityKeyIdSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const receiverIdentityKeyIdSize = receiverIdentityKeyId.length * receiverIdentityKeyId.BYTES_PER_ELEMENT;
             const receiverIdentityKeyIdPtr = Module._malloc(receiverIdentityKeyIdSize);
             Module.HEAP8.set(receiverIdentityKeyId, receiverIdentityKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const receiverIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
             const receiverIdentityKeyIdCtxPtr = Module._malloc(receiverIdentityKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(receiverIdentityKeyIdCtxPtr, receiverIdentityKeyIdPtr, receiverIdentityKeyIdSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const receiverLongTermKeyIdSize = receiverLongTermKeyId.length * receiverLongTermKeyId.BYTES_PER_ELEMENT;
             const receiverLongTermKeyIdPtr = Module._malloc(receiverLongTermKeyIdSize);
             Module.HEAP8.set(receiverLongTermKeyId, receiverLongTermKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const receiverLongTermKeyIdCtxSize = Module._vsc_data_ctx_size();
             const receiverLongTermKeyIdCtxPtr = Module._malloc(receiverLongTermKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(receiverLongTermKeyIdCtxPtr, receiverLongTermKeyIdPtr, receiverLongTermKeyIdSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const receiverOneTimeKeyIdSize = receiverOneTimeKeyId.length * receiverOneTimeKeyId.BYTES_PER_ELEMENT;
             const receiverOneTimeKeyIdPtr = Module._malloc(receiverOneTimeKeyIdSize);
             Module.HEAP8.set(receiverOneTimeKeyId, receiverOneTimeKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const receiverOneTimeKeyIdCtxSize = Module._vsc_data_ctx_size();
             const receiverOneTimeKeyIdCtxPtr = Module._malloc(receiverOneTimeKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(receiverOneTimeKeyIdCtxPtr, receiverOneTimeKeyIdPtr, receiverOneTimeKeyIdSize);
-
+            
             try {
                 const proxyResult = Module._vscr_ratchet_session_initiate(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPublicKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPublicKey.ctxPtr, receiverLongTermKeyIdCtxPtr, receiverOneTimePublicKey.ctxPtr, receiverOneTimeKeyIdCtxPtr, enablePostQuantum);
                 modules.RatchetError.handleStatusCode(proxyResult);
@@ -161,43 +161,43 @@ const initRatchetSession = (Module, modules) => {
             precondition.ensureImplementInterface('receiverLongTermPublicKey', receiverLongTermPublicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('receiverLongTermKeyId', receiverLongTermKeyId);
             precondition.ensureBoolean('enablePostQuantum', enablePostQuantum);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const senderIdentityKeyIdSize = senderIdentityKeyId.length * senderIdentityKeyId.BYTES_PER_ELEMENT;
             const senderIdentityKeyIdPtr = Module._malloc(senderIdentityKeyIdSize);
             Module.HEAP8.set(senderIdentityKeyId, senderIdentityKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const senderIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
             const senderIdentityKeyIdCtxPtr = Module._malloc(senderIdentityKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(senderIdentityKeyIdCtxPtr, senderIdentityKeyIdPtr, senderIdentityKeyIdSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const receiverIdentityKeyIdSize = receiverIdentityKeyId.length * receiverIdentityKeyId.BYTES_PER_ELEMENT;
             const receiverIdentityKeyIdPtr = Module._malloc(receiverIdentityKeyIdSize);
             Module.HEAP8.set(receiverIdentityKeyId, receiverIdentityKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const receiverIdentityKeyIdCtxSize = Module._vsc_data_ctx_size();
             const receiverIdentityKeyIdCtxPtr = Module._malloc(receiverIdentityKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(receiverIdentityKeyIdCtxPtr, receiverIdentityKeyIdPtr, receiverIdentityKeyIdSize);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const receiverLongTermKeyIdSize = receiverLongTermKeyId.length * receiverLongTermKeyId.BYTES_PER_ELEMENT;
             const receiverLongTermKeyIdPtr = Module._malloc(receiverLongTermKeyIdSize);
             Module.HEAP8.set(receiverLongTermKeyId, receiverLongTermKeyIdPtr);
-
+            
             // Create C structure vsc_data_t.
             const receiverLongTermKeyIdCtxSize = Module._vsc_data_ctx_size();
             const receiverLongTermKeyIdCtxPtr = Module._malloc(receiverLongTermKeyIdCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(receiverLongTermKeyIdCtxPtr, receiverLongTermKeyIdPtr, receiverLongTermKeyIdSize);
-
+            
             try {
                 const proxyResult = Module._vscr_ratchet_session_initiate_no_one_time_key(this.ctxPtr, senderIdentityPrivateKey.ctxPtr, senderIdentityKeyIdCtxPtr, receiverIdentityPublicKey.ctxPtr, receiverIdentityKeyIdCtxPtr, receiverLongTermPublicKey.ctxPtr, receiverLongTermKeyIdCtxPtr, enablePostQuantum);
                 modules.RatchetError.handleStatusCode(proxyResult);
@@ -236,85 +236,76 @@ const initRatchetSession = (Module, modules) => {
 
         isInitiator() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_is_initiator(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         isPqcEnabled() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_is_pqc_enabled(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         receivedFirstResponse() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_received_first_response(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
         receiverHasOneTimePublicKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_receiver_has_one_time_public_key(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
-        encrypt(plainText, error) {
+        encrypt(plainText) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
             const plainTextPtr = Module._malloc(plainTextSize);
             Module.HEAP8.set(plainText, plainTextPtr);
-
+            
             // Create C structure vsc_data_t.
             const plainTextCtxSize = Module._vsc_data_ctx_size();
             const plainTextCtxPtr = Module._malloc(plainTextCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
-
-            const errorCtxSize = Module._vscr_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscr_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscr_ratchet_session_encrypt(this.ctxPtr, plainTextCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscr_error_status(errorCtxPtr);
-                modules.RatchetError.handleStatusCode(errorStatus);
-
+                const proxyResult = Module._vscr_ratchet_session_encrypt(this.ctxPtr, plainTextCtxPtr);
+                modules.RatchetError.handleStatusCode(proxyResult);
+            
                 const jsResult = modules.RatchetMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(plainTextPtr);
                 Module._free(plainTextCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 
         decryptLen(message) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetMessage);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_session_decrypt_len(this.ctxPtr, message.ctxPtr);
             return proxyResult;
@@ -323,14 +314,14 @@ const initRatchetSession = (Module, modules) => {
         decrypt(message) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.RatchetMessage);
-
+            
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
-
+            
             try {
                 const proxyResult = Module._vscr_ratchet_session_decrypt(this.ctxPtr, message.ctxPtr, plainTextCtxPtr);
                 modules.RatchetError.handleStatusCode(proxyResult);
-
+            
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
                 const plainTextPtrLen = Module._vsc_buffer_len(plainTextCtxPtr);
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
@@ -342,54 +333,36 @@ const initRatchetSession = (Module, modules) => {
 
         serialize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
-
-            try {
-                proxyResult = Module._vscr_ratchet_session_serialize(this.ctxPtr);
-
-                const bufferResultLen = Module._vsc_buffer_len(proxyResult);
-                const bufferResultPtr = Module._vsc_buffer_bytes(proxyResult);
-                const bufferResult = Module.HEAPU8.slice(bufferResultPtr, bufferResultPtr + bufferResultLen);
-                return bufferResult;
-            } finally {
-                Module._vsc_buffer_delete(proxyResult);
-            }
+            proxyResult = Module._vscr_ratchet_session_serialize(this.ctxPtr);
+            return proxyResult;
         }
 
-        static deserialize(input, error) {
+        static deserialize(input) {
             precondition.ensureByteArray('input', input);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;
             const inputPtr = Module._malloc(inputSize);
             Module.HEAP8.set(input, inputPtr);
-
+            
             // Create C structure vsc_data_t.
             const inputCtxSize = Module._vsc_data_ctx_size();
             const inputCtxPtr = Module._malloc(inputCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
-
-            const errorCtxSize = Module._vscr_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscr_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscr_ratchet_session_deserialize(inputCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscr_error_status(errorCtxPtr);
-                modules.RatchetError.handleStatusCode(errorStatus);
-
-                const jsResult = RatchetSession.newAndTakeCContext(proxyResult);
+                const proxyResult = Module._vscr_ratchet_session_deserialize(inputCtxPtr);
+                modules.RatchetError.handleStatusCode(proxyResult);
+            
+                const jsResult = modules.Self.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
                 Module._free(inputCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 

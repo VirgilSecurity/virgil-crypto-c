@@ -35,8 +35,8 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
 
 
 class vscf_verifier_t(Structure):
@@ -45,7 +45,8 @@ class vscf_verifier_t(Structure):
 
 class VscfVerifier(object):
     """Verify data of any size.
-    Compatible with the class "signer"."""
+Compatible with the class "signer"."""
+
 
     def __init__(self):
         """Create underlying C context."""

@@ -47,6 +47,7 @@ class vscf_hmac_t(Structure):
 class VscfHmac(object):
     """Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1)."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -128,7 +129,7 @@ class VscfHmac(object):
 
     def vscf_hmac_reset(self, ctx):
         """Prepare to authenticate a new message with the same key
-        as the previous MAC operation."""
+as the previous MAC operation."""
         vscf_hmac_reset = self._lib.vscf_hmac_reset
         vscf_hmac_reset.argtypes = [POINTER(vscf_hmac_t)]
         vscf_hmac_reset.restype = None

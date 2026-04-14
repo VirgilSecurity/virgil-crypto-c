@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.falcon_setRandom(this.cCtx, random);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.falcon_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey generateKey() throws FoundationException {
-        return FoundationJNI.INSTANCE.falcon_generateKey(this.cCtx);
-    }
-
     public long cCtx;
 
     public Falcon() {
@@ -82,16 +70,8 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
         clearResources();
     }
 
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.falcon_algId(this.cCtx);
-    }
-
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.falcon_produceAlgInfo(this.cCtx);
-    }
-
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.falcon_restoreAlgInfo(this.cCtx, algInfo);
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.falcon_setRandom(this.cCtx, random);
     }
 
     public boolean getCanImportPublicKey() {
@@ -108,6 +88,18 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
 
     public boolean getCanExportPrivateKey() {
         return true;
+    }
+
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.falcon_algId(this.cCtx);
+    }
+
+    public AlgInfo produceAlgInfo() {
+        return FoundationJNI.INSTANCE.falcon_produceAlgInfo(this.cCtx);
+    }
+
+    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
+        FoundationJNI.INSTANCE.falcon_restoreAlgInfo(this.cCtx, algInfo);
     }
 
     public PrivateKey generateEphemeralKey(Key key) throws FoundationException {
@@ -148,6 +140,14 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
 
     public boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature) {
         return FoundationJNI.INSTANCE.falcon_verifyHash(this.cCtx, publicKey, hashId, digest, signature);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.falcon_setupDefaults(this.cCtx);
+    }
+
+    public PrivateKey generateKey() throws FoundationException {
+        return FoundationJNI.INSTANCE.falcon_generateKey(this.cCtx);
     }
 
 }

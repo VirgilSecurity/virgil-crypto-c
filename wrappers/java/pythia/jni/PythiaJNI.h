@@ -67,19 +67,19 @@ Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1proofValueBufLen(void);
 JNIEXPORT jint JNICALL
 Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1passwordUpdateTokenBufLen(void);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blind(jbyteArray jpassword);
 
 JNIEXPORT jbyteArray JNICALL
 Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1deblind(jbyteArray jtransformedPassword, jbyteArray jblindingSecret);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1computeTransformationKeyPair(jbyteArray jtransformationKeyId, jbyteArray jpythiaSecret, jbyteArray jpythiaScopeSecret);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transform(jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPrivateKey);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1prove(jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtransformedTweak, jbyteArray jtransformationPrivateKey, jbyteArray jtransformationPublicKey);
 
 JNIEXPORT jboolean JNICALL

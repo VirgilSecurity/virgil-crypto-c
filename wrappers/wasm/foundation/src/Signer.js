@@ -86,19 +86,19 @@ const initSigner = (Module, modules) => {
         appendData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
-
+            
             // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
-
+            
             try {
                 Module._vscf_signer_append_data(this.ctxPtr, dataCtxPtr);
             } finally {
@@ -110,7 +110,7 @@ const initSigner = (Module, modules) => {
         signatureLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_signer_signature_len(this.ctxPtr, privateKey.ctxPtr);
             return proxyResult;
@@ -119,14 +119,14 @@ const initSigner = (Module, modules) => {
         sign(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-
+            
             const signatureCapacity = this.signatureLen(privateKey);
             const signatureCtxPtr = Module._vsc_buffer_new_with_capacity(signatureCapacity);
-
+            
             try {
                 const proxyResult = Module._vscf_signer_sign(this.ctxPtr, privateKey.ctxPtr, signatureCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-
+            
                 const signaturePtr = Module._vsc_buffer_bytes(signatureCtxPtr);
                 const signaturePtrLen = Module._vsc_buffer_len(signatureCtxPtr);
                 const signature = Module.HEAPU8.slice(signaturePtr, signaturePtr + signaturePtrLen);

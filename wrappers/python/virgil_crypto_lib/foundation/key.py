@@ -52,7 +52,7 @@ class Key(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def __len__(self):
+    def len(self):
         """Length of the key in bytes."""
         raise NotImplementedError()
 
@@ -64,5 +64,5 @@ class Key(object):
     @abstractmethod
     def is_valid(self):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         raise NotImplementedError()

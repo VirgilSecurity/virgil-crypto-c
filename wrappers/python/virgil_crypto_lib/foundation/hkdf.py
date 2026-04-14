@@ -47,6 +47,8 @@ from .salted_kdf import SaltedKdf
 class Hkdf(Alg, Kdf, SaltedKdf):
     """Virgil Security implementation of the HKDF (RFC 6234) algorithm."""
 
+    HASH_COUNTER_MAX = 255
+
     def __init__(self):
         """Create underlying C context."""
         self._lib_vscf_hkdf = VscfHkdf()
@@ -91,7 +93,7 @@ class Hkdf(Alg, Kdf, SaltedKdf):
 
     def set_info(self, info):
         """Setup application specific information (optional).
-        Can be empty."""
+Can be empty."""
         d_info = Data(info)
         self._lib_vscf_hkdf.vscf_hkdf_set_info(self.ctx, d_info.data)
 

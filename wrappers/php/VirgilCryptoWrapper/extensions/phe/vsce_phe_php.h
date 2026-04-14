@@ -74,13 +74,16 @@ extern "C" {
 // Constants
 //
 VSCE_PHP_PUBLIC const char*
-vsce_phe_server_t_php_res_name(void);
+vsce_phe_cipher_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
 vsce_phe_client_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
-vsce_phe_cipher_t_php_res_name(void);
+vsce_phe_common_t_php_res_name(void);
+
+VSCE_PHP_PUBLIC const char*
+vsce_phe_server_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
 vsce_uokms_client_t_php_res_name(void);
@@ -91,32 +94,8 @@ vsce_uokms_server_t_php_res_name(void);
 VSCE_PHP_PUBLIC const char*
 vsce_uokms_wrap_rotation_t_php_res_name(void);
 
-//
-// Registered resources
-//
-VSCE_PHP_PUBLIC int
-le_vsce_phe_server_t(void);
-
-VSCE_PHP_PUBLIC int
-le_vsce_phe_client_t(void);
-
-VSCE_PHP_PUBLIC int
-le_vsce_phe_cipher_t(void);
-
-VSCE_PHP_PUBLIC int
-le_vsce_uokms_client_t(void);
-
-VSCE_PHP_PUBLIC int
-le_vsce_uokms_server_t(void);
-
-VSCE_PHP_PUBLIC int
-le_vsce_uokms_wrap_rotation_t(void);
-
-//
-// Extension init functions declaration
-//
-PHP_MINIT_FUNCTION(vsce_phe_php);
-PHP_MSHUTDOWN_FUNCTION(vsce_phe_php);
+VSCE_PHP_PUBLIC const char*
+vsce_impl_t_php_res_name(void);
 
 #ifdef __cplusplus
 }

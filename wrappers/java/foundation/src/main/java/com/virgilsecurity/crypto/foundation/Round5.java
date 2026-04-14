@@ -38,18 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Round5 implements AutoCloseable, KeyAlg, Kem {
 
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.round5_setRandom(this.cCtx, random);
-    }
-
-    public void setupDefaults() throws FoundationException {
-        FoundationJNI.INSTANCE.round5_setupDefaults(this.cCtx);
-    }
-
-    public PrivateKey generateKey(AlgId algId) throws FoundationException {
-        return FoundationJNI.INSTANCE.round5_generateKey(this.cCtx, algId);
-    }
-
     public long cCtx;
 
     public Round5() {
@@ -80,6 +68,10 @@ public class Round5 implements AutoCloseable, KeyAlg, Kem {
 
     protected void finalize() throws Throwable {
         clearResources();
+    }
+
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.round5_setRandom(this.cCtx, random);
     }
 
     public boolean getCanImportPublicKey() {
@@ -126,12 +118,20 @@ public class Round5 implements AutoCloseable, KeyAlg, Kem {
         return FoundationJNI.INSTANCE.round5_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public Round5KemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.round5_kemEncapsulate(this.cCtx, publicKey);
     }
 
     public byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.round5_kemDecapsulate(this.cCtx, encapsulatedKey, privateKey);
+    }
+
+    public void setupDefaults() throws FoundationException {
+        FoundationJNI.INSTANCE.round5_setupDefaults(this.cCtx);
+    }
+
+    public PrivateKey generateKey(AlgId algId) throws FoundationException {
+        return FoundationJNI.INSTANCE.round5_generateKey(this.cCtx, algId);
     }
 
 }

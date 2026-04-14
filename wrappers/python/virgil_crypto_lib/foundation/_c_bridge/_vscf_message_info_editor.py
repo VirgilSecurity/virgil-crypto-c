@@ -47,10 +47,11 @@ class vscf_message_info_editor_t(Structure):
 class VscfMessageInfoEditor(object):
     """Add and/or remove recipients and it's parameters within message info.
 
-    Usage:
-      1. Unpack binary message info that was obtained from RecipientCipher.
-      2. Add and/or remove key recipients.
-      3. Pack MessagInfo to the binary data."""
+Usage:
+  1. Unpack binary message info that was obtained from RecipientCipher.
+  2. Add and/or remove key recipients.
+  3. Pack MessagInfo to the binary data."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -85,8 +86,8 @@ class VscfMessageInfoEditor(object):
     def vscf_message_info_editor_unpack(self, ctx, message_info_data):
         """Unpack serialized message info.
 
-        Note that recipients can only be removed but not added.
-        Note, use "unlock" method to be able to add new recipients as well."""
+Note that recipients can only be removed but not added.
+Note, use "unlock" method to be able to add new recipients as well."""
         vscf_message_info_editor_unpack = self._lib.vscf_message_info_editor_unpack
         vscf_message_info_editor_unpack.argtypes = [POINTER(vscf_message_info_editor_t), vsc_data_t]
         vscf_message_info_editor_unpack.restype = c_int
@@ -108,7 +109,7 @@ class VscfMessageInfoEditor(object):
 
     def vscf_message_info_editor_remove_key_recipient(self, ctx, recipient_id):
         """Remove recipient with a given id.
-        Return false if recipient with given id was not found."""
+Return false if recipient with given id was not found."""
         vscf_message_info_editor_remove_key_recipient = self._lib.vscf_message_info_editor_remove_key_recipient
         vscf_message_info_editor_remove_key_recipient.argtypes = [POINTER(vscf_message_info_editor_t), vsc_data_t]
         vscf_message_info_editor_remove_key_recipient.restype = c_bool
@@ -123,7 +124,7 @@ class VscfMessageInfoEditor(object):
 
     def vscf_message_info_editor_packed_len(self, ctx):
         """Return length of serialized message info.
-        Actual length can be obtained right after applying changes."""
+Actual length can be obtained right after applying changes."""
         vscf_message_info_editor_packed_len = self._lib.vscf_message_info_editor_packed_len
         vscf_message_info_editor_packed_len.argtypes = [POINTER(vscf_message_info_editor_t)]
         vscf_message_info_editor_packed_len.restype = c_size_t
@@ -131,7 +132,7 @@ class VscfMessageInfoEditor(object):
 
     def vscf_message_info_editor_pack(self, ctx, message_info):
         """Return serialized message info.
-        Precondition: this method can be called after "apply"."""
+Precondition: this method can be called after "apply"."""
         vscf_message_info_editor_pack = self._lib.vscf_message_info_editor_pack
         vscf_message_info_editor_pack.argtypes = [POINTER(vscf_message_info_editor_t), POINTER(vsc_buffer_t)]
         vscf_message_info_editor_pack.restype = None

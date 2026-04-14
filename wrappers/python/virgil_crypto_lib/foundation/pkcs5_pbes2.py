@@ -64,6 +64,11 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
     def set_cipher(self, cipher):
         self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_use_cipher(self.ctx, cipher.c_impl)
 
+    def reset(self, pwd):
+        """Configure cipher with a new password."""
+        d_pwd = Data(pwd)
+        self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_reset(self.ctx, d_pwd.data)
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_alg_id(self.ctx)
@@ -83,7 +88,7 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
     def encrypt(self, data):
         """Encrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(data_len=len(data)))
+        out = Buffer(self.encrypted_len(data=len(data)))
         status = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_encrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -101,7 +106,7 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
     def decrypt(self, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(data_len=len(data)))
+        out = Buffer(self.decrypted_len(data=len(data)))
         status = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_decrypt(self.ctx, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -110,11 +115,6 @@ class Pkcs5Pbes2(Alg, Encrypt, Decrypt):
         """Calculate required buffer length to hold the decrypted data."""
         result = self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_decrypted_len(self.ctx, data_len)
         return result
-
-    def reset(self, pwd):
-        """Configure cipher with a new password."""
-        d_pwd = Data(pwd)
-        self._lib_vscf_pkcs5_pbes2.vscf_pkcs5_pbes2_reset(self.ctx, d_pwd.data)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

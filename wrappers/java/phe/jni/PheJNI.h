@@ -41,15 +41,9 @@ JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1close(jlong );
 
 JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setOperationRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1generateServerKeyPair(jlong c_ctx);
 
 JNIEXPORT jint JNICALL
@@ -67,7 +61,7 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPassword(jlong c_ctx,
 JNIEXPORT jint JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1updateTokenLen(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1rotateKeys(jlong c_ctx, jbyteArray jserverPrivateKey);
 
 JNIEXPORT jlong JNICALL
@@ -75,12 +69,6 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new__(void);
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1close(jlong );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setOperationRandom(jlong , jobject );
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setupDefaults(jlong c_ctx);
@@ -94,7 +82,7 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1generateClientPrivateKey(jl
 JNIEXPORT jint JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollmentRecordLen(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollAccount(jlong c_ctx, jbyteArray jenrollmentResponse, jbyteArray jpassword);
 
 JNIEXPORT jint JNICALL
@@ -106,7 +94,7 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1createVerifyPasswordRequest
 JNIEXPORT jbyteArray JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1checkResponseAndDecrypt(jlong c_ctx, jbyteArray jpassword, jbyteArray jenrollmentRecord, jbyteArray jverifyPasswordResponse);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1rotateKeys(jlong c_ctx, jbyteArray jupdateToken);
 
 JNIEXPORT jbyteArray JNICALL
@@ -117,9 +105,6 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new__(void);
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1close(jlong );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setRandom(jlong , jobject );
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setupDefaults(jlong c_ctx);
@@ -149,12 +134,6 @@ JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1close(jlong );
 
 JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setOperationRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setupDefaults(jlong c_ctx);
 
 JNIEXPORT void JNICALL
@@ -166,13 +145,13 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeys(jlong c_ctx, jbyt
 JNIEXPORT jbyteArray JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateClientPrivateKey(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateEncryptWrap(jlong c_ctx, jint jencryptionKeyLen);
 
 JNIEXPORT jbyteArray JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1decryptOneparty(jlong c_ctx, jbyteArray jwrap, jint jencryptionKeyLen);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateDecryptRequest(jlong c_ctx, jbyteArray jwrap);
 
 JNIEXPORT jbyteArray JNICALL
@@ -184,7 +163,7 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeysOneparty(jlong 
 JNIEXPORT jbyteArray JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateUpdateTokenOneparty(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeys(jlong c_ctx, jbyteArray jupdateToken);
 
 JNIEXPORT jlong JNICALL
@@ -194,15 +173,9 @@ JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1close(jlong );
 
 JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setOperationRandom(jlong , jobject );
-
-JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1generateServerKeyPair(jlong c_ctx);
 
 JNIEXPORT jint JNICALL
@@ -211,7 +184,7 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1decryptResponseLen(jlong 
 JNIEXPORT jbyteArray JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1processDecryptRequest(jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jdecryptRequest);
 
-JNIEXPORT jbyteArray JNICALL
+JNIEXPORT jobject JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1rotateKeys(jlong c_ctx, jbyteArray jserverPrivateKey);
 
 JNIEXPORT jlong JNICALL
@@ -219,9 +192,6 @@ Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1new__(void);
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1close(jlong );
-
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setOperationRandom(jlong , jobject );
 
 JNIEXPORT void JNICALL
 Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults(jlong c_ctx);

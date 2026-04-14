@@ -43,9 +43,9 @@ from .private_key import PrivateKey
 class CompoundPrivateKey(Key, PrivateKey):
     """Handles compound private key.
 
-    Compound private key contains 2 private keys and signature:
-        - cipher key - is used for decryption;
-        - signer key - is used for signing."""
+Compound private key contains 2 private keys and signature:
+    - cipher key - is used for decryption;
+    - signer key - is used for signing."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -58,20 +58,32 @@ class CompoundPrivateKey(Key, PrivateKey):
         """Destroy underlying C context."""
         self._lib_vscf_compound_private_key.vscf_compound_private_key_delete(self.ctx)
 
-    def __len__(self):
-        """Length of the key in bytes."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_len(self.ctx)
-        return result
+    def cipher_key(self):
+        """Return primary private key suitable for a final decryption."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_cipher_key(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
 
-    def alg_info(self):
-        """Return algorithm information that can be used for serialization."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+    def signer_key(self):
+        """Return private key suitable for signing."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_signer_key(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def alg_id(self):
         """Algorithm identifier the key belongs to."""
         result = self._lib_vscf_compound_private_key.vscf_compound_private_key_alg_id(self.ctx)
+        return result
+
+    def alg_info(self):
+        """Return algorithm information that can be used for serialization."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_alg_info(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def len(self):
+        """Length of the key in bytes."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_len(self.ctx)
         return result
 
     def bitlen(self):
@@ -81,7 +93,7 @@ class CompoundPrivateKey(Key, PrivateKey):
 
     def is_valid(self):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         result = self._lib_vscf_compound_private_key.vscf_compound_private_key_is_valid(self.ctx)
         return result
 
@@ -89,18 +101,6 @@ class CompoundPrivateKey(Key, PrivateKey):
         """Extract public key from the private key."""
         result = self._lib_vscf_compound_private_key.vscf_compound_private_key_extract_public_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def cipher_key(self):
-        """Return primary private key suitable for a final decryption."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_cipher_key(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def signer_key(self):
-        """Return private key suitable for signing."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_signer_key(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     @classmethod

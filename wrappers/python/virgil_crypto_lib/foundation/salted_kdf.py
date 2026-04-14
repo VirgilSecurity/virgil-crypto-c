@@ -39,7 +39,7 @@ from abc import *
 
 class SaltedKdf(object):
     """Provides interface to the key derivation function (KDF) algorithms
-    that use salt and teration count."""
+that use salt and teration count."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -50,5 +50,5 @@ class SaltedKdf(object):
     @abstractmethod
     def set_info(self, info):
         """Setup application specific information (optional).
-        Can be empty."""
+Can be empty."""
         raise NotImplementedError()

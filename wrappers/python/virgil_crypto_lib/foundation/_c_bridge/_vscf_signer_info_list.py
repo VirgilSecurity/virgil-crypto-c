@@ -35,6 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
+from ._vscf_self import vscf_self_t
 from ._vscf_signer_info import vscf_signer_info_t
 
 
@@ -44,6 +45,7 @@ class vscf_signer_info_list_t(Structure):
 
 class VscfSignerInfoList(object):
     """Handles a list of "signer info" class objects."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -87,7 +89,7 @@ class VscfSignerInfoList(object):
         """Return next list node if exists, or NULL otherwise."""
         vscf_signer_info_list_next = self._lib.vscf_signer_info_list_next
         vscf_signer_info_list_next.argtypes = [POINTER(vscf_signer_info_list_t)]
-        vscf_signer_info_list_next.restype = POINTER(vscf_signer_info_list_t)
+        vscf_signer_info_list_next.restype = POINTER(vscf_self_t)
         return vscf_signer_info_list_next(ctx)
 
     def vscf_signer_info_list_has_prev(self, ctx):
@@ -101,7 +103,7 @@ class VscfSignerInfoList(object):
         """Return previous list node if exists, or NULL otherwise."""
         vscf_signer_info_list_prev = self._lib.vscf_signer_info_list_prev
         vscf_signer_info_list_prev.argtypes = [POINTER(vscf_signer_info_list_t)]
-        vscf_signer_info_list_prev.restype = POINTER(vscf_signer_info_list_t)
+        vscf_signer_info_list_prev.restype = POINTER(vscf_self_t)
         return vscf_signer_info_list_prev(ctx)
 
     def vscf_signer_info_list_clear(self, ctx):

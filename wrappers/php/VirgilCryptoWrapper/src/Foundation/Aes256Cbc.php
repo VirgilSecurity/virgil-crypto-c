@@ -45,11 +45,6 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     */
     private $ctx;
 
-    const NONCE_LEN = 16;
-    const KEY_LEN = 32;
-    const KEY_BITLEN = 256;
-    const BLOCK_LEN = 16;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -97,7 +92,7 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     */
     public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_aes256_cbc_restore_alg_info_php($this->ctx, $$algInfo);
+        vscf_aes256_cbc_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
     }
 
     /**

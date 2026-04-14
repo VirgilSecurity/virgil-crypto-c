@@ -36,6 +36,7 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_key_recipient_info import vscf_key_recipient_info_t
+from ._vscf_self import vscf_self_t
 
 
 class vscf_key_recipient_info_list_t(Structure):
@@ -44,6 +45,7 @@ class vscf_key_recipient_info_list_t(Structure):
 
 class VscfKeyRecipientInfoList(object):
     """Handles a list of "key recipient info" class objects."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -87,7 +89,7 @@ class VscfKeyRecipientInfoList(object):
         """Return next list node if exists, or NULL otherwise."""
         vscf_key_recipient_info_list_next = self._lib.vscf_key_recipient_info_list_next
         vscf_key_recipient_info_list_next.argtypes = [POINTER(vscf_key_recipient_info_list_t)]
-        vscf_key_recipient_info_list_next.restype = POINTER(vscf_key_recipient_info_list_t)
+        vscf_key_recipient_info_list_next.restype = POINTER(vscf_self_t)
         return vscf_key_recipient_info_list_next(ctx)
 
     def vscf_key_recipient_info_list_has_prev(self, ctx):
@@ -101,7 +103,7 @@ class VscfKeyRecipientInfoList(object):
         """Return previous list node if exists, or NULL otherwise."""
         vscf_key_recipient_info_list_prev = self._lib.vscf_key_recipient_info_list_prev
         vscf_key_recipient_info_list_prev.argtypes = [POINTER(vscf_key_recipient_info_list_t)]
-        vscf_key_recipient_info_list_prev.restype = POINTER(vscf_key_recipient_info_list_t)
+        vscf_key_recipient_info_list_prev.restype = POINTER(vscf_self_t)
         return vscf_key_recipient_info_list_prev(ctx)
 
     def vscf_key_recipient_info_list_clear(self, ctx):

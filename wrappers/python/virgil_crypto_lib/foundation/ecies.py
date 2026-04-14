@@ -66,13 +66,13 @@ class Ecies(object):
 
     def set_ephemeral_key(self, ephemeral_key):
         """Set ephemeral key that used for data encryption.
-        Public and ephemeral keys should belong to the same curve.
-        This dependency is optional."""
+Public and ephemeral keys should belong to the same curve.
+This dependency is optional."""
         self._lib_vscf_ecies.vscf_ecies_use_ephemeral_key(self.ctx, ephemeral_key.c_impl)
 
     def set_key_alg(self, key_alg):
         """Set weak reference to the key algorithm.
-        Key algorithm MUST support shared key computation as well."""
+Key algorithm MUST support shared key computation as well."""
         self._lib_vscf_ecies.vscf_ecies_set_key_alg(self.ctx, key_alg.c_impl)
 
     def release_key_alg(self):
@@ -86,7 +86,7 @@ class Ecies(object):
 
     def setup_defaults_no_random(self):
         """Setup predefined values to the uninitialized class dependencies
-        except random."""
+except random."""
         self._lib_vscf_ecies.vscf_ecies_setup_defaults_no_random(self.ctx)
 
     def encrypted_len(self, public_key, data_len):
@@ -97,7 +97,7 @@ class Ecies(object):
     def encrypt(self, public_key, data):
         """Encrypt data with a given public key."""
         d_data = Data(data)
-        out = Buffer(self.encrypted_len(public_key=public_key, data_len=len(data)))
+        out = Buffer(self.encrypted_len(public_key=public_key, data=len(data)))
         status = self._lib_vscf_ecies.vscf_ecies_encrypt(self.ctx, public_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
@@ -110,7 +110,7 @@ class Ecies(object):
     def decrypt(self, private_key, data):
         """Decrypt given data."""
         d_data = Data(data)
-        out = Buffer(self.decrypted_len(private_key=private_key, data_len=len(data)))
+        out = Buffer(self.decrypted_len(private_key=private_key, data=len(data)))
         status = self._lib_vscf_ecies.vscf_ecies_decrypt(self.ctx, private_key.c_impl, d_data.data, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()

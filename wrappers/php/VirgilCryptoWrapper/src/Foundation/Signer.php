@@ -110,7 +110,7 @@ class Signer
     */
     public function signatureLen(PrivateKey $$privateKey): int
     {
-        return vscf_signer_signature_len_php($this->ctx, $$privateKey);
+        return vscf_signer_signature_len_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**
@@ -121,7 +121,7 @@ class Signer
     */
     public function sign(PrivateKey $$privateKey): string
     {
-        return vscf_signer_sign_php($this->ctx, $$privateKey);
+        return vscf_signer_sign_php($this->ctx, $$privateKey->getCtx());
     }
 
     /**

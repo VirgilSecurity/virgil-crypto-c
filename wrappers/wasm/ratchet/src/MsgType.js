@@ -36,8 +36,8 @@
 
 const initMsgType = (Module, modules) => {
     const MsgType = Object.freeze({
-        REGULAR: 0,
-        PREKEY: 1,
+        REGULAR: 1,
+        PREKEY: 2,
     });
 
     return MsgType;

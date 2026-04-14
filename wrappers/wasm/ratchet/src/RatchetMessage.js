@@ -66,7 +66,7 @@ const initRatchetMessage = (Module, modules) => {
 
         getType() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_message_get_type(this.ctxPtr);
             return proxyResult;
@@ -74,7 +74,7 @@ const initRatchetMessage = (Module, modules) => {
 
         getCounter() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_message_get_counter(this.ctxPtr);
             return proxyResult;
@@ -82,83 +82,27 @@ const initRatchetMessage = (Module, modules) => {
 
         getSenderIdentityKeyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_message_get_sender_identity_key_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscr_ratchet_message_get_sender_identity_key_id(this.ctxPtr);
         }
 
         getReceiverIdentityKeyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_message_get_receiver_identity_key_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscr_ratchet_message_get_receiver_identity_key_id(this.ctxPtr);
         }
 
         getReceiverLongTermKeyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_message_get_receiver_long_term_key_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscr_ratchet_message_get_receiver_long_term_key_id(this.ctxPtr);
         }
 
         getReceiverOneTimeKeyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
-            // Create C structure vsc_data_t.
-            const dataResultCtxSize = Module._vsc_data_ctx_size();
-            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
-
-            try {
-                Module._vscr_ratchet_message_get_receiver_one_time_key_id(dataResultCtxPtr, this.ctxPtr);
-
-                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
-                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
-                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
-                return dataResult;
-            } finally {
-                Module._free(dataResultCtxPtr);
-            }
+            Module._vscr_ratchet_message_get_receiver_one_time_key_id(this.ctxPtr);
         }
 
         serializeLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscr_ratchet_message_serialize_len(this.ctxPtr);
             return proxyResult;
@@ -166,13 +110,13 @@ const initRatchetMessage = (Module, modules) => {
 
         serialize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             const outputCapacity = this.serializeLen();
             const outputCtxPtr = Module._vsc_buffer_new_with_capacity(outputCapacity);
-
+            
             try {
                 Module._vscr_ratchet_message_serialize(this.ctxPtr, outputCtxPtr);
-
+            
                 const outputPtr = Module._vsc_buffer_bytes(outputCtxPtr);
                 const outputPtrLen = Module._vsc_buffer_len(outputCtxPtr);
                 const output = Module.HEAPU8.slice(outputPtr, outputPtr + outputPtrLen);
@@ -182,39 +126,30 @@ const initRatchetMessage = (Module, modules) => {
             }
         }
 
-        static deserialize(input, error) {
+        static deserialize(input) {
             precondition.ensureByteArray('input', input);
-
+            
             // Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;
             const inputPtr = Module._malloc(inputSize);
             Module.HEAP8.set(input, inputPtr);
-
+            
             // Create C structure vsc_data_t.
             const inputCtxSize = Module._vsc_data_ctx_size();
             const inputCtxPtr = Module._malloc(inputCtxSize);
-
+            
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
-
-            const errorCtxSize = Module._vscr_error_ctx_size();
-            const errorCtxPtr = Module._malloc(errorCtxSize);
-            Module._vscr_error_reset(errorCtxPtr);
-
-            let proxyResult;
-
+            
             try {
-                proxyResult = Module._vscr_ratchet_message_deserialize(inputCtxPtr, errorCtxPtr);
-
-                const errorStatus = Module._vscr_error_status(errorCtxPtr);
-                modules.RatchetError.handleStatusCode(errorStatus);
-
-                const jsResult = RatchetMessage.newAndTakeCContext(proxyResult);
+                const proxyResult = Module._vscr_ratchet_message_deserialize(inputCtxPtr);
+                modules.RatchetError.handleStatusCode(proxyResult);
+            
+                const jsResult = modules.Self.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
                 Module._free(inputCtxPtr);
-                Module._free(errorCtxPtr);
             }
         }
 

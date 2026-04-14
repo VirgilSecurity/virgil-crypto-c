@@ -66,15 +66,6 @@ class RawPublicKey implements Key, PublicKey
 
     /**
     *
-    * @return string
-    */
-    public function data(): string
-    {
-        return vscf_raw_public_key_data_php($this->ctx);
-    }
-
-    /**
-    *
     * @return AlgId
     */
     public function algId(): AlgId
@@ -118,6 +109,15 @@ class RawPublicKey implements Key, PublicKey
     public function isValid(): bool
     {
         return vscf_raw_public_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return string
+    */
+    public function data(): string
+    {
+        return vscf_raw_public_key_data_php($this->ctx);
     }
 
     /**

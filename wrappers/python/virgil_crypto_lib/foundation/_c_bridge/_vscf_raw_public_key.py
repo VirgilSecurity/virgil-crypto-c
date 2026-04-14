@@ -46,6 +46,7 @@ class vscf_raw_public_key_t(Structure):
 class VscfRawPublicKey(object):
     """Handles interchangeable public key representation."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -62,6 +63,13 @@ class VscfRawPublicKey(object):
         vscf_raw_public_key_delete.argtypes = [POINTER(vscf_raw_public_key_t)]
         vscf_raw_public_key_delete.restype = None
         return vscf_raw_public_key_delete(ctx)
+
+    def vscf_raw_public_key_data(self, ctx):
+        """Return key data."""
+        vscf_raw_public_key_data = self._lib.vscf_raw_public_key_data
+        vscf_raw_public_key_data.argtypes = [POINTER(vscf_raw_public_key_t)]
+        vscf_raw_public_key_data.restype = vsc_data_t
+        return vscf_raw_public_key_data(ctx)
 
     def vscf_raw_public_key_alg_id(self, ctx):
         """Algorithm identifier the key belongs to."""
@@ -93,18 +101,11 @@ class VscfRawPublicKey(object):
 
     def vscf_raw_public_key_is_valid(self, ctx):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         vscf_raw_public_key_is_valid = self._lib.vscf_raw_public_key_is_valid
         vscf_raw_public_key_is_valid.argtypes = [POINTER(vscf_raw_public_key_t)]
         vscf_raw_public_key_is_valid.restype = c_bool
         return vscf_raw_public_key_is_valid(ctx)
-
-    def vscf_raw_public_key_data(self, ctx):
-        """Return key data."""
-        vscf_raw_public_key_data = self._lib.vscf_raw_public_key_data
-        vscf_raw_public_key_data.argtypes = [POINTER(vscf_raw_public_key_t)]
-        vscf_raw_public_key_data.restype = vsc_data_t
-        return vscf_raw_public_key_data(ctx)
 
     def vscf_raw_public_key_shallow_copy(self, ctx):
         vscf_raw_public_key_shallow_copy = self._lib.vscf_raw_public_key_shallow_copy
