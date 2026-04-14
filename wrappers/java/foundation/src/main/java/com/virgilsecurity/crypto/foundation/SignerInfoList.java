@@ -82,7 +82,7 @@ public class SignerInfoList implements AutoCloseable {
         return FoundationJNI.INSTANCE.signerInfoList_hasNext(this.cCtx);
     }
 
-    public Self next() {
+    public SignerInfoList next() {
         return FoundationJNI.INSTANCE.signerInfoList_next(this.cCtx);
     }
 
@@ -90,7 +90,7 @@ public class SignerInfoList implements AutoCloseable {
         return FoundationJNI.INSTANCE.signerInfoList_hasPrev(this.cCtx);
     }
 
-    public Self prev() {
+    public SignerInfoList prev() {
         return FoundationJNI.INSTANCE.signerInfoList_prev(this.cCtx);
     }
 

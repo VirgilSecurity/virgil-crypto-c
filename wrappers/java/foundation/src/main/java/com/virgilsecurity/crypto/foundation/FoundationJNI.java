@@ -36,9 +36,1922 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+import com.virgilsecurity.crypto.common.utils.NativeUtils;
 
 public class FoundationJNI {
 
-    public static final FoundationJNI INSTANCE = new FoundationJNI();
+    public static final FoundationJNI INSTANCE;
+
+    static {
+        NativeUtils.load("vscf_foundation");
+        INSTANCE = new FoundationJNI();
+    }
+
+    private FoundationJNI() {
+    }
+
+    public native byte[] oid_fromAlgId(AlgId algId);
+
+    public native AlgId oid_toAlgId(byte[] oid);
+
+    public native byte[] oid_fromId(OidId oidId);
+
+    public native OidId oid_toId(byte[] oid);
+
+    public native AlgId oid_idToAlgId(OidId oidId);
+
+    public native boolean oid_equal(byte[] lhs, byte[] rhs);
+
+    public native int base64_encodedLen(int dataLen);
+
+    public native byte[] base64_encode(byte[] data);
+
+    public native int base64_decodedLen(int strLen);
+
+    public native byte[] base64_decode(byte[] str) throws FoundationException;
+
+    public native int pem_wrappedLen(String title, int dataLen);
+
+    public native byte[] pem_wrap(String title, byte[] data);
+
+    public native int pem_unwrappedLen(int pemLen);
+
+    public native byte[] pem_unwrap(byte[] pem) throws FoundationException;
+
+    public native byte[] pem_title(byte[] pem);
+
+    public native long messageInfo_new();
+
+    public native void messageInfo_close(long cCtx);
+
+    public native AlgInfo messageInfo_dataEncryptionAlgInfo(long cCtx);
+
+    public native KeyRecipientInfoList messageInfo_keyRecipientInfoList(long cCtx);
+
+    public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
+
+    public native boolean messageInfo_hasCustomParams(long cCtx);
+
+    public native MessageInfoCustomParams messageInfo_customParams(long cCtx);
+
+    public native boolean messageInfo_hasCipherKdfAlgInfo(long cCtx);
+
+    public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
+
+    public native boolean messageInfo_hasCipherPaddingAlgInfo(long cCtx);
+
+    public native AlgInfo messageInfo_cipherPaddingAlgInfo(long cCtx);
+
+    public native boolean messageInfo_hasFooterInfo(long cCtx);
+
+    public native FooterInfo messageInfo_footerInfo(long cCtx);
+
+    public native void messageInfo_clear(long cCtx);
+
+    public native long keyRecipientInfo_new();
+
+    public native void keyRecipientInfo_close(long cCtx);
+
+    public native byte[] keyRecipientInfo_recipientId(long cCtx);
+
+    public native AlgInfo keyRecipientInfo_keyEncryptionAlgorithm(long cCtx);
+
+    public native byte[] keyRecipientInfo_encryptedKey(long cCtx);
+
+    public native long keyRecipientInfoList_new();
+
+    public native void keyRecipientInfoList_close(long cCtx);
+
+    public native boolean keyRecipientInfoList_hasItem(long cCtx);
+
+    public native KeyRecipientInfo keyRecipientInfoList_item(long cCtx);
+
+    public native boolean keyRecipientInfoList_hasNext(long cCtx);
+
+    public native KeyRecipientInfoList keyRecipientInfoList_next(long cCtx);
+
+    public native boolean keyRecipientInfoList_hasPrev(long cCtx);
+
+    public native KeyRecipientInfoList keyRecipientInfoList_prev(long cCtx);
+
+    public native void keyRecipientInfoList_clear(long cCtx);
+
+    public native long passwordRecipientInfo_new();
+
+    public native void passwordRecipientInfo_close(long cCtx);
+
+    public native AlgInfo passwordRecipientInfo_keyEncryptionAlgorithm(long cCtx);
+
+    public native byte[] passwordRecipientInfo_encryptedKey(long cCtx);
+
+    public native long passwordRecipientInfoList_new();
+
+    public native void passwordRecipientInfoList_close(long cCtx);
+
+    public native boolean passwordRecipientInfoList_hasItem(long cCtx);
+
+    public native PasswordRecipientInfo passwordRecipientInfoList_item(long cCtx);
+
+    public native boolean passwordRecipientInfoList_hasNext(long cCtx);
+
+    public native PasswordRecipientInfoList passwordRecipientInfoList_next(long cCtx);
+
+    public native boolean passwordRecipientInfoList_hasPrev(long cCtx);
+
+    public native PasswordRecipientInfoList passwordRecipientInfoList_prev(long cCtx);
+
+    public native void passwordRecipientInfoList_clear(long cCtx);
+
+    public native Hash algFactory_createHashFromInfo(AlgInfo algInfo);
+
+    public native Mac algFactory_createMacFromInfo(AlgInfo algInfo);
+
+    public native Kdf algFactory_createKdfFromInfo(AlgInfo algInfo);
+
+    public native SaltedKdf algFactory_createSaltedKdfFromInfo(AlgInfo algInfo);
+
+    public native Cipher algFactory_createCipherFromInfo(AlgInfo algInfo);
+
+    public native Padding algFactory_createPaddingFromInfo(AlgInfo algInfo, Random random);
+
+    public native KeyAlg keyAlgFactory_createFromAlgId(AlgId algId, Random random) throws FoundationException;
+
+    public native KeyAlg keyAlgFactory_createFromKey(Key key, Random random) throws FoundationException;
+
+    public native KeyAlg keyAlgFactory_createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException;
+
+    public native KeyAlg keyAlgFactory_createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException;
+
+    public native long ecies_new();
+
+    public native void ecies_close(long cCtx);
+
+    public native void ecies_setRandom(long cCtx, Random random);
+
+    public native void ecies_setCipher(long cCtx, Cipher cipher);
+
+    public native void ecies_setMac(long cCtx, Mac mac);
+
+    public native void ecies_setKdf(long cCtx, Kdf kdf);
+
+    public native void ecies_setEphemeralKey(long cCtx, PrivateKey ephemeralKey);
+
+    public native void ecies_setKeyAlg(long cCtx, KeyAlg keyAlg);
+
+    public native void ecies_releaseKeyAlg(long cCtx);
+
+    public native void ecies_setupDefaults(long cCtx) throws FoundationException;
+
+    public native void ecies_setupDefaultsNoRandom(long cCtx);
+
+    public native int ecies_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] ecies_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native int ecies_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] ecies_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native long recipientCipher_new();
+
+    public native void recipientCipher_close(long cCtx);
+
+    public native void recipientCipher_setRandom(long cCtx, Random random);
+
+    public native void recipientCipher_setEncryptionCipher(long cCtx, Cipher encryptionCipher);
+
+    public native void recipientCipher_setEncryptionPadding(long cCtx, Padding encryptionPadding);
+
+    public native void recipientCipher_setPaddingParams(long cCtx, PaddingParams paddingParams);
+
+    public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
+
+    public native boolean recipientCipher_hasKeyRecipient(long cCtx, byte[] recipientId);
+
+    public native void recipientCipher_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey);
+
+    public native void recipientCipher_clearRecipients(long cCtx);
+
+    public native void recipientCipher_addSigner(long cCtx, byte[] signerId, PrivateKey privateKey) throws FoundationException;
+
+    public native void recipientCipher_clearSigners(long cCtx);
+
+    public native MessageInfoCustomParams recipientCipher_customParams(long cCtx);
+
+    public native void recipientCipher_startEncryption(long cCtx) throws FoundationException;
+
+    public native void recipientCipher_startSignedEncryption(long cCtx, int dataSize) throws FoundationException;
+
+    public native int recipientCipher_messageInfoLen(long cCtx);
+
+    public native byte[] recipientCipher_packMessageInfo(long cCtx);
+
+    public native int recipientCipher_encryptionOutLen(long cCtx, int dataLen);
+
+    public native byte[] recipientCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] recipientCipher_finishEncryption(long cCtx) throws FoundationException;
+
+    public native void recipientCipher_startDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException;
+
+    public native void recipientCipher_startVerifiedDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo, byte[] messageInfoFooter) throws FoundationException;
+
+    public native int recipientCipher_decryptionOutLen(long cCtx, int dataLen);
+
+    public native byte[] recipientCipher_processDecryption(long cCtx, byte[] data) throws FoundationException;
+
+    public native byte[] recipientCipher_finishDecryption(long cCtx) throws FoundationException;
+
+    public native boolean recipientCipher_isDataSigned(long cCtx);
+
+    public native SignerInfoList recipientCipher_signerInfos(long cCtx);
+
+    public native boolean recipientCipher_verifySignerInfo(long cCtx, SignerInfo signerInfo, PublicKey publicKey);
+
+    public native int recipientCipher_messageInfoFooterLen(long cCtx);
+
+    public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
+
+    public native long messageInfoCustomParams_new();
+
+    public native void messageInfoCustomParams_close(long cCtx);
+
+    public native void messageInfoCustomParams_addInt(long cCtx, byte[] key, int value);
+
+    public native void messageInfoCustomParams_addString(long cCtx, byte[] key, byte[] value);
+
+    public native void messageInfoCustomParams_addData(long cCtx, byte[] key, byte[] value);
+
+    public native void messageInfoCustomParams_clear(long cCtx);
+
+    public native int messageInfoCustomParams_findInt(long cCtx, byte[] key) throws FoundationException;
+
+    public native byte[] messageInfoCustomParams_findString(long cCtx, byte[] key) throws FoundationException;
+
+    public native byte[] messageInfoCustomParams_findData(long cCtx, byte[] key) throws FoundationException;
+
+    public native boolean messageInfoCustomParams_hasParams(long cCtx);
+
+    public native long keyProvider_new();
+
+    public native void keyProvider_close(long cCtx);
+
+    public native void keyProvider_setRandom(long cCtx, Random random);
+
+    public native void keyProvider_setupDefaults(long cCtx) throws FoundationException;
+
+    public native void keyProvider_setRsaParams(long cCtx, int bitlen);
+
+    public native PrivateKey keyProvider_generatePrivateKey(long cCtx, AlgId algId) throws FoundationException;
+
+    public native PrivateKey keyProvider_generatePostQuantumPrivateKey(long cCtx) throws FoundationException;
+
+    public native PrivateKey keyProvider_generateCompoundPrivateKey(long cCtx, AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException;
+
+    public native PrivateKey keyProvider_generateHybridPrivateKey(long cCtx, AlgId firstKeyAlgId, AlgId secondKeyAlgId) throws FoundationException;
+
+    public native PrivateKey keyProvider_generateCompoundHybridPrivateKey(long cCtx, AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId, AlgId signerFirstKeyAlgId, AlgId signerSecondKeyAlgId) throws FoundationException;
+
+    public native PrivateKey keyProvider_importPrivateKey(long cCtx, byte[] keyData) throws FoundationException;
+
+    public native PublicKey keyProvider_importPublicKey(long cCtx, byte[] keyData) throws FoundationException;
+
+    public native int keyProvider_exportedPublicKeyLen(long cCtx, PublicKey publicKey);
+
+    public native byte[] keyProvider_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native int keyProvider_exportedPrivateKeyLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] keyProvider_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native long signer_new();
+
+    public native void signer_close(long cCtx);
+
+    public native void signer_setHash(long cCtx, Hash hash);
+
+    public native void signer_setRandom(long cCtx, Random random);
+
+    public native void signer_reset(long cCtx);
+
+    public native void signer_appendData(long cCtx, byte[] data);
+
+    public native int signer_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] signer_sign(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native long verifier_new();
+
+    public native void verifier_close(long cCtx);
+
+    public native void verifier_reset(long cCtx, byte[] signature) throws FoundationException;
+
+    public native void verifier_appendData(long cCtx, byte[] data);
+
+    public native boolean verifier_verify(long cCtx, PublicKey publicKey);
+
+    public native long brainkeyClient_new();
+
+    public native void brainkeyClient_close(long cCtx);
+
+    public native void brainkeyClient_setRandom(long cCtx, Random random);
+
+    public native void brainkeyClient_setOperationRandom(long cCtx, Random operationRandom);
+
+    public native void brainkeyClient_setupDefaults(long cCtx) throws FoundationException;
+
+    public native BrainkeyClientBlindResult brainkeyClient_blind(long cCtx, byte[] password) throws FoundationException;
+
+    public native byte[] brainkeyClient_deblind(long cCtx, byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException;
+
+    public native long brainkeyServer_new();
+
+    public native void brainkeyServer_close(long cCtx);
+
+    public native void brainkeyServer_setRandom(long cCtx, Random random);
+
+    public native void brainkeyServer_setOperationRandom(long cCtx, Random operationRandom);
+
+    public native void brainkeyServer_setupDefaults(long cCtx) throws FoundationException;
+
+    public native byte[] brainkeyServer_generateIdentitySecret(long cCtx) throws FoundationException;
+
+    public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
+
+    public native long groupSessionMessage_new();
+
+    public native void groupSessionMessage_close(long cCtx);
+
+    public native GroupMsgType groupSessionMessage_getType(long cCtx);
+
+    public native byte[] groupSessionMessage_getSessionId(long cCtx);
+
+    public native int groupSessionMessage_getEpoch(long cCtx);
+
+    public native int groupSessionMessage_serializeLen(long cCtx);
+
+    public native byte[] groupSessionMessage_serialize(long cCtx);
+
+    public native GroupSessionMessage groupSessionMessage_deserialize(long cCtx, byte[] input) throws FoundationException;
+
+    public native long groupSessionTicket_new();
+
+    public native void groupSessionTicket_close(long cCtx);
+
+    public native void groupSessionTicket_setRng(long cCtx, Random rng);
+
+    public native void groupSessionTicket_setupDefaults(long cCtx) throws FoundationException;
+
+    public native void groupSessionTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws FoundationException;
+
+    public native GroupSessionMessage groupSessionTicket_getTicketMessage(long cCtx);
+
+    public native long groupSession_new();
+
+    public native void groupSession_close(long cCtx);
+
+    public native void groupSession_setRng(long cCtx, Random rng);
+
+    public native int groupSession_getCurrentEpoch(long cCtx);
+
+    public native void groupSession_setupDefaults(long cCtx) throws FoundationException;
+
+    public native byte[] groupSession_getSessionId(long cCtx);
+
+    public native void groupSession_addEpoch(long cCtx, GroupSessionMessage message) throws FoundationException;
+
+    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, PrivateKey privateKey) throws FoundationException;
+
+    public native int groupSession_decryptLen(long cCtx, GroupSessionMessage message);
+
+    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, PublicKey publicKey) throws FoundationException;
+
+    public native GroupSessionTicket groupSession_createGroupTicket(long cCtx) throws FoundationException;
+
+    public native long messageInfoEditor_new();
+
+    public native void messageInfoEditor_close(long cCtx);
+
+    public native void messageInfoEditor_setRandom(long cCtx, Random random);
+
+    public native void messageInfoEditor_setupDefaults(long cCtx) throws FoundationException;
+
+    public native void messageInfoEditor_unpack(long cCtx, byte[] messageInfoData) throws FoundationException;
+
+    public native void messageInfoEditor_unlock(long cCtx, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException;
+
+    public native void messageInfoEditor_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey) throws FoundationException;
+
+    public native boolean messageInfoEditor_removeKeyRecipient(long cCtx, byte[] recipientId);
+
+    public native void messageInfoEditor_removeAll(long cCtx);
+
+    public native int messageInfoEditor_packedLen(long cCtx);
+
+    public native byte[] messageInfoEditor_pack(long cCtx);
+
+    public native long signerInfo_new();
+
+    public native void signerInfo_close(long cCtx);
+
+    public native byte[] signerInfo_signerId(long cCtx);
+
+    public native AlgInfo signerInfo_signerAlgInfo(long cCtx);
+
+    public native byte[] signerInfo_signature(long cCtx);
+
+    public native long signerInfoList_new();
+
+    public native void signerInfoList_close(long cCtx);
+
+    public native boolean signerInfoList_hasItem(long cCtx);
+
+    public native SignerInfo signerInfoList_item(long cCtx);
+
+    public native boolean signerInfoList_hasNext(long cCtx);
+
+    public native SignerInfoList signerInfoList_next(long cCtx);
+
+    public native boolean signerInfoList_hasPrev(long cCtx);
+
+    public native SignerInfoList signerInfoList_prev(long cCtx);
+
+    public native void signerInfoList_clear(long cCtx);
+
+    public native long messageInfoFooter_new();
+
+    public native void messageInfoFooter_close(long cCtx);
+
+    public native boolean messageInfoFooter_hasSignerInfos(long cCtx);
+
+    public native SignerInfoList messageInfoFooter_signerInfos(long cCtx);
+
+    public native AlgInfo messageInfoFooter_signerHashAlgInfo(long cCtx);
+
+    public native byte[] messageInfoFooter_signerDigest(long cCtx);
+
+    public native long signedDataInfo_new();
+
+    public native void signedDataInfo_close(long cCtx);
+
+    public native AlgInfo signedDataInfo_hashAlgInfo(long cCtx);
+
+    public native long footerInfo_new();
+
+    public native void footerInfo_close(long cCtx);
+
+    public native boolean footerInfo_hasSignedDataInfo(long cCtx);
+
+    public native SignedDataInfo footerInfo_signedDataInfo(long cCtx);
+
+    public native void footerInfo_setDataSize(long cCtx, int dataSize);
+
+    public native int footerInfo_dataSize(long cCtx);
+
+    public native long keyInfo_new();
+
+    public native void keyInfo_close(long cCtx);
+
+    public native boolean keyInfo_isCompound(long cCtx);
+
+    public native boolean keyInfo_isHybrid(long cCtx);
+
+    public native boolean keyInfo_isCompoundHybrid(long cCtx);
+
+    public native boolean keyInfo_isCompoundHybridCipher(long cCtx);
+
+    public native boolean keyInfo_isCompoundHybridSigner(long cCtx);
+
+    public native boolean keyInfo_isHybridPostQuantum(long cCtx);
+
+    public native boolean keyInfo_isHybridPostQuantumCipher(long cCtx);
+
+    public native boolean keyInfo_isHybridPostQuantumSigner(long cCtx);
+
+    public native AlgId keyInfo_algId(long cCtx);
+
+    public native AlgId keyInfo_compoundCipherAlgId(long cCtx);
+
+    public native AlgId keyInfo_compoundSignerAlgId(long cCtx);
+
+    public native AlgId keyInfo_hybridFirstKeyAlgId(long cCtx);
+
+    public native AlgId keyInfo_hybridSecondKeyAlgId(long cCtx);
+
+    public native AlgId keyInfo_compoundHybridCipherFirstKeyAlgId(long cCtx);
+
+    public native AlgId keyInfo_compoundHybridCipherSecondKeyAlgId(long cCtx);
+
+    public native AlgId keyInfo_compoundHybridSignerFirstKeyAlgId(long cCtx);
+
+    public native AlgId keyInfo_compoundHybridSignerSecondKeyAlgId(long cCtx);
+
+    public native long paddingParams_new();
+
+    public native void paddingParams_close(long cCtx);
+
+    public native int paddingParams_frame(long cCtx);
+
+    public native int paddingParams_frameMax(long cCtx);
+
+    public native long sha224_new();
+
+    public native void sha224_close(long cCtx);
+
+    public native AlgId sha224_algId(long cCtx);
+
+    public native AlgInfo sha224_produceAlgInfo(long cCtx);
+
+    public native void sha224_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] sha224_hash(long cCtx, byte[] data);
+
+    public native void sha224_start(long cCtx);
+
+    public native void sha224_update(long cCtx, byte[] data);
+
+    public native byte[] sha224_finish(long cCtx);
+
+    public native long sha256_new();
+
+    public native void sha256_close(long cCtx);
+
+    public native AlgId sha256_algId(long cCtx);
+
+    public native AlgInfo sha256_produceAlgInfo(long cCtx);
+
+    public native void sha256_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] sha256_hash(long cCtx, byte[] data);
+
+    public native void sha256_start(long cCtx);
+
+    public native void sha256_update(long cCtx, byte[] data);
+
+    public native byte[] sha256_finish(long cCtx);
+
+    public native long sha384_new();
+
+    public native void sha384_close(long cCtx);
+
+    public native AlgId sha384_algId(long cCtx);
+
+    public native AlgInfo sha384_produceAlgInfo(long cCtx);
+
+    public native void sha384_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] sha384_hash(long cCtx, byte[] data);
+
+    public native void sha384_start(long cCtx);
+
+    public native void sha384_update(long cCtx, byte[] data);
+
+    public native byte[] sha384_finish(long cCtx);
+
+    public native long sha512_new();
+
+    public native void sha512_close(long cCtx);
+
+    public native AlgId sha512_algId(long cCtx);
+
+    public native AlgInfo sha512_produceAlgInfo(long cCtx);
+
+    public native void sha512_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] sha512_hash(long cCtx, byte[] data);
+
+    public native void sha512_start(long cCtx);
+
+    public native void sha512_update(long cCtx, byte[] data);
+
+    public native byte[] sha512_finish(long cCtx);
+
+    public native long aes256Gcm_new();
+
+    public native void aes256Gcm_close(long cCtx);
+
+    public native AlgId aes256Gcm_algId(long cCtx);
+
+    public native AlgInfo aes256Gcm_produceAlgInfo(long cCtx);
+
+    public native void aes256Gcm_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] aes256Gcm_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int aes256Gcm_encryptedLen(long cCtx, int dataLen);
+
+    public native int aes256Gcm_preciseEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Gcm_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int aes256Gcm_decryptedLen(long cCtx, int dataLen);
+
+    public native void aes256Gcm_setNonce(long cCtx, byte[] nonce);
+
+    public native void aes256Gcm_setKey(long cCtx, byte[] key);
+
+    public native void aes256Gcm_startEncryption(long cCtx);
+
+    public native void aes256Gcm_startDecryption(long cCtx);
+
+    public native byte[] aes256Gcm_update(long cCtx, byte[] data);
+
+    public native int aes256Gcm_outLen(long cCtx, int dataLen);
+
+    public native int aes256Gcm_encryptedOutLen(long cCtx, int dataLen);
+
+    public native int aes256Gcm_decryptedOutLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Gcm_finish(long cCtx) throws FoundationException;
+
+    public native AuthEncryptAuthEncryptResult aes256Gcm_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
+
+    public native int aes256Gcm_authEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Gcm_authDecrypt(long cCtx, byte[] data, byte[] authData, byte[] tag) throws FoundationException;
+
+    public native int aes256Gcm_authDecryptedLen(long cCtx, int dataLen);
+
+    public native void aes256Gcm_setAuthData(long cCtx, byte[] authData);
+
+    public native CipherAuthFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
+
+    public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
+
+    public native long aes256Cbc_new();
+
+    public native void aes256Cbc_close(long cCtx);
+
+    public native AlgId aes256Cbc_algId(long cCtx);
+
+    public native AlgInfo aes256Cbc_produceAlgInfo(long cCtx);
+
+    public native void aes256Cbc_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] aes256Cbc_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int aes256Cbc_encryptedLen(long cCtx, int dataLen);
+
+    public native int aes256Cbc_preciseEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Cbc_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int aes256Cbc_decryptedLen(long cCtx, int dataLen);
+
+    public native void aes256Cbc_setNonce(long cCtx, byte[] nonce);
+
+    public native void aes256Cbc_setKey(long cCtx, byte[] key);
+
+    public native void aes256Cbc_startEncryption(long cCtx);
+
+    public native void aes256Cbc_startDecryption(long cCtx);
+
+    public native byte[] aes256Cbc_update(long cCtx, byte[] data);
+
+    public native int aes256Cbc_outLen(long cCtx, int dataLen);
+
+    public native int aes256Cbc_encryptedOutLen(long cCtx, int dataLen);
+
+    public native int aes256Cbc_decryptedOutLen(long cCtx, int dataLen);
+
+    public native byte[] aes256Cbc_finish(long cCtx) throws FoundationException;
+
+    public native long asn1rd_new();
+
+    public native void asn1rd_close(long cCtx);
+
+    public native boolean asn1rd_mbedtlsHasError(long cCtx, int code);
+
+    public native byte[] asn1rd_readTagData(long cCtx, int tag);
+
+    public native void asn1rd_reset(long cCtx, byte[] data);
+
+    public native int asn1rd_leftLen(long cCtx);
+
+    public native boolean asn1rd_hasError(long cCtx);
+
+    public native void asn1rd_status(long cCtx) throws FoundationException;
+
+    public native int asn1rd_getTag(long cCtx);
+
+    public native int asn1rd_getLen(long cCtx);
+
+    public native int asn1rd_getDataLen(long cCtx);
+
+    public native int asn1rd_readTag(long cCtx, int tag);
+
+    public native int asn1rd_readContextTag(long cCtx, int tag);
+
+    public native int asn1rd_readInt(long cCtx);
+
+    public native byte asn1rd_readInt8(long cCtx);
+
+    public native short asn1rd_readInt16(long cCtx);
+
+    public native int asn1rd_readInt32(long cCtx);
+
+    public native long asn1rd_readInt64(long cCtx);
+
+    public native int asn1rd_readUint(long cCtx);
+
+    public native int asn1rd_readUint8(long cCtx);
+
+    public native int asn1rd_readUint16(long cCtx);
+
+    public native int asn1rd_readUint32(long cCtx);
+
+    public native long asn1rd_readUint64(long cCtx);
+
+    public native boolean asn1rd_readBool(long cCtx);
+
+    public native void asn1rd_readNull(long cCtx);
+
+    public native void asn1rd_readNullOptional(long cCtx);
+
+    public native byte[] asn1rd_readOctetStr(long cCtx);
+
+    public native byte[] asn1rd_readBitstringAsOctetStr(long cCtx);
+
+    public native byte[] asn1rd_readUtf8Str(long cCtx);
+
+    public native byte[] asn1rd_readOid(long cCtx);
+
+    public native byte[] asn1rd_readData(long cCtx, int len);
+
+    public native int asn1rd_readSequence(long cCtx);
+
+    public native int asn1rd_readSet(long cCtx);
+
+    public native long asn1wr_new();
+
+    public native void asn1wr_close(long cCtx);
+
+    public native boolean asn1wr_mbedtlsHasError(long cCtx, int code);
+
+    public native int asn1wr_writeTagData(long cCtx, byte[] data, int tag);
+
+    public native int asn1wr_getCurrentElementLen(long cCtx, byte curr, byte end);
+
+    public native void asn1wr_swapElementsOfSet(long cCtx, byte toStart, int toLen, byte fromStart, int fromLen);
+
+    public native boolean asn1wr_secondElementOfSetIsLess(long cCtx, byte firstStart, int firstLen, byte secondStart, int secondLen);
+
+    public native void asn1wr_sortElementsOfSet(long cCtx, int len);
+
+    public native void asn1wr_reset(long cCtx, byte[] out, int outLen);
+
+    public native int asn1wr_finish(long cCtx, boolean doNotAdjust);
+
+    public native byte asn1wr_bytes(long cCtx);
+
+    public native int asn1wr_len(long cCtx);
+
+    public native int asn1wr_writtenLen(long cCtx);
+
+    public native int asn1wr_unwrittenLen(long cCtx);
+
+    public native boolean asn1wr_hasError(long cCtx);
+
+    public native void asn1wr_status(long cCtx) throws FoundationException;
+
+    public native byte asn1wr_reserve(long cCtx, int len);
+
+    public native int asn1wr_writeTag(long cCtx, int tag);
+
+    public native int asn1wr_writeContextTag(long cCtx, int tag, int len);
+
+    public native int asn1wr_writeLen(long cCtx, int len);
+
+    public native int asn1wr_writeInt(long cCtx, int value);
+
+    public native int asn1wr_writeInt8(long cCtx, byte value);
+
+    public native int asn1wr_writeInt16(long cCtx, short value);
+
+    public native int asn1wr_writeInt32(long cCtx, int value);
+
+    public native int asn1wr_writeInt64(long cCtx, long value);
+
+    public native int asn1wr_writeUint(long cCtx, int value);
+
+    public native int asn1wr_writeUint8(long cCtx, int value);
+
+    public native int asn1wr_writeUint16(long cCtx, int value);
+
+    public native int asn1wr_writeUint32(long cCtx, int value);
+
+    public native int asn1wr_writeUint64(long cCtx, long value);
+
+    public native int asn1wr_writeBool(long cCtx, boolean value);
+
+    public native int asn1wr_writeNull(long cCtx);
+
+    public native int asn1wr_writeOctetStr(long cCtx, byte[] value);
+
+    public native int asn1wr_writeOctetStrAsBitstring(long cCtx, byte[] value);
+
+    public native int asn1wr_writeData(long cCtx, byte[] data);
+
+    public native int asn1wr_writeUtf8Str(long cCtx, byte[] value);
+
+    public native int asn1wr_writeOid(long cCtx, byte[] value);
+
+    public native int asn1wr_writeSequence(long cCtx, int len);
+
+    public native int asn1wr_writeSet(long cCtx, int len);
+
+    public native long rsaPublicKey_new();
+
+    public native void rsaPublicKey_close(long cCtx);
+
+    public native int rsaPublicKey_keyExponent(long cCtx);
+
+    public native AlgId rsaPublicKey_algId(long cCtx);
+
+    public native AlgInfo rsaPublicKey_algInfo(long cCtx);
+
+    public native int rsaPublicKey_len(long cCtx);
+
+    public native int rsaPublicKey_bitlen(long cCtx);
+
+    public native boolean rsaPublicKey_isValid(long cCtx);
+
+    public native long rsaPrivateKey_new();
+
+    public native void rsaPrivateKey_close(long cCtx);
+
+    public native AlgId rsaPrivateKey_algId(long cCtx);
+
+    public native AlgInfo rsaPrivateKey_algInfo(long cCtx);
+
+    public native int rsaPrivateKey_len(long cCtx);
+
+    public native int rsaPrivateKey_bitlen(long cCtx);
+
+    public native boolean rsaPrivateKey_isValid(long cCtx);
+
+    public native PublicKey rsaPrivateKey_extractPublicKey(long cCtx);
+
+    public native long rsa_new();
+
+    public native void rsa_close(long cCtx);
+
+    public native void rsa_setRandom(long cCtx, Random random);
+
+    public native void rsa_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey rsa_generateKey(long cCtx, int bitlen) throws FoundationException;
+
+    public native PrivateKey rsa_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey rsa_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey rsa_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey rsa_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey rsa_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean rsa_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native int rsa_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] rsa_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native boolean rsa_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native int rsa_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] rsa_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native boolean rsa_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int rsa_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] rsa_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean rsa_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean rsa_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native long eccPublicKey_new();
+
+    public native void eccPublicKey_close(long cCtx);
+
+    public native AlgId eccPublicKey_algId(long cCtx);
+
+    public native AlgInfo eccPublicKey_algInfo(long cCtx);
+
+    public native int eccPublicKey_len(long cCtx);
+
+    public native int eccPublicKey_bitlen(long cCtx);
+
+    public native boolean eccPublicKey_isValid(long cCtx);
+
+    public native long eccPrivateKey_new();
+
+    public native void eccPrivateKey_close(long cCtx);
+
+    public native AlgId eccPrivateKey_algId(long cCtx);
+
+    public native AlgInfo eccPrivateKey_algInfo(long cCtx);
+
+    public native int eccPrivateKey_len(long cCtx);
+
+    public native int eccPrivateKey_bitlen(long cCtx);
+
+    public native boolean eccPrivateKey_isValid(long cCtx);
+
+    public native PublicKey eccPrivateKey_extractPublicKey(long cCtx);
+
+    public native long ecc_new();
+
+    public native void ecc_close(long cCtx);
+
+    public native void ecc_setRandom(long cCtx, Random random);
+
+    public native void ecc_setEcies(long cCtx, Ecies ecies);
+
+    public native void ecc_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey ecc_generateKey(long cCtx, AlgId algId) throws FoundationException;
+
+    public native AlgInfo ecc_produceAlgInfoForKey(long cCtx, Key key);
+
+    public native PrivateKey ecc_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey ecc_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey ecc_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey ecc_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey ecc_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean ecc_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native int ecc_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] ecc_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native boolean ecc_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native int ecc_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] ecc_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native boolean ecc_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int ecc_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] ecc_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean ecc_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean ecc_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native byte[] ecc_computeSharedKey(long cCtx, PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
+
+    public native int ecc_sharedKeyLen(long cCtx, Key key);
+
+    public native int ecc_kemSharedKeyLen(long cCtx, Key key);
+
+    public native int ecc_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
+
+    public native KemKemEncapsulateResult ecc_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native byte[] ecc_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+
+    public native long entropyAccumulator_new();
+
+    public native void entropyAccumulator_close(long cCtx);
+
+    public native void entropyAccumulator_setupDefaults(long cCtx);
+
+    public native void entropyAccumulator_addSource(long cCtx, EntropySource source, int threshold);
+
+    public native boolean entropyAccumulator_isStrong(long cCtx);
+
+    public native byte[] entropyAccumulator_gather(long cCtx, int len) throws FoundationException;
+
+    public native long ctrDrbg_new();
+
+    public native void ctrDrbg_close(long cCtx);
+
+    public native void ctrDrbg_setEntropySource(long cCtx, EntropySource entropySource);
+
+    public native void ctrDrbg_setupDefaults(long cCtx) throws FoundationException;
+
+    public native void ctrDrbg_enablePredictionResistance(long cCtx);
+
+    public native void ctrDrbg_setReseedInterval(long cCtx, int interval);
+
+    public native void ctrDrbg_setEntropyLen(long cCtx, int len);
+
+    public native byte[] ctrDrbg_random(long cCtx, int dataLen) throws FoundationException;
+
+    public native void ctrDrbg_reseed(long cCtx) throws FoundationException;
+
+    public native long hmac_new();
+
+    public native void hmac_close(long cCtx);
+
+    public native void hmac_setHash(long cCtx, Hash hash);
+
+    public native AlgId hmac_algId(long cCtx);
+
+    public native AlgInfo hmac_produceAlgInfo(long cCtx);
+
+    public native void hmac_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native int hmac_digestLen(long cCtx);
+
+    public native byte[] hmac_mac(long cCtx, byte[] key, byte[] data);
+
+    public native void hmac_start(long cCtx, byte[] key);
+
+    public native void hmac_update(long cCtx, byte[] data);
+
+    public native byte[] hmac_finish(long cCtx);
+
+    public native void hmac_reset(long cCtx);
+
+    public native long hkdf_new();
+
+    public native void hkdf_close(long cCtx);
+
+    public native void hkdf_setHash(long cCtx, Hash hash);
+
+    public native AlgId hkdf_algId(long cCtx);
+
+    public native AlgInfo hkdf_produceAlgInfo(long cCtx);
+
+    public native void hkdf_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] hkdf_derive(long cCtx, byte[] data, int keyLen);
+
+    public native void hkdf_reset(long cCtx, byte[] salt, int iterationCount);
+
+    public native void hkdf_setInfo(long cCtx, byte[] info);
+
+    public native long kdf1_new();
+
+    public native void kdf1_close(long cCtx);
+
+    public native void kdf1_setHash(long cCtx, Hash hash);
+
+    public native AlgId kdf1_algId(long cCtx);
+
+    public native AlgInfo kdf1_produceAlgInfo(long cCtx);
+
+    public native void kdf1_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] kdf1_derive(long cCtx, byte[] data, int keyLen);
+
+    public native long kdf2_new();
+
+    public native void kdf2_close(long cCtx);
+
+    public native void kdf2_setHash(long cCtx, Hash hash);
+
+    public native AlgId kdf2_algId(long cCtx);
+
+    public native AlgInfo kdf2_produceAlgInfo(long cCtx);
+
+    public native void kdf2_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] kdf2_derive(long cCtx, byte[] data, int keyLen);
+
+    public native long fakeRandom_new();
+
+    public native void fakeRandom_close(long cCtx);
+
+    public native void fakeRandom_setupSourceByte(long cCtx, byte byteSource);
+
+    public native void fakeRandom_setupSourceData(long cCtx, byte[] dataSource);
+
+    public native byte[] fakeRandom_random(long cCtx, int dataLen) throws FoundationException;
+
+    public native void fakeRandom_reseed(long cCtx) throws FoundationException;
+
+    public native boolean fakeRandom_isStrong(long cCtx);
+
+    public native byte[] fakeRandom_gather(long cCtx, int len) throws FoundationException;
+
+    public native long pkcs5Pbkdf2_new();
+
+    public native void pkcs5Pbkdf2_close(long cCtx);
+
+    public native void pkcs5Pbkdf2_setHmac(long cCtx, Mac hmac);
+
+    public native void pkcs5Pbkdf2_setupDefaults(long cCtx);
+
+    public native AlgId pkcs5Pbkdf2_algId(long cCtx);
+
+    public native AlgInfo pkcs5Pbkdf2_produceAlgInfo(long cCtx);
+
+    public native void pkcs5Pbkdf2_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] pkcs5Pbkdf2_derive(long cCtx, byte[] data, int keyLen);
+
+    public native void pkcs5Pbkdf2_reset(long cCtx, byte[] salt, int iterationCount);
+
+    public native void pkcs5Pbkdf2_setInfo(long cCtx, byte[] info);
+
+    public native long pkcs5Pbes2_new();
+
+    public native void pkcs5Pbes2_close(long cCtx);
+
+    public native void pkcs5Pbes2_setKdf(long cCtx, SaltedKdf kdf);
+
+    public native void pkcs5Pbes2_setCipher(long cCtx, Cipher cipher);
+
+    public native void pkcs5Pbes2_reset(long cCtx, byte[] pwd);
+
+    public native AlgId pkcs5Pbes2_algId(long cCtx);
+
+    public native AlgInfo pkcs5Pbes2_produceAlgInfo(long cCtx);
+
+    public native void pkcs5Pbes2_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native byte[] pkcs5Pbes2_encrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int pkcs5Pbes2_encryptedLen(long cCtx, int dataLen);
+
+    public native int pkcs5Pbes2_preciseEncryptedLen(long cCtx, int dataLen);
+
+    public native byte[] pkcs5Pbes2_decrypt(long cCtx, byte[] data) throws FoundationException;
+
+    public native int pkcs5Pbes2_decryptedLen(long cCtx, int dataLen);
+
+    public native long seedEntropySource_new();
+
+    public native void seedEntropySource_close(long cCtx);
+
+    public native void seedEntropySource_resetSeed(long cCtx, byte[] seed);
+
+    public native void seedEntropySource_moveForward(long cCtx);
+
+    public native boolean seedEntropySource_isStrong(long cCtx);
+
+    public native byte[] seedEntropySource_gather(long cCtx, int len) throws FoundationException;
+
+    public native long keyMaterialRng_new();
+
+    public native void keyMaterialRng_close(long cCtx);
+
+    public native void keyMaterialRng_resetKeyMaterial(long cCtx, byte[] keyMaterial);
+
+    public native byte[] keyMaterialRng_random(long cCtx, int dataLen) throws FoundationException;
+
+    public native void keyMaterialRng_reseed(long cCtx) throws FoundationException;
+
+    public native long rawPublicKey_new();
+
+    public native void rawPublicKey_close(long cCtx);
+
+    public native byte[] rawPublicKey_data(long cCtx);
+
+    public native AlgId rawPublicKey_algId(long cCtx);
+
+    public native AlgInfo rawPublicKey_algInfo(long cCtx);
+
+    public native int rawPublicKey_len(long cCtx);
+
+    public native int rawPublicKey_bitlen(long cCtx);
+
+    public native boolean rawPublicKey_isValid(long cCtx);
+
+    public native long rawPrivateKey_new();
+
+    public native void rawPrivateKey_close(long cCtx);
+
+    public native byte[] rawPrivateKey_data(long cCtx);
+
+    public native boolean rawPrivateKey_hasPublicKey(long cCtx);
+
+    public native void rawPrivateKey_setPublicKey(long cCtx, RawPublicKey rawPublicKey);
+
+    public native RawPublicKey rawPrivateKey_getPublicKey(long cCtx);
+
+    public native AlgId rawPrivateKey_algId(long cCtx);
+
+    public native AlgInfo rawPrivateKey_algInfo(long cCtx);
+
+    public native int rawPrivateKey_len(long cCtx);
+
+    public native int rawPrivateKey_bitlen(long cCtx);
+
+    public native boolean rawPrivateKey_isValid(long cCtx);
+
+    public native PublicKey rawPrivateKey_extractPublicKey(long cCtx);
+
+    public native long pkcs8Serializer_new();
+
+    public native void pkcs8Serializer_close(long cCtx);
+
+    public native void pkcs8Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+
+    public native void pkcs8Serializer_setupDefaults(long cCtx);
+
+    public native int pkcs8Serializer_serializePublicKeyInplace(long cCtx, RawPublicKey publicKey) throws FoundationException;
+
+    public native int pkcs8Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
+
+    public native int pkcs8Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
+
+    public native byte[] pkcs8Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
+
+    public native int pkcs8Serializer_serializedPrivateKeyLen(long cCtx, RawPrivateKey privateKey);
+
+    public native byte[] pkcs8Serializer_serializePrivateKey(long cCtx, RawPrivateKey privateKey) throws FoundationException;
+
+    public native long sec1Serializer_new();
+
+    public native void sec1Serializer_close(long cCtx);
+
+    public native void sec1Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+
+    public native void sec1Serializer_setupDefaults(long cCtx);
+
+    public native int sec1Serializer_serializePublicKeyInplace(long cCtx, RawPublicKey publicKey) throws FoundationException;
+
+    public native int sec1Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
+
+    public native boolean sec1Serializer_isEcKey(long cCtx, Key key);
+
+    public native int sec1Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
+
+    public native byte[] sec1Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
+
+    public native int sec1Serializer_serializedPrivateKeyLen(long cCtx, RawPrivateKey privateKey);
+
+    public native byte[] sec1Serializer_serializePrivateKey(long cCtx, RawPrivateKey privateKey) throws FoundationException;
+
+    public native long keyAsn1Serializer_new();
+
+    public native void keyAsn1Serializer_close(long cCtx);
+
+    public native void keyAsn1Serializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+
+    public native void keyAsn1Serializer_setupDefaults(long cCtx);
+
+    public native int keyAsn1Serializer_serializePublicKeyInplace(long cCtx, RawPublicKey publicKey) throws FoundationException;
+
+    public native int keyAsn1Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
+
+    public native int keyAsn1Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
+
+    public native byte[] keyAsn1Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
+
+    public native int keyAsn1Serializer_serializedPrivateKeyLen(long cCtx, RawPrivateKey privateKey);
+
+    public native byte[] keyAsn1Serializer_serializePrivateKey(long cCtx, RawPrivateKey privateKey) throws FoundationException;
+
+    public native long keyAsn1Deserializer_new();
+
+    public native void keyAsn1Deserializer_close(long cCtx);
+
+    public native void keyAsn1Deserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
+
+    public native void keyAsn1Deserializer_setupDefaults(long cCtx);
+
+    public native RawPublicKey keyAsn1Deserializer_deserializePublicKeyInplace(long cCtx) throws FoundationException;
+
+    public native RawPrivateKey keyAsn1Deserializer_deserializePrivateKeyInplace(long cCtx) throws FoundationException;
+
+    public native RawPrivateKey keyAsn1Deserializer_deserializePkcs8PrivateKeyInplace(long cCtx, int seqLeftLen, int version) throws FoundationException;
+
+    public native RawPrivateKey keyAsn1Deserializer_deserializeSec1PrivateKeyInplace(long cCtx, int seqLeftLen, int version, AlgInfo algInfo) throws FoundationException;
+
+    public native RawPublicKey keyAsn1Deserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
+
+    public native RawPrivateKey keyAsn1Deserializer_deserializePrivateKey(long cCtx, byte[] privateKeyData) throws FoundationException;
+
+    public native long ed25519_new();
+
+    public native void ed25519_close(long cCtx);
+
+    public native void ed25519_setRandom(long cCtx, Random random);
+
+    public native void ed25519_setEcies(long cCtx, Ecies ecies);
+
+    public native void ed25519_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey ed25519_generateKey(long cCtx) throws FoundationException;
+
+    public native PrivateKey ed25519_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey ed25519_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey ed25519_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey ed25519_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey ed25519_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean ed25519_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native int ed25519_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] ed25519_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native boolean ed25519_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native int ed25519_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] ed25519_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native boolean ed25519_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int ed25519_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] ed25519_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean ed25519_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean ed25519_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native byte[] ed25519_computeSharedKey(long cCtx, PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
+
+    public native int ed25519_sharedKeyLen(long cCtx, Key key);
+
+    public native int ed25519_kemSharedKeyLen(long cCtx, Key key);
+
+    public native int ed25519_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
+
+    public native KemKemEncapsulateResult ed25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native byte[] ed25519_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+
+    public native long curve25519_new();
+
+    public native void curve25519_close(long cCtx);
+
+    public native void curve25519_setRandom(long cCtx, Random random);
+
+    public native void curve25519_setEcies(long cCtx, Ecies ecies);
+
+    public native void curve25519_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey curve25519_generateKey(long cCtx) throws FoundationException;
+
+    public native PrivateKey curve25519_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey curve25519_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey curve25519_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey curve25519_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey curve25519_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean curve25519_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native int curve25519_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] curve25519_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native boolean curve25519_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native int curve25519_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] curve25519_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native byte[] curve25519_computeSharedKey(long cCtx, PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
+
+    public native int curve25519_sharedKeyLen(long cCtx, Key key);
+
+    public native int curve25519_kemSharedKeyLen(long cCtx, Key key);
+
+    public native int curve25519_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
+
+    public native KemKemEncapsulateResult curve25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native byte[] curve25519_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+
+    public native long falcon_new();
+
+    public native void falcon_close(long cCtx);
+
+    public native void falcon_setRandom(long cCtx, Random random);
+
+    public native void falcon_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey falcon_generateKey(long cCtx) throws FoundationException;
+
+    public native AlgId falcon_algId(long cCtx);
+
+    public native AlgInfo falcon_produceAlgInfo(long cCtx);
+
+    public native void falcon_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native PrivateKey falcon_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey falcon_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey falcon_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey falcon_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey falcon_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean falcon_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int falcon_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] falcon_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean falcon_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean falcon_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native long round5_new();
+
+    public native void round5_close(long cCtx);
+
+    public native void round5_setRandom(long cCtx, Random random);
+
+    public native void round5_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey round5_generateKey(long cCtx, AlgId algId) throws FoundationException;
+
+    public native PrivateKey round5_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey round5_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey round5_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey round5_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey round5_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native int round5_kemSharedKeyLen(long cCtx, Key key);
+
+    public native int round5_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
+
+    public native KemKemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native byte[] round5_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+
+    public native long compoundKeyAlgInfo_new();
+
+    public native void compoundKeyAlgInfo_close(long cCtx);
+
+    public native AlgInfo compoundKeyAlgInfo_cipherAlgInfo(long cCtx);
+
+    public native AlgInfo compoundKeyAlgInfo_signerAlgInfo(long cCtx);
+
+    public native AlgId compoundKeyAlgInfo_algId(long cCtx);
+
+    public native long compoundPublicKey_new();
+
+    public native void compoundPublicKey_close(long cCtx);
+
+    public native PublicKey compoundPublicKey_cipherKey(long cCtx);
+
+    public native PublicKey compoundPublicKey_signerKey(long cCtx);
+
+    public native AlgId compoundPublicKey_algId(long cCtx);
+
+    public native AlgInfo compoundPublicKey_algInfo(long cCtx);
+
+    public native int compoundPublicKey_len(long cCtx);
+
+    public native int compoundPublicKey_bitlen(long cCtx);
+
+    public native boolean compoundPublicKey_isValid(long cCtx);
+
+    public native long compoundPrivateKey_new();
+
+    public native void compoundPrivateKey_close(long cCtx);
+
+    public native PrivateKey compoundPrivateKey_cipherKey(long cCtx);
+
+    public native PrivateKey compoundPrivateKey_signerKey(long cCtx);
+
+    public native AlgId compoundPrivateKey_algId(long cCtx);
+
+    public native AlgInfo compoundPrivateKey_algInfo(long cCtx);
+
+    public native int compoundPrivateKey_len(long cCtx);
+
+    public native int compoundPrivateKey_bitlen(long cCtx);
+
+    public native boolean compoundPrivateKey_isValid(long cCtx);
+
+    public native PublicKey compoundPrivateKey_extractPublicKey(long cCtx);
+
+    public native long compoundKeyAlg_new();
+
+    public native void compoundKeyAlg_close(long cCtx);
+
+    public native void compoundKeyAlg_setRandom(long cCtx, Random random);
+
+    public native void compoundKeyAlg_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey compoundKeyAlg_makeKey(long cCtx, PrivateKey cipherKey, PrivateKey signerKey) throws FoundationException;
+
+    public native AlgId compoundKeyAlg_algId(long cCtx);
+
+    public native AlgInfo compoundKeyAlg_produceAlgInfo(long cCtx);
+
+    public native void compoundKeyAlg_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native PrivateKey compoundKeyAlg_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey compoundKeyAlg_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey compoundKeyAlg_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey compoundKeyAlg_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey compoundKeyAlg_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean compoundKeyAlg_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native int compoundKeyAlg_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] compoundKeyAlg_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native boolean compoundKeyAlg_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native int compoundKeyAlg_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] compoundKeyAlg_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native boolean compoundKeyAlg_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int compoundKeyAlg_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] compoundKeyAlg_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean compoundKeyAlg_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean compoundKeyAlg_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native long hybridKeyAlgInfo_new();
+
+    public native void hybridKeyAlgInfo_close(long cCtx);
+
+    public native AlgInfo hybridKeyAlgInfo_firstKeyAlgInfo(long cCtx);
+
+    public native AlgInfo hybridKeyAlgInfo_secondKeyAlgInfo(long cCtx);
+
+    public native AlgId hybridKeyAlgInfo_algId(long cCtx);
+
+    public native long hybridPublicKey_new();
+
+    public native void hybridPublicKey_close(long cCtx);
+
+    public native PublicKey hybridPublicKey_firstKey(long cCtx);
+
+    public native PublicKey hybridPublicKey_secondKey(long cCtx);
+
+    public native AlgId hybridPublicKey_algId(long cCtx);
+
+    public native AlgInfo hybridPublicKey_algInfo(long cCtx);
+
+    public native int hybridPublicKey_len(long cCtx);
+
+    public native int hybridPublicKey_bitlen(long cCtx);
+
+    public native boolean hybridPublicKey_isValid(long cCtx);
+
+    public native long hybridPrivateKey_new();
+
+    public native void hybridPrivateKey_close(long cCtx);
+
+    public native PrivateKey hybridPrivateKey_firstKey(long cCtx);
+
+    public native PrivateKey hybridPrivateKey_secondKey(long cCtx);
+
+    public native AlgId hybridPrivateKey_algId(long cCtx);
+
+    public native AlgInfo hybridPrivateKey_algInfo(long cCtx);
+
+    public native int hybridPrivateKey_len(long cCtx);
+
+    public native int hybridPrivateKey_bitlen(long cCtx);
+
+    public native boolean hybridPrivateKey_isValid(long cCtx);
+
+    public native PublicKey hybridPrivateKey_extractPublicKey(long cCtx);
+
+    public native long hybridKeyAlg_new();
+
+    public native void hybridKeyAlg_close(long cCtx);
+
+    public native void hybridKeyAlg_setRandom(long cCtx, Random random);
+
+    public native void hybridKeyAlg_setCipher(long cCtx, CipherAuth cipher);
+
+    public native void hybridKeyAlg_setHash(long cCtx, Hash hash);
+
+    public native void hybridKeyAlg_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey hybridKeyAlg_makeKey(long cCtx, PrivateKey firstKey, PrivateKey secondKey) throws FoundationException;
+
+    public native void hybridKeyAlg_configCipher(long cCtx, Cipher cipher, Hash hash, byte[] sharedKey);
+
+    public native PrivateKey hybridKeyAlg_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey hybridKeyAlg_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey hybridKeyAlg_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey hybridKeyAlg_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey hybridKeyAlg_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean hybridKeyAlg_canEncrypt(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native int hybridKeyAlg_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
+
+    public native byte[] hybridKeyAlg_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
+
+    public native boolean hybridKeyAlg_canDecrypt(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native int hybridKeyAlg_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
+
+    public native byte[] hybridKeyAlg_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
+
+    public native boolean hybridKeyAlg_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int hybridKeyAlg_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] hybridKeyAlg_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean hybridKeyAlg_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean hybridKeyAlg_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
+    public native long simpleAlgInfo_new();
+
+    public native void simpleAlgInfo_close(long cCtx);
+
+    public native AlgId simpleAlgInfo_algId(long cCtx);
+
+    public native long hashBasedAlgInfo_new();
+
+    public native void hashBasedAlgInfo_close(long cCtx);
+
+    public native AlgInfo hashBasedAlgInfo_hashAlgInfo(long cCtx);
+
+    public native AlgId hashBasedAlgInfo_algId(long cCtx);
+
+    public native long cipherAlgInfo_new();
+
+    public native void cipherAlgInfo_close(long cCtx);
+
+    public native byte[] cipherAlgInfo_nonce(long cCtx);
+
+    public native AlgId cipherAlgInfo_algId(long cCtx);
+
+    public native long saltedKdfAlgInfo_new();
+
+    public native void saltedKdfAlgInfo_close(long cCtx);
+
+    public native AlgInfo saltedKdfAlgInfo_hashAlgInfo(long cCtx);
+
+    public native byte[] saltedKdfAlgInfo_salt(long cCtx);
+
+    public native int saltedKdfAlgInfo_iterationCount(long cCtx);
+
+    public native AlgId saltedKdfAlgInfo_algId(long cCtx);
+
+    public native long pbeAlgInfo_new();
+
+    public native void pbeAlgInfo_close(long cCtx);
+
+    public native AlgInfo pbeAlgInfo_kdfAlgInfo(long cCtx);
+
+    public native AlgInfo pbeAlgInfo_cipherAlgInfo(long cCtx);
+
+    public native AlgId pbeAlgInfo_algId(long cCtx);
+
+    public native long eccAlgInfo_new();
+
+    public native void eccAlgInfo_close(long cCtx);
+
+    public native OidId eccAlgInfo_keyId(long cCtx);
+
+    public native OidId eccAlgInfo_domainId(long cCtx);
+
+    public native AlgId eccAlgInfo_algId(long cCtx);
+
+    public native long algInfoDerSerializer_new();
+
+    public native void algInfoDerSerializer_close(long cCtx);
+
+    public native void algInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+
+    public native void algInfoDerSerializer_setupDefaults(long cCtx);
+
+    public native boolean algInfoDerSerializer_isAlgRequireNullParams(long cCtx, AlgId algId);
+
+    public native int algInfoDerSerializer_serializedSimpleAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeSimpleAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedKdfAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeKdfAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedHkdfAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeHkdfAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedHmacAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeHmacAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedCipherAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeCipherAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedPbkdf2AlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializePbkdf2AlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedPbes2AlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializePbes2AlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedEccAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeEccAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedCompoundKeyAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeCompoundKeyAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedHybridKeyAlgInfoLen(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeHybridKeyAlgInfo(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializeInplace(long cCtx, AlgInfo algInfo);
+
+    public native int algInfoDerSerializer_serializedLen(long cCtx, AlgInfo algInfo);
+
+    public native byte[] algInfoDerSerializer_serialize(long cCtx, AlgInfo algInfo);
+
+    public native long algInfoDerDeserializer_new();
+
+    public native void algInfoDerDeserializer_close(long cCtx);
+
+    public native void algInfoDerDeserializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
+
+    public native void algInfoDerDeserializer_setupDefaults(long cCtx);
+
+    public native AlgInfo algInfoDerDeserializer_deserializeSimpleAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeKdfAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeHkdfAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeHmacAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeCipherAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializePbkdf2AlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializePbes2AlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeEccAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeCompoundKeyAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeHybridKeyAlgInfo(long cCtx, OidId oidId) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserializeInplace(long cCtx) throws FoundationException;
+
+    public native AlgInfo algInfoDerDeserializer_deserialize(long cCtx, byte[] data) throws FoundationException;
+
+    public native long messageInfoDerSerializer_new();
+
+    public native void messageInfoDerSerializer_close(long cCtx);
+
+    public native void messageInfoDerSerializer_setAsn1Reader(long cCtx, Asn1Reader asn1Reader);
+
+    public native void messageInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
+
+    public native void messageInfoDerSerializer_setupDefaults(long cCtx);
+
+    public native int messageInfoDerSerializer_serializedCustomParamsLen(long cCtx, MessageInfoCustomParams customParams);
+
+    public native int messageInfoDerSerializer_serializeCustomParams(long cCtx, MessageInfoCustomParams customParams);
+
+    public native int messageInfoDerSerializer_serializedFooterInfoLen(long cCtx, FooterInfo footerInfo);
+
+    public native int messageInfoDerSerializer_serializeFooterInfo(long cCtx, FooterInfo footerInfo);
+
+    public native int messageInfoDerSerializer_serializeSignedDataInfoInternal(long cCtx, SignedDataInfo signedDataInfo);
+
+    public native int messageInfoDerSerializer_serializedKeyRecipientInfoLen(long cCtx, KeyRecipientInfo keyRecipientInfo);
+
+    public native int messageInfoDerSerializer_serializeKeyRecipientInfo(long cCtx, KeyRecipientInfo keyRecipientInfo);
+
+    public native int messageInfoDerSerializer_serializedPasswordRecipientInfoLen(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
+
+    public native int messageInfoDerSerializer_serializePasswordRecipientInfo(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
+
+    public native int messageInfoDerSerializer_serializedRecipientInfosLen(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializeRecipientInfos(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializedEncryptedContentInfoLen(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializeEncryptedContentInfo(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializedEnvelopedDataLen(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializeEnvelopedData(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializedCmsContentInfoLen(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializeCmsContentInfo(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_serializedSignerInfosLen(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    public native int messageInfoDerSerializer_serializeSignerInfos(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    public native int messageInfoDerSerializer_serializedSignerInfoLen(long cCtx, SignerInfo signerInfo);
+
+    public native int messageInfoDerSerializer_serializeSignerInfo(long cCtx, SignerInfo signerInfo);
+
+    public native void messageInfoDerSerializer_deserializeCustomParams(long cCtx, MessageInfoCustomParams customParams) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeCipherKdf(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeCipherPadding(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeFooterInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeSignedDataInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeKeyRecipientInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializePasswordRecipientInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeRecipientInfos(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeEncryptedContentInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeEnvelopedData(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeCmsContentInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeSignerInfos(long cCtx, MessageInfoFooter messageInfoFooter) throws FoundationException;
+
+    public native void messageInfoDerSerializer_deserializeSignerInfo(long cCtx, MessageInfoFooter messageInfoFooter) throws FoundationException;
+
+    public native int messageInfoDerSerializer_serializedLen(long cCtx, MessageInfo messageInfo);
+
+    public native byte[] messageInfoDerSerializer_serialize(long cCtx, MessageInfo messageInfo);
+
+    public native int messageInfoDerSerializer_readPrefix(long cCtx, byte[] data);
+
+    public native MessageInfo messageInfoDerSerializer_deserialize(long cCtx, byte[] data) throws FoundationException;
+
+    public native int messageInfoDerSerializer_serializedFooterLen(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    public native byte[] messageInfoDerSerializer_serializeFooter(long cCtx, MessageInfoFooter messageInfoFooter);
+
+    public native MessageInfoFooter messageInfoDerSerializer_deserializeFooter(long cCtx, byte[] data) throws FoundationException;
+
+    public native long randomPadding_new();
+
+    public native void randomPadding_close(long cCtx);
+
+    public native void randomPadding_setRandom(long cCtx, Random random);
+
+    public native AlgId randomPadding_algId(long cCtx);
+
+    public native AlgInfo randomPadding_produceAlgInfo(long cCtx);
+
+    public native void randomPadding_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native void randomPadding_configure(long cCtx, PaddingParams params);
+
+    public native int randomPadding_paddedDataLen(long cCtx, int dataLen);
+
+    public native int randomPadding_len(long cCtx);
+
+    public native int randomPadding_lenMax(long cCtx);
+
+    public native void randomPadding_startDataProcessing(long cCtx);
+
+    public native byte[] randomPadding_processData(long cCtx, byte[] data);
+
+    public native byte[] randomPadding_finishDataProcessing(long cCtx) throws FoundationException;
+
+    public native void randomPadding_startPaddedDataProcessing(long cCtx);
+
+    public native byte[] randomPadding_processPaddedData(long cCtx, byte[] data);
+
+    public native int randomPadding_finishPaddedDataProcessingOutLen(long cCtx);
+
+    public native byte[] randomPadding_finishPaddedDataProcessing(long cCtx) throws FoundationException;
 
 }

@@ -126,7 +126,7 @@ public class RatchetSession implements AutoCloseable {
         return RatchetJNI.INSTANCE.ratchetSession_serialize(this.cCtx);
     }
 
-    public Self deserialize(byte[] input) throws RatchetException {
+    public RatchetSession deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetSession_deserialize(input);
     }
 

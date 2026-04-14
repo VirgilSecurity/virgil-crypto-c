@@ -102,7 +102,7 @@ public class RatchetMessage implements AutoCloseable {
         return RatchetJNI.INSTANCE.ratchetMessage_serialize(this.cCtx);
     }
 
-    public Self deserialize(byte[] input) throws RatchetException {
+    public RatchetMessage deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetMessage_deserialize(input);
     }
 

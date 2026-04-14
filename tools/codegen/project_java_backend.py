@@ -237,7 +237,7 @@ def _java_type_for_arg(arg: IRCArgument, project_name: str) -> str:
         return "byte[]"
     if arg.class_name == "error":
         return "void"
-    if arg.class_name and arg.class_name not in ("data", "buffer", "error"):
+    if arg.class_name and arg.class_name not in ("data", "buffer", "error", "self"):
         return _pascal(arg.class_name)
     type_name = (arg.type_name or "").lower()
     if type_name == "size":
@@ -279,6 +279,9 @@ def _java_return_type(method: IRCMethod, project_name: str,
         return "void"
 
     ret = value_returns[0]
+    # Resolve class_name="self" to the entity's own type
+    if ret.class_name == "self":
+        return _pascal(entity_name)
     return _java_type_for_arg(ret, project_name)
 
 
@@ -752,20 +755,129 @@ def _generate_result_class(
 # ---------------------------------------------------------------------------
 
 def _generate_jni_java(project_ir: IRProject) -> str:
-    """Generate {Project}JNI.java -- singleton with native method declarations."""
+    """Generate {Project}JNI.java -- singleton with ALL native method declarations."""
     pname = project_ir.name
     jni_class = _jni_class(pname)
+    exception_class = _exception_class(pname)
 
     lines: list[str] = []
     lines.append(_LICENSE)
     lines.append("")
     lines.append(f"package {_java_package(pname)};")
     lines.append("")
+    lines.append("import com.virgilsecurity.crypto.common.utils.NativeUtils;")
     lines.append("")
     lines.append(f"public class {jni_class} {{")
     lines.append("")
-    lines.append(f"    public static final {jni_class} INSTANCE = new {jni_class}();")
+    lines.append(f"    public static final {jni_class} INSTANCE;")
     lines.append("")
+    lines.append("    static {")
+    lines.append(f'        NativeUtils.load("{project_ir.prefix}_{pname}");')
+    lines.append(f"        INSTANCE = new {jni_class}();")
+    lines.append("    }")
+    lines.append("")
+    lines.append(f"    private {jni_class}() {{")
+    lines.append("    }")
+    lines.append("")
+
+    def _emit_native_methods(
+        entity_name: str,
+        methods: list,
+        dependencies: list,
+        is_static: bool,
+        interface_bindings: list | None = None,
+    ) -> None:
+        entity_camel = _entity_camel(entity_name)
+        iface_by_name = {i.name: i for i in project_ir.interfaces}
+
+        # new / close for non-static entities
+        if not is_static:
+            lines.append(f"    public native long {entity_camel}_new();")
+            lines.append("")
+            lines.append(f"    public native void {entity_camel}_close(long cCtx);")
+            lines.append("")
+
+        # Dependency setters
+        for dep in dependencies:
+            dep_type = _pascal(dep.type_name)
+            dep_setter = "set" + _pascal(dep.name)
+            lines.append(
+                f"    public native void {entity_camel}_{dep_setter}"
+                f"(long cCtx, {dep_type} {_camel(dep.name)});"
+            )
+            lines.append("")
+
+        # Collect all methods (own + inherited from interface bindings)
+        all_methods = list(methods)
+        if interface_bindings:
+            for binding in interface_bindings:
+                iface = iface_by_name.get(binding.name)
+                if iface is None:
+                    continue
+                existing_names = {m.name for m in all_methods}
+                for m in iface.methods:
+                    if m.name not in existing_names:
+                        all_methods.append(m)
+
+        # Method declarations — track origin for result class naming
+        method_origins: list[tuple[IRCMethod, str]] = []
+        for m in methods:
+            method_origins.append((m, entity_name))
+        if interface_bindings:
+            for binding in interface_bindings:
+                iface = iface_by_name.get(binding.name)
+                if iface is None:
+                    continue
+                existing_names = {m.name for m, _ in method_origins}
+                for m in iface.methods:
+                    if m.name not in existing_names:
+                        method_origins.append((m, binding.name))
+
+        for method, origin_name in method_origins:
+            if not _method_should_wrap(method):
+                continue
+            # Skip methods that reference external library types
+            has_ext_lib = False
+            for a in method.arguments + method.returns:
+                if a.library and a.library not in ("common", "foundation", "phe", "pythia", "ratchet"):
+                    has_ext_lib = True
+                    break
+            if has_ext_lib:
+                continue
+            method_camel = _camel(method.name)
+            # Use the origin entity name for result class naming
+            ret_type = _java_return_type(method, pname, origin_name)
+            include_ctx = not is_static
+            params = _java_param_list(method, pname, include_ctx=include_ctx)
+            params_str = ", ".join(f"{t} {n}" for t, n in params)
+            throws = _method_has_error(method)
+            throws_str = f" throws {exception_class}" if throws else ""
+            lines.append(
+                f"    public native {ret_type} {entity_camel}_{method_camel}"
+                f"({params_str}){throws_str};"
+            )
+            lines.append("")
+
+    # Iterate ALL entities: classes, then implementations
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in ("private", "internal"):
+            continue
+        if cls.name == "error":
+            continue
+        _emit_native_methods(
+            cls.name, cls.methods, cls.dependencies,
+            _is_static_class(cls),
+        )
+
+    for impl in project_ir.implementations:
+        if impl.attrs.get("scope") in ("private", "internal"):
+            continue
+        _emit_native_methods(
+            impl.name, impl.methods, impl.dependencies,
+            False,
+            interface_bindings=impl.interface_bindings,
+        )
+
     lines.append("}")
     lines.append("")
     return "\n".join(lines)
@@ -782,7 +894,7 @@ def _generate_exception(project_ir: IRProject) -> str:
     lines.append("")
     lines.append(f"package {_java_package(pname)};")
     lines.append("")
-    lines.append(f"public class {exception_class} {{")
+    lines.append(f"public class {exception_class} extends Exception {{")
     lines.append("")
 
     if status is not None:
