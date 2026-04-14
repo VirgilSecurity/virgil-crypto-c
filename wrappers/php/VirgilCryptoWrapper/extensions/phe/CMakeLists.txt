@@ -1,23 +1,51 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(vsce_phe_php)
+project(virgil_crypto_phe_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
-find_package(PHP REQUIRED)
+if(NOT VIRGIL_LIB_PHE)
+    message(STATUS "Skip building the PHP wrapper for library 'phe', which is not built.")
+    return()
+endif()
 
-add_library(vsce_phe_php SHARED
-    vsce_phe_php.c
-)
+add_library(phe_php SHARED)
 
-target_include_directories(vsce_phe_php PRIVATE
-    ${PHP_INCLUDE_DIRS}
-)
-
-target_link_libraries(vsce_phe_php
-    vsce_phe
-)
-
-set_target_properties(vsce_phe_php PROPERTIES
+set_target_properties(phe_php PROPERTIES
     OUTPUT_NAME "vsce_phe_php"
     PREFIX ""
     SUFFIX ".so"
 )
+
+if(WIN32)
+    set_target_properties(phe_php PROPERTIES SUFFIX ".dll")
+endif()
+
+target_compile_definitions(phe_php
+    PRIVATE
+        VSCE_PHP_SHARED_LIBRARY
+        VSCE_PHP_INTERNAL_BUILD=1
+)
+
+target_sources(phe_php
+    PRIVATE
+        $<BUILD_INTERFACE:vsce_phe_php.c>
+)
+
+target_include_directories(phe_php
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+)
+
+target_link_libraries(phe_php
+    PUBLIC
+        vsc::phe
+    PRIVATE
+        phplib
+        "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
+)
+
+if(VIRGIL_INSTALL_WRAP_LIBS)
+    install(TARGETS phe_php
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif()

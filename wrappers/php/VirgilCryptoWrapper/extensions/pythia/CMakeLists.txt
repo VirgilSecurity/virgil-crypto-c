@@ -1,23 +1,51 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(vscp_pythia_php)
+project(virgil_crypto_pythia_php VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)
 
-find_package(PHP REQUIRED)
+if(NOT VIRGIL_LIB_PYTHIA)
+    message(STATUS "Skip building the PHP wrapper for library 'pythia', which is not built.")
+    return()
+endif()
 
-add_library(vscp_pythia_php SHARED
-    vscp_pythia_php.c
-)
+add_library(pythia_php SHARED)
 
-target_include_directories(vscp_pythia_php PRIVATE
-    ${PHP_INCLUDE_DIRS}
-)
-
-target_link_libraries(vscp_pythia_php
-    vscp_pythia
-)
-
-set_target_properties(vscp_pythia_php PROPERTIES
+set_target_properties(pythia_php PROPERTIES
     OUTPUT_NAME "vscp_pythia_php"
     PREFIX ""
     SUFFIX ".so"
 )
+
+if(WIN32)
+    set_target_properties(pythia_php PROPERTIES SUFFIX ".dll")
+endif()
+
+target_compile_definitions(pythia_php
+    PRIVATE
+        VSCP_PHP_SHARED_LIBRARY
+        VSCP_PHP_INTERNAL_BUILD=1
+)
+
+target_sources(pythia_php
+    PRIVATE
+        $<BUILD_INTERFACE:vscp_pythia_php.c>
+)
+
+target_include_directories(pythia_php
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+)
+
+target_link_libraries(pythia_php
+    PUBLIC
+        vsc::pythia
+    PRIVATE
+        phplib
+        "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
+)
+
+if(VIRGIL_INSTALL_WRAP_LIBS)
+    install(TARGETS pythia_php
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif()

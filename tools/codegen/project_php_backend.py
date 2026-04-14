@@ -1174,34 +1174,73 @@ def generate_c_extension_header(project_ir: IRProject) -> str:
 
 
 def generate_c_extension_cmake(project_ir: IRProject) -> str:
-    """Generate the CMakeLists.txt for the C extension."""
+    """Generate the CMakeLists.txt for the PHP C extension.
+
+    Matches the legacy GSL-generated CMakeLists structure: uses
+    vsc::{project} imported target, phplib, macOS dynamic_lookup,
+    and proper output naming.
+    """
     prefix = project_ir.prefix
     project_name = project_ir.name
+    lib_option = f"VIRGIL_LIB_{project_name.upper()}"
+    target = f"{project_name}_php"
+    c_target = f"vsc::{project_name}"
 
     lines: list[str] = []
-    lines.append(f"cmake_minimum_required(VERSION 3.12 FATAL_ERROR)")
+    lines.append("cmake_minimum_required(VERSION 3.12 FATAL_ERROR)")
     lines.append("")
-    lines.append(f"project({prefix}_{project_name}_php)")
+    lines.append(f"project(virgil_crypto_{project_name}_php "
+                 "VERSION ${virgil_crypto_php_VERSION} LANGUAGES C)")
     lines.append("")
-    lines.append(f"find_package(PHP REQUIRED)")
+    lines.append(f"if(NOT {lib_option})")
+    lines.append(f'    message(STATUS "Skip building the PHP wrapper for '
+                 f"library '{project_name}', which is not built.\")")
+    lines.append("    return()")
+    lines.append("endif()")
     lines.append("")
-    lines.append(f"add_library({prefix}_{project_name}_php SHARED")
-    lines.append(f"    {prefix}_{project_name}_php.c")
-    lines.append(")")
+    lines.append(f"add_library({target} SHARED)")
     lines.append("")
-    lines.append(f"target_include_directories({prefix}_{project_name}_php PRIVATE")
-    lines.append("    ${PHP_INCLUDE_DIRS}")
-    lines.append(")")
-    lines.append("")
-    lines.append(f"target_link_libraries({prefix}_{project_name}_php")
-    lines.append(f"    {prefix}_{project_name}")
-    lines.append(")")
-    lines.append("")
-    lines.append(f"set_target_properties({prefix}_{project_name}_php PROPERTIES")
+    lines.append(f"set_target_properties({target} PROPERTIES")
     lines.append(f'    OUTPUT_NAME "{prefix}_{project_name}_php"')
-    lines.append("    PREFIX \"\"")
-    lines.append("    SUFFIX \".so\"")
+    lines.append('    PREFIX ""')
+    lines.append('    SUFFIX ".so"')
     lines.append(")")
+    lines.append("")
+    lines.append(f"if(WIN32)")
+    lines.append(f"    set_target_properties({target} PROPERTIES SUFFIX \".dll\")")
+    lines.append(f"endif()")
+    lines.append("")
+    lines.append(f"target_compile_definitions({target}")
+    lines.append("    PRIVATE")
+    lines.append(f"        {prefix.upper()}_PHP_SHARED_LIBRARY")
+    lines.append(f"        {prefix.upper()}_PHP_INTERNAL_BUILD=1")
+    lines.append(")")
+    lines.append("")
+    lines.append(f"target_sources({target}")
+    lines.append("    PRIVATE")
+    lines.append(f"        $<BUILD_INTERFACE:{prefix}_{project_name}_php.c>")
+    lines.append(")")
+    lines.append("")
+    lines.append(f"target_include_directories({target}")
+    lines.append("    PUBLIC")
+    lines.append("        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>")
+    lines.append(")")
+    lines.append("")
+    lines.append(f"target_link_libraries({target}")
+    lines.append("    PUBLIC")
+    lines.append(f"        {c_target}")
+    lines.append("    PRIVATE")
+    lines.append("        phplib")
+    lines.append('        "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:'
+                 '-undefined dynamic_lookup>"')
+    lines.append(")")
+    lines.append("")
+    lines.append("if(VIRGIL_INSTALL_WRAP_LIBS)")
+    lines.append(f"    install(TARGETS {target}")
+    lines.append("        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}")
+    lines.append("        RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}")
+    lines.append("    )")
+    lines.append("endif()")
     lines.append("")
 
     return "\n".join(lines)
