@@ -80,11 +80,11 @@ const initRandomPadding = (Module, modules) => {
         }
 
         static get PADDING_LEN_MIN() {
-            return .(c_class_random_padding_constant_padding_size_len) + 1;
+            return 5;
         }
 
         get PADDING_LEN_MIN() {
-            return .(c_class_random_padding_constant_padding_size_len) + 1;
+            return 5;
         }
 
         algId() {

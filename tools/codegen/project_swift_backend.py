@@ -950,7 +950,9 @@ def generate_swift_class(project_ir: IRProject, cls: IRClass) -> str:
                 continue
             prop_name = swift_method_name(const.name)
             const_type = _swift_constant_type(const)
-            value = const.attrs.get("value", "0")
+            value = resolve_constant_value(
+                const.attrs.get("value", "0"), cls, project_ir
+            )
             _emit_doc(lines, const.description)
             lines.append(f"    @objc public let {prop_name}: {const_type} = {value}")
             lines.append("")
@@ -1097,7 +1099,9 @@ def generate_swift_implementation(project_ir: IRProject, impl: IRImplementation)
                 continue
             prop_name = swift_method_name(bconst.name)
             const_type = _swift_constant_type(iface_const)
-            value = bconst.value or bconst.attrs.get("value", "0")
+            value = resolve_constant_value(
+                bconst.value or bconst.attrs.get("value", "0"), impl, project_ir
+            )
             _emit_doc(lines, iface_const.description)
             lines.append(f"    @objc public let {prop_name}: {const_type} = {value}")
             lines.append("")
@@ -1108,7 +1112,9 @@ def generate_swift_implementation(project_ir: IRProject, impl: IRImplementation)
             continue
         prop_name = swift_method_name(const.name)
         const_type = _swift_constant_type(const)
-        value = const.attrs.get("value", "0")
+        value = resolve_constant_value(
+            const.attrs.get("value", "0"), impl, project_ir
+        )
         _emit_doc(lines, const.description)
         lines.append(f"    @objc public let {prop_name}: {const_type} = {value}")
         lines.append("")

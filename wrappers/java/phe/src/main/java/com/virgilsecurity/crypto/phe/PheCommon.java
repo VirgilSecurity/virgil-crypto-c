@@ -71,11 +71,11 @@ public class PheCommon {
     }
 
     public int getPheMaxEncryptLen() {
-        return 1024 * 1024 - 64;
+        return 1048512;
     }
 
     public int getPheMaxDecryptLen() {
-        return 1024 * 1024;
+        return 1048576;
     }
 
     public int getPheMaxAuthLen() {

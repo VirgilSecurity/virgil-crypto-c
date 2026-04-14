@@ -683,6 +683,7 @@ def _collect_interface_names(project_ir: IRProject, impl: IRImplementation) -> l
 def _collect_constants_for_entity(
     project_ir: IRProject,
     constants: list[IRCConstant],
+    entity=None,
 ) -> list[tuple[str, str]]:
     """Collect (NAME, value) pairs for class constants."""
     result = []
@@ -690,7 +691,9 @@ def _collect_constants_for_entity(
         if const.attrs.get("definition") == "private":
             continue
         const_name = _snake_case(const.name).upper()
-        value = const.attrs.get("value", "0")
+        value = resolve_constant_value(
+            const.attrs.get("value", "0"), entity, project_ir
+        )
         result.append((const_name, value))
     return result
 
@@ -724,7 +727,7 @@ def generate_php_implementation(project_ir: IRProject, impl: IRImplementation) -
     lines.append("")
 
     # Constants from interface bindings
-    constants = _collect_constants_for_entity(project_ir, impl.constants)
+    constants = _collect_constants_for_entity(project_ir, impl.constants, entity=impl)
     if constants:
         for cname, cvalue in constants:
             lines.append(f"    const {cname} = {cvalue};")
@@ -831,7 +834,7 @@ def generate_php_class(project_ir: IRProject, cls: IRClass) -> str:
     lines.append("")
 
     # Constants
-    constants = _collect_constants_for_entity(project_ir, cls.constants)
+    constants = _collect_constants_for_entity(project_ir, cls.constants, entity=cls)
     if constants:
         for cname, cvalue in constants:
             lines.append(f"    const {cname} = {cvalue};")
@@ -903,7 +906,7 @@ def generate_php_static_class(project_ir: IRProject, cls: IRClass) -> str:
     lines.append("")
 
     # Constants (if any)
-    constants = _collect_constants_for_entity(project_ir, cls.constants)
+    constants = _collect_constants_for_entity(project_ir, cls.constants, entity=cls)
     if constants:
         for cname, cvalue in constants:
             lines.append(f"    const {cname} = {cvalue};")

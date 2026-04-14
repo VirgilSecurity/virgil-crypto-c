@@ -1057,9 +1057,17 @@ def _generate_class_js(
         lines.append("")
 
     # Constants as static+instance getters
+    # Look up entity for constant expression resolution
+    _entity_ref = None
+    for _ent in list(project_ir.classes) + list(project_ir.implementations):
+        if _ent.name == entity_name:
+            _entity_ref = _ent
+            break
     for const in constants:
         cname = _upper_snake(const.name)
-        raw_value = const.attrs.get("value", "0").strip()
+        raw_value = resolve_constant_value(
+            const.attrs.get("value", "0").strip(), _entity_ref, project_ir
+        )
         lines.append(f"        static get {cname}() {{")
         lines.append(f"            return {raw_value};")
         lines.append(f"        }}")

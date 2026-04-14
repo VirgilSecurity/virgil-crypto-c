@@ -591,7 +591,15 @@ def _generate_class_file(
             else:
                 jtype = "int"
             getter_name = "get" + _pascal(const.name)
-            value = const.attrs.get("value", "0")
+            # Look up entity for constant expression resolution
+            _ent = None
+            for _e in list(project_ir.classes) + list(project_ir.implementations):
+                if _e.name == entity_name:
+                    _ent = _e
+                    break
+            value = resolve_constant_value(
+                const.attrs.get("value", "0"), _ent, project_ir
+            )
             lines.append(f"    public {jtype} {getter_name}() {{")
             lines.append(f"        return {value};")
             lines.append("    }")

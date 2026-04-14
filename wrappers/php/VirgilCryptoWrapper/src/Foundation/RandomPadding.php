@@ -46,7 +46,7 @@ class RandomPadding implements Alg, Padding
     private $ctx;
 
     const PADDING_SIZE_LEN = 4;
-    const PADDING_LEN_MIN = .(c_class_random_padding_constant_padding_size_len) + 1;
+    const PADDING_LEN_MIN = 5;
 
     /**
     * Create underlying C context.

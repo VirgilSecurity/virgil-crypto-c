@@ -102,19 +102,19 @@ const initPheCommon = (Module, modules) => {
         }
 
         static get PHE_MAX_ENCRYPT_LEN() {
-            return 1024 * 1024 - 64;
+            return 1048512;
         }
 
         get PHE_MAX_ENCRYPT_LEN() {
-            return 1024 * 1024 - 64;
+            return 1048512;
         }
 
         static get PHE_MAX_DECRYPT_LEN() {
-            return 1024 * 1024;
+            return 1048576;
         }
 
         get PHE_MAX_DECRYPT_LEN() {
-            return 1024 * 1024;
+            return 1048576;
         }
 
         static get PHE_MAX_AUTH_LEN() {

@@ -48,8 +48,8 @@ class PheCommon
     const PHE_PRIVATE_KEY_LENGTH = 32;
     const PHE_PUBLIC_KEY_LENGTH = 65;
     const PHE_HASH_LEN = 32;
-    const PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64;
-    const PHE_MAX_DECRYPT_LEN = 1024 * 1024;
+    const PHE_MAX_ENCRYPT_LEN = 1048512;
+    const PHE_MAX_DECRYPT_LEN = 1048576;
     const PHE_MAX_AUTH_LEN = 1024;
 
 }

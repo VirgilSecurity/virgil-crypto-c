@@ -43,7 +43,7 @@ import VSCFoundation
 
     @objc public let paddingSizeLen: Int = 4
 
-    @objc public let paddingLenMin: Int = .(c_class_random_padding_constant_padding_size_len) + 1
+    @objc public let paddingLenMin: Int = 5
 
     public override init() {
         self.c_ctx = vscf_random_padding_new()
