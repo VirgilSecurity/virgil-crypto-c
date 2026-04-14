@@ -79,7 +79,7 @@ class FoundationEnumParityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.ir = _load_foundation_ir()
-        cls.files = dict(generate_swift_files(cls.ir))
+        cls.files = dict(generate_swift_files(cls.ir, repo_root=str(REPO_ROOT)))
 
     def _assert_parity(self, rel_path: str) -> None:
         legacy = _legacy_content(rel_path)
@@ -113,28 +113,33 @@ class FoundationEnumParityTests(unittest.TestCase):
         )
 
 
-class FoundationEnumFileCountTests(unittest.TestCase):
-    """Orchestrator produces the correct number of enum files."""
+class FoundationFileCountTests(unittest.TestCase):
+    """Orchestrator produces the correct number of files."""
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.ir = _load_foundation_ir()
-        cls.files = generate_swift_files(cls.ir)
+        cls.files = generate_swift_files(cls.ir, repo_root=str(REPO_ROOT))
+
+    def test_foundation_total_file_count(self) -> None:
+        # Foundation has 123 Swift files total (enums + protocols + classes + infrastructure)
+        self.assertEqual(len(self.files), 123)
 
     def test_foundation_enum_count(self) -> None:
-        # Foundation has 5 public non-infrastructure enums
-        self.assertEqual(len(self.files), 5)
+        # 5 public non-infrastructure enum files
+        enum_files = [p for p, _ in self.files if p.endswith((".swift",))
+                     and any(p.endswith(f"/{n}.swift") for n in
+                             ["AlgId", "Asn1Tag", "CipherState", "GroupMsgType", "OidId"])]
+        self.assertEqual(len(enum_files), 5)
 
-    def test_status_enum_not_emitted(self) -> None:
+    def test_status_enum_not_standalone(self) -> None:
+        # Status enum becomes FoundationError.swift, not Status.swift
         paths = [p for p, _ in self.files]
-        for p in paths:
-            self.assertNotIn("Status", p.split("/")[-1])
+        self.assertFalse(any(p.endswith("/Status.swift") for p in paths))
 
-    def test_impl_tag_not_emitted(self) -> None:
+    def test_impl_tag_not_standalone(self) -> None:
         paths = [p for p, _ in self.files]
-        for p in paths:
-            self.assertNotIn("ImplTag", p.split("/")[-1])
-            self.assertNotIn("impl", p.split("/")[-1].lower().replace("implementation", ""))
+        self.assertFalse(any("ImplTag" in p.split("/")[-1] for p in paths))
 
 
 # ---------------------------------------------------------------------------
@@ -148,7 +153,7 @@ class RatchetEnumParityTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         src = load_named_project_source("ratchet", str(REPO_ROOT))
         cls.ir = project_to_ir(src)
-        cls.files = dict(generate_swift_files(cls.ir))
+        cls.files = dict(generate_swift_files(cls.ir, repo_root=str(REPO_ROOT)))
 
     def test_msg_type_parity(self) -> None:
         rel = "wrappers/swift/VirgilCrypto/VirgilCryptoRatchet/MsgType.swift"
@@ -160,25 +165,27 @@ class RatchetEnumParityTests(unittest.TestCase):
         legacy = _legacy_content(rel)
         self.assertEqual(self.files.get(rel), legacy)
 
-    def test_ratchet_enum_count(self) -> None:
-        self.assertEqual(len(self.files), 2)
+    def test_ratchet_total_file_count(self) -> None:
+        # Ratchet has 8 Swift files total
+        self.assertEqual(len(self.files), 8)
 
 
 # ---------------------------------------------------------------------------
 # Pythia — no public enums
 # ---------------------------------------------------------------------------
 
-class PythiaEnumTests(unittest.TestCase):
-    """Pythia has no public enums — should generate 0 enum files."""
+class PythiaTests(unittest.TestCase):
+    """Pythia project file count test."""
 
     @classmethod
     def setUpClass(cls) -> None:
         src = load_named_project_source("pythia", str(REPO_ROOT))
         cls.ir = project_to_ir(src)
-        cls.files = generate_swift_files(cls.ir)
+        cls.files = generate_swift_files(cls.ir, repo_root=str(REPO_ROOT))
 
-    def test_no_enum_files(self) -> None:
-        self.assertEqual(len(self.files), 0)
+    def test_pythia_file_count(self) -> None:
+        # Pythia has 4 Swift files: CContext, PythiaError, Pythia, PythiaImplementation
+        self.assertEqual(len(self.files), 4)
 
 
 if __name__ == "__main__":
