@@ -1177,6 +1177,21 @@ def main() -> int:
                 out_path.write_text(content)
                 written.append(out_path)
 
+        # --- Java wrapper files ---
+        if "java" in wrappers_set:
+            from tools.codegen.project_java_backend import generate_java_files
+            for rel_path, content in generate_java_files(
+                project_ir, license_text=license_text,
+                repo_root=str(repo_root),
+            ):
+                out_path = out_root / rel_path
+                # Test files are handwritten and must NOT be overwritten.
+                if "/test/" in str(out_path) or "/androidTest/" in str(out_path):
+                    continue
+                ensure_parent(out_path)
+                out_path.write_text(content)
+                written.append(out_path)
+
         # --- WASM wrapper files ---
         if "wasm" in wrappers_set:
             from tools.codegen.project_wasm_backend import generate_wasm_files
