@@ -126,7 +126,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return GroupSessionMessage.init(take: proxyResult!)
+        return type(of: self).init(take: proxyResult!)
     }
 
 }

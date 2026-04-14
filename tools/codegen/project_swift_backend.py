@@ -342,10 +342,16 @@ def _is_static_class(cls: IRClass) -> bool:
 
 
 def _resolve_self_class(cls_name: str, arg: IRCArgument) -> IRCArgument:
-    """Resolve ``class="self"`` to the enclosing class name."""
+    """Resolve ``class="self"`` to the enclosing class name.
+
+    Sets ``_was_self=True`` on the resolved copy so downstream code can
+    detect that this was a self-reference (needed for Swift's ``Self``
+    return type).
+    """
     if arg.class_name == "self":
         resolved = copy.copy(arg)
         resolved.class_name = cls_name
+        resolved._was_self = True  # type: ignore[attr-defined]
         return resolved
     return arg
 
@@ -365,6 +371,9 @@ def _swift_type_for_arg(project_ir: IRProject, arg: IRCArgument) -> str:
     if arg.class_name == "buffer":
         return "Data"
     if arg.class_name and arg.class_name not in {"data", "buffer"}:
+        # If this was a class="self" reference, return Self type in Swift
+        if getattr(arg, '_was_self', False):
+            return "Self"
         return swift_type_name(arg.class_name)
     type_name = (arg.type_name or "").lower()
     if type_name == "size":
@@ -800,6 +809,11 @@ def _swift_return_expr(project_ir: IRProject, ret: IRCArgument, c_expr: str) -> 
             return f"{impl_class_name}.wrap{iface_name}(use: {c_expr}!)"
 
     if ret.class_name and ret.class_name not in {"data", "buffer"}:
+        # If class_name was originally "self", the return type is Self
+        # in Swift, so use type(of: self).init() for correct polymorphism
+        if ret.class_name == "self" or getattr(ret, '_was_self', False):
+            wrap = "take" if ret.access == "disown" else "use"
+            return f"type(of: self).init({wrap}: {c_expr}!)"
         cls_name = swift_type_name(ret.class_name)
         if ret.access == "disown":
             return f"{cls_name}.init(take: {c_expr}!)"

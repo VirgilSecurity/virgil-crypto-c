@@ -86,7 +86,7 @@ import VSCFoundation
     @objc public func next() -> Self {
         let proxyResult = vscf_signer_info_list_next(self.c_ctx)
 
-        return SignerInfoList.init(use: proxyResult!)
+        return type(of: self).init(use: proxyResult!)
     }
 
     /// Return true if list has previous item.
@@ -100,7 +100,7 @@ import VSCFoundation
     @objc public func prev() -> Self {
         let proxyResult = vscf_signer_info_list_prev(self.c_ctx)
 
-        return SignerInfoList.init(use: proxyResult!)
+        return type(of: self).init(use: proxyResult!)
     }
 
     /// Remove all items.

@@ -205,7 +205,7 @@ import VSCRatchet
 
         try RatchetError.handleStatus(fromC: error.status)
 
-        return RatchetSession.init(take: proxyResult!)
+        return type(of: self).init(take: proxyResult!)
     }
 
 }
