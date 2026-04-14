@@ -36,54 +36,36 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide DER deserializer of algorithm information.
-*/
 public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserializer {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public AlgInfoDerDeserializer() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.algInfoDerDeserializer_new();
-    }
-
-    /* Wrap underlying C context. */
-    AlgInfoDerDeserializer(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setAsn1Reader(Asn1Reader asn1Reader) {
         FoundationJNI.INSTANCE.algInfoDerDeserializer_setAsn1Reader(this.cCtx, asn1Reader);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.algInfoDerDeserializer_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Deserialize by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
-    */
     public AlgInfo deserializeInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeInplace(this.cCtx);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static AlgInfoDerDeserializer getInstance(long cCtx) {
+    public long cCtx;
+
+    public AlgInfoDerDeserializer() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.algInfoDerDeserializer_new();
+    }
+
+    package AlgInfoDerDeserializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public AlgInfoDerDeserializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new AlgInfoDerDeserializer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -92,21 +74,16 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Deserialize algorithm from the data.
-    */
     public AlgInfo deserialize(byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserialize(this.cCtx, data);
     }
-}
 
+}

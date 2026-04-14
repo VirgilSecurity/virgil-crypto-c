@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initSigner = (Module, modules) => {
-    /**
-     * Sign data of any size.
-     */
     class Signer {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Signer';
 
@@ -58,29 +47,16 @@ const initSigner = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Signer(Module._vscf_signer_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Signer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_signer_delete(this.ctxPtr);
@@ -88,45 +64,39 @@ const initSigner = (Module, modules) => {
             }
         }
 
-        set hash(hash) {
+        hash(hash) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_signer_release_hash(this.ctxPtr)
             Module._vscf_signer_use_hash(this.ctxPtr, hash.ctxPtr)
         }
 
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_signer_release_random(this.ctxPtr)
             Module._vscf_signer_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Start a processing a new signature.
-         */
         reset() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_signer_reset(this.ctxPtr);
         }
 
-        /**
-         * Add given data to the signed data.
-         */
         appendData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             try {
@@ -137,9 +107,6 @@ const initSigner = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length of the signature.
-         */
         signatureLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -149,9 +116,6 @@ const initSigner = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Accomplish signing and return signature.
-         */
         sign(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -171,6 +135,7 @@ const initSigner = (Module, modules) => {
                 Module._vsc_buffer_delete(signatureCtxPtr);
             }
         }
+
     }
 
     return Signer;

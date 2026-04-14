@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initCipherAlgInfo = (Module, modules) => {
-    /**
-     * Handle symmetric cipher algorithm information.
-     */
     class CipherAlgInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'CipherAlgInfo';
 
@@ -58,29 +47,16 @@ const initCipherAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CipherAlgInfo(Module._vscf_cipher_alg_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CipherAlgInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_cipher_alg_info_delete(this.ctxPtr);
@@ -88,23 +64,20 @@ const initCipherAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Create symmetric cipher algorithm info with identificator and input vector.
-         */
         static newWithMembers(algId, nonce) {
             precondition.ensureNumber('algId', algId);
             precondition.ensureByteArray('nonce', nonce);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const nonceSize = nonce.length * nonce.BYTES_PER_ELEMENT;
             const noncePtr = Module._malloc(nonceSize);
             Module.HEAP8.set(nonce, noncePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const nonceCtxSize = Module._vsc_data_ctx_size();
             const nonceCtxPtr = Module._malloc(nonceCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(nonceCtxPtr, noncePtr, nonceSize);
 
             let proxyResult;
@@ -120,9 +93,6 @@ const initCipherAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -131,13 +101,10 @@ const initCipherAlgInfo = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return IV.
-         */
         nonce() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -152,6 +119,7 @@ const initCipherAlgInfo = (Module, modules) => {
                 Module._free(dataResultCtxPtr);
             }
         }
+
     }
 
     return CipherAlgInfo;

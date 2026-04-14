@@ -34,12 +34,8 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initRatchetError = (Module, modules) => {
-    /**
-     * Defines the library status codes.
-     */
-    class RatchetError extends Error {
+    class RatchetError {
 
         constructor(message) {
             super(message);
@@ -47,9 +43,6 @@ const initRatchetError = (Module, modules) => {
             this.message = message;
         }
 
-        /**
-         * Throw exception of this class with a message that corresponds to the given status code.
-         */
         static handleStatusCode(statusCode) {
             if (statusCode == 0) {
                 return;
@@ -189,6 +182,7 @@ const initRatchetError = (Module, modules) => {
 
             throw new RatchetError("Unexpected status code:" + statusCode);
         }
+
     }
 
     return RatchetError;

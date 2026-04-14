@@ -36,85 +36,51 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
 public class PheCommon {
 
-    /*
-    * PHE elliptic curve point binary length
-    */
     public int getPhePointLength() {
         return 65;
     }
 
-    /*
-    * PHE max password length
-    */
     public int getPheMaxPasswordLength() {
         return 128;
     }
 
-    /*
-    * PHE server identifier length
-    */
     public int getPheServerIdentifierLength() {
         return 32;
     }
 
-    /*
-    * PHE client identifier length
-    */
     public int getPheClientIdentifierLength() {
         return 32;
     }
 
-    /*
-    * PHE account key length
-    */
     public int getPheAccountKeyLength() {
         return 32;
     }
 
-    /*
-    * PHE private key length
-    */
     public int getPhePrivateKeyLength() {
         return 32;
     }
 
-    /*
-    * PHE public key length
-    */
     public int getPhePublicKeyLength() {
         return 65;
     }
 
-    /*
-    * PHE hash length
-    */
     public int getPheHashLen() {
         return 32;
     }
 
-    /*
-    * Maximum data size to encrypt
-    */
     public int getPheMaxEncryptLen() {
         return 1024 * 1024 - 64;
     }
 
-    /*
-    * Maximum data size to decrypt
-    */
     public int getPheMaxDecryptLen() {
         return 1024 * 1024;
     }
 
-    /*
-    * Maximum data to authenticate
-    */
     public int getPheMaxAuthLen() {
         return 1024;
     }
-}
 
+}

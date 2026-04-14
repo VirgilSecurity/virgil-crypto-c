@@ -36,37 +36,25 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Class for encryption using PHE account key
-* This class is thread-safe.
-*/
 public class PheCipher implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public PheCipher() {
         super();
         this.cCtx = PheJNI.INSTANCE.pheCipher_new();
     }
 
-    /* Wrap underlying C context. */
-    PheCipher(PheContextHolder contextHolder) {
+    package PheCipher(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static PheCipher getInstance(long cCtx) {
+    public PheCipher getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new PheCipher(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -75,70 +63,44 @@ public class PheCipher implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Random used for salt generation
-    */
     public void setRandom(Random random) {
         PheJNI.INSTANCE.pheCipher_setRandom(this.cCtx, random);
     }
 
-    /*
-    * Setups dependencies with default values.
-    */
     public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.pheCipher_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Returns buffer capacity needed to fit cipher text
-    */
     public int encryptLen(int plainTextLen) {
         return PheJNI.INSTANCE.pheCipher_encryptLen(this.cCtx, plainTextLen);
     }
 
-    /*
-    * Returns buffer capacity needed to fit plain text
-    */
     public int decryptLen(int cipherTextLen) {
         return PheJNI.INSTANCE.pheCipher_decryptLen(this.cCtx, cipherTextLen);
     }
 
-    /*
-    * Encrypts data using account key
-    */
     public byte[] encrypt(byte[] plainText, byte[] accountKey) throws PheException {
         return PheJNI.INSTANCE.pheCipher_encrypt(this.cCtx, plainText, accountKey);
     }
 
-    /*
-    * Decrypts data using account key
-    */
     public byte[] decrypt(byte[] cipherText, byte[] accountKey) throws PheException {
         return PheJNI.INSTANCE.pheCipher_decrypt(this.cCtx, cipherText, accountKey);
     }
 
-    /*
-    * Encrypts data (and authenticates additional data) using account key
-    */
     public byte[] authEncrypt(byte[] plainText, byte[] additionalData, byte[] accountKey) throws PheException {
         return PheJNI.INSTANCE.pheCipher_authEncrypt(this.cCtx, plainText, additionalData, accountKey);
     }
 
-    /*
-    * Decrypts data (and verifies additional data) using account key
-    */
     public byte[] authDecrypt(byte[] cipherText, byte[] additionalData, byte[] accountKey) throws PheException {
         return PheJNI.INSTANCE.pheCipher_authDecrypt(this.cCtx, cipherText, additionalData, accountKey);
     }
-}
 
+}

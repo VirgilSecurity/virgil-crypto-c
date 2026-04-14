@@ -36,26 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method uokms client.generateEncryptWrap() */
 public class UokmsClientGenerateEncryptWrapResult {
 
     private byte[] wrap;
-
-    private byte[] encryptionKey;
-
-    /* Create new instance of UokmsClientGenerateEncryptWrapResult. */
-    UokmsClientGenerateEncryptWrapResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    UokmsClientGenerateEncryptWrapResult(byte[] wrap, byte[] encryptionKey) {
-        super();
-        this.wrap = wrap;
-        this.encryptionKey = encryptionKey;
-    }
 
     public byte[] getWrap() {
         return this.wrap;
@@ -65,6 +49,8 @@ public class UokmsClientGenerateEncryptWrapResult {
         this.wrap = wrap;
     }
 
+    private byte[] encryptionKey;
+
     public byte[] getEncryptionKey() {
         return this.encryptionKey;
     }
@@ -72,5 +58,15 @@ public class UokmsClientGenerateEncryptWrapResult {
     public void setEncryptionKey(byte[] encryptionKey) {
         this.encryptionKey = encryptionKey;
     }
-}
 
+    package UokmsClientGenerateEncryptWrapResult() {
+        super();
+    }
+
+    package UokmsClientGenerateEncryptWrapResult(byte[] wrap, byte[] encryptionKey) {
+        super();
+        this.wrap = wrap;
+        this.encryptionKey = encryptionKey;
+    }
+
+}

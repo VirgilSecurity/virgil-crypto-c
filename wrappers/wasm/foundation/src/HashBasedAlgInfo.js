@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initHashBasedAlgInfo = (Module, modules) => {
-    /**
-     * Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
-     */
     class HashBasedAlgInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'HashBasedAlgInfo';
 
@@ -58,29 +47,16 @@ const initHashBasedAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new HashBasedAlgInfo(Module._vscf_hash_based_alg_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new HashBasedAlgInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_hash_based_alg_info_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initHashBasedAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -99,9 +72,6 @@ const initHashBasedAlgInfo = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return hash algorithm information.
-         */
         hashAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -111,6 +81,7 @@ const initHashBasedAlgInfo = (Module, modules) => {
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return HashBasedAlgInfo;

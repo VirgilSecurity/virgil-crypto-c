@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
-*/
 class HashBasedAlgInfo implements AlgInfo
 {
 
@@ -68,10 +65,8 @@ class HashBasedAlgInfo implements AlgInfo
     }
 
     /**
-    * Return hash algorithm information.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function hashAlgInfo(): AlgInfo
     {
@@ -80,7 +75,6 @@ class HashBasedAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

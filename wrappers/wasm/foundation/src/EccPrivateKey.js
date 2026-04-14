@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initEccPrivateKey = (Module, modules) => {
-    /**
-     * Handles ECC private key.
-     */
     class EccPrivateKey {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'EccPrivateKey';
 
@@ -58,29 +47,16 @@ const initEccPrivateKey = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new EccPrivateKey(Module._vscf_ecc_private_key_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new EccPrivateKey(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_ecc_private_key_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initEccPrivateKey = (Module, modules) => {
             }
         }
 
-        /**
-         * Algorithm identifier the key belongs to.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -99,9 +72,6 @@ const initEccPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return algorithm information that can be used for serialization.
-         */
         algInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -112,9 +82,6 @@ const initEccPrivateKey = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Length of the key in bytes.
-         */
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -123,9 +90,6 @@ const initEccPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Length of the key in bits.
-         */
         bitlen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -134,9 +98,6 @@ const initEccPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return tag of an associated algorithm that can handle this key.
-         */
         implTag() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -145,10 +106,6 @@ const initEccPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Check that key is valid.
-         * Note, this operation can be slow.
-         */
         isValid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -159,9 +116,6 @@ const initEccPrivateKey = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Extract public key from the private key.
-         */
         extractPublicKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -171,6 +125,7 @@ const initEccPrivateKey = (Module, modules) => {
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return EccPrivateKey;

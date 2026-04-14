@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles a hybrid private key.
-*
-* The hybrid private key contains 2 private keys.
-*/
 class HybridPrivateKey implements Key, PrivateKey
 {
 
@@ -70,10 +65,8 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return first private key.
     *
     * @return PrivateKey
-    * @throws \Exception
     */
     public function firstKey(): PrivateKey
     {
@@ -82,10 +75,8 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return second private key.
     *
     * @return PrivateKey
-    * @throws \Exception
     */
     public function secondKey(): PrivateKey
     {
@@ -94,7 +85,6 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -105,10 +95,8 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -117,7 +105,6 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -127,7 +114,6 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -137,8 +123,6 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
@@ -148,10 +132,8 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Extract public key from the private key.
     *
     * @return PublicKey
-    * @throws \Exception
     */
     public function extractPublicKey(): PublicKey
     {

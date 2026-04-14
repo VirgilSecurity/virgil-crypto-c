@@ -36,36 +36,25 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Class implements UOKMS for server-side.
-*/
 public class UokmsServer implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public UokmsServer() {
         super();
         this.cCtx = PheJNI.INSTANCE.uokmsServer_new();
     }
 
-    /* Wrap underlying C context. */
-    UokmsServer(PheContextHolder contextHolder) {
+    package UokmsServer(PheContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static UokmsServer getInstance(long cCtx) {
+    public UokmsServer getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new UokmsServer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -74,63 +63,40 @@ public class UokmsServer implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Random used for key generation, proofs, etc.
-    */
     public void setRandom(Random random) {
         PheJNI.INSTANCE.uokmsServer_setRandom(this.cCtx, random);
     }
 
-    /*
-    * Random used for crypto operations to make them const-time
-    */
     public void setOperationRandom(Random operationRandom) {
         PheJNI.INSTANCE.uokmsServer_setOperationRandom(this.cCtx, operationRandom);
     }
 
-    /*
-    * Setups dependencies with default values.
-    */
     public void setupDefaults() throws PheException {
         PheJNI.INSTANCE.uokmsServer_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Generates new NIST P-256 server key pair for some client
-    */
     public UokmsServerGenerateServerKeyPairResult generateServerKeyPair() throws PheException {
         return PheJNI.INSTANCE.uokmsServer_generateServerKeyPair(this.cCtx);
     }
 
-    /*
-    * Buffer size needed to fit DecryptResponse
-    */
     public int decryptResponseLen() {
         return PheJNI.INSTANCE.uokmsServer_decryptResponseLen(this.cCtx);
     }
 
-    /*
-    * Processed client's decrypt request
-    */
     public byte[] processDecryptRequest(byte[] serverPrivateKey, byte[] decryptRequest) throws PheException {
         return PheJNI.INSTANCE.uokmsServer_processDecryptRequest(this.cCtx, serverPrivateKey, decryptRequest);
     }
 
-    /*
-    * Updates server's private and public keys and issues an update token for use on client's side
-    */
     public UokmsServerRotateKeysResult rotateKeys(byte[] serverPrivateKey) throws PheException {
         return PheJNI.INSTANCE.uokmsServer_rotateKeys(this.cCtx, serverPrivateKey);
     }
-}
 
+}

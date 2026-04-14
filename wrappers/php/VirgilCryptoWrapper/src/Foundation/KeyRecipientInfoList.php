@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles a list of "key recipient info" class objects.
-*/
 class KeyRecipientInfoList
 {
 
@@ -68,7 +65,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Return true if given list has item.
     *
     * @return bool
     */
@@ -78,7 +74,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Return list item.
     *
     * @return KeyRecipientInfo
     */
@@ -89,7 +84,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Return true if list has next item.
     *
     * @return bool
     */
@@ -99,7 +93,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Return next list node if exists, or NULL otherwise.
     *
     * @return KeyRecipientInfoList
     */
@@ -110,7 +103,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Return true if list has previous item.
     *
     * @return bool
     */
@@ -120,7 +112,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Return previous list node if exists, or NULL otherwise.
     *
     * @return KeyRecipientInfoList
     */
@@ -131,7 +122,6 @@ class KeyRecipientInfoList
     }
 
     /**
-    * Remove all items.
     *
     * @return void
     */

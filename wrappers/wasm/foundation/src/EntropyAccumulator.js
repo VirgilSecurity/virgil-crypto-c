@@ -34,13 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initEntropyAccumulator = (Module, modules) => {
-    /**
-     * Implementation based on a simple entropy accumulator.
-     */
     class EntropyAccumulator {
 
         static get SOURCES_MAX() {
@@ -48,14 +42,9 @@ const initEntropyAccumulator = (Module, modules) => {
         }
 
         get SOURCES_MAX() {
-            return EntropyAccumulator.SOURCES_MAX;
+            return 15;
         }
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'EntropyAccumulator';
 
@@ -66,29 +55,16 @@ const initEntropyAccumulator = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new EntropyAccumulator(Module._vscf_entropy_accumulator_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new EntropyAccumulator(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_entropy_accumulator_delete(this.ctxPtr);
@@ -96,9 +72,6 @@ const initEntropyAccumulator = (Module, modules) => {
             }
         }
 
-        /**
-         * Defines that implemented source is strong.
-         */
         isStrong() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -109,9 +82,6 @@ const initEntropyAccumulator = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Gather entropy of the requested length.
-         */
         gather(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -132,25 +102,18 @@ const initEntropyAccumulator = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_entropy_accumulator_setup_defaults(this.ctxPtr);
         }
 
-        /**
-         * Add given entropy source to the accumulator.
-         * Threshold defines minimum number of bytes that must be gathered
-         * from the source during accumulation.
-         */
         addSource(source, threshold) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('source', source, 'Foundation.EntropySource', modules.FoundationInterfaceTag.ENTROPY_SOURCE, modules.FoundationInterface);
             precondition.ensureNumber('threshold', threshold);
             Module._vscf_entropy_accumulator_add_source(this.ctxPtr, source.ctxPtr, threshold);
         }
+
     }
 
     return EntropyAccumulator;

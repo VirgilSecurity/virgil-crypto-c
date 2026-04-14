@@ -36,29 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provides compile time knownledge about algorithm.
-*/
-public interface CipherInfo {
-
-    /*
-    * Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
-    */
-    int getNonceLen();
-
-    /*
-    * Cipher key length in bytes.
-    */
-    int getKeyLen();
-
-    /*
-    * Cipher key length in bits.
-    */
-    int getKeyBitlen();
-
-    /*
-    * Cipher block length in bytes.
-    */
-    int getBlockLen();
-}
-

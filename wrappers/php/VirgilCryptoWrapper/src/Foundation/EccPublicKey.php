@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles ECC public key.
-*/
 class EccPublicKey implements Key, PublicKey
 {
 
@@ -68,7 +65,6 @@ class EccPublicKey implements Key, PublicKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -79,10 +75,8 @@ class EccPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -91,7 +85,6 @@ class EccPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -101,7 +94,6 @@ class EccPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -111,8 +103,6 @@ class EccPublicKey implements Key, PublicKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */

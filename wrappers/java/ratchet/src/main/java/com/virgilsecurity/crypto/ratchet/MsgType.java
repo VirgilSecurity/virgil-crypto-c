@@ -36,39 +36,4 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import com.virgilsecurity.crypto.foundation.*;
-
-/*
-* Represents message type
-*/
-public enum MsgType {
-
-    /*
-    * Regular message. This message is used all the time except case described in prekey message section.
-    */
-    REGULAR(1),
-    /*
-    * Prekey message. This message is sent by initiator till first response is received.
-    */
-    PREKEY(2);
-
-    private final int code;
-
-    private MsgType(int code) {
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public static MsgType fromCode(int code) {
-        for (MsgType a : MsgType.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
-    }
-}
 

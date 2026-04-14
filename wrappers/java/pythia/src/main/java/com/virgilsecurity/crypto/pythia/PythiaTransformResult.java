@@ -36,24 +36,9 @@
 
 package com.virgilsecurity.crypto.pythia;
 
-/* Encapsulate result of method pythia.transform() */
 public class PythiaTransformResult {
 
     private byte[] transformedPassword;
-
-    private byte[] transformedTweak;
-
-    /* Create new instance of PythiaTransformResult. */
-    PythiaTransformResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    PythiaTransformResult(byte[] transformedPassword, byte[] transformedTweak) {
-        super();
-        this.transformedPassword = transformedPassword;
-        this.transformedTweak = transformedTweak;
-    }
 
     public byte[] getTransformedPassword() {
         return this.transformedPassword;
@@ -63,6 +48,8 @@ public class PythiaTransformResult {
         this.transformedPassword = transformedPassword;
     }
 
+    private byte[] transformedTweak;
+
     public byte[] getTransformedTweak() {
         return this.transformedTweak;
     }
@@ -70,5 +57,15 @@ public class PythiaTransformResult {
     public void setTransformedTweak(byte[] transformedTweak) {
         this.transformedTweak = transformedTweak;
     }
-}
 
+    package PythiaTransformResult() {
+        super();
+    }
+
+    package PythiaTransformResult(byte[] transformedPassword, byte[] transformedTweak) {
+        super();
+        this.transformedPassword = transformedPassword;
+        this.transformedTweak = transformedTweak;
+    }
+
+}

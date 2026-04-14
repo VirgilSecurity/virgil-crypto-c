@@ -34,22 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initKeyAsn1Serializer = (Module, modules) => {
-    /**
-     * Implements key serialization in the ASN.1 format (DER / PEM):
-     * - SEC1 - for EC private keys;
-     * - PKCS#8 - for other keys.
-     */
     class KeyAsn1Serializer {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'KeyAsn1Serializer';
 
@@ -60,29 +47,16 @@ const initKeyAsn1Serializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyAsn1Serializer(Module._vscf_key_asn1_serializer_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyAsn1Serializer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_key_asn1_serializer_delete(this.ctxPtr);
@@ -90,18 +64,13 @@ const initKeyAsn1Serializer = (Module, modules) => {
             }
         }
 
-        set asn1Writer(asn1Writer) {
+        asn1Writer(asn1Writer) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_key_asn1_serializer_release_asn1_writer(this.ctxPtr)
             Module._vscf_key_asn1_serializer_use_asn1_writer(this.ctxPtr, asn1Writer.ctxPtr)
         }
 
-        /**
-         * Calculate buffer size enough to hold serialized public key.
-         *
-         * Precondition: public key must be exportable.
-         */
         serializedPublicKeyLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
@@ -111,11 +80,6 @@ const initKeyAsn1Serializer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Serialize given public key to an interchangeable format.
-         *
-         * Precondition: public key must be exportable.
-         */
         serializePublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
@@ -136,11 +100,6 @@ const initKeyAsn1Serializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Calculate buffer size enough to hold serialized private key.
-         *
-         * Precondition: private key must be exportable.
-         */
         serializedPrivateKeyLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
@@ -150,11 +109,6 @@ const initKeyAsn1Serializer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Serialize given private key to an interchangeable format.
-         *
-         * Precondition: private key must be exportable.
-         */
         serializePrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
@@ -175,20 +129,12 @@ const initKeyAsn1Serializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_key_asn1_serializer_setup_defaults(this.ctxPtr);
         }
 
-        /**
-         * Serialize Public Key by using internal ASN.1 writer.
-         * Note, that caller code is responsible to reset ASN.1 writer with
-         * an output buffer.
-         */
-        serializePublicKeyInplace(publicKey) {
+        serializePublicKeyInplace(publicKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
 
@@ -209,12 +155,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Serialize Private Key by using internal ASN.1 writer.
-         * Note, that caller code is responsible to reset ASN.1 writer with
-         * an output buffer.
-         */
-        serializePrivateKeyInplace(privateKey) {
+        serializePrivateKeyInplace(privateKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
 
@@ -234,6 +175,7 @@ const initKeyAsn1Serializer = (Module, modules) => {
                 Module._free(errorCtxPtr);
             }
         }
+
     }
 
     return KeyAsn1Serializer;

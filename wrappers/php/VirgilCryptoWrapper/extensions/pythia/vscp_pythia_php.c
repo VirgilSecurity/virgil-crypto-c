@@ -7,17 +7,17 @@
 // modification, are permitted provided that the following conditions are
 // met:
 //
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
+// (1) Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
 //
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
+// (2) Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in
+// the documentation and/or other materials provided with the
+// distribution.
 //
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
+// (3) Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 // IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -83,10 +83,19 @@ const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 //
 
 //
-// Extension init functions declaration
+// Extension init functions definition
 //
-PHP_MINIT_FUNCTION(vscp_pythia_php);
-PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php);
+
+PHP_MINIT_FUNCTION(vscp_pythia_php) {
+    zend_class_entry vscp_ce;
+    INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
+    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_exception_get_default());
+
+    return SUCCESS;
+}
+PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php) {
+    return SUCCESS;
+}
 
 //
 // Functions wrapping
@@ -1199,18 +1208,3 @@ zend_module_entry vscp_pythia_php_module_entry = {
 };
 
 ZEND_GET_MODULE(vscp_pythia_php)
-
-//
-// Extension init functions definition
-//
-
-PHP_MINIT_FUNCTION(vscp_pythia_php) {
-    zend_class_entry vscp_ce;
-    INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
-    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_exception_get_default());
-
-    return SUCCESS;
-}
-PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php) {
-    return SUCCESS;
-}

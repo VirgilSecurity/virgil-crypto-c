@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* This is implementation of Curve25519 elliptic curve algorithms.
-*/
 class Curve25519 implements KeyAlg, KeyCipher, ComputeSharedKey, Kem
 {
 
@@ -73,25 +70,26 @@ class Curve25519 implements KeyAlg, KeyCipher, ComputeSharedKey, Kem
     }
 
     /**
-    * @param Random $random
+    *
+    * @param Random $$random
     * @return void
     */
-    public function useRandom(Random $random): void
+    public function useRandom(Random $$random): void
     {
-        vscf_curve25519_use_random_php($this->ctx, $random->getCtx());
+        vscf_curve25519_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * @param Ecies $ecies
+    *
+    * @param Ecies $$ecies
     * @return void
     */
-    public function useEcies(Ecies $ecies): void
+    public function useEcies(Ecies $$ecies): void
     {
-        vscf_curve25519_use_ecies_php($this->ctx, $ecies->getCtx());
+        vscf_curve25519_use_ecies_php($this->ctx, $$ecies);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -102,11 +100,8 @@ class Curve25519 implements KeyAlg, KeyCipher, ComputeSharedKey, Kem
     }
 
     /**
-    * Generate new private key.
-    * Note, this operation might be slow.
     *
     * @return PrivateKey
-    * @throws \Exception
     */
     public function generateKey(): PrivateKey
     {
@@ -115,237 +110,191 @@ class Curve25519 implements KeyAlg, KeyCipher, ComputeSharedKey, Kem
     }
 
     /**
-    * Generate ephemeral private key of the same type.
-    * Note, this operation might be slow.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function generateEphemeralKey(Key $key): PrivateKey
+    public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = vscf_curve25519_generate_ephemeral_key_php($this->ctx, $key->getCtx());
+        $ctx = vscf_curve25519_generate_ephemeral_key_php($this->ctx, $$key);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Import public key from the raw binary format.
     *
-    * Return public key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param RawPublicKey $rawKey
+    * @param RawPublicKey $$rawKey
     * @return PublicKey
-    * @throws \Exception
     */
-    public function importPublicKey(RawPublicKey $rawKey): PublicKey
+    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
-        $ctx = vscf_curve25519_import_public_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_curve25519_import_public_key_php($this->ctx, $$rawKey);
         return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**
-    * Export public key to the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return RawPublicKey
     */
-    public function exportPublicKey(PublicKey $publicKey): RawPublicKey
+    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = vscf_curve25519_export_public_key_php($this->ctx, $publicKey->getCtx());
+        $ctx = vscf_curve25519_export_public_key_php($this->ctx, $$publicKey);
         return new RawPublicKey($ctx);
     }
 
     /**
-    * Import private key from the raw binary format.
     *
-    * Return private key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param RawPrivateKey $rawKey
+    * @param RawPrivateKey $$rawKey
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey
+    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
-        $ctx = vscf_curve25519_import_private_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_curve25519_import_private_key_php($this->ctx, $$rawKey);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Export private key in the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return RawPrivateKey
     */
-    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
+    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = vscf_curve25519_export_private_key_php($this->ctx, $privateKey->getCtx());
+        $ctx = vscf_curve25519_export_private_key_php($this->ctx, $$privateKey);
         return new RawPrivateKey($ctx);
     }
 
     /**
-    * Check if algorithm can encrypt data with a given key.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param PublicKey $$publicKey
+    * @param int $$dataLen
     * @return bool
     */
-    public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
+    public function canEncrypt(PublicKey $$publicKey, int $$dataLen): bool
     {
-        return vscf_curve25519_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_curve25519_can_encrypt_php($this->ctx, $$publicKey, $$dataLen);
     }
 
     /**
-    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param PublicKey $$publicKey
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptedLen(PublicKey $publicKey, int $dataLen): int
+    public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
     {
-        return vscf_curve25519_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_curve25519_encrypted_len_php($this->ctx, $$publicKey, $$dataLen);
     }
 
     /**
-    * Encrypt data with a given public key.
     *
-    * @param PublicKey $publicKey
-    * @param string $data
+    * @param PublicKey $$publicKey
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(PublicKey $publicKey, string $data): string
+    public function encrypt(PublicKey $$publicKey, string $$data): string
     {
-        return vscf_curve25519_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
+        return vscf_curve25519_encrypt_php($this->ctx, $$publicKey, $$data);
     }
 
     /**
-    * Check if algorithm can decrypt data with a given key.
-    * However, success result of decryption is not guaranteed.
     *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
+    * @param PrivateKey $$privateKey
+    * @param int $$dataLen
     * @return bool
     */
-    public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
+    public function canDecrypt(PrivateKey $$privateKey, int $$dataLen): bool
     {
-        return vscf_curve25519_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
+        return vscf_curve25519_can_decrypt_php($this->ctx, $$privateKey, $$dataLen);
     }
 
     /**
-    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
+    * @param PrivateKey $$privateKey
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
+    public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
     {
-        return vscf_curve25519_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
+        return vscf_curve25519_decrypted_len_php($this->ctx, $$privateKey, $$dataLen);
     }
 
     /**
-    * Decrypt given data.
     *
-    * @param PrivateKey $privateKey
-    * @param string $data
+    * @param PrivateKey $$privateKey
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(PrivateKey $privateKey, string $data): string
+    public function decrypt(PrivateKey $$privateKey, string $$data): string
     {
-        return vscf_curve25519_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
+        return vscf_curve25519_decrypt_php($this->ctx, $$privateKey, $$data);
     }
 
     /**
-    * Compute shared key for 2 asymmetric keys.
-    * Note, computed shared key can be used only within symmetric cryptography.
     *
-    * @param PublicKey $publicKey
-    * @param PrivateKey $privateKey
+    * @param PublicKey $$publicKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function computeSharedKey(PublicKey $publicKey, PrivateKey $privateKey): string
+    public function computeSharedKey(PublicKey $$publicKey, PrivateKey $$privateKey): string
     {
-        return vscf_curve25519_compute_shared_key_php($this->ctx, $publicKey->getCtx(), $privateKey->getCtx());
+        return vscf_curve25519_compute_shared_key_php($this->ctx, $$publicKey, $$privateKey);
     }
 
     /**
-    * Return number of bytes required to hold shared key.
-    * Expect Public Key or Private Key.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return int
     */
-    public function sharedKeyLen(Key $key): int
+    public function sharedKeyLen(Key $$key): int
     {
-        return vscf_curve25519_shared_key_len_php($this->ctx, $key->getCtx());
+        return vscf_curve25519_shared_key_len_php($this->ctx, $$key);
     }
 
     /**
-    * Return length in bytes required to hold encapsulated shared key.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return int
     */
-    public function kemSharedKeyLen(Key $key): int
+    public function kemSharedKeyLen(Key $$key): int
     {
-        return vscf_curve25519_kem_shared_key_len_php($this->ctx, $key->getCtx());
+        return vscf_curve25519_kem_shared_key_len_php($this->ctx, $$key);
     }
 
     /**
-    * Return length in bytes required to hold encapsulated key.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return int
     */
-    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int
+    public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
     {
-        return vscf_curve25519_kem_encapsulated_key_len_php($this->ctx, $publicKey->getCtx());
+        return vscf_curve25519_kem_encapsulated_key_len_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Generate a shared key and a key encapsulated message.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return array
     * @throws \Exception
     */
-    public function kemEncapsulate(PublicKey $publicKey): array // [shared_key, encapsulated_key]
+    public function kemEncapsulate(PublicKey $$publicKey): array
     {
-        return vscf_curve25519_kem_encapsulate_php($this->ctx, $publicKey->getCtx());
+        return vscf_curve25519_kem_encapsulate_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Decapsulate the shared key.
     *
-    * @param string $encapsulatedKey
-    * @param PrivateKey $privateKey
+    * @param string $$encapsulatedKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string
+    public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
     {
-        return vscf_curve25519_kem_decapsulate_php($this->ctx, $encapsulatedKey, $privateKey->getCtx());
+        return vscf_curve25519_kem_decapsulate_php($this->ctx, $$encapsulatedKey, $$privateKey);
     }
 
     /**

@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Group ticket used to start group session, remove participants or proactive to rotate encryption key.
-*/
 class GroupSessionTicket
 {
 
@@ -68,17 +65,16 @@ class GroupSessionTicket
     }
 
     /**
-    * @param Random $rng
+    *
+    * @param Random $$rng
     * @return void
     */
-    public function useRng(Random $rng): void
+    public function useRng(Random $$rng): void
     {
-        vscf_group_session_ticket_use_rng_php($this->ctx, $rng->getCtx());
+        vscf_group_session_ticket_use_rng_php($this->ctx, $$rng);
     }
 
     /**
-    * Setups default dependencies:
-    * - RNG: CTR DRBG
     *
     * @return void
     * @throws \Exception
@@ -89,19 +85,17 @@ class GroupSessionTicket
     }
 
     /**
-    * Set this ticket to start new group session.
     *
-    * @param string $sessionId
+    * @param string $$sessionId
     * @return void
     * @throws \Exception
     */
-    public function setupTicketAsNew(string $sessionId): void
+    public function setupTicketAsNew(string $$sessionId): void
     {
-        vscf_group_session_ticket_setup_ticket_as_new_php($this->ctx, $sessionId);
+        vscf_group_session_ticket_setup_ticket_as_new_php($this->ctx, $$sessionId);
     }
 
     /**
-    * Returns message that should be sent to all participants using secure channel.
     *
     * @return GroupSessionMessage
     */

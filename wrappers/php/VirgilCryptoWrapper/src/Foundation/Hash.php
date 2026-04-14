@@ -37,39 +37,45 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides interface to the hashing (messege digest) algorithms.
-*/
 interface Hash extends Ctx
 {
 
     /**
-    * Calculate hash over given data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     */
-    public static function hash(string $data): string;
+    public static function hash(string $$data): string
+    {
+        return ($$data);
+    }
 
     /**
-    * Start a new hashing.
     *
     * @return void
     */
-    public function start(): void;
+    public function start(): void
+    {
+        ($this->ctx);
+    }
 
     /**
-    * Add given data to the hash.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function update(string $data): void;
+    public function update(string $$data): void
+    {
+        ($this->ctx, $$data);
+    }
 
     /**
-    * Accompilsh hashing and return it's result (a message digest).
     *
     * @return string
     */
-    public function finish(): string;
+    public function finish(): string
+    {
+        return ($this->ctx);
+    }
+
 }

@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
-*/
 class Kdf1 implements Alg, Kdf
 {
 
@@ -68,16 +65,16 @@ class Kdf1 implements Alg, Kdf
     }
 
     /**
-    * @param Hash $hash
+    *
+    * @param Hash $$hash
     * @return void
     */
-    public function useHash(Hash $hash): void
+    public function useHash(Hash $$hash): void
     {
-        vscf_kdf1_use_hash_php($this->ctx, $hash->getCtx());
+        vscf_kdf1_use_hash_php($this->ctx, $$hash);
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -88,10 +85,8 @@ class Kdf1 implements Alg, Kdf
     }
 
     /**
-    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -100,27 +95,25 @@ class Kdf1 implements Alg, Kdf
     }
 
     /**
-    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_kdf1_restore_alg_info_php($this->ctx, $algInfo->getCtx());
+        vscf_kdf1_restore_alg_info_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Derive key of the requested length from the given data.
     *
-    * @param string $data
-    * @param int $keyLen
+    * @param string $$data
+    * @param int $$keyLen
     * @return string
     */
-    public function derive(string $data, int $keyLen): string
+    public function derive(string $$data, int $$keyLen): string
     {
-        return vscf_kdf1_derive_php($this->ctx, $data, $keyLen);
+        return vscf_kdf1_derive_php($this->ctx, $$data, $$keyLen);
     }
 
     /**

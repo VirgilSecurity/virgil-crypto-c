@@ -34,18 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPem = (Module, modules) => {
-    /**
-     * Simple PEM wrapper.
-     */
     class Pem {
 
-        /**
-         * Return length in bytes required to hold wrapped PEM format.
-         */
         static wrappedLen(title, dataLen) {
             precondition.ensureNumber('title', title);
             precondition.ensureNumber('dataLen', dataLen);
@@ -55,25 +46,20 @@ const initPem = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Takes binary data and wraps it to the simple PEM format - no
-         * additional information just header-base64-footer.
-         * Note, written buffer is NOT null-terminated.
-         */
         static wrap(title, data) {
             precondition.ensureNumber('title', title);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const pemCapacity = modules.Pem.wrappedLen(title, data.length);
@@ -93,9 +79,6 @@ const initPem = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required to hold unwrapped binary.
-         */
         static unwrappedLen(pemLen) {
             precondition.ensureNumber('pemLen', pemLen);
 
@@ -104,22 +87,19 @@ const initPem = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Takes PEM data and extract binary data from it.
-         */
         static unwrap(pem) {
             precondition.ensureByteArray('pem', pem);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const pemSize = pem.length * pem.BYTES_PER_ELEMENT;
             const pemPtr = Module._malloc(pemSize);
             Module.HEAP8.set(pem, pemPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const pemCtxSize = Module._vsc_data_ctx_size();
             const pemCtxPtr = Module._malloc(pemCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pemCtxPtr, pemPtr, pemSize);
 
             const dataCapacity = modules.Pem.unwrappedLen(pem.length);
@@ -140,25 +120,22 @@ const initPem = (Module, modules) => {
             }
         }
 
-        /**
-         * Returns PEM title if PEM data is valid, otherwise - empty data.
-         */
         static title(pem) {
             precondition.ensureByteArray('pem', pem);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const pemSize = pem.length * pem.BYTES_PER_ELEMENT;
             const pemPtr = Module._malloc(pemSize);
             Module.HEAP8.set(pem, pemPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const pemCtxSize = Module._vsc_data_ctx_size();
             const pemCtxPtr = Module._malloc(pemCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pemCtxPtr, pemPtr, pemSize);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -175,6 +152,7 @@ const initPem = (Module, modules) => {
                 Module._free(dataResultCtxPtr);
             }
         }
+
     }
 
     return Pem;

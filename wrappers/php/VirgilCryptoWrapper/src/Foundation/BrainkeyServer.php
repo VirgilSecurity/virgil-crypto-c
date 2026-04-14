@@ -68,24 +68,27 @@ class BrainkeyServer
     }
 
     /**
-    * @param Random $random
+    *
+    * @param Random $$random
     * @return void
     */
-    public function useRandom(Random $random): void
+    public function useRandom(Random $$random): void
     {
-        vscf_brainkey_server_use_random_php($this->ctx, $random->getCtx());
+        vscf_brainkey_server_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * @param Random $operationRandom
+    *
+    * @param Random $$operationRandom
     * @return void
     */
-    public function useOperationRandom(Random $operationRandom): void
+    public function useOperationRandom(Random $$operationRandom): void
     {
-        vscf_brainkey_server_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+        vscf_brainkey_server_use_operation_random_php($this->ctx, $$operationRandom);
     }
 
     /**
+    *
     * @return void
     * @throws \Exception
     */
@@ -95,6 +98,7 @@ class BrainkeyServer
     }
 
     /**
+    *
     * @return string
     * @throws \Exception
     */
@@ -104,14 +108,15 @@ class BrainkeyServer
     }
 
     /**
-    * @param string $identitySecret
-    * @param string $blindedPoint
+    *
+    * @param string $$identitySecret
+    * @param string $$blindedPoint
     * @return string
     * @throws \Exception
     */
-    public function harden(string $identitySecret, string $blindedPoint): string
+    public function harden(string $$identitySecret, string $$blindedPoint): string
     {
-        return vscf_brainkey_server_harden_php($this->ctx, $identitySecret, $blindedPoint);
+        return vscf_brainkey_server_harden_php($this->ctx, $$identitySecret, $$blindedPoint);
     }
 
     /**

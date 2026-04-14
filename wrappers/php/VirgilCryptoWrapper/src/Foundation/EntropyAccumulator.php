@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Implementation based on a simple entropy accumulator.
-*/
 class EntropyAccumulator implements EntropySource
 {
 
@@ -70,7 +67,6 @@ class EntropyAccumulator implements EntropySource
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -80,21 +76,17 @@ class EntropyAccumulator implements EntropySource
     }
 
     /**
-    * Add given entropy source to the accumulator.
-    * Threshold defines minimum number of bytes that must be gathered
-    * from the source during accumulation.
     *
-    * @param EntropySource $source
-    * @param int $threshold
+    * @param EntropySource $$source
+    * @param int $$threshold
     * @return void
     */
-    public function addSource(EntropySource $source, int $threshold): void
+    public function addSource(EntropySource $$source, int $$threshold): void
     {
-        vscf_entropy_accumulator_add_source_php($this->ctx, $source->getCtx(), $threshold);
+        vscf_entropy_accumulator_add_source_php($this->ctx, $$source, $$threshold);
     }
 
     /**
-    * Defines that implemented source is strong.
     *
     * @return bool
     */
@@ -104,15 +96,14 @@ class EntropyAccumulator implements EntropySource
     }
 
     /**
-    * Gather entropy of the requested length.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     * @throws \Exception
     */
-    public function gather(int $len): string
+    public function gather(int $$len): string
     {
-        return vscf_entropy_accumulator_gather_php($this->ctx, $len);
+        return vscf_entropy_accumulator_gather_php($this->ctx, $$len);
     }
 
     /**

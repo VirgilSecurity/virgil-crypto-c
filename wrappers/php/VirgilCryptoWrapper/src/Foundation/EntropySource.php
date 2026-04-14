@@ -37,25 +37,27 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Defines generic interface for the entropy source.
-*/
 interface EntropySource extends Ctx
 {
 
     /**
-    * Defines that implemented source is strong.
     *
     * @return bool
     */
-    public function isStrong(): bool;
+    public function isStrong(): bool
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Gather entropy of the requested length.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     * @throws \Exception
     */
-    public function gather(int $len): string;
+    public function gather(int $$len): string
+    {
+        return ($this->ctx, $$len);
+    }
+
 }

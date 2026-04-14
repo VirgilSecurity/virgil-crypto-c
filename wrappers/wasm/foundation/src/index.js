@@ -34,7 +34,6 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const FoundationModule = require(process.env.PROJECT_MODULE);
 
 const initFoundationInterfaceTag = require('./FoundationInterfaceTag');

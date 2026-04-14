@@ -36,36 +36,25 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Class represents ratchet message
-*/
 public class RatchetMessage implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public RatchetMessage() {
         super();
         this.cCtx = RatchetJNI.INSTANCE.ratchetMessage_new();
     }
 
-    /* Wrap underlying C context. */
-    RatchetMessage(RatchetContextHolder contextHolder) {
+    package RatchetMessage(RatchetContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static RatchetMessage getInstance(long cCtx) {
+    public RatchetMessage getInstance(long cCtx) {
         RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
         return new RatchetMessage(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -74,77 +63,48 @@ public class RatchetMessage implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Returns message type.
-    */
     public MsgType getType() {
         return RatchetJNI.INSTANCE.ratchetMessage_getType(this.cCtx);
     }
 
-    /*
-    * Returns message counter in current asymmetric ratchet round.
-    */
     public long getCounter() {
         return RatchetJNI.INSTANCE.ratchetMessage_getCounter(this.cCtx);
     }
 
-    /*
-    * Returns long-term public key, if message is prekey message.
-    */
     public byte[] getSenderIdentityKeyId() {
         return RatchetJNI.INSTANCE.ratchetMessage_getSenderIdentityKeyId(this.cCtx);
     }
 
-    /*
-    * Returns long-term public key, if message is prekey message.
-    */
     public byte[] getReceiverIdentityKeyId() {
         return RatchetJNI.INSTANCE.ratchetMessage_getReceiverIdentityKeyId(this.cCtx);
     }
 
-    /*
-    * Returns long-term public key, if message is prekey message.
-    */
     public byte[] getReceiverLongTermKeyId() {
         return RatchetJNI.INSTANCE.ratchetMessage_getReceiverLongTermKeyId(this.cCtx);
     }
 
-    /*
-    * Returns one-time public key, if message is prekey message and if one-time key is present, empty result otherwise.
-    */
     public byte[] getReceiverOneTimeKeyId() {
         return RatchetJNI.INSTANCE.ratchetMessage_getReceiverOneTimeKeyId(this.cCtx);
     }
 
-    /*
-    * Buffer len to serialize this class.
-    */
     public int serializeLen() {
         return RatchetJNI.INSTANCE.ratchetMessage_serializeLen(this.cCtx);
     }
 
-    /*
-    * Serializes instance.
-    */
     public byte[] serialize() {
         return RatchetJNI.INSTANCE.ratchetMessage_serialize(this.cCtx);
     }
 
-    /*
-    * Deserializes instance.
-    */
-    public static RatchetMessage deserialize(byte[] input) throws RatchetException {
+    public RatchetMessage deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetMessage_deserialize(input);
     }
-}
 
+}

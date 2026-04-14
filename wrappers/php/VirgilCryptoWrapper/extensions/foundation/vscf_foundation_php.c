@@ -7,17 +7,17 @@
 // modification, are permitted provided that the following conditions are
 // met:
 //
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
+// (1) Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
 //
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
+// (2) Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in
+// the documentation and/or other materials provided with the
+// distribution.
 //
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
+// (3) Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 // IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -623,10 +623,117 @@ VSCF_PHP_PUBLIC int le_vscf_padding_params_t(void) {
 }
 
 //
-// Extension init functions declaration
+// Extension init functions definition
 //
-PHP_MINIT_FUNCTION(vscf_foundation_php);
-PHP_MSHUTDOWN_FUNCTION(vscf_foundation_php);
+static void vscf_impl_dtor_php(zend_resource *rsrc) {
+    vscf_impl_delete((vscf_impl_t *)rsrc->ptr);
+}
+static void vscf_message_info_dtor_php(zend_resource *rsrc) {
+    vscf_message_info_delete((vscf_message_info_t *)rsrc->ptr);
+}
+static void vscf_key_recipient_info_dtor_php(zend_resource *rsrc) {
+    vscf_key_recipient_info_delete((vscf_key_recipient_info_t *)rsrc->ptr);
+}
+static void vscf_key_recipient_info_list_dtor_php(zend_resource *rsrc) {
+    vscf_key_recipient_info_list_delete((vscf_key_recipient_info_list_t *)rsrc->ptr);
+}
+static void vscf_password_recipient_info_dtor_php(zend_resource *rsrc) {
+    vscf_password_recipient_info_delete((vscf_password_recipient_info_t *)rsrc->ptr);
+}
+static void vscf_password_recipient_info_list_dtor_php(zend_resource *rsrc) {
+    vscf_password_recipient_info_list_delete((vscf_password_recipient_info_list_t *)rsrc->ptr);
+}
+static void vscf_ecies_dtor_php(zend_resource *rsrc) {
+    vscf_ecies_delete((vscf_ecies_t *)rsrc->ptr);
+}
+static void vscf_recipient_cipher_dtor_php(zend_resource *rsrc) {
+    vscf_recipient_cipher_delete((vscf_recipient_cipher_t *)rsrc->ptr);
+}
+static void vscf_message_info_custom_params_dtor_php(zend_resource *rsrc) {
+    vscf_message_info_custom_params_delete((vscf_message_info_custom_params_t *)rsrc->ptr);
+}
+static void vscf_key_provider_dtor_php(zend_resource *rsrc) {
+    vscf_key_provider_delete((vscf_key_provider_t *)rsrc->ptr);
+}
+static void vscf_signer_dtor_php(zend_resource *rsrc) {
+    vscf_signer_delete((vscf_signer_t *)rsrc->ptr);
+}
+static void vscf_verifier_dtor_php(zend_resource *rsrc) {
+    vscf_verifier_delete((vscf_verifier_t *)rsrc->ptr);
+}
+static void vscf_brainkey_client_dtor_php(zend_resource *rsrc) {
+    vscf_brainkey_client_delete((vscf_brainkey_client_t *)rsrc->ptr);
+}
+static void vscf_brainkey_server_dtor_php(zend_resource *rsrc) {
+    vscf_brainkey_server_delete((vscf_brainkey_server_t *)rsrc->ptr);
+}
+static void vscf_group_session_message_dtor_php(zend_resource *rsrc) {
+    vscf_group_session_message_delete((vscf_group_session_message_t *)rsrc->ptr);
+}
+static void vscf_group_session_ticket_dtor_php(zend_resource *rsrc) {
+    vscf_group_session_ticket_delete((vscf_group_session_ticket_t *)rsrc->ptr);
+}
+static void vscf_group_session_dtor_php(zend_resource *rsrc) {
+    vscf_group_session_delete((vscf_group_session_t *)rsrc->ptr);
+}
+static void vscf_message_info_editor_dtor_php(zend_resource *rsrc) {
+    vscf_message_info_editor_delete((vscf_message_info_editor_t *)rsrc->ptr);
+}
+static void vscf_signer_info_dtor_php(zend_resource *rsrc) {
+    vscf_signer_info_delete((vscf_signer_info_t *)rsrc->ptr);
+}
+static void vscf_signer_info_list_dtor_php(zend_resource *rsrc) {
+    vscf_signer_info_list_delete((vscf_signer_info_list_t *)rsrc->ptr);
+}
+static void vscf_message_info_footer_dtor_php(zend_resource *rsrc) {
+    vscf_message_info_footer_delete((vscf_message_info_footer_t *)rsrc->ptr);
+}
+static void vscf_signed_data_info_dtor_php(zend_resource *rsrc) {
+    vscf_signed_data_info_delete((vscf_signed_data_info_t *)rsrc->ptr);
+}
+static void vscf_footer_info_dtor_php(zend_resource *rsrc) {
+    vscf_footer_info_delete((vscf_footer_info_t *)rsrc->ptr);
+}
+static void vscf_key_info_dtor_php(zend_resource *rsrc) {
+    vscf_key_info_delete((vscf_key_info_t *)rsrc->ptr);
+}
+static void vscf_padding_params_dtor_php(zend_resource *rsrc) {
+    vscf_padding_params_delete((vscf_padding_params_t *)rsrc->ptr);
+}
+PHP_MINIT_FUNCTION(vscf_foundation_php) {
+    zend_class_entry vscf_ce;
+    INIT_CLASS_ENTRY(vscf_ce, "FoundationException", NULL);
+    vscf_exception_ce = zend_register_internal_class_ex(&vscf_ce, zend_exception_get_default());
+    LE_VSCF_IMPL_T = zend_register_list_destructors_ex(vscf_impl_dtor_php, NULL, vscf_impl_t_php_res_name(), module_number);
+    LE_VSCF_MESSAGE_INFO_T = zend_register_list_destructors_ex(vscf_message_info_dtor_php, NULL, vscf_message_info_t_php_res_name(), module_number);
+    LE_VSCF_KEY_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_key_recipient_info_dtor_php, NULL, vscf_key_recipient_info_t_php_res_name(), module_number);
+    LE_VSCF_KEY_RECIPIENT_INFO_LIST_T = zend_register_list_destructors_ex(vscf_key_recipient_info_list_dtor_php, NULL, vscf_key_recipient_info_list_t_php_res_name(), module_number);
+    LE_VSCF_PASSWORD_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_password_recipient_info_dtor_php, NULL, vscf_password_recipient_info_t_php_res_name(), module_number);
+    LE_VSCF_PASSWORD_RECIPIENT_INFO_LIST_T = zend_register_list_destructors_ex(vscf_password_recipient_info_list_dtor_php, NULL, vscf_password_recipient_info_list_t_php_res_name(), module_number);
+    LE_VSCF_ECIES_T = zend_register_list_destructors_ex(vscf_ecies_dtor_php, NULL, vscf_ecies_t_php_res_name(), module_number);
+    LE_VSCF_RECIPIENT_CIPHER_T = zend_register_list_destructors_ex(vscf_recipient_cipher_dtor_php, NULL, vscf_recipient_cipher_t_php_res_name(), module_number);
+    LE_VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T = zend_register_list_destructors_ex(vscf_message_info_custom_params_dtor_php, NULL, vscf_message_info_custom_params_t_php_res_name(), module_number);
+    LE_VSCF_KEY_PROVIDER_T = zend_register_list_destructors_ex(vscf_key_provider_dtor_php, NULL, vscf_key_provider_t_php_res_name(), module_number);
+    LE_VSCF_SIGNER_T = zend_register_list_destructors_ex(vscf_signer_dtor_php, NULL, vscf_signer_t_php_res_name(), module_number);
+    LE_VSCF_VERIFIER_T = zend_register_list_destructors_ex(vscf_verifier_dtor_php, NULL, vscf_verifier_t_php_res_name(), module_number);
+    LE_VSCF_BRAINKEY_CLIENT_T = zend_register_list_destructors_ex(vscf_brainkey_client_dtor_php, NULL, vscf_brainkey_client_t_php_res_name(), module_number);
+    LE_VSCF_BRAINKEY_SERVER_T = zend_register_list_destructors_ex(vscf_brainkey_server_dtor_php, NULL, vscf_brainkey_server_t_php_res_name(), module_number);
+    LE_VSCF_GROUP_SESSION_MESSAGE_T = zend_register_list_destructors_ex(vscf_group_session_message_dtor_php, NULL, vscf_group_session_message_t_php_res_name(), module_number);
+    LE_VSCF_GROUP_SESSION_TICKET_T = zend_register_list_destructors_ex(vscf_group_session_ticket_dtor_php, NULL, vscf_group_session_ticket_t_php_res_name(), module_number);
+    LE_VSCF_GROUP_SESSION_T = zend_register_list_destructors_ex(vscf_group_session_dtor_php, NULL, vscf_group_session_t_php_res_name(), module_number);
+    LE_VSCF_MESSAGE_INFO_EDITOR_T = zend_register_list_destructors_ex(vscf_message_info_editor_dtor_php, NULL, vscf_message_info_editor_t_php_res_name(), module_number);
+    LE_VSCF_SIGNER_INFO_T = zend_register_list_destructors_ex(vscf_signer_info_dtor_php, NULL, vscf_signer_info_t_php_res_name(), module_number);
+    LE_VSCF_SIGNER_INFO_LIST_T = zend_register_list_destructors_ex(vscf_signer_info_list_dtor_php, NULL, vscf_signer_info_list_t_php_res_name(), module_number);
+    LE_VSCF_MESSAGE_INFO_FOOTER_T = zend_register_list_destructors_ex(vscf_message_info_footer_dtor_php, NULL, vscf_message_info_footer_t_php_res_name(), module_number);
+    LE_VSCF_SIGNED_DATA_INFO_T = zend_register_list_destructors_ex(vscf_signed_data_info_dtor_php, NULL, vscf_signed_data_info_t_php_res_name(), module_number);
+    LE_VSCF_FOOTER_INFO_T = zend_register_list_destructors_ex(vscf_footer_info_dtor_php, NULL, vscf_footer_info_t_php_res_name(), module_number);
+    LE_VSCF_KEY_INFO_T = zend_register_list_destructors_ex(vscf_key_info_dtor_php, NULL, vscf_key_info_t_php_res_name(), module_number);
+    LE_VSCF_PADDING_PARAMS_T = zend_register_list_destructors_ex(vscf_padding_params_dtor_php, NULL, vscf_padding_params_t_php_res_name(), module_number);
+    return SUCCESS;
+}
+PHP_MSHUTDOWN_FUNCTION(vscf_foundation_php) {
+    return SUCCESS;
+}
 
 //
 // Functions wrapping
@@ -41915,116 +42022,3 @@ zend_module_entry vscf_foundation_php_module_entry = {
 };
 
 ZEND_GET_MODULE(vscf_foundation_php)
-
-//
-// Extension init functions definition
-//
-static void vscf_impl_dtor_php(zend_resource *rsrc) {
-    vscf_impl_delete((vscf_impl_t *)rsrc->ptr);
-}
-static void vscf_message_info_dtor_php(zend_resource *rsrc) {
-    vscf_message_info_delete((vscf_message_info_t *)rsrc->ptr);
-}
-static void vscf_key_recipient_info_dtor_php(zend_resource *rsrc) {
-    vscf_key_recipient_info_delete((vscf_key_recipient_info_t *)rsrc->ptr);
-}
-static void vscf_key_recipient_info_list_dtor_php(zend_resource *rsrc) {
-    vscf_key_recipient_info_list_delete((vscf_key_recipient_info_list_t *)rsrc->ptr);
-}
-static void vscf_password_recipient_info_dtor_php(zend_resource *rsrc) {
-    vscf_password_recipient_info_delete((vscf_password_recipient_info_t *)rsrc->ptr);
-}
-static void vscf_password_recipient_info_list_dtor_php(zend_resource *rsrc) {
-    vscf_password_recipient_info_list_delete((vscf_password_recipient_info_list_t *)rsrc->ptr);
-}
-static void vscf_ecies_dtor_php(zend_resource *rsrc) {
-    vscf_ecies_delete((vscf_ecies_t *)rsrc->ptr);
-}
-static void vscf_recipient_cipher_dtor_php(zend_resource *rsrc) {
-    vscf_recipient_cipher_delete((vscf_recipient_cipher_t *)rsrc->ptr);
-}
-static void vscf_message_info_custom_params_dtor_php(zend_resource *rsrc) {
-    vscf_message_info_custom_params_delete((vscf_message_info_custom_params_t *)rsrc->ptr);
-}
-static void vscf_key_provider_dtor_php(zend_resource *rsrc) {
-    vscf_key_provider_delete((vscf_key_provider_t *)rsrc->ptr);
-}
-static void vscf_signer_dtor_php(zend_resource *rsrc) {
-    vscf_signer_delete((vscf_signer_t *)rsrc->ptr);
-}
-static void vscf_verifier_dtor_php(zend_resource *rsrc) {
-    vscf_verifier_delete((vscf_verifier_t *)rsrc->ptr);
-}
-static void vscf_brainkey_client_dtor_php(zend_resource *rsrc) {
-    vscf_brainkey_client_delete((vscf_brainkey_client_t *)rsrc->ptr);
-}
-static void vscf_brainkey_server_dtor_php(zend_resource *rsrc) {
-    vscf_brainkey_server_delete((vscf_brainkey_server_t *)rsrc->ptr);
-}
-static void vscf_group_session_message_dtor_php(zend_resource *rsrc) {
-    vscf_group_session_message_delete((vscf_group_session_message_t *)rsrc->ptr);
-}
-static void vscf_group_session_ticket_dtor_php(zend_resource *rsrc) {
-    vscf_group_session_ticket_delete((vscf_group_session_ticket_t *)rsrc->ptr);
-}
-static void vscf_group_session_dtor_php(zend_resource *rsrc) {
-    vscf_group_session_delete((vscf_group_session_t *)rsrc->ptr);
-}
-static void vscf_message_info_editor_dtor_php(zend_resource *rsrc) {
-    vscf_message_info_editor_delete((vscf_message_info_editor_t *)rsrc->ptr);
-}
-static void vscf_signer_info_dtor_php(zend_resource *rsrc) {
-    vscf_signer_info_delete((vscf_signer_info_t *)rsrc->ptr);
-}
-static void vscf_signer_info_list_dtor_php(zend_resource *rsrc) {
-    vscf_signer_info_list_delete((vscf_signer_info_list_t *)rsrc->ptr);
-}
-static void vscf_message_info_footer_dtor_php(zend_resource *rsrc) {
-    vscf_message_info_footer_delete((vscf_message_info_footer_t *)rsrc->ptr);
-}
-static void vscf_signed_data_info_dtor_php(zend_resource *rsrc) {
-    vscf_signed_data_info_delete((vscf_signed_data_info_t *)rsrc->ptr);
-}
-static void vscf_footer_info_dtor_php(zend_resource *rsrc) {
-    vscf_footer_info_delete((vscf_footer_info_t *)rsrc->ptr);
-}
-static void vscf_key_info_dtor_php(zend_resource *rsrc) {
-    vscf_key_info_delete((vscf_key_info_t *)rsrc->ptr);
-}
-static void vscf_padding_params_dtor_php(zend_resource *rsrc) {
-    vscf_padding_params_delete((vscf_padding_params_t *)rsrc->ptr);
-}
-PHP_MINIT_FUNCTION(vscf_foundation_php) {
-    zend_class_entry vscf_ce;
-    INIT_CLASS_ENTRY(vscf_ce, "FoundationException", NULL);
-    vscf_exception_ce = zend_register_internal_class_ex(&vscf_ce, zend_exception_get_default());
-    LE_VSCF_IMPL_T = zend_register_list_destructors_ex(vscf_impl_dtor_php, NULL, vscf_impl_t_php_res_name(), module_number);
-    LE_VSCF_MESSAGE_INFO_T = zend_register_list_destructors_ex(vscf_message_info_dtor_php, NULL, vscf_message_info_t_php_res_name(), module_number);
-    LE_VSCF_KEY_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_key_recipient_info_dtor_php, NULL, vscf_key_recipient_info_t_php_res_name(), module_number);
-    LE_VSCF_KEY_RECIPIENT_INFO_LIST_T = zend_register_list_destructors_ex(vscf_key_recipient_info_list_dtor_php, NULL, vscf_key_recipient_info_list_t_php_res_name(), module_number);
-    LE_VSCF_PASSWORD_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_password_recipient_info_dtor_php, NULL, vscf_password_recipient_info_t_php_res_name(), module_number);
-    LE_VSCF_PASSWORD_RECIPIENT_INFO_LIST_T = zend_register_list_destructors_ex(vscf_password_recipient_info_list_dtor_php, NULL, vscf_password_recipient_info_list_t_php_res_name(), module_number);
-    LE_VSCF_ECIES_T = zend_register_list_destructors_ex(vscf_ecies_dtor_php, NULL, vscf_ecies_t_php_res_name(), module_number);
-    LE_VSCF_RECIPIENT_CIPHER_T = zend_register_list_destructors_ex(vscf_recipient_cipher_dtor_php, NULL, vscf_recipient_cipher_t_php_res_name(), module_number);
-    LE_VSCF_MESSAGE_INFO_CUSTOM_PARAMS_T = zend_register_list_destructors_ex(vscf_message_info_custom_params_dtor_php, NULL, vscf_message_info_custom_params_t_php_res_name(), module_number);
-    LE_VSCF_KEY_PROVIDER_T = zend_register_list_destructors_ex(vscf_key_provider_dtor_php, NULL, vscf_key_provider_t_php_res_name(), module_number);
-    LE_VSCF_SIGNER_T = zend_register_list_destructors_ex(vscf_signer_dtor_php, NULL, vscf_signer_t_php_res_name(), module_number);
-    LE_VSCF_VERIFIER_T = zend_register_list_destructors_ex(vscf_verifier_dtor_php, NULL, vscf_verifier_t_php_res_name(), module_number);
-    LE_VSCF_BRAINKEY_CLIENT_T = zend_register_list_destructors_ex(vscf_brainkey_client_dtor_php, NULL, vscf_brainkey_client_t_php_res_name(), module_number);
-    LE_VSCF_BRAINKEY_SERVER_T = zend_register_list_destructors_ex(vscf_brainkey_server_dtor_php, NULL, vscf_brainkey_server_t_php_res_name(), module_number);
-    LE_VSCF_GROUP_SESSION_MESSAGE_T = zend_register_list_destructors_ex(vscf_group_session_message_dtor_php, NULL, vscf_group_session_message_t_php_res_name(), module_number);
-    LE_VSCF_GROUP_SESSION_TICKET_T = zend_register_list_destructors_ex(vscf_group_session_ticket_dtor_php, NULL, vscf_group_session_ticket_t_php_res_name(), module_number);
-    LE_VSCF_GROUP_SESSION_T = zend_register_list_destructors_ex(vscf_group_session_dtor_php, NULL, vscf_group_session_t_php_res_name(), module_number);
-    LE_VSCF_MESSAGE_INFO_EDITOR_T = zend_register_list_destructors_ex(vscf_message_info_editor_dtor_php, NULL, vscf_message_info_editor_t_php_res_name(), module_number);
-    LE_VSCF_SIGNER_INFO_T = zend_register_list_destructors_ex(vscf_signer_info_dtor_php, NULL, vscf_signer_info_t_php_res_name(), module_number);
-    LE_VSCF_SIGNER_INFO_LIST_T = zend_register_list_destructors_ex(vscf_signer_info_list_dtor_php, NULL, vscf_signer_info_list_t_php_res_name(), module_number);
-    LE_VSCF_MESSAGE_INFO_FOOTER_T = zend_register_list_destructors_ex(vscf_message_info_footer_dtor_php, NULL, vscf_message_info_footer_t_php_res_name(), module_number);
-    LE_VSCF_SIGNED_DATA_INFO_T = zend_register_list_destructors_ex(vscf_signed_data_info_dtor_php, NULL, vscf_signed_data_info_t_php_res_name(), module_number);
-    LE_VSCF_FOOTER_INFO_T = zend_register_list_destructors_ex(vscf_footer_info_dtor_php, NULL, vscf_footer_info_t_php_res_name(), module_number);
-    LE_VSCF_KEY_INFO_T = zend_register_list_destructors_ex(vscf_key_info_dtor_php, NULL, vscf_key_info_t_php_res_name(), module_number);
-    LE_VSCF_PADDING_PARAMS_T = zend_register_list_destructors_ex(vscf_padding_params_dtor_php, NULL, vscf_padding_params_t_php_res_name(), module_number);
-    return SUCCESS;
-}
-PHP_MSHUTDOWN_FUNCTION(vscf_foundation_php) {
-    return SUCCESS;
-}

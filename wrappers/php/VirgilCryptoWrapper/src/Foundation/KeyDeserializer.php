@@ -37,25 +37,29 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Public and private key deserialization from an interchangeable format.
-*/
 interface KeyDeserializer extends Ctx
 {
 
     /**
-    * Deserialize given public key as an interchangeable format to the object.
     *
-    * @param string $publicKeyData
+    * @param string $$publicKeyData
     * @return RawPublicKey
     */
-    public function deserializePublicKey(string $publicKeyData): RawPublicKey;
+    public function deserializePublicKey(string $$publicKeyData): RawPublicKey
+    {
+        $ctx = ($this->ctx, $$publicKeyData);
+        return new RawPublicKey($ctx);
+    }
 
     /**
-    * Deserialize given private key as an interchangeable format to the object.
     *
-    * @param string $privateKeyData
+    * @param string $$privateKeyData
     * @return RawPrivateKey
     */
-    public function deserializePrivateKey(string $privateKeyData): RawPrivateKey;
+    public function deserializePrivateKey(string $$privateKeyData): RawPrivateKey
+    {
+        $ctx = ($this->ctx, $$privateKeyData);
+        return new RawPrivateKey($ctx);
+    }
+
 }

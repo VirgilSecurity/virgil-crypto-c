@@ -36,14 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provides interface to the key derivation function (KDF) algorithms.
-*/
-public interface Kdf {
-
-    /*
-    * Derive key of the requested length from the given data.
-    */
-    byte[] derive(byte[] data, int keyLen);
-}
-

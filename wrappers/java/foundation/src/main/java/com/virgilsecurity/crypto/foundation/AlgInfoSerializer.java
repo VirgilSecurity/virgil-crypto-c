@@ -36,19 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide serialization of algorithm
-*/
-public interface AlgInfoSerializer {
-
-    /*
-    * Return buffer size enough to hold serialized algorithm.
-    */
-    int serializedLen(AlgInfo algInfo);
-
-    /*
-    * Serialize algorithm info to buffer class.
-    */
-    byte[] serialize(AlgInfo algInfo);
-}
-

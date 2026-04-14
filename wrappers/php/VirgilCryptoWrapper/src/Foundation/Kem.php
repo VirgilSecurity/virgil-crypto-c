@@ -37,44 +37,50 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides generic interface to the Key Encapsulation Mechanism (KEM).
-*/
 interface Kem extends Ctx
 {
 
     /**
-    * Return length in bytes required to hold encapsulated shared key.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return int
     */
-    public function kemSharedKeyLen(Key $key): int;
+    public function kemSharedKeyLen(Key $$key): int
+    {
+        return ($this->ctx, $$key);
+    }
 
     /**
-    * Return length in bytes required to hold encapsulated key.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return int
     */
-    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int;
+    public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
+    {
+        return ($this->ctx, $$publicKey);
+    }
 
     /**
-    * Generate a shared key and a key encapsulated message.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return array
     * @throws \Exception
     */
-    public function kemEncapsulate(PublicKey $publicKey): array; // [shared_key, encapsulated_key]
+    public function kemEncapsulate(PublicKey $$publicKey): array
+    {
+        return ($this->ctx, $$publicKey);
+    }
 
     /**
-    * Decapsulate the shared key.
     *
-    * @param string $encapsulatedKey
-    * @param PrivateKey $privateKey
+    * @param string $$encapsulatedKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string;
+    public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
+    {
+        return ($this->ctx, $$encapsulatedKey, $$privateKey);
+    }
+
 }

@@ -36,65 +36,40 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Implements key serialization in the ASN.1 format (DER / PEM):
-* - SEC1 - for EC private keys;
-* - PKCS#8 - for other keys.
-*/
 public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public KeyAsn1Serializer() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.keyAsn1Serializer_new();
-    }
-
-    /* Wrap underlying C context. */
-    KeyAsn1Serializer(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.keyAsn1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.keyAsn1Serializer_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Serialize Public Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
     public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
     }
 
-    /*
-    * Serialize Private Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
     public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static KeyAsn1Serializer getInstance(long cCtx) {
+    public long cCtx;
+
+    public KeyAsn1Serializer() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.keyAsn1Serializer_new();
+    }
+
+    package KeyAsn1Serializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public KeyAsn1Serializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyAsn1Serializer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -103,50 +78,28 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Calculate buffer size enough to hold serialized public key.
-    *
-    * Precondition: public key must be exportable.
-    */
     public int serializedPublicKeyLen(RawPublicKey publicKey) {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
 
-    /*
-    * Serialize given public key to an interchangeable format.
-    *
-    * Precondition: public key must be exportable.
-    */
     public byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePublicKey(this.cCtx, publicKey);
     }
 
-    /*
-    * Calculate buffer size enough to hold serialized private key.
-    *
-    * Precondition: private key must be exportable.
-    */
     public int serializedPrivateKeyLen(RawPrivateKey privateKey) {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
     }
 
-    /*
-    * Serialize given private key to an interchangeable format.
-    *
-    * Precondition: private key must be exportable.
-    */
     public byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Serializer_serializePrivateKey(this.cCtx, privateKey);
     }
-}
 
+}

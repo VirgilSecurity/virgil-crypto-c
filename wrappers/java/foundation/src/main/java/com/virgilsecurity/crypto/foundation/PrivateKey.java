@@ -36,14 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Contains private part of the key.
-*/
-public interface PrivateKey extends Key {
-
-    /*
-    * Extract public key from the private key.
-    */
-    PublicKey extractPublicKey();
-}
-

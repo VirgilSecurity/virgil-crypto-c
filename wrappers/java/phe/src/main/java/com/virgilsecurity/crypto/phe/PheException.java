@@ -36,32 +36,27 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Defines the library status codes.
-*/
-public class PheException extends RuntimeException {
+public class PheException {
 
-    public static final int SUCCESS = 0;
+    public int SUCCESS;
 
-    public static final int ERROR_INVALID_SUCCESS_PROOF = -1;
+    public int ERROR_INVALID_SUCCESS_PROOF;
 
-    public static final int ERROR_INVALID_FAIL_PROOF = -2;
+    public int ERROR_INVALID_FAIL_PROOF;
 
-    public static final int ERROR_RNG_FAILED = -3;
+    public int ERROR_RNG_FAILED;
 
-    public static final int ERROR_PROTOBUF_DECODE_FAILED = -4;
+    public int ERROR_PROTOBUF_DECODE_FAILED;
 
-    public static final int ERROR_INVALID_PUBLIC_KEY = -5;
+    public int ERROR_INVALID_PUBLIC_KEY;
 
-    public static final int ERROR_INVALID_PRIVATE_KEY = -6;
+    public int ERROR_INVALID_PRIVATE_KEY;
 
-    public static final int ERROR_AES_FAILED = -7;
+    public int ERROR_AES_FAILED;
 
     private int statusCode;
 
-    /* Create new instance. */
     public PheException(int statusCode) {
         super();
         this.statusCode = statusCode;
@@ -93,5 +88,5 @@ public class PheException extends RuntimeException {
             return "Unknown error";
         }
     }
-}
 
+}

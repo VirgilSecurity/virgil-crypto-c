@@ -36,24 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface for "message info footer" class serialization.
-*/
-public interface MessageInfoFooterSerializer {
-
-    /*
-    * Return buffer size enough to hold serialized message info footer.
-    */
-    int serializedFooterLen(MessageInfoFooter messageInfoFooter);
-
-    /*
-    * Serialize class "message info footer".
-    */
-    byte[] serializeFooter(MessageInfoFooter messageInfoFooter);
-
-    /*
-    * Deserialize class "message info footer".
-    */
-    MessageInfoFooter deserializeFooter(byte[] data) throws FoundationException;
-}
-

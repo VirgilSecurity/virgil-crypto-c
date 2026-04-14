@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Sign data of any size.
-*/
 public class Signer implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public Signer() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.signer_new();
     }
 
-    /* Wrap underlying C context. */
-    Signer(FoundationContextHolder contextHolder) {
+    package Signer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Signer getInstance(long cCtx) {
+    public Signer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Signer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,12 +62,10 @@ public class Signer implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
@@ -90,32 +78,20 @@ public class Signer implements AutoCloseable {
         FoundationJNI.INSTANCE.signer_setRandom(this.cCtx, random);
     }
 
-    /*
-    * Start a processing a new signature.
-    */
     public void reset() {
         FoundationJNI.INSTANCE.signer_reset(this.cCtx);
     }
 
-    /*
-    * Add given data to the signed data.
-    */
     public void appendData(byte[] data) {
         FoundationJNI.INSTANCE.signer_appendData(this.cCtx, data);
     }
 
-    /*
-    * Return length of the signature.
-    */
     public int signatureLen(PrivateKey privateKey) {
         return FoundationJNI.INSTANCE.signer_signatureLen(this.cCtx, privateKey);
     }
 
-    /*
-    * Accomplish signing and return signature.
-    */
     public byte[] sign(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.signer_sign(this.cCtx, privateKey);
     }
-}
 
+}

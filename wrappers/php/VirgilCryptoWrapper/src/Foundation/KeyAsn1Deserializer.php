@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
-*/
 class KeyAsn1Deserializer implements KeyDeserializer
 {
 
@@ -68,16 +65,16 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * @param Asn1Reader $asn1Reader
+    *
+    * @param Asn1Reader $$asn1Reader
     * @return void
     */
-    public function useAsn1Reader(Asn1Reader $asn1Reader): void
+    public function useAsn1Reader(Asn1Reader $$asn1Reader): void
     {
-        vscf_key_asn1_deserializer_use_asn1_reader_php($this->ctx, $asn1Reader->getCtx());
+        vscf_key_asn1_deserializer_use_asn1_reader_php($this->ctx, $$asn1Reader);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -87,9 +84,6 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * Deserialize Public Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
     *
     * @return RawPublicKey
     */
@@ -100,9 +94,6 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * Deserialize Private Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
     *
     * @return RawPrivateKey
     */
@@ -113,26 +104,24 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * Deserialize given public key as an interchangeable format to the object.
     *
-    * @param string $publicKeyData
+    * @param string $$publicKeyData
     * @return RawPublicKey
     */
-    public function deserializePublicKey(string $publicKeyData): RawPublicKey
+    public function deserializePublicKey(string $$publicKeyData): RawPublicKey
     {
-        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_php($this->ctx, $publicKeyData);
+        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_php($this->ctx, $$publicKeyData);
         return new RawPublicKey($ctx);
     }
 
     /**
-    * Deserialize given private key as an interchangeable format to the object.
     *
-    * @param string $privateKeyData
+    * @param string $$privateKeyData
     * @return RawPrivateKey
     */
-    public function deserializePrivateKey(string $privateKeyData): RawPrivateKey
+    public function deserializePrivateKey(string $$privateKeyData): RawPrivateKey
     {
-        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $privateKeyData);
+        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $$privateKeyData);
         return new RawPrivateKey($ctx);
     }
 

@@ -36,39 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provides interface to the hashing (messege digest) algorithms.
-*/
-public interface Hash {
-
-    /*
-    * Length of the digest (hashing output) in bytes.
-    */
-    int getDigestLen();
-
-    /*
-    * Block length of the digest function in bytes.
-    */
-    int getBlockLen();
-
-    /*
-    * Calculate hash over given data.
-    */
-    byte[] hash(byte[] data);
-
-    /*
-    * Start a new hashing.
-    */
-    void start();
-
-    /*
-    * Add given data to the hash.
-    */
-    void update(byte[] data);
-
-    /*
-    * Accompilsh hashing and return it's result (a message digest).
-    */
-    byte[] finish();
-}
-

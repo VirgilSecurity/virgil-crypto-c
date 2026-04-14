@@ -34,23 +34,10 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initGroupMsgType = (Module, modules) => {
-    /**
-     * Represents group message type
-     */
     const GroupMsgType = Object.freeze({
-
-        /**
-         * Group info type with encryption key.
-         * This type of message should be encrypted before transferring.
-         */
         GROUP_INFO: 0,
-
-        /**
-         * Regular group message with encrypted text.
-         */
-        REGULAR: 1
+        REGULAR: 1,
     });
 
     return GroupMsgType;

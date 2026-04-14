@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* CMS based serialization of the class "message info".
-*/
 class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFooterSerializer
 {
 
@@ -70,25 +67,26 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     }
 
     /**
-    * @param Asn1Reader $asn1Reader
+    *
+    * @param Asn1Reader $$asn1Reader
     * @return void
     */
-    public function useAsn1Reader(Asn1Reader $asn1Reader): void
+    public function useAsn1Reader(Asn1Reader $$asn1Reader): void
     {
-        vscf_message_info_der_serializer_use_asn1_reader_php($this->ctx, $asn1Reader->getCtx());
+        vscf_message_info_der_serializer_use_asn1_reader_php($this->ctx, $$asn1Reader);
     }
 
     /**
-    * @param Asn1Writer $asn1Writer
+    *
+    * @param Asn1Writer $$asn1Writer
     * @return void
     */
-    public function useAsn1Writer(Asn1Writer $asn1Writer): void
+    public function useAsn1Writer(Asn1Writer $$asn1Writer): void
     {
-        vscf_message_info_der_serializer_use_asn1_writer_php($this->ctx, $asn1Writer->getCtx());
+        vscf_message_info_der_serializer_use_asn1_writer_php($this->ctx, $$asn1Writer);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -98,85 +96,74 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     }
 
     /**
-    * Return buffer size enough to hold serialized message info.
     *
-    * @param MessageInfo $messageInfo
+    * @param MessageInfo $$messageInfo
     * @return int
     */
-    public function serializedLen(MessageInfo $messageInfo): int
+    public function serializedLen(MessageInfo $$messageInfo): int
     {
-        return vscf_message_info_der_serializer_serialized_len_php($this->ctx, $messageInfo->getCtx());
+        return vscf_message_info_der_serializer_serialized_len_php($this->ctx, $$messageInfo);
     }
 
     /**
-    * Serialize class "message info".
     *
-    * @param MessageInfo $messageInfo
+    * @param MessageInfo $$messageInfo
     * @return string
     */
-    public function serialize(MessageInfo $messageInfo): string
+    public function serialize(MessageInfo $$messageInfo): string
     {
-        return vscf_message_info_der_serializer_serialize_php($this->ctx, $messageInfo->getCtx());
+        return vscf_message_info_der_serializer_serialize_php($this->ctx, $$messageInfo);
     }
 
     /**
-    * Read message info prefix from the given data, and if it is valid,
-    * return a length of bytes of the whole message info.
     *
-    * Zero returned if length can not be determined from the given data,
-    * and this means that there is no message info at the data beginning.
-    *
-    * @param string $data
+    * @param string $$data
     * @return int
     */
-    public function readPrefix(string $data): int
+    public function readPrefix(string $$data): int
     {
-        return vscf_message_info_der_serializer_read_prefix_php($this->ctx, $data);
+        return vscf_message_info_der_serializer_read_prefix_php($this->ctx, $$data);
     }
 
     /**
-    * Deserialize class "message info".
     *
-    * @param string $data
+    * @param string $$data
     * @return MessageInfo
     */
-    public function deserialize(string $data): MessageInfo
+    public function deserialize(string $$data): MessageInfo
     {
-        $ctx = vscf_message_info_der_serializer_deserialize_php($this->ctx, $data);
+        $ctx = vscf_message_info_der_serializer_deserialize_php($this->ctx, $$data);
         return new MessageInfo($ctx);
     }
 
     /**
-    * Return buffer size enough to hold serialized message info footer.
     *
-    * @param MessageInfoFooter $messageInfoFooter
+    * @param MessageInfoFooter $$messageInfoFooter
     * @return int
     */
-    public function serializedFooterLen(MessageInfoFooter $messageInfoFooter): int
+    public function serializedFooterLen(MessageInfoFooter $$messageInfoFooter): int
     {
-        return vscf_message_info_der_serializer_serialized_footer_len_php($this->ctx, $messageInfoFooter->getCtx());
+        return vscf_message_info_der_serializer_serialized_footer_len_php($this->ctx, $$messageInfoFooter);
     }
 
     /**
-    * Serialize class "message info footer".
     *
-    * @param MessageInfoFooter $messageInfoFooter
+    * @param MessageInfoFooter $$messageInfoFooter
     * @return string
     */
-    public function serializeFooter(MessageInfoFooter $messageInfoFooter): string
+    public function serializeFooter(MessageInfoFooter $$messageInfoFooter): string
     {
-        return vscf_message_info_der_serializer_serialize_footer_php($this->ctx, $messageInfoFooter->getCtx());
+        return vscf_message_info_der_serializer_serialize_footer_php($this->ctx, $$messageInfoFooter);
     }
 
     /**
-    * Deserialize class "message info footer".
     *
-    * @param string $data
+    * @param string $$data
     * @return MessageInfoFooter
     */
-    public function deserializeFooter(string $data): MessageInfoFooter
+    public function deserializeFooter(string $$data): MessageInfoFooter
     {
-        $ctx = vscf_message_info_der_serializer_deserialize_footer_php($this->ctx, $data);
+        $ctx = vscf_message_info_der_serializer_deserialize_footer_php($this->ctx, $$data);
         return new MessageInfoFooter($ctx);
     }
 

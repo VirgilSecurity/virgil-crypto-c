@@ -37,56 +37,65 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides interface to the stateless MAC (message authentication code) algorithms.
-*/
 interface Mac extends Ctx
 {
 
     /**
-    * Size of the digest (mac output) in bytes.
     *
     * @return int
     */
-    public function digestLen(): int;
+    public function digestLen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Calculate MAC over given data.
     *
-    * @param string $key
-    * @param string $data
+    * @param string $$key
+    * @param string $$data
     * @return string
     */
-    public function mac(string $key, string $data): string;
+    public function mac(string $$key, string $$data): string
+    {
+        return ($this->ctx, $$key, $$data);
+    }
 
     /**
-    * Start a new MAC.
     *
-    * @param string $key
+    * @param string $$key
     * @return void
     */
-    public function start(string $key): void;
+    public function start(string $$key): void
+    {
+        ($this->ctx, $$key);
+    }
 
     /**
-    * Add given data to the MAC.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function update(string $data): void;
+    public function update(string $$data): void
+    {
+        ($this->ctx, $$data);
+    }
 
     /**
-    * Accomplish MAC and return it's result (a message digest).
     *
     * @return string
     */
-    public function finish(): string;
+    public function finish(): string
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Prepare to authenticate a new message with the same key
-    * as the previous MAC operation.
     *
     * @return void
     */
-    public function reset(): void;
+    public function reset(): void
+    {
+        ($this->ctx);
+    }
+
 }

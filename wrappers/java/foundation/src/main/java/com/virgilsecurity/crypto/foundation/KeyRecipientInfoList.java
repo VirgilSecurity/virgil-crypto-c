@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles a list of "key recipient info" class objects.
-*/
 public class KeyRecipientInfoList implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public KeyRecipientInfoList() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfoList_new();
     }
 
-    /* Wrap underlying C context. */
-    KeyRecipientInfoList(FoundationContextHolder contextHolder) {
+    package KeyRecipientInfoList(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static KeyRecipientInfoList getInstance(long cCtx) {
+    public KeyRecipientInfoList getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyRecipientInfoList(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,63 +62,40 @@ public class KeyRecipientInfoList implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return true if given list has item.
-    */
     public boolean hasItem() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_hasItem(this.cCtx);
     }
 
-    /*
-    * Return list item.
-    */
     public KeyRecipientInfo item() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_item(this.cCtx);
     }
 
-    /*
-    * Return true if list has next item.
-    */
     public boolean hasNext() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_hasNext(this.cCtx);
     }
 
-    /*
-    * Return next list node if exists, or NULL otherwise.
-    */
     public KeyRecipientInfoList next() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_next(this.cCtx);
     }
 
-    /*
-    * Return true if list has previous item.
-    */
     public boolean hasPrev() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_hasPrev(this.cCtx);
     }
 
-    /*
-    * Return previous list node if exists, or NULL otherwise.
-    */
     public KeyRecipientInfoList prev() {
         return FoundationJNI.INSTANCE.keyRecipientInfoList_prev(this.cCtx);
     }
 
-    /*
-    * Remove all items.
-    */
     public void clear() {
         FoundationJNI.INSTANCE.keyRecipientInfoList_clear(this.cCtx);
     }
-}
 
+}

@@ -34,7 +34,6 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const PythiaModule = require(process.env.PROJECT_MODULE);
 
 const initPythiaError = require('./PythiaError');

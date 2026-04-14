@@ -7,17 +7,17 @@
 // modification, are permitted provided that the following conditions are
 // met:
 //
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
+// (1) Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
 //
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
+// (2) Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in
+// the documentation and/or other materials provided with the
+// distribution.
 //
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
+// (3) Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 // IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -161,10 +161,41 @@ VSCE_PHP_PUBLIC int le_vsce_uokms_wrap_rotation_t(void) {
 }
 
 //
-// Extension init functions declaration
+// Extension init functions definition
 //
-PHP_MINIT_FUNCTION(vsce_phe_php);
-PHP_MSHUTDOWN_FUNCTION(vsce_phe_php);
+static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
+    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
+}
+static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
+    vsce_phe_client_delete((vsce_phe_client_t *)rsrc->ptr);
+}
+static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
+    vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
+}
+static void vsce_uokms_client_dtor_php(zend_resource *rsrc) {
+    vsce_uokms_client_delete((vsce_uokms_client_t *)rsrc->ptr);
+}
+static void vsce_uokms_server_dtor_php(zend_resource *rsrc) {
+    vsce_uokms_server_delete((vsce_uokms_server_t *)rsrc->ptr);
+}
+static void vsce_uokms_wrap_rotation_dtor_php(zend_resource *rsrc) {
+    vsce_uokms_wrap_rotation_delete((vsce_uokms_wrap_rotation_t *)rsrc->ptr);
+}
+PHP_MINIT_FUNCTION(vsce_phe_php) {
+    zend_class_entry vsce_ce;
+    INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
+    vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_exception_get_default());
+    LE_VSCE_PHE_SERVER_T = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name(), module_number);
+    LE_VSCE_PHE_CLIENT_T = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name(), module_number);
+    LE_VSCE_PHE_CIPHER_T = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name(), module_number);
+    LE_VSCE_UOKMS_CLIENT_T = zend_register_list_destructors_ex(vsce_uokms_client_dtor_php, NULL, vsce_uokms_client_t_php_res_name(), module_number);
+    LE_VSCE_UOKMS_SERVER_T = zend_register_list_destructors_ex(vsce_uokms_server_dtor_php, NULL, vsce_uokms_server_t_php_res_name(), module_number);
+    LE_VSCE_UOKMS_WRAP_ROTATION_T = zend_register_list_destructors_ex(vsce_uokms_wrap_rotation_dtor_php, NULL, vsce_uokms_wrap_rotation_t_php_res_name(), module_number);
+    return SUCCESS;
+}
+PHP_MSHUTDOWN_FUNCTION(vsce_phe_php) {
+    return SUCCESS;
+}
 
 //
 // Functions wrapping
@@ -3903,40 +3934,3 @@ zend_module_entry vsce_phe_php_module_entry = {
 };
 
 ZEND_GET_MODULE(vsce_phe_php)
-
-//
-// Extension init functions definition
-//
-static void vsce_phe_server_dtor_php(zend_resource *rsrc) {
-    vsce_phe_server_delete((vsce_phe_server_t *)rsrc->ptr);
-}
-static void vsce_phe_client_dtor_php(zend_resource *rsrc) {
-    vsce_phe_client_delete((vsce_phe_client_t *)rsrc->ptr);
-}
-static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
-    vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
-}
-static void vsce_uokms_client_dtor_php(zend_resource *rsrc) {
-    vsce_uokms_client_delete((vsce_uokms_client_t *)rsrc->ptr);
-}
-static void vsce_uokms_server_dtor_php(zend_resource *rsrc) {
-    vsce_uokms_server_delete((vsce_uokms_server_t *)rsrc->ptr);
-}
-static void vsce_uokms_wrap_rotation_dtor_php(zend_resource *rsrc) {
-    vsce_uokms_wrap_rotation_delete((vsce_uokms_wrap_rotation_t *)rsrc->ptr);
-}
-PHP_MINIT_FUNCTION(vsce_phe_php) {
-    zend_class_entry vsce_ce;
-    INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
-    vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_exception_get_default());
-    LE_VSCE_PHE_SERVER_T = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name(), module_number);
-    LE_VSCE_PHE_CLIENT_T = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name(), module_number);
-    LE_VSCE_PHE_CIPHER_T = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name(), module_number);
-    LE_VSCE_UOKMS_CLIENT_T = zend_register_list_destructors_ex(vsce_uokms_client_dtor_php, NULL, vsce_uokms_client_t_php_res_name(), module_number);
-    LE_VSCE_UOKMS_SERVER_T = zend_register_list_destructors_ex(vsce_uokms_server_dtor_php, NULL, vsce_uokms_server_t_php_res_name(), module_number);
-    LE_VSCE_UOKMS_WRAP_ROTATION_T = zend_register_list_destructors_ex(vsce_uokms_wrap_rotation_dtor_php, NULL, vsce_uokms_wrap_rotation_t_php_res_name(), module_number);
-    return SUCCESS;
-}
-PHP_MSHUTDOWN_FUNCTION(vsce_phe_php) {
-    return SUCCESS;
-}

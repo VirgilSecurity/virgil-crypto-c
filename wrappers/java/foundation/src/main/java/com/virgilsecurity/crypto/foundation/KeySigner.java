@@ -36,36 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide an interface for signing and verifying data digest
-* with asymmetric keys.
-*/
-public interface KeySigner extends KeyAlg {
-
-    /*
-    * Check if algorithm can sign data digest with a given key.
-    */
-    boolean canSign(PrivateKey privateKey);
-
-    /*
-    * Return length in bytes required to hold signature.
-    * Return zero if a given private key can not produce signatures.
-    */
-    int signatureLen(PrivateKey privateKey);
-
-    /*
-    * Sign data digest with a given private key.
-    */
-    byte[] signHash(PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
-
-    /*
-    * Check if algorithm can verify data digest with a given key.
-    */
-    boolean canVerify(PublicKey publicKey);
-
-    /*
-    * Verify data digest with a given public key and signature.
-    */
-    boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
-}
-

@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initFakeRandom = (Module, modules) => {
-    /**
-     * Random number generator that is used for test purposes only.
-     */
     class FakeRandom {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'FakeRandom';
 
@@ -58,29 +47,16 @@ const initFakeRandom = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new FakeRandom(Module._vscf_fake_random_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new FakeRandom(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_fake_random_delete(this.ctxPtr);
@@ -88,10 +64,6 @@ const initFakeRandom = (Module, modules) => {
             }
         }
 
-        /**
-         * Generate random bytes.
-         * All RNG implementations must be thread-safe.
-         */
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
@@ -112,18 +84,12 @@ const initFakeRandom = (Module, modules) => {
             }
         }
 
-        /**
-         * Retrieve new seed data from the entropy sources.
-         */
         reseed() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_fake_random_reseed(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Defines that implemented source is strong.
-         */
         isStrong() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -134,9 +100,6 @@ const initFakeRandom = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Gather entropy of the requested length.
-         */
         gather(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -157,33 +120,26 @@ const initFakeRandom = (Module, modules) => {
             }
         }
 
-        /**
-         * Configure random number generator to generate sequence filled with given byte.
-         */
         setupSourceByte(byteSource) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('byteSource', byteSource);
             Module._vscf_fake_random_setup_source_byte(this.ctxPtr, byteSource);
         }
 
-        /**
-         * Configure random number generator to generate random sequence from given data.
-         * Note, that given data is used as circular source.
-         */
         setupSourceData(dataSource) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('dataSource', dataSource);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSourceSize = dataSource.length * dataSource.BYTES_PER_ELEMENT;
             const dataSourcePtr = Module._malloc(dataSourceSize);
             Module.HEAP8.set(dataSource, dataSourcePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataSourceCtxSize = Module._vsc_data_ctx_size();
             const dataSourceCtxPtr = Module._malloc(dataSourceCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataSourceCtxPtr, dataSourcePtr, dataSourceSize);
 
             try {
@@ -193,6 +149,7 @@ const initFakeRandom = (Module, modules) => {
                 Module._free(dataSourceCtxPtr);
             }
         }
+
     }
 
     return FakeRandom;

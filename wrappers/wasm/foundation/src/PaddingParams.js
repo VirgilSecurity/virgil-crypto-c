@@ -34,13 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPaddingParams = (Module, modules) => {
-    /**
-     * Handles padding parameters and constraints.
-     */
     class PaddingParams {
 
         static get DEFAULT_FRAME_MIN() {
@@ -48,7 +42,7 @@ const initPaddingParams = (Module, modules) => {
         }
 
         get DEFAULT_FRAME_MIN() {
-            return PaddingParams.DEFAULT_FRAME_MIN;
+            return 32;
         }
 
         static get DEFAULT_FRAME() {
@@ -56,7 +50,7 @@ const initPaddingParams = (Module, modules) => {
         }
 
         get DEFAULT_FRAME() {
-            return PaddingParams.DEFAULT_FRAME;
+            return 160;
         }
 
         static get DEFAULT_FRAME_MAX() {
@@ -64,14 +58,9 @@ const initPaddingParams = (Module, modules) => {
         }
 
         get DEFAULT_FRAME_MAX() {
-            return PaddingParams.DEFAULT_FRAME_MAX;
+            return 256;
         }
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'PaddingParams';
 
@@ -82,29 +71,16 @@ const initPaddingParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PaddingParams(Module._vscf_padding_params_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PaddingParams(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_padding_params_delete(this.ctxPtr);
@@ -112,10 +88,6 @@ const initPaddingParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Build padding params with given constraints.
-         * Next formula can clarify what frame is: padding_length = data_length MOD frame
-         */
         static newWithConstraints(frame, frameMax) {
             precondition.ensureNumber('frame', frame);
             precondition.ensureNumber('frameMax', frameMax);
@@ -127,9 +99,6 @@ const initPaddingParams = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return padding frame in bytes.
-         */
         frame() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -138,9 +107,6 @@ const initPaddingParams = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return maximum padding frame in bytes.
-         */
         frameMax() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -148,6 +114,7 @@ const initPaddingParams = (Module, modules) => {
             proxyResult = Module._vscf_padding_params_frame_max(this.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return PaddingParams;

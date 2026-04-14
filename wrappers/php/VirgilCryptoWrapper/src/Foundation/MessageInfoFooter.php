@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle message signatures and related information.
-*/
 class MessageInfoFooter
 {
 
@@ -68,7 +65,6 @@ class MessageInfoFooter
     }
 
     /**
-    * Return true if at least one signer info presents.
     *
     * @return bool
     */
@@ -78,7 +74,6 @@ class MessageInfoFooter
     }
 
     /**
-    * Return list with a "signer info" elements.
     *
     * @return SignerInfoList
     */
@@ -89,10 +84,8 @@ class MessageInfoFooter
     }
 
     /**
-    * Return information about algorithm that was used for data hashing.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function signerHashAlgInfo(): AlgInfo
     {
@@ -101,7 +94,6 @@ class MessageInfoFooter
     }
 
     /**
-    * Return plain text digest that was used to produce signature.
     *
     * @return string
     */

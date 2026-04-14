@@ -34,21 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initSignerInfo = (Module, modules) => {
-    /**
-     * Handle information about signer that is defined by an identifer and
-     * a Public Key.
-     */
     class SignerInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'SignerInfo';
 
@@ -59,29 +47,16 @@ const initSignerInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SignerInfo(Module._vscf_signer_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SignerInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_signer_info_delete(this.ctxPtr);
@@ -89,13 +64,10 @@ const initSignerInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Return signer identifier.
-         */
         signerId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -111,9 +83,6 @@ const initSignerInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Return algorithm information that was used for data signing.
-         */
         signerAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -124,13 +93,10 @@ const initSignerInfo = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return data signature.
-         */
         signature() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -145,6 +111,7 @@ const initSignerInfo = (Module, modules) => {
                 Module._free(dataResultCtxPtr);
             }
         }
+
     }
 
     return SignerInfo;

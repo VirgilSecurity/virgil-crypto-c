@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide DER deserializer of algorithm information.
-*/
 class AlgInfoDerDeserializer implements AlgInfoDeserializer
 {
 
@@ -68,16 +65,16 @@ class AlgInfoDerDeserializer implements AlgInfoDeserializer
     }
 
     /**
-    * @param Asn1Reader $asn1Reader
+    *
+    * @param Asn1Reader $$asn1Reader
     * @return void
     */
-    public function useAsn1Reader(Asn1Reader $asn1Reader): void
+    public function useAsn1Reader(Asn1Reader $$asn1Reader): void
     {
-        vscf_alg_info_der_deserializer_use_asn1_reader_php($this->ctx, $asn1Reader->getCtx());
+        vscf_alg_info_der_deserializer_use_asn1_reader_php($this->ctx, $$asn1Reader);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -87,12 +84,8 @@ class AlgInfoDerDeserializer implements AlgInfoDeserializer
     }
 
     /**
-    * Deserialize by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function deserializeInplace(): AlgInfo
     {
@@ -101,15 +94,13 @@ class AlgInfoDerDeserializer implements AlgInfoDeserializer
     }
 
     /**
-    * Deserialize algorithm from the data.
     *
-    * @param string $data
+    * @param string $$data
     * @return AlgInfo
-    * @throws \Exception
     */
-    public function deserialize(string $data): AlgInfo
+    public function deserialize(string $$data): AlgInfo
     {
-        $ctx = vscf_alg_info_der_deserializer_deserialize_php($this->ctx, $data);
+        $ctx = vscf_alg_info_der_deserializer_deserialize_php($this->ctx, $$data);
         return FoundationImplementation::wrapAlgInfo($ctx);
     }
 

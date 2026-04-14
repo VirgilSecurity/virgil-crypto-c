@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles RSA public key.
-*/
 class RsaPublicKey implements Key, PublicKey
 {
 
@@ -68,7 +65,6 @@ class RsaPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return public key exponent.
     *
     * @return int
     */
@@ -78,7 +74,6 @@ class RsaPublicKey implements Key, PublicKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -89,10 +84,8 @@ class RsaPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -101,7 +94,6 @@ class RsaPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -111,7 +103,6 @@ class RsaPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -121,8 +112,6 @@ class RsaPublicKey implements Key, PublicKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */

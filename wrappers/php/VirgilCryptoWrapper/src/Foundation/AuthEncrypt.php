@@ -37,28 +37,29 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for authenticated data encryption.
-*/
 interface AuthEncrypt extends Ctx
 {
 
     /**
-    * Encrypt given data.
-    * If 'tag' is not given, then it will written to the 'enc'.
     *
-    * @param string $data
-    * @param string $authData
+    * @param string $$data
+    * @param string $$authData
     * @return array
     * @throws \Exception
     */
-    public function authEncrypt(string $data, string $authData): array; // [out, tag]
+    public function authEncrypt(string $$data, string $$authData): array
+    {
+        return ($this->ctx, $$data, $$authData);
+    }
 
     /**
-    * Calculate required buffer length to hold the authenticated encrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function authEncryptedLen(int $dataLen): int;
+    public function authEncryptedLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
+
 }

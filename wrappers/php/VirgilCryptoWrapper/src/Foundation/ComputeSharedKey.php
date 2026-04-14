@@ -37,29 +37,29 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface to compute shared key for 2 asymmetric keys.
-*/
 interface ComputeSharedKey extends Ctx
 {
 
     /**
-    * Compute shared key for 2 asymmetric keys.
-    * Note, computed shared key can be used only within symmetric cryptography.
     *
-    * @param PublicKey $publicKey
-    * @param PrivateKey $privateKey
+    * @param PublicKey $$publicKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function computeSharedKey(PublicKey $publicKey, PrivateKey $privateKey): string;
+    public function computeSharedKey(PublicKey $$publicKey, PrivateKey $$privateKey): string
+    {
+        return ($this->ctx, $$publicKey, $$privateKey);
+    }
 
     /**
-    * Return number of bytes required to hold shared key.
-    * Expect Public Key or Private Key.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return int
     */
-    public function sharedKeyLen(Key $key): int;
+    public function sharedKeyLen(Key $$key): int
+    {
+        return ($this->ctx, $$key);
+    }
+
 }

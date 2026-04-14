@@ -36,41 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Deterministic entropy source that is based only on the given seed.
-*/
 public class SeedEntropySource implements AutoCloseable, EntropySource {
+
+    public void resetSeed(byte[] seed) {
+        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public SeedEntropySource() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.seedEntropySource_new();
     }
 
-    /* Wrap underlying C context. */
-    SeedEntropySource(FoundationContextHolder contextHolder) {
+    package SeedEntropySource(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Set a new seed as an entropy source.
-    */
-    public void resetSeed(byte[] seed) {
-        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static SeedEntropySource getInstance(long cCtx) {
+    public SeedEntropySource getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SeedEntropySource(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -79,28 +66,20 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Defines that implemented source is strong.
-    */
     public boolean isStrong() {
         return FoundationJNI.INSTANCE.seedEntropySource_isStrong(this.cCtx);
     }
 
-    /*
-    * Gather entropy of the requested length.
-    */
     public byte[] gather(int len) throws FoundationException {
         return FoundationJNI.INSTANCE.seedEntropySource_gather(this.cCtx, len);
     }
-}
 
+}

@@ -34,21 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPheServer = (Module, modules) => {
-    /**
-     * Class for server-side PHE crypto operations.
-     * This class is thread-safe in case if VSCE_MULTI_THREADING defined.
-     */
     class PheServer {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'PheServer';
 
@@ -59,29 +47,16 @@ const initPheServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PheServer(Module._vsce_phe_server_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PheServer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vsce_phe_server_delete(this.ctxPtr);
@@ -89,38 +64,26 @@ const initPheServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for key generation, proofs, etc.
-         */
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_server_release_random(this.ctxPtr)
             Module._vsce_phe_server_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Random used for crypto operations to make them const-time
-         */
-        set operationRandom(operationRandom) {
+        operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_server_release_operation_random(this.ctxPtr)
             Module._vsce_phe_server_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
-        /**
-         * Setups dependencies with default values.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_server_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Generates new NIST P-256 server key pair for some client
-         */
         generateServerKeyPair() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -148,9 +111,6 @@ const initPheServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Buffer size needed to fit EnrollmentResponse
-         */
         enrollmentResponseLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -159,36 +119,33 @@ const initPheServer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Generates a new random enrollment and proof for a new user
-         */
         getEnrollment(serverPrivateKey, serverPublicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
             const serverPrivateKeyPtr = Module._malloc(serverPrivateKeySize);
             Module.HEAP8.set(serverPrivateKey, serverPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPrivateKeyCtxPtr = Module._malloc(serverPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPublicKeySize = serverPublicKey.length * serverPublicKey.BYTES_PER_ELEMENT;
             const serverPublicKeyPtr = Module._malloc(serverPublicKeySize);
             Module.HEAP8.set(serverPublicKey, serverPublicKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPublicKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPublicKeyCtxPtr = Module._malloc(serverPublicKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
 
             const enrollmentResponseCapacity = this.enrollmentResponseLen();
@@ -211,9 +168,6 @@ const initPheServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Buffer size needed to fit VerifyPasswordResponse
-         */
         verifyPasswordResponseLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -222,49 +176,46 @@ const initPheServer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Verifies existing user's password and generates response with proof
-         */
         verifyPassword(serverPrivateKey, serverPublicKey, verifyPasswordRequest) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
             precondition.ensureByteArray('verifyPasswordRequest', verifyPasswordRequest);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
             const serverPrivateKeyPtr = Module._malloc(serverPrivateKeySize);
             Module.HEAP8.set(serverPrivateKey, serverPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPrivateKeyCtxPtr = Module._malloc(serverPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPublicKeySize = serverPublicKey.length * serverPublicKey.BYTES_PER_ELEMENT;
             const serverPublicKeyPtr = Module._malloc(serverPublicKeySize);
             Module.HEAP8.set(serverPublicKey, serverPublicKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPublicKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPublicKeyCtxPtr = Module._malloc(serverPublicKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const verifyPasswordRequestSize = verifyPasswordRequest.length * verifyPasswordRequest.BYTES_PER_ELEMENT;
             const verifyPasswordRequestPtr = Module._malloc(verifyPasswordRequestSize);
             Module.HEAP8.set(verifyPasswordRequest, verifyPasswordRequestPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const verifyPasswordRequestCtxSize = Module._vsc_data_ctx_size();
             const verifyPasswordRequestCtxPtr = Module._malloc(verifyPasswordRequestCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(verifyPasswordRequestCtxPtr, verifyPasswordRequestPtr, verifyPasswordRequestSize);
 
             const verifyPasswordResponseCapacity = this.verifyPasswordResponseLen();
@@ -289,9 +240,6 @@ const initPheServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Buffer size needed to fit UpdateToken
-         */
         updateTokenLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -300,23 +248,20 @@ const initPheServer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Updates server's private and public keys and issues an update token for use on client's side
-         */
         rotateKeys(serverPrivateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
             const serverPrivateKeyPtr = Module._malloc(serverPrivateKeySize);
             Module.HEAP8.set(serverPrivateKey, serverPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPrivateKeyCtxPtr = Module._malloc(serverPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
             const newServerPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
@@ -352,6 +297,7 @@ const initPheServer = (Module, modules) => {
                 Module._vsc_buffer_delete(updateTokenCtxPtr);
             }
         }
+
     }
 
     return PheServer;

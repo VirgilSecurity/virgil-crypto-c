@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles RSA private key.
-*/
 class RsaPrivateKey implements Key, PrivateKey
 {
 
@@ -68,7 +65,6 @@ class RsaPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -79,10 +75,8 @@ class RsaPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -91,7 +85,6 @@ class RsaPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -101,7 +94,6 @@ class RsaPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -111,8 +103,6 @@ class RsaPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
@@ -122,10 +112,8 @@ class RsaPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Extract public key from the private key.
     *
     * @return PublicKey
-    * @throws \Exception
     */
     public function extractPublicKey(): PublicKey
     {

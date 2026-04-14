@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initUokmsClient = (Module, modules) => {
-    /**
-     * Class implements UOKMS for client-side.
-     */
     class UokmsClient {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'UokmsClient';
 
@@ -58,29 +47,16 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new UokmsClient(Module._vsce_uokms_client_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new UokmsClient(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vsce_uokms_client_delete(this.ctxPtr);
@@ -88,54 +64,40 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for key generation, proofs, etc.
-         */
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_uokms_client_release_random(this.ctxPtr)
             Module._vsce_uokms_client_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Random used for crypto operations to make them const-time
-         */
-        set operationRandom(operationRandom) {
+        operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_uokms_client_release_operation_random(this.ctxPtr)
             Module._vsce_uokms_client_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
-        /**
-         * Setups dependencies with default values.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_uokms_client_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Sets client private
-         * Call this method before any other methods
-         * This function should be called only once
-         */
         setKeysOneparty(clientPrivateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('clientPrivateKey', clientPrivateKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const clientPrivateKeySize = clientPrivateKey.length * clientPrivateKey.BYTES_PER_ELEMENT;
             const clientPrivateKeyPtr = Module._malloc(clientPrivateKeySize);
             Module.HEAP8.set(clientPrivateKey, clientPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const clientPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const clientPrivateKeyCtxPtr = Module._malloc(clientPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(clientPrivateKeyCtxPtr, clientPrivateKeyPtr, clientPrivateKeySize);
 
             try {
@@ -147,38 +109,33 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Sets client private and server public key
-         * Call this method before any other methods
-         * This function should be called only once
-         */
         setKeys(clientPrivateKey, serverPublicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('clientPrivateKey', clientPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const clientPrivateKeySize = clientPrivateKey.length * clientPrivateKey.BYTES_PER_ELEMENT;
             const clientPrivateKeyPtr = Module._malloc(clientPrivateKeySize);
             Module.HEAP8.set(clientPrivateKey, clientPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const clientPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const clientPrivateKeyCtxPtr = Module._malloc(clientPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(clientPrivateKeyCtxPtr, clientPrivateKeyPtr, clientPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPublicKeySize = serverPublicKey.length * serverPublicKey.BYTES_PER_ELEMENT;
             const serverPublicKeyPtr = Module._malloc(serverPublicKeySize);
             Module.HEAP8.set(serverPublicKey, serverPublicKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPublicKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPublicKeyCtxPtr = Module._malloc(serverPublicKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
 
             try {
@@ -192,9 +149,6 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Generates client private key
-         */
         generateClientPrivateKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -214,10 +168,6 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
-         * of "encryption key len" that can be used for symmetric encryption
-         */
         generateEncryptWrap(encryptionKeyLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('encryptionKeyLen', encryptionKeyLen);
@@ -246,24 +196,21 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Decrypt
-         */
         decryptOneparty(wrap, encryptionKeyLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('wrap', wrap);
             precondition.ensureNumber('encryptionKeyLen', encryptionKeyLen);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
             const wrapPtr = Module._malloc(wrapSize);
             Module.HEAP8.set(wrap, wrapPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const wrapCtxSize = Module._vsc_data_ctx_size();
             const wrapCtxPtr = Module._malloc(wrapCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
 
             const encryptionKeyCapacity = encryptionKeyLen;
@@ -284,24 +231,20 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Generates request to decrypt data, this request should be sent to the server.
-         * Server response is then passed to "process decrypt response" where encryption key can be decapsulated
-         */
         generateDecryptRequest(wrap) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('wrap', wrap);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
             const wrapPtr = Module._malloc(wrapSize);
             Module.HEAP8.set(wrap, wrapPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const wrapCtxSize = Module._vsc_data_ctx_size();
             const wrapCtxPtr = Module._malloc(wrapCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
 
             const deblindFactorCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
@@ -330,9 +273,6 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Processed server response, checks server proof and decapsulates encryption key
-         */
         processDecryptResponse(wrap, decryptRequest, decryptResponse, deblindFactor, encryptionKeyLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('wrap', wrap);
@@ -341,52 +281,52 @@ const initUokmsClient = (Module, modules) => {
             precondition.ensureByteArray('deblindFactor', deblindFactor);
             precondition.ensureNumber('encryptionKeyLen', encryptionKeyLen);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
             const wrapPtr = Module._malloc(wrapSize);
             Module.HEAP8.set(wrap, wrapPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const wrapCtxSize = Module._vsc_data_ctx_size();
             const wrapCtxPtr = Module._malloc(wrapCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const decryptRequestSize = decryptRequest.length * decryptRequest.BYTES_PER_ELEMENT;
             const decryptRequestPtr = Module._malloc(decryptRequestSize);
             Module.HEAP8.set(decryptRequest, decryptRequestPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const decryptRequestCtxSize = Module._vsc_data_ctx_size();
             const decryptRequestCtxPtr = Module._malloc(decryptRequestCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(decryptRequestCtxPtr, decryptRequestPtr, decryptRequestSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const decryptResponseSize = decryptResponse.length * decryptResponse.BYTES_PER_ELEMENT;
             const decryptResponsePtr = Module._malloc(decryptResponseSize);
             Module.HEAP8.set(decryptResponse, decryptResponsePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const decryptResponseCtxSize = Module._vsc_data_ctx_size();
             const decryptResponseCtxPtr = Module._malloc(decryptResponseCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(decryptResponseCtxPtr, decryptResponsePtr, decryptResponseSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const deblindFactorSize = deblindFactor.length * deblindFactor.BYTES_PER_ELEMENT;
             const deblindFactorPtr = Module._malloc(deblindFactorSize);
             Module.HEAP8.set(deblindFactor, deblindFactorPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const deblindFactorCtxSize = Module._vsc_data_ctx_size();
             const deblindFactorCtxPtr = Module._malloc(deblindFactorCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(deblindFactorCtxPtr, deblindFactorPtr, deblindFactorSize);
 
             const encryptionKeyCapacity = encryptionKeyLen;
@@ -413,23 +353,20 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Rotates client key using given update token obtained from server
-         */
         rotateKeysOneparty(updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
             const updateTokenPtr = Module._malloc(updateTokenSize);
             Module.HEAP8.set(updateToken, updateTokenPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const updateTokenCtxSize = Module._vsc_data_ctx_size();
             const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
             const newClientPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
@@ -450,9 +387,6 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Generates update token for one-party mode
-         */
         generateUpdateTokenOneparty() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -472,23 +406,20 @@ const initUokmsClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Rotates client and server keys using given update token obtained from server
-         */
         rotateKeys(updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
             const updateTokenPtr = Module._malloc(updateTokenSize);
             Module.HEAP8.set(updateToken, updateTokenPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const updateTokenCtxSize = Module._vsc_data_ctx_size();
             const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
             const newClientPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
@@ -516,6 +447,7 @@ const initUokmsClient = (Module, modules) => {
                 Module._vsc_buffer_delete(newServerPublicKeyCtxPtr);
             }
         }
+
     }
 
     return UokmsClient;

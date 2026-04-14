@@ -36,20 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Common interface to get random data.
-*/
-public interface Random {
-
-    /*
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
-    */
-    byte[] random(int dataLen) throws FoundationException;
-
-    /*
-    * Retrieve new seed data from the entropy sources.
-    */
-    void reseed() throws FoundationException;
-}
-

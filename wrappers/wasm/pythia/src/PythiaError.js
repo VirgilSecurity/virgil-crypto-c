@@ -34,12 +34,8 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initPythiaError = (Module, modules) => {
-    /**
-     * Defines the library status codes.
-     */
-    class PythiaError extends Error {
+    class PythiaError {
 
         constructor(message) {
             super(message);
@@ -47,9 +43,6 @@ const initPythiaError = (Module, modules) => {
             this.message = message;
         }
 
-        /**
-         * Throw exception of this class with a message that corresponds to the given status code.
-         */
         static handleStatusCode(statusCode) {
             if (statusCode == 0) {
                 return;
@@ -69,6 +62,7 @@ const initPythiaError = (Module, modules) => {
 
             throw new PythiaError("Unexpected status code:" + statusCode);
         }
+
     }
 
     return PythiaError;

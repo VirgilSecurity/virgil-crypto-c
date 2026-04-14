@@ -36,51 +36,30 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Create algorithms based on the given information.
-*/
 public class AlgFactory {
 
-    /*
-    * Create algorithm that implements "hash stream" interface.
-    */
-    public static Hash createHashFromInfo(AlgInfo algInfo) {
+    public Hash createHashFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createHashFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "mac stream" interface.
-    */
-    public static Mac createMacFromInfo(AlgInfo algInfo) {
+    public Mac createMacFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createMacFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "kdf" interface.
-    */
-    public static Kdf createKdfFromInfo(AlgInfo algInfo) {
+    public Kdf createKdfFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createKdfFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "salted kdf" interface.
-    */
-    public static SaltedKdf createSaltedKdfFromInfo(AlgInfo algInfo) {
+    public SaltedKdf createSaltedKdfFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createSaltedKdfFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "cipher" interface.
-    */
-    public static Cipher createCipherFromInfo(AlgInfo algInfo) {
+    public Cipher createCipherFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createCipherFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "padding" interface.
-    */
-    public static Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
+    public Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
         return FoundationJNI.INSTANCE.algFactory_createPaddingFromInfo(algInfo, random);
     }
-}
 
+}

@@ -37,27 +37,28 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Common interface to get random data.
-*/
 interface Random extends Ctx
 {
 
     /**
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return string
     * @throws \Exception
     */
-    public function random(int $dataLen): string;
+    public function random(int $$dataLen): string
+    {
+        return ($this->ctx, $$dataLen);
+    }
 
     /**
-    * Retrieve new seed data from the entropy sources.
     *
     * @return void
     * @throws \Exception
     */
-    public function reseed(): void;
+    public function reseed(): void
+    {
+        ($this->ctx);
+    }
+
 }

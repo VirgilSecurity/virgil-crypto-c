@@ -36,19 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Public and private key deserialization from an interchangeable format.
-*/
-public interface KeyDeserializer {
-
-    /*
-    * Deserialize given public key as an interchangeable format to the object.
-    */
-    RawPublicKey deserializePublicKey(byte[] publicKeyData) throws FoundationException;
-
-    /*
-    * Deserialize given private key as an interchangeable format to the object.
-    */
-    RawPrivateKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException;
-}
-

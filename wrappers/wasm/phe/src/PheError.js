@@ -34,12 +34,8 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initPheError = (Module, modules) => {
-    /**
-     * Defines the library status codes.
-     */
-    class PheError extends Error {
+    class PheError {
 
         constructor(message) {
             super(message);
@@ -47,9 +43,6 @@ const initPheError = (Module, modules) => {
             this.message = message;
         }
 
-        /**
-         * Throw exception of this class with a message that corresponds to the given status code.
-         */
         static handleStatusCode(statusCode) {
             if (statusCode == 0) {
                 return;
@@ -85,6 +78,7 @@ const initPheError = (Module, modules) => {
 
             throw new PheError("Unexpected status code:" + statusCode);
         }
+
     }
 
     return PheError;

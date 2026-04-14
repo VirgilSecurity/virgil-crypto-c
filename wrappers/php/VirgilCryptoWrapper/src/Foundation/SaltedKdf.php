@@ -37,28 +37,28 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides interface to the key derivation function (KDF) algorithms
-* that use salt and teration count.
-*/
 interface SaltedKdf extends Ctx
 {
 
     /**
-    * Prepare algorithm to derive new key.
     *
-    * @param string $salt
-    * @param int $iterationCount
+    * @param string $$salt
+    * @param int $$iterationCount
     * @return void
     */
-    public function reset(string $salt, int $iterationCount): void;
+    public function reset(string $$salt, int $$iterationCount): void
+    {
+        ($this->ctx, $$salt, $$iterationCount);
+    }
 
     /**
-    * Setup application specific information (optional).
-    * Can be empty.
     *
-    * @param string $info
+    * @param string $$info
     * @return void
     */
-    public function setInfo(string $info): void;
+    public function setInfo(string $$info): void
+    {
+        ($this->ctx, $$info);
+    }
+
 }

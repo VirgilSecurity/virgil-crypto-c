@@ -36,37 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Public and private key serialization to an interchangeable format.
-*/
-public interface KeySerializer {
-
-    /*
-    * Calculate buffer size enough to hold serialized public key.
-    *
-    * Precondition: public key must be exportable.
-    */
-    int serializedPublicKeyLen(RawPublicKey publicKey);
-
-    /*
-    * Serialize given public key to an interchangeable format.
-    *
-    * Precondition: public key must be exportable.
-    */
-    byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException;
-
-    /*
-    * Calculate buffer size enough to hold serialized private key.
-    *
-    * Precondition: private key must be exportable.
-    */
-    int serializedPrivateKeyLen(RawPrivateKey privateKey);
-
-    /*
-    * Serialize given private key to an interchangeable format.
-    *
-    * Precondition: private key must be exportable.
-    */
-    byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException;
-}
-

@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPkcs5Pbkdf2 = (Module, modules) => {
-    /**
-     * Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
-     */
     class Pkcs5Pbkdf2 {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Pkcs5Pbkdf2';
 
@@ -58,29 +47,16 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Pkcs5Pbkdf2(Module._vscf_pkcs5_pbkdf2_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Pkcs5Pbkdf2(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_pkcs5_pbkdf2_delete(this.ctxPtr);
@@ -88,16 +64,13 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             }
         }
 
-        set hmac(hmac) {
+        hmac(hmac) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('hmac', hmac, 'Foundation.Mac', modules.FoundationInterfaceTag.MAC, modules.FoundationInterface);
             Module._vscf_pkcs5_pbkdf2_release_hmac(this.ctxPtr)
             Module._vscf_pkcs5_pbkdf2_use_hmac(this.ctxPtr, hmac.ctxPtr)
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -106,9 +79,6 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Produce object with algorithm information and configuration parameters.
-         */
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -119,9 +89,6 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Restore algorithm configuration from the given object.
-         */
         restoreAlgInfo(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -129,24 +96,21 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Derive key of the requested length from the given data.
-         */
         derive(data, keyLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
             precondition.ensureNumber('keyLen', keyLen);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const keyCapacity = keyLen;
@@ -166,24 +130,21 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Prepare algorithm to derive new key.
-         */
         reset(salt, iterationCount) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('salt', salt);
             precondition.ensureNumber('iterationCount', iterationCount);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const saltSize = salt.length * salt.BYTES_PER_ELEMENT;
             const saltPtr = Module._malloc(saltSize);
             Module.HEAP8.set(salt, saltPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const saltCtxSize = Module._vsc_data_ctx_size();
             const saltCtxPtr = Module._malloc(saltCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(saltCtxPtr, saltPtr, saltSize);
 
             try {
@@ -194,24 +155,20 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup application specific information (optional).
-         * Can be empty.
-         */
         setInfo(info) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('info', info);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const infoSize = info.length * info.BYTES_PER_ELEMENT;
             const infoPtr = Module._malloc(infoSize);
             Module.HEAP8.set(info, infoPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const infoCtxSize = Module._vsc_data_ctx_size();
             const infoCtxPtr = Module._malloc(infoCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(infoCtxPtr, infoPtr, infoSize);
 
             try {
@@ -222,13 +179,11 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_pkcs5_pbkdf2_setup_defaults(this.ctxPtr);
         }
+
     }
 
     return Pkcs5Pbkdf2;

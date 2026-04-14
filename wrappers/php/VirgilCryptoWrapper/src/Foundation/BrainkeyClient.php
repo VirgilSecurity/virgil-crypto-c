@@ -71,24 +71,27 @@ class BrainkeyClient
     }
 
     /**
-    * @param Random $random
+    *
+    * @param Random $$random
     * @return void
     */
-    public function useRandom(Random $random): void
+    public function useRandom(Random $$random): void
     {
-        vscf_brainkey_client_use_random_php($this->ctx, $random->getCtx());
+        vscf_brainkey_client_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * @param Random $operationRandom
+    *
+    * @param Random $$operationRandom
     * @return void
     */
-    public function useOperationRandom(Random $operationRandom): void
+    public function useOperationRandom(Random $$operationRandom): void
     {
-        vscf_brainkey_client_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+        vscf_brainkey_client_use_operation_random_php($this->ctx, $$operationRandom);
     }
 
     /**
+    *
     * @return void
     * @throws \Exception
     */
@@ -98,26 +101,28 @@ class BrainkeyClient
     }
 
     /**
-    * @param string $password
+    *
+    * @param string $$password
     * @return array
     * @throws \Exception
     */
-    public function blind(string $password): array // [deblind_factor, blinded_point]
+    public function blind(string $$password): array
     {
-        return vscf_brainkey_client_blind_php($this->ctx, $password);
+        return vscf_brainkey_client_blind_php($this->ctx, $$password);
     }
 
     /**
-    * @param string $password
-    * @param string $hardenedPoint
-    * @param string $deblindFactor
-    * @param string $keyName
+    *
+    * @param string $$password
+    * @param string $$hardenedPoint
+    * @param string $$deblindFactor
+    * @param string $$keyName
     * @return string
     * @throws \Exception
     */
-    public function deblind(string $password, string $hardenedPoint, string $deblindFactor, string $keyName): string
+    public function deblind(string $$password, string $$hardenedPoint, string $$deblindFactor, string $$keyName): string
     {
-        return vscf_brainkey_client_deblind_php($this->ctx, $password, $hardenedPoint, $deblindFactor, $keyName);
+        return vscf_brainkey_client_deblind_php($this->ctx, $$password, $$hardenedPoint, $$deblindFactor, $$keyName);
     }
 
     /**

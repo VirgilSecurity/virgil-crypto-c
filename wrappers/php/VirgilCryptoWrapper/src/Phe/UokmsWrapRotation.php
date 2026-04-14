@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Phe;
 
-/**
-* Implements wrap rotation.
-*/
 class UokmsWrapRotation
 {
 
@@ -68,16 +65,16 @@ class UokmsWrapRotation
     }
 
     /**
-    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    *
+    * @param \Virgil\CryptoWrapper\Foundation\Random $$operationRandom
     * @return void
     */
-    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $$operationRandom): void
     {
-        vsce_uokms_wrap_rotation_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+        vsce_uokms_wrap_rotation_use_operation_random_php($this->ctx, $$operationRandom);
     }
 
     /**
-    * Setups dependencies with default values.
     *
     * @return void
     * @throws \Exception
@@ -88,27 +85,25 @@ class UokmsWrapRotation
     }
 
     /**
-    * Sets update token. Should be called only once and before any other function
     *
-    * @param string $updateToken
+    * @param string $$updateToken
     * @return void
     * @throws \Exception
     */
-    public function setUpdateToken(string $updateToken): void
+    public function setUpdateToken(string $$updateToken): void
     {
-        vsce_uokms_wrap_rotation_set_update_token_php($this->ctx, $updateToken);
+        vsce_uokms_wrap_rotation_set_update_token_php($this->ctx, $$updateToken);
     }
 
     /**
-    * Updates EnrollmentRecord using server's update token
     *
-    * @param string $wrap
+    * @param string $$wrap
     * @return string
     * @throws \Exception
     */
-    public function updateWrap(string $wrap): string
+    public function updateWrap(string $$wrap): string
     {
-        return vsce_uokms_wrap_rotation_update_wrap_php($this->ctx, $wrap);
+        return vsce_uokms_wrap_rotation_update_wrap_php($this->ctx, $$wrap);
     }
 
     /**

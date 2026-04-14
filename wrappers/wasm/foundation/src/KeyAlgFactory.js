@@ -34,19 +34,10 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initKeyAlgFactory = (Module, modules) => {
-    /**
-     * Create a bridge between "raw keys" and algorithms that can import them.
-     */
     class KeyAlgFactory {
 
-        /**
-         * Create a key algorithm based on an identifier.
-         */
-        static createFromAlgId(algId, random) {
+        static createFromAlgId(algId, random, error) {
             precondition.ensureNumber('algId', algId);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
 
@@ -69,10 +60,7 @@ const initKeyAlgFactory = (Module, modules) => {
             }
         }
 
-        /**
-         * Create a key algorithm correspond to a specific key.
-         */
-        static createFromKey(key, random) {
+        static createFromKey(key, random, error) {
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
 
@@ -95,10 +83,7 @@ const initKeyAlgFactory = (Module, modules) => {
             }
         }
 
-        /**
-         * Create a key algorithm that can import "raw public key".
-         */
-        static createFromRawPublicKey(publicKey, random) {
+        static createFromRawPublicKey(publicKey, random, error) {
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
 
@@ -121,10 +106,7 @@ const initKeyAlgFactory = (Module, modules) => {
             }
         }
 
-        /**
-         * Create a key algorithm that can import "raw private key".
-         */
-        static createFromRawPrivateKey(privateKey, random) {
+        static createFromRawPrivateKey(privateKey, random, error) {
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
 
@@ -146,6 +128,7 @@ const initKeyAlgFactory = (Module, modules) => {
                 Module._free(errorCtxPtr);
             }
         }
+
     }
 
     return KeyAlgFactory;

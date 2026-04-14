@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Verify data of any size.
-* Compatible with the class "signer".
-*/
 class Verifier
 {
 
@@ -69,37 +65,34 @@ class Verifier
     }
 
     /**
-    * Start verifying a signature.
     *
-    * @param string $signature
+    * @param string $$signature
     * @return void
     * @throws \Exception
     */
-    public function reset(string $signature): void
+    public function reset(string $$signature): void
     {
-        vscf_verifier_reset_php($this->ctx, $signature);
+        vscf_verifier_reset_php($this->ctx, $$signature);
     }
 
     /**
-    * Add given data to the signed data.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function appendData(string $data): void
+    public function appendData(string $$data): void
     {
-        vscf_verifier_append_data_php($this->ctx, $data);
+        vscf_verifier_append_data_php($this->ctx, $$data);
     }
 
     /**
-    * Verify accumulated data.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return bool
     */
-    public function verify(PublicKey $publicKey): bool
+    public function verify(PublicKey $$publicKey): bool
     {
-        return vscf_verifier_verify_php($this->ctx, $publicKey->getCtx());
+        return vscf_verifier_verify_php($this->ctx, $$publicKey);
     }
 
     /**

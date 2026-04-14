@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPkcs5Pbes2 = (Module, modules) => {
-    /**
-     * Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
-     */
     class Pkcs5Pbes2 {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Pkcs5Pbes2';
 
@@ -58,29 +47,16 @@ const initPkcs5Pbes2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Pkcs5Pbes2(Module._vscf_pkcs5_pbes2_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Pkcs5Pbes2(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_pkcs5_pbes2_delete(this.ctxPtr);
@@ -88,23 +64,20 @@ const initPkcs5Pbes2 = (Module, modules) => {
             }
         }
 
-        set kdf(kdf) {
+        kdf(kdf) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('kdf', kdf, 'Foundation.SaltedKdf', modules.FoundationInterfaceTag.SALTED_KDF, modules.FoundationInterface);
             Module._vscf_pkcs5_pbes2_release_kdf(this.ctxPtr)
             Module._vscf_pkcs5_pbes2_use_kdf(this.ctxPtr, kdf.ctxPtr)
         }
 
-        set cipher(cipher) {
+        cipher(cipher) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('cipher', cipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_pkcs5_pbes2_release_cipher(this.ctxPtr)
             Module._vscf_pkcs5_pbes2_use_cipher(this.ctxPtr, cipher.ctxPtr)
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -113,9 +86,6 @@ const initPkcs5Pbes2 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Produce object with algorithm information and configuration parameters.
-         */
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -126,9 +96,6 @@ const initPkcs5Pbes2 = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Restore algorithm configuration from the given object.
-         */
         restoreAlgInfo(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -136,23 +103,20 @@ const initPkcs5Pbes2 = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Encrypt given data.
-         */
         encrypt(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const outCapacity = this.encryptedLen(data.length);
@@ -173,9 +137,6 @@ const initPkcs5Pbes2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Calculate required buffer length to hold the encrypted data.
-         */
         encryptedLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
@@ -185,9 +146,6 @@ const initPkcs5Pbes2 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Precise length calculation of encrypted data.
-         */
         preciseEncryptedLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
@@ -197,23 +155,20 @@ const initPkcs5Pbes2 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Decrypt given data.
-         */
         decrypt(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const outCapacity = this.decryptedLen(data.length);
@@ -234,9 +189,6 @@ const initPkcs5Pbes2 = (Module, modules) => {
             }
         }
 
-        /**
-         * Calculate required buffer length to hold the decrypted data.
-         */
         decryptedLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
@@ -246,23 +198,20 @@ const initPkcs5Pbes2 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Configure cipher with a new password.
-         */
         reset(pwd) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('pwd', pwd);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const pwdSize = pwd.length * pwd.BYTES_PER_ELEMENT;
             const pwdPtr = Module._malloc(pwdSize);
             Module.HEAP8.set(pwd, pwdPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const pwdCtxSize = Module._vsc_data_ctx_size();
             const pwdCtxPtr = Module._malloc(pwdCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pwdCtxPtr, pwdPtr, pwdSize);
 
             try {
@@ -272,6 +221,7 @@ const initPkcs5Pbes2 = (Module, modules) => {
                 Module._free(pwdCtxPtr);
             }
         }
+
     }
 
     return Pkcs5Pbes2;

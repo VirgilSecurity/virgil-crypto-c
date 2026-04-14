@@ -34,21 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initKeyProvider = (Module, modules) => {
-    /**
-     * Provide functionality for private key generation and importing that
-     * relies on the software default implementations.
-     */
     class KeyProvider {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'KeyProvider';
 
@@ -59,29 +47,16 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyProvider(Module._vscf_key_provider_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyProvider(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_key_provider_delete(this.ctxPtr);
@@ -89,35 +64,26 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_key_provider_release_random(this.ctxPtr)
             Module._vscf_key_provider_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_key_provider_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Setup parameters that is used during RSA key generation.
-         */
         setRsaParams(bitlen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('bitlen', bitlen);
             Module._vscf_key_provider_set_rsa_params(this.ctxPtr, bitlen);
         }
 
-        /**
-         * Generate new private key with a given algorithm.
-         */
-        generatePrivateKey(algId) {
+        generatePrivateKey(algId, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('algId', algId);
 
@@ -140,19 +106,7 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Generate new post-quantum private key with default algorithms.
-         * Note, that a post-quantum key combines classic private keys
-         * alongside with post-quantum private keys.
-         * Current structure is "compound private key" is:
-         * - cipher private key is "hybrid private key" where:
-         * - first key is a classic private key;
-         * - second key is a post-quantum private key;
-         * - signer private key "hybrid private key" where:
-         * - first key is a classic private key;
-         * - second key is a post-quantum private key.
-         */
-        generatePostQuantumPrivateKey() {
+        generatePostQuantumPrivateKey(error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -174,10 +128,7 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Generate new compound private key with given algorithms.
-         */
-        generateCompoundPrivateKey(cipherAlgId, signerAlgId) {
+        generateCompoundPrivateKey(cipherAlgId, signerAlgId, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('cipherAlgId', cipherAlgId);
             precondition.ensureNumber('signerAlgId', signerAlgId);
@@ -201,10 +152,7 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Generate new hybrid private key with given algorithms.
-         */
-        generateHybridPrivateKey(firstKeyAlgId, secondKeyAlgId) {
+        generateHybridPrivateKey(firstKeyAlgId, secondKeyAlgId, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('firstKeyAlgId', firstKeyAlgId);
             precondition.ensureNumber('secondKeyAlgId', secondKeyAlgId);
@@ -228,13 +176,7 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Generate new compound private key with nested hybrid private keys.
-         *
-         * Note, second key algorithm identifiers can be NONE, in this case,
-         * a regular key will be crated instead of a hybrid key.
-         */
-        generateCompoundHybridPrivateKey(cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId) {
+        generateCompoundHybridPrivateKey(cipherFirstKeyAlgId, cipherSecondKeyAlgId, signerFirstKeyAlgId, signerSecondKeyAlgId, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('cipherFirstKeyAlgId', cipherFirstKeyAlgId);
             precondition.ensureNumber('cipherSecondKeyAlgId', cipherSecondKeyAlgId);
@@ -260,23 +202,20 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Import private key from the PKCS#8 format.
-         */
-        importPrivateKey(keyData) {
+        importPrivateKey(keyData, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -300,23 +239,20 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Import public key from the PKCS#8 format.
-         */
-        importPublicKey(keyData) {
+        importPublicKey(keyData, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -340,11 +276,6 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Calculate buffer size enough to hold exported public key.
-         *
-         * Precondition: public key must be exportable.
-         */
         exportedPublicKeyLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -354,11 +285,6 @@ const initKeyProvider = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Export given public key to the PKCS#8 DER format.
-         *
-         * Precondition: public key must be exportable.
-         */
         exportPublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -379,11 +305,6 @@ const initKeyProvider = (Module, modules) => {
             }
         }
 
-        /**
-         * Calculate buffer size enough to hold exported private key.
-         *
-         * Precondition: private key must be exportable.
-         */
         exportedPrivateKeyLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -393,11 +314,6 @@ const initKeyProvider = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Export given private key to the PKCS#8 or SEC1 DER format.
-         *
-         * Precondition: private key must be exportable.
-         */
         exportPrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -417,6 +333,7 @@ const initKeyProvider = (Module, modules) => {
                 Module._vsc_buffer_delete(outCtxPtr);
             }
         }
+
     }
 
     return KeyProvider;

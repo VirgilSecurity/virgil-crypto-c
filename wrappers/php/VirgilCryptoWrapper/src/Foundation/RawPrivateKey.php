@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles interchangeable private key representation.
-*/
 class RawPrivateKey implements Key, PrivateKey
 {
 
@@ -68,7 +65,6 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return key data.
     *
     * @return string
     */
@@ -78,7 +74,6 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return true if private key contains public key.
     *
     * @return bool
     */
@@ -88,18 +83,16 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Setup public key related to the private key.
     *
-    * @param RawPublicKey $rawPublicKey
+    * @param RawPublicKey $$rawPublicKey
     * @return void
     */
-    public function setPublicKey(RawPublicKey $rawPublicKey): void
+    public function setPublicKey(RawPublicKey $$rawPublicKey): void
     {
-        vscf_raw_private_key_set_public_key_php($this->ctx, $rawPublicKey->getCtx());
+        vscf_raw_private_key_set_public_key_php($this->ctx, $$rawPublicKey);
     }
 
     /**
-    * Return public key related to the private key.
     *
     * @return RawPublicKey
     */
@@ -110,7 +103,6 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -121,10 +113,8 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -133,7 +123,6 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -143,7 +132,6 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -153,8 +141,6 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
@@ -164,10 +150,8 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Extract public key from the private key.
     *
     * @return PublicKey
-    * @throws \Exception
     */
     public function extractPublicKey(): PublicKey
     {

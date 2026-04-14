@@ -1,51 +1,52 @@
-// Copyright (C) 2015-2022 Virgil Security, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
-//
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
-//
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-// POSSIBILITY OF SUCH DAMAGE.
-//
-// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+/// Copyright (C) 2015-2022 Virgil Security, Inc.
+///
+/// All rights reserved.
+///
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permitted provided that the following conditions are
+/// met:
+///
+/// (1) Redistributions of source code must retain the above copyright
+/// notice, this list of conditions and the following disclaimer.
+///
+/// (2) Redistributions in binary form must reproduce the above copyright
+/// notice, this list of conditions and the following disclaimer in
+/// the documentation and/or other materials provided with the
+/// distribution.
+///
+/// (3) Neither the name of the copyright holder nor the names of its
+/// contributors may be used to endorse or promote products derived from
+/// this software without specific prior written permission.
+///
+/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+/// POSSIBILITY OF SUCH DAMAGE.
+///
+/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+
 
 import Foundation
 import VSCFoundation
 
-/// Defines the library status codes.
 @objc(VSCFFoundationError) public enum FoundationError: Int, Error {
+
     /// This error should not be returned if assertions is enabled.
     case errorBadArguments = -1
 
     /// Can be used to define that not all context prerequisites are satisfied.
-    /// Note, this error should not be returned if assertions is enabled.
+/// Note, this error should not be returned if assertions is enabled.
     case errorUninitialized = -2
 
     /// Define that error code from one of third-party module was not handled.
-    /// Note, this error should not be returned if assertions is enabled.
+/// Note, this error should not be returned if assertions is enabled.
     case errorUnhandledThirdpartyError = -3
 
     /// Buffer capacity is not enough to hold result.
@@ -172,14 +173,14 @@ import VSCFoundation
     case errorBadAsn1AlgorithmHybridKey = -239
 
     /// Decryption failed, because message info was not given explicitly,
-    /// and was not part of an encrypted message.
+/// and was not part of an encrypted message.
     case errorNoMessageInfo = -301
 
     /// Message Info is corrupted.
     case errorBadMessageInfo = -302
 
     /// Recipient defined with id is not found within message info
-    /// during data decryption.
+/// during data decryption.
     case errorKeyRecipientIsNotFound = -303
 
     /// Content encryption key can not be decrypted with a given private key.
@@ -192,7 +193,7 @@ import VSCFoundation
     case errorMessageInfoCustomParamNotFound = -306
 
     /// A custom parameter with a given key is found, but the requested value
-    /// type does not correspond to the actual type.
+/// type does not correspond to the actual type.
     case errorMessageInfoCustomParamTypeMismatch = -307
 
     /// Signature format is corrupted.
@@ -261,15 +262,13 @@ import VSCFoundation
     /// Plain text too long.
     case errorPlainTextTooLong = -707
 
-    /// Create enumeration value from the correspond C enumeration value.
-    init(fromC status: vscf_status_t) {
+    internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!
     }
-
-    /// Check given C status, and if it's not "success" then throw correspond exception.
-    static func handleStatus(fromC code: vscf_status_t) throws {
+    @objc public static func handleStatus(fromC code: vscf_status_t) throws {
         if code != vscf_status_SUCCESS {
             throw FoundationError(fromC: code)
         }
     }
+
 }

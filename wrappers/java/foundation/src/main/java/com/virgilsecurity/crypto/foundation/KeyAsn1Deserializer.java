@@ -36,63 +36,40 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
-*/
 public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public KeyAsn1Deserializer() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.keyAsn1Deserializer_new();
-    }
-
-    /* Wrap underlying C context. */
-    KeyAsn1Deserializer(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setAsn1Reader(Asn1Reader asn1Reader) {
         FoundationJNI.INSTANCE.keyAsn1Deserializer_setAsn1Reader(this.cCtx, asn1Reader);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.keyAsn1Deserializer_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Deserialize Public Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
-    */
     public RawPublicKey deserializePublicKeyInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKeyInplace(this.cCtx);
     }
 
-    /*
-    * Deserialize Private Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
-    */
     public RawPrivateKey deserializePrivateKeyInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKeyInplace(this.cCtx);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static KeyAsn1Deserializer getInstance(long cCtx) {
+    public long cCtx;
+
+    public KeyAsn1Deserializer() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.keyAsn1Deserializer_new();
+    }
+
+    package KeyAsn1Deserializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public KeyAsn1Deserializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyAsn1Deserializer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -101,28 +78,20 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Deserialize given public key as an interchangeable format to the object.
-    */
     public RawPublicKey deserializePublicKey(byte[] publicKeyData) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePublicKey(this.cCtx, publicKeyData);
     }
 
-    /*
-    * Deserialize given private key as an interchangeable format to the object.
-    */
     public RawPrivateKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKey(this.cCtx, privateKeyData);
     }
-}
 
+}

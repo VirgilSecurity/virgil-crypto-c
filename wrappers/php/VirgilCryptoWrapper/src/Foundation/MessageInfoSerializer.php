@@ -37,45 +37,48 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for "message info" class serialization.
-*/
 interface MessageInfoSerializer extends Ctx
 {
 
     /**
-    * Return buffer size enough to hold serialized message info.
     *
-    * @param MessageInfo $messageInfo
+    * @param MessageInfo $$messageInfo
     * @return int
     */
-    public function serializedLen(MessageInfo $messageInfo): int;
+    public function serializedLen(MessageInfo $$messageInfo): int
+    {
+        return ($this->ctx, $$messageInfo);
+    }
 
     /**
-    * Serialize class "message info".
     *
-    * @param MessageInfo $messageInfo
+    * @param MessageInfo $$messageInfo
     * @return string
     */
-    public function serialize(MessageInfo $messageInfo): string;
+    public function serialize(MessageInfo $$messageInfo): string
+    {
+        return ($this->ctx, $$messageInfo);
+    }
 
     /**
-    * Read message info prefix from the given data, and if it is valid,
-    * return a length of bytes of the whole message info.
     *
-    * Zero returned if length can not be determined from the given data,
-    * and this means that there is no message info at the data beginning.
-    *
-    * @param string $data
+    * @param string $$data
     * @return int
     */
-    public function readPrefix(string $data): int;
+    public function readPrefix(string $$data): int
+    {
+        return ($this->ctx, $$data);
+    }
 
     /**
-    * Deserialize class "message info".
     *
-    * @param string $data
+    * @param string $$data
     * @return MessageInfo
     */
-    public function deserialize(string $data): MessageInfo;
+    public function deserialize(string $$data): MessageInfo
+    {
+        $ctx = ($this->ctx, $$data);
+        return new MessageInfo($ctx);
+    }
+
 }

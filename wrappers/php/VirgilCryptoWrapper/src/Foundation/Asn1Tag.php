@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-use MyCLabs\Enum\Enum;
-
-/**
-* ASN.1 constants.
-*/
 class Asn1Tag extends Enum
 {
 
@@ -64,4 +59,5 @@ class Asn1Tag extends Enum
     private const PRIMITIVE = "0x00";
     private const CONSTRUCTED = "0x20";
     private const CONTEXT_SPECIFIC = "0x80";
+
 }

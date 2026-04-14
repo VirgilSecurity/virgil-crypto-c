@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Virgil implementation of the ECIES algorithm.
-*/
 public class Ecies implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public Ecies() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.ecies_new();
     }
 
-    /* Wrap underlying C context. */
-    Ecies(FoundationContextHolder contextHolder) {
+    package Ecies(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Ecies getInstance(long cCtx) {
+    public Ecies getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Ecies(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,12 +62,10 @@ public class Ecies implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
@@ -98,71 +86,40 @@ public class Ecies implements AutoCloseable {
         FoundationJNI.INSTANCE.ecies_setKdf(this.cCtx, kdf);
     }
 
-    /*
-    * Set ephemeral key that used for data encryption.
-    * Public and ephemeral keys should belong to the same curve.
-    * This dependency is optional.
-    */
     public void setEphemeralKey(PrivateKey ephemeralKey) {
         FoundationJNI.INSTANCE.ecies_setEphemeralKey(this.cCtx, ephemeralKey);
     }
 
-    /*
-    * Set weak reference to the key algorithm.
-    * Key algorithm MUST support shared key computation as well.
-    */
     public void setKeyAlg(KeyAlg keyAlg) {
         FoundationJNI.INSTANCE.ecies_setKeyAlg(this.cCtx, keyAlg);
     }
 
-    /*
-    * Release weak reference to the key algorithm.
-    */
     public void releaseKeyAlg() {
         FoundationJNI.INSTANCE.ecies_releaseKeyAlg(this.cCtx);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.ecies_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies
-    * except random.
-    */
     public void setupDefaultsNoRandom() {
         FoundationJNI.INSTANCE.ecies_setupDefaultsNoRandom(this.cCtx);
     }
 
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
     public int encryptedLen(PublicKey publicKey, int dataLen) {
         return FoundationJNI.INSTANCE.ecies_encryptedLen(this.cCtx, publicKey, dataLen);
     }
 
-    /*
-    * Encrypt data with a given public key.
-    */
     public byte[] encrypt(PublicKey publicKey, byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.ecies_encrypt(this.cCtx, publicKey, data);
     }
 
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
     public int decryptedLen(PrivateKey privateKey, int dataLen) {
         return FoundationJNI.INSTANCE.ecies_decryptedLen(this.cCtx, privateKey, dataLen);
     }
 
-    /*
-    * Decrypt given data.
-    */
     public byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.ecies_decrypt(this.cCtx, privateKey, data);
     }
-}
 
+}

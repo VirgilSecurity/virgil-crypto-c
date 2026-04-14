@@ -34,18 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initAlgFactory = (Module, modules) => {
-    /**
-     * Create algorithms based on the given information.
-     */
     class AlgFactory {
 
-        /**
-         * Create algorithm that implements "hash stream" interface.
-         */
         static createHashFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
@@ -56,9 +47,6 @@ const initAlgFactory = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "mac stream" interface.
-         */
         static createMacFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
@@ -69,9 +57,6 @@ const initAlgFactory = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "kdf" interface.
-         */
         static createKdfFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
@@ -82,9 +67,6 @@ const initAlgFactory = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "salted kdf" interface.
-         */
         static createSaltedKdfFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
@@ -95,9 +77,6 @@ const initAlgFactory = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "cipher" interface.
-         */
         static createCipherFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
@@ -108,9 +87,6 @@ const initAlgFactory = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "padding" interface.
-         */
         static createPaddingFromInfo(algInfo, random) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
@@ -121,6 +97,7 @@ const initAlgFactory = (Module, modules) => {
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return AlgFactory;

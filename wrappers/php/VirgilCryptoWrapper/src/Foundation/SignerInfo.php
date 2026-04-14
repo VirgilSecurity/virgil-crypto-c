@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about signer that is defined by an identifer and
-* a Public Key.
-*/
 class SignerInfo
 {
 
@@ -69,7 +65,6 @@ class SignerInfo
     }
 
     /**
-    * Return signer identifier.
     *
     * @return string
     */
@@ -79,10 +74,8 @@ class SignerInfo
     }
 
     /**
-    * Return algorithm information that was used for data signing.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function signerAlgInfo(): AlgInfo
     {
@@ -91,7 +84,6 @@ class SignerInfo
     }
 
     /**
-    * Return data signature.
     *
     * @return string
     */

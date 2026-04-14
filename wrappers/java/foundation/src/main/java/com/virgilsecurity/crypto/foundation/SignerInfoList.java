@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles a list of "signer info" class objects.
-*/
 public class SignerInfoList implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public SignerInfoList() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.signerInfoList_new();
     }
 
-    /* Wrap underlying C context. */
-    SignerInfoList(FoundationContextHolder contextHolder) {
+    package SignerInfoList(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static SignerInfoList getInstance(long cCtx) {
+    public SignerInfoList getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SignerInfoList(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,63 +62,40 @@ public class SignerInfoList implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return true if given list has item.
-    */
     public boolean hasItem() {
         return FoundationJNI.INSTANCE.signerInfoList_hasItem(this.cCtx);
     }
 
-    /*
-    * Return list item.
-    */
     public SignerInfo item() {
         return FoundationJNI.INSTANCE.signerInfoList_item(this.cCtx);
     }
 
-    /*
-    * Return true if list has next item.
-    */
     public boolean hasNext() {
         return FoundationJNI.INSTANCE.signerInfoList_hasNext(this.cCtx);
     }
 
-    /*
-    * Return next list node if exists, or NULL otherwise.
-    */
     public SignerInfoList next() {
         return FoundationJNI.INSTANCE.signerInfoList_next(this.cCtx);
     }
 
-    /*
-    * Return true if list has previous item.
-    */
     public boolean hasPrev() {
         return FoundationJNI.INSTANCE.signerInfoList_hasPrev(this.cCtx);
     }
 
-    /*
-    * Return previous list node if exists, or NULL otherwise.
-    */
     public SignerInfoList prev() {
         return FoundationJNI.INSTANCE.signerInfoList_prev(this.cCtx);
     }
 
-    /*
-    * Remove all items.
-    */
     public void clear() {
         FoundationJNI.INSTANCE.signerInfoList_clear(this.cCtx);
     }
-}
 
+}

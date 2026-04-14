@@ -34,50 +34,27 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initAsn1Tag = (Module, modules) => {
-    /**
-     * ASN.1 constants.
-     */
     const Asn1Tag = Object.freeze({
-
         BOOLEAN: 0,
-
         INTEGER: 1,
-
         BIT_STRING: 2,
-
         OCTET_STRING: 3,
-
         NULL: 4,
-
         OID: 5,
-
         UTF8_STRING: 6,
-
         SEQUENCE: 7,
-
         SET: 8,
-
         PRINTABLE_STRING: 9,
-
         T61_STRING: 10,
-
         IA5_STRING: 11,
-
         UTC_TIME: 12,
-
         GENERALIZED_TIME: 13,
-
         UNIVERSAL_STRING: 14,
-
         BMP_STRING: 15,
-
         PRIMITIVE: 16,
-
         CONSTRUCTED: 17,
-
-        CONTEXT_SPECIFIC: 18
+        CONTEXT_SPECIFIC: 18,
     });
 
     return Asn1Tag;

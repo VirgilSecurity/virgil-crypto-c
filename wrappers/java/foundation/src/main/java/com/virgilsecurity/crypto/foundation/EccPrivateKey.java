@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles ECC private key.
-*/
 public class EccPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public EccPrivateKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.eccPrivateKey_new();
     }
 
-    /* Wrap underlying C context. */
-    EccPrivateKey(FoundationContextHolder contextHolder) {
+    package EccPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static EccPrivateKey getInstance(long cCtx) {
+    public EccPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new EccPrivateKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,57 +62,36 @@ public class EccPrivateKey implements AutoCloseable, Key, PrivateKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.eccPrivateKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.eccPrivateKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.eccPrivateKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.eccPrivateKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.eccPrivateKey_isValid(this.cCtx);
     }
 
-    /*
-    * Extract public key from the private key.
-    */
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.eccPrivateKey_extractPublicKey(this.cCtx);
     }
-}
 
+}

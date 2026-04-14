@@ -37,17 +37,17 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Contains private part of the key.
-*/
 interface PrivateKey extends Ctx
 {
 
     /**
-    * Extract public key from the private key.
     *
     * @return PublicKey
-    * @throws \Exception
     */
-    public function extractPublicKey(): PublicKey;
+    public function extractPublicKey(): PublicKey
+    {
+        $ctx = ($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
 }

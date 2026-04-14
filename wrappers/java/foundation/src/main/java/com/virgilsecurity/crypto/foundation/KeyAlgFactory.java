@@ -36,37 +36,22 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Create a bridge between "raw keys" and algorithms that can import them.
-*/
 public class KeyAlgFactory {
 
-    /*
-    * Create a key algorithm based on an identifier.
-    */
-    public static KeyAlg createFromAlgId(AlgId algId, Random random) throws FoundationException {
+    public KeyAlg createFromAlgId(AlgId algId, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromAlgId(algId, random);
     }
 
-    /*
-    * Create a key algorithm correspond to a specific key.
-    */
-    public static KeyAlg createFromKey(Key key, Random random) throws FoundationException {
+    public KeyAlg createFromKey(Key key, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromKey(key, random);
     }
 
-    /*
-    * Create a key algorithm that can import "raw public key".
-    */
-    public static KeyAlg createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException {
+    public KeyAlg createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromRawPublicKey(publicKey, random);
     }
 
-    /*
-    * Create a key algorithm that can import "raw private key".
-    */
-    public static KeyAlg createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException {
+    public KeyAlg createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromRawPrivateKey(privateKey, random);
     }
-}
 
+}

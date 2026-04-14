@@ -37,14 +37,10 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-use MyCLabs\Enum\Enum;
-
-/**
-* Represents group message type
-*/
 class GroupMsgType extends Enum
 {
 
     private const GROUP_INFO = "1";
     private const REGULAR = "2";
+
 }

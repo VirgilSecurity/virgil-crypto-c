@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initAsn1wr = (Module, modules) => {
-    /**
-     * This is MbedTLS implementation of ASN.1 writer.
-     */
     class Asn1wr {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Asn1wr';
 
@@ -58,29 +47,16 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Asn1wr(Module._vscf_asn1wr_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Asn1wr(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_asn1wr_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Reset all internal states and prepare to new ASN.1 writing operations.
-         */
         reset(out, outLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('out', out);
@@ -98,15 +71,6 @@ const initAsn1wr = (Module, modules) => {
             Module._vscf_asn1wr_reset(this.ctxPtr, out, outLen);
         }
 
-        /**
-         * Finalize writing and forbid further operations.
-         *
-         * Note, that ASN.1 structure is always written to the buffer end, and
-         * if argument "do not adjust" is false, then data is moved to the
-         * beginning, otherwise - data is left at the buffer end.
-         *
-         * Returns length of the written bytes.
-         */
         finish(doNotAdjust) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureBoolean('doNotAdjust', doNotAdjust);
@@ -116,9 +80,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Returns pointer to the inner buffer.
-         */
         bytes() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -127,9 +88,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Returns total inner buffer length.
-         */
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -138,9 +96,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Returns how many bytes were already written to the ASN.1 structure.
-         */
         writtenLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -149,9 +104,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Returns how many bytes are available for writing.
-         */
         unwrittenLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -160,9 +112,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return true if status is not "success".
-         */
         hasError() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -173,19 +122,12 @@ const initAsn1wr = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return error code.
-         */
         status() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_asn1wr_status(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Move writing position backward for the given length.
-         * Return current writing position.
-         */
         reserve(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -195,10 +137,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 tag.
-         * Return count of written bytes.
-         */
         writeTag(tag) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
@@ -208,10 +146,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write context-specific ASN.1 tag.
-         * Return count of written bytes.
-         */
         writeContextTag(tag, len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('tag', tag);
@@ -222,10 +156,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write length of the following data.
-         * Return count of written bytes.
-         */
         writeLen(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -235,10 +165,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeInt(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -248,10 +174,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeInt8(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -261,10 +183,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeInt16(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -274,10 +192,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeInt32(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -287,10 +201,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeInt64(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -300,10 +210,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeUint(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -313,10 +219,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeUint8(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -326,10 +228,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeUint16(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -339,10 +237,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeUint32(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -352,10 +246,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: INTEGER.
-         * Return count of written bytes.
-         */
         writeUint64(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('value', value);
@@ -365,10 +255,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: BOOLEAN.
-         * Return count of written bytes.
-         */
         writeBool(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureBoolean('value', value);
@@ -378,9 +264,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: NULL.
-         */
         writeNull() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -389,24 +272,20 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Write ASN.1 type: OCTET STRING.
-         * Return count of written bytes.
-         */
         writeOctetStr(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
             let proxyResult;
@@ -420,25 +299,20 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Write ASN.1 type: BIT STRING with all zero unused bits.
-         *
-         * Return count of written bytes.
-         */
         writeOctetStrAsBitstring(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
             let proxyResult;
@@ -452,25 +326,20 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Write raw data directly to the ASN.1 structure.
-         * Return count of written bytes.
-         * Note, use this method carefully.
-         */
         writeData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             let proxyResult;
@@ -484,24 +353,20 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Write ASN.1 type: UTF8String.
-         * Return count of written bytes.
-         */
         writeUtf8Str(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
             let proxyResult;
@@ -515,24 +380,20 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Write ASN.1 type: OID.
-         * Return count of written bytes.
-         */
         writeOid(value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
             let proxyResult;
@@ -546,10 +407,6 @@ const initAsn1wr = (Module, modules) => {
             }
         }
 
-        /**
-         * Mark previously written data of given length as ASN.1 type: SEQUENCE.
-         * Return count of written bytes.
-         */
         writeSequence(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -559,10 +416,6 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Mark previously written data of given length as ASN.1 type: SET.
-         * Return count of written bytes.
-         */
         writeSet(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -571,6 +424,7 @@ const initAsn1wr = (Module, modules) => {
             proxyResult = Module._vscf_asn1wr_write_set(this.ctxPtr, len);
             return proxyResult;
         }
+
     }
 
     return Asn1wr;

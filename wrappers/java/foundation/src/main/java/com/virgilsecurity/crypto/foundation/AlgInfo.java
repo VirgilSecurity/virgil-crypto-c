@@ -36,14 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide details about implemented algorithms.
-*/
-public interface AlgInfo {
-
-    /*
-    * Provide algorithm identificator.
-    */
-    AlgId algId();
-}
-

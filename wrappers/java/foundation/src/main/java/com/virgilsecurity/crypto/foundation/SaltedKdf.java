@@ -36,21 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provides interface to the key derivation function (KDF) algorithms
-* that use salt and teration count.
-*/
-public interface SaltedKdf extends Kdf {
-
-    /*
-    * Prepare algorithm to derive new key.
-    */
-    void reset(byte[] salt, int iterationCount);
-
-    /*
-    * Setup application specific information (optional).
-    * Can be empty.
-    */
-    void setInfo(byte[] info);
-}
-

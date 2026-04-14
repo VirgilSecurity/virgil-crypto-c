@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Phe;
 
-/**
-* Class implements UOKMS for server-side.
-*/
 class UokmsServer
 {
 
@@ -68,25 +65,26 @@ class UokmsServer
     }
 
     /**
-    * @param \Virgil\CryptoWrapper\Foundation\Random $random
+    *
+    * @param \Virgil\CryptoWrapper\Foundation\Random $$random
     * @return void
     */
-    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $random): void
+    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $$random): void
     {
-        vsce_uokms_server_use_random_php($this->ctx, $random->getCtx());
+        vsce_uokms_server_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    *
+    * @param \Virgil\CryptoWrapper\Foundation\Random $$operationRandom
     * @return void
     */
-    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $$operationRandom): void
     {
-        vsce_uokms_server_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+        vsce_uokms_server_use_operation_random_php($this->ctx, $$operationRandom);
     }
 
     /**
-    * Setups dependencies with default values.
     *
     * @return void
     * @throws \Exception
@@ -97,18 +95,16 @@ class UokmsServer
     }
 
     /**
-    * Generates new NIST P-256 server key pair for some client
     *
     * @return array
     * @throws \Exception
     */
-    public function generateServerKeyPair(): array // [server_private_key, server_public_key]
+    public function generateServerKeyPair(): array
     {
         return vsce_uokms_server_generate_server_key_pair_php($this->ctx);
     }
 
     /**
-    * Buffer size needed to fit DecryptResponse
     *
     * @return int
     */
@@ -118,28 +114,26 @@ class UokmsServer
     }
 
     /**
-    * Processed client's decrypt request
     *
-    * @param string $serverPrivateKey
-    * @param string $decryptRequest
+    * @param string $$serverPrivateKey
+    * @param string $$decryptRequest
     * @return string
     * @throws \Exception
     */
-    public function processDecryptRequest(string $serverPrivateKey, string $decryptRequest): string
+    public function processDecryptRequest(string $$serverPrivateKey, string $$decryptRequest): string
     {
-        return vsce_uokms_server_process_decrypt_request_php($this->ctx, $serverPrivateKey, $decryptRequest);
+        return vsce_uokms_server_process_decrypt_request_php($this->ctx, $$serverPrivateKey, $$decryptRequest);
     }
 
     /**
-    * Updates server's private and public keys and issues an update token for use on client's side
     *
-    * @param string $serverPrivateKey
+    * @param string $$serverPrivateKey
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $serverPrivateKey): array // [new_server_private_key, new_server_public_key, update_token]
+    public function rotateKeys(string $$serverPrivateKey): array
     {
-        return vsce_uokms_server_rotate_keys_php($this->ctx, $serverPrivateKey);
+        return vsce_uokms_server_rotate_keys_php($this->ctx, $$serverPrivateKey);
     }
 
     /**

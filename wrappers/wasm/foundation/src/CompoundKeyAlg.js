@@ -34,67 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initCompoundKeyAlg = (Module, modules) => {
-    /**
-     * Implements public key cryptography over compound keys.
-     *
-     * Compound key contains 2 keys - one for encryption/decryption and
-     * one for signing/verifying.
-     */
     class CompoundKeyAlg {
 
-        /**
-         * Defines whether a public key can be imported or not.
-         */
-        static get CAN_IMPORT_PUBLIC_KEY() {
-            return true;
-        }
-
-        get CAN_IMPORT_PUBLIC_KEY() {
-            return CompoundKeyAlg.CAN_IMPORT_PUBLIC_KEY;
-        }
-
-        /**
-         * Define whether a public key can be exported or not.
-         */
-        static get CAN_EXPORT_PUBLIC_KEY() {
-            return true;
-        }
-
-        get CAN_EXPORT_PUBLIC_KEY() {
-            return CompoundKeyAlg.CAN_EXPORT_PUBLIC_KEY;
-        }
-
-        /**
-         * Define whether a private key can be imported or not.
-         */
-        static get CAN_IMPORT_PRIVATE_KEY() {
-            return true;
-        }
-
-        get CAN_IMPORT_PRIVATE_KEY() {
-            return CompoundKeyAlg.CAN_IMPORT_PRIVATE_KEY;
-        }
-
-        /**
-         * Define whether a private key can be exported or not.
-         */
-        static get CAN_EXPORT_PRIVATE_KEY() {
-            return true;
-        }
-
-        get CAN_EXPORT_PRIVATE_KEY() {
-            return CompoundKeyAlg.CAN_EXPORT_PRIVATE_KEY;
-        }
-
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'CompoundKeyAlg';
 
@@ -105,29 +47,16 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CompoundKeyAlg(Module._vscf_compound_key_alg_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CompoundKeyAlg(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_compound_key_alg_delete(this.ctxPtr);
@@ -135,16 +64,13 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_compound_key_alg_release_random(this.ctxPtr)
             Module._vscf_compound_key_alg_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -153,9 +79,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Produce object with algorithm information and configuration parameters.
-         */
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -166,9 +89,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Restore algorithm configuration from the given object.
-         */
         restoreAlgInfo(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -176,11 +96,39 @@ const initCompoundKeyAlg = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Generate ephemeral private key of the same type.
-         * Note, this operation might be slow.
-         */
-        generateEphemeralKey(key) {
+        static get CAN_IMPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        get CAN_IMPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        static get CAN_EXPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        get CAN_EXPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        static get CAN_IMPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        get CAN_IMPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        static get CAN_EXPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        get CAN_EXPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        generateEphemeralKey(key, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
 
@@ -203,17 +151,7 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Import public key from the raw binary format.
-         *
-         * Return public key that is adopted and optimized to be used
-         * with this particular algorithm.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA public key must be imported from the format defined in
-         * RFC 3447 Appendix A.1.1.
-         */
-        importPublicKey(rawKey) {
+        importPublicKey(rawKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPublicKey);
 
@@ -236,24 +174,21 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Import public key from the raw binary format.
-         */
-        importPublicKeyData(keyData, keyAlgInfo) {
+        importPublicKeyData(keyData, keyAlgInfo, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
             precondition.ensureImplementInterface('keyAlgInfo', keyAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -277,14 +212,7 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Export public key to the raw binary format.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA public key must be exported in format defined in
-         * RFC 3447 Appendix A.1.1.
-         */
-        exportPublicKey(publicKey) {
+        exportPublicKey(publicKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
 
@@ -307,9 +235,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required to hold exported public key.
-         */
         exportedPublicKeyDataLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -319,13 +244,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Export public key to the raw binary format without algorithm information.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA public key must be exported in format defined in
-         * RFC 3447 Appendix A.1.1.
-         */
         exportPublicKeyData(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -346,17 +264,7 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Import private key from the raw binary format.
-         *
-         * Return private key that is adopted and optimized to be used
-         * with this particular algorithm.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be imported from the format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
-        importPrivateKey(rawKey) {
+        importPrivateKey(rawKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPrivateKey);
 
@@ -379,24 +287,21 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Import private key from the raw binary format.
-         */
-        importPrivateKeyData(keyData, keyAlgInfo) {
+        importPrivateKeyData(keyData, keyAlgInfo, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
             precondition.ensureImplementInterface('keyAlgInfo', keyAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -420,14 +325,7 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Export private key in the raw binary format.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be exported in format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
-        exportPrivateKey(privateKey) {
+        exportPrivateKey(privateKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
@@ -450,9 +348,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required to hold exported private key.
-         */
         exportedPrivateKeyDataLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -462,13 +357,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Export private key to the raw binary format without algorithm information.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be exported in format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
         exportPrivateKeyData(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -489,9 +377,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Check if algorithm can encrypt data with a given key.
-         */
         canEncrypt(publicKey, dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -504,9 +389,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Calculate required buffer length to hold the encrypted data.
-         */
         encryptedLen(publicKey, dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -517,24 +399,21 @@ const initCompoundKeyAlg = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Encrypt data with a given public key.
-         */
         encrypt(publicKey, data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const outCapacity = this.encryptedLen(publicKey, data.length);
@@ -555,10 +434,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Check if algorithm can decrypt data with a given key.
-         * However, success result of decryption is not guaranteed.
-         */
         canDecrypt(privateKey, dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -571,9 +446,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Calculate required buffer length to hold the decrypted data.
-         */
         decryptedLen(privateKey, dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -584,24 +456,21 @@ const initCompoundKeyAlg = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Decrypt given data.
-         */
         decrypt(privateKey, data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const outCapacity = this.decryptedLen(privateKey, data.length);
@@ -622,9 +491,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Check if algorithm can sign data digest with a given key.
-         */
         canSign(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -636,10 +502,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return length in bytes required to hold signature.
-         * Return zero if a given private key can not produce signatures.
-         */
         signatureLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -649,25 +511,22 @@ const initCompoundKeyAlg = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Sign data digest with a given private key.
-         */
         signHash(privateKey, hashId, digest) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureNumber('hashId', hashId);
             precondition.ensureByteArray('digest', digest);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const digestSize = digest.length * digest.BYTES_PER_ELEMENT;
             const digestPtr = Module._malloc(digestSize);
             Module.HEAP8.set(digest, digestPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const digestCtxSize = Module._vsc_data_ctx_size();
             const digestCtxPtr = Module._malloc(digestCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(digestCtxPtr, digestPtr, digestSize);
 
             const signatureCapacity = this.signatureLen(privateKey);
@@ -688,9 +547,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Check if algorithm can verify data digest with a given key.
-         */
         canVerify(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -702,9 +558,6 @@ const initCompoundKeyAlg = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Verify data digest with a given public key and signature.
-         */
         verifyHash(publicKey, hashId, digest, signature) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -712,28 +565,28 @@ const initCompoundKeyAlg = (Module, modules) => {
             precondition.ensureByteArray('digest', digest);
             precondition.ensureByteArray('signature', signature);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const digestSize = digest.length * digest.BYTES_PER_ELEMENT;
             const digestPtr = Module._malloc(digestSize);
             Module.HEAP8.set(digest, digestPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const digestCtxSize = Module._vsc_data_ctx_size();
             const digestCtxPtr = Module._malloc(digestCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(digestCtxPtr, digestPtr, digestSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const signatureSize = signature.length * signature.BYTES_PER_ELEMENT;
             const signaturePtr = Module._malloc(signatureSize);
             Module.HEAP8.set(signature, signaturePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const signatureCtxSize = Module._vsc_data_ctx_size();
             const signatureCtxPtr = Module._malloc(signatureCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(signatureCtxPtr, signaturePtr, signatureSize);
 
             let proxyResult;
@@ -751,21 +604,13 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_compound_key_alg_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Make compound private key from given.
-         *
-         * Note, this operation might be slow.
-         */
-        makeKey(cipherKey, signerKey) {
+        makeKey(cipherKey, signerKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('cipherKey', cipherKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureImplementInterface('signerKey', signerKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -788,6 +633,7 @@ const initCompoundKeyAlg = (Module, modules) => {
                 Module._free(errorCtxPtr);
             }
         }
+
     }
 
     return CompoundKeyAlg;

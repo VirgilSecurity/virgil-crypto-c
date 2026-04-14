@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles padding parameters and constraints.
-*/
 class PaddingParams
 {
 
@@ -53,17 +50,14 @@ class PaddingParams
     const DEFAULT_FRAME_MAX = 256;
 
     /**
-    * Build padding params with given constraints.
-    * Next formula can clarify what frame is: padding_length = data_length MOD frame
     *
-    * @param int $frame
-    * @param int $frameMax
+    * @param int $$frame
+    * @param int $$frameMax
     * @return PaddingParams
     */
-    public static function withConstraints(int $frame, int $frameMax): PaddingParams
+    public static function withConstraints(int $$frame, int $$frameMax): PaddingParams
     {
-        $ctx = vscf_padding_params_with_constraints_php($frame, $frameMax);
-        return new PaddingParams($ctx);
+        return vscf_padding_params_with_constraints_php($$frame, $$frameMax);
     }
 
     /**
@@ -86,7 +80,6 @@ class PaddingParams
     }
 
     /**
-    * Return padding frame in bytes.
     *
     * @return int
     */
@@ -96,7 +89,6 @@ class PaddingParams
     }
 
     /**
-    * Return maximum padding frame in bytes.
     *
     * @return int
     */

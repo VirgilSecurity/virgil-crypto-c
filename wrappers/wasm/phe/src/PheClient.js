@@ -34,21 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPheClient = (Module, modules) => {
-    /**
-     * Class for client-side PHE crypto operations.
-     * This class is thread-safe in case if VSCE_MULTI_THREADING defined.
-     */
     class PheClient {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'PheClient';
 
@@ -59,29 +47,16 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PheClient(Module._vsce_phe_client_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PheClient(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vsce_phe_client_delete(this.ctxPtr);
@@ -89,67 +64,53 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for key generation, proofs, etc.
-         */
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_client_release_random(this.ctxPtr)
             Module._vsce_phe_client_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Random used for crypto operations to make them const-time
-         */
-        set operationRandom(operationRandom) {
+        operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_client_release_operation_random(this.ctxPtr)
             Module._vsce_phe_client_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
-        /**
-         * Setups dependencies with default values.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_client_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Sets client private and server public key
-         * Call this method before any other methods except `update enrollment record` and `generate client private key`
-         * This function should be called only once
-         */
         setKeys(clientPrivateKey, serverPublicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('clientPrivateKey', clientPrivateKey);
             precondition.ensureByteArray('serverPublicKey', serverPublicKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const clientPrivateKeySize = clientPrivateKey.length * clientPrivateKey.BYTES_PER_ELEMENT;
             const clientPrivateKeyPtr = Module._malloc(clientPrivateKeySize);
             Module.HEAP8.set(clientPrivateKey, clientPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const clientPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const clientPrivateKeyCtxPtr = Module._malloc(clientPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(clientPrivateKeyCtxPtr, clientPrivateKeyPtr, clientPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPublicKeySize = serverPublicKey.length * serverPublicKey.BYTES_PER_ELEMENT;
             const serverPublicKeyPtr = Module._malloc(serverPublicKeySize);
             Module.HEAP8.set(serverPublicKey, serverPublicKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPublicKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPublicKeyCtxPtr = Module._malloc(serverPublicKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
 
             try {
@@ -163,9 +124,6 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Generates client private key
-         */
         generateClientPrivateKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -185,9 +143,6 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Buffer size needed to fit EnrollmentRecord
-         */
         enrollmentRecordLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -196,38 +151,33 @@ const initPheClient = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-         * a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-         * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
-         */
         enrollAccount(enrollmentResponse, password) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('enrollmentResponse', enrollmentResponse);
             precondition.ensureByteArray('password', password);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const enrollmentResponseSize = enrollmentResponse.length * enrollmentResponse.BYTES_PER_ELEMENT;
             const enrollmentResponsePtr = Module._malloc(enrollmentResponseSize);
             Module.HEAP8.set(enrollmentResponse, enrollmentResponsePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const enrollmentResponseCtxSize = Module._vsc_data_ctx_size();
             const enrollmentResponseCtxPtr = Module._malloc(enrollmentResponseCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(enrollmentResponseCtxPtr, enrollmentResponsePtr, enrollmentResponseSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
             const passwordPtr = Module._malloc(passwordSize);
             Module.HEAP8.set(password, passwordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const passwordCtxSize = Module._vsc_data_ctx_size();
             const passwordCtxPtr = Module._malloc(passwordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
             const enrollmentRecordCapacity = this.enrollmentRecordLen();
@@ -258,9 +208,6 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Buffer size needed to fit VerifyPasswordRequest
-         */
         verifyPasswordRequestLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -269,36 +216,33 @@ const initPheClient = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Creates a request for further password verification at the PHE server side.
-         */
         createVerifyPasswordRequest(password, enrollmentRecord) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('password', password);
             precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
             const passwordPtr = Module._malloc(passwordSize);
             Module.HEAP8.set(password, passwordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const passwordCtxSize = Module._vsc_data_ctx_size();
             const passwordCtxPtr = Module._malloc(passwordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const enrollmentRecordSize = enrollmentRecord.length * enrollmentRecord.BYTES_PER_ELEMENT;
             const enrollmentRecordPtr = Module._malloc(enrollmentRecordSize);
             Module.HEAP8.set(enrollmentRecord, enrollmentRecordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const enrollmentRecordCtxSize = Module._vsc_data_ctx_size();
             const enrollmentRecordCtxPtr = Module._malloc(enrollmentRecordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(enrollmentRecordCtxPtr, enrollmentRecordPtr, enrollmentRecordSize);
 
             const verifyPasswordRequestCapacity = this.verifyPasswordRequestLen();
@@ -321,51 +265,46 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Verifies PHE server's answer
-         * If login succeeded, extracts account key
-         * If login failed account key will be empty
-         */
         checkResponseAndDecrypt(password, enrollmentRecord, verifyPasswordResponse) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('password', password);
             precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
             precondition.ensureByteArray('verifyPasswordResponse', verifyPasswordResponse);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
             const passwordPtr = Module._malloc(passwordSize);
             Module.HEAP8.set(password, passwordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const passwordCtxSize = Module._vsc_data_ctx_size();
             const passwordCtxPtr = Module._malloc(passwordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const enrollmentRecordSize = enrollmentRecord.length * enrollmentRecord.BYTES_PER_ELEMENT;
             const enrollmentRecordPtr = Module._malloc(enrollmentRecordSize);
             Module.HEAP8.set(enrollmentRecord, enrollmentRecordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const enrollmentRecordCtxSize = Module._vsc_data_ctx_size();
             const enrollmentRecordCtxPtr = Module._malloc(enrollmentRecordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(enrollmentRecordCtxPtr, enrollmentRecordPtr, enrollmentRecordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const verifyPasswordResponseSize = verifyPasswordResponse.length * verifyPasswordResponse.BYTES_PER_ELEMENT;
             const verifyPasswordResponsePtr = Module._malloc(verifyPasswordResponseSize);
             Module.HEAP8.set(verifyPasswordResponse, verifyPasswordResponsePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const verifyPasswordResponseCtxSize = Module._vsc_data_ctx_size();
             const verifyPasswordResponseCtxPtr = Module._malloc(verifyPasswordResponseCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(verifyPasswordResponseCtxPtr, verifyPasswordResponsePtr, verifyPasswordResponseSize);
 
             const accountKeyCapacity = modules.PheCommon.PHE_ACCOUNT_KEY_LENGTH;
@@ -390,24 +329,20 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Updates client's private key and server's public key using server's update token
-         * Use output values to instantiate new client instance with new keys
-         */
         rotateKeys(updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
             const updateTokenPtr = Module._malloc(updateTokenSize);
             Module.HEAP8.set(updateToken, updateTokenPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const updateTokenCtxSize = Module._vsc_data_ctx_size();
             const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
             const newClientPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
@@ -436,36 +371,33 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        /**
-         * Updates EnrollmentRecord using server's update token
-         */
         updateEnrollmentRecord(enrollmentRecord, updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('enrollmentRecord', enrollmentRecord);
             precondition.ensureByteArray('updateToken', updateToken);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const enrollmentRecordSize = enrollmentRecord.length * enrollmentRecord.BYTES_PER_ELEMENT;
             const enrollmentRecordPtr = Module._malloc(enrollmentRecordSize);
             Module.HEAP8.set(enrollmentRecord, enrollmentRecordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const enrollmentRecordCtxSize = Module._vsc_data_ctx_size();
             const enrollmentRecordCtxPtr = Module._malloc(enrollmentRecordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(enrollmentRecordCtxPtr, enrollmentRecordPtr, enrollmentRecordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
             const updateTokenPtr = Module._malloc(updateTokenSize);
             Module.HEAP8.set(updateToken, updateTokenPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const updateTokenCtxSize = Module._vsc_data_ctx_size();
             const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
             const newEnrollmentRecordCapacity = this.enrollmentRecordLen();
@@ -487,6 +419,7 @@ const initPheClient = (Module, modules) => {
                 Module._vsc_buffer_delete(newEnrollmentRecordCtxPtr);
             }
         }
+
     }
 
     return PheClient;

@@ -37,25 +37,27 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide serialization of algorithm
-*/
 interface AlgInfoSerializer extends Ctx
 {
 
     /**
-    * Return buffer size enough to hold serialized algorithm.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return int
     */
-    public function serializedLen(AlgInfo $algInfo): int;
+    public function serializedLen(AlgInfo $$algInfo): int
+    {
+        return ($this->ctx, $$algInfo);
+    }
 
     /**
-    * Serialize algorithm info to buffer class.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return string
     */
-    public function serialize(AlgInfo $algInfo): string;
+    public function serialize(AlgInfo $$algInfo): string
+    {
+        return ($this->ctx, $$algInfo);
+    }
+
 }

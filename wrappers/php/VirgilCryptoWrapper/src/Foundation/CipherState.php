@@ -37,15 +37,11 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-use MyCLabs\Enum\Enum;
-
-/**
-* Enumerates possible sequentail cipher's states.
-*/
 class CipherState extends Enum
 {
 
     private const INITIAL = 0;
     private const ENCRYPTION = 1;
     private const DECRYPTION = 2;
+
 }

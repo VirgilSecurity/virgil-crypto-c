@@ -36,29 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method uokms server.rotateKeys() */
 public class UokmsServerRotateKeysResult {
 
     private byte[] newServerPrivateKey;
-
-    private byte[] newServerPublicKey;
-
-    private byte[] updateToken;
-
-    /* Create new instance of UokmsServerRotateKeysResult. */
-    UokmsServerRotateKeysResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    UokmsServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
-        super();
-        this.newServerPrivateKey = newServerPrivateKey;
-        this.newServerPublicKey = newServerPublicKey;
-        this.updateToken = updateToken;
-    }
 
     public byte[] getNewServerPrivateKey() {
         return this.newServerPrivateKey;
@@ -68,6 +49,8 @@ public class UokmsServerRotateKeysResult {
         this.newServerPrivateKey = newServerPrivateKey;
     }
 
+    private byte[] newServerPublicKey;
+
     public byte[] getNewServerPublicKey() {
         return this.newServerPublicKey;
     }
@@ -76,6 +59,8 @@ public class UokmsServerRotateKeysResult {
         this.newServerPublicKey = newServerPublicKey;
     }
 
+    private byte[] updateToken;
+
     public byte[] getUpdateToken() {
         return this.updateToken;
     }
@@ -83,5 +68,16 @@ public class UokmsServerRotateKeysResult {
     public void setUpdateToken(byte[] updateToken) {
         this.updateToken = updateToken;
     }
-}
 
+    package UokmsServerRotateKeysResult() {
+        super();
+    }
+
+    package UokmsServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
+        super();
+        this.newServerPrivateKey = newServerPrivateKey;
+        this.newServerPublicKey = newServerPublicKey;
+        this.updateToken = updateToken;
+    }
+
+}

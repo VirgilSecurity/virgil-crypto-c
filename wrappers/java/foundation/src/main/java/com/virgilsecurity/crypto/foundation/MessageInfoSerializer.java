@@ -36,35 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface for "message info" class serialization.
-*/
-public interface MessageInfoSerializer {
-
-    int getPrefixLen();
-
-    /*
-    * Return buffer size enough to hold serialized message info.
-    */
-    int serializedLen(MessageInfo messageInfo);
-
-    /*
-    * Serialize class "message info".
-    */
-    byte[] serialize(MessageInfo messageInfo);
-
-    /*
-    * Read message info prefix from the given data, and if it is valid,
-    * return a length of bytes of the whole message info.
-    *
-    * Zero returned if length can not be determined from the given data,
-    * and this means that there is no message info at the data beginning.
-    */
-    int readPrefix(byte[] data);
-
-    /*
-    * Deserialize class "message info".
-    */
-    MessageInfo deserialize(byte[] data) throws FoundationException;
-}
-

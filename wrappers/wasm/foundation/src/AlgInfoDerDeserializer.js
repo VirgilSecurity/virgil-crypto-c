@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initAlgInfoDerDeserializer = (Module, modules) => {
-    /**
-     * Provide DER deserializer of algorithm information.
-     */
     class AlgInfoDerDeserializer {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'AlgInfoDerDeserializer';
 
@@ -58,29 +47,16 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new AlgInfoDerDeserializer(Module._vscf_alg_info_der_deserializer_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new AlgInfoDerDeserializer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_alg_info_der_deserializer_delete(this.ctxPtr);
@@ -88,30 +64,27 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             }
         }
 
-        set asn1Reader(asn1Reader) {
+        asn1Reader(asn1Reader) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Reader', asn1Reader, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
             Module._vscf_alg_info_der_deserializer_release_asn1_reader(this.ctxPtr)
             Module._vscf_alg_info_der_deserializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
 
-        /**
-         * Deserialize algorithm from the data.
-         */
-        deserialize(data) {
+        deserialize(data, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -135,20 +108,12 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_alg_info_der_deserializer_setup_defaults(this.ctxPtr);
         }
 
-        /**
-         * Deserialize by using internal ASN.1 reader.
-         * Note, that caller code is responsible to reset ASN.1 reader with
-         * an input buffer.
-         */
-        deserializeInplace() {
+        deserializeInplace(error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -169,6 +134,7 @@ const initAlgInfoDerDeserializer = (Module, modules) => {
                 Module._free(errorCtxPtr);
             }
         }
+
     }
 
     return AlgInfoDerDeserializer;

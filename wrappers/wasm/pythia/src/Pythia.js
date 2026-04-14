@@ -34,130 +34,85 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPythia = (Module, modules) => {
-    /**
-     * Provide Pythia implementation based on the Virgil Security.
-     */
     class Pythia {
 
-        /**
-         * Performs global initialization of the pythia library.
-         * Must be called once for entire application at startup.
-         */
         static configure() {
             const proxyResult = Module._vscp_pythia_configure();
             modules.PythiaError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Performs global cleanup of the pythia library.
-         * Must be called once for entire application before exit.
-         */
         static cleanup() {
             Module._vscp_pythia_cleanup();
         }
 
-        /**
-         * Return length of the buffer needed to hold 'blinded password'.
-         */
         static blindedPasswordBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_blinded_password_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'deblinded password'.
-         */
         static deblindedPasswordBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_deblinded_password_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'blinding secret'.
-         */
         static blindingSecretBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_blinding_secret_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'transformation private key'.
-         */
         static transformationPrivateKeyBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_transformation_private_key_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'transformation public key'.
-         */
         static transformationPublicKeyBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_transformation_public_key_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'transformed password'.
-         */
         static transformedPasswordBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_transformed_password_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'transformed tweak'.
-         */
         static transformedTweakBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_transformed_tweak_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'proof value'.
-         */
         static proofValueBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_proof_value_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Return length of the buffer needed to hold 'password update token'.
-         */
         static passwordUpdateTokenBufLen() {
             let proxyResult;
             proxyResult = Module._vscp_pythia_password_update_token_buf_len();
             return proxyResult;
         }
 
-        /**
-         * Blinds password. Turns password into a pseudo-random string.
-         * This step is necessary to prevent 3rd-parties from knowledge of end user's password.
-         */
         static blind(password) {
             precondition.ensureByteArray('password', password);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const passwordSize = password.length * password.BYTES_PER_ELEMENT;
             const passwordPtr = Module._malloc(passwordSize);
             Module.HEAP8.set(password, passwordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const passwordCtxSize = Module._vsc_data_ctx_size();
             const passwordCtxPtr = Module._malloc(passwordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordCtxPtr, passwordPtr, passwordSize);
 
             const blindedPasswordCapacity = modules.Pythia.blindedPasswordBufLen();
@@ -186,35 +141,32 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
-         */
         static deblind(transformedPassword, blindingSecret) {
             precondition.ensureByteArray('transformedPassword', transformedPassword);
             precondition.ensureByteArray('blindingSecret', blindingSecret);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformedPasswordSize = transformedPassword.length * transformedPassword.BYTES_PER_ELEMENT;
             const transformedPasswordPtr = Module._malloc(transformedPasswordSize);
             Module.HEAP8.set(transformedPassword, transformedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformedPasswordCtxSize = Module._vsc_data_ctx_size();
             const transformedPasswordCtxPtr = Module._malloc(transformedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformedPasswordCtxPtr, transformedPasswordPtr, transformedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const blindingSecretSize = blindingSecret.length * blindingSecret.BYTES_PER_ELEMENT;
             const blindingSecretPtr = Module._malloc(blindingSecretSize);
             Module.HEAP8.set(blindingSecret, blindingSecretPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const blindingSecretCtxSize = Module._vsc_data_ctx_size();
             const blindingSecretCtxPtr = Module._malloc(blindingSecretCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindingSecretCtxPtr, blindingSecretPtr, blindingSecretSize);
 
             const deblindedPasswordCapacity = modules.Pythia.deblindedPasswordBufLen();
@@ -237,48 +189,45 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * Computes transformation private and public key.
-         */
         static computeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret) {
             precondition.ensureByteArray('transformationKeyId', transformationKeyId);
             precondition.ensureByteArray('pythiaSecret', pythiaSecret);
             precondition.ensureByteArray('pythiaScopeSecret', pythiaScopeSecret);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformationKeyIdSize = transformationKeyId.length * transformationKeyId.BYTES_PER_ELEMENT;
             const transformationKeyIdPtr = Module._malloc(transformationKeyIdSize);
             Module.HEAP8.set(transformationKeyId, transformationKeyIdPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformationKeyIdCtxSize = Module._vsc_data_ctx_size();
             const transformationKeyIdCtxPtr = Module._malloc(transformationKeyIdCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationKeyIdCtxPtr, transformationKeyIdPtr, transformationKeyIdSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const pythiaSecretSize = pythiaSecret.length * pythiaSecret.BYTES_PER_ELEMENT;
             const pythiaSecretPtr = Module._malloc(pythiaSecretSize);
             Module.HEAP8.set(pythiaSecret, pythiaSecretPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const pythiaSecretCtxSize = Module._vsc_data_ctx_size();
             const pythiaSecretCtxPtr = Module._malloc(pythiaSecretCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pythiaSecretCtxPtr, pythiaSecretPtr, pythiaSecretSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const pythiaScopeSecretSize = pythiaScopeSecret.length * pythiaScopeSecret.BYTES_PER_ELEMENT;
             const pythiaScopeSecretPtr = Module._malloc(pythiaScopeSecretSize);
             Module.HEAP8.set(pythiaScopeSecret, pythiaScopeSecretPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const pythiaScopeSecretCtxSize = Module._vsc_data_ctx_size();
             const pythiaScopeSecretCtxPtr = Module._malloc(pythiaScopeSecretCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(pythiaScopeSecretCtxPtr, pythiaScopeSecretPtr, pythiaScopeSecretSize);
 
             const transformationPrivateKeyCapacity = modules.Pythia.transformationPrivateKeyBufLen();
@@ -311,48 +260,45 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * Transforms blinded password using transformation private key.
-         */
         static transform(blindedPassword, tweak, transformationPrivateKey) {
             precondition.ensureByteArray('blindedPassword', blindedPassword);
             precondition.ensureByteArray('tweak', tweak);
             precondition.ensureByteArray('transformationPrivateKey', transformationPrivateKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const blindedPasswordSize = blindedPassword.length * blindedPassword.BYTES_PER_ELEMENT;
             const blindedPasswordPtr = Module._malloc(blindedPasswordSize);
             Module.HEAP8.set(blindedPassword, blindedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const blindedPasswordCtxSize = Module._vsc_data_ctx_size();
             const blindedPasswordCtxPtr = Module._malloc(blindedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindedPasswordCtxPtr, blindedPasswordPtr, blindedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const tweakSize = tweak.length * tweak.BYTES_PER_ELEMENT;
             const tweakPtr = Module._malloc(tweakSize);
             Module.HEAP8.set(tweak, tweakPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const tweakCtxSize = Module._vsc_data_ctx_size();
             const tweakCtxPtr = Module._malloc(tweakCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(tweakCtxPtr, tweakPtr, tweakSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformationPrivateKeySize = transformationPrivateKey.length * transformationPrivateKey.BYTES_PER_ELEMENT;
             const transformationPrivateKeyPtr = Module._malloc(transformationPrivateKeySize);
             Module.HEAP8.set(transformationPrivateKey, transformationPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformationPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const transformationPrivateKeyCtxPtr = Module._malloc(transformationPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPrivateKeyCtxPtr, transformationPrivateKeyPtr, transformationPrivateKeySize);
 
             const transformedPasswordCapacity = modules.Pythia.transformedPasswordBufLen();
@@ -385,9 +331,6 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * Generates proof that server possesses secret values that were used to transform password.
-         */
         static prove(transformedPassword, blindedPassword, transformedTweak, transformationPrivateKey, transformationPublicKey) {
             precondition.ensureByteArray('transformedPassword', transformedPassword);
             precondition.ensureByteArray('blindedPassword', blindedPassword);
@@ -395,64 +338,64 @@ const initPythia = (Module, modules) => {
             precondition.ensureByteArray('transformationPrivateKey', transformationPrivateKey);
             precondition.ensureByteArray('transformationPublicKey', transformationPublicKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformedPasswordSize = transformedPassword.length * transformedPassword.BYTES_PER_ELEMENT;
             const transformedPasswordPtr = Module._malloc(transformedPasswordSize);
             Module.HEAP8.set(transformedPassword, transformedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformedPasswordCtxSize = Module._vsc_data_ctx_size();
             const transformedPasswordCtxPtr = Module._malloc(transformedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformedPasswordCtxPtr, transformedPasswordPtr, transformedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const blindedPasswordSize = blindedPassword.length * blindedPassword.BYTES_PER_ELEMENT;
             const blindedPasswordPtr = Module._malloc(blindedPasswordSize);
             Module.HEAP8.set(blindedPassword, blindedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const blindedPasswordCtxSize = Module._vsc_data_ctx_size();
             const blindedPasswordCtxPtr = Module._malloc(blindedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindedPasswordCtxPtr, blindedPasswordPtr, blindedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformedTweakSize = transformedTweak.length * transformedTweak.BYTES_PER_ELEMENT;
             const transformedTweakPtr = Module._malloc(transformedTweakSize);
             Module.HEAP8.set(transformedTweak, transformedTweakPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformedTweakCtxSize = Module._vsc_data_ctx_size();
             const transformedTweakCtxPtr = Module._malloc(transformedTweakCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformedTweakCtxPtr, transformedTweakPtr, transformedTweakSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformationPrivateKeySize = transformationPrivateKey.length * transformationPrivateKey.BYTES_PER_ELEMENT;
             const transformationPrivateKeyPtr = Module._malloc(transformationPrivateKeySize);
             Module.HEAP8.set(transformationPrivateKey, transformationPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformationPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const transformationPrivateKeyCtxPtr = Module._malloc(transformationPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPrivateKeyCtxPtr, transformationPrivateKeyPtr, transformationPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformationPublicKeySize = transformationPublicKey.length * transformationPublicKey.BYTES_PER_ELEMENT;
             const transformationPublicKeyPtr = Module._malloc(transformationPublicKeySize);
             Module.HEAP8.set(transformationPublicKey, transformationPublicKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformationPublicKeyCtxSize = Module._vsc_data_ctx_size();
             const transformationPublicKeyCtxPtr = Module._malloc(transformationPublicKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPublicKeyCtxPtr, transformationPublicKeyPtr, transformationPublicKeySize);
 
             const proofValueCCapacity = modules.Pythia.proofValueBufLen();
@@ -489,11 +432,7 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * This operation allows client to verify that the output of transform() is correct,
-         * assuming that client has previously stored transformation public key.
-         */
-        static verify(transformedPassword, blindedPassword, tweak, transformationPublicKey, proofValueC, proofValueU) {
+        static verify(transformedPassword, blindedPassword, tweak, transformationPublicKey, proofValueC, proofValueU, error) {
             precondition.ensureByteArray('transformedPassword', transformedPassword);
             precondition.ensureByteArray('blindedPassword', blindedPassword);
             precondition.ensureByteArray('tweak', tweak);
@@ -501,76 +440,76 @@ const initPythia = (Module, modules) => {
             precondition.ensureByteArray('proofValueC', proofValueC);
             precondition.ensureByteArray('proofValueU', proofValueU);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformedPasswordSize = transformedPassword.length * transformedPassword.BYTES_PER_ELEMENT;
             const transformedPasswordPtr = Module._malloc(transformedPasswordSize);
             Module.HEAP8.set(transformedPassword, transformedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformedPasswordCtxSize = Module._vsc_data_ctx_size();
             const transformedPasswordCtxPtr = Module._malloc(transformedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformedPasswordCtxPtr, transformedPasswordPtr, transformedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const blindedPasswordSize = blindedPassword.length * blindedPassword.BYTES_PER_ELEMENT;
             const blindedPasswordPtr = Module._malloc(blindedPasswordSize);
             Module.HEAP8.set(blindedPassword, blindedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const blindedPasswordCtxSize = Module._vsc_data_ctx_size();
             const blindedPasswordCtxPtr = Module._malloc(blindedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindedPasswordCtxPtr, blindedPasswordPtr, blindedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const tweakSize = tweak.length * tweak.BYTES_PER_ELEMENT;
             const tweakPtr = Module._malloc(tweakSize);
             Module.HEAP8.set(tweak, tweakPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const tweakCtxSize = Module._vsc_data_ctx_size();
             const tweakCtxPtr = Module._malloc(tweakCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(tweakCtxPtr, tweakPtr, tweakSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const transformationPublicKeySize = transformationPublicKey.length * transformationPublicKey.BYTES_PER_ELEMENT;
             const transformationPublicKeyPtr = Module._malloc(transformationPublicKeySize);
             Module.HEAP8.set(transformationPublicKey, transformationPublicKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const transformationPublicKeyCtxSize = Module._vsc_data_ctx_size();
             const transformationPublicKeyCtxPtr = Module._malloc(transformationPublicKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(transformationPublicKeyCtxPtr, transformationPublicKeyPtr, transformationPublicKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const proofValueCSize = proofValueC.length * proofValueC.BYTES_PER_ELEMENT;
             const proofValueCPtr = Module._malloc(proofValueCSize);
             Module.HEAP8.set(proofValueC, proofValueCPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const proofValueCCtxSize = Module._vsc_data_ctx_size();
             const proofValueCCtxPtr = Module._malloc(proofValueCCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(proofValueCCtxPtr, proofValueCPtr, proofValueCSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const proofValueUSize = proofValueU.length * proofValueU.BYTES_PER_ELEMENT;
             const proofValueUPtr = Module._malloc(proofValueUSize);
             Module.HEAP8.set(proofValueU, proofValueUPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const proofValueUCtxSize = Module._vsc_data_ctx_size();
             const proofValueUCtxPtr = Module._malloc(proofValueUCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(proofValueUCtxPtr, proofValueUPtr, proofValueUSize);
 
             const errorCtxSize = Module._vscp_error_ctx_size();
@@ -604,38 +543,32 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * Rotates old transformation key to new transformation key and generates 'password update token',
-         * that can update 'deblinded password'(s).
-         *
-         * This action should increment version of the 'pythia scope secret'.
-         */
         static getPasswordUpdateToken(previousTransformationPrivateKey, newTransformationPrivateKey) {
             precondition.ensureByteArray('previousTransformationPrivateKey', previousTransformationPrivateKey);
             precondition.ensureByteArray('newTransformationPrivateKey', newTransformationPrivateKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const previousTransformationPrivateKeySize = previousTransformationPrivateKey.length * previousTransformationPrivateKey.BYTES_PER_ELEMENT;
             const previousTransformationPrivateKeyPtr = Module._malloc(previousTransformationPrivateKeySize);
             Module.HEAP8.set(previousTransformationPrivateKey, previousTransformationPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const previousTransformationPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const previousTransformationPrivateKeyCtxPtr = Module._malloc(previousTransformationPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(previousTransformationPrivateKeyCtxPtr, previousTransformationPrivateKeyPtr, previousTransformationPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const newTransformationPrivateKeySize = newTransformationPrivateKey.length * newTransformationPrivateKey.BYTES_PER_ELEMENT;
             const newTransformationPrivateKeyPtr = Module._malloc(newTransformationPrivateKeySize);
             Module.HEAP8.set(newTransformationPrivateKey, newTransformationPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const newTransformationPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const newTransformationPrivateKeyCtxPtr = Module._malloc(newTransformationPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(newTransformationPrivateKeyCtxPtr, newTransformationPrivateKeyPtr, newTransformationPrivateKeySize);
 
             const passwordUpdateTokenCapacity = modules.Pythia.passwordUpdateTokenBufLen();
@@ -658,36 +591,32 @@ const initPythia = (Module, modules) => {
             }
         }
 
-        /**
-         * Updates previously stored 'deblinded password' with 'password update token'.
-         * After this call, 'transform()' called with new arguments will return corresponding values.
-         */
         static updateDeblindedWithToken(deblindedPassword, passwordUpdateToken) {
             precondition.ensureByteArray('deblindedPassword', deblindedPassword);
             precondition.ensureByteArray('passwordUpdateToken', passwordUpdateToken);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const deblindedPasswordSize = deblindedPassword.length * deblindedPassword.BYTES_PER_ELEMENT;
             const deblindedPasswordPtr = Module._malloc(deblindedPasswordSize);
             Module.HEAP8.set(deblindedPassword, deblindedPasswordPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const deblindedPasswordCtxSize = Module._vsc_data_ctx_size();
             const deblindedPasswordCtxPtr = Module._malloc(deblindedPasswordCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(deblindedPasswordCtxPtr, deblindedPasswordPtr, deblindedPasswordSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const passwordUpdateTokenSize = passwordUpdateToken.length * passwordUpdateToken.BYTES_PER_ELEMENT;
             const passwordUpdateTokenPtr = Module._malloc(passwordUpdateTokenSize);
             Module.HEAP8.set(passwordUpdateToken, passwordUpdateTokenPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const passwordUpdateTokenCtxSize = Module._vsc_data_ctx_size();
             const passwordUpdateTokenCtxPtr = Module._malloc(passwordUpdateTokenCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(passwordUpdateTokenCtxPtr, passwordUpdateTokenPtr, passwordUpdateTokenSize);
 
             const updatedDeblindedPasswordCapacity = modules.Pythia.deblindedPasswordBufLen();
@@ -709,6 +638,7 @@ const initPythia = (Module, modules) => {
                 Module._vsc_buffer_delete(updatedDeblindedPasswordCtxPtr);
             }
         }
+
     }
 
     return Pythia;

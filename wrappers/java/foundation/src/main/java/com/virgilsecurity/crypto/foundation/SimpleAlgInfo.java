@@ -36,42 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle simple algorithm information (just id).
-*/
 public class SimpleAlgInfo implements AutoCloseable, AlgInfo {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public SimpleAlgInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.simpleAlgInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    SimpleAlgInfo(FoundationContextHolder contextHolder) {
+    package SimpleAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Create algorithm info with identificator.
-    */
-    public SimpleAlgInfo(AlgId algId) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.simpleAlgInfo_new(algId);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static SimpleAlgInfo getInstance(long cCtx) {
+    public SimpleAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SimpleAlgInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -80,21 +62,21 @@ public class SimpleAlgInfo implements AutoCloseable, AlgInfo {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
+    public SimpleAlgInfo(AlgId algId) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.simpleAlgInfo_new(algId);
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.simpleAlgInfo_algId(this.cCtx);
     }
-}
 
+}

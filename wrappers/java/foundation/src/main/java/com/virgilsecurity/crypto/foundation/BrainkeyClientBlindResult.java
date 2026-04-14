@@ -36,24 +36,9 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/* Encapsulate result of method brainkey client.blind() */
 public class BrainkeyClientBlindResult {
 
     private byte[] deblindFactor;
-
-    private byte[] blindedPoint;
-
-    /* Create new instance of BrainkeyClientBlindResult. */
-    BrainkeyClientBlindResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    BrainkeyClientBlindResult(byte[] deblindFactor, byte[] blindedPoint) {
-        super();
-        this.deblindFactor = deblindFactor;
-        this.blindedPoint = blindedPoint;
-    }
 
     public byte[] getDeblindFactor() {
         return this.deblindFactor;
@@ -63,6 +48,8 @@ public class BrainkeyClientBlindResult {
         this.deblindFactor = deblindFactor;
     }
 
+    private byte[] blindedPoint;
+
     public byte[] getBlindedPoint() {
         return this.blindedPoint;
     }
@@ -70,5 +57,15 @@ public class BrainkeyClientBlindResult {
     public void setBlindedPoint(byte[] blindedPoint) {
         this.blindedPoint = blindedPoint;
     }
-}
 
+    package BrainkeyClientBlindResult() {
+        super();
+    }
+
+    package BrainkeyClientBlindResult(byte[] deblindFactor, byte[] blindedPoint) {
+        super();
+        this.deblindFactor = deblindFactor;
+        this.blindedPoint = blindedPoint;
+    }
+
+}

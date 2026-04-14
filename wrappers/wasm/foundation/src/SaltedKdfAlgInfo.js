@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initSaltedKdfAlgInfo = (Module, modules) => {
-    /**
-     * Handle KDF algorithms that are configured with salt and iteration count.
-     */
     class SaltedKdfAlgInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'SaltedKdfAlgInfo';
 
@@ -58,29 +47,16 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SaltedKdfAlgInfo(Module._vscf_salted_kdf_alg_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SaltedKdfAlgInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_salted_kdf_alg_info_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -99,9 +72,6 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return hash algorithm information.
-         */
         hashAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -112,13 +82,10 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return KDF salt.
-         */
         salt() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -134,10 +101,6 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Return KDF iteration count.
-         * Note, can be 0 if KDF does not need the iteration count.
-         */
         iterationCount() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -145,6 +108,7 @@ const initSaltedKdfAlgInfo = (Module, modules) => {
             proxyResult = Module._vscf_salted_kdf_alg_info_iteration_count(this.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return SaltedKdfAlgInfo;

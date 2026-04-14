@@ -37,79 +37,71 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide conversion logic between OID and algorithm tags.
-*/
 class Oid
 {
 
     /**
-    * Return OID for given algorithm identifier.
     *
-    * @param AlgId $algId
+    * @param AlgId $$algId
     * @return string
     */
-    public static function fromAlgId(AlgId $algId): string
+    public static function fromAlgId(AlgId $$algId): string
     {
-        return vscf_oid_from_alg_id_php($algId->getValue());
+        return vscf_oid_from_alg_id_php($$algId);
     }
 
     /**
-    * Return algorithm identifier for given OID.
     *
-    * @param string $oid
+    * @param string $$oid
     * @return AlgId
     */
-    public static function toAlgId(string $oid): AlgId
+    public static function toAlgId(string $$oid): AlgId
     {
-        $enum = vscf_oid_to_alg_id_php($oid);
+        $enum = vscf_oid_to_alg_id_php($$oid);
         return new AlgId($enum);
     }
 
     /**
-    * Return OID for a given identifier.
     *
-    * @param OidId $oidId
+    * @param OidId $$oidId
     * @return string
     */
-    public static function fromId(OidId $oidId): string
+    public static function fromId(OidId $$oidId): string
     {
-        return vscf_oid_from_id_php($oidId->getValue());
+        return vscf_oid_from_id_php($$oidId);
     }
 
     /**
-    * Return identifier for a given OID.
     *
-    * @param string $oid
+    * @param string $$oid
     * @return OidId
     */
-    public static function toId(string $oid): OidId
+    public static function toId(string $$oid): OidId
     {
-        $enum = vscf_oid_to_id_php($oid);
+        $enum = vscf_oid_to_id_php($$oid);
         return new OidId($enum);
     }
 
     /**
-    * Map oid identifier to the algorithm identifier.
     *
-    * @param OidId $oidId
+    * @param OidId $$oidId
     * @return AlgId
     */
-    public static function idToAlgId(OidId $oidId): AlgId
+    public static function idToAlgId(OidId $$oidId): AlgId
     {
-        $enum = vscf_oid_id_to_alg_id_php($oidId->getValue());
+        $enum = vscf_oid_id_to_alg_id_php($$oidId);
         return new AlgId($enum);
     }
 
     /**
-    * Return true if given OIDs are equal.
     *
-    * @param string $lhs
-    * @param string $rhs
+    * @param string $$lhs
+    * @param string $$rhs
     * @return bool
     */
-    public static function equal(string $lhs, string $rhs): bool
+    public static function equal(string $$lhs, string $$rhs): bool
     {
-        return vscf_oid_equal_php($lhs, $rhs);
+        return vscf_oid_equal_php($$lhs, $$rhs);
     }
+
 }

@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Sign data of any size.
-*/
 class Signer
 {
 
@@ -68,25 +65,26 @@ class Signer
     }
 
     /**
-    * @param Hash $hash
+    *
+    * @param Hash $$hash
     * @return void
     */
-    public function useHash(Hash $hash): void
+    public function useHash(Hash $$hash): void
     {
-        vscf_signer_use_hash_php($this->ctx, $hash->getCtx());
+        vscf_signer_use_hash_php($this->ctx, $$hash);
     }
 
     /**
-    * @param Random $random
+    *
+    * @param Random $$random
     * @return void
     */
-    public function useRandom(Random $random): void
+    public function useRandom(Random $$random): void
     {
-        vscf_signer_use_random_php($this->ctx, $random->getCtx());
+        vscf_signer_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * Start a processing a new signature.
     *
     * @return void
     */
@@ -96,37 +94,34 @@ class Signer
     }
 
     /**
-    * Add given data to the signed data.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function appendData(string $data): void
+    public function appendData(string $$data): void
     {
-        vscf_signer_append_data_php($this->ctx, $data);
+        vscf_signer_append_data_php($this->ctx, $$data);
     }
 
     /**
-    * Return length of the signature.
     *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return int
     */
-    public function signatureLen(PrivateKey $privateKey): int
+    public function signatureLen(PrivateKey $$privateKey): int
     {
-        return vscf_signer_signature_len_php($this->ctx, $privateKey->getCtx());
+        return vscf_signer_signature_len_php($this->ctx, $$privateKey);
     }
 
     /**
-    * Accomplish signing and return signature.
     *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function sign(PrivateKey $privateKey): string
+    public function sign(PrivateKey $$privateKey): string
     {
-        return vscf_signer_sign_php($this->ctx, $privateKey->getCtx());
+        return vscf_signer_sign_php($this->ctx, $$privateKey);
     }
 
     /**

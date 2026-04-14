@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initSignerInfoList = (Module, modules) => {
-    /**
-     * Handles a list of "signer info" class objects.
-     */
     class SignerInfoList {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'SignerInfoList';
 
@@ -58,29 +47,16 @@ const initSignerInfoList = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SignerInfoList(Module._vscf_signer_info_list_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SignerInfoList(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_signer_info_list_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initSignerInfoList = (Module, modules) => {
             }
         }
 
-        /**
-         * Return true if given list has item.
-         */
         hasItem() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -101,9 +74,6 @@ const initSignerInfoList = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return list item.
-         */
         item() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -114,9 +84,6 @@ const initSignerInfoList = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return true if list has next item.
-         */
         hasNext() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -127,9 +94,6 @@ const initSignerInfoList = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return next list node if exists, or NULL otherwise.
-         */
         next() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -140,9 +104,6 @@ const initSignerInfoList = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return true if list has previous item.
-         */
         hasPrev() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -153,9 +114,6 @@ const initSignerInfoList = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return previous list node if exists, or NULL otherwise.
-         */
         prev() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -166,13 +124,11 @@ const initSignerInfoList = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Remove all items.
-         */
         clear() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_signer_info_list_clear(this.ctxPtr);
         }
+
     }
 
     return SignerInfoList;

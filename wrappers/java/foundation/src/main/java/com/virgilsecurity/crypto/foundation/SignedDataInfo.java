@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle meta information about signed data.
-*/
 public class SignedDataInfo implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public SignedDataInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.signedDataInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    SignedDataInfo(FoundationContextHolder contextHolder) {
+    package SignedDataInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static SignedDataInfo getInstance(long cCtx) {
+    public SignedDataInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SignedDataInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,21 +62,16 @@ public class SignedDataInfo implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return information about algorithm that was used to produce data digest.
-    */
     public AlgInfo hashAlgInfo() {
         return FoundationJNI.INSTANCE.signedDataInfo_hashAlgInfo(this.cCtx);
     }
-}
 
+}

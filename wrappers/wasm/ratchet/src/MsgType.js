@@ -34,22 +34,10 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initMsgType = (Module, modules) => {
-    /**
-     * Represents message type
-     */
     const MsgType = Object.freeze({
-
-        /**
-         * Regular message. This message is used all the time except case described in prekey message section.
-         */
         REGULAR: 0,
-
-        /**
-         * Prekey message. This message is sent by initiator till first response is received.
-         */
-        PREKEY: 1
+        PREKEY: 1,
     });
 
     return MsgType;

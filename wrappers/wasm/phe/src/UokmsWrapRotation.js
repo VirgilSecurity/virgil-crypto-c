@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initUokmsWrapRotation = (Module, modules) => {
-    /**
-     * Implements wrap rotation.
-     */
     class UokmsWrapRotation {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'UokmsWrapRotation';
 
@@ -58,29 +47,16 @@ const initUokmsWrapRotation = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new UokmsWrapRotation(Module._vsce_uokms_wrap_rotation_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new UokmsWrapRotation(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vsce_uokms_wrap_rotation_delete(this.ctxPtr);
@@ -88,42 +64,33 @@ const initUokmsWrapRotation = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for crypto operations to make them const-time
-         */
-        set operationRandom(operationRandom) {
+        operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_uokms_wrap_rotation_release_operation_random(this.ctxPtr)
             Module._vsce_uokms_wrap_rotation_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
-        /**
-         * Setups dependencies with default values.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_uokms_wrap_rotation_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Sets update token. Should be called only once and before any other function
-         */
         setUpdateToken(updateToken) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('updateToken', updateToken);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const updateTokenSize = updateToken.length * updateToken.BYTES_PER_ELEMENT;
             const updateTokenPtr = Module._malloc(updateTokenSize);
             Module.HEAP8.set(updateToken, updateTokenPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const updateTokenCtxSize = Module._vsc_data_ctx_size();
             const updateTokenCtxPtr = Module._malloc(updateTokenCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(updateTokenCtxPtr, updateTokenPtr, updateTokenSize);
 
             try {
@@ -135,23 +102,20 @@ const initUokmsWrapRotation = (Module, modules) => {
             }
         }
 
-        /**
-         * Updates EnrollmentRecord using server's update token
-         */
         updateWrap(wrap) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('wrap', wrap);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const wrapSize = wrap.length * wrap.BYTES_PER_ELEMENT;
             const wrapPtr = Module._malloc(wrapSize);
             Module.HEAP8.set(wrap, wrapPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const wrapCtxSize = Module._vsc_data_ctx_size();
             const wrapCtxPtr = Module._malloc(wrapCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(wrapCtxPtr, wrapPtr, wrapSize);
 
             const newWrapCapacity = modules.PheCommon.PHE_PUBLIC_KEY_LENGTH;
@@ -171,6 +135,7 @@ const initUokmsWrapRotation = (Module, modules) => {
                 Module._vsc_buffer_delete(newWrapCtxPtr);
             }
         }
+
     }
 
     return UokmsWrapRotation;

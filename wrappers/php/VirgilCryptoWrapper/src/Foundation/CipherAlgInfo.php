@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle symmetric cipher algorithm information.
-*/
 class CipherAlgInfo implements AlgInfo
 {
 
@@ -49,16 +46,14 @@ class CipherAlgInfo implements AlgInfo
     private $ctx;
 
     /**
-    * Create symmetric cipher algorithm info with identificator and input vector.
     *
-    * @param AlgId $algId
-    * @param string $nonce
+    * @param AlgId $$algId
+    * @param string $$nonce
     * @return CipherAlgInfo
     */
-    public static function withMembers(AlgId $algId, string $nonce): CipherAlgInfo
+    public static function withMembers(AlgId $$algId, string $$nonce): CipherAlgInfo
     {
-        $ctx = vscf_cipher_alg_info_with_members_php($algId, $nonce);
-        return new CipherAlgInfo($ctx);
+        return vscf_cipher_alg_info_with_members_php($$algId, $$nonce);
     }
 
     /**
@@ -81,7 +76,6 @@ class CipherAlgInfo implements AlgInfo
     }
 
     /**
-    * Return IV.
     *
     * @return string
     */
@@ -91,7 +85,6 @@ class CipherAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

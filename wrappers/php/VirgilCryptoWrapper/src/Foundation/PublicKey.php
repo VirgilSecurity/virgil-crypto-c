@@ -37,9 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Contains public part of the key.
-*/
 interface PublicKey extends Ctx
 {
+
 }

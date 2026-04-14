@@ -36,56 +36,36 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle KDF algorithms that are configured with salt and iteration count.
-*/
 public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
+
+    public AlgInfo hashAlgInfo() {
+        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_hashAlgInfo(this.cCtx);
+    }
+
+    public byte[] salt() {
+        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_salt(this.cCtx);
+    }
+
+    public int iterationCount() {
+        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_iterationCount(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public SaltedKdfAlgInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.saltedKdfAlgInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
+    package SaltedKdfAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return hash algorithm information.
-    */
-    public AlgInfo hashAlgInfo() {
-        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_hashAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Return KDF salt.
-    */
-    public byte[] salt() {
-        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_salt(this.cCtx);
-    }
-
-    /*
-    * Return KDF iteration count.
-    * Note, can be 0 if KDF does not need the iteration count.
-    */
-    public int iterationCount() {
-        return FoundationJNI.INSTANCE.saltedKdfAlgInfo_iterationCount(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static SaltedKdfAlgInfo getInstance(long cCtx) {
+    public SaltedKdfAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SaltedKdfAlgInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -94,21 +74,16 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.saltedKdfAlgInfo_algId(this.cCtx);
     }
-}
 
+}

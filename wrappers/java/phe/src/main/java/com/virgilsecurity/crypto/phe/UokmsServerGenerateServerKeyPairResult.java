@@ -36,26 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method uokms server.generateServerKeyPair() */
 public class UokmsServerGenerateServerKeyPairResult {
 
     private byte[] serverPrivateKey;
-
-    private byte[] serverPublicKey;
-
-    /* Create new instance of UokmsServerGenerateServerKeyPairResult. */
-    UokmsServerGenerateServerKeyPairResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    UokmsServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
-        super();
-        this.serverPrivateKey = serverPrivateKey;
-        this.serverPublicKey = serverPublicKey;
-    }
 
     public byte[] getServerPrivateKey() {
         return this.serverPrivateKey;
@@ -65,6 +49,8 @@ public class UokmsServerGenerateServerKeyPairResult {
         this.serverPrivateKey = serverPrivateKey;
     }
 
+    private byte[] serverPublicKey;
+
     public byte[] getServerPublicKey() {
         return this.serverPublicKey;
     }
@@ -72,5 +58,15 @@ public class UokmsServerGenerateServerKeyPairResult {
     public void setServerPublicKey(byte[] serverPublicKey) {
         this.serverPublicKey = serverPublicKey;
     }
-}
 
+    package UokmsServerGenerateServerKeyPairResult() {
+        super();
+    }
+
+    package UokmsServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
+        super();
+        this.serverPrivateKey = serverPrivateKey;
+        this.serverPublicKey = serverPublicKey;
+    }
+
+}

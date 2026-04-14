@@ -36,20 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface for authenticated data encryption.
-*/
-public interface AuthEncrypt extends CipherAuthInfo {
-
-    /*
-    * Encrypt given data.
-    * If 'tag' is not given, then it will written to the 'enc'.
-    */
-    AuthEncryptAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the authenticated encrypted data.
-    */
-    int authEncryptedLen(int dataLen);
-}
-

@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Implementation of the RNG using deterministic random bit generators
-* based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-* This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled.
-*/
 class CtrDrbg implements Random
 {
 
@@ -73,17 +68,17 @@ class CtrDrbg implements Random
     }
 
     /**
-    * @param EntropySource $entropySource
+    *
+    * @param EntropySource $$entropySource
     * @return void
     * @throws \Exception
     */
-    public function useEntropySource(EntropySource $entropySource): void
+    public function useEntropySource(EntropySource $$entropySource): void
     {
-        vscf_ctr_drbg_use_entropy_source_php($this->ctx, $entropySource->getCtx());
+        vscf_ctr_drbg_use_entropy_source_php($this->ctx, $$entropySource);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -94,9 +89,6 @@ class CtrDrbg implements Random
     }
 
     /**
-    * Force entropy to be gathered at the beginning of every call to
-    * the random() method.
-    * Note, use this if your entropy source has sufficient throughput.
     *
     * @return void
     */
@@ -106,44 +98,37 @@ class CtrDrbg implements Random
     }
 
     /**
-    * Sets the reseed interval.
-    * Default value is reseed interval.
     *
-    * @param int $interval
+    * @param int $$interval
     * @return void
     */
-    public function setReseedInterval(int $interval): void
+    public function setReseedInterval(int $$interval): void
     {
-        vscf_ctr_drbg_set_reseed_interval_php($this->ctx, $interval);
+        vscf_ctr_drbg_set_reseed_interval_php($this->ctx, $$interval);
     }
 
     /**
-    * Sets the amount of entropy grabbed on each seed or reseed.
-    * The default value is entropy len.
     *
-    * @param int $len
+    * @param int $$len
     * @return void
     */
-    public function setEntropyLen(int $len): void
+    public function setEntropyLen(int $$len): void
     {
-        vscf_ctr_drbg_set_entropy_len_php($this->ctx, $len);
+        vscf_ctr_drbg_set_entropy_len_php($this->ctx, $$len);
     }
 
     /**
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return string
     * @throws \Exception
     */
-    public function random(int $dataLen): string
+    public function random(int $$dataLen): string
     {
-        return vscf_ctr_drbg_random_php($this->ctx, $dataLen);
+        return vscf_ctr_drbg_random_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Retrieve new seed data from the entropy sources.
     *
     * @return void
     * @throws \Exception

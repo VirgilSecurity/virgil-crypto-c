@@ -40,27 +40,20 @@ public class MessageInfoCustomParams implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public MessageInfoCustomParams() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.messageInfoCustomParams_new();
     }
 
-    /* Wrap underlying C context. */
-    MessageInfoCustomParams(FoundationContextHolder contextHolder) {
+    package MessageInfoCustomParams(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static MessageInfoCustomParams getInstance(long cCtx) {
+    public MessageInfoCustomParams getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new MessageInfoCustomParams(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -69,70 +62,44 @@ public class MessageInfoCustomParams implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Add custom parameter with integer value.
-    */
     public void addInt(byte[] key, int value) {
         FoundationJNI.INSTANCE.messageInfoCustomParams_addInt(this.cCtx, key, value);
     }
 
-    /*
-    * Add custom parameter with UTF8 string value.
-    */
     public void addString(byte[] key, byte[] value) {
         FoundationJNI.INSTANCE.messageInfoCustomParams_addString(this.cCtx, key, value);
     }
 
-    /*
-    * Add custom parameter with octet string value.
-    */
     public void addData(byte[] key, byte[] value) {
         FoundationJNI.INSTANCE.messageInfoCustomParams_addData(this.cCtx, key, value);
     }
 
-    /*
-    * Remove all parameters.
-    */
     public void clear() {
         FoundationJNI.INSTANCE.messageInfoCustomParams_clear(this.cCtx);
     }
 
-    /*
-    * Return custom parameter with integer value.
-    */
     public int findInt(byte[] key) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoCustomParams_findInt(this.cCtx, key);
     }
 
-    /*
-    * Return custom parameter with UTF8 string value.
-    */
     public byte[] findString(byte[] key) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoCustomParams_findString(this.cCtx, key);
     }
 
-    /*
-    * Return custom parameter with octet string value.
-    */
     public byte[] findData(byte[] key) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoCustomParams_findData(this.cCtx, key);
     }
 
-    /*
-    * Return true if at least one param exists.
-    */
     public boolean hasParams() {
         return FoundationJNI.INSTANCE.messageInfoCustomParams_hasParams(this.cCtx);
     }
-}
 
+}

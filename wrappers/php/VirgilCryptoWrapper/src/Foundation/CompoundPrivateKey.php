@@ -37,13 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles compound private key.
-*
-* Compound private key contains 2 private keys and signature:
-* - cipher key - is used for decryption;
-* - signer key - is used for signing.
-*/
 class CompoundPrivateKey implements Key, PrivateKey
 {
 
@@ -72,10 +65,8 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return primary private key suitable for a final decryption.
     *
     * @return PrivateKey
-    * @throws \Exception
     */
     public function cipherKey(): PrivateKey
     {
@@ -84,10 +75,8 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return private key suitable for signing.
     *
     * @return PrivateKey
-    * @throws \Exception
     */
     public function signerKey(): PrivateKey
     {
@@ -96,7 +85,6 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -107,10 +95,8 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -119,7 +105,6 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -129,7 +114,6 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -139,8 +123,6 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
@@ -150,10 +132,8 @@ class CompoundPrivateKey implements Key, PrivateKey
     }
 
     /**
-    * Extract public key from the private key.
     *
     * @return PublicKey
-    * @throws \Exception
     */
     public function extractPublicKey(): PublicKey
     {

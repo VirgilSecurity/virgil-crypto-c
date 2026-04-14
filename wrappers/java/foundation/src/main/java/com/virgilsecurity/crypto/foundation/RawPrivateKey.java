@@ -36,62 +36,40 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles interchangeable private key representation.
-*/
 public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
+
+    public byte[] data() {
+        return FoundationJNI.INSTANCE.rawPrivateKey_data(this.cCtx);
+    }
+
+    public boolean hasPublicKey() {
+        return FoundationJNI.INSTANCE.rawPrivateKey_hasPublicKey(this.cCtx);
+    }
+
+    public void setPublicKey(RawPublicKey rawPublicKey) {
+        FoundationJNI.INSTANCE.rawPrivateKey_setPublicKey(this.cCtx, rawPublicKey);
+    }
+
+    public RawPublicKey getPublicKey() {
+        return FoundationJNI.INSTANCE.rawPrivateKey_getPublicKey(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public RawPrivateKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.rawPrivateKey_new();
     }
 
-    /* Wrap underlying C context. */
-    RawPrivateKey(FoundationContextHolder contextHolder) {
+    package RawPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return key data.
-    */
-    public byte[] data() {
-        return FoundationJNI.INSTANCE.rawPrivateKey_data(this.cCtx);
-    }
-
-    /*
-    * Return true if private key contains public key.
-    */
-    public boolean hasPublicKey() {
-        return FoundationJNI.INSTANCE.rawPrivateKey_hasPublicKey(this.cCtx);
-    }
-
-    /*
-    * Setup public key related to the private key.
-    */
-    public void setPublicKey(RawPublicKey rawPublicKey) {
-        FoundationJNI.INSTANCE.rawPrivateKey_setPublicKey(this.cCtx, rawPublicKey);
-    }
-
-    /*
-    * Return public key related to the private key.
-    */
-    public RawPublicKey getPublicKey() {
-        return FoundationJNI.INSTANCE.rawPrivateKey_getPublicKey(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static RawPrivateKey getInstance(long cCtx) {
+    public RawPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RawPrivateKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -100,57 +78,36 @@ public class RawPrivateKey implements AutoCloseable, Key, PrivateKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.rawPrivateKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.rawPrivateKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.rawPrivateKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.rawPrivateKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.rawPrivateKey_isValid(this.cCtx);
     }
 
-    /*
-    * Extract public key from the private key.
-    */
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.rawPrivateKey_extractPublicKey(this.cCtx);
     }
-}
 
+}

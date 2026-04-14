@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Deterministic entropy source that is based only on the given seed.
-*/
 class SeedEntropySource implements EntropySource
 {
 
@@ -70,18 +67,16 @@ class SeedEntropySource implements EntropySource
     }
 
     /**
-    * Set a new seed as an entropy source.
     *
-    * @param string $seed
+    * @param string $$seed
     * @return void
     */
-    public function resetSeed(string $seed): void
+    public function resetSeed(string $$seed): void
     {
-        vscf_seed_entropy_source_reset_seed_php($this->ctx, $seed);
+        vscf_seed_entropy_source_reset_seed_php($this->ctx, $$seed);
     }
 
     /**
-    * Defines that implemented source is strong.
     *
     * @return bool
     */
@@ -91,15 +86,14 @@ class SeedEntropySource implements EntropySource
     }
 
     /**
-    * Gather entropy of the requested length.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     * @throws \Exception
     */
-    public function gather(int $len): string
+    public function gather(int $$len): string
     {
-        return vscf_seed_entropy_source_gather_php($this->ctx, $len);
+        return vscf_seed_entropy_source_gather_php($this->ctx, $$len);
     }
 
     /**

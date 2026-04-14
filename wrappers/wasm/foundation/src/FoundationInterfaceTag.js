@@ -34,75 +34,41 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initFoundationInterfaceTag = (Module, modules) => {
     const FoundationInterfaceTag = Object.freeze({
-
         ALG: 1,
-
         ALG_INFO: 2,
-
         ALG_INFO_DESERIALIZER: 3,
-
         ALG_INFO_SERIALIZER: 4,
-
         ASN1_READER: 5,
-
         ASN1_WRITER: 6,
-
         AUTH_DECRYPT: 7,
-
         AUTH_ENCRYPT: 8,
-
         CIPHER: 9,
-
         CIPHER_AUTH: 10,
-
         CIPHER_AUTH_INFO: 11,
-
         CIPHER_INFO: 12,
-
         COMPUTE_SHARED_KEY: 13,
-
         DECRYPT: 14,
-
         ENCRYPT: 15,
-
         ENTROPY_SOURCE: 16,
-
         HASH: 17,
-
         KDF: 18,
-
         KEM: 19,
-
         KEY: 20,
-
         KEY_ALG: 21,
-
         KEY_CIPHER: 22,
-
         KEY_DESERIALIZER: 23,
-
         KEY_SERIALIZER: 24,
-
         KEY_SIGNER: 25,
-
         MAC: 26,
-
         MESSAGE_INFO_FOOTER_SERIALIZER: 27,
-
         MESSAGE_INFO_SERIALIZER: 28,
-
         PADDING: 29,
-
         PRIVATE_KEY: 30,
-
         PUBLIC_KEY: 31,
-
         RANDOM: 32,
-
-        SALTED_KDF: 33
+        SALTED_KDF: 33,
     });
 
     return FoundationInterfaceTag;

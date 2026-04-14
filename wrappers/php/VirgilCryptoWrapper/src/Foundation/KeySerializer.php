@@ -37,51 +37,49 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Public and private key serialization to an interchangeable format.
-*/
 interface KeySerializer extends Ctx
 {
 
     /**
-    * Calculate buffer size enough to hold serialized public key.
     *
-    * Precondition: public key must be exportable.
-    *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return int
     */
-    public function serializedPublicKeyLen(RawPublicKey $publicKey): int;
+    public function serializedPublicKeyLen(RawPublicKey $$publicKey): int
+    {
+        return ($this->ctx, $$publicKey);
+    }
 
     /**
-    * Serialize given public key to an interchangeable format.
     *
-    * Precondition: public key must be exportable.
-    *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return string
     * @throws \Exception
     */
-    public function serializePublicKey(RawPublicKey $publicKey): string;
+    public function serializePublicKey(RawPublicKey $$publicKey): string
+    {
+        return ($this->ctx, $$publicKey);
+    }
 
     /**
-    * Calculate buffer size enough to hold serialized private key.
     *
-    * Precondition: private key must be exportable.
-    *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return int
     */
-    public function serializedPrivateKeyLen(RawPrivateKey $privateKey): int;
+    public function serializedPrivateKeyLen(RawPrivateKey $$privateKey): int
+    {
+        return ($this->ctx, $$privateKey);
+    }
 
     /**
-    * Serialize given private key to an interchangeable format.
     *
-    * Precondition: private key must be exportable.
-    *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function serializePrivateKey(RawPrivateKey $privateKey): string;
+    public function serializePrivateKey(RawPrivateKey $$privateKey): string
+    {
+        return ($this->ctx, $$privateKey);
+    }
+
 }

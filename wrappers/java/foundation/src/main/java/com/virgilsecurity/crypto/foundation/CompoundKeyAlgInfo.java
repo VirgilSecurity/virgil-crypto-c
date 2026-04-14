@@ -36,48 +36,32 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about compound key algorithm.
-*/
 public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
+
+    public AlgInfo cipherAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_cipherAlgInfo(this.cCtx);
+    }
+
+    public AlgInfo signerAlgInfo() {
+        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signerAlgInfo(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public CompoundKeyAlgInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.compoundKeyAlgInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    CompoundKeyAlgInfo(FoundationContextHolder contextHolder) {
+    package CompoundKeyAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return information about encrypt/decrypt algorithm.
-    */
-    public AlgInfo cipherAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_cipherAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Return information about sign/verify algorithm.
-    */
-    public AlgInfo signerAlgInfo() {
-        return FoundationJNI.INSTANCE.compoundKeyAlgInfo_signerAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static CompoundKeyAlgInfo getInstance(long cCtx) {
+    public CompoundKeyAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CompoundKeyAlgInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -86,21 +70,16 @@ public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.compoundKeyAlgInfo_algId(this.cCtx);
     }
-}
 
+}

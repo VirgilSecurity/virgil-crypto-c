@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle meta information about footer.
-*/
 class FooterInfo
 {
 
@@ -68,7 +65,6 @@ class FooterInfo
     }
 
     /**
-    * Retrun true if signed data info present.
     *
     * @return bool
     */
@@ -78,7 +74,6 @@ class FooterInfo
     }
 
     /**
-    * Return signed data info.
     *
     * @return SignedDataInfo
     */
@@ -89,18 +84,16 @@ class FooterInfo
     }
 
     /**
-    * Set data size.
     *
-    * @param int $dataSize
+    * @param int $$dataSize
     * @return void
     */
-    public function setDataSize(int $dataSize): void
+    public function setDataSize(int $$dataSize): void
     {
-        vscf_footer_info_set_data_size_php($this->ctx, $dataSize);
+        vscf_footer_info_set_data_size_php($this->ctx, $$dataSize);
     }
 
     /**
-    * Return data size.
     *
     * @return int
     */

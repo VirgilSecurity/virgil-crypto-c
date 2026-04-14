@@ -34,56 +34,30 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initAlgId = (Module, modules) => {
-    /**
-     * Define implemented algorithm identificator.
-     */
     const AlgId = Object.freeze({
-
         NONE: 0,
-
         SHA224: 1,
-
         SHA256: 2,
-
         SHA384: 3,
-
         SHA512: 4,
-
         KDF1: 5,
-
         KDF2: 6,
-
         RSA: 7,
-
         ED25519: 8,
-
         CURVE25519: 9,
-
         SECP256R1: 10,
-
         AES256_GCM: 11,
-
         AES256_CBC: 12,
-
         HMAC: 13,
-
         HKDF: 14,
-
         PKCS5_PBKDF2: 15,
-
         PKCS5_PBES2: 16,
-
         COMPOUND_KEY: 17,
-
         HYBRID_KEY: 18,
-
         FALCON: 19,
-
         ROUND5_ND_1CCA_5D: 20,
-
-        RANDOM_PADDING: 21
+        RANDOM_PADDING: 21,
     });
 
     return AlgId;

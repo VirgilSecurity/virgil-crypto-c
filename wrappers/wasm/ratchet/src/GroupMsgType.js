@@ -34,23 +34,10 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initGroupMsgType = (Module, modules) => {
-    /**
-     * Represents group message type
-     */
     const GroupMsgType = Object.freeze({
-
-        /**
-         * Group info used to create group chat, add or remove participants.
-         * Should be distributed only using secure channels.
-         */
         GROUP_INFO: 0,
-
-        /**
-         * Regular group ratchet message with cipher text.
-         */
-        REGULAR: 1
+        REGULAR: 1,
     });
 
     return GroupMsgType;

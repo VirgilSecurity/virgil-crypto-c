@@ -34,22 +34,13 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initOid = (Module, modules) => {
-    /**
-     * Provide conversion logic between OID and algorithm tags.
-     */
     class Oid {
 
-        /**
-         * Return OID for given algorithm identifier.
-         */
         static fromAlgId(algId) {
             precondition.ensureNumber('algId', algId);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -65,22 +56,19 @@ const initOid = (Module, modules) => {
             }
         }
 
-        /**
-         * Return algorithm identifier for given OID.
-         */
         static toAlgId(oid) {
             precondition.ensureByteArray('oid', oid);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const oidSize = oid.length * oid.BYTES_PER_ELEMENT;
             const oidPtr = Module._malloc(oidSize);
             Module.HEAP8.set(oid, oidPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const oidCtxSize = Module._vsc_data_ctx_size();
             const oidCtxPtr = Module._malloc(oidCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(oidCtxPtr, oidPtr, oidSize);
 
             let proxyResult;
@@ -94,13 +82,10 @@ const initOid = (Module, modules) => {
             }
         }
 
-        /**
-         * Return OID for a given identifier.
-         */
         static fromId(oidId) {
             precondition.ensureNumber('oidId', oidId);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -116,22 +101,19 @@ const initOid = (Module, modules) => {
             }
         }
 
-        /**
-         * Return identifier for a given OID.
-         */
         static toId(oid) {
             precondition.ensureByteArray('oid', oid);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const oidSize = oid.length * oid.BYTES_PER_ELEMENT;
             const oidPtr = Module._malloc(oidSize);
             Module.HEAP8.set(oid, oidPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const oidCtxSize = Module._vsc_data_ctx_size();
             const oidCtxPtr = Module._malloc(oidCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(oidCtxPtr, oidPtr, oidSize);
 
             let proxyResult;
@@ -145,9 +127,6 @@ const initOid = (Module, modules) => {
             }
         }
 
-        /**
-         * Map oid identifier to the algorithm identifier.
-         */
         static idToAlgId(oidId) {
             precondition.ensureNumber('oidId', oidId);
 
@@ -156,35 +135,32 @@ const initOid = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return true if given OIDs are equal.
-         */
         static equal(lhs, rhs) {
             precondition.ensureByteArray('lhs', lhs);
             precondition.ensureByteArray('rhs', rhs);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const lhsSize = lhs.length * lhs.BYTES_PER_ELEMENT;
             const lhsPtr = Module._malloc(lhsSize);
             Module.HEAP8.set(lhs, lhsPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const lhsCtxSize = Module._vsc_data_ctx_size();
             const lhsCtxPtr = Module._malloc(lhsCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(lhsCtxPtr, lhsPtr, lhsSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const rhsSize = rhs.length * rhs.BYTES_PER_ELEMENT;
             const rhsPtr = Module._malloc(rhsSize);
             Module.HEAP8.set(rhs, rhsPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const rhsCtxSize = Module._vsc_data_ctx_size();
             const rhsCtxPtr = Module._malloc(rhsCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(rhsCtxPtr, rhsPtr, rhsSize);
 
             let proxyResult;
@@ -201,6 +177,7 @@ const initOid = (Module, modules) => {
                 Module._free(rhsCtxPtr);
             }
         }
+
     }
 
     return Oid;

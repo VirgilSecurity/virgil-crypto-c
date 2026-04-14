@@ -37,34 +37,38 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface to persist algorithm information and it parameters
-* and then restore the algorithm from it.
-*/
 interface Alg extends Ctx
 {
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */
-    public function algId(): AlgId;
+    public function algId(): AlgId
+    {
+        $enum = ($this->ctx);
+        return new AlgId($enum);
+    }
 
     /**
-    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
-    public function produceAlgInfo(): AlgInfo;
+    public function produceAlgInfo(): AlgInfo
+    {
+        $ctx = ($this->ctx);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
 
     /**
-    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void;
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
+    {
+        ($this->ctx, $$algInfo);
+    }
+
 }

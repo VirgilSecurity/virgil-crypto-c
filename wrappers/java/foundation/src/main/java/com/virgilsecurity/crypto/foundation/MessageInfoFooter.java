@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle message signatures and related information.
-*/
 public class MessageInfoFooter implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public MessageInfoFooter() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.messageInfoFooter_new();
     }
 
-    /* Wrap underlying C context. */
-    MessageInfoFooter(FoundationContextHolder contextHolder) {
+    package MessageInfoFooter(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static MessageInfoFooter getInstance(long cCtx) {
+    public MessageInfoFooter getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new MessageInfoFooter(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,42 +62,28 @@ public class MessageInfoFooter implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return true if at least one signer info presents.
-    */
     public boolean hasSignerInfos() {
         return FoundationJNI.INSTANCE.messageInfoFooter_hasSignerInfos(this.cCtx);
     }
 
-    /*
-    * Return list with a "signer info" elements.
-    */
     public SignerInfoList signerInfos() {
         return FoundationJNI.INSTANCE.messageInfoFooter_signerInfos(this.cCtx);
     }
 
-    /*
-    * Return information about algorithm that was used for data hashing.
-    */
     public AlgInfo signerHashAlgInfo() {
         return FoundationJNI.INSTANCE.messageInfoFooter_signerHashAlgInfo(this.cCtx);
     }
 
-    /*
-    * Return plain text digest that was used to produce signature.
-    */
     public byte[] signerDigest() {
         return FoundationJNI.INSTANCE.messageInfoFooter_signerDigest(this.cCtx);
     }
-}
 
+}

@@ -36,26 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method uokms client.rotateKeys() */
 public class UokmsClientRotateKeysResult {
 
     private byte[] newClientPrivateKey;
-
-    private byte[] newServerPublicKey;
-
-    /* Create new instance of UokmsClientRotateKeysResult. */
-    UokmsClientRotateKeysResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    UokmsClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
-        super();
-        this.newClientPrivateKey = newClientPrivateKey;
-        this.newServerPublicKey = newServerPublicKey;
-    }
 
     public byte[] getNewClientPrivateKey() {
         return this.newClientPrivateKey;
@@ -65,6 +49,8 @@ public class UokmsClientRotateKeysResult {
         this.newClientPrivateKey = newClientPrivateKey;
     }
 
+    private byte[] newServerPublicKey;
+
     public byte[] getNewServerPublicKey() {
         return this.newServerPublicKey;
     }
@@ -72,5 +58,15 @@ public class UokmsClientRotateKeysResult {
     public void setNewServerPublicKey(byte[] newServerPublicKey) {
         this.newServerPublicKey = newServerPublicKey;
     }
-}
 
+    package UokmsClientRotateKeysResult() {
+        super();
+    }
+
+    package UokmsClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
+        super();
+        this.newClientPrivateKey = newClientPrivateKey;
+        this.newServerPublicKey = newServerPublicKey;
+    }
+
+}

@@ -36,62 +36,40 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Group chat encryption session.
-*/
 public class GroupSession implements AutoCloseable {
+
+    public int getSenderIdLen() {
+        return 32;
+    }
+
+    public int getMaxPlainTextLen() {
+        return 30000;
+    }
+
+    public int getMaxEpochsCount() {
+        return 50;
+    }
+
+    public int getSaltSize() {
+        return 32;
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public GroupSession() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.groupSession_new();
     }
 
-    /* Wrap underlying C context. */
-    GroupSession(FoundationContextHolder contextHolder) {
+    package GroupSession(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Sender id len
-    */
-    public int getSenderIdLen() {
-        return 32;
-    }
-
-    /*
-    * Max plain text len
-    */
-    public int getMaxPlainTextLen() {
-        return 30000;
-    }
-
-    /*
-    * Max epochs count
-    */
-    public int getMaxEpochsCount() {
-        return 50;
-    }
-
-    /*
-    * Salt size
-    */
-    public int getSaltSize() {
-        return 32;
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static GroupSession getInstance(long cCtx) {
+    public GroupSession getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new GroupSession(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -100,79 +78,48 @@ public class GroupSession implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Random
-    */
     public void setRng(Random rng) {
         FoundationJNI.INSTANCE.groupSession_setRng(this.cCtx, rng);
     }
 
-    /*
-    * Returns current epoch.
-    */
     public long getCurrentEpoch() {
         return FoundationJNI.INSTANCE.groupSession_getCurrentEpoch(this.cCtx);
     }
 
-    /*
-    * Setups default dependencies:
-    * - RNG: CTR DRBG
-    */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.groupSession_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Returns session id.
-    */
     public byte[] getSessionId() {
         return FoundationJNI.INSTANCE.groupSession_getSessionId(this.cCtx);
     }
 
-    /*
-    * Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
-    * Epoch message should be encrypted and signed by trusted group chat member (admin).
-    */
     public void addEpoch(GroupSessionMessage message) throws FoundationException {
         FoundationJNI.INSTANCE.groupSession_addEpoch(this.cCtx, message);
     }
 
-    /*
-    * Encrypts data
-    */
     public GroupSessionMessage encrypt(byte[] plainText, PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSession_encrypt(this.cCtx, plainText, privateKey);
     }
 
-    /*
-    * Calculates size of buffer sufficient to store decrypted message
-    */
     public int decryptLen(GroupSessionMessage message) {
         return FoundationJNI.INSTANCE.groupSession_decryptLen(this.cCtx, message);
     }
 
-    /*
-    * Decrypts message
-    */
     public byte[] decrypt(GroupSessionMessage message, PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSession_decrypt(this.cCtx, message, publicKey);
     }
 
-    /*
-    * Creates ticket with new key for removing participants or proactive to rotate encryption key.
-    */
     public GroupSessionTicket createGroupTicket() throws FoundationException {
         return FoundationJNI.INSTANCE.groupSession_createGroupTicket(this.cCtx);
     }
-}
 
+}

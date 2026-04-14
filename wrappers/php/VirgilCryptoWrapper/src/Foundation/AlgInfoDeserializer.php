@@ -37,18 +37,18 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide algorithm deserialization.
-*/
 interface AlgInfoDeserializer extends Ctx
 {
 
     /**
-    * Deserialize algorithm from the data.
     *
-    * @param string $data
+    * @param string $$data
     * @return AlgInfo
-    * @throws \Exception
     */
-    public function deserialize(string $data): AlgInfo;
+    public function deserialize(string $$data): AlgInfo
+    {
+        $ctx = ($this->ctx, $$data);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
 }

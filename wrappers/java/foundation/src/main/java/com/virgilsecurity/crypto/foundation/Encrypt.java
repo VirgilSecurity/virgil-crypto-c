@@ -36,24 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface for data encryption.
-*/
-public interface Encrypt {
-
-    /*
-    * Encrypt given data.
-    */
-    byte[] encrypt(byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
-    int encryptedLen(int dataLen);
-
-    /*
-    * Precise length calculation of encrypted data.
-    */
-    int preciseEncryptedLen(int dataLen);
-}
-

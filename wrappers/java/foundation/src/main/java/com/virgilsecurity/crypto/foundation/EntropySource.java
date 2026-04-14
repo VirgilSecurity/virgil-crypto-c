@@ -36,19 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Defines generic interface for the entropy source.
-*/
-public interface EntropySource {
-
-    /*
-    * Defines that implemented source is strong.
-    */
-    boolean isStrong();
-
-    /*
-    * Gather entropy of the requested length.
-    */
-    byte[] gather(int len) throws FoundationException;
-}
-

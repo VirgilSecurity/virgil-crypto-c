@@ -36,50 +36,32 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles a hybrid public key.
-*
-* The hybrid public key contains 2 public keys.
-*/
 public class HybridPublicKey implements AutoCloseable, Key, PublicKey {
+
+    public PublicKey firstKey() {
+        return FoundationJNI.INSTANCE.hybridPublicKey_firstKey(this.cCtx);
+    }
+
+    public PublicKey secondKey() {
+        return FoundationJNI.INSTANCE.hybridPublicKey_secondKey(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public HybridPublicKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.hybridPublicKey_new();
     }
 
-    /* Wrap underlying C context. */
-    HybridPublicKey(FoundationContextHolder contextHolder) {
+    package HybridPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return the first public key.
-    */
-    public PublicKey firstKey() {
-        return FoundationJNI.INSTANCE.hybridPublicKey_firstKey(this.cCtx);
-    }
-
-    /*
-    * Return the second public key.
-    */
-    public PublicKey secondKey() {
-        return FoundationJNI.INSTANCE.hybridPublicKey_secondKey(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static HybridPublicKey getInstance(long cCtx) {
+    public HybridPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridPublicKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -88,50 +70,32 @@ public class HybridPublicKey implements AutoCloseable, Key, PublicKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hybridPublicKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.hybridPublicKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.hybridPublicKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.hybridPublicKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.hybridPublicKey_isValid(this.cCtx);
     }
-}
 
+}

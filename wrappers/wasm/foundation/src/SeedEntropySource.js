@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initSeedEntropySource = (Module, modules) => {
-    /**
-     * Deterministic entropy source that is based only on the given seed.
-     */
     class SeedEntropySource {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'SeedEntropySource';
 
@@ -58,29 +47,16 @@ const initSeedEntropySource = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SeedEntropySource(Module._vscf_seed_entropy_source_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new SeedEntropySource(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_seed_entropy_source_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initSeedEntropySource = (Module, modules) => {
             }
         }
 
-        /**
-         * Defines that implemented source is strong.
-         */
         isStrong() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -101,9 +74,6 @@ const initSeedEntropySource = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Gather entropy of the requested length.
-         */
         gather(len) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('len', len);
@@ -124,23 +94,20 @@ const initSeedEntropySource = (Module, modules) => {
             }
         }
 
-        /**
-         * Set a new seed as an entropy source.
-         */
         resetSeed(seed) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('seed', seed);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const seedSize = seed.length * seed.BYTES_PER_ELEMENT;
             const seedPtr = Module._malloc(seedSize);
             Module.HEAP8.set(seed, seedPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const seedCtxSize = Module._vsc_data_ctx_size();
             const seedCtxPtr = Module._malloc(seedCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(seedCtxPtr, seedPtr, seedSize);
 
             try {
@@ -150,6 +117,7 @@ const initSeedEntropySource = (Module, modules) => {
                 Module._free(seedCtxPtr);
             }
         }
+
     }
 
     return SeedEntropySource;

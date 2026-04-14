@@ -36,38 +36,22 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
-*/
 public class Base64 {
 
-    /*
-    * Calculate length in bytes required to hold an encoded base64 string.
-    */
-    public static int encodedLen(int dataLen) {
+    public int encodedLen(int dataLen) {
         return FoundationJNI.INSTANCE.base64_encodedLen(dataLen);
     }
 
-    /*
-    * Encode given data to the base64 format.
-    * Note, written buffer is NOT null-terminated.
-    */
-    public static byte[] encode(byte[] data) {
+    public byte[] encode(byte[] data) {
         return FoundationJNI.INSTANCE.base64_encode(data);
     }
 
-    /*
-    * Calculate length in bytes required to hold a decoded base64 string.
-    */
-    public static int decodedLen(int strLen) {
+    public int decodedLen(int strLen) {
         return FoundationJNI.INSTANCE.base64_decodedLen(strLen);
     }
 
-    /*
-    * Decode given data from the base64 format.
-    */
-    public static byte[] decode(byte[] str) throws FoundationException {
+    public byte[] decode(byte[] str) throws FoundationException {
         return FoundationJNI.INSTANCE.base64_decode(str);
     }
-}
 
+}

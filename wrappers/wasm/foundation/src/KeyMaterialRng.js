@@ -34,44 +34,25 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initKeyMaterialRng = (Module, modules) => {
-    /**
-     * Random number generator that generate deterministic sequence based
-     * on a given seed.
-     * This RNG can be used to transform key material rial to the private key.
-     */
     class KeyMaterialRng {
 
-        /**
-         * Minimum length in bytes for the key material.
-         */
         static get KEY_MATERIAL_LEN_MIN() {
             return 32;
         }
 
         get KEY_MATERIAL_LEN_MIN() {
-            return KeyMaterialRng.KEY_MATERIAL_LEN_MIN;
+            return 32;
         }
 
-        /**
-         * Maximum length in bytes for the key material.
-         */
         static get KEY_MATERIAL_LEN_MAX() {
             return 512;
         }
 
         get KEY_MATERIAL_LEN_MAX() {
-            return KeyMaterialRng.KEY_MATERIAL_LEN_MAX;
+            return 512;
         }
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'KeyMaterialRng';
 
@@ -82,29 +63,16 @@ const initKeyMaterialRng = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyMaterialRng(Module._vscf_key_material_rng_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyMaterialRng(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_key_material_rng_delete(this.ctxPtr);
@@ -112,10 +80,6 @@ const initKeyMaterialRng = (Module, modules) => {
             }
         }
 
-        /**
-         * Generate random bytes.
-         * All RNG implementations must be thread-safe.
-         */
         random(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
@@ -136,32 +100,26 @@ const initKeyMaterialRng = (Module, modules) => {
             }
         }
 
-        /**
-         * Retrieve new seed data from the entropy sources.
-         */
         reseed() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_key_material_rng_reseed(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Set a new key material.
-         */
         resetKeyMaterial(keyMaterial) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyMaterial', keyMaterial);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyMaterialSize = keyMaterial.length * keyMaterial.BYTES_PER_ELEMENT;
             const keyMaterialPtr = Module._malloc(keyMaterialSize);
             Module.HEAP8.set(keyMaterial, keyMaterialPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyMaterialCtxSize = Module._vsc_data_ctx_size();
             const keyMaterialCtxPtr = Module._malloc(keyMaterialCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyMaterialCtxPtr, keyMaterialPtr, keyMaterialSize);
 
             try {
@@ -171,6 +129,7 @@ const initKeyMaterialRng = (Module, modules) => {
                 Module._free(keyMaterialCtxPtr);
             }
         }
+
     }
 
     return KeyMaterialRng;

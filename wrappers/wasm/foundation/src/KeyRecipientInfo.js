@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initKeyRecipientInfo = (Module, modules) => {
-    /**
-     * Handle information about recipient that is defined by a Public Key.
-     */
     class KeyRecipientInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'KeyRecipientInfo';
 
@@ -58,29 +47,16 @@ const initKeyRecipientInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyRecipientInfo(Module._vscf_key_recipient_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new KeyRecipientInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_key_recipient_info_delete(this.ctxPtr);
@@ -88,36 +64,33 @@ const initKeyRecipientInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Create object and define all properties.
-         */
         static newWithData(recipientId, keyEncryptionAlgorithm, encryptedKey) {
             precondition.ensureByteArray('recipientId', recipientId);
             precondition.ensureImplementInterface('keyEncryptionAlgorithm', keyEncryptionAlgorithm, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureByteArray('encryptedKey', encryptedKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const recipientIdSize = recipientId.length * recipientId.BYTES_PER_ELEMENT;
             const recipientIdPtr = Module._malloc(recipientIdSize);
             Module.HEAP8.set(recipientId, recipientIdPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const recipientIdCtxSize = Module._vsc_data_ctx_size();
             const recipientIdCtxPtr = Module._malloc(recipientIdCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(recipientIdCtxPtr, recipientIdPtr, recipientIdSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const encryptedKeySize = encryptedKey.length * encryptedKey.BYTES_PER_ELEMENT;
             const encryptedKeyPtr = Module._malloc(encryptedKeySize);
             Module.HEAP8.set(encryptedKey, encryptedKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const encryptedKeyCtxSize = Module._vsc_data_ctx_size();
             const encryptedKeyCtxPtr = Module._malloc(encryptedKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(encryptedKeyCtxPtr, encryptedKeyPtr, encryptedKeySize);
 
             let proxyResult;
@@ -135,13 +108,10 @@ const initKeyRecipientInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Return recipient identifier.
-         */
         recipientId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -157,10 +127,6 @@ const initKeyRecipientInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Return algorithm information that was used for encryption
-         * a data encryption key.
-         */
         keyEncryptionAlgorithm() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -171,13 +137,10 @@ const initKeyRecipientInfo = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return an encrypted data encryption key.
-         */
         encryptedKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -192,6 +155,7 @@ const initKeyRecipientInfo = (Module, modules) => {
                 Module._free(dataResultCtxPtr);
             }
         }
+
     }
 
     return KeyRecipientInfo;

@@ -36,54 +36,36 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide DER serializer of algorithm information.
-*/
 public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public AlgInfoDerSerializer() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.algInfoDerSerializer_new();
-    }
-
-    /* Wrap underlying C context. */
-    AlgInfoDerSerializer(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.algInfoDerSerializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.algInfoDerSerializer_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Serialize by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
     public int serializeInplace(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algInfoDerSerializer_serializeInplace(this.cCtx, algInfo);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static AlgInfoDerSerializer getInstance(long cCtx) {
+    public long cCtx;
+
+    public AlgInfoDerSerializer() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.algInfoDerSerializer_new();
+    }
+
+    package AlgInfoDerSerializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public AlgInfoDerSerializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new AlgInfoDerSerializer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -92,28 +74,20 @@ public class AlgInfoDerSerializer implements AutoCloseable, AlgInfoSerializer {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return buffer size enough to hold serialized algorithm.
-    */
     public int serializedLen(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algInfoDerSerializer_serializedLen(this.cCtx, algInfo);
     }
 
-    /*
-    * Serialize algorithm info to buffer class.
-    */
     public byte[] serialize(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algInfoDerSerializer_serialize(this.cCtx, algInfo);
     }
-}
 
+}

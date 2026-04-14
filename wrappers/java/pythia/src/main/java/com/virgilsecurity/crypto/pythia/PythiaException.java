@@ -36,22 +36,18 @@
 
 package com.virgilsecurity.crypto.pythia;
 
-/*
-* Defines the library status codes.
-*/
-public class PythiaException extends RuntimeException {
+public class PythiaException {
 
-    public static final int SUCCESS = 0;
+    public int SUCCESS;
 
-    public static final int ERROR_BAD_ARGUMENTS = -1;
+    public int ERROR_BAD_ARGUMENTS;
 
-    public static final int ERROR_PYTHIA_INNER_FAIL = -200;
+    public int ERROR_PYTHIA_INNER_FAIL;
 
-    public static final int ERROR_RNG_FAILED = -202;
+    public int ERROR_RNG_FAILED;
 
     private int statusCode;
 
-    /* Create new instance. */
     public PythiaException(int statusCode) {
         super();
         this.statusCode = statusCode;
@@ -75,5 +71,5 @@ public class PythiaException extends RuntimeException {
             return "Unknown error";
         }
     }
-}
 
+}

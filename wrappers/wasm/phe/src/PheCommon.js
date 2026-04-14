@@ -34,132 +34,97 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPheCommon = (Module, modules) => {
     class PheCommon {
 
-        /**
-         * PHE elliptic curve point binary length
-         */
         static get PHE_POINT_LENGTH() {
             return 65;
         }
 
         get PHE_POINT_LENGTH() {
-            return PheCommon.PHE_POINT_LENGTH;
+            return 65;
         }
 
-        /**
-         * PHE max password length
-         */
         static get PHE_MAX_PASSWORD_LENGTH() {
             return 128;
         }
 
         get PHE_MAX_PASSWORD_LENGTH() {
-            return PheCommon.PHE_MAX_PASSWORD_LENGTH;
+            return 128;
         }
 
-        /**
-         * PHE server identifier length
-         */
         static get PHE_SERVER_IDENTIFIER_LENGTH() {
             return 32;
         }
 
         get PHE_SERVER_IDENTIFIER_LENGTH() {
-            return PheCommon.PHE_SERVER_IDENTIFIER_LENGTH;
+            return 32;
         }
 
-        /**
-         * PHE client identifier length
-         */
         static get PHE_CLIENT_IDENTIFIER_LENGTH() {
             return 32;
         }
 
         get PHE_CLIENT_IDENTIFIER_LENGTH() {
-            return PheCommon.PHE_CLIENT_IDENTIFIER_LENGTH;
+            return 32;
         }
 
-        /**
-         * PHE account key length
-         */
         static get PHE_ACCOUNT_KEY_LENGTH() {
             return 32;
         }
 
         get PHE_ACCOUNT_KEY_LENGTH() {
-            return PheCommon.PHE_ACCOUNT_KEY_LENGTH;
+            return 32;
         }
 
-        /**
-         * PHE private key length
-         */
         static get PHE_PRIVATE_KEY_LENGTH() {
             return 32;
         }
 
         get PHE_PRIVATE_KEY_LENGTH() {
-            return PheCommon.PHE_PRIVATE_KEY_LENGTH;
+            return 32;
         }
 
-        /**
-         * PHE public key length
-         */
         static get PHE_PUBLIC_KEY_LENGTH() {
             return 65;
         }
 
         get PHE_PUBLIC_KEY_LENGTH() {
-            return PheCommon.PHE_PUBLIC_KEY_LENGTH;
+            return 65;
         }
 
-        /**
-         * PHE hash length
-         */
         static get PHE_HASH_LEN() {
             return 32;
         }
 
         get PHE_HASH_LEN() {
-            return PheCommon.PHE_HASH_LEN;
+            return 32;
         }
 
-        /**
-         * Maximum data size to encrypt
-         */
         static get PHE_MAX_ENCRYPT_LEN() {
             return 1024 * 1024 - 64;
         }
 
         get PHE_MAX_ENCRYPT_LEN() {
-            return PheCommon.PHE_MAX_ENCRYPT_LEN;
+            return 1024 * 1024 - 64;
         }
 
-        /**
-         * Maximum data size to decrypt
-         */
         static get PHE_MAX_DECRYPT_LEN() {
             return 1024 * 1024;
         }
 
         get PHE_MAX_DECRYPT_LEN() {
-            return PheCommon.PHE_MAX_DECRYPT_LEN;
+            return 1024 * 1024;
         }
 
-        /**
-         * Maximum data to authenticate
-         */
         static get PHE_MAX_AUTH_LEN() {
             return 1024;
         }
 
         get PHE_MAX_AUTH_LEN() {
-            return PheCommon.PHE_MAX_AUTH_LEN;
+            return 1024;
         }
+
     }
 
     return PheCommon;

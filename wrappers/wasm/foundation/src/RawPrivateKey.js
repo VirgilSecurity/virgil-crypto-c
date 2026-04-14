@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initRawPrivateKey = (Module, modules) => {
-    /**
-     * Handles interchangeable private key representation.
-     */
     class RawPrivateKey {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'RawPrivateKey';
 
@@ -58,29 +47,16 @@ const initRawPrivateKey = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new RawPrivateKey(Module._vscf_raw_private_key_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new RawPrivateKey(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_raw_private_key_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initRawPrivateKey = (Module, modules) => {
             }
         }
 
-        /**
-         * Algorithm identifier the key belongs to.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -99,9 +72,6 @@ const initRawPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return algorithm information that can be used for serialization.
-         */
         algInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -112,9 +82,6 @@ const initRawPrivateKey = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Length of the key in bytes.
-         */
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -123,9 +90,6 @@ const initRawPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Length of the key in bits.
-         */
         bitlen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -134,9 +98,6 @@ const initRawPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return tag of an associated algorithm that can handle this key.
-         */
         implTag() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -145,10 +106,6 @@ const initRawPrivateKey = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Check that key is valid.
-         * Note, this operation can be slow.
-         */
         isValid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -159,9 +116,6 @@ const initRawPrivateKey = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Extract public key from the private key.
-         */
         extractPublicKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -172,13 +126,10 @@ const initRawPrivateKey = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return key data.
-         */
         data() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -194,9 +145,6 @@ const initRawPrivateKey = (Module, modules) => {
             }
         }
 
-        /**
-         * Return true if private key contains public key.
-         */
         hasPublicKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -207,18 +155,12 @@ const initRawPrivateKey = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Setup public key related to the private key.
-         */
         setPublicKey(rawPublicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawPublicKey', rawPublicKey, modules.RawPublicKey);
             Module._vscf_raw_private_key_set_public_key(this.ctxPtr, rawPublicKey.ctxPtr);
         }
 
-        /**
-         * Return public key related to the private key.
-         */
         getPublicKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -228,6 +170,7 @@ const initRawPrivateKey = (Module, modules) => {
             const jsResult = modules.RawPublicKey.newAndUseCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return RawPrivateKey;

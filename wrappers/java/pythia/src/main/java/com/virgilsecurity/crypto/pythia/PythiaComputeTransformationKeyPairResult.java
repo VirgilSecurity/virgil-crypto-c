@@ -36,24 +36,9 @@
 
 package com.virgilsecurity.crypto.pythia;
 
-/* Encapsulate result of method pythia.computeTransformationKeyPair() */
 public class PythiaComputeTransformationKeyPairResult {
 
     private byte[] transformationPrivateKey;
-
-    private byte[] transformationPublicKey;
-
-    /* Create new instance of PythiaComputeTransformationKeyPairResult. */
-    PythiaComputeTransformationKeyPairResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    PythiaComputeTransformationKeyPairResult(byte[] transformationPrivateKey, byte[] transformationPublicKey) {
-        super();
-        this.transformationPrivateKey = transformationPrivateKey;
-        this.transformationPublicKey = transformationPublicKey;
-    }
 
     public byte[] getTransformationPrivateKey() {
         return this.transformationPrivateKey;
@@ -63,6 +48,8 @@ public class PythiaComputeTransformationKeyPairResult {
         this.transformationPrivateKey = transformationPrivateKey;
     }
 
+    private byte[] transformationPublicKey;
+
     public byte[] getTransformationPublicKey() {
         return this.transformationPublicKey;
     }
@@ -70,5 +57,15 @@ public class PythiaComputeTransformationKeyPairResult {
     public void setTransformationPublicKey(byte[] transformationPublicKey) {
         this.transformationPublicKey = transformationPublicKey;
     }
-}
 
+    package PythiaComputeTransformationKeyPairResult() {
+        super();
+    }
+
+    package PythiaComputeTransformationKeyPairResult(byte[] transformationPrivateKey, byte[] transformationPublicKey) {
+        super();
+        this.transformationPrivateKey = transformationPrivateKey;
+        this.transformationPublicKey = transformationPublicKey;
+    }
+
+}

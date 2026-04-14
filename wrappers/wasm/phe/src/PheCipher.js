@@ -34,21 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initPheCipher = (Module, modules) => {
-    /**
-     * Class for encryption using PHE account key
-     * This class is thread-safe.
-     */
     class PheCipher {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'PheCipher';
 
@@ -59,29 +47,16 @@ const initPheCipher = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PheCipher(Module._vsce_phe_cipher_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PheCipher(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vsce_phe_cipher_delete(this.ctxPtr);
@@ -89,28 +64,19 @@ const initPheCipher = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for salt generation
-         */
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_cipher_release_random(this.ctxPtr)
             Module._vsce_phe_cipher_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Setups dependencies with default values.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_phe_cipher_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Returns buffer capacity needed to fit cipher text
-         */
         encryptLen(plainTextLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('plainTextLen', plainTextLen);
@@ -120,9 +86,6 @@ const initPheCipher = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Returns buffer capacity needed to fit plain text
-         */
         decryptLen(cipherTextLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('cipherTextLen', cipherTextLen);
@@ -132,36 +95,33 @@ const initPheCipher = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Encrypts data using account key
-         */
         encrypt(plainText, accountKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
             precondition.ensureByteArray('accountKey', accountKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
             const plainTextPtr = Module._malloc(plainTextSize);
             Module.HEAP8.set(plainText, plainTextPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const plainTextCtxSize = Module._vsc_data_ctx_size();
             const plainTextCtxPtr = Module._malloc(plainTextCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const accountKeySize = accountKey.length * accountKey.BYTES_PER_ELEMENT;
             const accountKeyPtr = Module._malloc(accountKeySize);
             Module.HEAP8.set(accountKey, accountKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const accountKeyCtxSize = Module._vsc_data_ctx_size();
             const accountKeyCtxPtr = Module._malloc(accountKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
             const cipherTextCapacity = this.encryptLen(plainText.length);
@@ -184,36 +144,33 @@ const initPheCipher = (Module, modules) => {
             }
         }
 
-        /**
-         * Decrypts data using account key
-         */
         decrypt(cipherText, accountKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('cipherText', cipherText);
             precondition.ensureByteArray('accountKey', accountKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const cipherTextSize = cipherText.length * cipherText.BYTES_PER_ELEMENT;
             const cipherTextPtr = Module._malloc(cipherTextSize);
             Module.HEAP8.set(cipherText, cipherTextPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const cipherTextCtxSize = Module._vsc_data_ctx_size();
             const cipherTextCtxPtr = Module._malloc(cipherTextCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(cipherTextCtxPtr, cipherTextPtr, cipherTextSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const accountKeySize = accountKey.length * accountKey.BYTES_PER_ELEMENT;
             const accountKeyPtr = Module._malloc(accountKeySize);
             Module.HEAP8.set(accountKey, accountKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const accountKeyCtxSize = Module._vsc_data_ctx_size();
             const accountKeyCtxPtr = Module._malloc(accountKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
             const plainTextCapacity = this.decryptLen(cipherText.length);
@@ -236,49 +193,46 @@ const initPheCipher = (Module, modules) => {
             }
         }
 
-        /**
-         * Encrypts data (and authenticates additional data) using account key
-         */
         authEncrypt(plainText, additionalData, accountKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
             precondition.ensureByteArray('additionalData', additionalData);
             precondition.ensureByteArray('accountKey', accountKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
             const plainTextPtr = Module._malloc(plainTextSize);
             Module.HEAP8.set(plainText, plainTextPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const plainTextCtxSize = Module._vsc_data_ctx_size();
             const plainTextCtxPtr = Module._malloc(plainTextCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const additionalDataSize = additionalData.length * additionalData.BYTES_PER_ELEMENT;
             const additionalDataPtr = Module._malloc(additionalDataSize);
             Module.HEAP8.set(additionalData, additionalDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const additionalDataCtxSize = Module._vsc_data_ctx_size();
             const additionalDataCtxPtr = Module._malloc(additionalDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(additionalDataCtxPtr, additionalDataPtr, additionalDataSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const accountKeySize = accountKey.length * accountKey.BYTES_PER_ELEMENT;
             const accountKeyPtr = Module._malloc(accountKeySize);
             Module.HEAP8.set(accountKey, accountKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const accountKeyCtxSize = Module._vsc_data_ctx_size();
             const accountKeyCtxPtr = Module._malloc(accountKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
             const cipherTextCapacity = this.encryptLen(plainText.length);
@@ -303,49 +257,46 @@ const initPheCipher = (Module, modules) => {
             }
         }
 
-        /**
-         * Decrypts data (and verifies additional data) using account key
-         */
         authDecrypt(cipherText, additionalData, accountKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('cipherText', cipherText);
             precondition.ensureByteArray('additionalData', additionalData);
             precondition.ensureByteArray('accountKey', accountKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const cipherTextSize = cipherText.length * cipherText.BYTES_PER_ELEMENT;
             const cipherTextPtr = Module._malloc(cipherTextSize);
             Module.HEAP8.set(cipherText, cipherTextPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const cipherTextCtxSize = Module._vsc_data_ctx_size();
             const cipherTextCtxPtr = Module._malloc(cipherTextCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(cipherTextCtxPtr, cipherTextPtr, cipherTextSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const additionalDataSize = additionalData.length * additionalData.BYTES_PER_ELEMENT;
             const additionalDataPtr = Module._malloc(additionalDataSize);
             Module.HEAP8.set(additionalData, additionalDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const additionalDataCtxSize = Module._vsc_data_ctx_size();
             const additionalDataCtxPtr = Module._malloc(additionalDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(additionalDataCtxPtr, additionalDataPtr, additionalDataSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const accountKeySize = accountKey.length * accountKey.BYTES_PER_ELEMENT;
             const accountKeyPtr = Module._malloc(accountKeySize);
             Module.HEAP8.set(accountKey, accountKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const accountKeyCtxSize = Module._vsc_data_ctx_size();
             const accountKeyCtxPtr = Module._malloc(accountKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(accountKeyCtxPtr, accountKeyPtr, accountKeySize);
 
             const plainTextCapacity = this.decryptLen(cipherText.length);
@@ -369,6 +320,7 @@ const initPheCipher = (Module, modules) => {
                 Module._vsc_buffer_delete(plainTextCtxPtr);
             }
         }
+
     }
 
     return PheCipher;

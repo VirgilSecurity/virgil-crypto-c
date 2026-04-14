@@ -34,69 +34,38 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initOidId = (Module, modules) => {
     const OidId = Object.freeze({
-
         NONE: 0,
-
         RSA: 1,
-
         ED25519: 2,
-
         CURVE25519: 3,
-
         SHA224: 4,
-
         SHA256: 5,
-
         SHA384: 6,
-
         SHA512: 7,
-
         KDF1: 8,
-
         KDF2: 9,
-
         AES256_GCM: 10,
-
         AES256_CBC: 11,
-
         PKCS5_PBKDF2: 12,
-
         PKCS5_PBES2: 13,
-
         CMS_DATA: 14,
-
         CMS_ENVELOPED_DATA: 15,
-
         HKDF_WITH_SHA256: 16,
-
         HKDF_WITH_SHA384: 17,
-
         HKDF_WITH_SHA512: 18,
-
         HMAC_WITH_SHA224: 19,
-
         HMAC_WITH_SHA256: 20,
-
         HMAC_WITH_SHA384: 21,
-
         HMAC_WITH_SHA512: 22,
-
         EC_GENERIC_KEY: 23,
-
         EC_DOMAIN_SECP256R1: 24,
-
         COMPOUND_KEY: 25,
-
         HYBRID_KEY: 26,
-
         FALCON: 27,
-
         ROUND5_ND_1CCA_5D: 28,
-
-        RANDOM_PADDING: 29
+        RANDOM_PADDING: 29,
     });
 
     return OidId;

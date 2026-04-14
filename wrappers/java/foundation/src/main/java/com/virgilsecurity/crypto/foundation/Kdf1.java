@@ -36,38 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
-*/
 public class Kdf1 implements AutoCloseable, Alg, Kdf {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public Kdf1() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.kdf1_new();
-    }
-
-    /* Wrap underlying C context. */
-    Kdf1(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setHash(Hash hash) {
         FoundationJNI.INSTANCE.kdf1_setHash(this.cCtx, hash);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Kdf1 getInstance(long cCtx) {
+    public long cCtx;
+
+    public Kdf1() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.kdf1_new();
+    }
+
+    package Kdf1(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public Kdf1 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Kdf1(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -76,42 +66,28 @@ public class Kdf1 implements AutoCloseable, Alg, Kdf {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.kdf1_algId(this.cCtx);
     }
 
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
     public AlgInfo produceAlgInfo() {
         return FoundationJNI.INSTANCE.kdf1_produceAlgInfo(this.cCtx);
     }
 
-    /*
-    * Restore algorithm configuration from the given object.
-    */
     public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
         FoundationJNI.INSTANCE.kdf1_restoreAlgInfo(this.cCtx, algInfo);
     }
 
-    /*
-    * Derive key of the requested length from the given data.
-    */
     public byte[] derive(byte[] data, int keyLen) {
         return FoundationJNI.INSTANCE.kdf1_derive(this.cCtx, data, keyLen);
     }
-}
 
+}

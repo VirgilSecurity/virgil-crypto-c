@@ -37,8 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-use MyCLabs\Enum\Enum;
-
 class OidId extends Enum
 {
 
@@ -72,4 +70,5 @@ class OidId extends Enum
     private const FALCON = 27;
     private const ROUND5_ND_1CCA_5D = 28;
     private const RANDOM_PADDING = 29;
+
 }

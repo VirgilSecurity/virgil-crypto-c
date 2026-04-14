@@ -36,41 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles interchangeable public key representation.
-*/
 public class RawPublicKey implements AutoCloseable, Key, PublicKey {
+
+    public byte[] data() {
+        return FoundationJNI.INSTANCE.rawPublicKey_data(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public RawPublicKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.rawPublicKey_new();
     }
 
-    /* Wrap underlying C context. */
-    RawPublicKey(FoundationContextHolder contextHolder) {
+    package RawPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return key data.
-    */
-    public byte[] data() {
-        return FoundationJNI.INSTANCE.rawPublicKey_data(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static RawPublicKey getInstance(long cCtx) {
+    public RawPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RawPublicKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -79,50 +66,32 @@ public class RawPublicKey implements AutoCloseable, Key, PublicKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.rawPublicKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.rawPublicKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.rawPublicKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.rawPublicKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.rawPublicKey_isValid(this.cCtx);
     }
-}
 
+}

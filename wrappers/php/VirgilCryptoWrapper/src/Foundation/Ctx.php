@@ -41,7 +41,12 @@ interface Ctx
 {
 
     /**
+    * Get C context.
+    *
     * @return resource
     */
-    public function getCtx();
+    public function getCtx()
+    {
+        return $this->ctx;
+    }
 }

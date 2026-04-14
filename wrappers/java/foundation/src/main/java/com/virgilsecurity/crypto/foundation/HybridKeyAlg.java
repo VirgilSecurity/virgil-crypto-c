@@ -36,25 +36,7 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Implements public key cryptography over hybrid keys.
-* Hybrid encryption - TODO
-* Hybrid signatures - TODO
-*/
 public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public HybridKeyAlg() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.hybridKeyAlg_new();
-    }
-
-    /* Wrap underlying C context. */
-    HybridKeyAlg(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.hybridKeyAlg_setRandom(this.cCtx, random);
@@ -68,30 +50,30 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
         FoundationJNI.INSTANCE.hybridKeyAlg_setHash(this.cCtx, hash);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.hybridKeyAlg_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Make hybrid private key from given keys.
-    */
     public PrivateKey makeKey(PrivateKey firstKey, PrivateKey secondKey) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_makeKey(this.cCtx, firstKey, secondKey);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static HybridKeyAlg getInstance(long cCtx) {
+    public long cCtx;
+
+    public HybridKeyAlg() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.hybridKeyAlg_new();
+    }
+
+    package HybridKeyAlg(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public HybridKeyAlg getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridKeyAlg(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -100,179 +82,92 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Defines whether a public key can be imported or not.
-    */
     public boolean getCanImportPublicKey() {
         return true;
     }
 
-    /*
-    * Define whether a public key can be exported or not.
-    */
     public boolean getCanExportPublicKey() {
         return true;
     }
 
-    /*
-    * Define whether a private key can be imported or not.
-    */
     public boolean getCanImportPrivateKey() {
         return true;
     }
 
-    /*
-    * Define whether a private key can be exported or not.
-    */
     public boolean getCanExportPrivateKey() {
         return true;
     }
 
-    /*
-    * Generate ephemeral private key of the same type.
-    * Note, this operation might be slow.
-    */
     public PrivateKey generateEphemeralKey(Key key) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_generateEphemeralKey(this.cCtx, key);
     }
 
-    /*
-    * Import public key from the raw binary format.
-    *
-    * Return public key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
     public PublicKey importPublicKey(RawPublicKey rawKey) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_importPublicKey(this.cCtx, rawKey);
     }
 
-    /*
-    * Export public key to the raw binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    */
     public RawPublicKey exportPublicKey(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_exportPublicKey(this.cCtx, publicKey);
     }
 
-    /*
-    * Import private key from the raw binary format.
-    *
-    * Return private key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
     public PrivateKey importPrivateKey(RawPrivateKey rawKey) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_importPrivateKey(this.cCtx, rawKey);
     }
 
-    /*
-    * Export private key in the raw binary format.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    */
     public RawPrivateKey exportPrivateKey(PrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_exportPrivateKey(this.cCtx, privateKey);
     }
 
-    /*
-    * Check if algorithm can encrypt data with a given key.
-    */
     public boolean canEncrypt(PublicKey publicKey, int dataLen) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_canEncrypt(this.cCtx, publicKey, dataLen);
     }
 
-    /*
-    * Calculate required buffer length to hold the encrypted data.
-    */
     public int encryptedLen(PublicKey publicKey, int dataLen) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_encryptedLen(this.cCtx, publicKey, dataLen);
     }
 
-    /*
-    * Encrypt data with a given public key.
-    */
     public byte[] encrypt(PublicKey publicKey, byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_encrypt(this.cCtx, publicKey, data);
     }
 
-    /*
-    * Check if algorithm can decrypt data with a given key.
-    * However, success result of decryption is not guaranteed.
-    */
     public boolean canDecrypt(PrivateKey privateKey, int dataLen) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_canDecrypt(this.cCtx, privateKey, dataLen);
     }
 
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
     public int decryptedLen(PrivateKey privateKey, int dataLen) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_decryptedLen(this.cCtx, privateKey, dataLen);
     }
 
-    /*
-    * Decrypt given data.
-    */
     public byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_decrypt(this.cCtx, privateKey, data);
     }
 
-    /*
-    * Check if algorithm can sign data digest with a given key.
-    */
     public boolean canSign(PrivateKey privateKey) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_canSign(this.cCtx, privateKey);
     }
 
-    /*
-    * Return length in bytes required to hold signature.
-    * Return zero if a given private key can not produce signatures.
-    */
     public int signatureLen(PrivateKey privateKey) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_signatureLen(this.cCtx, privateKey);
     }
 
-    /*
-    * Sign data digest with a given private key.
-    */
     public byte[] signHash(PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException {
         return FoundationJNI.INSTANCE.hybridKeyAlg_signHash(this.cCtx, privateKey, hashId, digest);
     }
 
-    /*
-    * Check if algorithm can verify data digest with a given key.
-    */
     public boolean canVerify(PublicKey publicKey) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_canVerify(this.cCtx, publicKey);
     }
 
-    /*
-    * Verify data digest with a given public key and signature.
-    */
     public boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature) {
         return FoundationJNI.INSTANCE.hybridKeyAlg_verifyHash(this.cCtx, publicKey, hashId, digest, signature);
     }
-}
 
+}

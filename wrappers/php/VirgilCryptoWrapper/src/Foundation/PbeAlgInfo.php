@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about password-based encryption algorithm.
-*/
 class PbeAlgInfo implements AlgInfo
 {
 
@@ -68,10 +65,8 @@ class PbeAlgInfo implements AlgInfo
     }
 
     /**
-    * Return KDF algorithm information.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function kdfAlgInfo(): AlgInfo
     {
@@ -80,10 +75,8 @@ class PbeAlgInfo implements AlgInfo
     }
 
     /**
-    * Return cipher algorithm information.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function cipherAlgInfo(): AlgInfo
     {
@@ -92,7 +85,6 @@ class PbeAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

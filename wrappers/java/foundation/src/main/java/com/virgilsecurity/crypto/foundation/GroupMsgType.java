@@ -36,38 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Represents group message type
-*/
-public enum GroupMsgType {
-
-    /*
-    * Group info type with encryption key.
-    * This type of message should be encrypted before transferring.
-    */
-    GROUP_INFO(1),
-    /*
-    * Regular group message with encrypted text.
-    */
-    REGULAR(2);
-
-    private final int code;
-
-    private GroupMsgType(int code) {
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public static GroupMsgType fromCode(int code) {
-        for (GroupMsgType a : GroupMsgType.values()) {
-            if (a.code == code) {
-                return a;
-            }
-        }
-        return null;
-    }
-}
-

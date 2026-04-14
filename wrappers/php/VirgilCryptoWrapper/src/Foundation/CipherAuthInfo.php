@@ -39,4 +39,5 @@ namespace Virgil\CryptoWrapper\Foundation;
 
 interface CipherAuthInfo extends Ctx
 {
+
 }

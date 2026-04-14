@@ -36,26 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method uokms client.generateDecryptRequest() */
 public class UokmsClientGenerateDecryptRequestResult {
 
     private byte[] deblindFactor;
-
-    private byte[] decryptRequest;
-
-    /* Create new instance of UokmsClientGenerateDecryptRequestResult. */
-    UokmsClientGenerateDecryptRequestResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    UokmsClientGenerateDecryptRequestResult(byte[] deblindFactor, byte[] decryptRequest) {
-        super();
-        this.deblindFactor = deblindFactor;
-        this.decryptRequest = decryptRequest;
-    }
 
     public byte[] getDeblindFactor() {
         return this.deblindFactor;
@@ -65,6 +49,8 @@ public class UokmsClientGenerateDecryptRequestResult {
         this.deblindFactor = deblindFactor;
     }
 
+    private byte[] decryptRequest;
+
     public byte[] getDecryptRequest() {
         return this.decryptRequest;
     }
@@ -72,5 +58,15 @@ public class UokmsClientGenerateDecryptRequestResult {
     public void setDecryptRequest(byte[] decryptRequest) {
         this.decryptRequest = decryptRequest;
     }
-}
 
+    package UokmsClientGenerateDecryptRequestResult() {
+        super();
+    }
+
+    package UokmsClientGenerateDecryptRequestResult(byte[] deblindFactor, byte[] decryptRequest) {
+        super();
+        this.deblindFactor = deblindFactor;
+        this.decryptRequest = decryptRequest;
+    }
+
+}

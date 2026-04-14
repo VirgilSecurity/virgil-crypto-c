@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initAlgInfoDerSerializer = (Module, modules) => {
-    /**
-     * Provide DER serializer of algorithm information.
-     */
     class AlgInfoDerSerializer {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'AlgInfoDerSerializer';
 
@@ -58,29 +47,16 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new AlgInfoDerSerializer(Module._vscf_alg_info_der_serializer_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new AlgInfoDerSerializer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_alg_info_der_serializer_delete(this.ctxPtr);
@@ -88,16 +64,13 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             }
         }
 
-        set asn1Writer(asn1Writer) {
+        asn1Writer(asn1Writer) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_alg_info_der_serializer_release_asn1_writer(this.ctxPtr)
             Module._vscf_alg_info_der_serializer_use_asn1_writer(this.ctxPtr, asn1Writer.ctxPtr)
         }
 
-        /**
-         * Return buffer size enough to hold serialized algorithm.
-         */
         serializedLen(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -107,9 +80,6 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Serialize algorithm info to buffer class.
-         */
         serialize(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -129,19 +99,11 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_alg_info_der_serializer_setup_defaults(this.ctxPtr);
         }
 
-        /**
-         * Serialize by using internal ASN.1 writer.
-         * Note, that caller code is responsible to reset ASN.1 writer with
-         * an output buffer.
-         */
         serializeInplace(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -150,6 +112,7 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             proxyResult = Module._vscf_alg_info_der_serializer_serialize_inplace(this.ctxPtr, algInfo.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return AlgInfoDerSerializer;

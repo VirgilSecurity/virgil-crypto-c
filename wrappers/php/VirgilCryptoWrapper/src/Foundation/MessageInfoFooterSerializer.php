@@ -37,33 +37,38 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for "message info footer" class serialization.
-*/
 interface MessageInfoFooterSerializer extends Ctx
 {
 
     /**
-    * Return buffer size enough to hold serialized message info footer.
     *
-    * @param MessageInfoFooter $messageInfoFooter
+    * @param MessageInfoFooter $$messageInfoFooter
     * @return int
     */
-    public function serializedFooterLen(MessageInfoFooter $messageInfoFooter): int;
+    public function serializedFooterLen(MessageInfoFooter $$messageInfoFooter): int
+    {
+        return ($this->ctx, $$messageInfoFooter);
+    }
 
     /**
-    * Serialize class "message info footer".
     *
-    * @param MessageInfoFooter $messageInfoFooter
+    * @param MessageInfoFooter $$messageInfoFooter
     * @return string
     */
-    public function serializeFooter(MessageInfoFooter $messageInfoFooter): string;
+    public function serializeFooter(MessageInfoFooter $$messageInfoFooter): string
+    {
+        return ($this->ctx, $$messageInfoFooter);
+    }
 
     /**
-    * Deserialize class "message info footer".
     *
-    * @param string $data
+    * @param string $$data
     * @return MessageInfoFooter
     */
-    public function deserializeFooter(string $data): MessageInfoFooter;
+    public function deserializeFooter(string $$data): MessageInfoFooter
+    {
+        $ctx = ($this->ctx, $$data);
+        return new MessageInfoFooter($ctx);
+    }
+
 }

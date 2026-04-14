@@ -37,66 +37,75 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide data encryption and decryption interface with asymmetric keys.
-*/
 interface KeyCipher extends Ctx
 {
 
     /**
-    * Check if algorithm can encrypt data with a given key.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param PublicKey $$publicKey
+    * @param int $$dataLen
     * @return bool
     */
-    public function canEncrypt(PublicKey $publicKey, int $dataLen): bool;
+    public function canEncrypt(PublicKey $$publicKey, int $$dataLen): bool
+    {
+        return ($this->ctx, $$publicKey, $$dataLen);
+    }
 
     /**
-    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param PublicKey $$publicKey
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptedLen(PublicKey $publicKey, int $dataLen): int;
+    public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
+    {
+        return ($this->ctx, $$publicKey, $$dataLen);
+    }
 
     /**
-    * Encrypt data with a given public key.
     *
-    * @param PublicKey $publicKey
-    * @param string $data
+    * @param PublicKey $$publicKey
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(PublicKey $publicKey, string $data): string;
+    public function encrypt(PublicKey $$publicKey, string $$data): string
+    {
+        return ($this->ctx, $$publicKey, $$data);
+    }
 
     /**
-    * Check if algorithm can decrypt data with a given key.
-    * However, success result of decryption is not guaranteed.
     *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
+    * @param PrivateKey $$privateKey
+    * @param int $$dataLen
     * @return bool
     */
-    public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool;
+    public function canDecrypt(PrivateKey $$privateKey, int $$dataLen): bool
+    {
+        return ($this->ctx, $$privateKey, $$dataLen);
+    }
 
     /**
-    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
+    * @param PrivateKey $$privateKey
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int;
+    public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
+    {
+        return ($this->ctx, $$privateKey, $$dataLen);
+    }
 
     /**
-    * Decrypt given data.
     *
-    * @param PrivateKey $privateKey
-    * @param string $data
+    * @param PrivateKey $$privateKey
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(PrivateKey $privateKey, string $data): string;
+    public function decrypt(PrivateKey $$privateKey, string $$data): string
+    {
+        return ($this->ctx, $$privateKey, $$data);
+    }
+
 }

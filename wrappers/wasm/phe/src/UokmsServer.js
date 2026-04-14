@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initUokmsServer = (Module, modules) => {
-    /**
-     * Class implements UOKMS for server-side.
-     */
     class UokmsServer {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'UokmsServer';
 
@@ -58,29 +47,16 @@ const initUokmsServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new UokmsServer(Module._vsce_uokms_server_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new UokmsServer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vsce_uokms_server_delete(this.ctxPtr);
@@ -88,38 +64,26 @@ const initUokmsServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for key generation, proofs, etc.
-         */
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_uokms_server_release_random(this.ctxPtr)
             Module._vsce_uokms_server_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Random used for crypto operations to make them const-time
-         */
-        set operationRandom(operationRandom) {
+        operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_uokms_server_release_operation_random(this.ctxPtr)
             Module._vsce_uokms_server_use_operation_random(this.ctxPtr, operationRandom.ctxPtr)
         }
 
-        /**
-         * Setups dependencies with default values.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vsce_uokms_server_setup_defaults(this.ctxPtr);
             modules.PheError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Generates new NIST P-256 server key pair for some client
-         */
         generateServerKeyPair() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -147,9 +111,6 @@ const initUokmsServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Buffer size needed to fit DecryptResponse
-         */
         decryptResponseLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -158,36 +119,33 @@ const initUokmsServer = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Processed client's decrypt request
-         */
         processDecryptRequest(serverPrivateKey, decryptRequest) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
             precondition.ensureByteArray('decryptRequest', decryptRequest);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
             const serverPrivateKeyPtr = Module._malloc(serverPrivateKeySize);
             Module.HEAP8.set(serverPrivateKey, serverPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPrivateKeyCtxPtr = Module._malloc(serverPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const decryptRequestSize = decryptRequest.length * decryptRequest.BYTES_PER_ELEMENT;
             const decryptRequestPtr = Module._malloc(decryptRequestSize);
             Module.HEAP8.set(decryptRequest, decryptRequestPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const decryptRequestCtxSize = Module._vsc_data_ctx_size();
             const decryptRequestCtxPtr = Module._malloc(decryptRequestCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(decryptRequestCtxPtr, decryptRequestPtr, decryptRequestSize);
 
             const decryptResponseCapacity = this.decryptResponseLen();
@@ -210,23 +168,20 @@ const initUokmsServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Updates server's private and public keys and issues an update token for use on client's side
-         */
         rotateKeys(serverPrivateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('serverPrivateKey', serverPrivateKey);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const serverPrivateKeySize = serverPrivateKey.length * serverPrivateKey.BYTES_PER_ELEMENT;
             const serverPrivateKeyPtr = Module._malloc(serverPrivateKeySize);
             Module.HEAP8.set(serverPrivateKey, serverPrivateKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const serverPrivateKeyCtxSize = Module._vsc_data_ctx_size();
             const serverPrivateKeyCtxPtr = Module._malloc(serverPrivateKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(serverPrivateKeyCtxPtr, serverPrivateKeyPtr, serverPrivateKeySize);
 
             const newServerPrivateKeyCapacity = modules.PheCommon.PHE_PRIVATE_KEY_LENGTH;
@@ -262,6 +217,7 @@ const initUokmsServer = (Module, modules) => {
                 Module._vsc_buffer_delete(updateTokenCtxPtr);
             }
         }
+
     }
 
     return UokmsServer;

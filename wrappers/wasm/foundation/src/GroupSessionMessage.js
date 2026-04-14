@@ -34,42 +34,25 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initGroupSessionMessage = (Module, modules) => {
-    /**
-     * Class represents group session message
-     */
     class GroupSessionMessage {
 
-        /**
-         * Max message len
-         */
         static get MAX_MESSAGE_LEN() {
             return 30188;
         }
 
         get MAX_MESSAGE_LEN() {
-            return GroupSessionMessage.MAX_MESSAGE_LEN;
+            return 30188;
         }
 
-        /**
-         * Message version
-         */
         static get MESSAGE_VERSION() {
             return 1;
         }
 
         get MESSAGE_VERSION() {
-            return GroupSessionMessage.MESSAGE_VERSION;
+            return 1;
         }
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'GroupSessionMessage';
 
@@ -80,29 +63,16 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new GroupSessionMessage(Module._vscf_group_session_message_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new GroupSessionMessage(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_group_session_message_delete(this.ctxPtr);
@@ -110,9 +80,6 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
-        /**
-         * Returns message type.
-         */
         getType() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -121,14 +88,10 @@ const initGroupSessionMessage = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Returns session id.
-         * This method should be called only for group info type.
-         */
         getSessionId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -144,9 +107,6 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
-        /**
-         * Returns message epoch.
-         */
         getEpoch() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -155,9 +115,6 @@ const initGroupSessionMessage = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Buffer len to serialize this class.
-         */
         serializeLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -166,9 +123,6 @@ const initGroupSessionMessage = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Serializes instance.
-         */
         serialize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -187,22 +141,19 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
-        /**
-         * Deserializes instance.
-         */
-        static deserialize(input) {
+        static deserialize(input, error) {
             precondition.ensureByteArray('input', input);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const inputSize = input.length * input.BYTES_PER_ELEMENT;
             const inputPtr = Module._malloc(inputSize);
             Module.HEAP8.set(input, inputPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const inputCtxSize = Module._vsc_data_ctx_size();
             const inputCtxPtr = Module._malloc(inputCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -225,6 +176,7 @@ const initGroupSessionMessage = (Module, modules) => {
                 Module._free(errorCtxPtr);
             }
         }
+
     }
 
     return GroupSessionMessage;

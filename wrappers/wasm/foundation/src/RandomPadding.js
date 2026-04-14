@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initRandomPadding = (Module, modules) => {
-    /**
-     * Append a random number of padding bytes to a data.
-     */
     class RandomPadding {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'RandomPadding';
 
@@ -58,29 +47,16 @@ const initRandomPadding = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new RandomPadding(Module._vscf_random_padding_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new RandomPadding(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_random_padding_delete(this.ctxPtr);
@@ -88,16 +64,13 @@ const initRandomPadding = (Module, modules) => {
             }
         }
 
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_random_padding_release_random(this.ctxPtr)
             Module._vscf_random_padding_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -106,9 +79,6 @@ const initRandomPadding = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Produce object with algorithm information and configuration parameters.
-         */
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -119,9 +89,6 @@ const initRandomPadding = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Restore algorithm configuration from the given object.
-         */
         restoreAlgInfo(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -129,18 +96,12 @@ const initRandomPadding = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Set new padding parameters.
-         */
         configure(params) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('params', params, modules.PaddingParams);
             Module._vscf_random_padding_configure(this.ctxPtr, params.ctxPtr);
         }
 
-        /**
-         * Return length in bytes of a data with a padding.
-         */
         paddedDataLen(dataLen) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataLen', dataLen);
@@ -150,10 +111,6 @@ const initRandomPadding = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return an actual number of padding in bytes.
-         * Note, this method might be called right before "finish data processing".
-         */
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -162,9 +119,6 @@ const initRandomPadding = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return a maximum number of padding in bytes.
-         */
         lenMax() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -173,35 +127,28 @@ const initRandomPadding = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Prepare the algorithm to process data.
-         */
         startDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_random_padding_start_data_processing(this.ctxPtr);
         }
 
-        /**
-         * Only data length is needed to produce padding later.
-         * Return data that should be further proceeded.
-         */
         processData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -219,9 +166,6 @@ const initRandomPadding = (Module, modules) => {
             }
         }
 
-        /**
-         * Accomplish data processing and return padding.
-         */
         finishDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -241,32 +185,25 @@ const initRandomPadding = (Module, modules) => {
             }
         }
 
-        /**
-         * Prepare the algorithm to process padded data.
-         */
         startPaddedDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_random_padding_start_padded_data_processing(this.ctxPtr);
         }
 
-        /**
-         * Process padded data.
-         * Return filtered data without padding.
-         */
         processPaddedData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const outCapacity = dataSize;
@@ -286,10 +223,6 @@ const initRandomPadding = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required hold output of the method
-         * "finish padded data processing".
-         */
         finishPaddedDataProcessingOutLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -298,9 +231,6 @@ const initRandomPadding = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Accomplish padded data processing and return left data without a padding.
-         */
         finishPaddedDataProcessing() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -319,6 +249,7 @@ const initRandomPadding = (Module, modules) => {
                 Module._vsc_buffer_delete(outCtxPtr);
             }
         }
+
     }
 
     return RandomPadding;

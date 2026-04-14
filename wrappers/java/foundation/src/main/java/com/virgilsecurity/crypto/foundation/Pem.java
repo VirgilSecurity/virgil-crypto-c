@@ -36,46 +36,26 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Simple PEM wrapper.
-*/
 public class Pem {
 
-    /*
-    * Return length in bytes required to hold wrapped PEM format.
-    */
-    public static int wrappedLen(String title, int dataLen) {
+    public int wrappedLen(String title, int dataLen) {
         return FoundationJNI.INSTANCE.pem_wrappedLen(title, dataLen);
     }
 
-    /*
-    * Takes binary data and wraps it to the simple PEM format - no
-    * additional information just header-base64-footer.
-    * Note, written buffer is NOT null-terminated.
-    */
-    public static byte[] wrap(String title, byte[] data) {
+    public byte[] wrap(String title, byte[] data) {
         return FoundationJNI.INSTANCE.pem_wrap(title, data);
     }
 
-    /*
-    * Return length in bytes required to hold unwrapped binary.
-    */
-    public static int unwrappedLen(int pemLen) {
+    public int unwrappedLen(int pemLen) {
         return FoundationJNI.INSTANCE.pem_unwrappedLen(pemLen);
     }
 
-    /*
-    * Takes PEM data and extract binary data from it.
-    */
-    public static byte[] unwrap(byte[] pem) throws FoundationException {
+    public byte[] unwrap(byte[] pem) throws FoundationException {
         return FoundationJNI.INSTANCE.pem_unwrap(pem);
     }
 
-    /*
-    * Returns PEM title if PEM data is valid, otherwise - empty data.
-    */
-    public static byte[] title(byte[] pem) {
+    public byte[] title(byte[] pem) {
         return FoundationJNI.INSTANCE.pem_title(pem);
     }
-}
 
+}

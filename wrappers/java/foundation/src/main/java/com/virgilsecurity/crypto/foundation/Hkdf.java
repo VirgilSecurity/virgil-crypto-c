@@ -36,38 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Virgil Security implementation of the HKDF (RFC 6234) algorithm.
-*/
 public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public Hkdf() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.hkdf_new();
-    }
-
-    /* Wrap underlying C context. */
-    Hkdf(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setHash(Hash hash) {
         FoundationJNI.INSTANCE.hkdf_setHash(this.cCtx, hash);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Hkdf getInstance(long cCtx) {
+    public long cCtx;
+
+    public Hkdf() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.hkdf_new();
+    }
+
+    package Hkdf(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public Hkdf getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Hkdf(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -76,57 +66,36 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hkdf_algId(this.cCtx);
     }
 
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
     public AlgInfo produceAlgInfo() {
         return FoundationJNI.INSTANCE.hkdf_produceAlgInfo(this.cCtx);
     }
 
-    /*
-    * Restore algorithm configuration from the given object.
-    */
     public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
         FoundationJNI.INSTANCE.hkdf_restoreAlgInfo(this.cCtx, algInfo);
     }
 
-    /*
-    * Derive key of the requested length from the given data.
-    */
     public byte[] derive(byte[] data, int keyLen) {
         return FoundationJNI.INSTANCE.hkdf_derive(this.cCtx, data, keyLen);
     }
 
-    /*
-    * Prepare algorithm to derive new key.
-    */
     public void reset(byte[] salt, int iterationCount) {
         FoundationJNI.INSTANCE.hkdf_reset(this.cCtx, salt, iterationCount);
     }
 
-    /*
-    * Setup application specific information (optional).
-    * Can be empty.
-    */
     public void setInfo(byte[] info) {
         FoundationJNI.INSTANCE.hkdf_setInfo(this.cCtx, info);
     }
-}
 
+}

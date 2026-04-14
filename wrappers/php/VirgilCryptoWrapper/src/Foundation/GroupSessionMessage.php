@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Class represents group session message
-*/
 class GroupSessionMessage
 {
 
@@ -71,7 +68,6 @@ class GroupSessionMessage
     }
 
     /**
-    * Returns message type.
     *
     * @return GroupMsgType
     */
@@ -82,8 +78,6 @@ class GroupSessionMessage
     }
 
     /**
-    * Returns session id.
-    * This method should be called only for group info type.
     *
     * @return string
     */
@@ -93,7 +87,6 @@ class GroupSessionMessage
     }
 
     /**
-    * Returns message epoch.
     *
     * @return int
     */
@@ -103,7 +96,6 @@ class GroupSessionMessage
     }
 
     /**
-    * Buffer len to serialize this class.
     *
     * @return int
     */
@@ -113,7 +105,6 @@ class GroupSessionMessage
     }
 
     /**
-    * Serializes instance.
     *
     * @return string
     */
@@ -123,14 +114,13 @@ class GroupSessionMessage
     }
 
     /**
-    * Deserializes instance.
     *
-    * @param string $input
+    * @param string $$input
     * @return GroupSessionMessage
     */
-    public static function deserialize(string $input): GroupSessionMessage
+    public static function deserialize(string $$input): GroupSessionMessage
     {
-        $ctx = vscf_group_session_message_deserialize_php($input);
+        $ctx = vscf_group_session_message_deserialize_php($$input);
         return new GroupSessionMessage($ctx);
     }
 

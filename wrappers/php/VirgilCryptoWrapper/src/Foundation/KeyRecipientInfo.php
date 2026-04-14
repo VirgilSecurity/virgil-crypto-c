@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about recipient that is defined by a Public Key.
-*/
 class KeyRecipientInfo
 {
 
@@ -49,17 +46,15 @@ class KeyRecipientInfo
     private $ctx;
 
     /**
-    * Create object and define all properties.
     *
-    * @param string $recipientId
-    * @param AlgInfo $keyEncryptionAlgorithm
-    * @param string $encryptedKey
+    * @param string $$recipientId
+    * @param AlgInfo $$keyEncryptionAlgorithm
+    * @param string $$encryptedKey
     * @return KeyRecipientInfo
     */
-    public static function withData(string $recipientId, AlgInfo $keyEncryptionAlgorithm, string $encryptedKey): KeyRecipientInfo
+    public static function withData(string $$recipientId, AlgInfo $$keyEncryptionAlgorithm, string $$encryptedKey): KeyRecipientInfo
     {
-        $ctx = vscf_key_recipient_info_with_data_php($recipientId, $keyEncryptionAlgorithm, $encryptedKey);
-        return new KeyRecipientInfo($ctx);
+        return vscf_key_recipient_info_with_data_php($$recipientId, $$keyEncryptionAlgorithm, $$encryptedKey);
     }
 
     /**
@@ -82,7 +77,6 @@ class KeyRecipientInfo
     }
 
     /**
-    * Return recipient identifier.
     *
     * @return string
     */
@@ -92,11 +86,8 @@ class KeyRecipientInfo
     }
 
     /**
-    * Return algorithm information that was used for encryption
-    * a data encryption key.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function keyEncryptionAlgorithm(): AlgInfo
     {
@@ -105,7 +96,6 @@ class KeyRecipientInfo
     }
 
     /**
-    * Return an encrypted data encryption key.
     *
     * @return string
     */

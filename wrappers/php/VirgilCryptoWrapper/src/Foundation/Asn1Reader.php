@@ -37,225 +37,273 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides interface to the ASN.1 reader.
-* Note, that all "read" methods move reading position forward.
-* Note, that all "get" do not change reading position.
-*/
 interface Asn1Reader extends Ctx
 {
 
     /**
-    * Reset all internal states and prepare to new ASN.1 reading operations.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function reset(string $data): void;
+    public function reset(string $$data): void
+    {
+        ($this->ctx, $$data);
+    }
 
     /**
-    * Return length in bytes how many bytes are left for reading.
     *
     * @return int
     */
-    public function leftLen(): int;
+    public function leftLen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Return true if status is not "success".
     *
     * @return bool
     */
-    public function hasError(): bool;
+    public function hasError(): bool
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Return error code.
     *
     * @return void
     * @throws \Exception
     */
-    public function status(): void;
+    public function status(): void
+    {
+        ($this->ctx);
+    }
 
     /**
-    * Get tag of the current ASN.1 element.
     *
     * @return int
     */
-    public function getTag(): int;
+    public function getTag(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Get length of the current ASN.1 element.
     *
     * @return int
     */
-    public function getLen(): int;
+    public function getLen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Get length of the current ASN.1 element with tag and length itself.
     *
     * @return int
     */
-    public function getDataLen(): int;
+    public function getDataLen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: TAG.
-    * Return element length.
     *
-    * @param int $tag
+    * @param int $$tag
     * @return int
     */
-    public function readTag(int $tag): int;
+    public function readTag(int $$tag): int
+    {
+        return ($this->ctx, $$tag);
+    }
 
     /**
-    * Read ASN.1 type: context-specific TAG.
-    * Return element length.
-    * Return 0 if current position do not points to the requested tag.
     *
-    * @param int $tag
+    * @param int $$tag
     * @return int
     */
-    public function readContextTag(int $tag): int;
+    public function readContextTag(int $$tag): int
+    {
+        return ($this->ctx, $$tag);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
-    *
-    * @return int
-    */
-    public function readInt(): int;
-
-    /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt8(): int;
+    public function readInt(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt16(): int;
+    public function readInt8(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt32(): int;
+    public function readInt16(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readInt64(): int;
+    public function readInt32(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint(): int;
+    public function readInt64(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint8(): int;
+    public function readUint(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint16(): int;
+    public function readUint8(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint32(): int;
+    public function readUint16(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
-    public function readUint64(): int;
+    public function readUint32(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: BOOLEAN.
+    *
+    * @return int
+    */
+    public function readUint64(): int
+    {
+        return ($this->ctx);
+    }
+
+    /**
     *
     * @return bool
     */
-    public function readBool(): bool;
+    public function readBool(): bool
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: NULL.
     *
     * @return void
     */
-    public function readNull(): void;
+    public function readNull(): void
+    {
+        ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: NULL, only if it exists.
-    * Note, this method is safe to call even no more data is left for reading.
     *
     * @return void
     */
-    public function readNullOptional(): void;
+    public function readNullOptional(): void
+    {
+        ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: OCTET STRING.
     *
     * @return string
     */
-    public function readOctetStr(): string;
+    public function readOctetStr(): string
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: BIT STRING.
     *
     * @return string
     */
-    public function readBitstringAsOctetStr(): string;
+    public function readBitstringAsOctetStr(): string
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: UTF8String.
     *
     * @return string
     */
-    public function readUtf8Str(): string;
+    public function readUtf8Str(): string
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: OID.
     *
     * @return string
     */
-    public function readOid(): string;
+    public function readOid(): string
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read raw data of given length.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     */
-    public function readData(int $len): string;
+    public function readData(int $$len): string
+    {
+        return ($this->ctx, $$len);
+    }
 
     /**
-    * Read ASN.1 type: SEQUENCE.
-    * Return element length.
     *
     * @return int
     */
-    public function readSequence(): int;
+    public function readSequence(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Read ASN.1 type: SET.
-    * Return element length.
     *
     * @return int
     */
-    public function readSet(): int;
+    public function readSet(): int
+    {
+        return ($this->ctx);
+    }
+
 }

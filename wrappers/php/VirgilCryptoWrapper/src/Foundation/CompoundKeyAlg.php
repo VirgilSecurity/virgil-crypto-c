@@ -37,12 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Implements public key cryptography over compound keys.
-*
-* Compound key contains 2 keys - one for encryption/decryption and
-* one for signing/verifying.
-*/
 class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
 {
 
@@ -76,16 +70,16 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     }
 
     /**
-    * @param Random $random
+    *
+    * @param Random $$random
     * @return void
     */
-    public function useRandom(Random $random): void
+    public function useRandom(Random $$random): void
     {
-        vscf_compound_key_alg_use_random_php($this->ctx, $random->getCtx());
+        vscf_compound_key_alg_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -96,23 +90,18 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     }
 
     /**
-    * Make compound private key from given.
     *
-    * Note, this operation might be slow.
-    *
-    * @param PrivateKey $cipherKey
-    * @param PrivateKey $signerKey
+    * @param PrivateKey $$cipherKey
+    * @param PrivateKey $$signerKey
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function makeKey(PrivateKey $cipherKey, PrivateKey $signerKey): PrivateKey
+    public function makeKey(PrivateKey $$cipherKey, PrivateKey $$signerKey): PrivateKey
     {
-        $ctx = vscf_compound_key_alg_make_key_php($this->ctx, $cipherKey->getCtx(), $signerKey->getCtx());
+        $ctx = vscf_compound_key_alg_make_key_php($this->ctx, $$cipherKey, $$signerKey);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -123,10 +112,8 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     }
 
     /**
-    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -135,238 +122,193 @@ class CompoundKeyAlg implements Alg, KeyAlg, KeyCipher, KeySigner
     }
 
     /**
-    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_compound_key_alg_restore_alg_info_php($this->ctx, $algInfo->getCtx());
+        vscf_compound_key_alg_restore_alg_info_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Generate ephemeral private key of the same type.
-    * Note, this operation might be slow.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function generateEphemeralKey(Key $key): PrivateKey
+    public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = vscf_compound_key_alg_generate_ephemeral_key_php($this->ctx, $key->getCtx());
+        $ctx = vscf_compound_key_alg_generate_ephemeral_key_php($this->ctx, $$key);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Import public key from the raw binary format.
     *
-    * Return public key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param RawPublicKey $rawKey
+    * @param RawPublicKey $$rawKey
     * @return PublicKey
-    * @throws \Exception
     */
-    public function importPublicKey(RawPublicKey $rawKey): PublicKey
+    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
-        $ctx = vscf_compound_key_alg_import_public_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_compound_key_alg_import_public_key_php($this->ctx, $$rawKey);
         return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**
-    * Export public key to the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return RawPublicKey
     */
-    public function exportPublicKey(PublicKey $publicKey): RawPublicKey
+    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = vscf_compound_key_alg_export_public_key_php($this->ctx, $publicKey->getCtx());
+        $ctx = vscf_compound_key_alg_export_public_key_php($this->ctx, $$publicKey);
         return new RawPublicKey($ctx);
     }
 
     /**
-    * Import private key from the raw binary format.
     *
-    * Return private key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param RawPrivateKey $rawKey
+    * @param RawPrivateKey $$rawKey
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey
+    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
-        $ctx = vscf_compound_key_alg_import_private_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_compound_key_alg_import_private_key_php($this->ctx, $$rawKey);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Export private key in the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return RawPrivateKey
     */
-    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
+    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = vscf_compound_key_alg_export_private_key_php($this->ctx, $privateKey->getCtx());
+        $ctx = vscf_compound_key_alg_export_private_key_php($this->ctx, $$privateKey);
         return new RawPrivateKey($ctx);
     }
 
     /**
-    * Check if algorithm can encrypt data with a given key.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param PublicKey $$publicKey
+    * @param int $$dataLen
     * @return bool
     */
-    public function canEncrypt(PublicKey $publicKey, int $dataLen): bool
+    public function canEncrypt(PublicKey $$publicKey, int $$dataLen): bool
     {
-        return vscf_compound_key_alg_can_encrypt_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_compound_key_alg_can_encrypt_php($this->ctx, $$publicKey, $$dataLen);
     }
 
     /**
-    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param PublicKey $publicKey
-    * @param int $dataLen
+    * @param PublicKey $$publicKey
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptedLen(PublicKey $publicKey, int $dataLen): int
+    public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
     {
-        return vscf_compound_key_alg_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
+        return vscf_compound_key_alg_encrypted_len_php($this->ctx, $$publicKey, $$dataLen);
     }
 
     /**
-    * Encrypt data with a given public key.
     *
-    * @param PublicKey $publicKey
-    * @param string $data
+    * @param PublicKey $$publicKey
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(PublicKey $publicKey, string $data): string
+    public function encrypt(PublicKey $$publicKey, string $$data): string
     {
-        return vscf_compound_key_alg_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
+        return vscf_compound_key_alg_encrypt_php($this->ctx, $$publicKey, $$data);
     }
 
     /**
-    * Check if algorithm can decrypt data with a given key.
-    * However, success result of decryption is not guaranteed.
     *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
+    * @param PrivateKey $$privateKey
+    * @param int $$dataLen
     * @return bool
     */
-    public function canDecrypt(PrivateKey $privateKey, int $dataLen): bool
+    public function canDecrypt(PrivateKey $$privateKey, int $$dataLen): bool
     {
-        return vscf_compound_key_alg_can_decrypt_php($this->ctx, $privateKey->getCtx(), $dataLen);
+        return vscf_compound_key_alg_can_decrypt_php($this->ctx, $$privateKey, $$dataLen);
     }
 
     /**
-    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param PrivateKey $privateKey
-    * @param int $dataLen
+    * @param PrivateKey $$privateKey
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
+    public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
     {
-        return vscf_compound_key_alg_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
+        return vscf_compound_key_alg_decrypted_len_php($this->ctx, $$privateKey, $$dataLen);
     }
 
     /**
-    * Decrypt given data.
     *
-    * @param PrivateKey $privateKey
-    * @param string $data
+    * @param PrivateKey $$privateKey
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(PrivateKey $privateKey, string $data): string
+    public function decrypt(PrivateKey $$privateKey, string $$data): string
     {
-        return vscf_compound_key_alg_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
+        return vscf_compound_key_alg_decrypt_php($this->ctx, $$privateKey, $$data);
     }
 
     /**
-    * Check if algorithm can sign data digest with a given key.
     *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return bool
     */
-    public function canSign(PrivateKey $privateKey): bool
+    public function canSign(PrivateKey $$privateKey): bool
     {
-        return vscf_compound_key_alg_can_sign_php($this->ctx, $privateKey->getCtx());
+        return vscf_compound_key_alg_can_sign_php($this->ctx, $$privateKey);
     }
 
     /**
-    * Return length in bytes required to hold signature.
-    * Return zero if a given private key can not produce signatures.
     *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return int
     */
-    public function signatureLen(PrivateKey $privateKey): int
+    public function signatureLen(PrivateKey $$privateKey): int
     {
-        return vscf_compound_key_alg_signature_len_php($this->ctx, $privateKey->getCtx());
+        return vscf_compound_key_alg_signature_len_php($this->ctx, $$privateKey);
     }
 
     /**
-    * Sign data digest with a given private key.
     *
-    * @param PrivateKey $privateKey
-    * @param AlgId $hashId
-    * @param string $digest
+    * @param PrivateKey $$privateKey
+    * @param AlgId $$hashId
+    * @param string $$digest
     * @return string
     * @throws \Exception
     */
-    public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string
+    public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
     {
-        return vscf_compound_key_alg_sign_hash_php($this->ctx, $privateKey->getCtx(), $hashId->getValue(), $digest);
+        return vscf_compound_key_alg_sign_hash_php($this->ctx, $$privateKey, $$hashId, $$digest);
     }
 
     /**
-    * Check if algorithm can verify data digest with a given key.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return bool
     */
-    public function canVerify(PublicKey $publicKey): bool
+    public function canVerify(PublicKey $$publicKey): bool
     {
-        return vscf_compound_key_alg_can_verify_php($this->ctx, $publicKey->getCtx());
+        return vscf_compound_key_alg_can_verify_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Verify data digest with a given public key and signature.
     *
-    * @param PublicKey $publicKey
-    * @param AlgId $hashId
-    * @param string $digest
-    * @param string $signature
+    * @param PublicKey $$publicKey
+    * @param AlgId $$hashId
+    * @param string $$digest
+    * @param string $$signature
     * @return bool
     */
-    public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool
+    public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
     {
-        return vscf_compound_key_alg_verify_hash_php($this->ctx, $publicKey->getCtx(), $hashId->getValue(), $digest, $signature);
+        return vscf_compound_key_alg_verify_hash_php($this->ctx, $$publicKey, $$hashId, $$digest, $$signature);
     }
 
     /**

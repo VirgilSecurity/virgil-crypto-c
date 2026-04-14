@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide DER serializer of algorithm information.
-*/
 class AlgInfoDerSerializer implements AlgInfoSerializer
 {
 
@@ -68,16 +65,16 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
     }
 
     /**
-    * @param Asn1Writer $asn1Writer
+    *
+    * @param Asn1Writer $$asn1Writer
     * @return void
     */
-    public function useAsn1Writer(Asn1Writer $asn1Writer): void
+    public function useAsn1Writer(Asn1Writer $$asn1Writer): void
     {
-        vscf_alg_info_der_serializer_use_asn1_writer_php($this->ctx, $asn1Writer->getCtx());
+        vscf_alg_info_der_serializer_use_asn1_writer_php($this->ctx, $$asn1Writer);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -87,38 +84,33 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
     }
 
     /**
-    * Serialize by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return int
     */
-    public function serializeInplace(AlgInfo $algInfo): int
+    public function serializeInplace(AlgInfo $$algInfo): int
     {
-        return vscf_alg_info_der_serializer_serialize_inplace_php($this->ctx, $algInfo->getCtx());
+        return vscf_alg_info_der_serializer_serialize_inplace_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Return buffer size enough to hold serialized algorithm.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return int
     */
-    public function serializedLen(AlgInfo $algInfo): int
+    public function serializedLen(AlgInfo $$algInfo): int
     {
-        return vscf_alg_info_der_serializer_serialized_len_php($this->ctx, $algInfo->getCtx());
+        return vscf_alg_info_der_serializer_serialized_len_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Serialize algorithm info to buffer class.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return string
     */
-    public function serialize(AlgInfo $algInfo): string
+    public function serialize(AlgInfo $$algInfo): string
     {
-        return vscf_alg_info_der_serializer_serialize_php($this->ctx, $algInfo->getCtx());
+        return vscf_alg_info_der_serializer_serialize_php($this->ctx, $$algInfo);
     }
 
     /**

@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about hybrid key algorithm.
-*/
 class HybridKeyAlgInfo implements AlgInfo
 {
 
@@ -68,10 +65,8 @@ class HybridKeyAlgInfo implements AlgInfo
     }
 
     /**
-    * Return algorithm information about the first key.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function firstKeyAlgInfo(): AlgInfo
     {
@@ -80,10 +75,8 @@ class HybridKeyAlgInfo implements AlgInfo
     }
 
     /**
-    * Return algorithm information about the second key.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function secondKeyAlgInfo(): AlgInfo
     {
@@ -92,7 +85,6 @@ class HybridKeyAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

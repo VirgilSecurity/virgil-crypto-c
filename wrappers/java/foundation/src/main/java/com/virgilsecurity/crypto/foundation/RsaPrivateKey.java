@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles RSA private key.
-*/
 public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public RsaPrivateKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.rsaPrivateKey_new();
     }
 
-    /* Wrap underlying C context. */
-    RsaPrivateKey(FoundationContextHolder contextHolder) {
+    package RsaPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static RsaPrivateKey getInstance(long cCtx) {
+    public RsaPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RsaPrivateKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,57 +62,36 @@ public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_isValid(this.cCtx);
     }
 
-    /*
-    * Extract public key from the private key.
-    */
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.rsaPrivateKey_extractPublicKey(this.cCtx);
     }
-}
 
+}

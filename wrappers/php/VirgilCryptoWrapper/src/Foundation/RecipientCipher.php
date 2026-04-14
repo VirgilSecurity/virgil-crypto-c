@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* This class provides hybrid encryption algorithm that combines symmetric
-* cipher for data encryption and asymmetric cipher and password based
-* cipher for symmetric key encryption.
-*/
 class RecipientCipher
 {
 
@@ -70,76 +65,77 @@ class RecipientCipher
     }
 
     /**
-    * @param Random $random
-    * @return void
-    */
-    public function useRandom(Random $random): void
-    {
-        vscf_recipient_cipher_use_random_php($this->ctx, $random->getCtx());
-    }
-
-    /**
-    * @param Cipher $encryptionCipher
-    * @return void
-    */
-    public function useEncryptionCipher(Cipher $encryptionCipher): void
-    {
-        vscf_recipient_cipher_use_encryption_cipher_php($this->ctx, $encryptionCipher->getCtx());
-    }
-
-    /**
-    * @param Padding $encryptionPadding
-    * @return void
-    */
-    public function useEncryptionPadding(Padding $encryptionPadding): void
-    {
-        vscf_recipient_cipher_use_encryption_padding_php($this->ctx, $encryptionPadding->getCtx());
-    }
-
-    /**
-    * @param PaddingParams $paddingParams
-    * @return void
-    */
-    public function usePaddingParams(PaddingParams $paddingParams): void
-    {
-        vscf_recipient_cipher_use_padding_params_php($this->ctx, $paddingParams->getCtx());
-    }
-
-    /**
-    * @param Hash $signerHash
-    * @return void
-    */
-    public function useSignerHash(Hash $signerHash): void
-    {
-        vscf_recipient_cipher_use_signer_hash_php($this->ctx, $signerHash->getCtx());
-    }
-
-    /**
-    * Return true if a key recipient with a given id has been added.
-    * Note, operation has O(N) time complexity.
     *
-    * @param string $recipientId
+    * @param Random $$random
+    * @return void
+    */
+    public function useRandom(Random $$random): void
+    {
+        vscf_recipient_cipher_use_random_php($this->ctx, $$random);
+    }
+
+    /**
+    *
+    * @param Cipher $$encryptionCipher
+    * @return void
+    */
+    public function useEncryptionCipher(Cipher $$encryptionCipher): void
+    {
+        vscf_recipient_cipher_use_encryption_cipher_php($this->ctx, $$encryptionCipher);
+    }
+
+    /**
+    *
+    * @param Padding $$encryptionPadding
+    * @return void
+    */
+    public function useEncryptionPadding(Padding $$encryptionPadding): void
+    {
+        vscf_recipient_cipher_use_encryption_padding_php($this->ctx, $$encryptionPadding);
+    }
+
+    /**
+    *
+    * @param PaddingParams $$paddingParams
+    * @return void
+    */
+    public function usePaddingParams(PaddingParams $$paddingParams): void
+    {
+        vscf_recipient_cipher_use_padding_params_php($this->ctx, $$paddingParams);
+    }
+
+    /**
+    *
+    * @param Hash $$signerHash
+    * @return void
+    */
+    public function useSignerHash(Hash $$signerHash): void
+    {
+        vscf_recipient_cipher_use_signer_hash_php($this->ctx, $$signerHash);
+    }
+
+    /**
+    *
+    * @param string $$recipientId
     * @return bool
     */
-    public function hasKeyRecipient(string $recipientId): bool
+    public function hasKeyRecipient(string $$recipientId): bool
     {
-        return vscf_recipient_cipher_has_key_recipient_php($this->ctx, $recipientId);
+        return vscf_recipient_cipher_has_key_recipient_php($this->ctx, $$recipientId);
     }
 
     /**
-    * Add recipient defined with id and public key.
     *
-    * @param string $recipientId
-    * @param PublicKey $publicKey
+    * @param string $$recipientId
+    * @param PublicKey $$publicKey
     * @return void
     */
-    public function addKeyRecipient(string $recipientId, PublicKey $publicKey): void
+    public function addKeyRecipient(string $$recipientId, PublicKey $$publicKey): void
     {
-        vscf_recipient_cipher_add_key_recipient_php($this->ctx, $recipientId, $publicKey->getCtx());
+        vscf_recipient_cipher_add_key_recipient_php($this->ctx, $$recipientId, $$publicKey);
     }
 
     /**
-    * Remove all recipients.
     *
     * @return void
     */
@@ -149,21 +145,18 @@ class RecipientCipher
     }
 
     /**
-    * Add identifier and private key to sign initial plain text.
-    * Return error if the private key can not sign.
     *
-    * @param string $signerId
-    * @param PrivateKey $privateKey
+    * @param string $$signerId
+    * @param PrivateKey $$privateKey
     * @return void
     * @throws \Exception
     */
-    public function addSigner(string $signerId, PrivateKey $privateKey): void
+    public function addSigner(string $$signerId, PrivateKey $$privateKey): void
     {
-        vscf_recipient_cipher_add_signer_php($this->ctx, $signerId, $privateKey->getCtx());
+        vscf_recipient_cipher_add_signer_php($this->ctx, $$signerId, $$privateKey);
     }
 
     /**
-    * Remove all signers.
     *
     * @return void
     */
@@ -173,8 +166,6 @@ class RecipientCipher
     }
 
     /**
-    * Provide access to the custom params object.
-    * The returned object can be used to add custom params or read it.
     *
     * @return MessageInfoCustomParams
     */
@@ -185,7 +176,6 @@ class RecipientCipher
     }
 
     /**
-    * Start encryption process.
     *
     * @return void
     * @throws \Exception
@@ -196,24 +186,17 @@ class RecipientCipher
     }
 
     /**
-    * Start encryption process with known plain text size.
     *
-    * Precondition: At least one signer should be added.
-    * Note, store message info footer as well.
-    *
-    * @param int $dataSize
+    * @param int $$dataSize
     * @return void
     * @throws \Exception
     */
-    public function startSignedEncryption(int $dataSize): void
+    public function startSignedEncryption(int $$dataSize): void
     {
-        vscf_recipient_cipher_start_signed_encryption_php($this->ctx, $dataSize);
+        vscf_recipient_cipher_start_signed_encryption_php($this->ctx, $$dataSize);
     }
 
     /**
-    * Return buffer length required to hold message info returned by the
-    * "pack message info" method.
-    * Precondition: all recipients and custom parameters should be set.
     *
     * @return int
     */
@@ -223,16 +206,6 @@ class RecipientCipher
     }
 
     /**
-    * Return serialized message info to the buffer.
-    *
-    * Precondition: this method should be called after "start encryption".
-    * Precondition: this method should be called before "finish encryption".
-    *
-    * Note, store message info to use it for decryption process,
-    * or place it at the encrypted data beginning (embedding).
-    *
-    * Return message info - recipients public information,
-    * algorithm information, etc.
     *
     * @return string
     */
@@ -242,31 +215,27 @@ class RecipientCipher
     }
 
     /**
-    * Return buffer length required to hold output of the method
-    * "process encryption" and method "finish" during encryption.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptionOutLen(int $dataLen): int
+    public function encryptionOutLen(int $$dataLen): int
     {
-        return vscf_recipient_cipher_encryption_out_len_php($this->ctx, $dataLen);
+        return vscf_recipient_cipher_encryption_out_len_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Process encryption of a new portion of data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function processEncryption(string $data): string
+    public function processEncryption(string $$data): string
     {
-        return vscf_recipient_cipher_process_encryption_php($this->ctx, $data);
+        return vscf_recipient_cipher_process_encryption_php($this->ctx, $$data);
     }
 
     /**
-    * Accomplish encryption.
     *
     * @return string
     * @throws \Exception
@@ -277,65 +246,54 @@ class RecipientCipher
     }
 
     /**
-    * Initiate decryption process with a recipient private key.
-    * Message Info can be empty if it was embedded to encrypted data.
     *
-    * @param string $recipientId
-    * @param PrivateKey $privateKey
-    * @param string $messageInfo
+    * @param string $$recipientId
+    * @param PrivateKey $$privateKey
+    * @param string $$messageInfo
     * @return void
     * @throws \Exception
     */
-    public function startDecryptionWithKey(string $recipientId, PrivateKey $privateKey, string $messageInfo): void
+    public function startDecryptionWithKey(string $$recipientId, PrivateKey $$privateKey, string $$messageInfo): void
     {
-        vscf_recipient_cipher_start_decryption_with_key_php($this->ctx, $recipientId, $privateKey->getCtx(), $messageInfo);
+        vscf_recipient_cipher_start_decryption_with_key_php($this->ctx, $$recipientId, $$privateKey, $$messageInfo);
     }
 
     /**
-    * Initiate decryption process with a recipient private key.
-    * Message Info can be empty if it was embedded to encrypted data.
-    * Message Info footer can be empty if it was embedded to encrypted data.
-    * If footer was embedded, method "start decryption with key" can be used.
     *
-    * @param string $recipientId
-    * @param PrivateKey $privateKey
-    * @param string $messageInfo
-    * @param string $messageInfoFooter
+    * @param string $$recipientId
+    * @param PrivateKey $$privateKey
+    * @param string $$messageInfo
+    * @param string $$messageInfoFooter
     * @return void
     * @throws \Exception
     */
-    public function startVerifiedDecryptionWithKey(string $recipientId, PrivateKey $privateKey, string $messageInfo, string $messageInfoFooter): void
+    public function startVerifiedDecryptionWithKey(string $$recipientId, PrivateKey $$privateKey, string $$messageInfo, string $$messageInfoFooter): void
     {
-        vscf_recipient_cipher_start_verified_decryption_with_key_php($this->ctx, $recipientId, $privateKey->getCtx(), $messageInfo, $messageInfoFooter);
+        vscf_recipient_cipher_start_verified_decryption_with_key_php($this->ctx, $$recipientId, $$privateKey, $$messageInfo, $$messageInfoFooter);
     }
 
     /**
-    * Return buffer length required to hold output of the method
-    * "process decryption" and method "finish" during decryption.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptionOutLen(int $dataLen): int
+    public function decryptionOutLen(int $$dataLen): int
     {
-        return vscf_recipient_cipher_decryption_out_len_php($this->ctx, $dataLen);
+        return vscf_recipient_cipher_decryption_out_len_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Process with a new portion of data.
-    * Return error if data can not be encrypted or decrypted.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function processDecryption(string $data): string
+    public function processDecryption(string $$data): string
     {
-        return vscf_recipient_cipher_process_decryption_php($this->ctx, $data);
+        return vscf_recipient_cipher_process_decryption_php($this->ctx, $$data);
     }
 
     /**
-    * Accomplish decryption.
     *
     * @return string
     * @throws \Exception
@@ -346,9 +304,6 @@ class RecipientCipher
     }
 
     /**
-    * Return true if data was signed by a sender.
-    *
-    * Precondition: this method should be called after "finish decryption".
     *
     * @return bool
     */
@@ -358,10 +313,6 @@ class RecipientCipher
     }
 
     /**
-    * Return information about signers that sign data.
-    *
-    * Precondition: this method should be called after "finish decryption".
-    * Precondition: method "is data signed" returns true.
     *
     * @return SignerInfoList
     */
@@ -372,22 +323,17 @@ class RecipientCipher
     }
 
     /**
-    * Verify given cipher info.
     *
-    * @param SignerInfo $signerInfo
-    * @param PublicKey $publicKey
+    * @param SignerInfo $$signerInfo
+    * @param PublicKey $$publicKey
     * @return bool
     */
-    public function verifySignerInfo(SignerInfo $signerInfo, PublicKey $publicKey): bool
+    public function verifySignerInfo(SignerInfo $$signerInfo, PublicKey $$publicKey): bool
     {
-        return vscf_recipient_cipher_verify_signer_info_php($this->ctx, $signerInfo->getCtx(), $publicKey->getCtx());
+        return vscf_recipient_cipher_verify_signer_info_php($this->ctx, $$signerInfo, $$publicKey);
     }
 
     /**
-    * Return buffer length required to hold message footer returned by the
-    * "pack message footer" method.
-    *
-    * Precondition: this method should be called after "finish encryption".
     *
     * @return int
     */
@@ -397,14 +343,6 @@ class RecipientCipher
     }
 
     /**
-    * Return serialized message info footer to the buffer.
-    *
-    * Precondition: this method should be called after "finish encryption".
-    *
-    * Note, store message info to use it for verified decryption process,
-    * or place it at the encrypted data ending (embedding).
-    *
-    * Return message info footer - signers public information, etc.
     *
     * @return string
     * @throws \Exception

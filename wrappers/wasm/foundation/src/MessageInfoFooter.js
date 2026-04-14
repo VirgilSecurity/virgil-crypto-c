@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initMessageInfoFooter = (Module, modules) => {
-    /**
-     * Handle message signatures and related information.
-     */
     class MessageInfoFooter {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'MessageInfoFooter';
 
@@ -58,29 +47,16 @@ const initMessageInfoFooter = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new MessageInfoFooter(Module._vscf_message_info_footer_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new MessageInfoFooter(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_message_info_footer_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initMessageInfoFooter = (Module, modules) => {
             }
         }
 
-        /**
-         * Return true if at least one signer info presents.
-         */
         hasSignerInfos() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -101,9 +74,6 @@ const initMessageInfoFooter = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return list with a "signer info" elements.
-         */
         signerInfos() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -114,9 +84,6 @@ const initMessageInfoFooter = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return information about algorithm that was used for data hashing.
-         */
         signerHashAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -127,13 +94,10 @@ const initMessageInfoFooter = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return plain text digest that was used to produce signature.
-         */
         signerDigest() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -148,6 +112,7 @@ const initMessageInfoFooter = (Module, modules) => {
                 Module._free(dataResultCtxPtr);
             }
         }
+
     }
 
     return MessageInfoFooter;

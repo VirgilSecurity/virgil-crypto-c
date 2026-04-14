@@ -36,48 +36,32 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about hybrid key algorithm.
-*/
 public class HybridKeyAlgInfo implements AutoCloseable, AlgInfo {
+
+    public AlgInfo firstKeyAlgInfo() {
+        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_firstKeyAlgInfo(this.cCtx);
+    }
+
+    public AlgInfo secondKeyAlgInfo() {
+        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_secondKeyAlgInfo(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public HybridKeyAlgInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.hybridKeyAlgInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    HybridKeyAlgInfo(FoundationContextHolder contextHolder) {
+    package HybridKeyAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return algorithm information about the first key.
-    */
-    public AlgInfo firstKeyAlgInfo() {
-        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_firstKeyAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Return algorithm information about the second key.
-    */
-    public AlgInfo secondKeyAlgInfo() {
-        return FoundationJNI.INSTANCE.hybridKeyAlgInfo_secondKeyAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static HybridKeyAlgInfo getInstance(long cCtx) {
+    public HybridKeyAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridKeyAlgInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -86,21 +70,16 @@ public class HybridKeyAlgInfo implements AutoCloseable, AlgInfo {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hybridKeyAlgInfo_algId(this.cCtx);
     }
-}
 
+}

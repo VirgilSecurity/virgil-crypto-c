@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide post-quantum encryption based on the round5 implementation.
-* For algorithm details check https://github.com/round5/code
-*/
 class Round5 implements KeyAlg, Kem
 {
 
@@ -75,16 +71,16 @@ class Round5 implements KeyAlg, Kem
     }
 
     /**
-    * @param Random $random
+    *
+    * @param Random $$random
     * @return void
     */
-    public function useRandom(Random $random): void
+    public function useRandom(Random $$random): void
     {
-        vscf_round5_use_random_php($this->ctx, $random->getCtx());
+        vscf_round5_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -95,150 +91,112 @@ class Round5 implements KeyAlg, Kem
     }
 
     /**
-    * Generate new private key.
-    * Note, this operation might be slow.
     *
-    * @param AlgId $algId
+    * @param AlgId $$algId
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function generateKey(AlgId $algId): PrivateKey
+    public function generateKey(AlgId $$algId): PrivateKey
     {
-        $ctx = vscf_round5_generate_key_php($this->ctx, $algId->getValue());
+        $ctx = vscf_round5_generate_key_php($this->ctx, $$algId);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Generate ephemeral private key of the same type.
-    * Note, this operation might be slow.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function generateEphemeralKey(Key $key): PrivateKey
+    public function generateEphemeralKey(Key $$key): PrivateKey
     {
-        $ctx = vscf_round5_generate_ephemeral_key_php($this->ctx, $key->getCtx());
+        $ctx = vscf_round5_generate_ephemeral_key_php($this->ctx, $$key);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Import public key from the raw binary format.
     *
-    * Return public key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param RawPublicKey $rawKey
+    * @param RawPublicKey $$rawKey
     * @return PublicKey
-    * @throws \Exception
     */
-    public function importPublicKey(RawPublicKey $rawKey): PublicKey
+    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
     {
-        $ctx = vscf_round5_import_public_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_round5_import_public_key_php($this->ctx, $$rawKey);
         return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**
-    * Export public key to the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return RawPublicKey
     */
-    public function exportPublicKey(PublicKey $publicKey): RawPublicKey
+    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
     {
-        $ctx = vscf_round5_export_public_key_php($this->ctx, $publicKey->getCtx());
+        $ctx = vscf_round5_export_public_key_php($this->ctx, $$publicKey);
         return new RawPublicKey($ctx);
     }
 
     /**
-    * Import private key from the raw binary format.
     *
-    * Return private key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param RawPrivateKey $rawKey
+    * @param RawPrivateKey $$rawKey
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey
+    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
     {
-        $ctx = vscf_round5_import_private_key_php($this->ctx, $rawKey->getCtx());
+        $ctx = vscf_round5_import_private_key_php($this->ctx, $$rawKey);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
-    * Export private key in the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return RawPrivateKey
     */
-    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
+    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
     {
-        $ctx = vscf_round5_export_private_key_php($this->ctx, $privateKey->getCtx());
+        $ctx = vscf_round5_export_private_key_php($this->ctx, $$privateKey);
         return new RawPrivateKey($ctx);
     }
 
     /**
-    * Return length in bytes required to hold encapsulated shared key.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return int
     */
-    public function kemSharedKeyLen(Key $key): int
+    public function kemSharedKeyLen(Key $$key): int
     {
-        return vscf_round5_kem_shared_key_len_php($this->ctx, $key->getCtx());
+        return vscf_round5_kem_shared_key_len_php($this->ctx, $$key);
     }
 
     /**
-    * Return length in bytes required to hold encapsulated key.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return int
     */
-    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int
+    public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
     {
-        return vscf_round5_kem_encapsulated_key_len_php($this->ctx, $publicKey->getCtx());
+        return vscf_round5_kem_encapsulated_key_len_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Generate a shared key and a key encapsulated message.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return array
     * @throws \Exception
     */
-    public function kemEncapsulate(PublicKey $publicKey): array // [shared_key, encapsulated_key]
+    public function kemEncapsulate(PublicKey $$publicKey): array
     {
-        return vscf_round5_kem_encapsulate_php($this->ctx, $publicKey->getCtx());
+        return vscf_round5_kem_encapsulate_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Decapsulate the shared key.
     *
-    * @param string $encapsulatedKey
-    * @param PrivateKey $privateKey
+    * @param string $$encapsulatedKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string
+    public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
     {
-        return vscf_round5_kem_decapsulate_php($this->ctx, $encapsulatedKey, $privateKey->getCtx());
+        return vscf_round5_kem_decapsulate_php($this->ctx, $$encapsulatedKey, $$privateKey);
     }
 
     /**

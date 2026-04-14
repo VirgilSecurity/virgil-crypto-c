@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles a list of "password recipient info" class objects.
-*/
 class PasswordRecipientInfoList
 {
 
@@ -68,7 +65,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Return true if given list has item.
     *
     * @return bool
     */
@@ -78,7 +74,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Return list item.
     *
     * @return PasswordRecipientInfo
     */
@@ -89,7 +84,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Return true if list has next item.
     *
     * @return bool
     */
@@ -99,7 +93,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Return next list node if exists, or NULL otherwise.
     *
     * @return PasswordRecipientInfoList
     */
@@ -110,7 +103,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Return true if list has previous item.
     *
     * @return bool
     */
@@ -120,7 +112,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Return previous list node if exists, or NULL otherwise.
     *
     * @return PasswordRecipientInfoList
     */
@@ -131,7 +122,6 @@ class PasswordRecipientInfoList
     }
 
     /**
-    * Remove all items.
     *
     * @return void
     */

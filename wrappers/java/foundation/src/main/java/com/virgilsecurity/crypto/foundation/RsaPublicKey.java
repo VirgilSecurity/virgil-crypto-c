@@ -36,41 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles RSA public key.
-*/
 public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
+
+    public int keyExponent() {
+        return FoundationJNI.INSTANCE.rsaPublicKey_keyExponent(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public RsaPublicKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.rsaPublicKey_new();
     }
 
-    /* Wrap underlying C context. */
-    RsaPublicKey(FoundationContextHolder contextHolder) {
+    package RsaPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return public key exponent.
-    */
-    public int keyExponent() {
-        return FoundationJNI.INSTANCE.rsaPublicKey_keyExponent(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static RsaPublicKey getInstance(long cCtx) {
+    public RsaPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RsaPublicKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -79,50 +66,32 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.rsaPublicKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.rsaPublicKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.rsaPublicKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.rsaPublicKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.rsaPublicKey_isValid(this.cCtx);
     }
-}
 
+}

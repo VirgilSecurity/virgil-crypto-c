@@ -34,9 +34,6 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initBrainkeyServer = (Module, modules) => {
     class BrainkeyServer {
 
@@ -45,7 +42,7 @@ const initBrainkeyServer = (Module, modules) => {
         }
 
         get POINT_LEN() {
-            return BrainkeyServer.POINT_LEN;
+            return 65;
         }
 
         static get MPI_LEN() {
@@ -53,14 +50,9 @@ const initBrainkeyServer = (Module, modules) => {
         }
 
         get MPI_LEN() {
-            return BrainkeyServer.MPI_LEN;
+            return 32;
         }
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'BrainkeyServer';
 
@@ -71,29 +63,16 @@ const initBrainkeyServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new BrainkeyServer(Module._vscf_brainkey_server_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new BrainkeyServer(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_brainkey_server_delete(this.ctxPtr);
@@ -101,20 +80,14 @@ const initBrainkeyServer = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used for key generation, proofs, etc.
-         */
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_brainkey_server_release_random(this.ctxPtr)
             Module._vscf_brainkey_server_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Random used for crypto operations to make them const-time
-         */
-        set operationRandom(operationRandom) {
+        operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_brainkey_server_release_operation_random(this.ctxPtr)
@@ -151,28 +124,28 @@ const initBrainkeyServer = (Module, modules) => {
             precondition.ensureByteArray('identitySecret', identitySecret);
             precondition.ensureByteArray('blindedPoint', blindedPoint);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const identitySecretSize = identitySecret.length * identitySecret.BYTES_PER_ELEMENT;
             const identitySecretPtr = Module._malloc(identitySecretSize);
             Module.HEAP8.set(identitySecret, identitySecretPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const identitySecretCtxSize = Module._vsc_data_ctx_size();
             const identitySecretCtxPtr = Module._malloc(identitySecretCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(identitySecretCtxPtr, identitySecretPtr, identitySecretSize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const blindedPointSize = blindedPoint.length * blindedPoint.BYTES_PER_ELEMENT;
             const blindedPointPtr = Module._malloc(blindedPointSize);
             Module.HEAP8.set(blindedPoint, blindedPointPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const blindedPointCtxSize = Module._vsc_data_ctx_size();
             const blindedPointCtxPtr = Module._malloc(blindedPointCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(blindedPointCtxPtr, blindedPointPtr, blindedPointSize);
 
             const hardenedPointCapacity = modules.BrainkeyServer.POINT_LEN;
@@ -194,6 +167,7 @@ const initBrainkeyServer = (Module, modules) => {
                 Module._vsc_buffer_delete(hardenedPointCtxPtr);
             }
         }
+
     }
 
     return BrainkeyServer;

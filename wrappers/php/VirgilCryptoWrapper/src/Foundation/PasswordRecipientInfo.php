@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about recipient that is defined by a password.
-*/
 class PasswordRecipientInfo
 {
 
@@ -49,16 +46,14 @@ class PasswordRecipientInfo
     private $ctx;
 
     /**
-    * Create object and define all properties.
     *
-    * @param AlgInfo $keyEncryptionAlgorithm
-    * @param string $encryptedKey
+    * @param AlgInfo $$keyEncryptionAlgorithm
+    * @param string $$encryptedKey
     * @return PasswordRecipientInfo
     */
-    public static function withMembers(AlgInfo $keyEncryptionAlgorithm, string $encryptedKey): PasswordRecipientInfo
+    public static function withMembers(AlgInfo $$keyEncryptionAlgorithm, string $$encryptedKey): PasswordRecipientInfo
     {
-        $ctx = vscf_password_recipient_info_with_members_php($keyEncryptionAlgorithm, $encryptedKey);
-        return new PasswordRecipientInfo($ctx);
+        return vscf_password_recipient_info_with_members_php($$keyEncryptionAlgorithm, $$encryptedKey);
     }
 
     /**
@@ -81,11 +76,8 @@ class PasswordRecipientInfo
     }
 
     /**
-    * Return algorithm information that was used for encryption
-    * a data encryption key.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function keyEncryptionAlgorithm(): AlgInfo
     {
@@ -94,7 +86,6 @@ class PasswordRecipientInfo
     }
 
     /**
-    * Return an encrypted data encryption key.
     *
     * @return string
     */

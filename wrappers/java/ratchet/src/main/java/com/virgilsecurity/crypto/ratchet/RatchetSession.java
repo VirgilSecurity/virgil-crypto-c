@@ -36,36 +36,25 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Class for ratchet session between 2 participants
-*/
 public class RatchetSession implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public RatchetSession() {
         super();
         this.cCtx = RatchetJNI.INSTANCE.ratchetSession_new();
     }
 
-    /* Wrap underlying C context. */
-    RatchetSession(RatchetContextHolder contextHolder) {
+    package RatchetSession(RatchetContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static RatchetSession getInstance(long cCtx) {
+    public RatchetSession getInstance(long cCtx) {
         RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
         return new RatchetSession(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -74,121 +63,72 @@ public class RatchetSession implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Random used to generate keys
-    */
     public void setRng(Random rng) {
         RatchetJNI.INSTANCE.ratchetSession_setRng(this.cCtx, rng);
     }
 
-    /*
-    * Setups default dependencies:
-    * - RNG: CTR DRBG
-    */
     public void setupDefaults() throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Initiates session
-    */
     public void initiate(PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, PublicKey receiverOneTimePublicKey, byte[] receiverOneTimeKeyId, boolean enablePostQuantum) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_initiate(this.cCtx, senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, receiverOneTimePublicKey, receiverOneTimeKeyId, enablePostQuantum);
     }
 
-    /*
-    * Initiates session
-    */
     public void initiateNoOneTimeKey(PrivateKey senderIdentityPrivateKey, byte[] senderIdentityKeyId, PublicKey receiverIdentityPublicKey, byte[] receiverIdentityKeyId, PublicKey receiverLongTermPublicKey, byte[] receiverLongTermKeyId, boolean enablePostQuantum) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_initiateNoOneTimeKey(this.cCtx, senderIdentityPrivateKey, senderIdentityKeyId, receiverIdentityPublicKey, receiverIdentityKeyId, receiverLongTermPublicKey, receiverLongTermKeyId, enablePostQuantum);
     }
 
-    /*
-    * Responds to session initiation
-    */
     public void respond(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, PrivateKey receiverOneTimePrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_respond(this.cCtx, senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, receiverOneTimePrivateKey, message, enablePostQuantum);
     }
 
-    /*
-    * Responds to session initiation
-    */
     public void respondNoOneTimeKey(PublicKey senderIdentityPublicKey, PrivateKey receiverIdentityPrivateKey, PrivateKey receiverLongTermPrivateKey, RatchetMessage message, boolean enablePostQuantum) throws RatchetException {
         RatchetJNI.INSTANCE.ratchetSession_respondNoOneTimeKey(this.cCtx, senderIdentityPublicKey, receiverIdentityPrivateKey, receiverLongTermPrivateKey, message, enablePostQuantum);
     }
 
-    /*
-    * Returns flag that indicates is this session was initiated or responded
-    */
     public boolean isInitiator() {
         return RatchetJNI.INSTANCE.ratchetSession_isInitiator(this.cCtx);
     }
 
-    /*
-    * Returns flag that indicates if session is post-quantum
-    */
     public boolean isPqcEnabled() {
         return RatchetJNI.INSTANCE.ratchetSession_isPqcEnabled(this.cCtx);
     }
 
-    /*
-    * Returns true if at least 1 response was successfully decrypted, false - otherwise
-    */
     public boolean receivedFirstResponse() {
         return RatchetJNI.INSTANCE.ratchetSession_receivedFirstResponse(this.cCtx);
     }
 
-    /*
-    * Returns true if receiver had one time public key
-    */
     public boolean receiverHasOneTimePublicKey() {
         return RatchetJNI.INSTANCE.ratchetSession_receiverHasOneTimePublicKey(this.cCtx);
     }
 
-    /*
-    * Encrypts data
-    */
     public RatchetMessage encrypt(byte[] plainText) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetSession_encrypt(this.cCtx, plainText);
     }
 
-    /*
-    * Calculates size of buffer sufficient to store decrypted message
-    */
     public int decryptLen(RatchetMessage message) {
         return RatchetJNI.INSTANCE.ratchetSession_decryptLen(this.cCtx, message);
     }
 
-    /*
-    * Decrypts message
-    */
     public byte[] decrypt(RatchetMessage message) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetSession_decrypt(this.cCtx, message);
     }
 
-    /*
-    * Serializes session to buffer
-    */
     public byte[] serialize() {
         return RatchetJNI.INSTANCE.ratchetSession_serialize(this.cCtx);
     }
 
-    /*
-    * Deserializes session from buffer.
-    * NOTE: Deserialized session needs dependencies to be set. Check setup defaults
-    */
-    public static RatchetSession deserialize(byte[] input) throws RatchetException {
+    public RatchetSession deserialize(byte[] input) throws RatchetException {
         return RatchetJNI.INSTANCE.ratchetSession_deserialize(input);
     }
-}
 
+}

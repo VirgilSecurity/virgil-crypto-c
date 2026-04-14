@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle algorithm information about ECP.
-*/
 class EccAlgInfo implements AlgInfo
 {
 
@@ -49,17 +46,15 @@ class EccAlgInfo implements AlgInfo
     private $ctx;
 
     /**
-    * Create algorithm info with EC generic key identificator, EC domain group identificator.
     *
-    * @param AlgId $algId
-    * @param OidId $keyId
-    * @param OidId $domainId
+    * @param AlgId $$algId
+    * @param OidId $$keyId
+    * @param OidId $$domainId
     * @return EccAlgInfo
     */
-    public static function withMembers(AlgId $algId, OidId $keyId, OidId $domainId): EccAlgInfo
+    public static function withMembers(AlgId $$algId, OidId $$keyId, OidId $$domainId): EccAlgInfo
     {
-        $ctx = vscf_ecc_alg_info_with_members_php($algId, $keyId, $domainId);
-        return new EccAlgInfo($ctx);
+        return vscf_ecc_alg_info_with_members_php($$algId, $$keyId, $$domainId);
     }
 
     /**
@@ -82,7 +77,6 @@ class EccAlgInfo implements AlgInfo
     }
 
     /**
-    * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
     *
     * @return OidId
     */
@@ -93,7 +87,6 @@ class EccAlgInfo implements AlgInfo
     }
 
     /**
-    * Return EC domain group identificator.
     *
     * @return OidId
     */
@@ -104,7 +97,6 @@ class EccAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

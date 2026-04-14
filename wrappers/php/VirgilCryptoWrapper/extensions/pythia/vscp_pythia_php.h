@@ -7,17 +7,17 @@
 // modification, are permitted provided that the following conditions are
 // met:
 //
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
+// (1) Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
 //
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
+// (2) Redistributions in binary form must reproduce the above copyright
+// notice, this list of conditions and the following disclaimer in
+// the documentation and/or other materials provided with the
+// distribution.
 //
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
+// (3) Neither the name of the copyright holder nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 // IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -43,31 +43,31 @@ extern "C" {
 
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   if VSCP_PHP_SHARED_LIBRARY
-#       if defined(VSCP_PHP_INTERNAL_BUILD)
-#           ifdef __GNUC__
-#               define VSCP_PHP_PUBLIC __attribute__ ((dllexport))
-#           else
-#               define VSCP_PHP_PUBLIC __declspec(dllexport)
-#           endif
-#       else
-#           ifdef __GNUC__
-#               define VSCP_PHP_PUBLIC __attribute__ ((dllimport))
-#           else
-#               define VSCP_PHP_PUBLIC __declspec(dllimport)
-#           endif
-#       endif
-#   else
-#       define VSCP_PHP_PUBLIC
-#   endif
-#   define VSCP_PHP_PRIVATE
+# if VSCP_PHP_SHARED_LIBRARY
+# if defined(VSCP_PHP_INTERNAL_BUILD)
+# ifdef __GNUC__
+# define VSCP_PHP_PUBLIC __attribute__ ((dllexport))
+# else
+# define VSCP_PHP_PUBLIC __declspec(dllexport)
+# endif
+# else
+# ifdef __GNUC__
+# define VSCP_PHP_PUBLIC __attribute__ ((dllimport))
+# else
+# define VSCP_PHP_PUBLIC __declspec(dllimport)
+# endif
+# endif
+# else
+# define VSCP_PHP_PUBLIC
+# endif
+# define VSCP_PHP_PRIVATE
 #else
-#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
-#       define VSCP_PHP_PUBLIC __attribute__ ((visibility ("default")))
-#       define VSCP_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
-#   else
-#       define VSCP_PHP_PRIVATE
-#   endif
+# if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
+# define VSCP_PHP_PUBLIC __attribute__ ((visibility ("default")))
+# define VSCP_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
+# else
+# define VSCP_PHP_PRIVATE
+# endif
 #endif
 
 //
@@ -77,6 +77,12 @@ extern "C" {
 //
 // Registered resources
 //
+
+//
+// Extension init functions declaration
+//
+PHP_MINIT_FUNCTION(vscp_pythia_php);
+PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php);
 
 #ifdef __cplusplus
 }

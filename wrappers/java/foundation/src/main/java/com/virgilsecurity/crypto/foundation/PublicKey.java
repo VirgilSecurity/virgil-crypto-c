@@ -36,9 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Contains public part of the key.
-*/
-public interface PublicKey extends Key {
-}
-

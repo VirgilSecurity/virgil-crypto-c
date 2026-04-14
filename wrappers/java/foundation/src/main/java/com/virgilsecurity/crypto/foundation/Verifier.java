@@ -36,35 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Verify data of any size.
-* Compatible with the class "signer".
-*/
 public class Verifier implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public Verifier() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.verifier_new();
     }
 
-    /* Wrap underlying C context. */
-    Verifier(FoundationContextHolder contextHolder) {
+    package Verifier(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Verifier getInstance(long cCtx) {
+    public Verifier getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Verifier(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -73,35 +62,24 @@ public class Verifier implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Start verifying a signature.
-    */
     public void reset(byte[] signature) throws FoundationException {
         FoundationJNI.INSTANCE.verifier_reset(this.cCtx, signature);
     }
 
-    /*
-    * Add given data to the signed data.
-    */
     public void appendData(byte[] data) {
         FoundationJNI.INSTANCE.verifier_appendData(this.cCtx, data);
     }
 
-    /*
-    * Verify accumulated data.
-    */
     public boolean verify(PublicKey publicKey) {
         return FoundationJNI.INSTANCE.verifier_verify(this.cCtx, publicKey);
     }
-}
 
+}

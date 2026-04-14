@@ -37,18 +37,18 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides interface to the key derivation function (KDF) algorithms.
-*/
 interface Kdf extends Ctx
 {
 
     /**
-    * Derive key of the requested length from the given data.
     *
-    * @param string $data
-    * @param int $keyLen
+    * @param string $$data
+    * @param int $$keyLen
     * @return string
     */
-    public function derive(string $data, int $keyLen): string;
+    public function derive(string $$data, int $$keyLen): string
+    {
+        return ($this->ctx, $$data, $$keyLen);
+    }
+
 }

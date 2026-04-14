@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about compound key algorithm.
-*/
 class CompoundKeyAlgInfo implements AlgInfo
 {
 
@@ -68,10 +65,8 @@ class CompoundKeyAlgInfo implements AlgInfo
     }
 
     /**
-    * Return information about encrypt/decrypt algorithm.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function cipherAlgInfo(): AlgInfo
     {
@@ -80,10 +75,8 @@ class CompoundKeyAlgInfo implements AlgInfo
     }
 
     /**
-    * Return information about sign/verify algorithm.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function signerAlgInfo(): AlgInfo
     {
@@ -92,7 +85,6 @@ class CompoundKeyAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

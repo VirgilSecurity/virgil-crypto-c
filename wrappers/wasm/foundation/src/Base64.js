@@ -34,18 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initBase64 = (Module, modules) => {
-    /**
-     * Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
-     */
     class Base64 {
 
-        /**
-         * Calculate length in bytes required to hold an encoded base64 string.
-         */
         static encodedLen(dataLen) {
             precondition.ensureNumber('dataLen', dataLen);
 
@@ -54,23 +45,19 @@ const initBase64 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Encode given data to the base64 format.
-         * Note, written buffer is NOT null-terminated.
-         */
         static encode(data) {
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const strCapacity = modules.Base64.encodedLen(data.length);
@@ -90,9 +77,6 @@ const initBase64 = (Module, modules) => {
             }
         }
 
-        /**
-         * Calculate length in bytes required to hold a decoded base64 string.
-         */
         static decodedLen(strLen) {
             precondition.ensureNumber('strLen', strLen);
 
@@ -101,22 +85,19 @@ const initBase64 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Decode given data from the base64 format.
-         */
         static decode(str) {
             precondition.ensureByteArray('str', str);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const strSize = str.length * str.BYTES_PER_ELEMENT;
             const strPtr = Module._malloc(strSize);
             Module.HEAP8.set(str, strPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const strCtxSize = Module._vsc_data_ctx_size();
             const strCtxPtr = Module._malloc(strCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(strCtxPtr, strPtr, strSize);
 
             const dataCapacity = modules.Base64.decodedLen(str.length);
@@ -136,6 +117,7 @@ const initBase64 = (Module, modules) => {
                 Module._vsc_buffer_delete(dataCtxPtr);
             }
         }
+
     }
 
     return Base64;

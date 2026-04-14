@@ -38,19 +38,6 @@ package com.virgilsecurity.crypto.foundation;
 
 public class BrainkeyClient implements AutoCloseable {
 
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public BrainkeyClient() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.brainkeyClient_new();
-    }
-
-    /* Wrap underlying C context. */
-    BrainkeyClient(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
-
     public int getPointLen() {
         return 65;
     }
@@ -71,16 +58,22 @@ public class BrainkeyClient implements AutoCloseable {
         return 128;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static BrainkeyClient getInstance(long cCtx) {
+    public long cCtx;
+
+    public BrainkeyClient() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.brainkeyClient_new();
+    }
+
+    package BrainkeyClient(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public BrainkeyClient getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new BrainkeyClient(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -89,26 +82,18 @@ public class BrainkeyClient implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Random used for key generation, proofs, etc.
-    */
     public void setRandom(Random random) {
         FoundationJNI.INSTANCE.brainkeyClient_setRandom(this.cCtx, random);
     }
 
-    /*
-    * Random used for crypto operations to make them const-time
-    */
     public void setOperationRandom(Random operationRandom) {
         FoundationJNI.INSTANCE.brainkeyClient_setOperationRandom(this.cCtx, operationRandom);
     }
@@ -124,5 +109,5 @@ public class BrainkeyClient implements AutoCloseable {
     public byte[] deblind(byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException {
         return FoundationJNI.INSTANCE.brainkeyClient_deblind(this.cCtx, password, hardenedPoint, deblindFactor, keyName);
     }
-}
 
+}

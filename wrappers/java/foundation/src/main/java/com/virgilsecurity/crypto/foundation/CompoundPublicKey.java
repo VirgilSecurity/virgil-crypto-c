@@ -36,52 +36,32 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles compound public key.
-*
-* Compound public key contains 2 public keys and signature:
-* - cipher key - is used for encryption;
-* - signer key - is used for verifying.
-*/
 public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
+
+    public PublicKey cipherKey() {
+        return FoundationJNI.INSTANCE.compoundPublicKey_cipherKey(this.cCtx);
+    }
+
+    public PublicKey signerKey() {
+        return FoundationJNI.INSTANCE.compoundPublicKey_signerKey(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public CompoundPublicKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.compoundPublicKey_new();
     }
 
-    /* Wrap underlying C context. */
-    CompoundPublicKey(FoundationContextHolder contextHolder) {
+    package CompoundPublicKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return a cipher public key suitable for initial encryption.
-    */
-    public PublicKey cipherKey() {
-        return FoundationJNI.INSTANCE.compoundPublicKey_cipherKey(this.cCtx);
-    }
-
-    /*
-    * Return public key suitable for verifying.
-    */
-    public PublicKey signerKey() {
-        return FoundationJNI.INSTANCE.compoundPublicKey_signerKey(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static CompoundPublicKey getInstance(long cCtx) {
+    public CompoundPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CompoundPublicKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -90,50 +70,32 @@ public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.compoundPublicKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.compoundPublicKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.compoundPublicKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.compoundPublicKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.compoundPublicKey_isValid(this.cCtx);
     }
-}
 
+}

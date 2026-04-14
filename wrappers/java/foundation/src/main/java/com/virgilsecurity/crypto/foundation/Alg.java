@@ -36,25 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface to persist algorithm information and it parameters
-* and then restore the algorithm from it.
-*/
-public interface Alg {
-
-    /*
-    * Provide algorithm identificator.
-    */
-    AlgId algId();
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    AlgInfo produceAlgInfo();
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    void restoreAlgInfo(AlgInfo algInfo) throws FoundationException;
-}
-

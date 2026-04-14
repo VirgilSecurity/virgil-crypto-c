@@ -37,75 +37,62 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Common information about asymmetric key algorithm.
-*/
 interface KeyAlg extends Ctx
 {
 
     /**
-    * Generate ephemeral private key of the same type.
-    * Note, this operation might be slow.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function generateEphemeralKey(Key $key): PrivateKey;
+    public function generateEphemeralKey(Key $$key): PrivateKey
+    {
+        $ctx = ($this->ctx, $$key);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
 
     /**
-    * Import public key from the raw binary format.
     *
-    * Return public key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param RawPublicKey $rawKey
+    * @param RawPublicKey $$rawKey
     * @return PublicKey
-    * @throws \Exception
     */
-    public function importPublicKey(RawPublicKey $rawKey): PublicKey;
+    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
+    {
+        $ctx = ($this->ctx, $$rawKey);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
 
     /**
-    * Export public key to the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA public key must be exported in format defined in
-    * RFC 3447 Appendix A.1.1.
-    *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return RawPublicKey
     */
-    public function exportPublicKey(PublicKey $publicKey): RawPublicKey;
+    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
+    {
+        $ctx = ($this->ctx, $$publicKey);
+        return new RawPublicKey($ctx);
+    }
 
     /**
-    * Import private key from the raw binary format.
     *
-    * Return private key that is adopted and optimized to be used
-    * with this particular algorithm.
-    *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be imported from the format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param RawPrivateKey $rawKey
+    * @param RawPrivateKey $$rawKey
     * @return PrivateKey
-    * @throws \Exception
     */
-    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey;
+    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
+    {
+        $ctx = ($this->ctx, $$rawKey);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
 
     /**
-    * Export private key in the raw binary format.
     *
-    * Binary format must be defined in the key specification.
-    * For instance, RSA private key must be exported in format defined in
-    * RFC 3447 Appendix A.1.2.
-    *
-    * @param PrivateKey $privateKey
+    * @param PrivateKey $$privateKey
     * @return RawPrivateKey
     */
-    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey;
+    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
+    {
+        $ctx = ($this->ctx, $$privateKey);
+        return new RawPrivateKey($ctx);
+    }
+
 }

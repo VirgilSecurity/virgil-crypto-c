@@ -36,42 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about recipient that is defined by a password.
-*/
 public class PasswordRecipientInfo implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public PasswordRecipientInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    PasswordRecipientInfo(FoundationContextHolder contextHolder) {
+    package PasswordRecipientInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Create object and define all properties.
-    */
-    public PasswordRecipientInfo(AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfo_new(keyEncryptionAlgorithm, encryptedKey);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static PasswordRecipientInfo getInstance(long cCtx) {
+    public PasswordRecipientInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PasswordRecipientInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -80,29 +62,25 @@ public class PasswordRecipientInfo implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return algorithm information that was used for encryption
-    * a data encryption key.
-    */
+    public PasswordRecipientInfo(AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.passwordRecipientInfo_new(keyEncryptionAlgorithm, encryptedKey);
+    }
+
     public AlgInfo keyEncryptionAlgorithm() {
         return FoundationJNI.INSTANCE.passwordRecipientInfo_keyEncryptionAlgorithm(this.cCtx);
     }
 
-    /*
-    * Return an encrypted data encryption key.
-    */
     public byte[] encryptedKey() {
         return FoundationJNI.INSTANCE.passwordRecipientInfo_encryptedKey(this.cCtx);
     }
-}
 
+}

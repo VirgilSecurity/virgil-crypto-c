@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initFooterInfo = (Module, modules) => {
-    /**
-     * Handle meta information about footer.
-     */
     class FooterInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'FooterInfo';
 
@@ -58,29 +47,16 @@ const initFooterInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new FooterInfo(Module._vscf_footer_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new FooterInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_footer_info_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initFooterInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Retrun true if signed data info present.
-         */
         hasSignedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -101,9 +74,6 @@ const initFooterInfo = (Module, modules) => {
             return booleanResult;
         }
 
-        /**
-         * Return signed data info.
-         */
         signedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -114,18 +84,12 @@ const initFooterInfo = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Set data size.
-         */
         setDataSize(dataSize) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataSize', dataSize);
             Module._vscf_footer_info_set_data_size(this.ctxPtr, dataSize);
         }
 
-        /**
-         * Return data size.
-         */
         dataSize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -133,6 +97,7 @@ const initFooterInfo = (Module, modules) => {
             proxyResult = Module._vscf_footer_info_data_size(this.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return FooterInfo;

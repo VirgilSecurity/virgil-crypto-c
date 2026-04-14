@@ -34,102 +34,73 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initRatchetCommon = (Module, modules) => {
-    /**
-     * Class with public constants
-     */
     class RatchetCommon {
 
-        /**
-         * Max plain text length allowed to be encrypted
-         */
         static get MAX_PLAIN_TEXT_LEN() {
             return 30000;
         }
 
         get MAX_PLAIN_TEXT_LEN() {
-            return RatchetCommon.MAX_PLAIN_TEXT_LEN;
+            return 30000;
         }
 
-        /**
-         * Max message length
-         */
         static get MAX_MESSAGE_LEN() {
             return 35583;
         }
 
         get MAX_MESSAGE_LEN() {
-            return RatchetCommon.MAX_MESSAGE_LEN;
+            return 35583;
         }
 
-        /**
-         * Key pair id length
-         */
         static get KEY_ID_LEN() {
             return 8;
         }
 
         get KEY_ID_LEN() {
-            return RatchetCommon.KEY_ID_LEN;
+            return 8;
         }
 
-        /**
-         * Participant id length
-         */
         static get PARTICIPANT_ID_LEN() {
             return 32;
         }
 
         get PARTICIPANT_ID_LEN() {
-            return RatchetCommon.PARTICIPANT_ID_LEN;
+            return 32;
         }
 
-        /**
-         * Session id length
-         */
         static get SESSION_ID_LEN() {
             return 32;
         }
 
         get SESSION_ID_LEN() {
-            return RatchetCommon.SESSION_ID_LEN;
+            return 32;
         }
 
-        /**
-         * Max number of group chat participants
-         */
         static get MAX_PARTICIPANTS_COUNT() {
             return 100;
         }
 
         get MAX_PARTICIPANTS_COUNT() {
-            return RatchetCommon.MAX_PARTICIPANTS_COUNT;
+            return 100;
         }
 
-        /**
-         * Min number of group chat participants
-         */
         static get MIN_PARTICIPANTS_COUNT() {
             return 2;
         }
 
         get MIN_PARTICIPANTS_COUNT() {
-            return RatchetCommon.MIN_PARTICIPANTS_COUNT;
+            return 2;
         }
 
-        /**
-         * Max group message length
-         */
         static get MAX_GROUP_MESSAGE_LEN() {
             return 32918;
         }
 
         get MAX_GROUP_MESSAGE_LEN() {
-            return RatchetCommon.MAX_GROUP_MESSAGE_LEN;
+            return 32918;
         }
+
     }
 
     return RatchetCommon;

@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initHmac = (Module, modules) => {
-    /**
-     * Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
-     */
     class Hmac {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Hmac';
 
@@ -58,29 +47,16 @@ const initHmac = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Hmac(Module._vscf_hmac_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Hmac(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_hmac_delete(this.ctxPtr);
@@ -88,16 +64,13 @@ const initHmac = (Module, modules) => {
             }
         }
 
-        set hash(hash) {
+        hash(hash) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_hmac_release_hash(this.ctxPtr)
             Module._vscf_hmac_use_hash(this.ctxPtr, hash.ctxPtr)
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -106,9 +79,6 @@ const initHmac = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Produce object with algorithm information and configuration parameters.
-         */
         produceAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -119,9 +89,6 @@ const initHmac = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Restore algorithm configuration from the given object.
-         */
         restoreAlgInfo(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
@@ -129,9 +96,6 @@ const initHmac = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Size of the digest (mac output) in bytes.
-         */
         digestLen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -140,36 +104,33 @@ const initHmac = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Calculate MAC over given data.
-         */
         mac(key, data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             const macCapacity = this.digestLen();
@@ -191,23 +152,20 @@ const initHmac = (Module, modules) => {
             }
         }
 
-        /**
-         * Start a new MAC.
-         */
         start(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
             try {
@@ -218,23 +176,20 @@ const initHmac = (Module, modules) => {
             }
         }
 
-        /**
-         * Add given data to the MAC.
-         */
         update(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             try {
@@ -245,9 +200,6 @@ const initHmac = (Module, modules) => {
             }
         }
 
-        /**
-         * Accomplish MAC and return it's result (a message digest).
-         */
         finish() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -266,14 +218,11 @@ const initHmac = (Module, modules) => {
             }
         }
 
-        /**
-         * Prepare to authenticate a new message with the same key
-         * as the previous MAC operation.
-         */
         reset() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_hmac_reset(this.ctxPtr);
         }
+
     }
 
     return Hmac;

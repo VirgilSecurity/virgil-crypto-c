@@ -36,24 +36,9 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/* Encapsulate result of method aes256 gcm.finishAuthEncryption() */
 public class CipherAuthFinishAuthEncryptionResult {
 
     private byte[] out;
-
-    private byte[] tag;
-
-    /* Create new instance of CipherAuthFinishAuthEncryptionResult. */
-    CipherAuthFinishAuthEncryptionResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    CipherAuthFinishAuthEncryptionResult(byte[] out, byte[] tag) {
-        super();
-        this.out = out;
-        this.tag = tag;
-    }
 
     public byte[] getOut() {
         return this.out;
@@ -63,6 +48,8 @@ public class CipherAuthFinishAuthEncryptionResult {
         this.out = out;
     }
 
+    private byte[] tag;
+
     public byte[] getTag() {
         return this.tag;
     }
@@ -70,5 +57,15 @@ public class CipherAuthFinishAuthEncryptionResult {
     public void setTag(byte[] tag) {
         this.tag = tag;
     }
-}
 
+    package CipherAuthFinishAuthEncryptionResult() {
+        super();
+    }
+
+    package CipherAuthFinishAuthEncryptionResult(byte[] out, byte[] tag) {
+        super();
+        this.out = out;
+        this.tag = tag;
+    }
+
+}

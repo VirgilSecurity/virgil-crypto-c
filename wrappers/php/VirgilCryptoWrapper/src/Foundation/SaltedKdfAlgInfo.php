@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle KDF algorithms that are configured with salt and iteration count.
-*/
 class SaltedKdfAlgInfo implements AlgInfo
 {
 
@@ -68,10 +65,8 @@ class SaltedKdfAlgInfo implements AlgInfo
     }
 
     /**
-    * Return hash algorithm information.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function hashAlgInfo(): AlgInfo
     {
@@ -80,7 +75,6 @@ class SaltedKdfAlgInfo implements AlgInfo
     }
 
     /**
-    * Return KDF salt.
     *
     * @return string
     */
@@ -90,8 +84,6 @@ class SaltedKdfAlgInfo implements AlgInfo
     }
 
     /**
-    * Return KDF iteration count.
-    * Note, can be 0 if KDF does not need the iteration count.
     *
     * @return int
     */
@@ -101,7 +93,6 @@ class SaltedKdfAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

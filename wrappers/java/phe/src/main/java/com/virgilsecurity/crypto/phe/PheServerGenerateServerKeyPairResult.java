@@ -36,26 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method phe server.generateServerKeyPair() */
 public class PheServerGenerateServerKeyPairResult {
 
     private byte[] serverPrivateKey;
-
-    private byte[] serverPublicKey;
-
-    /* Create new instance of PheServerGenerateServerKeyPairResult. */
-    PheServerGenerateServerKeyPairResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    PheServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
-        super();
-        this.serverPrivateKey = serverPrivateKey;
-        this.serverPublicKey = serverPublicKey;
-    }
 
     public byte[] getServerPrivateKey() {
         return this.serverPrivateKey;
@@ -65,6 +49,8 @@ public class PheServerGenerateServerKeyPairResult {
         this.serverPrivateKey = serverPrivateKey;
     }
 
+    private byte[] serverPublicKey;
+
     public byte[] getServerPublicKey() {
         return this.serverPublicKey;
     }
@@ -72,5 +58,15 @@ public class PheServerGenerateServerKeyPairResult {
     public void setServerPublicKey(byte[] serverPublicKey) {
         this.serverPublicKey = serverPublicKey;
     }
-}
 
+    package PheServerGenerateServerKeyPairResult() {
+        super();
+    }
+
+    package PheServerGenerateServerKeyPairResult(byte[] serverPrivateKey, byte[] serverPublicKey) {
+        super();
+        this.serverPrivateKey = serverPrivateKey;
+        this.serverPublicKey = serverPublicKey;
+    }
+
+}

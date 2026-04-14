@@ -37,41 +37,38 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Mix-in interface that provides specific functionality to authenticated
-* encryption and decryption (AEAD ciphers).
-*/
 interface CipherAuth extends Ctx
 {
 
     /**
-    * Set additional data for for AEAD ciphers.
     *
-    * @param string $authData
+    * @param string $$authData
     * @return void
     */
-    public function setAuthData(string $authData): void;
+    public function setAuthData(string $$authData): void
+    {
+        ($this->ctx, $$authData);
+    }
 
     /**
-    * Accomplish an authenticated encryption and place tag separately.
-    *
-    * Note, if authentication tag should be added to an encrypted data,
-    * method "finish" can be used.
     *
     * @return array
     * @throws \Exception
     */
-    public function finishAuthEncryption(): array; // [out, tag]
+    public function finishAuthEncryption(): array
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Accomplish an authenticated decryption with explicitly given tag.
     *
-    * Note, if authentication tag is a part of an encrypted data then,
-    * method "finish" can be used for simplicity.
-    *
-    * @param string $tag
+    * @param string $$tag
     * @return string
     * @throws \Exception
     */
-    public function finishAuthDecryption(string $tag): string;
+    public function finishAuthDecryption(string $$tag): string
+    {
+        return ($this->ctx, $$tag);
+    }
+
 }

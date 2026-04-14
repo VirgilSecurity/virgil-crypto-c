@@ -34,7 +34,6 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const PheModule = require(process.env.PROJECT_MODULE);
 
 const initFoundationError = require('../foundation/FoundationError');

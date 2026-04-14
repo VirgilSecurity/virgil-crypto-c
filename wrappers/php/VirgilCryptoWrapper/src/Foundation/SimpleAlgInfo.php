@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle simple algorithm information (just id).
-*/
 class SimpleAlgInfo implements AlgInfo
 {
 
@@ -49,15 +46,13 @@ class SimpleAlgInfo implements AlgInfo
     private $ctx;
 
     /**
-    * Create algorithm info with identificator.
     *
-    * @param AlgId $algId
+    * @param AlgId $$algId
     * @return SimpleAlgInfo
     */
-    public static function withAlgId(AlgId $algId): SimpleAlgInfo
+    public static function withAlgId(AlgId $$algId): SimpleAlgInfo
     {
-        $ctx = vscf_simple_alg_info_with_alg_id_php($algId);
-        return new SimpleAlgInfo($ctx);
+        return vscf_simple_alg_info_with_alg_id_php($$algId);
     }
 
     /**
@@ -80,7 +75,6 @@ class SimpleAlgInfo implements AlgInfo
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */

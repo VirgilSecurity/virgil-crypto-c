@@ -34,17 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initMessageInfoCustomParams = (Module, modules) => {
     class MessageInfoCustomParams {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'MessageInfoCustomParams';
 
@@ -55,29 +47,16 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new MessageInfoCustomParams(Module._vscf_message_info_custom_params_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new MessageInfoCustomParams(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_message_info_custom_params_delete(this.ctxPtr);
@@ -85,24 +64,21 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Add custom parameter with integer value.
-         */
         addInt(key, value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureNumber('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
             try {
@@ -113,36 +89,33 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Add custom parameter with UTF8 string value.
-         */
         addString(key, value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
             try {
@@ -155,36 +128,33 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Add custom parameter with octet string value.
-         */
         addData(key, value) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
             precondition.ensureByteArray('value', value);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const valueSize = value.length * value.BYTES_PER_ELEMENT;
             const valuePtr = Module._malloc(valueSize);
             Module.HEAP8.set(value, valuePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const valueCtxSize = Module._vsc_data_ctx_size();
             const valueCtxPtr = Module._malloc(valueCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(valueCtxPtr, valuePtr, valueSize);
 
             try {
@@ -197,31 +167,25 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Remove all parameters.
-         */
         clear() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_message_info_custom_params_clear(this.ctxPtr);
         }
 
-        /**
-         * Return custom parameter with integer value.
-         */
-        findInt(key) {
+        findInt(key, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -243,30 +207,27 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Return custom parameter with UTF8 string value.
-         */
-        findString(key) {
+        findString(key, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -288,30 +249,27 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Return custom parameter with octet string value.
-         */
-        findData(key) {
+        findData(key, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('key', key);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keySize = key.length * key.BYTES_PER_ELEMENT;
             const keyPtr = Module._malloc(keySize);
             Module.HEAP8.set(key, keyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyCtxSize = Module._vsc_data_ctx_size();
             const keyCtxPtr = Module._malloc(keyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataResultCtxSize = Module._vsc_data_ctx_size();
             const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
 
@@ -333,9 +291,6 @@ const initMessageInfoCustomParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Return true if at least one param exists.
-         */
         hasParams() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -345,6 +300,7 @@ const initMessageInfoCustomParams = (Module, modules) => {
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
+
     }
 
     return MessageInfoCustomParams;

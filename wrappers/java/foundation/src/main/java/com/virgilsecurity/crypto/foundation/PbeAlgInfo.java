@@ -36,48 +36,32 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about password-based encryption algorithm.
-*/
 public class PbeAlgInfo implements AutoCloseable, AlgInfo {
+
+    public AlgInfo kdfAlgInfo() {
+        return FoundationJNI.INSTANCE.pbeAlgInfo_kdfAlgInfo(this.cCtx);
+    }
+
+    public AlgInfo cipherAlgInfo() {
+        return FoundationJNI.INSTANCE.pbeAlgInfo_cipherAlgInfo(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public PbeAlgInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.pbeAlgInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    PbeAlgInfo(FoundationContextHolder contextHolder) {
+    package PbeAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return KDF algorithm information.
-    */
-    public AlgInfo kdfAlgInfo() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_kdfAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Return cipher algorithm information.
-    */
-    public AlgInfo cipherAlgInfo() {
-        return FoundationJNI.INSTANCE.pbeAlgInfo_cipherAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static PbeAlgInfo getInstance(long cCtx) {
+    public PbeAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PbeAlgInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -86,21 +70,16 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.pbeAlgInfo_algId(this.cCtx);
     }
-}
 
+}

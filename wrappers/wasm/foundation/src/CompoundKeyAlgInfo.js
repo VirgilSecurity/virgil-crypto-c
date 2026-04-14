@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initCompoundKeyAlgInfo = (Module, modules) => {
-    /**
-     * Handle information about compound key algorithm.
-     */
     class CompoundKeyAlgInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'CompoundKeyAlgInfo';
 
@@ -58,29 +47,16 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CompoundKeyAlgInfo(Module._vscf_compound_key_alg_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CompoundKeyAlgInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_compound_key_alg_info_delete(this.ctxPtr);
@@ -88,9 +64,6 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -99,9 +72,6 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return information about encrypt/decrypt algorithm.
-         */
         cipherAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -112,9 +82,6 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
             return jsResult;
         }
 
-        /**
-         * Return information about sign/verify algorithm.
-         */
         signerAlgInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -124,6 +91,7 @@ const initCompoundKeyAlgInfo = (Module, modules) => {
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return CompoundKeyAlgInfo;

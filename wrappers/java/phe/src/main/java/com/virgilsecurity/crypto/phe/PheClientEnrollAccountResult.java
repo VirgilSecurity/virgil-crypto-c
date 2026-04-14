@@ -36,26 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method phe client.enrollAccount() */
 public class PheClientEnrollAccountResult {
 
     private byte[] enrollmentRecord;
-
-    private byte[] accountKey;
-
-    /* Create new instance of PheClientEnrollAccountResult. */
-    PheClientEnrollAccountResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    PheClientEnrollAccountResult(byte[] enrollmentRecord, byte[] accountKey) {
-        super();
-        this.enrollmentRecord = enrollmentRecord;
-        this.accountKey = accountKey;
-    }
 
     public byte[] getEnrollmentRecord() {
         return this.enrollmentRecord;
@@ -65,6 +49,8 @@ public class PheClientEnrollAccountResult {
         this.enrollmentRecord = enrollmentRecord;
     }
 
+    private byte[] accountKey;
+
     public byte[] getAccountKey() {
         return this.accountKey;
     }
@@ -72,5 +58,15 @@ public class PheClientEnrollAccountResult {
     public void setAccountKey(byte[] accountKey) {
         this.accountKey = accountKey;
     }
-}
 
+    package PheClientEnrollAccountResult() {
+        super();
+    }
+
+    package PheClientEnrollAccountResult(byte[] enrollmentRecord, byte[] accountKey) {
+        super();
+        this.enrollmentRecord = enrollmentRecord;
+        this.accountKey = accountKey;
+    }
+
+}

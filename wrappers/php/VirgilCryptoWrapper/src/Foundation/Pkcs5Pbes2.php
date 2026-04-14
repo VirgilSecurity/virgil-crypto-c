@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Virgil Security implementation of the PBES2 (RFC 8018) algorithm.
-*/
 class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
 {
 
@@ -68,36 +65,36 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
     }
 
     /**
-    * @param SaltedKdf $kdf
-    * @return void
-    */
-    public function useKdf(SaltedKdf $kdf): void
-    {
-        vscf_pkcs5_pbes2_use_kdf_php($this->ctx, $kdf->getCtx());
-    }
-
-    /**
-    * @param Cipher $cipher
-    * @return void
-    */
-    public function useCipher(Cipher $cipher): void
-    {
-        vscf_pkcs5_pbes2_use_cipher_php($this->ctx, $cipher->getCtx());
-    }
-
-    /**
-    * Configure cipher with a new password.
     *
-    * @param string $pwd
+    * @param SaltedKdf $$kdf
     * @return void
     */
-    public function reset(string $pwd): void
+    public function useKdf(SaltedKdf $$kdf): void
     {
-        vscf_pkcs5_pbes2_reset_php($this->ctx, $pwd);
+        vscf_pkcs5_pbes2_use_kdf_php($this->ctx, $$kdf);
     }
 
     /**
-    * Provide algorithm identificator.
+    *
+    * @param Cipher $$cipher
+    * @return void
+    */
+    public function useCipher(Cipher $$cipher): void
+    {
+        vscf_pkcs5_pbes2_use_cipher_php($this->ctx, $$cipher);
+    }
+
+    /**
+    *
+    * @param string $$pwd
+    * @return void
+    */
+    public function reset(string $$pwd): void
+    {
+        vscf_pkcs5_pbes2_reset_php($this->ctx, $$pwd);
+    }
+
+    /**
     *
     * @return AlgId
     */
@@ -108,10 +105,8 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
     }
 
     /**
-    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -120,72 +115,66 @@ class Pkcs5Pbes2 implements Alg, Encrypt, Decrypt
     }
 
     /**
-    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_pkcs5_pbes2_restore_alg_info_php($this->ctx, $algInfo->getCtx());
+        vscf_pkcs5_pbes2_restore_alg_info_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Encrypt given data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(string $data): string
+    public function encrypt(string $$data): string
     {
-        return vscf_pkcs5_pbes2_encrypt_php($this->ctx, $data);
+        return vscf_pkcs5_pbes2_encrypt_php($this->ctx, $$data);
     }
 
     /**
-    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptedLen(int $dataLen): int
+    public function encryptedLen(int $$dataLen): int
     {
-        return vscf_pkcs5_pbes2_encrypted_len_php($this->ctx, $dataLen);
+        return vscf_pkcs5_pbes2_encrypted_len_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Precise length calculation of encrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function preciseEncryptedLen(int $dataLen): int
+    public function preciseEncryptedLen(int $$dataLen): int
     {
-        return vscf_pkcs5_pbes2_precise_encrypted_len_php($this->ctx, $dataLen);
+        return vscf_pkcs5_pbes2_precise_encrypted_len_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Decrypt given data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(string $data): string
+    public function decrypt(string $$data): string
     {
-        return vscf_pkcs5_pbes2_decrypt_php($this->ctx, $data);
+        return vscf_pkcs5_pbes2_decrypt_php($this->ctx, $$data);
     }
 
     /**
-    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptedLen(int $dataLen): int
+    public function decryptedLen(int $$dataLen): int
     {
-        return vscf_pkcs5_pbes2_decrypted_len_php($this->ctx, $dataLen);
+        return vscf_pkcs5_pbes2_decrypted_len_php($this->ctx, $$dataLen);
     }
 
     /**

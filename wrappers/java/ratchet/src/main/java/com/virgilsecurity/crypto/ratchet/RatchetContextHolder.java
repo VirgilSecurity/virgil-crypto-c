@@ -36,13 +36,12 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-class RatchetContextHolder {
+package class RatchetContextHolder {
 
-    long cCtx;
+    package long cCtx;
 
-    /* Create underlying C context. */
-    RatchetContextHolder(long cCtx) {
+    package RatchetContextHolder(long cCtx) {
         this.cCtx = cCtx;
     }
-}
 
+}

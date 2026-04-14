@@ -34,20 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initGroupSessionTicket = (Module, modules) => {
-    /**
-     * Group ticket used to start group session, remove participants or proactive to rotate encryption key.
-     */
     class GroupSessionTicket {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'GroupSessionTicket';
 
@@ -58,29 +47,16 @@ const initGroupSessionTicket = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new GroupSessionTicket(Module._vscf_group_session_ticket_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new GroupSessionTicket(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_group_session_ticket_delete(this.ctxPtr);
@@ -88,43 +64,33 @@ const initGroupSessionTicket = (Module, modules) => {
             }
         }
 
-        /**
-         * Random used to generate keys
-         */
-        set rng(rng) {
+        rng(rng) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_group_session_ticket_release_rng(this.ctxPtr)
             Module._vscf_group_session_ticket_use_rng(this.ctxPtr, rng.ctxPtr)
         }
 
-        /**
-         * Setups default dependencies:
-         * - RNG: CTR DRBG
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_group_session_ticket_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Set this ticket to start new group session.
-         */
         setupTicketAsNew(sessionId) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('sessionId', sessionId);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const sessionIdSize = sessionId.length * sessionId.BYTES_PER_ELEMENT;
             const sessionIdPtr = Module._malloc(sessionIdSize);
             Module.HEAP8.set(sessionId, sessionIdPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const sessionIdCtxSize = Module._vsc_data_ctx_size();
             const sessionIdCtxPtr = Module._malloc(sessionIdCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(sessionIdCtxPtr, sessionIdPtr, sessionIdSize);
 
             try {
@@ -136,9 +102,6 @@ const initGroupSessionTicket = (Module, modules) => {
             }
         }
 
-        /**
-         * Returns message that should be sent to all participants using secure channel.
-         */
         getTicketMessage() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
 
@@ -148,6 +111,7 @@ const initGroupSessionTicket = (Module, modules) => {
             const jsResult = modules.GroupSessionMessage.newAndUseCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return GroupSessionTicket;

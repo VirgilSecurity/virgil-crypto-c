@@ -34,15 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initFoundationInterface = (Module, modules) => {
     class FoundationInterface {
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             const implTag = Module._vscf_impl_tag(ctxPtr);
             switch(implTag) {
@@ -211,23 +205,14 @@ const initFoundationInterface = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             return new modules.FoundationInterface.newAndTakeCContext(Module._vscf_impl_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Return true if given class implements C interface with a given tag.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static isImplemented(ctxPtr, interfaceTag) {
             return Module._vscf_impl_api(ctxPtr, interfaceTag) != 0;
         }
+
     }
 
     return FoundationInterface;

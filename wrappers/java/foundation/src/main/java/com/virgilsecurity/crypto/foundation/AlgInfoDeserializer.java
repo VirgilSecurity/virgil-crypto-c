@@ -36,14 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide algorithm deserialization.
-*/
-public interface AlgInfoDeserializer {
-
-    /*
-    * Deserialize algorithm from the data.
-    */
-    AlgInfo deserialize(byte[] data) throws FoundationException;
-}
-

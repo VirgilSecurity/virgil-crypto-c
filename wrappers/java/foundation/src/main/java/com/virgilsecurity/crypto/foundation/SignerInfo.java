@@ -36,35 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about signer that is defined by an identifer and
-* a Public Key.
-*/
 public class SignerInfo implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public SignerInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.signerInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    SignerInfo(FoundationContextHolder contextHolder) {
+    package SignerInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static SignerInfo getInstance(long cCtx) {
+    public SignerInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SignerInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -73,35 +62,24 @@ public class SignerInfo implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return signer identifier.
-    */
     public byte[] signerId() {
         return FoundationJNI.INSTANCE.signerInfo_signerId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that was used for data signing.
-    */
     public AlgInfo signerAlgInfo() {
         return FoundationJNI.INSTANCE.signerInfo_signerAlgInfo(this.cCtx);
     }
 
-    /*
-    * Return data signature.
-    */
     public byte[] signature() {
         return FoundationJNI.INSTANCE.signerInfo_signature(this.cCtx);
     }
-}
 
+}

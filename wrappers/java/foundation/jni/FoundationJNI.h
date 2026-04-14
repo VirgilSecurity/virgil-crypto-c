@@ -34,1774 +34,2642 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-#include <jni.h>
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1fromAlgId(jobject jalgId);
 
-#ifndef _Included_FoundationJNI_h
-#define _Included_FoundationJNI_h
-#ifdef __cplusplus
-extern "C" {
-#endif
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1fromAlgId (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1toAlgId(jbyteArray joid);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1toAlgId (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1fromId(jobject joidId);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1fromId (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1toId(jbyteArray joid);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1toId (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1idToAlgId(jobject joidId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1idToAlgId (JNIEnv *, jobject, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1equal(jbyteArray jlhs, jbyteArray jrhs);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_oid_1equal (JNIEnv *, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1encodedLen(jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1encodedLen (JNIEnv *, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1encode(jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1encode (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1decodedLen(jint jstrLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1decodedLen (JNIEnv *, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1decode(jbyteArray jstr);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_base64_1decode (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1wrappedLen(jstring jtitle, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1wrappedLen (JNIEnv *, jobject, jstring, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1wrap(jstring jtitle, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1wrap (JNIEnv *, jobject, jstring, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1unwrappedLen(jint jpemLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1unwrappedLen (JNIEnv *, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1unwrap(jbyteArray jpem);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1unwrap (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1title(jbyteArray jpem);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pem_1title (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1dataEncryptionAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1dataEncryptionAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1keyRecipientInfoList(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1keyRecipientInfoList (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1passwordRecipientInfoList(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1passwordRecipientInfoList (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCustomParams(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCustomParams (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1customParams(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1customParams (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCipherKdfAlgInfo(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCipherKdfAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1cipherKdfAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1cipherKdfAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCipherPaddingAlgInfo(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasCipherPaddingAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1cipherPaddingAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1cipherPaddingAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasFooterInfo(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1hasFooterInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1footerInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1footerInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1clear(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfo_1clear (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1new___3BLcom_virgilsecurity_crypto_foundation_AlgInfo_2_3B(jbyteArray jrecipientId, jobject jkeyEncryptionAlgorithm, jbyteArray jencryptedKey);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1new___3BLcom_virgilsecurity_crypto_foundation_AlgInfo_2_3B (JNIEnv *, jobject, jbyteArray, jobject, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1recipientId(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1recipientId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1keyEncryptionAlgorithm(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1keyEncryptionAlgorithm (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1encryptedKey(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfo_1encryptedKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasItem(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasItem (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1item(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1item (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasNext(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasNext (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1next(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1next (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasPrev(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1hasPrev (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1prev(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1prev (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1clear(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyRecipientInfoList_1clear (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgInfo_2_3B(jobject jkeyEncryptionAlgorithm, jbyteArray jencryptedKey);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgInfo_2_3B (JNIEnv *, jobject, jobject, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1keyEncryptionAlgorithm(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1keyEncryptionAlgorithm (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1encryptedKey(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfo_1encryptedKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasItem(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasItem (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1item(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1item (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasNext(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasNext (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1next(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1next (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasPrev(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1hasPrev (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1prev(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1prev (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1clear(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1clear (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createHashFromInfo(jobject jalgInfo);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createHashFromInfo (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createMacFromInfo(jobject jalgInfo);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createMacFromInfo (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createKdfFromInfo(jobject jalgInfo);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createKdfFromInfo (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createSaltedKdfFromInfo(jobject jalgInfo);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createSaltedKdfFromInfo (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createCipherFromInfo(jobject jalgInfo);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createCipherFromInfo (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createPaddingFromInfo(jobject jalgInfo, jobject jrandom);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createPaddingFromInfo (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromAlgId(jobject jalgId, jobject jrandom);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromAlgId (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromKey(jobject jkey, jobject jrandom);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromKey (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromRawPublicKey(jobject jpublicKey, jobject jrandom);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromRawPublicKey (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromRawPrivateKey(jobject jprivateKey, jobject jrandom);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAlgFactory_1createFromRawPrivateKey (JNIEnv *, jobject, jobject, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setCipher(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setCipher (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setMac(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setMac (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setKdf(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setKdf (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setEphemeralKey(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setKeyAlg(jlong c_ctx, jobject jkeyAlg);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setKeyAlg (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1releaseKeyAlg(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1releaseKeyAlg (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setupDefaultsNoRandom(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setupDefaultsNoRandom (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionCipher(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionCipher (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionPadding(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionPadding (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setPaddingParams(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setPaddingParams (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setSignerHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setSignerHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1hasKeyRecipient(jlong c_ctx, jbyteArray jrecipientId);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1hasKeyRecipient (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1addKeyRecipient(jlong c_ctx, jbyteArray jrecipientId, jobject jpublicKey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1addKeyRecipient (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1clearRecipients(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1clearRecipients (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1addSigner(jlong c_ctx, jbyteArray jsignerId, jobject jprivateKey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1addSigner (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1clearSigners(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1clearSigners (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1customParams(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1customParams (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startEncryption(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startEncryption (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startSignedEncryption(jlong c_ctx, jint jdataSize);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startSignedEncryption (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1messageInfoLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1messageInfoLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1packMessageInfo(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1packMessageInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1encryptionOutLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1encryptionOutLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1processEncryption(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1processEncryption (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1finishEncryption(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1finishEncryption (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startDecryptionWithKey(jlong c_ctx, jbyteArray jrecipientId, jobject jprivateKey, jbyteArray jmessageInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startDecryptionWithKey (JNIEnv *, jobject, jlong, jbyteArray, jobject, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startVerifiedDecryptionWithKey(jlong c_ctx, jbyteArray jrecipientId, jobject jprivateKey, jbyteArray jmessageInfo, jbyteArray jmessageInfoFooter);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1startVerifiedDecryptionWithKey (JNIEnv *, jobject, jlong, jbyteArray, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1decryptionOutLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1decryptionOutLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1processDecryption(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1processDecryption (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1finishDecryption(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1finishDecryption (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1isDataSigned(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1isDataSigned (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1signerInfos(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1signerInfos (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1verifySignerInfo(jlong c_ctx, jobject jsignerInfo, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1verifySignerInfo (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1messageInfoFooterLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1messageInfoFooterLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1packMessageInfoFooter(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1packMessageInfoFooter (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1addInt(jlong c_ctx, jbyteArray jkey, jint jvalue);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1addInt (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1addString(jlong c_ctx, jbyteArray jkey, jbyteArray jvalue);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1addString (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1addData(jlong c_ctx, jbyteArray jkey, jbyteArray jvalue);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1addData (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1clear(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1clear (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1findInt(jlong c_ctx, jbyteArray jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1findInt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1findString(jlong c_ctx, jbyteArray jkey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1findString (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1findData(jlong c_ctx, jbyteArray jkey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1findData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1hasParams(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoCustomParams_1hasParams (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setRsaParams(jlong c_ctx, jint jbitlen);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setRsaParams (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generatePrivateKey(jlong c_ctx, jobject jalgId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generatePrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generatePostQuantumPrivateKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generatePostQuantumPrivateKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundPrivateKey(jlong c_ctx, jobject jcipherAlgId, jobject jsignerAlgId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundPrivateKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateHybridPrivateKey(jlong c_ctx, jobject jfirstKeyAlgId, jobject jsecondKeyAlgId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateHybridPrivateKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundHybridPrivateKey(jlong c_ctx, jobject jcipherFirstKeyAlgId, jobject jcipherSecondKeyAlgId, jobject jsignerFirstKeyAlgId, jobject jsignerSecondKeyAlgId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1generateCompoundHybridPrivateKey (JNIEnv *, jobject, jlong, jobject, jobject, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPrivateKey(jlong c_ctx, jbyteArray jkeyData);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPrivateKey (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPublicKey(jlong c_ctx, jbyteArray jkeyData);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1importPublicKey (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportedPublicKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportedPublicKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportedPrivateKeyLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportedPrivateKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1setHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1setHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1reset(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1reset (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1appendData(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1appendData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1sign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1sign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1reset(jlong c_ctx, jbyteArray jsignature);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1reset (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1appendData(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1appendData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1verify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_verifier_1verify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setOperationRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1blind(jlong c_ctx, jbyteArray jpassword);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1blind (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1deblind(jlong c_ctx, jbyteArray jpassword, jbyteArray jhardenedPoint, jbyteArray jdeblindFactor, jbyteArray jkeyName);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1deblind (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setOperationRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1generateIdentitySecret(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1generateIdentitySecret (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1harden(jlong c_ctx, jbyteArray jidentitySecret, jbyteArray jblindedPoint);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1harden (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1getType(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1getType (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1getSessionId(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1getSessionId (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1getEpoch(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1getEpoch (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1serializeLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1serializeLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1serialize(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1serialize (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1deserialize(jbyteArray jinput);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1deserialize (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setRng(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setRng (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setupTicketAsNew(jlong c_ctx, jbyteArray jsessionId);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setupTicketAsNew (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1getTicketMessage(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1getTicketMessage (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1setRng(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1setRng (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1getCurrentEpoch(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1getCurrentEpoch (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1getSessionId(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1getSessionId (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1addEpoch(jlong c_ctx, jobject jmessage);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1addEpoch (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1encrypt(jlong c_ctx, jbyteArray jplainText, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1encrypt (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1decryptLen(jlong c_ctx, jobject jmessage);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1decryptLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1decrypt(jlong c_ctx, jobject jmessage, jobject jpublicKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1decrypt (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1createGroupTicket(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1createGroupTicket (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack(jlong c_ctx, jbyteArray jmessageInfoData);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unpack (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unlock(jlong c_ctx, jbyteArray jownerRecipientId, jobject jownerPrivateKey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1unlock (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1addKeyRecipient(jlong c_ctx, jbyteArray jrecipientId, jobject jpublicKey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1addKeyRecipient (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1removeKeyRecipient(jlong c_ctx, jbyteArray jrecipientId);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1removeKeyRecipient (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1removeAll(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1removeAll (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1packedLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1packedLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1pack(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1pack (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1signerId(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1signerId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1signerAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1signerAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1signature(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfo_1signature (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasItem(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasItem (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1item(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1item (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasNext(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasNext (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1next(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1next (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasPrev(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1hasPrev (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1prev(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1prev (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1clear(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signerInfoList_1clear (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1hasSignerInfos(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1hasSignerInfos (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1signerInfos(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1signerInfos (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1signerHashAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1signerHashAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1signerDigest(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoFooter_1signerDigest (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1hashAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signedDataInfo_1hashAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1hasSignedDataInfo(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1hasSignedDataInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1signedDataInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1signedDataInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1setDataSize(jlong c_ctx, jint jdataSize);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1setDataSize (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1dataSize(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_footerInfo_1dataSize (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgInfo_2(jobject jalgInfo);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgInfo_2 (JNIEnv *, jobject, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompound(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompound (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybrid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybrid (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompoundHybrid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompoundHybrid (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompoundHybridCipher(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompoundHybridCipher (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompoundHybridSigner(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isCompoundHybridSigner (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybridPostQuantum(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybridPostQuantum (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybridPostQuantumCipher(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybridPostQuantumCipher (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybridPostQuantumSigner(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1isHybridPostQuantumSigner (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundCipherAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundCipherAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundSignerAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundSignerAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1hybridFirstKeyAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1hybridFirstKeyAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1hybridSecondKeyAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1hybridSecondKeyAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridCipherFirstKeyAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridCipherFirstKeyAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridCipherSecondKeyAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridCipherSecondKeyAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridSignerFirstKeyAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridSignerFirstKeyAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridSignerSecondKeyAlgId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyInfo_1compoundHybridSignerSecondKeyAlgId (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__II(jint jframe, jint jframeMax);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1new__II (JNIEnv *, jobject, jint, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frame(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frame (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frameMax(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_paddingParams_1frameMax (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1hash(jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1hash (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1start(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1start (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha224_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1hash(jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1hash (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1start(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1start (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha256_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1hash(jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1hash (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1start(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1start (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha384_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1hash(jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1hash (JNIEnv *, jobject, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1start(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1start (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sha512_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1encrypt(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1encrypt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1encryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1encryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1preciseEncryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1preciseEncryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1decrypt(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1decrypt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1decryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1decryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setNonce(jlong c_ctx, jbyteArray jnonce);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setNonce (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setKey(jlong c_ctx, jbyteArray jkey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setKey (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1startEncryption(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1startEncryption (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1startDecryption(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1startDecryption (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1outLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1outLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1encryptedOutLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1encryptedOutLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1decryptedOutLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1decryptedOutLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authEncrypt(jlong c_ctx, jbyteArray jdata, jbyteArray jauthData);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authEncrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authEncryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authEncryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authDecrypt(jlong c_ctx, jbyteArray jdata, jbyteArray jauthData, jbyteArray jtag);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authDecrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authDecryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1authDecryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setAuthData(jlong c_ctx, jbyteArray jauthData);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1setAuthData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1finishAuthEncryption(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1finishAuthEncryption (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1finishAuthDecryption(jlong c_ctx, jbyteArray jtag);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Gcm_1finishAuthDecryption (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1encrypt(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1encrypt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1encryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1encryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1preciseEncryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1preciseEncryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1decrypt(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1decrypt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1decryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1decryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1setNonce(jlong c_ctx, jbyteArray jnonce);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1setNonce (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1setKey(jlong c_ctx, jbyteArray jkey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1setKey (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1startEncryption(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1startEncryption (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1startDecryption(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1startDecryption (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1outLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1outLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1encryptedOutLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1encryptedOutLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1decryptedOutLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1decryptedOutLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_aes256Cbc_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1reset(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1reset (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1leftLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1leftLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1hasError(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1hasError (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1status(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1status (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1getTag(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1getTag (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1getLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1getLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1getDataLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1getDataLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readTag(jlong c_ctx, jint jtag);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readTag (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readContextTag(jlong c_ctx, jint jtag);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readContextTag (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt8(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt8 (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt16(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt16 (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt32(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt32 (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt64(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readInt64 (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint8(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint8 (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint16(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint16 (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint32(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint32 (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint64(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUint64 (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readBool(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readBool (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readNull(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readNull (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readNullOptional(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readNullOptional (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readOctetStr(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readOctetStr (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readBitstringAsOctetStr(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readBitstringAsOctetStr (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUtf8Str(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readUtf8Str (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readOid(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readOid (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readData(jlong c_ctx, jint jlen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readData (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readSequence(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readSequence (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readSet(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readSet (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1reset(jlong c_ctx, jbyteArray jout, jint joutLen);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1reset (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1finish(jlong c_ctx, jboolean jdoNotAdjust);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1finish (JNIEnv *, jobject, jlong, jboolean);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1bytes(jlong c_ctx);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1bytes (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writtenLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writtenLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1unwrittenLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1unwrittenLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1hasError(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1hasError (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1status(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1status (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1reserve(jlong c_ctx, jint jlen);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1reserve (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeTag(jlong c_ctx, jint jtag);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeTag (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeContextTag(jlong c_ctx, jint jtag, jint jlen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeContextTag (JNIEnv *, jobject, jlong, jint, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeLen(jlong c_ctx, jint jlen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt(jlong c_ctx, jint jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt8(jlong c_ctx, jint jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt8 (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt16(jlong c_ctx, jint jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt16 (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt32(jlong c_ctx, jint jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt32 (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt64(jlong c_ctx, jint jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeInt64 (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint(jlong c_ctx, jlong jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint8(jlong c_ctx, jlong jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint8 (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint16(jlong c_ctx, jlong jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint16 (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint32(jlong c_ctx, jlong jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint32 (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint64(jlong c_ctx, jlong jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUint64 (JNIEnv *, jobject, jlong, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeBool(jlong c_ctx, jboolean jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeBool (JNIEnv *, jobject, jlong, jboolean);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeNull(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeNull (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeOctetStr(jlong c_ctx, jbyteArray jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeOctetStr (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeOctetStrAsBitstring(jlong c_ctx, jbyteArray jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeOctetStrAsBitstring (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeData(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUtf8Str(jlong c_ctx, jbyteArray jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeUtf8Str (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeOid(jlong c_ctx, jbyteArray jvalue);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeOid (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeSequence(jlong c_ctx, jint jlen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeSequence (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeSet(jlong c_ctx, jint jlen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeSet (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1keyExponent(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1keyExponent (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1extractPublicKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPrivateKey_1extractPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1generateKey(jlong c_ctx, jint jbitlen);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1generateKey (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canEncrypt(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canEncrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canDecrypt(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canDecrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canSign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canSign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1signHash(jlong c_ctx, jobject jprivateKey, jobject jhashId, jbyteArray jdigest);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canVerify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1canVerify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1verifyHash(jlong c_ctx, jobject jpublicKey, jobject jhashId, jbyteArray jdigest, jbyteArray jsignature);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsa_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPublicKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1extractPublicKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccPrivateKey_1extractPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1setEcies(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1setEcies (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1generateKey(jlong c_ctx, jobject jalgId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1generateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canEncrypt(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canEncrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canDecrypt(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canDecrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canSign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canSign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1signHash(jlong c_ctx, jobject jprivateKey, jobject jhashId, jbyteArray jdigest);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canVerify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1canVerify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1verifyHash(jlong c_ctx, jobject jpublicKey, jobject jhashId, jbyteArray jdigest, jbyteArray jsignature);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1computeSharedKey(jlong c_ctx, jobject jpublicKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1computeSharedKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1sharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1sharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemSharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemSharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemEncapsulatedKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemEncapsulatedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemEncapsulate(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemEncapsulate (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemDecapsulate(jlong c_ctx, jbyteArray jencapsulatedKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1kemDecapsulate (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1addSource(jlong c_ctx, jobject jsource, jint jthreshold);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1addSource (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1isStrong(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1isStrong (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1gather(jlong c_ctx, jint jlen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1gather (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setEntropySource(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setEntropySource (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1enablePredictionResistance(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1enablePredictionResistance (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setReseedInterval(jlong c_ctx, jint jinterval);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setReseedInterval (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setEntropyLen(jlong c_ctx, jint jlen);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1setEntropyLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1random(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1random (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1reseed(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ctrDrbg_1reseed (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1setHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1setHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1digestLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1digestLen (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1mac(jlong c_ctx, jbyteArray jkey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1mac (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1start(jlong c_ctx, jbyteArray jkey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1start (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1update(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1update (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1finish(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1finish (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1reset(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hmac_1reset (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1setHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1setHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1derive(jlong c_ctx, jbyteArray jdata, jint jkeyLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1derive (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1reset(jlong c_ctx, jbyteArray jsalt, jint jiterationCount);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1reset (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1setInfo(jlong c_ctx, jbyteArray jinfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hkdf_1setInfo (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1setHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1setHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1derive(jlong c_ctx, jbyteArray jdata, jint jkeyLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf1_1derive (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1setHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1setHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1derive(jlong c_ctx, jbyteArray jdata, jint jkeyLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kdf2_1derive (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1setupSourceByte(jlong c_ctx, jbyte jbyteSource);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1setupSourceByte (JNIEnv *, jobject, jlong, jbyte);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1setupSourceData(jlong c_ctx, jbyteArray jdataSource);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1setupSourceData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1random(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1random (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1reseed(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1reseed (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1isStrong(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1isStrong (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1gather(jlong c_ctx, jint jlen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_fakeRandom_1gather (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setHmac(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setHmac (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1derive(jlong c_ctx, jbyteArray jdata, jint jkeyLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1derive (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1reset(jlong c_ctx, jbyteArray jsalt, jint jiterationCount);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1reset (JNIEnv *, jobject, jlong, jbyteArray, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setInfo(jlong c_ctx, jbyteArray jinfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbkdf2_1setInfo (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1setKdf(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1setKdf (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1setCipher(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1setCipher (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1reset(jlong c_ctx, jbyteArray jpwd);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1reset (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1encrypt(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1encrypt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1encryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1encryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1preciseEncryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1preciseEncryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1decrypt(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1decrypt (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1decryptedLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs5Pbes2_1decryptedLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1resetSeed(jlong c_ctx, jbyteArray jseed);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1resetSeed (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1isStrong(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1isStrong (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1gather(jlong c_ctx, jint jlen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1gather (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1resetKeyMaterial(jlong c_ctx, jbyteArray jkeyMaterial);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1resetKeyMaterial (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1random(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1random (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1reseed(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1reseed (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1data(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1data (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPublicKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1data(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1data (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1hasPublicKey(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1hasPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1setPublicKey(jlong c_ctx, jobject jrawPublicKey);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1setPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1getPublicKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1getPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1extractPublicKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rawPrivateKey_1extractPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setAsn1Writer(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setAsn1Writer (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePublicKeyInplace(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePublicKeyInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePrivateKeyInplace(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePrivateKeyInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializedPublicKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializedPublicKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializedPrivateKeyLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializedPrivateKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pkcs8Serializer_1serializePrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1setAsn1Writer(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1setAsn1Writer (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKeyInplace(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKeyInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePrivateKeyInplace(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePrivateKeyInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializedPublicKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializedPublicKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializedPrivateKeyLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializedPrivateKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1serializePrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1setAsn1Writer(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1setAsn1Writer (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKeyInplace(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKeyInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePrivateKeyInplace(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePrivateKeyInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializedPublicKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializedPublicKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializedPrivateKeyLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializedPrivateKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1serializePrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1setAsn1Reader(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1setAsn1Reader (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePublicKeyInplace(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePublicKeyInplace (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePrivateKeyInplace(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePrivateKeyInplace (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePublicKey(jlong c_ctx, jbyteArray jpublicKeyData);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePublicKey (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePrivateKey(jlong c_ctx, jbyteArray jprivateKeyData);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePrivateKey (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1setEcies(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1setEcies (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1generateKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1generateKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canEncrypt(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canEncrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canDecrypt(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canDecrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canSign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canSign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1signHash(jlong c_ctx, jobject jprivateKey, jobject jhashId, jbyteArray jdigest);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canVerify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1canVerify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1verifyHash(jlong c_ctx, jobject jpublicKey, jobject jhashId, jbyteArray jdigest, jbyteArray jsignature);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1computeSharedKey(jlong c_ctx, jobject jpublicKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1computeSharedKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1sharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1sharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemSharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemSharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemEncapsulatedKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemEncapsulatedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemEncapsulate(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemEncapsulate (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemDecapsulate(jlong c_ctx, jbyteArray jencapsulatedKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ed25519_1kemDecapsulate (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1setEcies(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1setEcies (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1generateKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1generateKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1canEncrypt(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1canEncrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1canDecrypt(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1canDecrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1computeSharedKey(jlong c_ctx, jobject jpublicKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1computeSharedKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1sharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1sharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemSharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemSharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemEncapsulatedKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemEncapsulatedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemEncapsulate(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemEncapsulate (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemDecapsulate(jlong c_ctx, jbyteArray jencapsulatedKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_curve25519_1kemDecapsulate (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1generateKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1generateKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1canSign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1canSign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signHash(jlong c_ctx, jobject jprivateKey, jobject jhashId, jbyteArray jdigest);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1canVerify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1canVerify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1verifyHash(jlong c_ctx, jobject jpublicKey, jobject jhashId, jbyteArray jdigest, jbyteArray jsignature);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_falcon_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1generateKey(jlong c_ctx, jobject jalgId);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1generateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemSharedKeyLen(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemSharedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemEncapsulatedKeyLen(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemEncapsulatedKeyLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemEncapsulate(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemEncapsulate (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemDecapsulate(jlong c_ctx, jbyteArray jencapsulatedKey, jobject jprivateKey);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_round5_1kemDecapsulate (JNIEnv *, jobject, jlong, jbyteArray, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1cipherAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1cipherAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signerAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1signerAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1cipherKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1cipherKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1signerKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1signerKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPublicKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1cipherKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1cipherKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1signerKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1signerKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1extractPublicKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundPrivateKey_1extractPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1makeKey(jlong c_ctx, jobject jcipherKey, jobject jsignerKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1makeKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canEncrypt(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canEncrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canDecrypt(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canDecrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canSign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canSign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1signHash(jlong c_ctx, jobject jprivateKey, jobject jhashId, jbyteArray jdigest);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canVerify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1canVerify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1verifyHash(jlong c_ctx, jobject jpublicKey, jobject jhashId, jbyteArray jdigest, jbyteArray jsignature);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_compoundKeyAlg_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1firstKeyAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1firstKeyAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1secondKeyAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1secondKeyAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1firstKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1firstKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1secondKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1secondKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPublicKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1firstKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1firstKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1secondKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1secondKey (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1algInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1algInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1bitlen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1bitlen (JNIEnv *, jobject, jlong);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1isValid(jlong c_ctx);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1isValid (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1extractPublicKey(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridPrivateKey_1extractPublicKey (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setCipher(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setCipher (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setHash(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setHash (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1makeKey(jlong c_ctx, jobject jfirstKey, jobject jsecondKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1makeKey (JNIEnv *, jobject, jlong, jobject, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1generateEphemeralKey(jlong c_ctx, jobject jkey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1generateEphemeralKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1importPublicKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1importPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1exportPublicKey(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1exportPublicKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1importPrivateKey(jlong c_ctx, jobject jrawKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1importPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1exportPrivateKey(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1exportPrivateKey (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canEncrypt(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canEncrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1encryptedLen(jlong c_ctx, jobject jpublicKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1encryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1encrypt(jlong c_ctx, jobject jpublicKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1encrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canDecrypt(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canDecrypt (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1decryptedLen(jlong c_ctx, jobject jprivateKey, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1decryptedLen (JNIEnv *, jobject, jlong, jobject, jint);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1decrypt(jlong c_ctx, jobject jprivateKey, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1decrypt (JNIEnv *, jobject, jlong, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canSign(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canSign (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1signatureLen(jlong c_ctx, jobject jprivateKey);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1signatureLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1signHash(jlong c_ctx, jobject jprivateKey, jobject jhashId, jbyteArray jdigest);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1signHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canVerify(jlong c_ctx, jobject jpublicKey);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1canVerify (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jboolean JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1verifyHash(jlong c_ctx, jobject jpublicKey, jobject jhashId, jbyteArray jdigest, jbyteArray jsignature);
 
-JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1verifyHash (JNIEnv *, jobject, jlong, jobject, jobject, jbyteArray, jbyteArray);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2(jobject jalgId);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2 (JNIEnv *, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1hashAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1hashAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hashBasedAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1nonce(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1nonce (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2_3B(jobject jalgId, jbyteArray jnonce);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2_3B (JNIEnv *, jobject, jobject, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_cipherAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1hashAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1hashAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1salt(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1salt (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1iterationCount(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1iterationCount (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_saltedKdfAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1kdfAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1kdfAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1cipherAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1cipherAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_pbeAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1keyId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1keyId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1domainId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1domainId (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_OidId_2Lcom_virgilsecurity_crypto_foundation_OidId_2(jobject jalgId, jobject jkeyId, jobject jdomainId);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1new__Lcom_virgilsecurity_crypto_foundation_AlgId_2Lcom_virgilsecurity_crypto_foundation_OidId_2Lcom_virgilsecurity_crypto_foundation_OidId_2 (JNIEnv *, jobject, jobject, jobject, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_eccAlgInfo_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setAsn1Writer(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setAsn1Writer (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeInplace(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeInplace (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedLen(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serialize(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serialize (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1setAsn1Reader(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1setAsn1Reader (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeInplace(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeInplace (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserialize(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserialize (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setAsn1Reader(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setAsn1Reader (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setAsn1Writer(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setAsn1Writer (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setupDefaults(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1setupDefaults (JNIEnv *, jobject, jlong);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedLen(jlong c_ctx, jobject jmessageInfo);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serialize(jlong c_ctx, jobject jmessageInfo);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serialize (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1readPrefix(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1readPrefix (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserialize(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserialize (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedFooterLen(jlong c_ctx, jobject jmessageInfoFooter);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedFooterLen (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeFooter(jlong c_ctx, jobject jmessageInfoFooter);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeFooter (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeFooter(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeFooter (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1setRandom(jlong , jobject );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1setRandom (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jlong JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1new__(void);
 
-JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1new__ (JNIEnv *, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1close(jlong );
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1close (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1algId(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1algId (JNIEnv *, jobject, jlong);
+JNIEXPORT jobject JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1produceAlgInfo(jlong c_ctx);
 
-JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1produceAlgInfo (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1restoreAlgInfo(jlong c_ctx, jobject jalgInfo);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1restoreAlgInfo (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1configure(jlong c_ctx, jobject jparams);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1configure (JNIEnv *, jobject, jlong, jobject);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1paddedDataLen(jlong c_ctx, jint jdataLen);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1paddedDataLen (JNIEnv *, jobject, jlong, jint);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1len(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1len (JNIEnv *, jobject, jlong);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1lenMax(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1lenMax (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1startDataProcessing(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1startDataProcessing (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1processData(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1processData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishDataProcessing(jlong c_ctx);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishDataProcessing (JNIEnv *, jobject, jlong);
+JNIEXPORT void JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1startPaddedDataProcessing(jlong c_ctx);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1startPaddedDataProcessing (JNIEnv *, jobject, jlong);
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1processPaddedData(jlong c_ctx, jbyteArray jdata);
 
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1processPaddedData (JNIEnv *, jobject, jlong, jbyteArray);
+JNIEXPORT jint JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessingOutLen(jlong c_ctx);
 
-JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessingOutLen (JNIEnv *, jobject, jlong);
-
-JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessing (JNIEnv *, jobject, jlong);
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+JNIEXPORT jbyteArray JNICALL
+Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1finishPaddedDataProcessing(jlong c_ctx);

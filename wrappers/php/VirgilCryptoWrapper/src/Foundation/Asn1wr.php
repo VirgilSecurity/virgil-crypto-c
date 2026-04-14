@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* This is MbedTLS implementation of ASN.1 writer.
-*/
 class Asn1wr implements Asn1Writer
 {
 
@@ -68,36 +65,27 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Reset all internal states and prepare to new ASN.1 writing operations.
     *
-    * @param int $out
-    * @param int $outLen
+    * @param int $$out
+    * @param int $$outLen
     * @return void
     */
-    public function reset(int $out, int $outLen): void
+    public function reset(int $$out, int $$outLen): void
     {
-        vscf_asn1wr_reset_php($this->ctx, $out, $outLen);
+        vscf_asn1wr_reset_php($this->ctx, $$out, $$outLen);
     }
 
     /**
-    * Finalize writing and forbid further operations.
     *
-    * Note, that ASN.1 structure is always written to the buffer end, and
-    * if argument "do not adjust" is false, then data is moved to the
-    * beginning, otherwise - data is left at the buffer end.
-    *
-    * Returns length of the written bytes.
-    *
-    * @param bool $doNotAdjust
+    * @param bool $$doNotAdjust
     * @return int
     */
-    public function finish(bool $doNotAdjust): int
+    public function finish(bool $$doNotAdjust): int
     {
-        return vscf_asn1wr_finish_php($this->ctx, $doNotAdjust);
+        return vscf_asn1wr_finish_php($this->ctx, $$doNotAdjust);
     }
 
     /**
-    * Returns pointer to the inner buffer.
     *
     * @return string
     */
@@ -107,7 +95,6 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Returns total inner buffer length.
     *
     * @return int
     */
@@ -117,7 +104,6 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Returns how many bytes were already written to the ASN.1 structure.
     *
     * @return int
     */
@@ -127,7 +113,6 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Returns how many bytes are available for writing.
     *
     * @return int
     */
@@ -137,7 +122,6 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Return true if status is not "success".
     *
     * @return bool
     */
@@ -147,7 +131,6 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Return error code.
     *
     * @return void
     * @throws \Exception
@@ -158,188 +141,157 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Move writing position backward for the given length.
-    * Return current writing position.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     */
-    public function reserve(int $len): string
+    public function reserve(int $$len): string
     {
-        return vscf_asn1wr_reserve_php($this->ctx, $len);
+        return vscf_asn1wr_reserve_php($this->ctx, $$len);
     }
 
     /**
-    * Write ASN.1 tag.
-    * Return count of written bytes.
     *
-    * @param int $tag
+    * @param int $$tag
     * @return int
     */
-    public function writeTag(int $tag): int
+    public function writeTag(int $$tag): int
     {
-        return vscf_asn1wr_write_tag_php($this->ctx, $tag);
+        return vscf_asn1wr_write_tag_php($this->ctx, $$tag);
     }
 
     /**
-    * Write context-specific ASN.1 tag.
-    * Return count of written bytes.
     *
-    * @param int $tag
-    * @param int $len
+    * @param int $$tag
+    * @param int $$len
     * @return int
     */
-    public function writeContextTag(int $tag, int $len): int
+    public function writeContextTag(int $$tag, int $$len): int
     {
-        return vscf_asn1wr_write_context_tag_php($this->ctx, $tag, $len);
+        return vscf_asn1wr_write_context_tag_php($this->ctx, $$tag, $$len);
     }
 
     /**
-    * Write length of the following data.
-    * Return count of written bytes.
     *
-    * @param int $len
+    * @param int $$len
     * @return int
     */
-    public function writeLen(int $len): int
+    public function writeLen(int $$len): int
     {
-        return vscf_asn1wr_write_len_php($this->ctx, $len);
+        return vscf_asn1wr_write_len_php($this->ctx, $$len);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt(int $value): int
+    public function writeInt(int $$value): int
     {
-        return vscf_asn1wr_write_int_php($this->ctx, $value);
+        return vscf_asn1wr_write_int_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt8(int $value): int
+    public function writeInt8(int $$value): int
     {
-        return vscf_asn1wr_write_int8_php($this->ctx, $value);
+        return vscf_asn1wr_write_int8_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt16(int $value): int
+    public function writeInt16(int $$value): int
     {
-        return vscf_asn1wr_write_int16_php($this->ctx, $value);
+        return vscf_asn1wr_write_int16_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt32(int $value): int
+    public function writeInt32(int $$value): int
     {
-        return vscf_asn1wr_write_int32_php($this->ctx, $value);
+        return vscf_asn1wr_write_int32_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt64(int $value): int
+    public function writeInt64(int $$value): int
     {
-        return vscf_asn1wr_write_int64_php($this->ctx, $value);
+        return vscf_asn1wr_write_int64_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint(int $value): int
+    public function writeUint(int $$value): int
     {
-        return vscf_asn1wr_write_uint_php($this->ctx, $value);
+        return vscf_asn1wr_write_uint_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint8(int $value): int
+    public function writeUint8(int $$value): int
     {
-        return vscf_asn1wr_write_uint8_php($this->ctx, $value);
+        return vscf_asn1wr_write_uint8_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint16(int $value): int
+    public function writeUint16(int $$value): int
     {
-        return vscf_asn1wr_write_uint16_php($this->ctx, $value);
+        return vscf_asn1wr_write_uint16_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint32(int $value): int
+    public function writeUint32(int $$value): int
     {
-        return vscf_asn1wr_write_uint32_php($this->ctx, $value);
+        return vscf_asn1wr_write_uint32_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint64(int $value): int
+    public function writeUint64(int $$value): int
     {
-        return vscf_asn1wr_write_uint64_php($this->ctx, $value);
+        return vscf_asn1wr_write_uint64_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: BOOLEAN.
-    * Return count of written bytes.
     *
-    * @param bool $value
+    * @param bool $$value
     * @return int
     */
-    public function writeBool(bool $value): int
+    public function writeBool(bool $$value): int
     {
-        return vscf_asn1wr_write_bool_php($this->ctx, $value);
+        return vscf_asn1wr_write_bool_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: NULL.
     *
     * @return int
     */
@@ -349,89 +301,73 @@ class Asn1wr implements Asn1Writer
     }
 
     /**
-    * Write ASN.1 type: OCTET STRING.
-    * Return count of written bytes.
     *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeOctetStr(string $value): int
+    public function writeOctetStr(string $$value): int
     {
-        return vscf_asn1wr_write_octet_str_php($this->ctx, $value);
+        return vscf_asn1wr_write_octet_str_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: BIT STRING with all zero unused bits.
     *
-    * Return count of written bytes.
-    *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeOctetStrAsBitstring(string $value): int
+    public function writeOctetStrAsBitstring(string $$value): int
     {
-        return vscf_asn1wr_write_octet_str_as_bitstring_php($this->ctx, $value);
+        return vscf_asn1wr_write_octet_str_as_bitstring_php($this->ctx, $$value);
     }
 
     /**
-    * Write raw data directly to the ASN.1 structure.
-    * Return count of written bytes.
-    * Note, use this method carefully.
     *
-    * @param string $data
+    * @param string $$data
     * @return int
     */
-    public function writeData(string $data): int
+    public function writeData(string $$data): int
     {
-        return vscf_asn1wr_write_data_php($this->ctx, $data);
+        return vscf_asn1wr_write_data_php($this->ctx, $$data);
     }
 
     /**
-    * Write ASN.1 type: UTF8String.
-    * Return count of written bytes.
     *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeUtf8Str(string $value): int
+    public function writeUtf8Str(string $$value): int
     {
-        return vscf_asn1wr_write_utf8_str_php($this->ctx, $value);
+        return vscf_asn1wr_write_utf8_str_php($this->ctx, $$value);
     }
 
     /**
-    * Write ASN.1 type: OID.
-    * Return count of written bytes.
     *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeOid(string $value): int
+    public function writeOid(string $$value): int
     {
-        return vscf_asn1wr_write_oid_php($this->ctx, $value);
+        return vscf_asn1wr_write_oid_php($this->ctx, $$value);
     }
 
     /**
-    * Mark previously written data of given length as ASN.1 type: SEQUENCE.
-    * Return count of written bytes.
     *
-    * @param int $len
+    * @param int $$len
     * @return int
     */
-    public function writeSequence(int $len): int
+    public function writeSequence(int $$len): int
     {
-        return vscf_asn1wr_write_sequence_php($this->ctx, $len);
+        return vscf_asn1wr_write_sequence_php($this->ctx, $$len);
     }
 
     /**
-    * Mark previously written data of given length as ASN.1 type: SET.
-    * Return count of written bytes.
     *
-    * @param int $len
+    * @param int $$len
     * @return int
     */
-    public function writeSet(int $len): int
+    public function writeSet(int $$len): int
     {
-        return vscf_asn1wr_write_set_php($this->ctx, $len);
+        return vscf_asn1wr_write_set_php($this->ctx, $$len);
     }
 
     /**

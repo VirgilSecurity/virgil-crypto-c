@@ -39,6 +39,7 @@ namespace Virgil\CryptoWrapper\Phe;
 
 class PheCommon
 {
+
     const PHE_POINT_LENGTH = 65;
     const PHE_MAX_PASSWORD_LENGTH = 128;
     const PHE_SERVER_IDENTIFIER_LENGTH = 32;
@@ -50,4 +51,5 @@ class PheCommon
     const PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64;
     const PHE_MAX_DECRYPT_LEN = 1024 * 1024;
     const PHE_MAX_AUTH_LEN = 1024;
+
 }

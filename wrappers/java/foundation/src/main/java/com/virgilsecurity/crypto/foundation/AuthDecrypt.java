@@ -36,20 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface for data encryption.
-*/
-public interface AuthDecrypt extends CipherAuthInfo {
-
-    /*
-    * Decrypt given data.
-    * If 'tag' is not given, then it will be taken from the 'enc'.
-    */
-    byte[] authDecrypt(byte[] data, byte[] authData, byte[] tag) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the authenticated decrypted data.
-    */
-    int authDecryptedLen(int dataLen);
-}
-

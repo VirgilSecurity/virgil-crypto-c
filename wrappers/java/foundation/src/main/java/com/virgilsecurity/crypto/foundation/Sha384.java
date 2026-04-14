@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* This is MbedTLS implementation of SHA384.
-*/
 public class Sha384 implements AutoCloseable, Alg, Hash {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public Sha384() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.sha384_new();
     }
 
-    /* Wrap underlying C context. */
-    Sha384(FoundationContextHolder contextHolder) {
+    package Sha384(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Sha384 getInstance(long cCtx) {
+    public Sha384 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha384(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,77 +62,48 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.sha384_algId(this.cCtx);
     }
 
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
     public AlgInfo produceAlgInfo() {
         return FoundationJNI.INSTANCE.sha384_produceAlgInfo(this.cCtx);
     }
 
-    /*
-    * Restore algorithm configuration from the given object.
-    */
     public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
         FoundationJNI.INSTANCE.sha384_restoreAlgInfo(this.cCtx, algInfo);
     }
 
-    /*
-    * Length of the digest (hashing output) in bytes.
-    */
     public int getDigestLen() {
         return 48;
     }
 
-    /*
-    * Block length of the digest function in bytes.
-    */
     public int getBlockLen() {
         return 128;
     }
 
-    /*
-    * Calculate hash over given data.
-    */
     public byte[] hash(byte[] data) {
         return FoundationJNI.INSTANCE.sha384_hash(data);
     }
 
-    /*
-    * Start a new hashing.
-    */
     public void start() {
         FoundationJNI.INSTANCE.sha384_start(this.cCtx);
     }
 
-    /*
-    * Add given data to the hash.
-    */
     public void update(byte[] data) {
         FoundationJNI.INSTANCE.sha384_update(this.cCtx, data);
     }
 
-    /*
-    * Accompilsh hashing and return it's result (a message digest).
-    */
     public byte[] finish() {
         return FoundationJNI.INSTANCE.sha384_finish(this.cCtx);
     }
-}
 
+}

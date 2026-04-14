@@ -37,13 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles compound public key.
-*
-* Compound public key contains 2 public keys and signature:
-* - cipher key - is used for encryption;
-* - signer key - is used for verifying.
-*/
 class CompoundPublicKey implements Key, PublicKey
 {
 
@@ -72,10 +65,8 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return a cipher public key suitable for initial encryption.
     *
     * @return PublicKey
-    * @throws \Exception
     */
     public function cipherKey(): PublicKey
     {
@@ -84,10 +75,8 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return public key suitable for verifying.
     *
     * @return PublicKey
-    * @throws \Exception
     */
     public function signerKey(): PublicKey
     {
@@ -96,7 +85,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -107,10 +95,8 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -119,7 +105,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -129,7 +114,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -139,8 +123,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */

@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* This is MbedTLS implementation of SHA512.
-*/
 class Sha512 implements Alg, Hash
 {
 
@@ -71,7 +68,6 @@ class Sha512 implements Alg, Hash
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -82,10 +78,8 @@ class Sha512 implements Alg, Hash
     }
 
     /**
-    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -94,30 +88,27 @@ class Sha512 implements Alg, Hash
     }
 
     /**
-    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_sha512_restore_alg_info_php($this->ctx, $algInfo->getCtx());
+        vscf_sha512_restore_alg_info_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Calculate hash over given data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     */
-    public static function hash(string $data): string
+    public static function hash(string $$data): string
     {
-        return vscf_sha512_hash_php($data);
+        return vscf_sha512_hash_php($$data);
     }
 
     /**
-    * Start a new hashing.
     *
     * @return void
     */
@@ -127,18 +118,16 @@ class Sha512 implements Alg, Hash
     }
 
     /**
-    * Add given data to the hash.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function update(string $data): void
+    public function update(string $$data): void
     {
-        vscf_sha512_update_php($this->ctx, $data);
+        vscf_sha512_update_php($this->ctx, $$data);
     }
 
     /**
-    * Accompilsh hashing and return it's result (a message digest).
     *
     * @return string
     */

@@ -37,46 +37,54 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Basic key type.
-*/
 interface Key extends Ctx
 {
 
     /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
-    public function algId(): AlgId;
+    public function algId(): AlgId
+    {
+        $enum = ($this->ctx);
+        return new AlgId($enum);
+    }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
-    public function algInfo(): AlgInfo;
+    public function algInfo(): AlgInfo
+    {
+        $ctx = ($this->ctx);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
-    public function len(): int;
+    public function len(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
-    public function bitlen(): int;
+    public function bitlen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
-    public function isValid(): bool;
+    public function isValid(): bool
+    {
+        return ($this->ctx);
+    }
+
 }

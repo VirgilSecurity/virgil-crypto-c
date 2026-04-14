@@ -34,65 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initRound5 = (Module, modules) => {
-    /**
-     * Provide post-quantum encryption based on the round5 implementation.
-     * For algorithm details check https://github.com/round5/code
-     */
     class Round5 {
 
-        /**
-         * Defines whether a public key can be imported or not.
-         */
-        static get CAN_IMPORT_PUBLIC_KEY() {
-            return true;
-        }
-
-        get CAN_IMPORT_PUBLIC_KEY() {
-            return Round5.CAN_IMPORT_PUBLIC_KEY;
-        }
-
-        /**
-         * Define whether a public key can be exported or not.
-         */
-        static get CAN_EXPORT_PUBLIC_KEY() {
-            return true;
-        }
-
-        get CAN_EXPORT_PUBLIC_KEY() {
-            return Round5.CAN_EXPORT_PUBLIC_KEY;
-        }
-
-        /**
-         * Define whether a private key can be imported or not.
-         */
-        static get CAN_IMPORT_PRIVATE_KEY() {
-            return true;
-        }
-
-        get CAN_IMPORT_PRIVATE_KEY() {
-            return Round5.CAN_IMPORT_PRIVATE_KEY;
-        }
-
-        /**
-         * Define whether a private key can be exported or not.
-         */
-        static get CAN_EXPORT_PRIVATE_KEY() {
-            return true;
-        }
-
-        get CAN_EXPORT_PRIVATE_KEY() {
-            return Round5.CAN_EXPORT_PRIVATE_KEY;
-        }
-
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Round5';
 
@@ -103,29 +47,16 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Round5(Module._vscf_round5_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Round5(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_round5_delete(this.ctxPtr);
@@ -133,18 +64,46 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        set random(random) {
+        random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_round5_release_random(this.ctxPtr)
             Module._vscf_round5_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        /**
-         * Generate ephemeral private key of the same type.
-         * Note, this operation might be slow.
-         */
-        generateEphemeralKey(key) {
+        static get CAN_IMPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        get CAN_IMPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        static get CAN_EXPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        get CAN_EXPORT_PUBLIC_KEY() {
+            return true;
+        }
+
+        static get CAN_IMPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        get CAN_IMPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        static get CAN_EXPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        get CAN_EXPORT_PRIVATE_KEY() {
+            return true;
+        }
+
+        generateEphemeralKey(key, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
 
@@ -167,17 +126,7 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Import public key from the raw binary format.
-         *
-         * Return public key that is adopted and optimized to be used
-         * with this particular algorithm.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA public key must be imported from the format defined in
-         * RFC 3447 Appendix A.1.1.
-         */
-        importPublicKey(rawKey) {
+        importPublicKey(rawKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPublicKey);
 
@@ -200,24 +149,21 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Import public key from the raw binary format.
-         */
-        importPublicKeyData(keyData, keyAlgInfo) {
+        importPublicKeyData(keyData, keyAlgInfo, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
             precondition.ensureImplementInterface('keyAlgInfo', keyAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -241,14 +187,7 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Export public key to the raw binary format.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA public key must be exported in format defined in
-         * RFC 3447 Appendix A.1.1.
-         */
-        exportPublicKey(publicKey) {
+        exportPublicKey(publicKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
 
@@ -271,9 +210,6 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required to hold exported public key.
-         */
         exportedPublicKeyDataLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -283,13 +219,6 @@ const initRound5 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Export public key to the raw binary format without algorithm information.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA public key must be exported in format defined in
-         * RFC 3447 Appendix A.1.1.
-         */
         exportPublicKeyData(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -310,17 +239,7 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Import private key from the raw binary format.
-         *
-         * Return private key that is adopted and optimized to be used
-         * with this particular algorithm.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be imported from the format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
-        importPrivateKey(rawKey) {
+        importPrivateKey(rawKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPrivateKey);
 
@@ -343,24 +262,21 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Import private key from the raw binary format.
-         */
-        importPrivateKeyData(keyData, keyAlgInfo) {
+        importPrivateKeyData(keyData, keyAlgInfo, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('keyData', keyData);
             precondition.ensureImplementInterface('keyAlgInfo', keyAlgInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const keyDataSize = keyData.length * keyData.BYTES_PER_ELEMENT;
             const keyDataPtr = Module._malloc(keyDataSize);
             Module.HEAP8.set(keyData, keyDataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const keyDataCtxSize = Module._vsc_data_ctx_size();
             const keyDataCtxPtr = Module._malloc(keyDataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyDataCtxPtr, keyDataPtr, keyDataSize);
 
             const errorCtxSize = Module._vscf_error_ctx_size();
@@ -384,14 +300,7 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Export private key in the raw binary format.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be exported in format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
-        exportPrivateKey(privateKey) {
+        exportPrivateKey(privateKey, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
@@ -414,9 +323,6 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required to hold exported private key.
-         */
         exportedPrivateKeyDataLen(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -426,13 +332,6 @@ const initRound5 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Export private key to the raw binary format without algorithm information.
-         *
-         * Binary format must be defined in the key specification.
-         * For instance, RSA private key must be exported in format defined in
-         * RFC 3447 Appendix A.1.2.
-         */
         exportPrivateKeyData(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
@@ -453,9 +352,6 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Return length in bytes required to hold encapsulated shared key.
-         */
         kemSharedKeyLen(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
@@ -465,9 +361,6 @@ const initRound5 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Return length in bytes required to hold encapsulated key.
-         */
         kemEncapsulatedKeyLen(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -477,9 +370,6 @@ const initRound5 = (Module, modules) => {
             return proxyResult;
         }
 
-        /**
-         * Generate a shared key and a key encapsulated message.
-         */
         kemEncapsulate(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -508,24 +398,21 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Decapsulate the shared key.
-         */
         kemDecapsulate(encapsulatedKey, privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('encapsulatedKey', encapsulatedKey);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const encapsulatedKeySize = encapsulatedKey.length * encapsulatedKey.BYTES_PER_ELEMENT;
             const encapsulatedKeyPtr = Module._malloc(encapsulatedKeySize);
             Module.HEAP8.set(encapsulatedKey, encapsulatedKeyPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const encapsulatedKeyCtxSize = Module._vsc_data_ctx_size();
             const encapsulatedKeyCtxPtr = Module._malloc(encapsulatedKeyCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(encapsulatedKeyCtxPtr, encapsulatedKeyPtr, encapsulatedKeySize);
 
             const sharedKeyCapacity = this.kemSharedKeyLen(privateKey);
@@ -546,20 +433,13 @@ const initRound5 = (Module, modules) => {
             }
         }
 
-        /**
-         * Setup predefined values to the uninitialized class dependencies.
-         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_round5_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
-        /**
-         * Generate new private key.
-         * Note, this operation might be slow.
-         */
-        generateKey(algId) {
+        generateKey(algId, error) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('algId', algId);
 
@@ -581,6 +461,7 @@ const initRound5 = (Module, modules) => {
                 Module._free(errorCtxPtr);
             }
         }
+
     }
 
     return Round5;

@@ -37,34 +37,38 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for data encryption.
-*/
 interface Encrypt extends Ctx
 {
 
     /**
-    * Encrypt given data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(string $data): string;
+    public function encrypt(string $$data): string
+    {
+        return ($this->ctx, $$data);
+    }
 
     /**
-    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptedLen(int $dataLen): int;
+    public function encryptedLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
 
     /**
-    * Precise length calculation of encrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function preciseEncryptedLen(int $dataLen): int;
+    public function preciseEncryptedLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
+
 }

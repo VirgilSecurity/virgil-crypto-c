@@ -36,35 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Basic key type.
-*/
-public interface Key {
-
-    /*
-    * Algorithm identifier the key belongs to.
-    */
-    AlgId algId();
-
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
-    AlgInfo algInfo();
-
-    /*
-    * Length of the key in bytes.
-    */
-    int len();
-
-    /*
-    * Length of the key in bits.
-    */
-    int bitlen();
-
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
-    boolean isValid();
-}
-

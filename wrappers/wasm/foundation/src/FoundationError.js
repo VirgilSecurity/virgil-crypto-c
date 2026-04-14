@@ -34,12 +34,8 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initFoundationError = (Module, modules) => {
-    /**
-     * Defines the library status codes.
-     */
-    class FoundationError extends Error {
+    class FoundationError {
 
         constructor(message) {
             super(message);
@@ -47,9 +43,6 @@ const initFoundationError = (Module, modules) => {
             this.message = message;
         }
 
-        /**
-         * Throw exception of this class with a message that corresponds to the given status code.
-         */
         static handleStatusCode(statusCode) {
             if (statusCode == 0) {
                 return;
@@ -349,6 +342,7 @@ const initFoundationError = (Module, modules) => {
 
             throw new FoundationError("Unexpected status code:" + statusCode);
         }
+
     }
 
     return FoundationError;

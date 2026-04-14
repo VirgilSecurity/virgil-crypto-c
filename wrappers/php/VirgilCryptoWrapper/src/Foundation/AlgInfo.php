@@ -37,16 +37,17 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide details about implemented algorithms.
-*/
 interface AlgInfo extends Ctx
 {
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */
-    public function algId(): AlgId;
+    public function algId(): AlgId
+    {
+        $enum = ($this->ctx);
+        return new AlgId($enum);
+    }
+
 }

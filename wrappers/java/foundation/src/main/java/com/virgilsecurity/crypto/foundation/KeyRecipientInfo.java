@@ -36,42 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle information about recipient that is defined by a Public Key.
-*/
 public class KeyRecipientInfo implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public KeyRecipientInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    KeyRecipientInfo(FoundationContextHolder contextHolder) {
+    package KeyRecipientInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Create object and define all properties.
-    */
-    public KeyRecipientInfo(byte[] recipientId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new(recipientId, keyEncryptionAlgorithm, encryptedKey);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static KeyRecipientInfo getInstance(long cCtx) {
+    public KeyRecipientInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyRecipientInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -80,36 +62,29 @@ public class KeyRecipientInfo implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return recipient identifier.
-    */
+    public KeyRecipientInfo(byte[] recipientId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new(recipientId, keyEncryptionAlgorithm, encryptedKey);
+    }
+
     public byte[] recipientId() {
         return FoundationJNI.INSTANCE.keyRecipientInfo_recipientId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that was used for encryption
-    * a data encryption key.
-    */
     public AlgInfo keyEncryptionAlgorithm() {
         return FoundationJNI.INSTANCE.keyRecipientInfo_keyEncryptionAlgorithm(this.cCtx);
     }
 
-    /*
-    * Return an encrypted data encryption key.
-    */
     public byte[] encryptedKey() {
         return FoundationJNI.INSTANCE.keyRecipientInfo_encryptedKey(this.cCtx);
     }
-}
 
+}

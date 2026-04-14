@@ -36,49 +36,32 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Random number generator that is used for test purposes only.
-*/
 public class FakeRandom implements AutoCloseable, Random, EntropySource {
+
+    public void setupSourceByte(byte byteSource) {
+        FoundationJNI.INSTANCE.fakeRandom_setupSourceByte(this.cCtx, byteSource);
+    }
+
+    public void setupSourceData(byte[] dataSource) {
+        FoundationJNI.INSTANCE.fakeRandom_setupSourceData(this.cCtx, dataSource);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public FakeRandom() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.fakeRandom_new();
     }
 
-    /* Wrap underlying C context. */
-    FakeRandom(FoundationContextHolder contextHolder) {
+    package FakeRandom(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Configure random number generator to generate sequence filled with given byte.
-    */
-    public void setupSourceByte(byte byteSource) {
-        FoundationJNI.INSTANCE.fakeRandom_setupSourceByte(this.cCtx, byteSource);
-    }
-
-    /*
-    * Configure random number generator to generate random sequence from given data.
-    * Note, that given data is used as circular source.
-    */
-    public void setupSourceData(byte[] dataSource) {
-        FoundationJNI.INSTANCE.fakeRandom_setupSourceData(this.cCtx, dataSource);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static FakeRandom getInstance(long cCtx) {
+    public FakeRandom getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new FakeRandom(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -87,43 +70,28 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
-    */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.fakeRandom_random(this.cCtx, dataLen);
     }
 
-    /*
-    * Retrieve new seed data from the entropy sources.
-    */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.fakeRandom_reseed(this.cCtx);
     }
 
-    /*
-    * Defines that implemented source is strong.
-    */
     public boolean isStrong() {
         return FoundationJNI.INSTANCE.fakeRandom_isStrong(this.cCtx);
     }
 
-    /*
-    * Gather entropy of the requested length.
-    */
     public byte[] gather(int len) throws FoundationException {
         return FoundationJNI.INSTANCE.fakeRandom_gather(this.cCtx, len);
     }
-}
 
+}

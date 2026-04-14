@@ -36,38 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
-*/
 public class Hmac implements AutoCloseable, Alg, Mac {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public Hmac() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.hmac_new();
-    }
-
-    /* Wrap underlying C context. */
-    Hmac(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setHash(Hash hash) {
         FoundationJNI.INSTANCE.hmac_setHash(this.cCtx, hash);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Hmac getInstance(long cCtx) {
+    public long cCtx;
+
+    public Hmac() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.hmac_new();
+    }
+
+    package Hmac(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public Hmac getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Hmac(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -76,78 +66,48 @@ public class Hmac implements AutoCloseable, Alg, Mac {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hmac_algId(this.cCtx);
     }
 
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
     public AlgInfo produceAlgInfo() {
         return FoundationJNI.INSTANCE.hmac_produceAlgInfo(this.cCtx);
     }
 
-    /*
-    * Restore algorithm configuration from the given object.
-    */
     public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
         FoundationJNI.INSTANCE.hmac_restoreAlgInfo(this.cCtx, algInfo);
     }
 
-    /*
-    * Size of the digest (mac output) in bytes.
-    */
     public int digestLen() {
         return FoundationJNI.INSTANCE.hmac_digestLen(this.cCtx);
     }
 
-    /*
-    * Calculate MAC over given data.
-    */
     public byte[] mac(byte[] key, byte[] data) {
         return FoundationJNI.INSTANCE.hmac_mac(this.cCtx, key, data);
     }
 
-    /*
-    * Start a new MAC.
-    */
     public void start(byte[] key) {
         FoundationJNI.INSTANCE.hmac_start(this.cCtx, key);
     }
 
-    /*
-    * Add given data to the MAC.
-    */
     public void update(byte[] data) {
         FoundationJNI.INSTANCE.hmac_update(this.cCtx, data);
     }
 
-    /*
-    * Accomplish MAC and return it's result (a message digest).
-    */
     public byte[] finish() {
         return FoundationJNI.INSTANCE.hmac_finish(this.cCtx);
     }
 
-    /*
-    * Prepare to authenticate a new message with the same key
-    * as the previous MAC operation.
-    */
     public void reset() {
         FoundationJNI.INSTANCE.hmac_reset(this.cCtx);
     }
-}
 
+}

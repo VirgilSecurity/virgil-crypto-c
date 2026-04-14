@@ -34,21 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
-const precondition = require('./precondition');
-
 const initVerifier = (Module, modules) => {
-    /**
-     * Verify data of any size.
-     * Compatible with the class "signer".
-     */
     class Verifier {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'Verifier';
 
@@ -59,29 +47,16 @@ const initVerifier = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Verifier(Module._vscf_verifier_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new Verifier(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_verifier_delete(this.ctxPtr);
@@ -89,23 +64,20 @@ const initVerifier = (Module, modules) => {
             }
         }
 
-        /**
-         * Start verifying a signature.
-         */
         reset(signature) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('signature', signature);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const signatureSize = signature.length * signature.BYTES_PER_ELEMENT;
             const signaturePtr = Module._malloc(signatureSize);
             Module.HEAP8.set(signature, signaturePtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const signatureCtxSize = Module._vsc_data_ctx_size();
             const signatureCtxPtr = Module._malloc(signatureCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(signatureCtxPtr, signaturePtr, signatureSize);
 
             try {
@@ -117,23 +89,20 @@ const initVerifier = (Module, modules) => {
             }
         }
 
-        /**
-         * Add given data to the signed data.
-         */
         appendData(data) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('data', data);
 
-            //  Copy bytes from JS memory to the WASM memory.
+            // Copy bytes from JS memory to the WASM memory.
             const dataSize = data.length * data.BYTES_PER_ELEMENT;
             const dataPtr = Module._malloc(dataSize);
             Module.HEAP8.set(data, dataPtr);
 
-            //  Create C structure vsc_data_t.
+            // Create C structure vsc_data_t.
             const dataCtxSize = Module._vsc_data_ctx_size();
             const dataCtxPtr = Module._malloc(dataCtxSize);
 
-            //  Point created vsc_data_t object to the copied bytes.
+            // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
 
             try {
@@ -144,9 +113,6 @@ const initVerifier = (Module, modules) => {
             }
         }
 
-        /**
-         * Verify accumulated data.
-         */
         verify(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
@@ -157,6 +123,7 @@ const initVerifier = (Module, modules) => {
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
+
     }
 
     return Verifier;

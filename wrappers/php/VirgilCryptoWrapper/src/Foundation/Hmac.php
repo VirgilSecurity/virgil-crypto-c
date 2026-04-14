@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
-*/
 class Hmac implements Alg, Mac
 {
 
@@ -68,16 +65,16 @@ class Hmac implements Alg, Mac
     }
 
     /**
-    * @param Hash $hash
+    *
+    * @param Hash $$hash
     * @return void
     */
-    public function useHash(Hash $hash): void
+    public function useHash(Hash $$hash): void
     {
-        vscf_hmac_use_hash_php($this->ctx, $hash->getCtx());
+        vscf_hmac_use_hash_php($this->ctx, $$hash);
     }
 
     /**
-    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -88,10 +85,8 @@ class Hmac implements Alg, Mac
     }
 
     /**
-    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -100,19 +95,17 @@ class Hmac implements Alg, Mac
     }
 
     /**
-    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $algInfo
+    * @param AlgInfo $$algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $algInfo): void
+    public function restoreAlgInfo(AlgInfo $$algInfo): void
     {
-        vscf_hmac_restore_alg_info_php($this->ctx, $algInfo->getCtx());
+        vscf_hmac_restore_alg_info_php($this->ctx, $$algInfo);
     }
 
     /**
-    * Size of the digest (mac output) in bytes.
     *
     * @return int
     */
@@ -122,41 +115,37 @@ class Hmac implements Alg, Mac
     }
 
     /**
-    * Calculate MAC over given data.
     *
-    * @param string $key
-    * @param string $data
+    * @param string $$key
+    * @param string $$data
     * @return string
     */
-    public function mac(string $key, string $data): string
+    public function mac(string $$key, string $$data): string
     {
-        return vscf_hmac_mac_php($this->ctx, $key, $data);
+        return vscf_hmac_mac_php($this->ctx, $$key, $$data);
     }
 
     /**
-    * Start a new MAC.
     *
-    * @param string $key
+    * @param string $$key
     * @return void
     */
-    public function start(string $key): void
+    public function start(string $$key): void
     {
-        vscf_hmac_start_php($this->ctx, $key);
+        vscf_hmac_start_php($this->ctx, $$key);
     }
 
     /**
-    * Add given data to the MAC.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function update(string $data): void
+    public function update(string $$data): void
     {
-        vscf_hmac_update_php($this->ctx, $data);
+        vscf_hmac_update_php($this->ctx, $$data);
     }
 
     /**
-    * Accomplish MAC and return it's result (a message digest).
     *
     * @return string
     */
@@ -166,8 +155,6 @@ class Hmac implements Alg, Mac
     }
 
     /**
-    * Prepare to authenticate a new message with the same key
-    * as the previous MAC operation.
     *
     * @return void
     */

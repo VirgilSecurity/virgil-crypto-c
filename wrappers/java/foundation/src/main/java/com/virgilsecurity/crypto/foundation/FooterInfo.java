@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle meta information about footer.
-*/
 public class FooterInfo implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public FooterInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.footerInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    FooterInfo(FoundationContextHolder contextHolder) {
+    package FooterInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static FooterInfo getInstance(long cCtx) {
+    public FooterInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new FooterInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,42 +62,28 @@ public class FooterInfo implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Retrun true if signed data info present.
-    */
     public boolean hasSignedDataInfo() {
         return FoundationJNI.INSTANCE.footerInfo_hasSignedDataInfo(this.cCtx);
     }
 
-    /*
-    * Return signed data info.
-    */
     public SignedDataInfo signedDataInfo() {
         return FoundationJNI.INSTANCE.footerInfo_signedDataInfo(this.cCtx);
     }
 
-    /*
-    * Set data size.
-    */
     public void setDataSize(int dataSize) {
         FoundationJNI.INSTANCE.footerInfo_setDataSize(this.cCtx, dataSize);
     }
 
-    /*
-    * Return data size.
-    */
     public int dataSize() {
         return FoundationJNI.INSTANCE.footerInfo_dataSize(this.cCtx);
     }
-}
 
+}

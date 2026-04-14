@@ -36,63 +36,40 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Implements PKCS#8 key serialization to DER format.
-*/
 public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public Pkcs8Serializer() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.pkcs8Serializer_new();
-    }
-
-    /* Wrap underlying C context. */
-    Pkcs8Serializer(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
 
     public void setAsn1Writer(Asn1Writer asn1Writer) {
         FoundationJNI.INSTANCE.pkcs8Serializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
     public void setupDefaults() {
         FoundationJNI.INSTANCE.pkcs8Serializer_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Serialize Public Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
     public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.pkcs8Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
     }
 
-    /*
-    * Serialize Private Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
     public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.pkcs8Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static Pkcs8Serializer getInstance(long cCtx) {
+    public long cCtx;
+
+    public Pkcs8Serializer() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.pkcs8Serializer_new();
+    }
+
+    package Pkcs8Serializer(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public Pkcs8Serializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Pkcs8Serializer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -101,50 +78,28 @@ public class Pkcs8Serializer implements AutoCloseable, KeySerializer {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Calculate buffer size enough to hold serialized public key.
-    *
-    * Precondition: public key must be exportable.
-    */
     public int serializedPublicKeyLen(RawPublicKey publicKey) {
         return FoundationJNI.INSTANCE.pkcs8Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
 
-    /*
-    * Serialize given public key to an interchangeable format.
-    *
-    * Precondition: public key must be exportable.
-    */
     public byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.pkcs8Serializer_serializePublicKey(this.cCtx, publicKey);
     }
 
-    /*
-    * Calculate buffer size enough to hold serialized private key.
-    *
-    * Precondition: private key must be exportable.
-    */
     public int serializedPrivateKeyLen(RawPrivateKey privateKey) {
         return FoundationJNI.INSTANCE.pkcs8Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
     }
 
-    /*
-    * Serialize given private key to an interchangeable format.
-    *
-    * Precondition: private key must be exportable.
-    */
     public byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.pkcs8Serializer_serializePrivateKey(this.cCtx, privateKey);
     }
-}
 
+}

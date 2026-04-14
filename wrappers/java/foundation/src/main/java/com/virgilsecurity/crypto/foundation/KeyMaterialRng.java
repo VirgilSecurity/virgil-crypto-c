@@ -36,57 +36,36 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Random number generator that generate deterministic sequence based
-* on a given seed.
-* This RNG can be used to transform key material rial to the private key.
-*/
 public class KeyMaterialRng implements AutoCloseable, Random {
+
+    public int getKeyMaterialLenMin() {
+        return 32;
+    }
+
+    public int getKeyMaterialLenMax() {
+        return 512;
+    }
+
+    public void resetKeyMaterial(byte[] keyMaterial) {
+        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public KeyMaterialRng() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.keyMaterialRng_new();
     }
 
-    /* Wrap underlying C context. */
-    KeyMaterialRng(FoundationContextHolder contextHolder) {
+    package KeyMaterialRng(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Minimum length in bytes for the key material.
-    */
-    public int getKeyMaterialLenMin() {
-        return 32;
-    }
-
-    /*
-    * Maximum length in bytes for the key material.
-    */
-    public int getKeyMaterialLenMax() {
-        return 512;
-    }
-
-    /*
-    * Set a new key material.
-    */
-    public void resetKeyMaterial(byte[] keyMaterial) {
-        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static KeyMaterialRng getInstance(long cCtx) {
+    public KeyMaterialRng getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyMaterialRng(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -95,29 +74,20 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
-    */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.keyMaterialRng_random(this.cCtx, dataLen);
     }
 
-    /*
-    * Retrieve new seed data from the entropy sources.
-    */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.keyMaterialRng_reseed(this.cCtx);
     }
-}
 
+}

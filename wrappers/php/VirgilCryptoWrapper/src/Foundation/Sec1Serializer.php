@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Implements SEC 1 key serialization to DER format.
-* See also RFC 5480 and RFC 5915.
-*/
 class Sec1Serializer implements KeySerializer
 {
 
@@ -69,16 +65,16 @@ class Sec1Serializer implements KeySerializer
     }
 
     /**
-    * @param Asn1Writer $asn1Writer
+    *
+    * @param Asn1Writer $$asn1Writer
     * @return void
     */
-    public function useAsn1Writer(Asn1Writer $asn1Writer): void
+    public function useAsn1Writer(Asn1Writer $$asn1Writer): void
     {
-        vscf_sec1_serializer_use_asn1_writer_php($this->ctx, $asn1Writer->getCtx());
+        vscf_sec1_serializer_use_asn1_writer_php($this->ctx, $$asn1Writer);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -88,83 +84,65 @@ class Sec1Serializer implements KeySerializer
     }
 
     /**
-    * Serialize Public Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
     *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return int
     */
-    public function serializePublicKeyInplace(RawPublicKey $publicKey): int
+    public function serializePublicKeyInplace(RawPublicKey $$publicKey): int
     {
-        return vscf_sec1_serializer_serialize_public_key_inplace_php($this->ctx, $publicKey->getCtx());
+        return vscf_sec1_serializer_serialize_public_key_inplace_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Serialize Private Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
     *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return int
     */
-    public function serializePrivateKeyInplace(RawPrivateKey $privateKey): int
+    public function serializePrivateKeyInplace(RawPrivateKey $$privateKey): int
     {
-        return vscf_sec1_serializer_serialize_private_key_inplace_php($this->ctx, $privateKey->getCtx());
+        return vscf_sec1_serializer_serialize_private_key_inplace_php($this->ctx, $$privateKey);
     }
 
     /**
-    * Calculate buffer size enough to hold serialized public key.
     *
-    * Precondition: public key must be exportable.
-    *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return int
     */
-    public function serializedPublicKeyLen(RawPublicKey $publicKey): int
+    public function serializedPublicKeyLen(RawPublicKey $$publicKey): int
     {
-        return vscf_sec1_serializer_serialized_public_key_len_php($this->ctx, $publicKey->getCtx());
+        return vscf_sec1_serializer_serialized_public_key_len_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Serialize given public key to an interchangeable format.
     *
-    * Precondition: public key must be exportable.
-    *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return string
     * @throws \Exception
     */
-    public function serializePublicKey(RawPublicKey $publicKey): string
+    public function serializePublicKey(RawPublicKey $$publicKey): string
     {
-        return vscf_sec1_serializer_serialize_public_key_php($this->ctx, $publicKey->getCtx());
+        return vscf_sec1_serializer_serialize_public_key_php($this->ctx, $$publicKey);
     }
 
     /**
-    * Calculate buffer size enough to hold serialized private key.
     *
-    * Precondition: private key must be exportable.
-    *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return int
     */
-    public function serializedPrivateKeyLen(RawPrivateKey $privateKey): int
+    public function serializedPrivateKeyLen(RawPrivateKey $$privateKey): int
     {
-        return vscf_sec1_serializer_serialized_private_key_len_php($this->ctx, $privateKey->getCtx());
+        return vscf_sec1_serializer_serialized_private_key_len_php($this->ctx, $$privateKey);
     }
 
     /**
-    * Serialize given private key to an interchangeable format.
     *
-    * Precondition: private key must be exportable.
-    *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function serializePrivateKey(RawPrivateKey $privateKey): string
+    public function serializePrivateKey(RawPrivateKey $$privateKey): string
     {
-        return vscf_sec1_serializer_serialize_private_key_php($this->ctx, $privateKey->getCtx());
+        return vscf_sec1_serializer_serialize_private_key_php($this->ctx, $$privateKey);
     }
 
     /**

@@ -37,26 +37,28 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for data encryption.
-*/
 interface Decrypt extends Ctx
 {
 
     /**
-    * Decrypt given data.
     *
-    * @param string $data
+    * @param string $$data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(string $data): string;
+    public function decrypt(string $$data): string
+    {
+        return ($this->ctx, $$data);
+    }
 
     /**
-    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptedLen(int $dataLen): int;
+    public function decryptedLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
+
 }

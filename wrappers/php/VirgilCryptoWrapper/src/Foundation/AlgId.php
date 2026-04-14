@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-use MyCLabs\Enum\Enum;
-
-/**
-* Define implemented algorithm identificator.
-*/
 class AlgId extends Enum
 {
 
@@ -67,4 +62,5 @@ class AlgId extends Enum
     private const FALCON = 19;
     private const ROUND5_ND_1CCA_5D = 20;
     private const RANDOM_PADDING = 21;
+
 }

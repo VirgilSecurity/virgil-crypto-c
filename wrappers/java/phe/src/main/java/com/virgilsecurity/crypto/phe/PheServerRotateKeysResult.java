@@ -36,29 +36,10 @@
 
 package com.virgilsecurity.crypto.phe;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/* Encapsulate result of method phe server.rotateKeys() */
 public class PheServerRotateKeysResult {
 
     private byte[] newServerPrivateKey;
-
-    private byte[] newServerPublicKey;
-
-    private byte[] updateToken;
-
-    /* Create new instance of PheServerRotateKeysResult. */
-    PheServerRotateKeysResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    PheServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
-        super();
-        this.newServerPrivateKey = newServerPrivateKey;
-        this.newServerPublicKey = newServerPublicKey;
-        this.updateToken = updateToken;
-    }
 
     public byte[] getNewServerPrivateKey() {
         return this.newServerPrivateKey;
@@ -68,6 +49,8 @@ public class PheServerRotateKeysResult {
         this.newServerPrivateKey = newServerPrivateKey;
     }
 
+    private byte[] newServerPublicKey;
+
     public byte[] getNewServerPublicKey() {
         return this.newServerPublicKey;
     }
@@ -76,6 +59,8 @@ public class PheServerRotateKeysResult {
         this.newServerPublicKey = newServerPublicKey;
     }
 
+    private byte[] updateToken;
+
     public byte[] getUpdateToken() {
         return this.updateToken;
     }
@@ -83,5 +68,16 @@ public class PheServerRotateKeysResult {
     public void setUpdateToken(byte[] updateToken) {
         this.updateToken = updateToken;
     }
-}
 
+    package PheServerRotateKeysResult() {
+        super();
+    }
+
+    package PheServerRotateKeysResult(byte[] newServerPrivateKey, byte[] newServerPublicKey, byte[] updateToken) {
+        super();
+        this.newServerPrivateKey = newServerPrivateKey;
+        this.newServerPublicKey = newServerPublicKey;
+        this.updateToken = updateToken;
+    }
+
+}

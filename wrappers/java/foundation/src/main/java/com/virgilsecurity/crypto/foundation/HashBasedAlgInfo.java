@@ -36,41 +36,28 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
-*/
 public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
+
+    public AlgInfo hashAlgInfo() {
+        return FoundationJNI.INSTANCE.hashBasedAlgInfo_hashAlgInfo(this.cCtx);
+    }
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public HashBasedAlgInfo() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.hashBasedAlgInfo_new();
     }
 
-    /* Wrap underlying C context. */
-    HashBasedAlgInfo(FoundationContextHolder contextHolder) {
+    package HashBasedAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return hash algorithm information.
-    */
-    public AlgInfo hashAlgInfo() {
-        return FoundationJNI.INSTANCE.hashBasedAlgInfo_hashAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static HashBasedAlgInfo getInstance(long cCtx) {
+    public HashBasedAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HashBasedAlgInfo(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -79,21 +66,16 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hashBasedAlgInfo_algId(this.cCtx);
     }
-}
 
+}

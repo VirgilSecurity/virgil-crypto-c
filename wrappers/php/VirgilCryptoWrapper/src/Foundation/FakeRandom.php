@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Random number generator that is used for test purposes only.
-*/
 class FakeRandom implements Random, EntropySource
 {
 
@@ -68,43 +65,37 @@ class FakeRandom implements Random, EntropySource
     }
 
     /**
-    * Configure random number generator to generate sequence filled with given byte.
     *
-    * @param int $byteSource
+    * @param int $$byteSource
     * @return void
     */
-    public function setupSourceByte(int $byteSource): void
+    public function setupSourceByte(int $$byteSource): void
     {
-        vscf_fake_random_setup_source_byte_php($this->ctx, $byteSource);
+        vscf_fake_random_setup_source_byte_php($this->ctx, $$byteSource);
     }
 
     /**
-    * Configure random number generator to generate random sequence from given data.
-    * Note, that given data is used as circular source.
     *
-    * @param string $dataSource
+    * @param string $$dataSource
     * @return void
     */
-    public function setupSourceData(string $dataSource): void
+    public function setupSourceData(string $$dataSource): void
     {
-        vscf_fake_random_setup_source_data_php($this->ctx, $dataSource);
+        vscf_fake_random_setup_source_data_php($this->ctx, $$dataSource);
     }
 
     /**
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return string
     * @throws \Exception
     */
-    public function random(int $dataLen): string
+    public function random(int $$dataLen): string
     {
-        return vscf_fake_random_random_php($this->ctx, $dataLen);
+        return vscf_fake_random_random_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Retrieve new seed data from the entropy sources.
     *
     * @return void
     * @throws \Exception
@@ -115,7 +106,6 @@ class FakeRandom implements Random, EntropySource
     }
 
     /**
-    * Defines that implemented source is strong.
     *
     * @return bool
     */
@@ -125,15 +115,14 @@ class FakeRandom implements Random, EntropySource
     }
 
     /**
-    * Gather entropy of the requested length.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     * @throws \Exception
     */
-    public function gather(int $len): string
+    public function gather(int $$len): string
     {
-        return vscf_fake_random_gather_php($this->ctx, $len);
+        return vscf_fake_random_gather_php($this->ctx, $$len);
     }
 
     /**

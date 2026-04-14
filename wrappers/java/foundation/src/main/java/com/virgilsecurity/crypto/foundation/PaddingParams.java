@@ -36,32 +36,7 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles padding parameters and constraints.
-*/
 public class PaddingParams implements AutoCloseable {
-
-    public long cCtx;
-
-    /* Create underlying C context. */
-    public PaddingParams() {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new();
-    }
-
-    /* Wrap underlying C context. */
-    PaddingParams(FoundationContextHolder contextHolder) {
-        this.cCtx = contextHolder.cCtx;
-    }
-
-    /*
-    * Build padding params with given constraints.
-    * Next formula can clarify what frame is: padding_length = data_length MOD frame
-    */
-    public PaddingParams(int frame, int frameMax) {
-        super();
-        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new(frame, frameMax);
-    }
 
     public int getDefaultFrameMin() {
         return 32;
@@ -75,16 +50,22 @@ public class PaddingParams implements AutoCloseable {
         return 256;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static PaddingParams getInstance(long cCtx) {
+    public long cCtx;
+
+    public PaddingParams() {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new();
+    }
+
+    package PaddingParams(FoundationContextHolder contextHolder) {
+        this.cCtx = contextHolder.cCtx;
+    }
+
+    public PaddingParams getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PaddingParams(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -93,28 +74,25 @@ public class PaddingParams implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Return padding frame in bytes.
-    */
+    public PaddingParams(int frame, int frameMax) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.paddingParams_new(frame, frameMax);
+    }
+
     public int frame() {
         return FoundationJNI.INSTANCE.paddingParams_frame(this.cCtx);
     }
 
-    /*
-    * Return maximum padding frame in bytes.
-    */
     public int frameMax() {
         return FoundationJNI.INSTANCE.paddingParams_frameMax(this.cCtx);
     }
-}
 
+}

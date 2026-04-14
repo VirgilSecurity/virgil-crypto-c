@@ -36,39 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Add and/or remove recipients and it's parameters within message info.
-*
-* Usage:
-* 1. Unpack binary message info that was obtained from RecipientCipher.
-* 2. Add and/or remove key recipients.
-* 3. Pack MessagInfo to the binary data.
-*/
 public class MessageInfoEditor implements AutoCloseable {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public MessageInfoEditor() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.messageInfoEditor_new();
     }
 
-    /* Wrap underlying C context. */
-    MessageInfoEditor(FoundationContextHolder contextHolder) {
+    package MessageInfoEditor(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static MessageInfoEditor getInstance(long cCtx) {
+    public MessageInfoEditor getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new MessageInfoEditor(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -77,12 +62,10 @@ public class MessageInfoEditor implements AutoCloseable {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
@@ -91,66 +74,36 @@ public class MessageInfoEditor implements AutoCloseable {
         FoundationJNI.INSTANCE.messageInfoEditor_setRandom(this.cCtx, random);
     }
 
-    /*
-    * Set dependencies to it's defaults.
-    */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.messageInfoEditor_setupDefaults(this.cCtx);
     }
 
-    /*
-    * Unpack serialized message info.
-    *
-    * Note that recipients can only be removed but not added.
-    * Note, use "unlock" method to be able to add new recipients as well.
-    */
     public void unpack(byte[] messageInfoData) throws FoundationException {
         FoundationJNI.INSTANCE.messageInfoEditor_unpack(this.cCtx, messageInfoData);
     }
 
-    /*
-    * Decrypt encryption key this allows adding new recipients.
-    */
     public void unlock(byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException {
         FoundationJNI.INSTANCE.messageInfoEditor_unlock(this.cCtx, ownerRecipientId, ownerPrivateKey);
     }
 
-    /*
-    * Add recipient defined with id and public key.
-    */
     public void addKeyRecipient(byte[] recipientId, PublicKey publicKey) throws FoundationException {
         FoundationJNI.INSTANCE.messageInfoEditor_addKeyRecipient(this.cCtx, recipientId, publicKey);
     }
 
-    /*
-    * Remove recipient with a given id.
-    * Return false if recipient with given id was not found.
-    */
     public boolean removeKeyRecipient(byte[] recipientId) {
         return FoundationJNI.INSTANCE.messageInfoEditor_removeKeyRecipient(this.cCtx, recipientId);
     }
 
-    /*
-    * Remove all existent recipients.
-    */
     public void removeAll() {
         FoundationJNI.INSTANCE.messageInfoEditor_removeAll(this.cCtx);
     }
 
-    /*
-    * Return length of serialized message info.
-    * Actual length can be obtained right after applying changes.
-    */
     public int packedLen() {
         return FoundationJNI.INSTANCE.messageInfoEditor_packedLen(this.cCtx);
     }
 
-    /*
-    * Return serialized message info.
-    * Precondition: this method can be called after "apply".
-    */
     public byte[] pack() {
         return FoundationJNI.INSTANCE.messageInfoEditor_pack(this.cCtx);
     }
-}
 
+}

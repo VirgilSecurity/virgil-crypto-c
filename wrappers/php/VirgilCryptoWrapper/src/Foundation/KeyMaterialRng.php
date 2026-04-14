@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Random number generator that generate deterministic sequence based
-* on a given seed.
-* This RNG can be used to transform key material rial to the private key.
-*/
 class KeyMaterialRng implements Random
 {
 
@@ -73,31 +68,27 @@ class KeyMaterialRng implements Random
     }
 
     /**
-    * Set a new key material.
     *
-    * @param string $keyMaterial
+    * @param string $$keyMaterial
     * @return void
     */
-    public function resetKeyMaterial(string $keyMaterial): void
+    public function resetKeyMaterial(string $$keyMaterial): void
     {
-        vscf_key_material_rng_reset_key_material_php($this->ctx, $keyMaterial);
+        vscf_key_material_rng_reset_key_material_php($this->ctx, $$keyMaterial);
     }
 
     /**
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return string
     * @throws \Exception
     */
-    public function random(int $dataLen): string
+    public function random(int $$dataLen): string
     {
-        return vscf_key_material_rng_random_php($this->ctx, $dataLen);
+        return vscf_key_material_rng_random_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Retrieve new seed data from the entropy sources.
     *
     * @return void
     * @throws \Exception

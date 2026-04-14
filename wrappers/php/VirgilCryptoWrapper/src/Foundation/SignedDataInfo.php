@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle meta information about signed data.
-*/
 class SignedDataInfo
 {
 
@@ -68,10 +65,8 @@ class SignedDataInfo
     }
 
     /**
-    * Return information about algorithm that was used to produce data digest.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function hashAlgInfo(): AlgInfo
     {

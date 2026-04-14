@@ -37,9 +37,7 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides compile time knownledge about algorithm.
-*/
 interface CipherInfo extends Ctx
 {
+
 }

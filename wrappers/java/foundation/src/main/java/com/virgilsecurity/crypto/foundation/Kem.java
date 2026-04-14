@@ -36,29 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provides generic interface to the Key Encapsulation Mechanism (KEM).
-*/
-public interface Kem {
-
-    /*
-    * Return length in bytes required to hold encapsulated shared key.
-    */
-    int kemSharedKeyLen(Key key);
-
-    /*
-    * Return length in bytes required to hold encapsulated key.
-    */
-    int kemEncapsulatedKeyLen(PublicKey publicKey);
-
-    /*
-    * Generate a shared key and a key encapsulated message.
-    */
-    KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException;
-
-    /*
-    * Decapsulate the shared key.
-    */
-    byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
-}
-

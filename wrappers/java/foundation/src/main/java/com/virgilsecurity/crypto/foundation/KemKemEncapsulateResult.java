@@ -36,24 +36,9 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/* Encapsulate result of method round5.kemEncapsulate() */
 public class KemKemEncapsulateResult {
 
     private byte[] sharedKey;
-
-    private byte[] encapsulatedKey;
-
-    /* Create new instance of KemKemEncapsulateResult. */
-    KemKemEncapsulateResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    KemKemEncapsulateResult(byte[] sharedKey, byte[] encapsulatedKey) {
-        super();
-        this.sharedKey = sharedKey;
-        this.encapsulatedKey = encapsulatedKey;
-    }
 
     public byte[] getSharedKey() {
         return this.sharedKey;
@@ -63,6 +48,8 @@ public class KemKemEncapsulateResult {
         this.sharedKey = sharedKey;
     }
 
+    private byte[] encapsulatedKey;
+
     public byte[] getEncapsulatedKey() {
         return this.encapsulatedKey;
     }
@@ -70,5 +57,15 @@ public class KemKemEncapsulateResult {
     public void setEncapsulatedKey(byte[] encapsulatedKey) {
         this.encapsulatedKey = encapsulatedKey;
     }
-}
 
+    package KemKemEncapsulateResult() {
+        super();
+    }
+
+    package KemKemEncapsulateResult(byte[] sharedKey, byte[] encapsulatedKey) {
+        super();
+        this.sharedKey = sharedKey;
+        this.encapsulatedKey = encapsulatedKey;
+    }
+
+}

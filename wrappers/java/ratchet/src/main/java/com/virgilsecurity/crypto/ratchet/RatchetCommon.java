@@ -36,67 +36,39 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import com.virgilsecurity.crypto.foundation.*;
 
-/*
-* Class with public constants
-*/
 public class RatchetCommon {
 
-    /*
-    * Max plain text length allowed to be encrypted
-    */
     public int getMaxPlainTextLen() {
         return 30000;
     }
 
-    /*
-    * Max message length
-    */
     public int getMaxMessageLen() {
         return 35583;
     }
 
-    /*
-    * Key pair id length
-    */
     public int getKeyIdLen() {
         return 8;
     }
 
-    /*
-    * Participant id length
-    */
     public int getParticipantIdLen() {
         return 32;
     }
 
-    /*
-    * Session id length
-    */
     public int getSessionIdLen() {
         return 32;
     }
 
-    /*
-    * Max number of group chat participants
-    */
     public int getMaxParticipantsCount() {
         return 100;
     }
 
-    /*
-    * Min number of group chat participants
-    */
     public int getMinParticipantsCount() {
         return 2;
     }
 
-    /*
-    * Max group message length
-    */
     public int getMaxGroupMessageLen() {
         return 32918;
     }
-}
 
+}

@@ -36,19 +36,3 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide interface for data encryption.
-*/
-public interface Decrypt {
-
-    /*
-    * Decrypt given data.
-    */
-    byte[] decrypt(byte[] data) throws FoundationException;
-
-    /*
-    * Calculate required buffer length to hold the decrypted data.
-    */
-    int decryptedLen(int dataLen);
-}
-

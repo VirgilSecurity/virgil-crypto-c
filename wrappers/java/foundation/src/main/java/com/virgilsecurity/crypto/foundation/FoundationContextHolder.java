@@ -36,13 +36,12 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-class FoundationContextHolder {
+package class FoundationContextHolder {
 
-    long cCtx;
+    package long cCtx;
 
-    /* Create underlying C context. */
-    FoundationContextHolder(long cCtx) {
+    package FoundationContextHolder(long cCtx) {
         this.cCtx = cCtx;
     }
-}
 
+}

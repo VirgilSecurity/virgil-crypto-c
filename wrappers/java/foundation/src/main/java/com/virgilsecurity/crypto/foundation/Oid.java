@@ -36,51 +36,30 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Provide conversion logic between OID and algorithm tags.
-*/
 public class Oid {
 
-    /*
-    * Return OID for given algorithm identifier.
-    */
-    public static byte[] fromAlgId(AlgId algId) {
+    public byte[] fromAlgId(AlgId algId) {
         return FoundationJNI.INSTANCE.oid_fromAlgId(algId);
     }
 
-    /*
-    * Return algorithm identifier for given OID.
-    */
-    public static AlgId toAlgId(byte[] oid) {
+    public AlgId toAlgId(byte[] oid) {
         return FoundationJNI.INSTANCE.oid_toAlgId(oid);
     }
 
-    /*
-    * Return OID for a given identifier.
-    */
-    public static byte[] fromId(OidId oidId) {
+    public byte[] fromId(OidId oidId) {
         return FoundationJNI.INSTANCE.oid_fromId(oidId);
     }
 
-    /*
-    * Return identifier for a given OID.
-    */
-    public static OidId toId(byte[] oid) {
+    public OidId toId(byte[] oid) {
         return FoundationJNI.INSTANCE.oid_toId(oid);
     }
 
-    /*
-    * Map oid identifier to the algorithm identifier.
-    */
-    public static AlgId idToAlgId(OidId oidId) {
+    public AlgId idToAlgId(OidId oidId) {
         return FoundationJNI.INSTANCE.oid_idToAlgId(oidId);
     }
 
-    /*
-    * Return true if given OIDs are equal.
-    */
-    public static boolean equal(byte[] lhs, byte[] rhs) {
+    public boolean equal(byte[] lhs, byte[] rhs) {
         return FoundationJNI.INSTANCE.oid_equal(lhs, rhs);
     }
-}
 
+}
