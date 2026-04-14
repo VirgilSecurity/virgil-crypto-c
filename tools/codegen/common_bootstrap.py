@@ -1144,6 +1144,21 @@ def main() -> int:
                 out_path.write_text(content)
                 written.append(out_path)
 
+        # --- Swift wrapper files ---
+        if "swift" in wrappers_set:
+            from tools.codegen.project_swift_backend import generate_swift_files
+            for rel_path, content in generate_swift_files(
+                project_ir, license_text=license_text,
+                repo_root=str(repo_root),
+            ):
+                out_path = out_root / rel_path
+                # Test files are handwritten and must NOT be overwritten.
+                if "Test" in str(out_path.parent):
+                    continue
+                ensure_parent(out_path)
+                out_path.write_text(content)
+                written.append(out_path)
+
         unexpected_skips = [(n, e) for n, e in skipped if n not in KNOWN_SKIPS]
         known = [(n, e) for n, e in skipped if n in KNOWN_SKIPS]
 
