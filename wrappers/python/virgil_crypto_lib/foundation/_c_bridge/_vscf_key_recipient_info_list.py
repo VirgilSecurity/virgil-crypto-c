@@ -36,7 +36,6 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_key_recipient_info import vscf_key_recipient_info_t
-from ._vscf_self import vscf_self_t
 
 
 class vscf_key_recipient_info_list_t(Structure):

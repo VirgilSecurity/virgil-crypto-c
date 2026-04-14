@@ -33,27 +33,9 @@
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
-from ._vsce_status import VirgilCryptoPheError
-from ._vsce_status import VsceStatus
-from ._vsce_phe_hash import vsce_phe_hash_t
-from ._vsce_proof_generator import vsce_proof_generator_t
-from ._vsce_phe_proof_generator import vsce_phe_proof_generator_t
-from ._vsce_proof_verifier import vsce_proof_verifier_t
-from ._vsce_phe_proof_verifier import vsce_phe_proof_verifier_t
-from ._vsce_uokms_proof_generator import vsce_uokms_proof_generator_t
-from ._vsce_uokms_proof_verifier import vsce_uokms_proof_verifier_t
-from ._vsce_error import vsce_error_t
-from ._vsce_error import VsceError
-from ._vsce_phe_common import VscePheCommon
-from ._vsce_phe_server import vsce_phe_server_t
-from ._vsce_phe_server import VscePheServer
-from ._vsce_phe_client import vsce_phe_client_t
-from ._vsce_phe_client import VscePheClient
-from ._vsce_phe_cipher import vsce_phe_cipher_t
-from ._vsce_phe_cipher import VscePheCipher
-from ._vsce_uokms_client import vsce_uokms_client_t
-from ._vsce_uokms_client import VsceUokmsClient
-from ._vsce_uokms_server import vsce_uokms_server_t
-from ._vsce_uokms_server import VsceUokmsServer
-from ._vsce_uokms_wrap_rotation import vsce_uokms_wrap_rotation_t
-from ._vsce_uokms_wrap_rotation import VsceUokmsWrapRotation
+from virgil_crypto_lib._libs import *
+from ctypes import *
+
+
+class vscf_mbedtls_md_t(Structure):
+    pass

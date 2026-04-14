@@ -38,7 +38,6 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from ._vscf_mbedtls_ecp_group import vscf_mbedtls_ecp_group_t
 
 
 class vscf_brainkey_client_t(Structure):

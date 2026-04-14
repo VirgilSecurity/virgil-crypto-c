@@ -35,7 +35,6 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from ._vscf_self import vscf_self_t
 from ._vscf_signer_info import vscf_signer_info_t
 
 

@@ -38,7 +38,6 @@ from ctypes import *
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from ._vscf_error import vscf_error_t
-from ._vscf_self import vscf_self_t
 
 
 class vscf_group_session_message_t(Structure):

@@ -35,7 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from ._vsce_impl import vsce_impl_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 

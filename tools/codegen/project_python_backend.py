@@ -346,7 +346,10 @@ def _bridge_imports_for_entity(
         elif a.class_name == "error":
             prefix = _resolve_project_prefix(project_ir, a.project)
             other_error_classes.add(prefix)
-        elif a.class_name and a.class_name not in ("data", "buffer"):
+        elif a.class_name and a.class_name not in ("data", "buffer", "self"):
+            # Skip external library types (e.g., mbedtls_ecp_group)
+            if a.library and a.library not in _PROJECT_PREFIX_MAP:
+                return
             prefix = _resolve_project_prefix(project_ir, a.project)
             stem = _snake_name(a.class_name)
             other_classes.add(f"{prefix}_{stem}")
@@ -376,7 +379,12 @@ def _bridge_imports_for_entity(
 
     lines: list[str] = []
     if needs_impl:
-        lines.append(f"from ._{project_ir.prefix}_impl import {project_ir.prefix}_impl_t")
+        # impl_t is always from foundation (vscf_impl_t) for all projects
+        # Only foundation defines the impl type; other projects import it
+        if project_ir.prefix == "vscf":
+            lines.append(f"from ._{project_ir.prefix}_impl import {project_ir.prefix}_impl_t")
+        else:
+            lines.append("from virgil_crypto_lib.foundation._c_bridge import vscf_impl_t")
     if needs_data:
         lines.append("from virgil_crypto_lib.common._c_bridge import vsc_data_t")
     if needs_buffer:
@@ -1913,6 +1921,34 @@ def generate_python_files(
             hl_cls = _hl_class_name(project_ir, enum.name)
             files.append((f"{hl_dir}{hl_stem}.py", hl_content))
             hl_init_entries.append((hl_stem, [hl_cls]))
+
+    # --- Private class stubs (bridge-only, needed as import targets) ---
+    for cls in project_ir.classes:
+        if _entity_is_public(cls.attrs):
+            continue  # Public classes are handled below
+        if cls.name in ("error",):
+            continue
+        snake = _snake_name(cls.name)
+        bridge_stem = f"{prefix}_{snake}"
+        struct_name = f"{prefix}_{snake}_t"
+        # Generate a minimal bridge stub with just the opaque struct type
+        stub_lines = [
+            _PYTHON_LICENSE,
+            "",
+            "",
+            "from virgil_crypto_lib._libs import *",
+            "from ctypes import *",
+            "",
+            "",
+            f"class {struct_name}(Structure):",
+            "    pass",
+            "",
+        ]
+        files.append((f"{bridge_dir}_{bridge_stem}.py", "\n".join(stub_lines)))
+        # Register in bridge __init__.py
+        bridge_init_entries_enums.append((
+            bridge_stem, None, [struct_name],
+        ))
 
     # --- Classes ---
     for cls in project_ir.classes:

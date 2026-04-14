@@ -40,7 +40,6 @@ from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from ._vscf_error import vscf_error_t
 from ._vscf_ecies import vscf_ecies_t
-from ._vscf_mbedtls_mpi import vscf_mbedtls_mpi_t
 from ._vscf_raw_private_key import vscf_raw_private_key_t
 from ._vscf_raw_public_key import vscf_raw_public_key_t
 
