@@ -69,7 +69,7 @@ import VSCRatchet
     }
 
     /// Returns message counter in current asymmetric ratchet round.
-    @objc public func getCounter() -> Int {
+    @objc public func getCounter() -> UInt32 {
         let proxyResult = vscr_ratchet_message_get_counter(self.c_ctx)
 
         return proxyResult
@@ -130,7 +130,7 @@ import VSCRatchet
     }
 
     /// Deserializes instance.
-    @objc public static func deserialize(input: Data) throws -> Self {
+    @objc public static func deserialize(input: Data) throws -> RatchetMessage {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
@@ -140,7 +140,7 @@ import VSCRatchet
 
         try RatchetError.handleStatus(fromC: error.status)
 
-        return type(of: self).init(take: proxyResult!)
+        return RatchetMessage.init(take: proxyResult!)
     }
 
 }

@@ -51,7 +51,7 @@ import VSCFoundation
     @objc func status() throws
 
     /// Get tag of the current ASN.1 element.
-    @objc func getTag() -> Int
+    @objc func getTag() -> Int32
 
     /// Get length of the current ASN.1 element.
     @objc func getLen() -> Int
@@ -61,42 +61,42 @@ import VSCFoundation
 
     /// Read ASN.1 type: TAG.
     /// Return element length.
-    @objc func readTag(tag: Int) -> Int
+    @objc func readTag(tag: Int32) -> Int
 
     /// Read ASN.1 type: context-specific TAG.
     /// Return element length.
     /// Return 0 if current position do not points to the requested tag.
-    @objc func readContextTag(tag: Int) -> Int
+    @objc func readContextTag(tag: Int32) -> Int
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readInt() -> Int
+    @objc func readInt() -> Int32
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readInt8() -> Int
+    @objc func readInt8() -> Int8
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readInt16() -> Int
+    @objc func readInt16() -> Int16
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readInt32() -> Int
+    @objc func readInt32() -> Int32
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readInt64() -> Int
+    @objc func readInt64() -> Int64
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readUint() -> Int
+    @objc func readUint() -> UInt32
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readUint8() -> Int
+    @objc func readUint8() -> UInt8
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readUint16() -> Int
+    @objc func readUint16() -> UInt16
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readUint32() -> Int
+    @objc func readUint32() -> UInt32
 
     /// Read ASN.1 type: INTEGER.
-    @objc func readUint64() -> Int
+    @objc func readUint64() -> UInt64
 
     /// Read ASN.1 type: BOOLEAN.
     @objc func readBool() -> Bool

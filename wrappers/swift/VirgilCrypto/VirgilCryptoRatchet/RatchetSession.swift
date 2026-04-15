@@ -77,9 +77,9 @@ import VSCRatchet
     /// Initiates session
     @objc public func initiate(senderIdentityPrivateKey: PrivateKey, senderIdentityKeyId: Data, receiverIdentityPublicKey: PublicKey, receiverIdentityKeyId: Data, receiverLongTermPublicKey: PublicKey, receiverLongTermKeyId: Data, receiverOneTimePublicKey: PublicKey, receiverOneTimeKeyId: Data, enablePostQuantum: Bool) throws {
         let proxyResult = senderIdentityKeyId.withUnsafeBytes({ (senderIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-            receiverIdentityKeyId.withUnsafeBytes({ (receiverIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-                receiverLongTermKeyId.withUnsafeBytes({ (receiverLongTermKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-                    receiverOneTimeKeyId.withUnsafeBytes({ (receiverOneTimeKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            return receiverIdentityKeyId.withUnsafeBytes({ (receiverIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+                return receiverLongTermKeyId.withUnsafeBytes({ (receiverLongTermKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+                    return receiverOneTimeKeyId.withUnsafeBytes({ (receiverOneTimeKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
                         return vscr_ratchet_session_initiate(self.c_ctx, senderIdentityPrivateKey.c_ctx, vsc_data(senderIdentityKeyIdPointer.bindMemory(to: byte.self).baseAddress, senderIdentityKeyId.count), receiverIdentityPublicKey.c_ctx, vsc_data(receiverIdentityKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverIdentityKeyId.count), receiverLongTermPublicKey.c_ctx, vsc_data(receiverLongTermKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverLongTermKeyId.count), receiverOneTimePublicKey.c_ctx, vsc_data(receiverOneTimeKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverOneTimeKeyId.count), enablePostQuantum)
                     })
                 })
@@ -92,8 +92,8 @@ import VSCRatchet
     /// Initiates session
     @objc public func initiateNoOneTimeKey(senderIdentityPrivateKey: PrivateKey, senderIdentityKeyId: Data, receiverIdentityPublicKey: PublicKey, receiverIdentityKeyId: Data, receiverLongTermPublicKey: PublicKey, receiverLongTermKeyId: Data, enablePostQuantum: Bool) throws {
         let proxyResult = senderIdentityKeyId.withUnsafeBytes({ (senderIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-            receiverIdentityKeyId.withUnsafeBytes({ (receiverIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
-                receiverLongTermKeyId.withUnsafeBytes({ (receiverLongTermKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+            return receiverIdentityKeyId.withUnsafeBytes({ (receiverIdentityKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
+                return receiverLongTermKeyId.withUnsafeBytes({ (receiverLongTermKeyIdPointer: UnsafeRawBufferPointer) -> vscr_status_t in
                     return vscr_ratchet_session_initiate_no_one_time_key(self.c_ctx, senderIdentityPrivateKey.c_ctx, vsc_data(senderIdentityKeyIdPointer.bindMemory(to: byte.self).baseAddress, senderIdentityKeyId.count), receiverIdentityPublicKey.c_ctx, vsc_data(receiverIdentityKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverIdentityKeyId.count), receiverLongTermPublicKey.c_ctx, vsc_data(receiverLongTermKeyIdPointer.bindMemory(to: byte.self).baseAddress, receiverLongTermKeyId.count), enablePostQuantum)
                 })
             })
@@ -195,7 +195,7 @@ import VSCRatchet
 
     /// Deserializes session from buffer.
     /// NOTE: Deserialized session needs dependencies to be set. Check setup defaults
-    @objc public static func deserialize(input: Data) throws -> Self {
+    @objc public static func deserialize(input: Data) throws -> RatchetSession {
         var error: vscr_error_t = vscr_error_t()
         vscr_error_reset(&error)
 
@@ -205,7 +205,7 @@ import VSCRatchet
 
         try RatchetError.handleStatus(fromC: error.status)
 
-        return type(of: self).init(take: proxyResult!)
+        return RatchetSession.init(take: proxyResult!)
     }
 
 }

@@ -50,3 +50,18 @@ import VSCFoundation
     /// Decapsulate the shared key.
     @objc func kemDecapsulate(encapsulatedKey: Data, privateKey: PrivateKey) throws -> Data
 }
+
+/// Encapsulate result of method Kem.kemEncapsulate()
+@objc(VSCFKemKemEncapsulateResult) public class KemKemEncapsulateResult: NSObject {
+
+    @objc public let sharedKey: Data
+
+    @objc public let encapsulatedKey: Data
+
+    /// Initialize all properties.
+    internal init(sharedKey: Data, encapsulatedKey: Data) {
+        self.sharedKey = sharedKey
+        self.encapsulatedKey = encapsulatedKey
+        super.init()
+    }
+}

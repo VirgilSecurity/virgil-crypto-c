@@ -83,10 +83,10 @@ import VSCFoundation
     }
 
     /// Return next list node if exists, or NULL otherwise.
-    @objc public func next() -> Self {
+    @objc public func next() -> KeyRecipientInfoList {
         let proxyResult = vscf_key_recipient_info_list_next(self.c_ctx)
 
-        return type(of: self).init(use: proxyResult!)
+        return KeyRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Return true if list has previous item.
@@ -97,10 +97,10 @@ import VSCFoundation
     }
 
     /// Return previous list node if exists, or NULL otherwise.
-    @objc public func prev() -> Self {
+    @objc public func prev() -> KeyRecipientInfoList {
         let proxyResult = vscf_key_recipient_info_list_prev(self.c_ctx)
 
-        return type(of: self).init(use: proxyResult!)
+        return KeyRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Remove all items.

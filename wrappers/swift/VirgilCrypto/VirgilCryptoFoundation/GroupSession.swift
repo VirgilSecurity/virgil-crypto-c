@@ -79,7 +79,7 @@ import VSCFoundation
     }
 
     /// Returns current epoch.
-    @objc public func getCurrentEpoch() -> Int {
+    @objc public func getCurrentEpoch() -> UInt32 {
         let proxyResult = vscf_group_session_get_current_epoch(self.c_ctx)
 
         return proxyResult

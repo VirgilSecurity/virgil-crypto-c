@@ -39,7 +39,7 @@ import VSCFoundation
 @objc(VSCFPem) public class Pem: NSObject {
 
     /// Return length in bytes required to hold wrapped PEM format.
-    @objc public static func wrappedLen(title: Void, dataLen: Int) -> Int {
+    @objc public static func wrappedLen(title: String, dataLen: Int) -> Int {
         let proxyResult = vscf_pem_wrapped_len(title, dataLen)
 
         return proxyResult
@@ -48,7 +48,7 @@ import VSCFoundation
     /// Takes binary data and wraps it to the simple PEM format - no
     /// additional information just header-base64-footer.
     /// Note, written buffer is NOT null-terminated.
-    @objc public static func wrap(title: Void, data: Data) -> Data {
+    @objc public static func wrap(title: String, data: Data) -> Data {
         let pemCount = Pem.wrappedLen(title: title, dataLen: data.count)
         var pem = Data(count: pemCount)
         let pemBuf = vsc_buffer_new()
@@ -85,7 +85,7 @@ import VSCFoundation
         }
 
         let proxyResult = pem.withUnsafeBytes({ (pemPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
                 return vscf_pem_unwrap(vsc_data(pemPointer.bindMemory(to: byte.self).baseAddress, pem.count), dataBuf)

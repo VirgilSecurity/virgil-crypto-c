@@ -62,7 +62,7 @@ import VSCFoundation
     }
 
     /// Add custom parameter with integer value.
-    @objc public func addInt(key: Data, value: Int) {
+    @objc public func addInt(key: Data, value: Int32) {
         key.withUnsafeBytes({ (keyPointer: UnsafeRawBufferPointer) in
             vscf_message_info_custom_params_add_int(self.c_ctx, vsc_data(keyPointer.bindMemory(to: byte.self).baseAddress, key.count), value)
         })
@@ -92,7 +92,7 @@ import VSCFoundation
     }
 
     /// Return custom parameter with integer value.
-    @objc public func findInt(key: Data) throws -> Int {
+    @objc public func findInt(key: Data) throws -> Int32 {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 

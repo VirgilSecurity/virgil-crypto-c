@@ -83,7 +83,7 @@ import VSCFoundation
     }
 
     /// Returns message epoch.
-    @objc public func getEpoch() -> Int {
+    @objc public func getEpoch() -> UInt32 {
         let proxyResult = vscf_group_session_message_get_epoch(self.c_ctx)
 
         return proxyResult
@@ -116,7 +116,7 @@ import VSCFoundation
     }
 
     /// Deserializes instance.
-    @objc public static func deserialize(input: Data) throws -> Self {
+    @objc public static func deserialize(input: Data) throws -> GroupSessionMessage {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -126,7 +126,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return type(of: self).init(take: proxyResult!)
+        return GroupSessionMessage.init(take: proxyResult!)
     }
 
 }

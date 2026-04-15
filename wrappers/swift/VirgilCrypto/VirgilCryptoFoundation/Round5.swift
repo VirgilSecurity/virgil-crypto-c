@@ -198,7 +198,7 @@ import VSCFoundation
     }
 
     /// Generate a shared key and a key encapsulated message.
-    @objc public func kemEncapsulate(publicKey: PublicKey) throws -> Round5KemEncapsulateResult {
+    @objc public func kemEncapsulate(publicKey: PublicKey) throws -> KemKemEncapsulateResult {
         let sharedKeyCount = self.kemSharedKeyLen(key: publicKey)
         var sharedKey = Data(count: sharedKeyCount)
         let sharedKeyBuf = vsc_buffer_new()
@@ -216,7 +216,7 @@ import VSCFoundation
         let proxyResult = sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_use(sharedKeyBuf, sharedKeyPointer.bindMemory(to: byte.self).baseAddress, sharedKeyCount)
 
-            encapsulatedKey.withUnsafeMutableBytes({ (encapsulatedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return encapsulatedKey.withUnsafeMutableBytes({ (encapsulatedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(encapsulatedKeyBuf, encapsulatedKeyPointer.bindMemory(to: byte.self).baseAddress, encapsulatedKeyCount)
 
                 return vscf_round5_kem_encapsulate(self.c_ctx, publicKey.c_ctx, sharedKeyBuf, encapsulatedKeyBuf)
@@ -227,7 +227,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: proxyResult)
 
-        return Round5KemEncapsulateResult(sharedKey: sharedKey, encapsulatedKey: encapsulatedKey)
+        return KemKemEncapsulateResult(sharedKey: sharedKey, encapsulatedKey: encapsulatedKey)
     }
 
     /// Decapsulate the shared key.
@@ -240,7 +240,7 @@ import VSCFoundation
         }
 
         let proxyResult = encapsulatedKey.withUnsafeBytes({ (encapsulatedKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return sharedKey.withUnsafeMutableBytes({ (sharedKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(sharedKeyBuf, sharedKeyPointer.bindMemory(to: byte.self).baseAddress, sharedKeyCount)
 
                 return vscf_round5_kem_decapsulate(self.c_ctx, vsc_data(encapsulatedKeyPointer.bindMemory(to: byte.self).baseAddress, encapsulatedKey.count), privateKey.c_ctx, sharedKeyBuf)

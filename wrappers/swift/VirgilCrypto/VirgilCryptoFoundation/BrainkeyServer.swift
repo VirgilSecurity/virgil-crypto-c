@@ -110,8 +110,8 @@ import VSCFoundation
         }
 
         let proxyResult = identitySecret.withUnsafeBytes({ (identitySecretPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-                hardenedPoint.withUnsafeMutableBytes({ (hardenedPointPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return hardenedPoint.withUnsafeMutableBytes({ (hardenedPointPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                     vsc_buffer_use(hardenedPointBuf, hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPointCount)
 
                     return vscf_brainkey_server_harden(self.c_ctx, vsc_data(identitySecretPointer.bindMemory(to: byte.self).baseAddress, identitySecret.count), vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), hardenedPointBuf)

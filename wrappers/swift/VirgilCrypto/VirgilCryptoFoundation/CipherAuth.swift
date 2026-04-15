@@ -53,3 +53,18 @@ import VSCFoundation
     /// method "finish" can be used for simplicity.
     @objc func finishAuthDecryption(tag: Data) throws -> Data
 }
+
+/// Encapsulate result of method CipherAuth.finishAuthEncryption()
+@objc(VSCFCipherAuthFinishAuthEncryptionResult) public class CipherAuthFinishAuthEncryptionResult: NSObject {
+
+    @objc public let out: Data
+
+    @objc public let tag: Data
+
+    /// Initialize all properties.
+    internal init(out: Data, tag: Data) {
+        self.out = out
+        self.tag = tag
+        super.init()
+    }
+}

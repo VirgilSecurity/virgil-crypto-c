@@ -45,3 +45,18 @@ import VSCFoundation
     /// Calculate required buffer length to hold the authenticated encrypted data.
     @objc func authEncryptedLen(dataLen: Int) -> Int
 }
+
+/// Encapsulate result of method AuthEncrypt.authEncrypt()
+@objc(VSCFAuthEncryptAuthEncryptResult) public class AuthEncryptAuthEncryptResult: NSObject {
+
+    @objc public let out: Data
+
+    @objc public let tag: Data
+
+    /// Initialize all properties.
+    internal init(out: Data, tag: Data) {
+        self.out = out
+        self.tag = tag
+        super.init()
+    }
+}

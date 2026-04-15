@@ -90,7 +90,7 @@ import VSCFoundation
     }
 
     /// Get tag of the current ASN.1 element.
-    @objc public func getTag() -> Int {
+    @objc public func getTag() -> Int32 {
         let proxyResult = vscf_asn1rd_get_tag(self.c_ctx)
 
         return proxyResult
@@ -112,7 +112,7 @@ import VSCFoundation
 
     /// Read ASN.1 type: TAG.
     /// Return element length.
-    @objc public func readTag(tag: Int) -> Int {
+    @objc public func readTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1rd_read_tag(self.c_ctx, tag)
 
         return proxyResult
@@ -121,77 +121,77 @@ import VSCFoundation
     /// Read ASN.1 type: context-specific TAG.
     /// Return element length.
     /// Return 0 if current position do not points to the requested tag.
-    @objc public func readContextTag(tag: Int) -> Int {
+    @objc public func readContextTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1rd_read_context_tag(self.c_ctx, tag)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readInt() -> Int {
+    @objc public func readInt() -> Int32 {
         let proxyResult = vscf_asn1rd_read_int(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readInt8() -> Int {
+    @objc public func readInt8() -> Int8 {
         let proxyResult = vscf_asn1rd_read_int8(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readInt16() -> Int {
+    @objc public func readInt16() -> Int16 {
         let proxyResult = vscf_asn1rd_read_int16(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readInt32() -> Int {
+    @objc public func readInt32() -> Int32 {
         let proxyResult = vscf_asn1rd_read_int32(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readInt64() -> Int {
+    @objc public func readInt64() -> Int64 {
         let proxyResult = vscf_asn1rd_read_int64(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readUint() -> Int {
+    @objc public func readUint() -> UInt32 {
         let proxyResult = vscf_asn1rd_read_uint(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readUint8() -> Int {
+    @objc public func readUint8() -> UInt8 {
         let proxyResult = vscf_asn1rd_read_uint8(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readUint16() -> Int {
+    @objc public func readUint16() -> UInt16 {
         let proxyResult = vscf_asn1rd_read_uint16(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readUint32() -> Int {
+    @objc public func readUint32() -> UInt32 {
         let proxyResult = vscf_asn1rd_read_uint32(self.c_ctx)
 
         return proxyResult
     }
 
     /// Read ASN.1 type: INTEGER.
-    @objc public func readUint64() -> Int {
+    @objc public func readUint64() -> UInt64 {
         let proxyResult = vscf_asn1rd_read_uint64(self.c_ctx)
 
         return proxyResult

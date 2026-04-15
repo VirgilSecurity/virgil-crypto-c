@@ -74,7 +74,7 @@ import VSCFoundation
     /// Serialize Public Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    @objc public func serializePublicKeyInplace(publicKey: RawPublicKey) throws -> Int {
+    public func serializePublicKeyInplace(publicKey: RawPublicKey) throws -> Int {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
@@ -88,7 +88,7 @@ import VSCFoundation
     /// Serialize Private Key by using internal ASN.1 writer.
     /// Note, that caller code is responsible to reset ASN.1 writer with
     /// an output buffer.
-    @objc public func serializePrivateKeyInplace(privateKey: RawPrivateKey) throws -> Int {
+    public func serializePrivateKeyInplace(privateKey: RawPrivateKey) throws -> Int {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 

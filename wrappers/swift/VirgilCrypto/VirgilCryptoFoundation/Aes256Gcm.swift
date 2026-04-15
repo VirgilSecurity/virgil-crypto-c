@@ -107,7 +107,7 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_aes256_gcm_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -144,7 +144,7 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_aes256_gcm_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -259,7 +259,7 @@ import VSCFoundation
 
     /// Encrypt given data.
     /// If 'tag' is not given, then it will written to the 'enc'.
-    @objc public func authEncrypt(data: Data, authData: Data) throws -> Aes256GcmAuthEncryptResult {
+    @objc public func authEncrypt(data: Data, authData: Data) throws -> AuthEncryptAuthEncryptResult {
         let outCount = self.authEncryptedLen(dataLen: data.count)
         var out = Data(count: outCount)
         let outBuf = vsc_buffer_new()
@@ -275,11 +275,11 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-                out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                     vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-                    tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                    return tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                         vsc_buffer_use(tagBuf, tagPointer.bindMemory(to: byte.self).baseAddress, tagCount)
 
                         return vscf_aes256_gcm_auth_encrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count), outBuf, tagBuf)
@@ -292,7 +292,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: proxyResult)
 
-        return Aes256GcmAuthEncryptResult(out: out, tag: tag)
+        return AuthEncryptAuthEncryptResult(out: out, tag: tag)
     }
 
     /// Calculate required buffer length to hold the authenticated encrypted data.
@@ -313,9 +313,9 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-                tag.withUnsafeBytes({ (tagPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-                    out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return authData.withUnsafeBytes({ (authDataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return tag.withUnsafeBytes({ (tagPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                    return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                         vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                         return vscf_aes256_gcm_auth_decrypt(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), vsc_data(authDataPointer.bindMemory(to: byte.self).baseAddress, authData.count), vsc_data(tagPointer.bindMemory(to: byte.self).baseAddress, tag.count), outBuf)
@@ -348,7 +348,7 @@ import VSCFoundation
     ///
     /// Note, if authentication tag should be added to an encrypted data,
     /// method "finish" can be used.
-    @objc public func finishAuthEncryption() throws -> Aes256GcmFinishAuthEncryptionResult {
+    @objc public func finishAuthEncryption() throws -> CipherAuthFinishAuthEncryptionResult {
         let outCount = self.outLen(dataLen: 0)
         var out = Data(count: outCount)
         let outBuf = vsc_buffer_new()
@@ -366,7 +366,7 @@ import VSCFoundation
         let proxyResult = out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
             vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
-            tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return tag.withUnsafeMutableBytes({ (tagPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(tagBuf, tagPointer.bindMemory(to: byte.self).baseAddress, tagCount)
 
                 return vscf_aes256_gcm_finish_auth_encryption(self.c_ctx, outBuf, tagBuf)
@@ -377,7 +377,7 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: proxyResult)
 
-        return Aes256GcmFinishAuthEncryptionResult(out: out, tag: tag)
+        return CipherAuthFinishAuthEncryptionResult(out: out, tag: tag)
     }
 
     /// Accomplish an authenticated decryption with explicitly given tag.
@@ -393,7 +393,7 @@ import VSCFoundation
         }
 
         let proxyResult = tag.withUnsafeBytes({ (tagPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_aes256_gcm_finish_auth_decryption(self.c_ctx, vsc_data(tagPointer.bindMemory(to: byte.self).baseAddress, tag.count), outBuf)

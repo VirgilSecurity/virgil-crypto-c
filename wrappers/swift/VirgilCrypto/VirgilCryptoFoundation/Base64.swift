@@ -84,7 +84,7 @@ import VSCFoundation
         }
 
         let proxyResult = str.withUnsafeBytes({ (strPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return data.withUnsafeMutableBytes({ (dataPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(dataBuf, dataPointer.bindMemory(to: byte.self).baseAddress, dataCount)
 
                 return vscf_base64_decode(vsc_data(strPointer.bindMemory(to: byte.self).baseAddress, str.count), dataBuf)

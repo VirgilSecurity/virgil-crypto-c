@@ -74,11 +74,11 @@ import VSCFoundation
 
     /// Write ASN.1 tag.
     /// Return count of written bytes.
-    @objc func writeTag(tag: Int) -> Int
+    @objc func writeTag(tag: Int32) -> Int
 
     /// Write context-specific ASN.1 tag.
     /// Return count of written bytes.
-    @objc func writeContextTag(tag: Int, len: Int) -> Int
+    @objc func writeContextTag(tag: Int32, len: Int) -> Int
 
     /// Write length of the following data.
     /// Return count of written bytes.
@@ -86,43 +86,43 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeInt(value: Int) -> Int
+    @objc func writeInt(value: Int32) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeInt8(value: Int) -> Int
+    @objc func writeInt8(value: Int8) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeInt16(value: Int) -> Int
+    @objc func writeInt16(value: Int16) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeInt32(value: Int) -> Int
+    @objc func writeInt32(value: Int32) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeInt64(value: Int) -> Int
+    @objc func writeInt64(value: Int64) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeUint(value: Int) -> Int
+    @objc func writeUint(value: UInt32) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeUint8(value: Int) -> Int
+    @objc func writeUint8(value: UInt8) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeUint16(value: Int) -> Int
+    @objc func writeUint16(value: UInt16) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeUint32(value: Int) -> Int
+    @objc func writeUint32(value: UInt32) -> Int
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc func writeUint64(value: Int) -> Int
+    @objc func writeUint64(value: UInt64) -> Int
 
     /// Write ASN.1 type: BOOLEAN.
     /// Return count of written bytes.

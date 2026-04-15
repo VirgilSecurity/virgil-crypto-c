@@ -77,7 +77,9 @@ import VSCFoundation
 
     /// Setup public key related to the private key.
     @objc public func setPublicKey(rawPublicKey: RawPublicKey) {
-        vscf_raw_private_key_set_public_key(self.c_ctx, rawPublicKey.c_ctx)
+        var rawPublicKeyCopy = vscf_raw_public_key_shallow_copy(rawPublicKey.c_ctx)
+
+        vscf_raw_private_key_set_public_key(self.c_ctx, &rawPublicKeyCopy)
     }
 
     /// Return public key related to the private key.

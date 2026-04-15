@@ -83,10 +83,10 @@ import VSCFoundation
     }
 
     /// Return next list node if exists, or NULL otherwise.
-    @objc public func next() -> Self {
+    @objc public func next() -> PasswordRecipientInfoList {
         let proxyResult = vscf_password_recipient_info_list_next(self.c_ctx)
 
-        return type(of: self).init(use: proxyResult!)
+        return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Return true if list has previous item.
@@ -97,10 +97,10 @@ import VSCFoundation
     }
 
     /// Return previous list node if exists, or NULL otherwise.
-    @objc public func prev() -> Self {
+    @objc public func prev() -> PasswordRecipientInfoList {
         let proxyResult = vscf_password_recipient_info_list_prev(self.c_ctx)
 
-        return type(of: self).init(use: proxyResult!)
+        return PasswordRecipientInfoList.init(use: proxyResult!)
     }
 
     /// Remove all items.

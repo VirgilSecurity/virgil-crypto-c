@@ -203,7 +203,7 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_recipient_cipher_process_encryption(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -241,7 +241,7 @@ import VSCFoundation
     /// Message Info can be empty if it was embedded to encrypted data.
     @objc public func startDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data) throws {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            return messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                 return vscf_recipient_cipher_start_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfo.count))
             })
         })
@@ -255,8 +255,8 @@ import VSCFoundation
     /// If footer was embedded, method "start decryption with key" can be used.
     @objc public func startVerifiedDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data, messageInfoFooter: Data) throws {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-                messageInfoFooter.withUnsafeBytes({ (messageInfoFooterPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            return messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return messageInfoFooter.withUnsafeBytes({ (messageInfoFooterPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                     return vscf_recipient_cipher_start_verified_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfo.count), vsc_data(messageInfoFooterPointer.bindMemory(to: byte.self).baseAddress, messageInfoFooter.count))
                 })
             })
@@ -284,7 +284,7 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_recipient_cipher_process_decryption(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)

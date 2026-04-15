@@ -371,9 +371,8 @@ def _swift_type_for_arg(project_ir: IRProject, arg: IRCArgument) -> str:
     if arg.class_name == "buffer":
         return "Data"
     if arg.class_name and arg.class_name not in {"data", "buffer"}:
-        # If this was a class="self" reference, return Self type in Swift
         if getattr(arg, '_was_self', False):
-            return "Self"
+            return swift_type_name(arg.class_name)
         return swift_type_name(arg.class_name)
     type_name = (arg.type_name or "").lower()
     if type_name == "size":
@@ -381,9 +380,19 @@ def _swift_type_for_arg(project_ir: IRProject, arg: IRCArgument) -> str:
     if type_name == "boolean":
         return "Bool"
     if type_name == "integer":
-        return "Int"  # Swift maps to Int for all integer sizes
+        size = arg.type_size
+        if size and size != "4":
+            _map = {"1": "Int8", "2": "Int16", "4": "Int32", "8": "Int64"}
+            return _map.get(size, "Int32")
+        return "Int32"
     if type_name == "unsigned":
-        return "Int"  # Swift wraps unsigned as Int for ObjC compat
+        size = arg.type_size
+        if size and size != "4":
+            _map = {"1": "UInt8", "2": "UInt16", "4": "UInt32", "8": "UInt64"}
+            return _map.get(size, "UInt32")
+        return "UInt32"
+    if type_name in ("string", "char") or arg.is_string:
+        return "String"
     if type_name == "byte" and arg.is_reference:
         return "UnsafeMutableRawPointer"
     return "Void"
@@ -401,7 +410,9 @@ def _swift_return_type(project_ir: IRProject, method: IRCMethod, entity_name: st
     for ret in method.returns:
         if ret.enum_name == "status":
             continue
-        value_returns.append(ret)
+        # Resolve class="self" to the entity name for return type
+        resolved = _resolve_self_class(entity_name, ret)
+        value_returns.append(resolved)
 
     for arg in method.arguments:
         if _arg_is_buffer_output(arg):
@@ -508,6 +519,7 @@ def _swift_method_body(
     *,
     is_static: bool = False,
     is_interface_method: bool = False,
+    result_entity_name: str | None = None,
 ) -> list[str]:
     """Generate the body lines for a Swift method.
 
@@ -591,6 +603,7 @@ def _swift_method_body(
     # instance pointer (e.g., ``Hash.hash`` is a stateless helper).
     is_static_method = is_static or method.attrs.get("is_static") == "1"
     c_call_parts: list[str] = []
+    disown_prologue: list[str] = []  # var declarations for disown args
     if not is_static_method:
         c_call_parts.append("self.c_ctx")
 
@@ -614,7 +627,18 @@ def _swift_method_body(
             c_call_parts.append(f"{local}.c_ctx")
         elif arg.class_name and arg.class_name not in {"data", "buffer"}:
             local = method_arg_locals[arg.name]
-            c_call_parts.append(f"{local}.c_ctx")
+            if arg.access == "disown":
+                # Disown: shallow-copy and pass pointer-to-pointer
+                cls_snake = arg.class_name.replace(" ", "_").lower()
+                cls_prefix = project_ir.prefix
+                disown_var = f"{local}Copy"
+                disown_prologue.append(
+                    f"        var {disown_var} = "
+                    f"{cls_prefix}_{cls_snake}_shallow_copy({local}.c_ctx)"
+                )
+                c_call_parts.append(f"&{disown_var}")
+            else:
+                c_call_parts.append(f"{local}.c_ctx")
         elif arg.enum_name:
             local = method_arg_locals[arg.name]
             c_type = _c_enum_type_by_name(project_ir, arg.enum_name)
@@ -651,6 +675,12 @@ def _swift_method_body(
             closure_return_type = None
     else:
         closure_return_type = None
+
+    # Emit disown variable declarations before the C call
+    for dl in disown_prologue:
+        lines.append(dl)
+    if disown_prologue:
+        lines.append("")
 
     # Decide whether to use closures or direct call
     if not needs_data_closures and not needs_buf_closures:
@@ -706,7 +736,8 @@ def _swift_method_body(
         for buf_arg in buffer_outputs:
             buf_local = swift_method_name(buf_arg.name)
             result_parts.append(f"{buf_local}: {buf_local}")
-        result_type = _result_struct_name(entity_name, method.name)
+        r_entity = result_entity_name or entity_name
+        result_type = _result_struct_name(r_entity, method.name)
         lines.append("")
         lines.append(f"        return {result_type}({', '.join(result_parts)})")
 
@@ -755,8 +786,11 @@ def _emit_closure_chain(
     indent = "        "
     prefix = "let proxyResult = " if assign_result else ""
 
+    needs_return = ret_type != "Void"
+
     for i, (kind, local, ptr_name) in enumerate(all_closures):
         closer_ret = f" -> {ret_type}" if ret_type != "Void" else ""
+
         if kind == "data":
             type_annot = "UnsafeRawBufferPointer"
             lines.append(
@@ -779,6 +813,14 @@ def _emit_closure_chain(
                 f"{ptr_name}.bindMemory(to: byte.self).baseAddress, {buf_count})"
             )
             lines.append("")
+
+        # After emitting the buffer_use (or data binding), if there are more
+        # closures following AND we have a return type, the NEXT statement
+        # (another closure or C call) needs "return" so Swift knows to
+        # propagate the value through the chain.
+        is_last = (i == len(all_closures) - 1)
+        if not is_last and needs_return:
+            prefix = "return "
 
     # Emit the C call at the deepest level
     if assign_result and ret_type != "Void":
@@ -809,11 +851,6 @@ def _swift_return_expr(project_ir: IRProject, ret: IRCArgument, c_expr: str) -> 
             return f"{impl_class_name}.wrap{iface_name}(use: {c_expr}!)"
 
     if ret.class_name and ret.class_name not in {"data", "buffer"}:
-        # If class_name was originally "self", the return type is Self
-        # in Swift, so use type(of: self).init() for correct polymorphism
-        if ret.class_name == "self" or getattr(ret, '_was_self', False):
-            wrap = "take" if ret.access == "disown" else "use"
-            return f"type(of: self).init({wrap}: {c_expr}!)"
         cls_name = swift_type_name(ret.class_name)
         if ret.access == "disown":
             return f"{cls_name}.init(take: {c_expr}!)"
@@ -914,6 +951,41 @@ def generate_swift_protocol(project_ir: IRProject, iface: IRInterface) -> str:
 
     lines.append("}")
     lines.append("")
+
+    # Generate result structs for multi-buffer return methods
+    for method in iface.methods:
+        if not _method_should_wrap(method):
+            continue
+        buffer_outputs = [a for a in method.arguments if _arg_is_buffer_output(a)]
+        value_returns = [r for r in method.returns if r.enum_name != "status"]
+        total = len(buffer_outputs) + len(value_returns)
+        if total >= 2:
+            result_name = _result_struct_name(iface.name, method.name)
+            objc_result = f"{_objc_prefix(project_ir)}{result_name}"
+            lines.append(f"/// Encapsulate result of method {type_name}.{swift_method_name(method.name)}()")
+            lines.append(f"@objc({objc_result}) public class {result_name}: NSObject {{")
+            lines.append("")
+            # Properties for each return value
+            all_outs: list[tuple[str, str]] = []
+            for ret in value_returns:
+                prop = swift_method_name(ret.name) if ret.name else "result"
+                all_outs.append((prop, _swift_type_for_arg(project_ir, ret)))
+            for buf in buffer_outputs:
+                prop = swift_method_name(buf.name)
+                all_outs.append((prop, "Data"))
+            for prop, ptype in all_outs:
+                lines.append(f"    @objc public let {prop}: {ptype}")
+                lines.append("")
+            # Initializer
+            init_params = ", ".join(f"{p}: {t}" for p, t in all_outs)
+            lines.append(f"    /// Initialize all properties.")
+            lines.append(f"    internal init({init_params}) {{")
+            for prop, _ in all_outs:
+                lines.append(f"        self.{prop} = {prop}")
+            lines.append(f"        super.init()")
+            lines.append(f"    }}")
+            lines.append("}")
+            lines.append("")
 
     return "\n".join(lines)
 
@@ -1175,7 +1247,10 @@ def generate_swift_implementation(project_ir: IRProject, impl: IRImplementation)
         for method in iface.methods:
             if not _method_should_wrap(method):
                 continue
-            _emit_method(lines, project_ir, impl.name, method, is_static=False)
+            _emit_method(
+                lines, project_ir, impl.name, method, is_static=False,
+                result_entity_name=binding.name,
+            )
 
     lines.append("}")
     lines.append("")
@@ -1190,10 +1265,13 @@ def _emit_method(
     method: IRCMethod,
     *,
     is_static: bool = False,
+    result_entity_name: str | None = None,
 ) -> None:
     """Emit a complete method (signature + body + closing brace)."""
+    # For return type: use result_entity_name if multi-buffer (interface origin)
+    ret_entity = result_entity_name or entity_name
     args_str, ret_type, throws, modifier = _swift_method_signature_parts(
-        project_ir, method, entity_name, is_static=is_static,
+        project_ir, method, ret_entity, is_static=is_static,
     )
     if is_static:
         modifier = "static "
@@ -1202,13 +1280,21 @@ def _emit_method(
     ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
     meth_name = swift_method_name(method.name)
 
+    # @objc methods that throw cannot return non-bridgeable primitive types
+    # In such cases, omit @objc (only ObjC classes/Void are allowed)
+    _non_bridgeable = {"Int", "Bool", "UInt", "Int8", "Int16", "Int32", "Int64",
+                       "UInt8", "UInt16", "UInt32", "UInt64"}
+    non_objc_ret = ret_type in _non_bridgeable and throws
+    objc_prefix = "" if non_objc_ret else "@objc "
+
     _emit_doc(lines, method.description)
     lines.append(
-        f"    @objc public {modifier}func {meth_name}"
+        f"    {objc_prefix}public {modifier}func {meth_name}"
         f"({args_str}){throws_str}{ret_str} {{"
     )
     body = _swift_method_body(
         project_ir, entity_name, method, is_static=is_static,
+        result_entity_name=result_entity_name,
     )
     lines.extend(body)
     lines.append("    }")

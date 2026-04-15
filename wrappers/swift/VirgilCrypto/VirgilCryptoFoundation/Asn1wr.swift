@@ -131,7 +131,7 @@ import VSCFoundation
 
     /// Write ASN.1 tag.
     /// Return count of written bytes.
-    @objc public func writeTag(tag: Int) -> Int {
+    @objc public func writeTag(tag: Int32) -> Int {
         let proxyResult = vscf_asn1wr_write_tag(self.c_ctx, tag)
 
         return proxyResult
@@ -139,7 +139,7 @@ import VSCFoundation
 
     /// Write context-specific ASN.1 tag.
     /// Return count of written bytes.
-    @objc public func writeContextTag(tag: Int, len: Int) -> Int {
+    @objc public func writeContextTag(tag: Int32, len: Int) -> Int {
         let proxyResult = vscf_asn1wr_write_context_tag(self.c_ctx, tag, len)
 
         return proxyResult
@@ -155,7 +155,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeInt(value: Int) -> Int {
+    @objc public func writeInt(value: Int32) -> Int {
         let proxyResult = vscf_asn1wr_write_int(self.c_ctx, value)
 
         return proxyResult
@@ -163,7 +163,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeInt8(value: Int) -> Int {
+    @objc public func writeInt8(value: Int8) -> Int {
         let proxyResult = vscf_asn1wr_write_int8(self.c_ctx, value)
 
         return proxyResult
@@ -171,7 +171,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeInt16(value: Int) -> Int {
+    @objc public func writeInt16(value: Int16) -> Int {
         let proxyResult = vscf_asn1wr_write_int16(self.c_ctx, value)
 
         return proxyResult
@@ -179,7 +179,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeInt32(value: Int) -> Int {
+    @objc public func writeInt32(value: Int32) -> Int {
         let proxyResult = vscf_asn1wr_write_int32(self.c_ctx, value)
 
         return proxyResult
@@ -187,7 +187,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeInt64(value: Int) -> Int {
+    @objc public func writeInt64(value: Int64) -> Int {
         let proxyResult = vscf_asn1wr_write_int64(self.c_ctx, value)
 
         return proxyResult
@@ -195,7 +195,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeUint(value: Int) -> Int {
+    @objc public func writeUint(value: UInt32) -> Int {
         let proxyResult = vscf_asn1wr_write_uint(self.c_ctx, value)
 
         return proxyResult
@@ -203,7 +203,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeUint8(value: Int) -> Int {
+    @objc public func writeUint8(value: UInt8) -> Int {
         let proxyResult = vscf_asn1wr_write_uint8(self.c_ctx, value)
 
         return proxyResult
@@ -211,7 +211,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeUint16(value: Int) -> Int {
+    @objc public func writeUint16(value: UInt16) -> Int {
         let proxyResult = vscf_asn1wr_write_uint16(self.c_ctx, value)
 
         return proxyResult
@@ -219,7 +219,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeUint32(value: Int) -> Int {
+    @objc public func writeUint32(value: UInt32) -> Int {
         let proxyResult = vscf_asn1wr_write_uint32(self.c_ctx, value)
 
         return proxyResult
@@ -227,7 +227,7 @@ import VSCFoundation
 
     /// Write ASN.1 type: INTEGER.
     /// Return count of written bytes.
-    @objc public func writeUint64(value: Int) -> Int {
+    @objc public func writeUint64(value: UInt64) -> Int {
         let proxyResult = vscf_asn1wr_write_uint64(self.c_ctx, value)
 
         return proxyResult
