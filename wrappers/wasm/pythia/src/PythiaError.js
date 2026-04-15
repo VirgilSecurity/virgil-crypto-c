@@ -35,7 +35,7 @@
  */
 
 const initPythiaError = (Module, modules) => {
-    class PythiaError {
+    class PythiaError extends Error {
 
         constructor(message) {
             super(message);

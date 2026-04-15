@@ -35,7 +35,7 @@
  */
 
 const initPheError = (Module, modules) => {
-    class PheError {
+    class PheError extends Error {
 
         constructor(message) {
             super(message);

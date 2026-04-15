@@ -34,6 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+
+const precondition = require('./precondition');
+
 const initEccPublicKey = (Module, modules) => {
     class EccPublicKey {
 

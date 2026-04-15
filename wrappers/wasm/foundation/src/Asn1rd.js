@@ -34,6 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+
+const precondition = require('./precondition');
+
 const initAsn1rd = (Module, modules) => {
     class Asn1rd {
 

@@ -34,6 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+
+const precondition = require('./precondition');
+
 const initHkdf = (Module, modules) => {
     class Hkdf {
 

@@ -35,7 +35,7 @@
  */
 
 const initFoundationError = (Module, modules) => {
-    class FoundationError {
+    class FoundationError extends Error {
 
         constructor(message) {
             super(message);

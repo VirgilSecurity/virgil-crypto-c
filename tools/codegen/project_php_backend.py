@@ -1019,7 +1019,7 @@ def generate_php_project_implementation(project_ir: IRProject) -> str:
 
 
 # ---------------------------------------------------------------------------
-# C extension generator (stub)
+# C extension generator
 # ---------------------------------------------------------------------------
 
 def _flatten_description(description: str) -> str:
@@ -1028,15 +1028,760 @@ def _flatten_description(description: str) -> str:
     return " ".join(line for line in lines if line)
 
 
+def _is_impl_type(project_ir: IRProject, entity_name: str) -> bool:
+    """True if entity_name corresponds to an implementation (uses impl_t resource)."""
+    for impl in project_ir.implementations:
+        if impl.name == entity_name:
+            return True
+    return False
+
+
+def _entity_res_name_func(prefix: str, entity_name: str, project_ir: IRProject) -> str:
+    """Return the C function name that retrieves the resource name string."""
+    if _is_impl_type(project_ir, entity_name):
+        return f"{prefix}_impl_t_php_res_name()"
+    entity_snake = _snake_case(entity_name)
+    return f"{prefix}_{entity_snake}_t_php_res_name()"
+
+
+def _entity_le_func(prefix: str, entity_name: str, project_ir: IRProject) -> str:
+    """Return the C function name that retrieves the resource list entry id."""
+    if _is_impl_type(project_ir, entity_name):
+        return f"le_{prefix}_impl_t()"
+    entity_snake = _snake_case(entity_name)
+    return f"le_{prefix}_{entity_snake}_t()"
+
+
+def _entity_c_type(prefix: str, entity_name: str, project_ir: IRProject) -> str:
+    """Return the C type for an entity's context pointer."""
+    if _is_impl_type(project_ir, entity_name):
+        return f"{prefix}_impl_t"
+    entity_snake = _snake_case(entity_name)
+    return f"{prefix}_{entity_snake}_t"
+
+
+def _zend_arg_type_for_c_arg(arg: IRCArgument) -> str:
+    """Map an IR argument to its ZEND_ARG_TYPE_INFO type constant."""
+    if arg.class_name == "data":
+        return "IS_STRING"
+    if arg.class_name in ("buffer",):
+        return "IS_STRING"  # buffer outputs become string returns
+    if arg.interface_name or arg.class_name:
+        return "IS_RESOURCE"
+    if arg.enum_name:
+        return "IS_LONG"
+    type_name = (arg.type_name or "").lower()
+    if type_name in ("size", "integer", "unsigned"):
+        return "IS_LONG"
+    if type_name == "boolean":
+        return "_IS_BOOL"
+    if type_name in ("string", "byte"):
+        return "IS_STRING"
+    return "IS_STRING"
+
+
+def _zend_return_type_for_method(
+    project_ir: IRProject,
+    method: IRCMethod,
+    entity_name: str,
+) -> str:
+    """Determine the ZEND return type constant for a method."""
+    resolved_returns = [_resolve_self_arg(entity_name, r) for r in method.returns]
+    value_returns = [r for r in resolved_returns if r.enum_name != "status"]
+    buffer_outputs = [a for a in method.arguments if _arg_is_buffer_output(a)]
+
+    if buffer_outputs:
+        return "IS_STRING"
+
+    if not value_returns:
+        return "IS_VOID"
+
+    ret = value_returns[0]
+    if ret.enum_name:
+        return "IS_LONG"
+    if ret.interface_name:
+        return "IS_RESOURCE"
+    if ret.class_name and ret.class_name not in ("data", "buffer", "error"):
+        return "IS_RESOURCE"
+    if ret.class_name == "data":
+        return "IS_STRING"
+    type_name = (ret.type_name or "").lower()
+    if type_name in ("size", "integer", "unsigned"):
+        return "IS_LONG"
+    if type_name == "boolean":
+        return "_IS_BOOL"
+    if type_name in ("string", "byte"):
+        return "IS_STRING"
+    return "IS_VOID"
+
+
+def _c_func_name(prefix: str, entity_name: str, method_name: str) -> str:
+    """C library function name: {prefix}_{entity_snake}_{method_snake}."""
+    return f"{prefix}_{_snake_case(entity_name)}_{_snake_case(method_name)}"
+
+
+def _buffer_capacity_expr(
+    project_ir: IRProject,
+    entity_name: str,
+    method: IRCMethod,
+    buf_arg: IRCArgument,
+    entity=None,
+) -> str:
+    """Build a C expression for the capacity of a buffer output argument.
+
+    Uses the length_attrs metadata from the IR to build the correct
+    capacity computation expression (method call, constant, or argument).
+    """
+    prefix = project_ir.prefix
+    entity_snake = _snake_case(entity_name)
+    la = buf_arg.length_attrs
+    if not la:
+        return "0"
+
+    if "method" in la:
+        method_name = la["method"]
+        len_func = f"{prefix}_{entity_snake}_{_snake_case(method_name)}"
+        # Build proxy arguments
+        proxy_args: list[str] = []
+        idx = 0
+        while f"proxy_{idx}_to" in la:
+            cast = la.get(f"proxy_{idx}_cast")
+            src_arg = la.get(f"proxy_{idx}_argument")
+            src_const = la.get(f"proxy_{idx}_constant")
+            if src_const is not None:
+                proxy_args.append(src_const)
+            elif src_arg is not None:
+                if cast == "data_length":
+                    # data.len — the proxy passes the length of a data argument
+                    proxy_args.append(f"{_snake_case(src_arg)}.len")
+                else:
+                    proxy_args.append(_snake_case(src_arg))
+            idx += 1
+        return f"{len_func}({', '.join(proxy_args)})"
+
+    if "constant" in la:
+        const_name = la["constant"]
+        owner_class = la.get("class")
+        if owner_class and owner_class != "self":
+            return f"{prefix}_{_snake_case(owner_class)}_{_snake_case(const_name).upper()}"
+        return f"{prefix}_{entity_snake}_{_snake_case(const_name).upper()}"
+
+    if "argument" in la:
+        return _snake_case(la["argument"])
+
+    return "0"
+
+
+def _collect_methods_for_entity(
+    project_ir: IRProject,
+    entity_name: str,
+    entity,
+    is_implementation: bool = False,
+) -> list[tuple[IRCMethod, bool]]:
+    """Collect (method, is_static) pairs for an entity, including interface methods.
+
+    For implementations, includes methods from bound interfaces.
+    Returns deduplicated list preserving order.
+    """
+    result: list[tuple[IRCMethod, bool]] = []
+    seen: set[str] = set()
+
+    if is_implementation:
+        iface_by_name = {i.name: i for i in project_ir.interfaces}
+        for binding in entity.interface_bindings:
+            iface = iface_by_name.get(binding.name)
+            if iface is None:
+                continue
+            for method in iface.methods:
+                if not _method_should_wrap(method):
+                    continue
+                if method.name in seen:
+                    continue
+                seen.add(method.name)
+                is_static = method.attrs.get("is_static") in {"1", "true"}
+                result.append((method, is_static))
+
+    for method in entity.methods:
+        if not _method_should_wrap(method):
+            continue
+        if method.name in seen:
+            continue
+        seen.add(method.name)
+        is_static = method.attrs.get("is_static") in {"1", "true"}
+        result.append((method, is_static))
+
+    return result
+
+
+def _emit_arginfo(
+    lines: list[str],
+    php_func_name: str,
+    method: IRCMethod,
+    entity_name: str,
+    project_ir: IRProject,
+    *,
+    is_static: bool = False,
+    is_instance: bool = False,
+) -> None:
+    """Emit ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX block for a method."""
+    resolved_args = [_resolve_self_arg(entity_name, a) for a in method.arguments]
+    # Count required args: ctx + non-skipped, non-buffer args
+    req_count = 0
+    if is_instance and not is_static:
+        req_count += 1  # ctx
+    for arg in resolved_args:
+        if _arg_should_skip(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            continue
+        req_count += 1
+
+    ret_type = _zend_return_type_for_method(project_ir, method, entity_name)
+
+    lines.append("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(")
+    lines.append(f"    arginfo_{php_func_name},")
+    lines.append(f"    0 /*return_reference*/,")
+    lines.append(f"    {req_count} /*required_num_args*/,")
+    lines.append(f"    {ret_type} /*type*/,")
+    lines.append(f"    0 /*allow_null*/)")
+    lines.append("")
+
+    # Self/ctx argument
+    if is_instance and not is_static:
+        lines.append("    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)")
+
+    # Regular arguments
+    for arg in resolved_args:
+        if _arg_should_skip(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            continue
+        arg_type = _zend_arg_type_for_c_arg(arg)
+        in_name = f"in_{_snake_case(arg.name)}"
+        lines.append(f"    ZEND_ARG_TYPE_INFO(0, {in_name}, {arg_type}, 0)")
+
+    lines.append("ZEND_END_ARG_INFO()")
+    lines.append("")
+
+
+def _emit_php_function(
+    lines: list[str],
+    php_func_name: str,
+    c_func_name: str,
+    method: IRCMethod,
+    entity_name: str,
+    project_ir: IRProject,
+    *,
+    is_static: bool = False,
+    is_instance: bool = False,
+    entity=None,
+) -> None:
+    """Emit a PHP_FUNCTION implementation for a method."""
+    prefix = project_ir.prefix
+    prefix_upper = prefix.upper()
+    resolved_args = [_resolve_self_arg(entity_name, a) for a in method.arguments]
+    resolved_returns = [_resolve_self_arg(entity_name, r) for r in method.returns]
+    value_returns = [r for r in resolved_returns if r.enum_name != "status"]
+    has_status = _method_has_status_return(method)
+    has_error_arg = _method_has_error_arg(method)
+    buffer_outputs = [a for a in resolved_args if _arg_is_buffer_output(a)]
+
+    lines.append(f"PHP_FUNCTION({php_func_name}) {{")
+    lines.append("")
+
+    # Declare input variables
+    lines.append("    //")
+    lines.append("    // Declare input argument")
+    lines.append("    //")
+
+    if is_instance and not is_static:
+        lines.append("    zval *in_ctx = NULL;")
+
+    for arg in resolved_args:
+        if _arg_should_skip(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            continue
+        in_name = f"in_{_snake_case(arg.name)}"
+        if arg.interface_name or (arg.class_name and arg.class_name not in ("data", "buffer", "error")):
+            lines.append(f"    zval *{in_name} = NULL;")
+        elif arg.class_name == "data":
+            lines.append(f"    char *{in_name} = NULL;")
+            lines.append(f"    size_t {in_name}_len = 0;")
+        elif arg.enum_name:
+            lines.append(f"    zend_long {in_name} = 0;")
+        else:
+            type_name = (arg.type_name or "").lower()
+            if type_name in ("size", "integer", "unsigned"):
+                lines.append(f"    zend_long {in_name} = 0;")
+            elif type_name == "boolean":
+                lines.append(f"    zend_bool {in_name} = 0;")
+            elif type_name in ("string", "byte"):
+                lines.append(f"    char *{in_name} = NULL;")
+                lines.append(f"    size_t {in_name}_len = 0;")
+            else:
+                lines.append(f"    zend_long {in_name} = 0;")
+
+    lines.append("")
+
+    # Parse parameters
+    req_count = 0
+    if is_instance and not is_static:
+        req_count += 1
+    for arg in resolved_args:
+        if _arg_should_skip(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            continue
+        req_count += 1
+
+    lines.append("    //")
+    lines.append("    // Parse arguments")
+    lines.append("    //")
+    lines.append(f"    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, {req_count}, {req_count})")
+
+    if is_instance and not is_static:
+        lines.append("        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)")
+
+    for arg in resolved_args:
+        if _arg_should_skip(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            continue
+        in_name = f"in_{_snake_case(arg.name)}"
+        if arg.interface_name or (arg.class_name and arg.class_name not in ("data", "buffer", "error")):
+            lines.append(f"        Z_PARAM_RESOURCE_EX({in_name}, 1 /*check_null*/, 0 /*separate*/)")
+        elif arg.class_name == "data":
+            lines.append(f"        Z_PARAM_STRING_EX({in_name}, {in_name}_len, 1 /*check_null*/, 0 /*separate*/)")
+        elif arg.enum_name:
+            lines.append(f"        Z_PARAM_LONG({in_name})")
+        else:
+            type_name = (arg.type_name or "").lower()
+            if type_name in ("size", "integer", "unsigned"):
+                lines.append(f"        Z_PARAM_LONG({in_name})")
+            elif type_name == "boolean":
+                lines.append(f"        Z_PARAM_BOOL({in_name})")
+            elif type_name in ("string", "byte"):
+                lines.append(f"        Z_PARAM_STRING_EX({in_name}, {in_name}_len, 1 /*check_null*/, 0 /*separate*/)")
+            else:
+                lines.append(f"        Z_PARAM_LONG({in_name})")
+
+    lines.append("    ZEND_PARSE_PARAMETERS_END();")
+    lines.append("")
+
+    # Proxy call: fetch resources and convert data
+    lines.append("    //")
+    lines.append("    // Proxy call")
+    lines.append("    //")
+
+    entity_c_type = _entity_c_type(prefix, entity_name, project_ir)
+    entity_snake = _snake_case(entity_name)
+
+    if is_instance and not is_static:
+        res_name = _entity_res_name_func(prefix, entity_name, project_ir)
+        le_name = _entity_le_func(prefix, entity_name, project_ir)
+        lines.append(f"    {entity_c_type} *{entity_snake} = zend_fetch_resource_ex(in_ctx, {res_name}, {le_name});")
+
+    for arg in resolved_args:
+        if _arg_should_skip(arg):
+            continue
+        if _arg_is_buffer_output(arg):
+            continue
+        in_name = f"in_{_snake_case(arg.name)}"
+        local_name = _snake_case(arg.name)
+        if arg.interface_name:
+            iface_prefix = _resolve_project_prefix(project_ir, arg.project)
+            lines.append(f"    {iface_prefix}_impl_t *{local_name} = zend_fetch_resource_ex({in_name}, {iface_prefix}_impl_t_php_res_name(), le_{iface_prefix}_impl_t());")
+        elif arg.class_name and arg.class_name not in ("data", "buffer", "error"):
+            cls_prefix = _resolve_project_prefix(project_ir, arg.project)
+            if _is_impl_type(project_ir, arg.class_name):
+                lines.append(f"    {cls_prefix}_impl_t *{local_name} = zend_fetch_resource_ex({in_name}, {cls_prefix}_impl_t_php_res_name(), le_{cls_prefix}_impl_t());")
+            else:
+                cls_snake = _snake_case(arg.class_name)
+                lines.append(f"    {cls_prefix}_{cls_snake}_t *{local_name} = zend_fetch_resource_ex({in_name}, {cls_prefix}_{cls_snake}_t_php_res_name(), le_{cls_prefix}_{cls_snake}_t());")
+        elif arg.class_name == "data":
+            lines.append(f"    vsc_data_t {local_name} = vsc_data((const byte*){in_name}, {in_name}_len);")
+        elif arg.enum_name:
+            lines.append(f"    int {local_name} = {in_name};")
+        else:
+            type_name = (arg.type_name or "").lower()
+            if type_name in ("size", "integer", "unsigned"):
+                lines.append(f"    size_t {local_name} = {in_name};")
+            elif type_name == "boolean":
+                lines.append(f"    bool {local_name} = {in_name};")
+
+    # Error arg setup
+    if has_error_arg:
+        lines.append(f"    {prefix}_error_t error;")
+        lines.append(f"    {prefix}_error_reset(&error);")
+
+    lines.append("")
+
+    # Allocate output buffers
+    for buf_arg in buffer_outputs:
+        buf_name = _snake_case(buf_arg.name)
+        cap_expr = _buffer_capacity_expr(project_ir, entity_name, method, buf_arg, entity=entity)
+        lines.append("    //")
+        lines.append(f"    // Allocate output buffer for output '{buf_name}'")
+        lines.append("    //")
+        lines.append(f"    zend_string *out_{buf_name} = zend_string_alloc({cap_expr}, 0);")
+        lines.append(f"    vsc_buffer_t *{buf_name} = vsc_buffer_new();")
+        lines.append(f"    vsc_buffer_use({buf_name}, (byte *)ZSTR_VAL(out_{buf_name}), ZSTR_LEN(out_{buf_name}));")
+        lines.append("")
+
+    # Build the C function call
+    lines.append("    //")
+    lines.append("    // Call main function")
+    lines.append("    //")
+
+    call_args: list[str] = []
+    if is_instance and not is_static:
+        call_args.append(entity_snake)
+    for arg in resolved_args:
+        if arg.class_name == "error":
+            call_args.append("&error")
+            continue
+        if _arg_is_buffer_output(arg):
+            call_args.append(_snake_case(arg.name))
+            continue
+        if _arg_should_skip(arg):
+            continue
+        local_name = _snake_case(arg.name)
+        call_args.append(local_name)
+
+    call_str = ", ".join(call_args)
+
+    # Determine how to capture the return
+    if has_status and not has_error_arg:
+        lines.append(f"    {prefix}_status_t status ={c_func_name}({call_str});")
+    elif has_error_arg:
+        if value_returns:
+            ret = value_returns[0]
+            if ret.interface_name:
+                ret_prefix = _resolve_project_prefix(project_ir, ret.project)
+                lines.append(f"    {ret_prefix}_impl_t *{_snake_case(ret.name)} ={c_func_name}({call_str});")
+            elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
+                ret_prefix = _resolve_project_prefix(project_ir, ret.project)
+                if _is_impl_type(project_ir, ret.class_name):
+                    lines.append(f"    {ret_prefix}_impl_t *{_snake_case(ret.name)} ={c_func_name}({call_str});")
+                else:
+                    ret_snake = _snake_case(ret.class_name)
+                    lines.append(f"    {ret_prefix}_{ret_snake}_t *{_snake_case(ret.name)} ={c_func_name}({call_str});")
+            else:
+                lines.append(f"    {c_func_name}({call_str});")
+        else:
+            lines.append(f"    {c_func_name}({call_str});")
+    elif value_returns and not buffer_outputs:
+        ret = value_returns[0]
+        if ret.interface_name:
+            ret_prefix = _resolve_project_prefix(project_ir, ret.project)
+            ret_name = _snake_case(ret.name)
+            is_const = method.attrs.get("is_const") in {"1", "true"}
+            if is_const or ret.access == "readonly":
+                lines.append(f"    {ret_prefix}_impl_t *{ret_name} =(vscf_impl_t *){c_func_name}({call_str});")
+            else:
+                lines.append(f"    {ret_prefix}_impl_t *{ret_name} ={c_func_name}({call_str});")
+        elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
+            ret_prefix = _resolve_project_prefix(project_ir, ret.project)
+            ret_name = _snake_case(ret.name)
+            if _is_impl_type(project_ir, ret.class_name):
+                is_const = method.attrs.get("is_const") in {"1", "true"}
+                if is_const or ret.access == "readonly":
+                    lines.append(f"    {ret_prefix}_impl_t *{ret_name} =({ret_prefix}_impl_t *){c_func_name}({call_str});")
+                else:
+                    lines.append(f"    {ret_prefix}_impl_t *{ret_name} ={c_func_name}({call_str});")
+            else:
+                ret_snake = _snake_case(ret.class_name)
+                is_const = method.attrs.get("is_const") in {"1", "true"}
+                if is_const or ret.access == "readonly":
+                    lines.append(f"    {ret_prefix}_{ret_snake}_t *{ret_name} =({ret_prefix}_{ret_snake}_t *){c_func_name}({call_str});")
+                else:
+                    lines.append(f"    {ret_prefix}_{ret_snake}_t *{ret_name} ={c_func_name}({call_str});")
+        elif ret.class_name == "data":
+            lines.append(f"    vsc_data_t {_snake_case(ret.name)} ={c_func_name}({call_str});")
+        elif ret.enum_name:
+            lines.append(f"    int {_snake_case(ret.name)} ={c_func_name}({call_str});")
+        else:
+            type_name = (ret.type_name or "").lower()
+            if type_name in ("size", "integer", "unsigned"):
+                lines.append(f"    size_t res ={c_func_name}({call_str});")
+            elif type_name == "boolean":
+                lines.append(f"    bool res ={c_func_name}({call_str});")
+            else:
+                lines.append(f"    {c_func_name}({call_str});")
+    else:
+        lines.append(f"    {c_func_name}({call_str});")
+
+    lines.append("")
+
+    # Handle error
+    if has_status and not has_error_arg:
+        lines.append("    //")
+        lines.append("    // Handle error")
+        lines.append("    //")
+        lines.append(f"    {prefix_upper}_HANDLE_STATUS(status);")
+        lines.append("")
+
+    if has_error_arg:
+        lines.append("    //")
+        lines.append("    // Handle error")
+        lines.append("    //")
+        lines.append(f"    {prefix}_status_t status = {prefix}_error_status(&error);")
+        lines.append(f"    {prefix_upper}_HANDLE_STATUS(status);")
+        lines.append("")
+
+    # Write returned result
+    if buffer_outputs:
+        buf_arg = buffer_outputs[0]
+        buf_name = _snake_case(buf_arg.name)
+        lines.append("    //")
+        lines.append("    // Correct string length to the actual")
+        lines.append("    //")
+        lines.append(f"    ZSTR_LEN(out_{buf_name}) = vsc_buffer_len({buf_name});")
+        lines.append("")
+        lines.append("    //")
+        lines.append("    // Write returned result")
+        lines.append("    //")
+        if has_status or has_error_arg:
+            lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
+            lines.append(f"        RETVAL_STR(out_{buf_name});")
+            lines.append(f"        vsc_buffer_destroy(&{buf_name});")
+            lines.append("    }")
+            lines.append("    else {")
+            lines.append(f"        zend_string_free(out_{buf_name});")
+            lines.append("    }")
+        else:
+            lines.append(f"    RETVAL_STR(out_{buf_name});")
+    elif value_returns:
+        ret = value_returns[0]
+        lines.append("    //")
+        lines.append("    // Write returned result")
+        lines.append("    //")
+        if ret.interface_name:
+            ret_name = _snake_case(ret.name)
+            ret_prefix = _resolve_project_prefix(project_ir, ret.project)
+            # Shallow copy if readonly (accessor return)
+            is_const = method.attrs.get("is_const") in {"1", "true"}
+            if is_const or ret.access == "readonly":
+                lines.append(f"    {ret_name} = {ret_prefix}_impl_shallow_copy({ret_name});")
+            if has_error_arg:
+                lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
+                lines.append(f"        zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_impl_t());")
+                lines.append(f"        RETVAL_RES({ret_name}_res);")
+                lines.append("    }")
+            else:
+                lines.append(f"    zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_impl_t());")
+                lines.append(f"    RETVAL_RES({ret_name}_res);")
+        elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
+            ret_name = _snake_case(ret.name)
+            ret_prefix = _resolve_project_prefix(project_ir, ret.project)
+            is_const = method.attrs.get("is_const") in {"1", "true"}
+            if _is_impl_type(project_ir, ret.class_name):
+                if is_const or ret.access == "readonly":
+                    lines.append(f"    {ret_name} = {ret_prefix}_impl_shallow_copy({ret_name});")
+                if has_error_arg:
+                    lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
+                    lines.append(f"        zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_impl_t());")
+                    lines.append(f"        RETVAL_RES({ret_name}_res);")
+                    lines.append("    }")
+                else:
+                    lines.append(f"    zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_impl_t());")
+                    lines.append(f"    RETVAL_RES({ret_name}_res);")
+            else:
+                ret_snake = _snake_case(ret.class_name)
+                if is_const or ret.access == "readonly":
+                    lines.append(f"    {ret_name} = {ret_prefix}_{ret_snake}_shallow_copy({ret_name});")
+                if has_error_arg:
+                    lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
+                    lines.append(f"        zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_{ret_snake}_t());")
+                    lines.append(f"        RETVAL_RES({ret_name}_res);")
+                    lines.append("    }")
+                else:
+                    lines.append(f"    zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_{ret_snake}_t());")
+                    lines.append(f"    RETVAL_RES({ret_name}_res);")
+        elif ret.class_name == "data":
+            ret_name = _snake_case(ret.name)
+            lines.append(f"    RETVAL_STRINGL((const char *){ret_name}.bytes, {ret_name}.len);")
+        elif ret.enum_name:
+            ret_name = _snake_case(ret.name)
+            lines.append(f"    RETVAL_LONG({ret_name});")
+        else:
+            type_name = (ret.type_name or "").lower()
+            if type_name in ("size", "integer", "unsigned"):
+                lines.append("    RETVAL_LONG(res);")
+            elif type_name == "boolean":
+                lines.append("    RETVAL_BOOL(res);")
+
+    lines.append("}")
+    lines.append("")
+
+
+def _emit_new_function(
+    lines: list[str],
+    prefix: str,
+    entity_name: str,
+    project_ir: IRProject,
+) -> str:
+    """Emit new/delete PHP functions for an entity. Returns list of PHP_FE names."""
+    prefix_upper = prefix.upper()
+    entity_snake = _snake_case(entity_name)
+    is_impl = _is_impl_type(project_ir, entity_name)
+    c_type = _entity_c_type(prefix, entity_name, project_ir)
+    le_func = _entity_le_func(prefix, entity_name, project_ir)
+    new_php = f"{prefix}_{entity_snake}_new_php"
+    del_php = f"{prefix}_{entity_snake}_delete_php"
+
+    # new arginfo
+    lines.append("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(")
+    lines.append(f"        arginfo_{new_php},")
+    lines.append("        0 /*return_reference*/,")
+    lines.append("        0 /*required_num_args*/,")
+    lines.append("        IS_RESOURCE /*type*/,")
+    lines.append("        0 /*allow_null*/)")
+    lines.append("ZEND_END_ARG_INFO()")
+    lines.append("")
+
+    # new function
+    lines.append(f"PHP_FUNCTION({new_php}) {{")
+    lines.append(f"    {c_type} *{entity_snake} = {prefix}_{entity_snake}_new();")
+    lines.append(f"    zend_resource *{entity_snake}_res = zend_register_resource({entity_snake}, {le_func});")
+    lines.append(f"    RETVAL_RES({entity_snake}_res);")
+    lines.append("}")
+    lines.append("")
+
+    # delete arginfo
+    lines.append("//")
+    lines.append(f"// Wrap method: {prefix}_{entity_snake}_delete")
+    lines.append("//")
+    lines.append("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(")
+    lines.append(f"        arginfo_{del_php},")
+    lines.append("        0 /*return_reference*/,")
+    lines.append("        1 /*required_num_args*/,")
+    lines.append("        IS_VOID /*type*/,")
+    lines.append("        0 /*allow_null*/)")
+    lines.append("")
+    lines.append("        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)")
+    lines.append("ZEND_END_ARG_INFO()")
+    lines.append("")
+
+    # delete function
+    res_name = _entity_res_name_func(prefix, entity_name, project_ir)
+    lines.append(f"PHP_FUNCTION({del_php}) {{")
+    lines.append("    //")
+    lines.append("    // Declare input arguments")
+    lines.append("    //")
+    lines.append("    zval *in_ctx = NULL;")
+    lines.append("")
+    lines.append("    //")
+    lines.append("    // Parse arguments")
+    lines.append("    //")
+    lines.append("    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)")
+    lines.append("        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)")
+    lines.append("    ZEND_PARSE_PARAMETERS_END();")
+    lines.append("")
+    lines.append("    //")
+    lines.append("    // Fetch for type checking and then release")
+    lines.append("    //")
+    lines.append(f"    {c_type} *{entity_snake} = zend_fetch_resource_ex(in_ctx, {res_name}, {le_func});")
+    lines.append("    zend_list_close(Z_RES_P(in_ctx));")
+    lines.append("    RETURN_TRUE;")
+    lines.append("}")
+    lines.append("")
+
+    return (new_php, del_php)
+
+
+def _emit_dependency_setter_c(
+    lines: list[str],
+    prefix: str,
+    entity_name: str,
+    dep: IRDependency,
+    project_ir: IRProject,
+) -> str:
+    """Emit a use_{dep} PHP function. Returns the PHP function name."""
+    prefix_upper = prefix.upper()
+    entity_snake = _snake_case(entity_name)
+    dep_snake = _snake_case(dep.name)
+    php_func = f"{prefix}_{entity_snake}_use_{dep_snake}_php"
+    c_func = f"{prefix}_{entity_snake}_use_{dep_snake}"
+
+    c_type = _entity_c_type(prefix, entity_name, project_ir)
+    res_name = _entity_res_name_func(prefix, entity_name, project_ir)
+    le_func = _entity_le_func(prefix, entity_name, project_ir)
+
+    lines.append("//")
+    lines.append(f"// Wrap method: {c_func}")
+    lines.append("//")
+    lines.append("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(")
+    lines.append(f"    arginfo_{php_func},")
+    lines.append("    0 /*return_reference*/,")
+    lines.append("    2 /*required_num_args*/,")
+    lines.append("    IS_VOID /*type*/,")
+    lines.append("    0 /*allow_null*/)")
+    lines.append("")
+    lines.append("")
+    lines.append("    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)")
+    lines.append(f"    ZEND_ARG_TYPE_INFO(0, in_{dep_snake}, IS_RESOURCE, 0)")
+    lines.append("ZEND_END_ARG_INFO()")
+    lines.append("")
+    lines.append(f"PHP_FUNCTION({php_func}) {{")
+    lines.append("")
+    lines.append("    //")
+    lines.append("    // Declare input argument")
+    lines.append("    //")
+    lines.append("    zval *in_ctx = NULL;")
+    lines.append(f"    zval *in_{dep_snake} = NULL;")
+    lines.append("")
+    lines.append("    //")
+    lines.append("    // Parse arguments")
+    lines.append("    //")
+    lines.append("    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)")
+    lines.append("        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)")
+    lines.append(f"        Z_PARAM_RESOURCE_EX(in_{dep_snake}, 1 /*check_null*/, 0 /*separate*/)")
+    lines.append("    ZEND_PARSE_PARAMETERS_END();")
+    lines.append("")
+    lines.append("    //")
+    lines.append("    // Proxy call")
+    lines.append("    //")
+    lines.append(f"    {c_type} *{entity_snake} = zend_fetch_resource_ex(in_ctx, {res_name}, {le_func});")
+
+    # Determine dependency type
+    dep_prefix = _resolve_project_prefix(project_ir, dep.attrs.get("project"))
+    if dep.type_kind == "interface":
+        lines.append(f"    {dep_prefix}_impl_t *{dep_snake} = zend_fetch_resource_ex(in_{dep_snake}, {dep_prefix}_impl_t_php_res_name(), le_{dep_prefix}_impl_t());")
+    elif dep.type_kind in ("class", "impl"):
+        if _is_impl_type(project_ir, dep.type_name):
+            lines.append(f"    {dep_prefix}_impl_t *{dep_snake} = zend_fetch_resource_ex(in_{dep_snake}, {dep_prefix}_impl_t_php_res_name(), le_{dep_prefix}_impl_t());")
+        else:
+            dep_type_snake = _snake_case(dep.type_name)
+            lines.append(f"    {dep_prefix}_{dep_type_snake}_t *{dep_snake} = zend_fetch_resource_ex(in_{dep_snake}, {dep_prefix}_{dep_type_snake}_t_php_res_name(), le_{dep_prefix}_{dep_type_snake}_t());")
+    else:
+        lines.append(f"    {dep_prefix}_impl_t *{dep_snake} = zend_fetch_resource_ex(in_{dep_snake}, {dep_prefix}_impl_t_php_res_name(), le_{dep_prefix}_impl_t());")
+
+    lines.append("")
+    lines.append("    //")
+    lines.append("    // Call main function")
+    lines.append("    //")
+    lines.append(f"    {c_func}({entity_snake}, {dep_snake});")
+    lines.append("}")
+    lines.append("")
+
+    return php_func
+
+
 def generate_c_extension_source(project_ir: IRProject) -> str:
     """Generate the C extension .c source file from IR.
 
     Produces the complete C extension with:
     - License, includes, status handler
-    - Resource type registrations
-    - PHP function implementations wrapping C calls
+    - Resource name constants and accessor functions
+    - Resource type variables and accessor functions
+    - MINIT/MSHUTDOWN declarations
+    - PHP function implementations (new, delete, use_*, methods)
     - Function entry table (PHP_FE)
     - Module definition
+    - Resource destructors
+    - MINIT function (register resources + exception class)
     """
     prefix = project_ir.prefix
     prefix_upper = prefix.upper()
@@ -1093,6 +1838,322 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append("}")
     lines.append("")
 
+    # --- Constants: resource name strings ---
+    lines.append("//")
+    lines.append("// Constants")
+    lines.append("//")
+    ver = project_ir.version or {}
+    ver_str = f"{ver.get('major', '0')}.{ver.get('minor', '0')}.{ver.get('patch', '0')}"
+    lines.append(f'const char {prefix_upper}_{project_name.upper()}_PHP_VERSION[] = "{ver_str}";')
+    lines.append(f'const char {prefix_upper}_{project_name.upper()}_PHP_EXTNAME[] = "{prefix}_{project_name}_php";')
+    lines.append("")
+
+    # impl_t resource name
+    lines.append(f'static const char {prefix_upper}_IMPL_T_PHP_RES_NAME[] = "{prefix}_impl_t";')
+
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        entity_upper = entity_snake.upper()
+        lines.append(f'static const char {prefix_upper}_{entity_upper}_T_PHP_RES_NAME[] = "{prefix}_{entity_snake}_t";')
+
+    lines.append("")
+
+    # Resource name accessor functions
+    lines.append("//")
+    lines.append("// Constants func wrapping")
+    lines.append("//")
+    lines.append(f"{prefix_upper}_PHP_PUBLIC const char* {prefix}_impl_t_php_res_name(void) {{")
+    lines.append(f"    return {prefix_upper}_IMPL_T_PHP_RES_NAME;")
+    lines.append("}")
+    lines.append("")
+
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        entity_upper = entity_snake.upper()
+        lines.append(f"{prefix_upper}_PHP_PUBLIC const char* {prefix}_{entity_snake}_t_php_res_name(void) {{")
+        lines.append(f"    return {prefix_upper}_{entity_upper}_T_PHP_RES_NAME;")
+        lines.append("}")
+        lines.append("")
+
+    # --- Registered resources (int variables) ---
+    lines.append("//")
+    lines.append("// Registered resources")
+    lines.append("//")
+    lines.append(f"int LE_{prefix_upper}_IMPL_T;")
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        entity_upper = entity_snake.upper()
+        lines.append(f"int LE_{prefix_upper}_{entity_upper}_T;")
+    lines.append("")
+
+    # Resource accessor functions
+    lines.append("//")
+    lines.append("// Registered resources func wrapping")
+    lines.append("//")
+    lines.append(f"{prefix_upper}_PHP_PUBLIC int le_{prefix}_impl_t(void) {{")
+    lines.append(f"    return LE_{prefix_upper}_IMPL_T;")
+    lines.append("}")
+    lines.append("")
+
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        entity_upper = entity_snake.upper()
+        lines.append(f"{prefix_upper}_PHP_PUBLIC int le_{prefix}_{entity_snake}_t(void) {{")
+        lines.append(f"    return LE_{prefix_upper}_{entity_upper}_T;")
+        lines.append("}")
+        lines.append("")
+
+    # MINIT/MSHUTDOWN declarations
+    lines.append("//")
+    lines.append("// Extension init functions declaration")
+    lines.append("//")
+    lines.append(f"PHP_MINIT_FUNCTION({prefix}_{project_name}_php);")
+    lines.append(f"PHP_MSHUTDOWN_FUNCTION({prefix}_{project_name}_php);")
+    lines.append("")
+
+    # --- Function implementations ---
+    lines.append("//")
+    lines.append("// Functions wrapping")
+    lines.append("//")
+
+    # Track all php function names for the function table
+    all_php_funcs: list[str] = []
+
+    # 1. vscf_impl_tag function (only for projects that have implementations)
+    if project_ir.implementations:
+        impl_tag_php = f"{prefix}_impl_tag_php"
+        all_php_funcs.append(impl_tag_php)
+
+        lines.append("//")
+        lines.append(f"// Wrap method: {prefix}_impl_tag")
+        lines.append("//")
+        lines.append("ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(")
+        lines.append(f"    arginfo_{impl_tag_php},")
+        lines.append("    0 /*return_reference*/,")
+        lines.append("    1 /*required_num_args*/,")
+        lines.append("    IS_LONG /*type*/,")
+        lines.append("    0 /*allow_null*/)")
+        lines.append("")
+        lines.append("")
+        lines.append("    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)")
+        lines.append("ZEND_END_ARG_INFO()")
+        lines.append("")
+        lines.append(f"PHP_FUNCTION({impl_tag_php}) {{")
+        lines.append("")
+        lines.append("    //")
+        lines.append("    // Declare input argument")
+        lines.append("    //")
+        lines.append("    zval *in_ctx = NULL;")
+        lines.append("")
+        lines.append("    //")
+        lines.append("    // Parse arguments")
+        lines.append("    //")
+        lines.append("    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)")
+        lines.append("        Z_PARAM_RESOURCE_EX(in_ctx, 1 /*check_null*/, 0 /*separate*/)")
+        lines.append("    ZEND_PARSE_PARAMETERS_END();")
+        lines.append("")
+        lines.append("    //")
+        lines.append("    // Proxy call")
+        lines.append("    //")
+        lines.append(f"    {prefix}_impl_t *ctx = zend_fetch_resource_ex(in_ctx, {prefix}_impl_t_php_res_name(), le_{prefix}_impl_t());")
+        lines.append("")
+        lines.append("    //")
+        lines.append("    // Call main function")
+        lines.append("    //")
+        lines.append(f"    int tag ={prefix}_impl_tag(ctx);")
+        lines.append("")
+        lines.append("    //")
+        lines.append("    // Write returned result")
+        lines.append("    //")
+        lines.append("    RETVAL_LONG(tag);")
+        lines.append("}")
+        lines.append("")
+
+    # 2. Static class methods (classes with context="none")
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in {"private", "internal"}:
+            continue
+        if cls.name == "error":
+            continue
+        if not _is_static_class(cls):
+            continue
+
+        for method in cls.methods:
+            if not _method_should_wrap(method):
+                continue
+            entity_snake = _snake_case(cls.name)
+            php_func = f"{prefix}_{entity_snake}_{_snake_case(method.name)}_php"
+            c_func = _c_func_name(prefix, cls.name, method.name)
+            all_php_funcs.append(php_func)
+
+            lines.append("//")
+            lines.append(f"// Wrap method: {c_func}")
+            lines.append("//")
+            _emit_arginfo(lines, php_func, method, cls.name, project_ir,
+                         is_static=True, is_instance=False)
+            _emit_php_function(lines, php_func, c_func, method, cls.name,
+                              project_ir, is_static=True, is_instance=False,
+                              entity=cls)
+
+    # 3. Non-static classes (with context)
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in {"private", "internal"}:
+            continue
+        if cls.name == "error":
+            continue
+        if _is_static_class(cls):
+            continue
+
+        entity_snake = _snake_case(cls.name)
+
+        # new/delete
+        lines.append("//")
+        lines.append(f"// Wrap method: {prefix}_{entity_snake}_new")
+        lines.append("//")
+        new_php, del_php = _emit_new_function(lines, prefix, cls.name, project_ir)
+        all_php_funcs.extend([new_php, del_php])
+
+        # methods
+        for method in cls.methods:
+            if not _method_should_wrap(method):
+                continue
+            is_static = method.attrs.get("is_static") in {"1", "true"}
+            php_func = f"{prefix}_{entity_snake}_{_snake_case(method.name)}_php"
+            c_func = _c_func_name(prefix, cls.name, method.name)
+            all_php_funcs.append(php_func)
+
+            lines.append("//")
+            lines.append(f"// Wrap method: {c_func}")
+            lines.append("//")
+            _emit_arginfo(lines, php_func, method, cls.name, project_ir,
+                         is_static=is_static, is_instance=True)
+            _emit_php_function(lines, php_func, c_func, method, cls.name,
+                              project_ir, is_static=is_static, is_instance=True,
+                              entity=cls)
+
+        # dependency setters
+        for dep in cls.dependencies:
+            dep_func = _emit_dependency_setter_c(lines, prefix, cls.name, dep, project_ir)
+            all_php_funcs.append(dep_func)
+
+    # 4. Implementations
+    for impl in project_ir.implementations:
+        if impl.attrs.get("scope") in {"private", "internal"}:
+            continue
+
+        entity_snake = _snake_case(impl.name)
+
+        # new/delete
+        lines.append("//")
+        lines.append(f"// Wrap method: {prefix}_{entity_snake}_new")
+        lines.append("//")
+        new_php, del_php = _emit_new_function(lines, prefix, impl.name, project_ir)
+        all_php_funcs.extend([new_php, del_php])
+
+        # Collect all methods (interface + own)
+        method_pairs = _collect_methods_for_entity(
+            project_ir, impl.name, impl, is_implementation=True,
+        )
+        for method, is_static in method_pairs:
+            php_func = f"{prefix}_{entity_snake}_{_snake_case(method.name)}_php"
+            c_func = _c_func_name(prefix, impl.name, method.name)
+            all_php_funcs.append(php_func)
+
+            lines.append("//")
+            lines.append(f"// Wrap method: {c_func}")
+            lines.append("//")
+            _emit_arginfo(lines, php_func, method, impl.name, project_ir,
+                         is_static=is_static, is_instance=True)
+            _emit_php_function(lines, php_func, c_func, method, impl.name,
+                              project_ir, is_static=is_static, is_instance=True,
+                              entity=impl)
+
+        # dependency setters
+        for dep in impl.dependencies:
+            dep_func = _emit_dependency_setter_c(lines, prefix, impl.name, dep, project_ir)
+            all_php_funcs.append(dep_func)
+
+    # --- Function entry table ---
+    lines.append(f"static zend_function_entry {prefix}_{project_name}_php_functions[] = {{")
+    for func_name in all_php_funcs:
+        lines.append(f"    PHP_FE({func_name}, arginfo_{func_name})")
+    lines.append("    PHP_FE_END")
+    lines.append("};")
+    lines.append("")
+
+    # --- Module entry ---
+    lines.append("//")
+    lines.append("// Extension module definition")
+    lines.append("//")
+    lines.append(f"zend_module_entry {prefix}_{project_name}_php_module_entry = {{")
+    lines.append("#if ZEND_MODULE_API_NO >= 20010901")
+    lines.append("    STANDARD_MODULE_HEADER,")
+    lines.append("#endif")
+    lines.append(f"    {prefix_upper}_{project_name.upper()}_PHP_EXTNAME,")
+    lines.append(f"    {prefix}_{project_name}_php_functions,")
+    lines.append(f"    PHP_MINIT({prefix}_{project_name}_php),")
+    lines.append(f"    PHP_MSHUTDOWN({prefix}_{project_name}_php),")
+    lines.append("    NULL,")
+    lines.append("    NULL,")
+    lines.append("    NULL,")
+    lines.append("#if ZEND_MODULE_API_NO >= 20010901")
+    lines.append(f"    {prefix_upper}_{project_name.upper()}_PHP_VERSION,")
+    lines.append("#endif")
+    lines.append("    STANDARD_MODULE_PROPERTIES")
+    lines.append("};")
+    lines.append("")
+    lines.append(f"ZEND_GET_MODULE({prefix}_{project_name}_php)")
+    lines.append("")
+
+    # --- Resource destructors ---
+    lines.append("//")
+    lines.append("// Extension init functions definition")
+    lines.append("//")
+
+    # impl_t destructor
+    lines.append(f"static void {prefix}_impl_dtor_php(zend_resource *rsrc) {{")
+    lines.append(f"    {prefix}_impl_delete(({prefix}_impl_t *)rsrc->ptr);")
+    lines.append("}")
+
+    for ename, ekind in all_entities:
+        if _is_impl_type(project_ir, ename):
+            continue  # implementations use impl_t destructor
+        entity_snake = _snake_case(ename)
+        lines.append(f"static void {prefix}_{entity_snake}_dtor_php(zend_resource *rsrc) {{")
+        lines.append(f"    {prefix}_{entity_snake}_delete(({prefix}_{entity_snake}_t *)rsrc->ptr);")
+        lines.append("}")
+
+    # MINIT function
+    lines.append(f"PHP_MINIT_FUNCTION({prefix}_{project_name}_php) {{")
+
+    # Register exception class
+    project_pascal = _pascal_case(project_name)
+    lines.append(f"    zend_class_entry {prefix}_ce;")
+    lines.append(f'    INIT_CLASS_ENTRY({prefix}_ce, "{project_pascal}Exception", NULL);')
+    lines.append(f"    {prefix}_exception_ce = zend_register_internal_class_ex(&{prefix}_ce, zend_exception_get_default());")
+
+    # Register resource types
+    lines.append(f"    LE_{prefix_upper}_IMPL_T = zend_register_list_destructors_ex({prefix}_impl_dtor_php, NULL, {prefix}_impl_t_php_res_name(), module_number);")
+
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        entity_upper = entity_snake.upper()
+        if _is_impl_type(project_ir, ename):
+            # Implementations share the impl_t destructor but get their own resource slot
+            # Actually, looking at legacy, implementations don't get separate resource types --
+            # they all use LE_VSCF_IMPL_T. Only classes get their own.
+            continue
+        lines.append(f"    LE_{prefix_upper}_{entity_upper}_T = zend_register_list_destructors_ex({prefix}_{entity_snake}_dtor_php, NULL, {prefix}_{entity_snake}_t_php_res_name(), module_number);")
+
+    lines.append("    return SUCCESS;")
+    lines.append("}")
+
+    # MSHUTDOWN function
+    lines.append(f"PHP_MSHUTDOWN_FUNCTION({prefix}_{project_name}_php) {{")
+    lines.append("    return SUCCESS;")
+    lines.append("}")
+    lines.append("")
+
     return "\n".join(lines)
 
 
@@ -1117,51 +2178,65 @@ def generate_c_extension_header(project_ir: IRProject) -> str:
 
     # Visibility macros
     lines.append(f"#if defined(_WIN32) || defined(__CYGWIN__)")
-    lines.append(f"# if {prefix_upper}_PHP_SHARED_LIBRARY")
-    lines.append(f"# if defined({prefix_upper}_PHP_INTERNAL_BUILD)")
-    lines.append(f"# ifdef __GNUC__")
-    lines.append(f"# define {prefix_upper}_PHP_PUBLIC __attribute__ ((dllexport))")
-    lines.append(f"# else")
-    lines.append(f"# define {prefix_upper}_PHP_PUBLIC __declspec(dllexport)")
-    lines.append(f"# endif")
-    lines.append(f"# else")
-    lines.append(f"# ifdef __GNUC__")
-    lines.append(f"# define {prefix_upper}_PHP_PUBLIC __attribute__ ((dllimport))")
-    lines.append(f"# else")
-    lines.append(f"# define {prefix_upper}_PHP_PUBLIC __declspec(dllimport)")
-    lines.append(f"# endif")
-    lines.append(f"# endif")
-    lines.append(f"# else")
-    lines.append(f"# define {prefix_upper}_PHP_PUBLIC")
-    lines.append(f"# endif")
-    lines.append(f"# define {prefix_upper}_PHP_PRIVATE")
+    lines.append(f"#   if VSCF_PHP_SHARED_LIBRARY")
+    lines.append(f"#       if defined({prefix_upper}_PHP_INTERNAL_BUILD)")
+    lines.append(f"#           ifdef __GNUC__")
+    lines.append(f"#               define {prefix_upper}_PHP_PUBLIC __attribute__ ((dllexport))")
+    lines.append(f"#           else")
+    lines.append(f"#               define {prefix_upper}_PHP_PUBLIC __declspec(dllexport)")
+    lines.append(f"#           endif")
+    lines.append(f"#       else")
+    lines.append(f"#           ifdef __GNUC__")
+    lines.append(f"#               define {prefix_upper}_PHP_PUBLIC __attribute__ ((dllimport))")
+    lines.append(f"#           else")
+    lines.append(f"#               define {prefix_upper}_PHP_PUBLIC __declspec(dllimport)")
+    lines.append(f"#           endif")
+    lines.append(f"#       endif")
+    lines.append(f"#   else")
+    lines.append(f"#       define {prefix_upper}_PHP_PUBLIC")
+    lines.append(f"#   endif")
+    lines.append(f"#   define {prefix_upper}_PHP_PRIVATE")
     lines.append(f"#else")
-    lines.append(f"# if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)")
-    lines.append(f"# define {prefix_upper}_PHP_PUBLIC __attribute__ ((visibility (\"default\")))")
-    lines.append(f"# define {prefix_upper}_PHP_PRIVATE __attribute__ ((visibility (\"hidden\")))")
-    lines.append(f"# else")
-    lines.append(f"# define {prefix_upper}_PHP_PRIVATE")
-    lines.append(f"# endif")
+    lines.append(f"#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)")
+    lines.append(f"#       define {prefix_upper}_PHP_PUBLIC __attribute__ ((visibility (\"default\")))")
+    lines.append(f"#       define {prefix_upper}_PHP_PRIVATE __attribute__ ((visibility (\"hidden\")))")
+    lines.append(f"#   else")
+    lines.append(f"#       define {prefix_upper}_PHP_PRIVATE")
+    lines.append(f"#   endif")
     lines.append(f"#endif")
     lines.append("")
 
-    # Resource name declarations for each class/impl
+    # Resource name function declarations
     lines.append("//")
     lines.append("// Constants")
     lines.append("//")
 
-    all_entities = _collect_all_wrapped_entities(project_ir)
-    for ename, ekind in all_entities:
-        entity_snake = _snake_case(ename)
-        if ekind in ("class", "implementation"):
-            lines.append(f"{prefix_upper}_PHP_PUBLIC const char*")
-            lines.append(f"{prefix}_{entity_snake}_t_php_res_name(void);")
-            lines.append("")
-
-    # Also declare impl_t resource name
+    # impl_t first
     lines.append(f"{prefix_upper}_PHP_PUBLIC const char*")
     lines.append(f"{prefix}_impl_t_php_res_name(void);")
     lines.append("")
+
+    all_entities = _collect_all_wrapped_entities(project_ir)
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        lines.append(f"{prefix_upper}_PHP_PUBLIC const char*")
+        lines.append(f"{prefix}_{entity_snake}_t_php_res_name(void);")
+        lines.append("")
+
+    # Registered resources function declarations
+    lines.append("//")
+    lines.append("// Registered resources")
+    lines.append("//")
+
+    lines.append(f"{prefix_upper}_PHP_PUBLIC int")
+    lines.append(f"le_{prefix}_impl_t(void);")
+    lines.append("")
+
+    for ename, ekind in all_entities:
+        entity_snake = _snake_case(ename)
+        lines.append(f"{prefix_upper}_PHP_PUBLIC int")
+        lines.append(f"le_{prefix}_{entity_snake}_t(void);")
+        lines.append("")
 
     lines.append("#ifdef __cplusplus")
     lines.append("}")

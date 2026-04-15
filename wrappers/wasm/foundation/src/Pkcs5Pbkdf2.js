@@ -34,6 +34,9 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+
+const precondition = require('./precondition');
+
 const initPkcs5Pbkdf2 = (Module, modules) => {
     class Pkcs5Pbkdf2 {
 

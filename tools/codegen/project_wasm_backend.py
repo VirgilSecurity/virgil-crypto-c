@@ -780,7 +780,7 @@ def _generate_error_js(project_ir: IRProject) -> str:
 
     lines: list[str] = [_LICENSE_HEADER, ""]
     lines.append(f"const init{error_name} = (Module, modules) => {{")
-    lines.append(f"    class {error_name} {{")
+    lines.append(f"    class {error_name} extends Error {{")
     lines.append("")
     lines.append("        constructor(message) {")
     lines.append("            super(message);")
@@ -1008,6 +1008,9 @@ def _generate_class_js(
     prefix = _c_entity_prefix(project_ir, entity_name)
 
     lines: list[str] = [_LICENSE_HEADER, ""]
+    lines.append("")
+    lines.append("const precondition = require('./precondition');")
+    lines.append("")
     lines.append(f"const init{class_name} = (Module, modules) => {{")
     lines.append(f"    class {class_name} {{")
     lines.append("")

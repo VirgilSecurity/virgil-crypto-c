@@ -35,7 +35,7 @@
  */
 
 const initRatchetError = (Module, modules) => {
-    class RatchetError {
+    class RatchetError extends Error {
 
         constructor(message) {
             super(message);
