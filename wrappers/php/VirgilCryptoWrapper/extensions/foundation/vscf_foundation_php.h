@@ -83,9 +83,6 @@ VSCF_PHP_PUBLIC const char*
 vscf_aes256_gcm_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
-vscf_alg_factory_t_php_res_name(void);
-
-VSCF_PHP_PUBLIC const char*
 vscf_alg_info_der_deserializer_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -96,9 +93,6 @@ vscf_asn1rd_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_asn1wr_t_php_res_name(void);
-
-VSCF_PHP_PUBLIC const char*
-vscf_base64_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_brainkey_client_t_php_res_name(void);
@@ -194,9 +188,6 @@ VSCF_PHP_PUBLIC const char*
 vscf_kdf2_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
-vscf_key_alg_factory_t_php_res_name(void);
-
-VSCF_PHP_PUBLIC const char*
 vscf_key_asn1_deserializer_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -233,9 +224,6 @@ VSCF_PHP_PUBLIC const char*
 vscf_message_info_footer_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
-vscf_oid_t_php_res_name(void);
-
-VSCF_PHP_PUBLIC const char*
 vscf_padding_params_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -246,9 +234,6 @@ vscf_password_recipient_info_list_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_pbe_alg_info_t_php_res_name(void);
-
-VSCF_PHP_PUBLIC const char*
-vscf_pem_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
 vscf_pkcs5_pbes2_t_php_res_name(void);
@@ -335,9 +320,6 @@ VSCF_PHP_PUBLIC int
 le_vscf_aes256_gcm_t(void);
 
 VSCF_PHP_PUBLIC int
-le_vscf_alg_factory_t(void);
-
-VSCF_PHP_PUBLIC int
 le_vscf_alg_info_der_deserializer_t(void);
 
 VSCF_PHP_PUBLIC int
@@ -348,9 +330,6 @@ le_vscf_asn1rd_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_asn1wr_t(void);
-
-VSCF_PHP_PUBLIC int
-le_vscf_base64_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_brainkey_client_t(void);
@@ -446,9 +425,6 @@ VSCF_PHP_PUBLIC int
 le_vscf_kdf2_t(void);
 
 VSCF_PHP_PUBLIC int
-le_vscf_key_alg_factory_t(void);
-
-VSCF_PHP_PUBLIC int
 le_vscf_key_asn1_deserializer_t(void);
 
 VSCF_PHP_PUBLIC int
@@ -485,9 +461,6 @@ VSCF_PHP_PUBLIC int
 le_vscf_message_info_footer_t(void);
 
 VSCF_PHP_PUBLIC int
-le_vscf_oid_t(void);
-
-VSCF_PHP_PUBLIC int
 le_vscf_padding_params_t(void);
 
 VSCF_PHP_PUBLIC int
@@ -498,9 +471,6 @@ le_vscf_password_recipient_info_list_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_pbe_alg_info_t(void);
-
-VSCF_PHP_PUBLIC int
-le_vscf_pem_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_pkcs5_pbes2_t(void);

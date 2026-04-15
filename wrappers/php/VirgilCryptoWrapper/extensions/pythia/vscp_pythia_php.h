@@ -43,41 +43,44 @@ extern "C" {
 
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-# if VSCP_PHP_SHARED_LIBRARY
-# if defined(VSCP_PHP_INTERNAL_BUILD)
-# ifdef __GNUC__
-# define VSCP_PHP_PUBLIC __attribute__ ((dllexport))
-# else
-# define VSCP_PHP_PUBLIC __declspec(dllexport)
-# endif
-# else
-# ifdef __GNUC__
-# define VSCP_PHP_PUBLIC __attribute__ ((dllimport))
-# else
-# define VSCP_PHP_PUBLIC __declspec(dllimport)
-# endif
-# endif
-# else
-# define VSCP_PHP_PUBLIC
-# endif
-# define VSCP_PHP_PRIVATE
+#   if VSCF_PHP_SHARED_LIBRARY
+#       if defined(VSCP_PHP_INTERNAL_BUILD)
+#           ifdef __GNUC__
+#               define VSCP_PHP_PUBLIC __attribute__ ((dllexport))
+#           else
+#               define VSCP_PHP_PUBLIC __declspec(dllexport)
+#           endif
+#       else
+#           ifdef __GNUC__
+#               define VSCP_PHP_PUBLIC __attribute__ ((dllimport))
+#           else
+#               define VSCP_PHP_PUBLIC __declspec(dllimport)
+#           endif
+#       endif
+#   else
+#       define VSCP_PHP_PUBLIC
+#   endif
+#   define VSCP_PHP_PRIVATE
 #else
-# if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
-# define VSCP_PHP_PUBLIC __attribute__ ((visibility ("default")))
-# define VSCP_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
-# else
-# define VSCP_PHP_PRIVATE
-# endif
+#   if (defined(__GNUC__) && __GNUC__ >= 4) || defined(__INTEL_COMPILER) || defined(__clang__)
+#       define VSCP_PHP_PUBLIC __attribute__ ((visibility ("default")))
+#       define VSCP_PHP_PRIVATE __attribute__ ((visibility ("hidden")))
+#   else
+#       define VSCP_PHP_PRIVATE
+#   endif
 #endif
 
 //
 // Constants
 //
 VSCP_PHP_PUBLIC const char*
-vscp_pythia_t_php_res_name(void);
-
-VSCP_PHP_PUBLIC const char*
 vscp_impl_t_php_res_name(void);
+
+//
+// Registered resources
+//
+VSCP_PHP_PUBLIC int
+le_vscp_impl_t(void);
 
 #ifdef __cplusplus
 }

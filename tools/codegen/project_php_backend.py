@@ -196,7 +196,28 @@ def _method_should_wrap(method: IRCMethod) -> bool:
     scope = method.attrs.get("scope", "public")
     decl = method.declaration or method.attrs.get("declaration", "public")
     vis = method.visibility or method.attrs.get("visibility", "public")
+    defn = method.definition or method.attrs.get("definition")
+    # Methods with explicit private/internal definition are not wrapped.
+    if defn in ("private", "internal"):
+        return False
     return scope == "public" and decl == "public" and vis == "public"
+
+
+def _impl_own_method_should_wrap(method: IRCMethod) -> bool:
+    """Check if an implementation's own method (not from interface) should be wrapped.
+
+    Implementation-specific methods that lack explicit definition/declaration
+    are considered internal helpers and should not be wrapped.
+    """
+    # If method has no definition and no declaration explicitly set,
+    # and has no scope explicitly set, treat as internal.
+    has_explicit_decl = method.declaration is not None or "declaration" in method.attrs
+    has_explicit_def = method.definition is not None or "definition" in method.attrs
+    has_explicit_scope = "scope" in method.attrs
+    # Must have at least one explicit public marker to be wrapped
+    if not has_explicit_decl and not has_explicit_def and not has_explicit_scope:
+        return False
+    return _method_should_wrap(method)
 
 
 def _arg_should_skip(arg: IRCArgument) -> bool:
@@ -1126,11 +1147,17 @@ def _buffer_capacity_expr(
     method: IRCMethod,
     buf_arg: IRCArgument,
     entity=None,
+    *,
+    instance_var: str = "",
 ) -> str:
     """Build a C expression for the capacity of a buffer output argument.
 
     Uses the length_attrs metadata from the IR to build the correct
     capacity computation expression (method call, constant, or argument).
+
+    ``instance_var`` is the C variable name for the entity instance
+    (e.g., ``"sha256"``). When set, it's prepended as the first argument
+    to instance method length calls.
     """
     prefix = project_ir.prefix
     entity_snake = _snake_case(entity_name)
@@ -1143,6 +1170,9 @@ def _buffer_capacity_expr(
         len_func = f"{prefix}_{entity_snake}_{_snake_case(method_name)}"
         # Build proxy arguments
         proxy_args: list[str] = []
+        # If this is an instance method, self goes first
+        if instance_var:
+            proxy_args.append(instance_var)
         idx = 0
         while f"proxy_{idx}_to" in la:
             cast = la.get(f"proxy_{idx}_cast")
@@ -1167,7 +1197,11 @@ def _buffer_capacity_expr(
         return f"{prefix}_{entity_snake}_{_snake_case(const_name).upper()}"
 
     if "argument" in la:
-        return _snake_case(la["argument"])
+        arg_name = _snake_case(la["argument"])
+        cast = la.get("cast")
+        if cast == "data_length":
+            return f"{arg_name}.len"
+        return arg_name
 
     return "0"
 
@@ -1202,7 +1236,8 @@ def _collect_methods_for_entity(
                 result.append((method, is_static))
 
     for method in entity.methods:
-        if not _method_should_wrap(method):
+        checker = _impl_own_method_should_wrap if is_implementation else _method_should_wrap
+        if not checker(method):
             continue
         if method.name in seen:
             continue
@@ -1264,6 +1299,34 @@ def _emit_arginfo(
     lines.append("")
 
 
+def _ret_local_name(ret: IRCArgument, entity_snake: str = "") -> str:
+    """Derive a safe C local variable name for a return argument.
+
+    Uses the interface/class name when available (matching legacy),
+    falls back to ret.name but avoids C keywords like "return".
+    ``entity_snake`` is the entity's snake_case name to avoid conflicts.
+    """
+    candidate = ""
+    if ret.interface_name:
+        candidate = _snake_case(ret.interface_name)
+    elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
+        candidate = _snake_case(ret.class_name)
+    elif ret.class_name == "data":
+        candidate = "res"
+    else:
+        raw = _snake_case(ret.name)
+        if raw in ("return", "class", "int", "void", "char", "if", "else", "switch",
+                    "case", "break", "default", "for", "while", "do", "struct"):
+            candidate = "res"
+        else:
+            candidate = raw
+
+    # Avoid collision with the entity ctx variable
+    if entity_snake and candidate == entity_snake:
+        candidate = f"proxy_{candidate}"
+    return candidate
+
+
 def _emit_php_function(
     lines: list[str],
     php_func_name: str,
@@ -1307,7 +1370,7 @@ def _emit_php_function(
             lines.append(f"    zval *{in_name} = NULL;")
         elif arg.class_name == "data":
             lines.append(f"    char *{in_name} = NULL;")
-            lines.append(f"    size_t {in_name}_len = 0;")
+            lines.append(f"    size_t {in_name}_blen = 0;")
         elif arg.enum_name:
             lines.append(f"    zend_long {in_name} = 0;")
         else:
@@ -1316,9 +1379,12 @@ def _emit_php_function(
                 lines.append(f"    zend_long {in_name} = 0;")
             elif type_name == "boolean":
                 lines.append(f"    zend_bool {in_name} = 0;")
-            elif type_name in ("string", "byte"):
+            elif type_name == "byte" and not arg.is_string:
+                # Raw byte pointer — passed as integer
+                lines.append(f"    zend_long {in_name} = 0;")
+            elif type_name == "string" or arg.is_string:
                 lines.append(f"    char *{in_name} = NULL;")
-                lines.append(f"    size_t {in_name}_len = 0;")
+                lines.append(f"    size_t {in_name}_blen = 0;")
             else:
                 lines.append(f"    zend_long {in_name} = 0;")
 
@@ -1352,7 +1418,7 @@ def _emit_php_function(
         if arg.interface_name or (arg.class_name and arg.class_name not in ("data", "buffer", "error")):
             lines.append(f"        Z_PARAM_RESOURCE_EX({in_name}, 1 /*check_null*/, 0 /*separate*/)")
         elif arg.class_name == "data":
-            lines.append(f"        Z_PARAM_STRING_EX({in_name}, {in_name}_len, 1 /*check_null*/, 0 /*separate*/)")
+            lines.append(f"        Z_PARAM_STRING_EX({in_name}, {in_name}_blen, 1 /*check_null*/, 0 /*separate*/)")
         elif arg.enum_name:
             lines.append(f"        Z_PARAM_LONG({in_name})")
         else:
@@ -1361,8 +1427,10 @@ def _emit_php_function(
                 lines.append(f"        Z_PARAM_LONG({in_name})")
             elif type_name == "boolean":
                 lines.append(f"        Z_PARAM_BOOL({in_name})")
-            elif type_name in ("string", "byte"):
-                lines.append(f"        Z_PARAM_STRING_EX({in_name}, {in_name}_len, 1 /*check_null*/, 0 /*separate*/)")
+            elif type_name == "byte" and not arg.is_string:
+                lines.append(f"        Z_PARAM_LONG({in_name})")
+            elif type_name == "string" or arg.is_string:
+                lines.append(f"        Z_PARAM_STRING_EX({in_name}, {in_name}_blen, 1 /*check_null*/, 0 /*separate*/)")
             else:
                 lines.append(f"        Z_PARAM_LONG({in_name})")
 
@@ -1400,9 +1468,17 @@ def _emit_php_function(
                 cls_snake = _snake_case(arg.class_name)
                 lines.append(f"    {cls_prefix}_{cls_snake}_t *{local_name} = zend_fetch_resource_ex({in_name}, {cls_prefix}_{cls_snake}_t_php_res_name(), le_{cls_prefix}_{cls_snake}_t());")
         elif arg.class_name == "data":
-            lines.append(f"    vsc_data_t {local_name} = vsc_data((const byte*){in_name}, {in_name}_len);")
+            lines.append(f"    vsc_data_t {local_name} = vsc_data((const byte*){in_name}, {in_name}_blen);")
         elif arg.enum_name:
             lines.append(f"    int {local_name} = {in_name};")
+        elif arg.type_name and arg.type_name.lower() == "byte" and not arg.is_string:
+            # Raw byte — value or pointer based on access/is_reference
+            if arg.is_reference or arg.access in ("writeonly", "readwrite"):
+                lines.append(f"    byte *{local_name} = (byte *){in_name};")
+            else:
+                lines.append(f"    byte {local_name} = (byte){in_name};")
+        elif arg.is_string or (arg.type_name and arg.type_name.lower() == "string"):
+            lines.append(f"    char *{local_name} = {in_name};")
         else:
             type_name = (arg.type_name or "").lower()
             if type_name in ("size", "integer", "unsigned"):
@@ -1420,7 +1496,11 @@ def _emit_php_function(
     # Allocate output buffers
     for buf_arg in buffer_outputs:
         buf_name = _snake_case(buf_arg.name)
-        cap_expr = _buffer_capacity_expr(project_ir, entity_name, method, buf_arg, entity=entity)
+        inst_var = entity_snake if (is_instance and not is_static) else ""
+        cap_expr = _buffer_capacity_expr(
+            project_ir, entity_name, method, buf_arg, entity=entity,
+            instance_var=inst_var,
+        )
         lines.append("    //")
         lines.append(f"    // Allocate output buffer for output '{buf_name}'")
         lines.append("    //")
@@ -1459,48 +1539,56 @@ def _emit_php_function(
             ret = value_returns[0]
             if ret.interface_name:
                 ret_prefix = _resolve_project_prefix(project_ir, ret.project)
-                lines.append(f"    {ret_prefix}_impl_t *{_snake_case(ret.name)} ={c_func_name}({call_str});")
+                lines.append(f"    {ret_prefix}_impl_t *{_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
             elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
                 ret_prefix = _resolve_project_prefix(project_ir, ret.project)
                 if _is_impl_type(project_ir, ret.class_name):
-                    lines.append(f"    {ret_prefix}_impl_t *{_snake_case(ret.name)} ={c_func_name}({call_str});")
+                    lines.append(f"    {ret_prefix}_impl_t *{_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
                 else:
                     ret_snake = _snake_case(ret.class_name)
-                    lines.append(f"    {ret_prefix}_{ret_snake}_t *{_snake_case(ret.name)} ={c_func_name}({call_str});")
+                    lines.append(f"    {ret_prefix}_{ret_snake}_t *{_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
+            elif ret.class_name == "data":
+                lines.append(f"    vsc_data_t {_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
+            elif ret.enum_name:
+                lines.append(f"    int {_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
             else:
-                lines.append(f"    {c_func_name}({call_str});")
+                type_name = (ret.type_name or "").lower()
+                if type_name in ("size", "integer", "unsigned"):
+                    lines.append(f"    size_t res ={c_func_name}({call_str});")
+                elif type_name == "boolean":
+                    lines.append(f"    bool res ={c_func_name}({call_str});")
+                else:
+                    lines.append(f"    {c_func_name}({call_str});")
         else:
             lines.append(f"    {c_func_name}({call_str});")
     elif value_returns and not buffer_outputs:
         ret = value_returns[0]
         if ret.interface_name:
             ret_prefix = _resolve_project_prefix(project_ir, ret.project)
-            ret_name = _snake_case(ret.name)
-            is_const = method.attrs.get("is_const") in {"1", "true"}
-            if is_const or ret.access == "readonly":
-                lines.append(f"    {ret_prefix}_impl_t *{ret_name} =(vscf_impl_t *){c_func_name}({call_str});")
+            ret_name = _ret_local_name(ret, entity_snake)
+            # Cast away const for readonly returns (C function returns const ptr)
+            if ret.access == "readonly":
+                lines.append(f"    {ret_prefix}_impl_t *{ret_name} =({ret_prefix}_impl_t *){c_func_name}({call_str});")
             else:
                 lines.append(f"    {ret_prefix}_impl_t *{ret_name} ={c_func_name}({call_str});")
         elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
             ret_prefix = _resolve_project_prefix(project_ir, ret.project)
-            ret_name = _snake_case(ret.name)
+            ret_name = _ret_local_name(ret, entity_snake)
             if _is_impl_type(project_ir, ret.class_name):
-                is_const = method.attrs.get("is_const") in {"1", "true"}
-                if is_const or ret.access == "readonly":
+                if ret.access == "readonly":
                     lines.append(f"    {ret_prefix}_impl_t *{ret_name} =({ret_prefix}_impl_t *){c_func_name}({call_str});")
                 else:
                     lines.append(f"    {ret_prefix}_impl_t *{ret_name} ={c_func_name}({call_str});")
             else:
                 ret_snake = _snake_case(ret.class_name)
-                is_const = method.attrs.get("is_const") in {"1", "true"}
-                if is_const or ret.access == "readonly":
+                if ret.access == "readonly":
                     lines.append(f"    {ret_prefix}_{ret_snake}_t *{ret_name} =({ret_prefix}_{ret_snake}_t *){c_func_name}({call_str});")
                 else:
                     lines.append(f"    {ret_prefix}_{ret_snake}_t *{ret_name} ={c_func_name}({call_str});")
         elif ret.class_name == "data":
-            lines.append(f"    vsc_data_t {_snake_case(ret.name)} ={c_func_name}({call_str});")
+            lines.append(f"    vsc_data_t {_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
         elif ret.enum_name:
-            lines.append(f"    int {_snake_case(ret.name)} ={c_func_name}({call_str});")
+            lines.append(f"    int {_ret_local_name(ret, entity_snake)} ={c_func_name}({call_str});")
         else:
             type_name = (ret.type_name or "").lower()
             if type_name in ("size", "integer", "unsigned"):
@@ -1558,11 +1646,11 @@ def _emit_php_function(
         lines.append("    // Write returned result")
         lines.append("    //")
         if ret.interface_name:
-            ret_name = _snake_case(ret.name)
+            ret_name = _ret_local_name(ret, entity_snake)
             ret_prefix = _resolve_project_prefix(project_ir, ret.project)
-            # Shallow copy if readonly (accessor return)
-            is_const = method.attrs.get("is_const") in {"1", "true"}
-            if is_const or ret.access == "readonly":
+            # Shallow copy only for readonly/borrowed returns (not disown/transfer)
+            needs_shallow_copy = ret.access == "readonly"
+            if needs_shallow_copy:
                 lines.append(f"    {ret_name} = {ret_prefix}_impl_shallow_copy({ret_name});")
             if has_error_arg:
                 lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
@@ -1573,11 +1661,11 @@ def _emit_php_function(
                 lines.append(f"    zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_impl_t());")
                 lines.append(f"    RETVAL_RES({ret_name}_res);")
         elif ret.class_name and ret.class_name not in ("data", "buffer", "error"):
-            ret_name = _snake_case(ret.name)
+            ret_name = _ret_local_name(ret, entity_snake)
             ret_prefix = _resolve_project_prefix(project_ir, ret.project)
-            is_const = method.attrs.get("is_const") in {"1", "true"}
+            needs_shallow_copy = ret.access == "readonly"
             if _is_impl_type(project_ir, ret.class_name):
-                if is_const or ret.access == "readonly":
+                if needs_shallow_copy:
                     lines.append(f"    {ret_name} = {ret_prefix}_impl_shallow_copy({ret_name});")
                 if has_error_arg:
                     lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
@@ -1589,8 +1677,9 @@ def _emit_php_function(
                     lines.append(f"    RETVAL_RES({ret_name}_res);")
             else:
                 ret_snake = _snake_case(ret.class_name)
-                if is_const or ret.access == "readonly":
+                if needs_shallow_copy:
                     lines.append(f"    {ret_name} = {ret_prefix}_{ret_snake}_shallow_copy({ret_name});")
+
                 if has_error_arg:
                     lines.append(f"    if (status == {prefix}_status_SUCCESS) {{")
                     lines.append(f"        zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_{ret_snake}_t());")
@@ -1600,10 +1689,10 @@ def _emit_php_function(
                     lines.append(f"    zend_resource *{ret_name}_res = zend_register_resource({ret_name}, le_{ret_prefix}_{ret_snake}_t());")
                     lines.append(f"    RETVAL_RES({ret_name}_res);")
         elif ret.class_name == "data":
-            ret_name = _snake_case(ret.name)
+            ret_name = _ret_local_name(ret, entity_snake)
             lines.append(f"    RETVAL_STRINGL((const char *){ret_name}.bytes, {ret_name}.len);")
         elif ret.enum_name:
-            ret_name = _snake_case(ret.name)
+            ret_name = _ret_local_name(ret, entity_snake)
             lines.append(f"    RETVAL_LONG({ret_name});")
         else:
             type_name = (ret.type_name or "").lower()
@@ -1798,9 +1887,9 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append(f'#include "{prefix}_assert.h"')
     lines.append(f'#include "{prefix}_{project_name}_php.h"')
 
-    # Collect all entities that need C includes
-    all_entities = _collect_all_wrapped_entities(project_ir)
-    for ename, ekind in all_entities:
+    # Collect all entities that need C includes (including static classes)
+    all_included_entities = _collect_all_included_entities(project_ir)
+    for ename, ekind in all_included_entities:
         entity_snake = _snake_case(ename)
         lines.append(f'#include "{prefix}_{entity_snake}.h"')
 
@@ -1847,6 +1936,9 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append(f'const char {prefix_upper}_{project_name.upper()}_PHP_VERSION[] = "{ver_str}";')
     lines.append(f'const char {prefix_upper}_{project_name.upper()}_PHP_EXTNAME[] = "{prefix}_{project_name}_php";')
     lines.append("")
+
+    # Resource-type entities (non-static classes + implementations)
+    all_entities = _collect_all_wrapped_entities(project_ir)
 
     # impl_t resource name
     lines.append(f'static const char {prefix_upper}_IMPL_T_PHP_RES_NAME[] = "{prefix}_impl_t";')
@@ -2130,7 +2222,7 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     project_pascal = _pascal_case(project_name)
     lines.append(f"    zend_class_entry {prefix}_ce;")
     lines.append(f'    INIT_CLASS_ENTRY({prefix}_ce, "{project_pascal}Exception", NULL);')
-    lines.append(f"    {prefix}_exception_ce = zend_register_internal_class_ex(&{prefix}_ce, zend_exception_get_default());")
+    lines.append(f"    {prefix}_exception_ce = zend_register_internal_class_ex(&{prefix}_ce, zend_ce_exception);")
 
     # Register resource types
     lines.append(f"    LE_{prefix_upper}_IMPL_T = zend_register_list_destructors_ex({prefix}_impl_dtor_php, NULL, {prefix}_impl_t_php_res_name(), module_number);")
@@ -2333,12 +2425,13 @@ def _find_status_enum(project_ir: IRProject) -> IREnum | None:
     return None
 
 
-def _collect_all_wrapped_entities(
+def _collect_all_included_entities(
     project_ir: IRProject,
 ) -> list[tuple[str, str]]:
-    """Collect all entity (name, kind) pairs that are wrapped for PHP.
+    """Collect all entity (name, kind) pairs that need C #include directives.
 
-    Returns sorted list for stable output.
+    Unlike ``_collect_all_wrapped_entities``, this includes static classes
+    (which have functions but no resource types).
     """
     entities: list[tuple[str, str]] = []
 
@@ -2347,6 +2440,35 @@ def _collect_all_wrapped_entities(
             continue
         if cls.name == "error":
             continue
+        entities.append((cls.name, "class"))
+
+    for impl in project_ir.implementations:
+        if impl.attrs.get("scope") in {"private", "internal"}:
+            continue
+        entities.append((impl.name, "implementation"))
+
+    return sorted(entities, key=lambda x: x[0])
+
+
+def _collect_all_wrapped_entities(
+    project_ir: IRProject,
+) -> list[tuple[str, str]]:
+    """Collect all entity (name, kind) pairs that are wrapped for PHP.
+
+    Returns sorted list for stable output. Only includes entities that
+    have a context (non-static classes and implementations).
+    Static classes (context="none") are excluded since they don't have
+    resource types -- they only have static functions.
+    """
+    entities: list[tuple[str, str]] = []
+
+    for cls in project_ir.classes:
+        if cls.attrs.get("scope") in {"private", "internal"}:
+            continue
+        if cls.name == "error":
+            continue
+        if _is_static_class(cls):
+            continue  # Static classes have no context/resource
         entities.append((cls.name, "class"))
 
     for impl in project_ir.implementations:
