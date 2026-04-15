@@ -214,7 +214,11 @@ _SWIFT_LICENSE = """\
 // Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>"""
 
 
-def _file_header(project_ir: IRProject, *, import_framework: bool = True) -> str:
+def _file_header(
+    project_ir: IRProject, *,
+    import_framework: bool = True,
+    cross_project_imports: list[str] | None = None,
+) -> str:
     """Standard file header: license + imports."""
     lines: list[str] = []
     lines.append(_SWIFT_LICENSE)
@@ -223,8 +227,50 @@ def _file_header(project_ir: IRProject, *, import_framework: bool = True) -> str
     lines.append("import Foundation")
     if import_framework:
         lines.append(f"import {_framework(project_ir)}")
+    if cross_project_imports:
+        for imp in sorted(set(cross_project_imports)):
+            lines.append(f"import {imp}")
     lines.append("")
     return "\n".join(lines)
+
+
+def _detect_cross_project_imports(
+    project_ir: IRProject,
+    methods: list,
+    dependencies: list | None = None,
+) -> list[str]:
+    """Detect cross-project Swift module imports needed by an entity."""
+    _ns_map = {
+        "common": "VirgilCryptoCommon",
+        "foundation": "VirgilCryptoFoundation",
+        "pythia": "VirgilCryptoPythia",
+        "ratchet": "VirgilCryptoRatchet",
+        "phe": "VirgilCryptoPhe",
+    }
+    imports: set[str] = set()
+    local = project_ir.name
+
+    def _check_arg(a):
+        if a.project and a.project != local:
+            ns = _ns_map.get(a.project)
+            if ns:
+                imports.add(ns)
+
+    for m in methods:
+        for a in m.arguments:
+            _check_arg(a)
+        for r in m.returns:
+            _check_arg(r)
+
+    if dependencies:
+        for dep in dependencies:
+            dp = dep.attrs.get("project")
+            if dp and dp != local:
+                ns = _ns_map.get(dp)
+                if ns:
+                    imports.add(ns)
+
+    return sorted(imports)
 
 
 # ---------------------------------------------------------------------------
@@ -845,6 +891,11 @@ def _swift_return_expr(project_ir: IRProject, ret: IRCArgument, c_expr: str) -> 
     if ret.class_name == "data":
         return f"Data.init(bytes: {c_expr}.bytes, count: {c_expr}.len)"
 
+    if ret.class_name == "buffer":
+        # Buffer return: extract bytes from the C buffer object
+        return (f"Data(bytes: vsc_buffer_bytes({c_expr}), "
+                f"count: vsc_buffer_len({c_expr}))")
+
     if ret.interface_name:
         iface_name = swift_type_name(ret.interface_name)
         if ret.access == "disown":
@@ -1020,8 +1071,11 @@ def generate_swift_class(project_ir: IRProject, cls: IRClass) -> str:
     prefix = project_ir.prefix
     is_static = _is_static_class(cls)
 
+    cross_imports = _detect_cross_project_imports(
+        project_ir, cls.methods, cls.dependencies,
+    )
     lines: list[str] = []
-    lines.append(_file_header(project_ir))
+    lines.append(_file_header(project_ir, cross_project_imports=cross_imports))
 
     if is_static:
         lines.append(f"@objc({objc_name}) public class {type_name}: NSObject {{")
@@ -1196,8 +1250,18 @@ def generate_swift_implementation(project_ir: IRProject, impl: IRImplementation)
     for binding in impl.interface_bindings:
         iface_names.append(swift_type_name(binding.name))
 
+    # Collect all methods (own + inherited) for cross-project detection
+    iface_by_name = {i.name: i for i in project_ir.interfaces}
+    all_impl_methods = list(impl.methods)
+    for binding in impl.interface_bindings:
+        iface = iface_by_name.get(binding.name)
+        if iface:
+            all_impl_methods.extend(iface.methods)
+    cross_imports = _detect_cross_project_imports(
+        project_ir, all_impl_methods, impl.dependencies,
+    )
     lines: list[str] = []
-    lines.append(_file_header(project_ir))
+    lines.append(_file_header(project_ir, cross_project_imports=cross_imports))
 
     # Class declaration with interface conformance
     if iface_names:

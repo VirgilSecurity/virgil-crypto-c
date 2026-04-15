@@ -35,6 +35,7 @@
 
 import Foundation
 import VSCRatchet
+import VirgilCryptoFoundation
 
 @objc(VSCRRatchetSession) public class RatchetSession: NSObject {
 
@@ -190,7 +191,7 @@ import VSCRatchet
     @objc public func serialize() -> Data {
         let proxyResult = vscr_ratchet_session_serialize(self.c_ctx)
 
-        return proxyResult
+        return Data(bytes: vsc_buffer_bytes(proxyResult), count: vsc_buffer_len(proxyResult))
     }
 
     /// Deserializes session from buffer.
