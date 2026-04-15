@@ -299,7 +299,7 @@ import VSCPythia
 
     /// This operation allows client to verify that the output of transform() is correct,
     /// assuming that client has previously stored transformation public key.
-    @objc public static func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws -> Bool {
+    public static func verify(transformedPassword: Data, blindedPassword: Data, tweak: Data, transformationPublicKey: Data, proofValueC: Data, proofValueU: Data) throws -> Bool {
         var error: vscp_error_t = vscp_error_t()
         vscp_error_reset(&error)
 
@@ -376,4 +376,56 @@ import VSCPythia
         return updatedDeblindedPassword
     }
 
+}
+
+@objc(VSCPPythiaBlindResult) public class PythiaBlindResult: NSObject {
+
+    @objc public let blindedPassword: Data
+
+    @objc public let blindingSecret: Data
+
+    internal init(blindedPassword: Data, blindingSecret: Data) {
+        self.blindedPassword = blindedPassword
+        self.blindingSecret = blindingSecret
+        super.init()
+    }
+}
+
+@objc(VSCPPythiaComputeTransformationKeyPairResult) public class PythiaComputeTransformationKeyPairResult: NSObject {
+
+    @objc public let transformationPrivateKey: Data
+
+    @objc public let transformationPublicKey: Data
+
+    internal init(transformationPrivateKey: Data, transformationPublicKey: Data) {
+        self.transformationPrivateKey = transformationPrivateKey
+        self.transformationPublicKey = transformationPublicKey
+        super.init()
+    }
+}
+
+@objc(VSCPPythiaTransformResult) public class PythiaTransformResult: NSObject {
+
+    @objc public let transformedPassword: Data
+
+    @objc public let transformedTweak: Data
+
+    internal init(transformedPassword: Data, transformedTweak: Data) {
+        self.transformedPassword = transformedPassword
+        self.transformedTweak = transformedTweak
+        super.init()
+    }
+}
+
+@objc(VSCPPythiaProveResult) public class PythiaProveResult: NSObject {
+
+    @objc public let proofValueC: Data
+
+    @objc public let proofValueU: Data
+
+    internal init(proofValueC: Data, proofValueU: Data) {
+        self.proofValueC = proofValueC
+        self.proofValueU = proofValueU
+        super.init()
+    }
 }

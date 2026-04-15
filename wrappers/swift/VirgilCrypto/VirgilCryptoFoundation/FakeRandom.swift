@@ -62,7 +62,7 @@ import VSCFoundation
     }
 
     /// Configure random number generator to generate sequence filled with given byte.
-    @objc public func setupSourceByte(byteSource: Void) {
+    @objc public func setupSourceByte(byteSource: UInt8) {
         vscf_fake_random_setup_source_byte(self.c_ctx, byteSource)
     }
 

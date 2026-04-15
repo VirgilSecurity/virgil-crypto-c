@@ -393,8 +393,10 @@ def _swift_type_for_arg(project_ir: IRProject, arg: IRCArgument) -> str:
         return "UInt32"
     if type_name in ("string", "char") or arg.is_string:
         return "String"
-    if type_name == "byte" and arg.is_reference:
-        return "UnsafeMutableRawPointer"
+    if type_name == "byte":
+        if arg.is_array or arg.is_reference:
+            return "UnsafeMutablePointer<UInt8>"
+        return "UInt8"
     return "Void"
 
 
@@ -866,6 +868,8 @@ def _swift_return_expr(project_ir: IRProject, ret: IRCArgument, c_expr: str) -> 
         return c_expr  # Direct Int-compatible
     if type_name == "boolean":
         return c_expr
+    if type_name == "byte" and (ret.is_reference or ret.is_array):
+        return f"{c_expr}!"  # Force-unwrap optional pointer
 
     return c_expr
 
@@ -1099,9 +1103,15 @@ def generate_swift_class(project_ir: IRProject, cls: IRClass) -> str:
         ret_str = f" -> {ret_type}" if ret_type != "Void" else ""
         meth_name = swift_method_name(method.name)
 
+        # @objc methods that throw cannot return non-bridgeable types
+        _non_bridgeable = {"Int", "Bool", "UInt", "Int8", "Int16", "Int32", "Int64",
+                           "UInt8", "UInt16", "UInt32", "UInt64"}
+        non_objc = ret_type in _non_bridgeable and throws
+        objc_prefix = "" if non_objc else "@objc "
+
         _emit_doc(lines, method.description)
         lines.append(
-            f"    @objc public {modifier}func {meth_name}"
+            f"    {objc_prefix}public {modifier}func {meth_name}"
             f"({args_str}){throws_str}{ret_str} {{"
         )
 
@@ -1114,6 +1124,37 @@ def generate_swift_class(project_ir: IRProject, cls: IRClass) -> str:
 
     lines.append("}")
     lines.append("")
+
+    # Generate result structs for multi-buffer class methods
+    for method in cls.methods:
+        if not _method_should_wrap(method):
+            continue
+        buffer_outputs = [a for a in method.arguments if _arg_is_buffer_output(a)]
+        value_returns = [r for r in method.returns if r.enum_name != "status"]
+        total = len(buffer_outputs) + len(value_returns)
+        if total >= 2:
+            result_name = _result_struct_name(cls.name, method.name)
+            objc_result = f"{_objc_prefix(project_ir)}{result_name}"
+            lines.append(f"@objc({objc_result}) public class {result_name}: NSObject {{")
+            lines.append("")
+            all_outs: list[tuple[str, str]] = []
+            for ret in value_returns:
+                prop = swift_method_name(ret.name) if ret.name else "result"
+                all_outs.append((prop, _swift_type_for_arg(project_ir, ret)))
+            for buf in buffer_outputs:
+                prop = swift_method_name(buf.name)
+                all_outs.append((prop, "Data"))
+            for prop, ptype in all_outs:
+                lines.append(f"    @objc public let {prop}: {ptype}")
+                lines.append("")
+            init_params = ", ".join(f"{p}: {t}" for p, t in all_outs)
+            lines.append(f"    internal init({init_params}) {{")
+            for prop, _ in all_outs:
+                lines.append(f"        self.{prop} = {prop}")
+            lines.append(f"        super.init()")
+            lines.append(f"    }}")
+            lines.append("}")
+            lines.append("")
 
     return "\n".join(lines)
 
@@ -1372,7 +1413,7 @@ def generate_swift_error(project_ir: IRProject) -> str:
     lines.append("    }")
 
     # handleStatus method
-    lines.append(f"    @objc public static func handleStatus(fromC code: {status_c_type}) throws {{")
+    lines.append(f"    internal static func handleStatus(fromC code: {status_c_type}) throws {{")
     lines.append(f"        if code != {prefix}_status_SUCCESS {{")
     lines.append(f"            throw {type_name}(fromC: code)")
     lines.append("        }")

@@ -39,7 +39,7 @@ import VSCFoundation
 @objc(VSCFAsn1Writer) public protocol Asn1Writer : CContext {
 
     /// Reset all internal states and prepare to new ASN.1 writing operations.
-    @objc func reset(out: Void, outLen: Int)
+    @objc func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int)
 
     /// Finalize writing and forbid further operations.
     ///
@@ -51,7 +51,7 @@ import VSCFoundation
     @objc func finish(doNotAdjust: Bool) -> Int
 
     /// Returns pointer to the inner buffer.
-    @objc func bytes() -> UnsafeMutableRawPointer
+    @objc func bytes() -> UnsafeMutablePointer<UInt8>
 
     /// Returns total inner buffer length.
     @objc func len() -> Int
@@ -70,7 +70,7 @@ import VSCFoundation
 
     /// Move writing position backward for the given length.
     /// Return current writing position.
-    @objc func reserve(len: Int) -> UnsafeMutableRawPointer
+    @objc func reserve(len: Int) -> UnsafeMutablePointer<UInt8>
 
     /// Write ASN.1 tag.
     /// Return count of written bytes.

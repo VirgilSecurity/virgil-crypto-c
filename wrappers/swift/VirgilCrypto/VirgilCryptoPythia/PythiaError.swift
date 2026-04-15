@@ -50,7 +50,7 @@ import VSCPythia
     internal init(fromC status: vscp_status_t) {
         self.init(rawValue: Int(status.rawValue))!
     }
-    @objc public static func handleStatus(fromC code: vscp_status_t) throws {
+    internal static func handleStatus(fromC code: vscp_status_t) throws {
         if code != vscp_status_SUCCESS {
             throw PythiaError(fromC: code)
         }

@@ -140,7 +140,7 @@ import VSCRatchet
     internal init(fromC status: vscr_status_t) {
         self.init(rawValue: Int(status.rawValue))!
     }
-    @objc public static func handleStatus(fromC code: vscr_status_t) throws {
+    internal static func handleStatus(fromC code: vscr_status_t) throws {
         if code != vscr_status_SUCCESS {
             throw RatchetError(fromC: code)
         }

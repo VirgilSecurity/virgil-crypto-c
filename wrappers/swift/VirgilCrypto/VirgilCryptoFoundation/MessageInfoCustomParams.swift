@@ -92,7 +92,7 @@ import VSCFoundation
     }
 
     /// Return custom parameter with integer value.
-    @objc public func findInt(key: Data) throws -> Int32 {
+    public func findInt(key: Data) throws -> Int32 {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 

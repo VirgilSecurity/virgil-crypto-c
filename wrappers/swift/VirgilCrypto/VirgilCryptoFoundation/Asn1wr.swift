@@ -62,7 +62,7 @@ import VSCFoundation
     }
 
     /// Reset all internal states and prepare to new ASN.1 writing operations.
-    @objc public func reset(out: Void, outLen: Int) {
+    @objc public func reset(out: UnsafeMutablePointer<UInt8>, outLen: Int) {
         vscf_asn1wr_reset(self.c_ctx, out, outLen)
     }
 
@@ -80,10 +80,10 @@ import VSCFoundation
     }
 
     /// Returns pointer to the inner buffer.
-    @objc public func bytes() -> UnsafeMutableRawPointer {
+    @objc public func bytes() -> UnsafeMutablePointer<UInt8> {
         let proxyResult = vscf_asn1wr_bytes(self.c_ctx)
 
-        return proxyResult
+        return proxyResult!
     }
 
     /// Returns total inner buffer length.
@@ -123,10 +123,10 @@ import VSCFoundation
 
     /// Move writing position backward for the given length.
     /// Return current writing position.
-    @objc public func reserve(len: Int) -> UnsafeMutableRawPointer {
+    @objc public func reserve(len: Int) -> UnsafeMutablePointer<UInt8> {
         let proxyResult = vscf_asn1wr_reserve(self.c_ctx, len)
 
-        return proxyResult
+        return proxyResult!
     }
 
     /// Write ASN.1 tag.

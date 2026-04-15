@@ -265,7 +265,7 @@ import VSCFoundation
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!
     }
-    @objc public static func handleStatus(fromC code: vscf_status_t) throws {
+    internal static func handleStatus(fromC code: vscf_status_t) throws {
         if code != vscf_status_SUCCESS {
             throw FoundationError(fromC: code)
         }

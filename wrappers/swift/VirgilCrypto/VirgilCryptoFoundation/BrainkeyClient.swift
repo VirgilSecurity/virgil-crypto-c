@@ -150,3 +150,16 @@ import VSCFoundation
     }
 
 }
+
+@objc(VSCFBrainkeyClientBlindResult) public class BrainkeyClientBlindResult: NSObject {
+
+    @objc public let deblindFactor: Data
+
+    @objc public let blindedPoint: Data
+
+    internal init(deblindFactor: Data, blindedPoint: Data) {
+        self.deblindFactor = deblindFactor
+        self.blindedPoint = blindedPoint
+        super.init()
+    }
+}
