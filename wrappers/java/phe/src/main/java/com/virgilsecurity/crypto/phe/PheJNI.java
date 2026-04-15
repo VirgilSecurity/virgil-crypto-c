@@ -59,22 +59,6 @@ public class PheJNI {
 
     public native void pheServer_setOperationRandom(long cCtx, Random operationRandom);
 
-    public native void pheServer_setupDefaults(long cCtx) throws PheException;
-
-    public native PheServerGenerateServerKeyPairResult pheServer_generateServerKeyPair(long cCtx) throws PheException;
-
-    public native int pheServer_enrollmentResponseLen(long cCtx);
-
-    public native byte[] pheServer_getEnrollment(long cCtx, byte[] serverPrivateKey, byte[] serverPublicKey) throws PheException;
-
-    public native int pheServer_verifyPasswordResponseLen(long cCtx);
-
-    public native byte[] pheServer_verifyPassword(long cCtx, byte[] serverPrivateKey, byte[] serverPublicKey, byte[] verifyPasswordRequest) throws PheException;
-
-    public native int pheServer_updateTokenLen(long cCtx);
-
-    public native PheServerRotateKeysResult pheServer_rotateKeys(long cCtx, byte[] serverPrivateKey) throws PheException;
-
     public native long pheClient_new();
 
     public native void pheClient_close(long cCtx);
@@ -83,45 +67,11 @@ public class PheJNI {
 
     public native void pheClient_setOperationRandom(long cCtx, Random operationRandom);
 
-    public native void pheClient_setupDefaults(long cCtx) throws PheException;
-
-    public native void pheClient_setKeys(long cCtx, byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException;
-
-    public native byte[] pheClient_generateClientPrivateKey(long cCtx) throws PheException;
-
-    public native int pheClient_enrollmentRecordLen(long cCtx);
-
-    public native PheClientEnrollAccountResult pheClient_enrollAccount(long cCtx, byte[] enrollmentResponse, byte[] password) throws PheException;
-
-    public native int pheClient_verifyPasswordRequestLen(long cCtx);
-
-    public native byte[] pheClient_createVerifyPasswordRequest(long cCtx, byte[] password, byte[] enrollmentRecord) throws PheException;
-
-    public native byte[] pheClient_checkResponseAndDecrypt(long cCtx, byte[] password, byte[] enrollmentRecord, byte[] verifyPasswordResponse) throws PheException;
-
-    public native PheClientRotateKeysResult pheClient_rotateKeys(long cCtx, byte[] updateToken) throws PheException;
-
-    public native byte[] pheClient_updateEnrollmentRecord(long cCtx, byte[] enrollmentRecord, byte[] updateToken) throws PheException;
-
     public native long pheCipher_new();
 
     public native void pheCipher_close(long cCtx);
 
     public native void pheCipher_setRandom(long cCtx, Random random);
-
-    public native void pheCipher_setupDefaults(long cCtx) throws PheException;
-
-    public native int pheCipher_encryptLen(long cCtx, int plainTextLen);
-
-    public native int pheCipher_decryptLen(long cCtx, int cipherTextLen);
-
-    public native byte[] pheCipher_encrypt(long cCtx, byte[] plainText, byte[] accountKey) throws PheException;
-
-    public native byte[] pheCipher_decrypt(long cCtx, byte[] cipherText, byte[] accountKey) throws PheException;
-
-    public native byte[] pheCipher_authEncrypt(long cCtx, byte[] plainText, byte[] additionalData, byte[] accountKey) throws PheException;
-
-    public native byte[] pheCipher_authDecrypt(long cCtx, byte[] cipherText, byte[] additionalData, byte[] accountKey) throws PheException;
 
     public native long uokmsClient_new();
 
@@ -131,28 +81,6 @@ public class PheJNI {
 
     public native void uokmsClient_setOperationRandom(long cCtx, Random operationRandom);
 
-    public native void uokmsClient_setupDefaults(long cCtx) throws PheException;
-
-    public native void uokmsClient_setKeysOneparty(long cCtx, byte[] clientPrivateKey) throws PheException;
-
-    public native void uokmsClient_setKeys(long cCtx, byte[] clientPrivateKey, byte[] serverPublicKey) throws PheException;
-
-    public native byte[] uokmsClient_generateClientPrivateKey(long cCtx) throws PheException;
-
-    public native UokmsClientGenerateEncryptWrapResult uokmsClient_generateEncryptWrap(long cCtx, int encryptionKeyLen) throws PheException;
-
-    public native byte[] uokmsClient_decryptOneparty(long cCtx, byte[] wrap, int encryptionKeyLen) throws PheException;
-
-    public native UokmsClientGenerateDecryptRequestResult uokmsClient_generateDecryptRequest(long cCtx, byte[] wrap) throws PheException;
-
-    public native byte[] uokmsClient_processDecryptResponse(long cCtx, byte[] wrap, byte[] decryptRequest, byte[] decryptResponse, byte[] deblindFactor, int encryptionKeyLen) throws PheException;
-
-    public native byte[] uokmsClient_rotateKeysOneparty(long cCtx, byte[] updateToken) throws PheException;
-
-    public native byte[] uokmsClient_generateUpdateTokenOneparty(long cCtx) throws PheException;
-
-    public native UokmsClientRotateKeysResult uokmsClient_rotateKeys(long cCtx, byte[] updateToken) throws PheException;
-
     public native long uokmsServer_new();
 
     public native void uokmsServer_close(long cCtx);
@@ -161,26 +89,10 @@ public class PheJNI {
 
     public native void uokmsServer_setOperationRandom(long cCtx, Random operationRandom);
 
-    public native void uokmsServer_setupDefaults(long cCtx) throws PheException;
-
-    public native UokmsServerGenerateServerKeyPairResult uokmsServer_generateServerKeyPair(long cCtx) throws PheException;
-
-    public native int uokmsServer_decryptResponseLen(long cCtx);
-
-    public native byte[] uokmsServer_processDecryptRequest(long cCtx, byte[] serverPrivateKey, byte[] decryptRequest) throws PheException;
-
-    public native UokmsServerRotateKeysResult uokmsServer_rotateKeys(long cCtx, byte[] serverPrivateKey) throws PheException;
-
     public native long uokmsWrapRotation_new();
 
     public native void uokmsWrapRotation_close(long cCtx);
 
     public native void uokmsWrapRotation_setOperationRandom(long cCtx, Random operationRandom);
-
-    public native void uokmsWrapRotation_setupDefaults(long cCtx) throws PheException;
-
-    public native void uokmsWrapRotation_setUpdateToken(long cCtx, byte[] updateToken) throws PheException;
-
-    public native byte[] uokmsWrapRotation_updateWrap(long cCtx, byte[] wrap) throws PheException;
 
 }

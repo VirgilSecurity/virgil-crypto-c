@@ -194,28 +194,4 @@ public class Asn1wr implements AutoCloseable, Asn1Writer {
         return FoundationJNI.INSTANCE.asn1wr_writeSet(this.cCtx, len);
     }
 
-    public boolean mbedtlsHasError(int code) {
-        return FoundationJNI.INSTANCE.asn1wr_mbedtlsHasError(this.cCtx, code);
-    }
-
-    public int writeTagData(byte[] data, int tag) {
-        return FoundationJNI.INSTANCE.asn1wr_writeTagData(this.cCtx, data, tag);
-    }
-
-    public int getCurrentElementLen(byte curr, byte end) {
-        return FoundationJNI.INSTANCE.asn1wr_getCurrentElementLen(curr, end);
-    }
-
-    public void swapElementsOfSet(byte toStart, int toLen, byte fromStart, int fromLen) {
-        FoundationJNI.INSTANCE.asn1wr_swapElementsOfSet(toStart, toLen, fromStart, fromLen);
-    }
-
-    public boolean secondElementOfSetIsLess(byte firstStart, int firstLen, byte secondStart, int secondLen) {
-        return FoundationJNI.INSTANCE.asn1wr_secondElementOfSetIsLess(firstStart, firstLen, secondStart, secondLen);
-    }
-
-    public void sortElementsOfSet(int len) {
-        FoundationJNI.INSTANCE.asn1wr_sortElementsOfSet(this.cCtx, len);
-    }
-
 }

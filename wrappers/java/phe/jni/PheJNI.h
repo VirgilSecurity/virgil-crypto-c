@@ -34,170 +34,127 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-JNIEXPORT jlong JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1new__(void);
+#include <jni.h>
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1close(jlong );
+#ifndef _Included_PheJNI_h
+#define _Included_PheJNI_h
+#ifdef __cplusplus
+extern "C" {
+#endif
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1new__ (JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setupDefaults(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1generateServerKeyPair(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1enrollmentResponseLen(jlong c_ctx);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1generateServerKeyPair (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1getEnrollment(jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jserverPublicKey);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1enrollmentResponseLen (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPasswordResponseLen(jlong c_ctx);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1getEnrollment (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPassword(jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jserverPublicKey, jbyteArray jverifyPasswordRequest);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPasswordResponseLen (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1updateTokenLen(jlong c_ctx);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1verifyPassword (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1rotateKeys(jlong c_ctx, jbyteArray jserverPrivateKey);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1updateTokenLen (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jlong JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new__(void);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1rotateKeys (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1close(jlong );
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new__ (JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setupDefaults(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setKeys(jlong c_ctx, jbyteArray jclientPrivateKey, jbyteArray jserverPublicKey);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1generateClientPrivateKey(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setKeys (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollmentRecordLen(jlong c_ctx);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1generateClientPrivateKey (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollAccount(jlong c_ctx, jbyteArray jenrollmentResponse, jbyteArray jpassword);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollmentRecordLen (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1verifyPasswordRequestLen(jlong c_ctx);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1enrollAccount (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1createVerifyPasswordRequest(jlong c_ctx, jbyteArray jpassword, jbyteArray jenrollmentRecord);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1verifyPasswordRequestLen (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1checkResponseAndDecrypt(jlong c_ctx, jbyteArray jpassword, jbyteArray jenrollmentRecord, jbyteArray jverifyPasswordResponse);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1createVerifyPasswordRequest (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1rotateKeys(jlong c_ctx, jbyteArray jupdateToken);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1checkResponseAndDecrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1updateEnrollmentRecord(jlong c_ctx, jbyteArray jenrollmentRecord, jbyteArray jupdateToken);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1rotateKeys (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT jlong JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new__(void);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1updateEnrollmentRecord (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1close(jlong );
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new__ (JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setupDefaults(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encryptLen(jlong c_ctx, jint jplainTextLen);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decryptLen(jlong c_ctx, jint jcipherTextLen);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encryptLen (JNIEnv *, jobject, jlong, jint);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encrypt(jlong c_ctx, jbyteArray jplainText, jbyteArray jaccountKey);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decryptLen (JNIEnv *, jobject, jlong, jint);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decrypt(jlong c_ctx, jbyteArray jcipherText, jbyteArray jaccountKey);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1authEncrypt(jlong c_ctx, jbyteArray jplainText, jbyteArray jadditionalData, jbyteArray jaccountKey);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1decrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1authDecrypt(jlong c_ctx, jbyteArray jcipherText, jbyteArray jadditionalData, jbyteArray jaccountKey);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1authEncrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jlong JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1new__(void);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1authDecrypt (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1close(jlong );
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1new__ (JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setupDefaults(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeysOneparty(jlong c_ctx, jbyteArray jclientPrivateKey);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeys(jlong c_ctx, jbyteArray jclientPrivateKey, jbyteArray jserverPublicKey);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeysOneparty (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateClientPrivateKey(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setKeys (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateEncryptWrap(jlong c_ctx, jint jencryptionKeyLen);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateClientPrivateKey (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1decryptOneparty(jlong c_ctx, jbyteArray jwrap, jint jencryptionKeyLen);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateEncryptWrap (JNIEnv *, jobject, jlong, jint);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateDecryptRequest(jlong c_ctx, jbyteArray jwrap);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1decryptOneparty (JNIEnv *, jobject, jlong, jbyteArray, jint);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1processDecryptResponse(jlong c_ctx, jbyteArray jwrap, jbyteArray jdecryptRequest, jbyteArray jdecryptResponse, jbyteArray jdeblindFactor, jint jencryptionKeyLen);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateDecryptRequest (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeysOneparty(jlong c_ctx, jbyteArray jupdateToken);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1processDecryptResponse (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jint);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateUpdateTokenOneparty(jlong c_ctx);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeysOneparty (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeys(jlong c_ctx, jbyteArray jupdateToken);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1generateUpdateTokenOneparty (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jlong JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1new__(void);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1rotateKeys (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1close(jlong );
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1new__ (JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setupDefaults(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1generateServerKeyPair(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1decryptResponseLen(jlong c_ctx);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1generateServerKeyPair (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1processDecryptRequest(jlong c_ctx, jbyteArray jserverPrivateKey, jbyteArray jdecryptRequest);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1decryptResponseLen (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1rotateKeys(jlong c_ctx, jbyteArray jserverPrivateKey);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1processDecryptRequest (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
 
-JNIEXPORT jlong JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1new__(void);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1rotateKeys (JNIEnv *, jobject, jlong, jbyteArray);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1close(jlong );
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1new__ (JNIEnv *, jobject);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults(jlong c_ctx);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setUpdateToken(jlong c_ctx, jbyteArray jupdateToken);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults (JNIEnv *, jobject, jlong);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap(jlong c_ctx, jbyteArray jwrap);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setUpdateToken (JNIEnv *, jobject, jlong, jbyteArray);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap (JNIEnv *, jobject, jlong, jbyteArray);
+
+
+#ifdef __cplusplus
+}
+#endif
+#endif

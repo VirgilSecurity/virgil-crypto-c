@@ -50,137 +50,25 @@ public class FoundationJNI {
     private FoundationJNI() {
     }
 
-    public native byte[] oid_fromAlgId(AlgId algId);
-
-    public native AlgId oid_toAlgId(byte[] oid);
-
-    public native byte[] oid_fromId(OidId oidId);
-
-    public native OidId oid_toId(byte[] oid);
-
-    public native AlgId oid_idToAlgId(OidId oidId);
-
-    public native boolean oid_equal(byte[] lhs, byte[] rhs);
-
-    public native int base64_encodedLen(int dataLen);
-
-    public native byte[] base64_encode(byte[] data);
-
-    public native int base64_decodedLen(int strLen);
-
-    public native byte[] base64_decode(byte[] str) throws FoundationException;
-
-    public native int pem_wrappedLen(String title, int dataLen);
-
-    public native byte[] pem_wrap(String title, byte[] data);
-
-    public native int pem_unwrappedLen(int pemLen);
-
-    public native byte[] pem_unwrap(byte[] pem) throws FoundationException;
-
-    public native byte[] pem_title(byte[] pem);
-
     public native long messageInfo_new();
 
     public native void messageInfo_close(long cCtx);
-
-    public native AlgInfo messageInfo_dataEncryptionAlgInfo(long cCtx);
-
-    public native KeyRecipientInfoList messageInfo_keyRecipientInfoList(long cCtx);
-
-    public native PasswordRecipientInfoList messageInfo_passwordRecipientInfoList(long cCtx);
-
-    public native boolean messageInfo_hasCustomParams(long cCtx);
-
-    public native MessageInfoCustomParams messageInfo_customParams(long cCtx);
-
-    public native boolean messageInfo_hasCipherKdfAlgInfo(long cCtx);
-
-    public native AlgInfo messageInfo_cipherKdfAlgInfo(long cCtx);
-
-    public native boolean messageInfo_hasCipherPaddingAlgInfo(long cCtx);
-
-    public native AlgInfo messageInfo_cipherPaddingAlgInfo(long cCtx);
-
-    public native boolean messageInfo_hasFooterInfo(long cCtx);
-
-    public native FooterInfo messageInfo_footerInfo(long cCtx);
-
-    public native void messageInfo_clear(long cCtx);
 
     public native long keyRecipientInfo_new();
 
     public native void keyRecipientInfo_close(long cCtx);
 
-    public native byte[] keyRecipientInfo_recipientId(long cCtx);
-
-    public native AlgInfo keyRecipientInfo_keyEncryptionAlgorithm(long cCtx);
-
-    public native byte[] keyRecipientInfo_encryptedKey(long cCtx);
-
     public native long keyRecipientInfoList_new();
 
     public native void keyRecipientInfoList_close(long cCtx);
-
-    public native boolean keyRecipientInfoList_hasItem(long cCtx);
-
-    public native KeyRecipientInfo keyRecipientInfoList_item(long cCtx);
-
-    public native boolean keyRecipientInfoList_hasNext(long cCtx);
-
-    public native KeyRecipientInfoList keyRecipientInfoList_next(long cCtx);
-
-    public native boolean keyRecipientInfoList_hasPrev(long cCtx);
-
-    public native KeyRecipientInfoList keyRecipientInfoList_prev(long cCtx);
-
-    public native void keyRecipientInfoList_clear(long cCtx);
 
     public native long passwordRecipientInfo_new();
 
     public native void passwordRecipientInfo_close(long cCtx);
 
-    public native AlgInfo passwordRecipientInfo_keyEncryptionAlgorithm(long cCtx);
-
-    public native byte[] passwordRecipientInfo_encryptedKey(long cCtx);
-
     public native long passwordRecipientInfoList_new();
 
     public native void passwordRecipientInfoList_close(long cCtx);
-
-    public native boolean passwordRecipientInfoList_hasItem(long cCtx);
-
-    public native PasswordRecipientInfo passwordRecipientInfoList_item(long cCtx);
-
-    public native boolean passwordRecipientInfoList_hasNext(long cCtx);
-
-    public native PasswordRecipientInfoList passwordRecipientInfoList_next(long cCtx);
-
-    public native boolean passwordRecipientInfoList_hasPrev(long cCtx);
-
-    public native PasswordRecipientInfoList passwordRecipientInfoList_prev(long cCtx);
-
-    public native void passwordRecipientInfoList_clear(long cCtx);
-
-    public native Hash algFactory_createHashFromInfo(AlgInfo algInfo);
-
-    public native Mac algFactory_createMacFromInfo(AlgInfo algInfo);
-
-    public native Kdf algFactory_createKdfFromInfo(AlgInfo algInfo);
-
-    public native SaltedKdf algFactory_createSaltedKdfFromInfo(AlgInfo algInfo);
-
-    public native Cipher algFactory_createCipherFromInfo(AlgInfo algInfo);
-
-    public native Padding algFactory_createPaddingFromInfo(AlgInfo algInfo, Random random);
-
-    public native KeyAlg keyAlgFactory_createFromAlgId(AlgId algId, Random random) throws FoundationException;
-
-    public native KeyAlg keyAlgFactory_createFromKey(Key key, Random random) throws FoundationException;
-
-    public native KeyAlg keyAlgFactory_createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException;
-
-    public native KeyAlg keyAlgFactory_createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException;
 
     public native long ecies_new();
 
@@ -196,22 +84,6 @@ public class FoundationJNI {
 
     public native void ecies_setEphemeralKey(long cCtx, PrivateKey ephemeralKey);
 
-    public native void ecies_setKeyAlg(long cCtx, KeyAlg keyAlg);
-
-    public native void ecies_releaseKeyAlg(long cCtx);
-
-    public native void ecies_setupDefaults(long cCtx) throws FoundationException;
-
-    public native void ecies_setupDefaultsNoRandom(long cCtx);
-
-    public native int ecies_encryptedLen(long cCtx, PublicKey publicKey, int dataLen);
-
-    public native byte[] ecies_encrypt(long cCtx, PublicKey publicKey, byte[] data) throws FoundationException;
-
-    public native int ecies_decryptedLen(long cCtx, PrivateKey privateKey, int dataLen);
-
-    public native byte[] ecies_decrypt(long cCtx, PrivateKey privateKey, byte[] data) throws FoundationException;
-
     public native long recipientCipher_new();
 
     public native void recipientCipher_close(long cCtx);
@@ -226,103 +98,15 @@ public class FoundationJNI {
 
     public native void recipientCipher_setSignerHash(long cCtx, Hash signerHash);
 
-    public native boolean recipientCipher_hasKeyRecipient(long cCtx, byte[] recipientId);
-
-    public native void recipientCipher_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey);
-
-    public native void recipientCipher_clearRecipients(long cCtx);
-
-    public native void recipientCipher_addSigner(long cCtx, byte[] signerId, PrivateKey privateKey) throws FoundationException;
-
-    public native void recipientCipher_clearSigners(long cCtx);
-
-    public native MessageInfoCustomParams recipientCipher_customParams(long cCtx);
-
-    public native void recipientCipher_startEncryption(long cCtx) throws FoundationException;
-
-    public native void recipientCipher_startSignedEncryption(long cCtx, int dataSize) throws FoundationException;
-
-    public native int recipientCipher_messageInfoLen(long cCtx);
-
-    public native byte[] recipientCipher_packMessageInfo(long cCtx);
-
-    public native int recipientCipher_encryptionOutLen(long cCtx, int dataLen);
-
-    public native byte[] recipientCipher_processEncryption(long cCtx, byte[] data) throws FoundationException;
-
-    public native byte[] recipientCipher_finishEncryption(long cCtx) throws FoundationException;
-
-    public native void recipientCipher_startDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo) throws FoundationException;
-
-    public native void recipientCipher_startVerifiedDecryptionWithKey(long cCtx, byte[] recipientId, PrivateKey privateKey, byte[] messageInfo, byte[] messageInfoFooter) throws FoundationException;
-
-    public native int recipientCipher_decryptionOutLen(long cCtx, int dataLen);
-
-    public native byte[] recipientCipher_processDecryption(long cCtx, byte[] data) throws FoundationException;
-
-    public native byte[] recipientCipher_finishDecryption(long cCtx) throws FoundationException;
-
-    public native boolean recipientCipher_isDataSigned(long cCtx);
-
-    public native SignerInfoList recipientCipher_signerInfos(long cCtx);
-
-    public native boolean recipientCipher_verifySignerInfo(long cCtx, SignerInfo signerInfo, PublicKey publicKey);
-
-    public native int recipientCipher_messageInfoFooterLen(long cCtx);
-
-    public native byte[] recipientCipher_packMessageInfoFooter(long cCtx) throws FoundationException;
-
     public native long messageInfoCustomParams_new();
 
     public native void messageInfoCustomParams_close(long cCtx);
-
-    public native void messageInfoCustomParams_addInt(long cCtx, byte[] key, int value);
-
-    public native void messageInfoCustomParams_addString(long cCtx, byte[] key, byte[] value);
-
-    public native void messageInfoCustomParams_addData(long cCtx, byte[] key, byte[] value);
-
-    public native void messageInfoCustomParams_clear(long cCtx);
-
-    public native int messageInfoCustomParams_findInt(long cCtx, byte[] key) throws FoundationException;
-
-    public native byte[] messageInfoCustomParams_findString(long cCtx, byte[] key) throws FoundationException;
-
-    public native byte[] messageInfoCustomParams_findData(long cCtx, byte[] key) throws FoundationException;
-
-    public native boolean messageInfoCustomParams_hasParams(long cCtx);
 
     public native long keyProvider_new();
 
     public native void keyProvider_close(long cCtx);
 
     public native void keyProvider_setRandom(long cCtx, Random random);
-
-    public native void keyProvider_setupDefaults(long cCtx) throws FoundationException;
-
-    public native void keyProvider_setRsaParams(long cCtx, int bitlen);
-
-    public native PrivateKey keyProvider_generatePrivateKey(long cCtx, AlgId algId) throws FoundationException;
-
-    public native PrivateKey keyProvider_generatePostQuantumPrivateKey(long cCtx) throws FoundationException;
-
-    public native PrivateKey keyProvider_generateCompoundPrivateKey(long cCtx, AlgId cipherAlgId, AlgId signerAlgId) throws FoundationException;
-
-    public native PrivateKey keyProvider_generateHybridPrivateKey(long cCtx, AlgId firstKeyAlgId, AlgId secondKeyAlgId) throws FoundationException;
-
-    public native PrivateKey keyProvider_generateCompoundHybridPrivateKey(long cCtx, AlgId cipherFirstKeyAlgId, AlgId cipherSecondKeyAlgId, AlgId signerFirstKeyAlgId, AlgId signerSecondKeyAlgId) throws FoundationException;
-
-    public native PrivateKey keyProvider_importPrivateKey(long cCtx, byte[] keyData) throws FoundationException;
-
-    public native PublicKey keyProvider_importPublicKey(long cCtx, byte[] keyData) throws FoundationException;
-
-    public native int keyProvider_exportedPublicKeyLen(long cCtx, PublicKey publicKey);
-
-    public native byte[] keyProvider_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    public native int keyProvider_exportedPrivateKeyLen(long cCtx, PrivateKey privateKey);
-
-    public native byte[] keyProvider_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
 
     public native long signer_new();
 
@@ -332,23 +116,9 @@ public class FoundationJNI {
 
     public native void signer_setRandom(long cCtx, Random random);
 
-    public native void signer_reset(long cCtx);
-
-    public native void signer_appendData(long cCtx, byte[] data);
-
-    public native int signer_signatureLen(long cCtx, PrivateKey privateKey);
-
-    public native byte[] signer_sign(long cCtx, PrivateKey privateKey) throws FoundationException;
-
     public native long verifier_new();
 
     public native void verifier_close(long cCtx);
-
-    public native void verifier_reset(long cCtx, byte[] signature) throws FoundationException;
-
-    public native void verifier_appendData(long cCtx, byte[] data);
-
-    public native boolean verifier_verify(long cCtx, PublicKey publicKey);
 
     public native long brainkeyClient_new();
 
@@ -358,12 +128,6 @@ public class FoundationJNI {
 
     public native void brainkeyClient_setOperationRandom(long cCtx, Random operationRandom);
 
-    public native void brainkeyClient_setupDefaults(long cCtx) throws FoundationException;
-
-    public native BrainkeyClientBlindResult brainkeyClient_blind(long cCtx, byte[] password) throws FoundationException;
-
-    public native byte[] brainkeyClient_deblind(long cCtx, byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException;
-
     public native long brainkeyServer_new();
 
     public native void brainkeyServer_close(long cCtx);
@@ -372,27 +136,9 @@ public class FoundationJNI {
 
     public native void brainkeyServer_setOperationRandom(long cCtx, Random operationRandom);
 
-    public native void brainkeyServer_setupDefaults(long cCtx) throws FoundationException;
-
-    public native byte[] brainkeyServer_generateIdentitySecret(long cCtx) throws FoundationException;
-
-    public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
-
     public native long groupSessionMessage_new();
 
     public native void groupSessionMessage_close(long cCtx);
-
-    public native GroupMsgType groupSessionMessage_getType(long cCtx);
-
-    public native byte[] groupSessionMessage_getSessionId(long cCtx);
-
-    public native int groupSessionMessage_getEpoch(long cCtx);
-
-    public native int groupSessionMessage_serializeLen(long cCtx);
-
-    public native byte[] groupSessionMessage_serialize(long cCtx);
-
-    public native GroupSessionMessage groupSessionMessage_deserialize(byte[] input) throws FoundationException;
 
     public native long groupSessionTicket_new();
 
@@ -400,33 +146,11 @@ public class FoundationJNI {
 
     public native void groupSessionTicket_setRng(long cCtx, Random rng);
 
-    public native void groupSessionTicket_setupDefaults(long cCtx) throws FoundationException;
-
-    public native void groupSessionTicket_setupTicketAsNew(long cCtx, byte[] sessionId) throws FoundationException;
-
-    public native GroupSessionMessage groupSessionTicket_getTicketMessage(long cCtx);
-
     public native long groupSession_new();
 
     public native void groupSession_close(long cCtx);
 
     public native void groupSession_setRng(long cCtx, Random rng);
-
-    public native int groupSession_getCurrentEpoch(long cCtx);
-
-    public native void groupSession_setupDefaults(long cCtx) throws FoundationException;
-
-    public native byte[] groupSession_getSessionId(long cCtx);
-
-    public native void groupSession_addEpoch(long cCtx, GroupSessionMessage message) throws FoundationException;
-
-    public native GroupSessionMessage groupSession_encrypt(long cCtx, byte[] plainText, PrivateKey privateKey) throws FoundationException;
-
-    public native int groupSession_decryptLen(long cCtx, GroupSessionMessage message);
-
-    public native byte[] groupSession_decrypt(long cCtx, GroupSessionMessage message, PublicKey publicKey) throws FoundationException;
-
-    public native GroupSessionTicket groupSession_createGroupTicket(long cCtx) throws FoundationException;
 
     public native long messageInfoEditor_new();
 
@@ -434,125 +158,33 @@ public class FoundationJNI {
 
     public native void messageInfoEditor_setRandom(long cCtx, Random random);
 
-    public native void messageInfoEditor_setupDefaults(long cCtx) throws FoundationException;
-
-    public native void messageInfoEditor_unpack(long cCtx, byte[] messageInfoData) throws FoundationException;
-
-    public native void messageInfoEditor_unlock(long cCtx, byte[] ownerRecipientId, PrivateKey ownerPrivateKey) throws FoundationException;
-
-    public native void messageInfoEditor_addKeyRecipient(long cCtx, byte[] recipientId, PublicKey publicKey) throws FoundationException;
-
-    public native boolean messageInfoEditor_removeKeyRecipient(long cCtx, byte[] recipientId);
-
-    public native void messageInfoEditor_removeAll(long cCtx);
-
-    public native int messageInfoEditor_packedLen(long cCtx);
-
-    public native byte[] messageInfoEditor_pack(long cCtx);
-
     public native long signerInfo_new();
 
     public native void signerInfo_close(long cCtx);
-
-    public native byte[] signerInfo_signerId(long cCtx);
-
-    public native AlgInfo signerInfo_signerAlgInfo(long cCtx);
-
-    public native byte[] signerInfo_signature(long cCtx);
 
     public native long signerInfoList_new();
 
     public native void signerInfoList_close(long cCtx);
 
-    public native boolean signerInfoList_hasItem(long cCtx);
-
-    public native SignerInfo signerInfoList_item(long cCtx);
-
-    public native boolean signerInfoList_hasNext(long cCtx);
-
-    public native SignerInfoList signerInfoList_next(long cCtx);
-
-    public native boolean signerInfoList_hasPrev(long cCtx);
-
-    public native SignerInfoList signerInfoList_prev(long cCtx);
-
-    public native void signerInfoList_clear(long cCtx);
-
     public native long messageInfoFooter_new();
 
     public native void messageInfoFooter_close(long cCtx);
-
-    public native boolean messageInfoFooter_hasSignerInfos(long cCtx);
-
-    public native SignerInfoList messageInfoFooter_signerInfos(long cCtx);
-
-    public native AlgInfo messageInfoFooter_signerHashAlgInfo(long cCtx);
-
-    public native byte[] messageInfoFooter_signerDigest(long cCtx);
 
     public native long signedDataInfo_new();
 
     public native void signedDataInfo_close(long cCtx);
 
-    public native AlgInfo signedDataInfo_hashAlgInfo(long cCtx);
-
     public native long footerInfo_new();
 
     public native void footerInfo_close(long cCtx);
-
-    public native boolean footerInfo_hasSignedDataInfo(long cCtx);
-
-    public native SignedDataInfo footerInfo_signedDataInfo(long cCtx);
-
-    public native void footerInfo_setDataSize(long cCtx, int dataSize);
-
-    public native int footerInfo_dataSize(long cCtx);
 
     public native long keyInfo_new();
 
     public native void keyInfo_close(long cCtx);
 
-    public native boolean keyInfo_isCompound(long cCtx);
-
-    public native boolean keyInfo_isHybrid(long cCtx);
-
-    public native boolean keyInfo_isCompoundHybrid(long cCtx);
-
-    public native boolean keyInfo_isCompoundHybridCipher(long cCtx);
-
-    public native boolean keyInfo_isCompoundHybridSigner(long cCtx);
-
-    public native boolean keyInfo_isHybridPostQuantum(long cCtx);
-
-    public native boolean keyInfo_isHybridPostQuantumCipher(long cCtx);
-
-    public native boolean keyInfo_isHybridPostQuantumSigner(long cCtx);
-
-    public native AlgId keyInfo_algId(long cCtx);
-
-    public native AlgId keyInfo_compoundCipherAlgId(long cCtx);
-
-    public native AlgId keyInfo_compoundSignerAlgId(long cCtx);
-
-    public native AlgId keyInfo_hybridFirstKeyAlgId(long cCtx);
-
-    public native AlgId keyInfo_hybridSecondKeyAlgId(long cCtx);
-
-    public native AlgId keyInfo_compoundHybridCipherFirstKeyAlgId(long cCtx);
-
-    public native AlgId keyInfo_compoundHybridCipherSecondKeyAlgId(long cCtx);
-
-    public native AlgId keyInfo_compoundHybridSignerFirstKeyAlgId(long cCtx);
-
-    public native AlgId keyInfo_compoundHybridSignerSecondKeyAlgId(long cCtx);
-
     public native long paddingParams_new();
 
     public native void paddingParams_close(long cCtx);
-
-    public native int paddingParams_frame(long cCtx);
-
-    public native int paddingParams_frameMax(long cCtx);
 
     public native long sha224_new();
 
@@ -720,10 +352,6 @@ public class FoundationJNI {
 
     public native void asn1rd_close(long cCtx);
 
-    public native boolean asn1rd_mbedtlsHasError(long cCtx, int code);
-
-    public native byte[] asn1rd_readTagData(long cCtx, int tag);
-
     public native void asn1rd_reset(long cCtx, byte[] data);
 
     public native int asn1rd_leftLen(long cCtx);
@@ -785,18 +413,6 @@ public class FoundationJNI {
     public native long asn1wr_new();
 
     public native void asn1wr_close(long cCtx);
-
-    public native boolean asn1wr_mbedtlsHasError(long cCtx, int code);
-
-    public native int asn1wr_writeTagData(long cCtx, byte[] data, int tag);
-
-    public native int asn1wr_getCurrentElementLen(byte curr, byte end);
-
-    public native void asn1wr_swapElementsOfSet(byte toStart, int toLen, byte fromStart, int fromLen);
-
-    public native boolean asn1wr_secondElementOfSetIsLess(byte firstStart, int firstLen, byte secondStart, int secondLen);
-
-    public native void asn1wr_sortElementsOfSet(long cCtx, int len);
 
     public native void asn1wr_reset(long cCtx, byte[] out, int outLen);
 
@@ -975,8 +591,6 @@ public class FoundationJNI {
     public native void ecc_setupDefaults(long cCtx) throws FoundationException;
 
     public native PrivateKey ecc_generateKey(long cCtx, AlgId algId) throws FoundationException;
-
-    public native AlgInfo ecc_produceAlgInfoForKey(long cCtx, Key key);
 
     public native PrivateKey ecc_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
@@ -1190,8 +804,6 @@ public class FoundationJNI {
 
     public native void seedEntropySource_resetSeed(long cCtx, byte[] seed);
 
-    public native void seedEntropySource_moveForward(long cCtx);
-
     public native boolean seedEntropySource_isStrong(long cCtx);
 
     public native byte[] seedEntropySource_gather(long cCtx, int len) throws FoundationException;
@@ -1278,8 +890,6 @@ public class FoundationJNI {
 
     public native int sec1Serializer_serializePrivateKeyInplace(long cCtx, RawPrivateKey privateKey) throws FoundationException;
 
-    public native boolean sec1Serializer_isEcKey(Key key);
-
     public native int sec1Serializer_serializedPublicKeyLen(long cCtx, RawPublicKey publicKey);
 
     public native byte[] sec1Serializer_serializePublicKey(long cCtx, RawPublicKey publicKey) throws FoundationException;
@@ -1319,10 +929,6 @@ public class FoundationJNI {
     public native RawPublicKey keyAsn1Deserializer_deserializePublicKeyInplace(long cCtx) throws FoundationException;
 
     public native RawPrivateKey keyAsn1Deserializer_deserializePrivateKeyInplace(long cCtx) throws FoundationException;
-
-    public native RawPrivateKey keyAsn1Deserializer_deserializePkcs8PrivateKeyInplace(long cCtx, int seqLeftLen, int version) throws FoundationException;
-
-    public native RawPrivateKey keyAsn1Deserializer_deserializeSec1PrivateKeyInplace(long cCtx, int seqLeftLen, int version, AlgInfo algInfo) throws FoundationException;
 
     public native RawPublicKey keyAsn1Deserializer_deserializePublicKey(long cCtx, byte[] publicKeyData) throws FoundationException;
 
@@ -1652,8 +1258,6 @@ public class FoundationJNI {
 
     public native PrivateKey hybridKeyAlg_makeKey(long cCtx, PrivateKey firstKey, PrivateKey secondKey) throws FoundationException;
 
-    public native void hybridKeyAlg_configCipher(Cipher cipher, Hash hash, byte[] sharedKey);
-
     public native PrivateKey hybridKeyAlg_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
     public native PublicKey hybridKeyAlg_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
@@ -1748,48 +1352,6 @@ public class FoundationJNI {
 
     public native void algInfoDerSerializer_setupDefaults(long cCtx);
 
-    public native boolean algInfoDerSerializer_isAlgRequireNullParams(AlgId algId);
-
-    public native int algInfoDerSerializer_serializedSimpleAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeSimpleAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedKdfAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeKdfAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedHkdfAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeHkdfAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedHmacAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeHmacAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedCipherAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeCipherAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedPbkdf2AlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializePbkdf2AlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedPbes2AlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializePbes2AlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedEccAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeEccAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedCompoundKeyAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeCompoundKeyAlgInfo(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializedHybridKeyAlgInfoLen(long cCtx, AlgInfo algInfo);
-
-    public native int algInfoDerSerializer_serializeHybridKeyAlgInfo(long cCtx, AlgInfo algInfo);
-
     public native int algInfoDerSerializer_serializeInplace(long cCtx, AlgInfo algInfo);
 
     public native int algInfoDerSerializer_serializedLen(long cCtx, AlgInfo algInfo);
@@ -1804,26 +1366,6 @@ public class FoundationJNI {
 
     public native void algInfoDerDeserializer_setupDefaults(long cCtx);
 
-    public native AlgInfo algInfoDerDeserializer_deserializeSimpleAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeKdfAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeHkdfAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeHmacAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeCipherAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializePbkdf2AlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializePbes2AlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeEccAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeCompoundKeyAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
-    public native AlgInfo algInfoDerDeserializer_deserializeHybridKeyAlgInfo(long cCtx, OidId oidId) throws FoundationException;
-
     public native AlgInfo algInfoDerDeserializer_deserializeInplace(long cCtx) throws FoundationException;
 
     public native AlgInfo algInfoDerDeserializer_deserialize(long cCtx, byte[] data) throws FoundationException;
@@ -1837,74 +1379,6 @@ public class FoundationJNI {
     public native void messageInfoDerSerializer_setAsn1Writer(long cCtx, Asn1Writer asn1Writer);
 
     public native void messageInfoDerSerializer_setupDefaults(long cCtx);
-
-    public native int messageInfoDerSerializer_serializedCustomParamsLen(long cCtx, MessageInfoCustomParams customParams);
-
-    public native int messageInfoDerSerializer_serializeCustomParams(long cCtx, MessageInfoCustomParams customParams);
-
-    public native int messageInfoDerSerializer_serializedFooterInfoLen(long cCtx, FooterInfo footerInfo);
-
-    public native int messageInfoDerSerializer_serializeFooterInfo(long cCtx, FooterInfo footerInfo);
-
-    public native int messageInfoDerSerializer_serializeSignedDataInfoInternal(long cCtx, SignedDataInfo signedDataInfo);
-
-    public native int messageInfoDerSerializer_serializedKeyRecipientInfoLen(long cCtx, KeyRecipientInfo keyRecipientInfo);
-
-    public native int messageInfoDerSerializer_serializeKeyRecipientInfo(long cCtx, KeyRecipientInfo keyRecipientInfo);
-
-    public native int messageInfoDerSerializer_serializedPasswordRecipientInfoLen(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
-
-    public native int messageInfoDerSerializer_serializePasswordRecipientInfo(long cCtx, PasswordRecipientInfo passwordRecipientInfo);
-
-    public native int messageInfoDerSerializer_serializedRecipientInfosLen(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializeRecipientInfos(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializedEncryptedContentInfoLen(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializeEncryptedContentInfo(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializedEnvelopedDataLen(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializeEnvelopedData(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializedCmsContentInfoLen(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializeCmsContentInfo(long cCtx, MessageInfo messageInfo);
-
-    public native int messageInfoDerSerializer_serializedSignerInfosLen(long cCtx, MessageInfoFooter messageInfoFooter);
-
-    public native int messageInfoDerSerializer_serializeSignerInfos(long cCtx, MessageInfoFooter messageInfoFooter);
-
-    public native int messageInfoDerSerializer_serializedSignerInfoLen(long cCtx, SignerInfo signerInfo);
-
-    public native int messageInfoDerSerializer_serializeSignerInfo(long cCtx, SignerInfo signerInfo);
-
-    public native void messageInfoDerSerializer_deserializeCustomParams(long cCtx, MessageInfoCustomParams customParams) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeCipherKdf(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeCipherPadding(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeFooterInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeSignedDataInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeKeyRecipientInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializePasswordRecipientInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeRecipientInfos(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeEncryptedContentInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeEnvelopedData(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeCmsContentInfo(long cCtx, MessageInfo messageInfo) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeSignerInfos(long cCtx, MessageInfoFooter messageInfoFooter) throws FoundationException;
-
-    public native void messageInfoDerSerializer_deserializeSignerInfo(long cCtx, MessageInfoFooter messageInfoFooter) throws FoundationException;
 
     public native int messageInfoDerSerializer_serializedLen(long cCtx, MessageInfo messageInfo);
 

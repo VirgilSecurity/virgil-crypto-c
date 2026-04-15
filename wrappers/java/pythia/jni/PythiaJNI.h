@@ -34,59 +34,53 @@
 * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 */
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1configure(void);
+#include <jni.h>
 
-JNIEXPORT void JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1cleanup(void);
+#ifndef _Included_PythiaJNI_h
+#define _Included_PythiaJNI_h
+#ifdef __cplusplus
+extern "C" {
+#endif
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1configure (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blindedPasswordBufLen(void);
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1cleanup (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1deblindedPasswordBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blindedPasswordBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blindingSecretBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1deblindedPasswordBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformationPrivateKeyBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blindingSecretBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformationPublicKeyBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformationPrivateKeyBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformedPasswordBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformationPublicKeyBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformedTweakBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformedPasswordBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1proofValueBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transformedTweakBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jint JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1passwordUpdateTokenBufLen(void);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1proofValueBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blind(jbyteArray jpassword);
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1passwordUpdateTokenBufLen (JNIEnv *, jobject);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1deblind(jbyteArray jtransformedPassword, jbyteArray jblindingSecret);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1blind (JNIEnv *, jobject, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1computeTransformationKeyPair(jbyteArray jtransformationKeyId, jbyteArray jpythiaSecret, jbyteArray jpythiaScopeSecret);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1deblind (JNIEnv *, jobject, jbyteArray, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transform(jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPrivateKey);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1computeTransformationKeyPair (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jobject JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1prove(jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtransformedTweak, jbyteArray jtransformationPrivateKey, jbyteArray jtransformationPublicKey);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1transform (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jboolean JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1verify(jbyteArray jtransformedPassword, jbyteArray jblindedPassword, jbyteArray jtweak, jbyteArray jtransformationPublicKey, jbyteArray jproofValueC, jbyteArray jproofValueU);
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1prove (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1getPasswordUpdateToken(jbyteArray jpreviousTransformationPrivateKey, jbyteArray jnewTransformationPrivateKey);
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1verify (JNIEnv *, jobject, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
-JNIEXPORT jbyteArray JNICALL
-Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1updateDeblindedWithToken(jbyteArray jdeblindedPassword, jbyteArray jpasswordUpdateToken);
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1getPasswordUpdateToken (JNIEnv *, jobject, jbyteArray, jbyteArray);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_pythia_PythiaJNI_pythia_1updateDeblindedWithToken (JNIEnv *, jobject, jbyteArray, jbyteArray);
+
+
+#ifdef __cplusplus
+}
+#endif
+#endif
