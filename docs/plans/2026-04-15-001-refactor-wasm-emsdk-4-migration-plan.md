@@ -7,6 +7,13 @@ date: 2026-04-15
 
 # refactor: Migrate WASM build from emsdk 3.1.51 to 4.x
 
+> **2026-04-17 addendum (post `docs/plans/2026-04-17-002-refactor-remove-pythia-wasm-wrapper-plan.md`):**
+> The WASM toolchain no longer links `thirdparty/relic`. Pythia was relic's only path into the WASM build; with the WASM pythia wrapper removed and `configs/wasm-config.cmake` now defaulting `VIRGIL_LIB_PYTHIA=OFF`, neither relic's compile nor its link runs during a WASM build.
+>
+> **Implication for this plan:** Unit 2 (the relic `PATCH_COMMAND` for the EP2 pointer-type fix) should be re-evaluated when this plan is picked up. If the emsdk 4.0.x spike confirms relic is not invoked during the WASM build path, Unit 2 can likely be skipped entirely — that was the single hardest unit in this plan. The patch may still be worth carrying for the *native* relic compile if it also fails under LLVM 19+ when `VIRGIL_LIB_PYTHIA=ON` (the default for non-WASM configs), but that's a separate, lower-stakes concern.
+>
+> Run the Unit 1 spike first, then decide whether to keep, narrow, or drop Unit 2 based on what the spike actually surfaces.
+
 ## Overview
 
 The WASM wrapper toolchain is pinned to Emscripten SDK 3.1.51 (LLVM 15) in CI. That pin is now two years old, aging against the rest of the build stack, and blocks adoption of newer Emscripten features, optimizer improvements, and browser support updates. This plan migrates the CI toolchain to the 4.0.x line (LLVM 19–20), updates the codegen backend that emits WASM build flags, and resolves known thirdparty breakage — primarily the `thirdparty/relic` EP2 curve pointer-type compilation failure triggered by stricter clang ≥16 diagnostics.
