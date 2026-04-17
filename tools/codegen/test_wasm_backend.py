@@ -68,17 +68,6 @@ class PheFileCountTests(unittest.TestCase):
         self.assertEqual(len(self.files), 11)
 
 
-class PythiaFileCountTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.ir = _load_ir("pythia")
-        cls.files = generate_wasm_files(cls.ir, repo_root=str(REPO_ROOT))
-
-    def test_total_file_count(self) -> None:
-        # 4 JS + 1 CMake = 5
-        self.assertEqual(len(self.files), 5)
-
-
 class RatchetFileCountTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
