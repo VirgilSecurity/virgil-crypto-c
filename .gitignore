@@ -58,6 +58,12 @@ __pycache__/
 # Go wrapper pre-built libs (built locally or by CI)
 wrappers/go/pkg/
 
+# CMake build artifacts that can leak into wrappers/ from in-source builds
+wrappers/**/CMakeFiles/
+wrappers/**/cmake_install.cmake
+wrappers/**/CTestTestfile.cmake
+wrappers/**/fake.c
+
 # pi agent workspace
 .pi/
 
