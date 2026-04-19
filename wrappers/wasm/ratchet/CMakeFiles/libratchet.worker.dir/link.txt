@@ -1,1 +1,0 @@
-/Users/ssiroshtan/Library/emsdk/upstream/emscripten/emcc -O3 -DNDEBUG @CMakeFiles/libratchet.worker.dir/objects1.rsp -o libratchet.worker.js @CMakeFiles/libratchet.worker.dir/linkLibs.rsp

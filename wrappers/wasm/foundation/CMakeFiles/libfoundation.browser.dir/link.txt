@@ -1,1 +1,0 @@
-/Users/ssiroshtan/Library/emsdk/upstream/emscripten/emcc -O3 -DNDEBUG @CMakeFiles/libfoundation.browser.dir/objects1.rsp -o libfoundation.browser.js @CMakeFiles/libfoundation.browser.dir/linkLibs.rsp

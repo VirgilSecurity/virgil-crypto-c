@@ -1,1 +1,0 @@
-/Users/ssiroshtan/Library/emsdk/upstream/emscripten/emcc -O3 -DNDEBUG @CMakeFiles/libphe.dir/objects1.rsp -o libphe.js @CMakeFiles/libphe.dir/linkLibs.rsp
