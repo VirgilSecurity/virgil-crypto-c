@@ -1893,6 +1893,13 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
         entity_snake = _snake_case(ename)
         lines.append(f'#include "{prefix}_{entity_snake}.h"')
 
+    # Cross-project PHP extension headers for symbol declarations.
+    # On Windows, __declspec(dllimport) decoration requires the header;
+    # on all platforms, the declaration prevents implicit-function warnings.
+    for dep_project in sorted(_collect_cross_project_php_deps(project_ir)):
+        dep_prefix = _PROJECT_PREFIX.get(dep_project, dep_project)
+        lines.append(f'#include "{dep_prefix}_{dep_project}_php.h"')
+
     lines.append("")
 
     # Status handler macro
@@ -2396,9 +2403,15 @@ def generate_c_extension_cmake(project_ir: IRProject) -> str:
     lines.append(f"        $<BUILD_INTERFACE:{prefix}_{project_name}_php.c>")
     lines.append(")")
     lines.append("")
+    cross_project_deps = sorted(_collect_cross_project_php_deps(project_ir))
+
     lines.append(f"target_include_directories({target}")
     lines.append("    PUBLIC")
     lines.append("        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>")
+    if cross_project_deps:
+        lines.append("    PRIVATE")
+        for dep_project in cross_project_deps:
+            lines.append(f"        $<BUILD_INTERFACE:${{CMAKE_CURRENT_LIST_DIR}}/../{dep_project}>")
     lines.append(")")
     lines.append("")
     lines.append(f"target_link_libraries({target}")
@@ -2408,6 +2421,8 @@ def generate_c_extension_cmake(project_ir: IRProject) -> str:
     lines.append("        phplib")
     lines.append('        "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:'
                  '-undefined dynamic_lookup>"')
+    for dep_project in cross_project_deps:
+        lines.append(f"        $<$<BOOL:${{WIN32}}>:{dep_project}_php>")
     lines.append(")")
     lines.append("")
     lines.append("if(VIRGIL_INSTALL_WRAP_LIBS)")
@@ -2431,6 +2446,38 @@ def _find_status_enum(project_ir: IRProject) -> IREnum | None:
         if enum.name == "status":
             return enum
     return None
+
+
+def _collect_cross_project_php_deps(project_ir: IRProject) -> set[str]:
+    """Return set of project names whose PHP symbols this project references.
+
+    Scans class/implementation dependencies and method arguments for
+    cross-project interface or class references. On Windows, the returned
+    projects must be linked as import libraries. On all platforms, their
+    PHP headers must be included for proper symbol declarations.
+    """
+    deps: set[str] = set()
+    current = project_ir.name
+
+    def _check(project_name: str | None) -> None:
+        if project_name and project_name != current:
+            deps.add(project_name)
+
+    for cls in project_ir.classes:
+        for dep in cls.dependencies:
+            _check(dep.attrs.get("project"))
+        for method in cls.methods:
+            for arg in method.arguments + method.returns:
+                _check(arg.project)
+
+    for impl in project_ir.implementations:
+        for dep in impl.dependencies:
+            _check(dep.attrs.get("project"))
+        for method in impl.methods:
+            for arg in method.arguments + method.returns:
+                _check(arg.project)
+
+    return deps
 
 
 def _collect_all_included_entities(

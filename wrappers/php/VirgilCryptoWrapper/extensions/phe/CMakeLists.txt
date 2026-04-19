@@ -33,6 +33,8 @@ target_sources(phe_php
 target_include_directories(phe_php
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+    PRIVATE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/../foundation>
 )
 
 target_link_libraries(phe_php
@@ -41,6 +43,7 @@ target_link_libraries(phe_php
     PRIVATE
         phplib
         "$<$<STREQUAL:${CMAKE_SYSTEM_NAME},Darwin>:-undefined dynamic_lookup>"
+        $<$<BOOL:${WIN32}>:foundation_php>
 )
 
 if(VIRGIL_INSTALL_WRAP_LIBS)

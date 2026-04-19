@@ -46,6 +46,7 @@
 #include "vsce_uokms_client.h"
 #include "vsce_uokms_server.h"
 #include "vsce_uokms_wrap_rotation.h"
+#include "vscf_foundation_php.h"
 
 #define VSCE_HANDLE_STATUS(status) do { if(status != vsce_status_SUCCESS) { vsce_handle_throw_exception(status); } } while (false)
 
