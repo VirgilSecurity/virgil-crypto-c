@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface AlgInfoSerializer {
+    int serializedLen(AlgInfo algInfo);
+
+    byte[] serialize(AlgInfo algInfo);
+
 }

@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Decrypt {
+    byte[] decrypt(byte[] data) throws FoundationException;
+
+    int decryptedLen(int dataLen);
+
 }

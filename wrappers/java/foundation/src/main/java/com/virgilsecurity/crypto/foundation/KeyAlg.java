@@ -37,4 +37,14 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface KeyAlg {
+    PrivateKey generateEphemeralKey(Key key) throws FoundationException;
+
+    PublicKey importPublicKey(RawPublicKey rawKey) throws FoundationException;
+
+    RawPublicKey exportPublicKey(PublicKey publicKey) throws FoundationException;
+
+    PrivateKey importPrivateKey(RawPrivateKey rawKey) throws FoundationException;
+
+    RawPrivateKey exportPrivateKey(PrivateKey privateKey) throws FoundationException;
+
 }

@@ -174,7 +174,7 @@ public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Compute
         return FoundationJNI.INSTANCE.ecc_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public EccKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.ecc_kemEncapsulate(this.cCtx, publicKey);
     }
 

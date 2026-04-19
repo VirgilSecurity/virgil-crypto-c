@@ -37,4 +37,14 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface KeySigner extends KeyAlg {
+    boolean canSign(PrivateKey privateKey);
+
+    int signatureLen(PrivateKey privateKey);
+
+    byte[] signHash(PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    boolean canVerify(PublicKey publicKey);
+
+    boolean verifyHash(PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
+
 }

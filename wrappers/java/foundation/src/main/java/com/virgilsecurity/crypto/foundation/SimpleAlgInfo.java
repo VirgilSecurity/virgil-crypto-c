@@ -45,6 +45,11 @@ public class SimpleAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.simpleAlgInfo_new();
     }
 
+    public SimpleAlgInfo(AlgId algId) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.simpleAlgInfo_new(algId);
+    }
+
     SimpleAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }

@@ -37,4 +37,16 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface KeyCipher extends KeyAlg {
+    boolean canEncrypt(PublicKey publicKey, int dataLen);
+
+    int encryptedLen(PublicKey publicKey, int dataLen);
+
+    byte[] encrypt(PublicKey publicKey, byte[] data) throws FoundationException;
+
+    boolean canDecrypt(PrivateKey privateKey, int dataLen);
+
+    int decryptedLen(PrivateKey privateKey, int dataLen);
+
+    byte[] decrypt(PrivateKey privateKey, byte[] data) throws FoundationException;
+
 }

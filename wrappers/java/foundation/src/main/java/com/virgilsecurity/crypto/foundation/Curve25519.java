@@ -154,7 +154,7 @@ public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeShar
         return FoundationJNI.INSTANCE.curve25519_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public Curve25519KemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.curve25519_kemEncapsulate(this.cCtx, publicKey);
     }
 

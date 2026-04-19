@@ -37,4 +37,10 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface MessageInfoFooterSerializer {
+    int serializedFooterLen(MessageInfoFooter messageInfoFooter);
+
+    byte[] serializeFooter(MessageInfoFooter messageInfoFooter);
+
+    MessageInfoFooter deserializeFooter(byte[] data) throws FoundationException;
+
 }

@@ -45,6 +45,11 @@ public class KeyRecipientInfo implements AutoCloseable {
         this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new();
     }
 
+    public KeyRecipientInfo(byte[] recipientId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.keyRecipientInfo_new(recipientId, keyEncryptionAlgorithm, encryptedKey);
+    }
+
     KeyRecipientInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }

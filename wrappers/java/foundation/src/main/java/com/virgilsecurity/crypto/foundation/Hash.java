@@ -37,4 +37,12 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Hash {
+    byte[] hash(byte[] data);
+
+    void start();
+
+    void update(byte[] data);
+
+    byte[] finish();
+
 }

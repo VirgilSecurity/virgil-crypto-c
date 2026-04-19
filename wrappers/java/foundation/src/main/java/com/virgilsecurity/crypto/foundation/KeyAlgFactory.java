@@ -38,19 +38,19 @@ package com.virgilsecurity.crypto.foundation;
 
 public class KeyAlgFactory {
 
-    public KeyAlg createFromAlgId(AlgId algId, Random random) throws FoundationException {
+    public static KeyAlg createFromAlgId(AlgId algId, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromAlgId(algId, random);
     }
 
-    public KeyAlg createFromKey(Key key, Random random) throws FoundationException {
+    public static KeyAlg createFromKey(Key key, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromKey(key, random);
     }
 
-    public KeyAlg createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException {
+    public static KeyAlg createFromRawPublicKey(RawPublicKey publicKey, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromRawPublicKey(publicKey, random);
     }
 
-    public KeyAlg createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException {
+    public static KeyAlg createFromRawPrivateKey(RawPrivateKey privateKey, Random random) throws FoundationException {
         return FoundationJNI.INSTANCE.keyAlgFactory_createFromRawPrivateKey(privateKey, random);
     }
 

@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Random {
+    byte[] random(int dataLen) throws FoundationException;
+
+    void reseed() throws FoundationException;
+
 }

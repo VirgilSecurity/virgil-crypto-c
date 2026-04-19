@@ -37,4 +37,62 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Asn1Reader {
+    void reset(byte[] data);
+
+    int leftLen();
+
+    boolean hasError();
+
+    void status() throws FoundationException;
+
+    int getTag();
+
+    int getLen();
+
+    int getDataLen();
+
+    int readTag(int tag);
+
+    int readContextTag(int tag);
+
+    int readInt();
+
+    byte readInt8();
+
+    short readInt16();
+
+    int readInt32();
+
+    long readInt64();
+
+    int readUint();
+
+    int readUint8();
+
+    int readUint16();
+
+    int readUint32();
+
+    long readUint64();
+
+    boolean readBool();
+
+    void readNull();
+
+    void readNullOptional();
+
+    byte[] readOctetStr();
+
+    byte[] readBitstringAsOctetStr();
+
+    byte[] readUtf8Str();
+
+    byte[] readOid();
+
+    byte[] readData(int len);
+
+    int readSequence();
+
+    int readSet();
+
 }

@@ -37,4 +37,26 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Padding {
+    void configure(PaddingParams params);
+
+    int paddedDataLen(int dataLen);
+
+    int len();
+
+    int lenMax();
+
+    void startDataProcessing();
+
+    byte[] processData(byte[] data);
+
+    byte[] finishDataProcessing() throws FoundationException;
+
+    void startPaddedDataProcessing();
+
+    byte[] processPaddedData(byte[] data);
+
+    int finishPaddedDataProcessingOutLen();
+
+    byte[] finishPaddedDataProcessing() throws FoundationException;
+
 }

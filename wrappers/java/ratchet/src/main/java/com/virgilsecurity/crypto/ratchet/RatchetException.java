@@ -36,7 +36,7 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-public class RatchetException extends Exception {
+public class RatchetException extends RuntimeException {
 
     public static final int SUCCESS = 0;
 

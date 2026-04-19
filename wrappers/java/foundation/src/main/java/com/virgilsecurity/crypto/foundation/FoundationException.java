@@ -36,7 +36,7 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class FoundationException extends Exception {
+public class FoundationException extends RuntimeException {
 
     public static final int SUCCESS = 0;
 

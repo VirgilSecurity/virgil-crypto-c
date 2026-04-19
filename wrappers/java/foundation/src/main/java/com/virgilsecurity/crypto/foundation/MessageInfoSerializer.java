@@ -37,4 +37,12 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface MessageInfoSerializer {
+    int serializedLen(MessageInfo messageInfo);
+
+    byte[] serialize(MessageInfo messageInfo);
+
+    int readPrefix(byte[] data);
+
+    MessageInfo deserialize(byte[] data) throws FoundationException;
+
 }

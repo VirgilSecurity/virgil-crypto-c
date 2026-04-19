@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface ComputeSharedKey extends KeyAlg {
+    byte[] computeSharedKey(PublicKey publicKey, PrivateKey privateKey) throws FoundationException;
+
+    int sharedKeyLen(Key key);
+
 }

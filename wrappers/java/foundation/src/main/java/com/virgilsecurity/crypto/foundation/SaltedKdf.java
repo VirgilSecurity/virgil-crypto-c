@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface SaltedKdf extends Kdf {
+    void reset(byte[] salt, int iterationCount);
+
+    void setInfo(byte[] info);
+
 }

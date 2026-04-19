@@ -174,7 +174,7 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
         return FoundationJNI.INSTANCE.ed25519_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public Ed25519KemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.ed25519_kemEncapsulate(this.cCtx, publicKey);
     }
 

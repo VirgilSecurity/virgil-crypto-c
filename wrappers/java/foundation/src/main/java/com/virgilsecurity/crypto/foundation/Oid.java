@@ -38,27 +38,27 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Oid {
 
-    public byte[] fromAlgId(AlgId algId) {
+    public static byte[] fromAlgId(AlgId algId) {
         return FoundationJNI.INSTANCE.oid_fromAlgId(algId);
     }
 
-    public AlgId toAlgId(byte[] oid) {
+    public static AlgId toAlgId(byte[] oid) {
         return FoundationJNI.INSTANCE.oid_toAlgId(oid);
     }
 
-    public byte[] fromId(OidId oidId) {
+    public static byte[] fromId(OidId oidId) {
         return FoundationJNI.INSTANCE.oid_fromId(oidId);
     }
 
-    public OidId toId(byte[] oid) {
+    public static OidId toId(byte[] oid) {
         return FoundationJNI.INSTANCE.oid_toId(oid);
     }
 
-    public AlgId idToAlgId(OidId oidId) {
+    public static AlgId idToAlgId(OidId oidId) {
         return FoundationJNI.INSTANCE.oid_idToAlgId(oidId);
     }
 
-    public boolean equal(byte[] lhs, byte[] rhs) {
+    public static boolean equal(byte[] lhs, byte[] rhs) {
         return FoundationJNI.INSTANCE.oid_equal(lhs, rhs);
     }
 

@@ -37,4 +37,10 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Alg {
+    AlgId algId();
+
+    AlgInfo produceAlgInfo();
+
+    void restoreAlgInfo(AlgInfo algInfo) throws FoundationException;
+
 }

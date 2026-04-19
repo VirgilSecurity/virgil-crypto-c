@@ -36,35 +36,44 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-public class Asn1Tag {
+public enum Asn1Tag {
 
-    public static final int BOOLEAN = 0x01;
-    public static final int INTEGER = 0x02;
-    public static final int BIT_STRING = 0x03;
-    public static final int OCTET_STRING = 0x04;
-    public static final int NULL = 0x05;
-    public static final int OID = 0x06;
-    public static final int UTF8_STRING = 0x0C;
-    public static final int SEQUENCE = 0x10;
-    public static final int SET = 0x11;
-    public static final int PRINTABLE_STRING = 0x13;
-    public static final int T61_STRING = 0x14;
-    public static final int IA5_STRING = 0x16;
-    public static final int UTC_TIME = 0x17;
-    public static final int GENERALIZED_TIME = 0x18;
-    public static final int UNIVERSAL_STRING = 0x1C;
-    public static final int BMP_STRING = 0x1E;
-    public static final int PRIMITIVE = 0x00;
-    public static final int CONSTRUCTED = 0x20;
-    public static final int CONTEXT_SPECIFIC = 0x80;
+    BOOLEAN(0x01),
+    INTEGER(0x02),
+    BIT_STRING(0x03),
+    OCTET_STRING(0x04),
+    NULL(0x05),
+    OID(0x06),
+    UTF8_STRING(0x0C),
+    SEQUENCE(0x10),
+    SET(0x11),
+    PRINTABLE_STRING(0x13),
+    T61_STRING(0x14),
+    IA5_STRING(0x16),
+    UTC_TIME(0x17),
+    GENERALIZED_TIME(0x18),
+    UNIVERSAL_STRING(0x1C),
+    BMP_STRING(0x1E),
+    PRIMITIVE(0x00),
+    CONSTRUCTED(0x20),
+    CONTEXT_SPECIFIC(0x80);
 
     private final int code;
 
-    public Asn1Tag(int code) {
+    private Asn1Tag(int code) {
         this.code = code;
     }
 
     public int getCode() {
-        return this.code;
+        return code;
+    }
+
+    public static Asn1Tag fromCode(int code) {
+        for (Asn1Tag a : Asn1Tag.values()) {
+            if (a.code == code) {
+                return a;
+            }
+        }
+        return null;
     }
 }

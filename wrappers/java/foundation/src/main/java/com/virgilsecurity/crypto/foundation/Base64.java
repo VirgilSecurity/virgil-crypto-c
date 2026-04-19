@@ -38,19 +38,19 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Base64 {
 
-    public int encodedLen(int dataLen) {
+    public static int encodedLen(int dataLen) {
         return FoundationJNI.INSTANCE.base64_encodedLen(dataLen);
     }
 
-    public byte[] encode(byte[] data) {
+    public static byte[] encode(byte[] data) {
         return FoundationJNI.INSTANCE.base64_encode(data);
     }
 
-    public int decodedLen(int strLen) {
+    public static int decodedLen(int strLen) {
         return FoundationJNI.INSTANCE.base64_decodedLen(strLen);
     }
 
-    public byte[] decode(byte[] str) throws FoundationException {
+    public static byte[] decode(byte[] str) throws FoundationException {
         return FoundationJNI.INSTANCE.base64_decode(str);
     }
 

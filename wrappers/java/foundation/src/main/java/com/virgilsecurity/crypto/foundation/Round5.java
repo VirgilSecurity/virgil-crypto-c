@@ -118,7 +118,7 @@ public class Round5 implements AutoCloseable, KeyAlg, Kem {
         return FoundationJNI.INSTANCE.round5_kemEncapsulatedKeyLen(this.cCtx, publicKey);
     }
 
-    public Round5KemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
+    public KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.round5_kemEncapsulate(this.cCtx, publicKey);
     }
 

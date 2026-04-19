@@ -37,4 +37,16 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Mac {
+    int digestLen();
+
+    byte[] mac(byte[] key, byte[] data);
+
+    void start(byte[] key);
+
+    void update(byte[] data);
+
+    byte[] finish();
+
+    void reset();
+
 }

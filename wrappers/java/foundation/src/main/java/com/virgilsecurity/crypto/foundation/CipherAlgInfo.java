@@ -45,6 +45,11 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.cipherAlgInfo_new();
     }
 
+    public CipherAlgInfo(AlgId algId, byte[] nonce) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.cipherAlgInfo_new(algId, nonce);
+    }
+
     CipherAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }

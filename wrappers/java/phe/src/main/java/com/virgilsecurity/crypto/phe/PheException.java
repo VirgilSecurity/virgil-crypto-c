@@ -36,7 +36,7 @@
 
 package com.virgilsecurity.crypto.phe;
 
-public class PheException extends Exception {
+public class PheException extends RuntimeException {
 
     public static final int SUCCESS = 0;
 

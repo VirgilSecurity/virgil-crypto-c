@@ -112,6 +112,8 @@ public class FoundationJNI {
 
     public native void keyRecipientInfo_close(long cCtx);
 
+    public native long keyRecipientInfo_new(byte[] recipientId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey);
+
     public native byte[] keyRecipientInfo_recipientId(long cCtx);
 
     public native AlgInfo keyRecipientInfo_keyEncryptionAlgorithm(long cCtx);
@@ -139,6 +141,8 @@ public class FoundationJNI {
     public native long passwordRecipientInfo_new();
 
     public native void passwordRecipientInfo_close(long cCtx);
+
+    public native long passwordRecipientInfo_new(AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey);
 
     public native AlgInfo passwordRecipientInfo_keyEncryptionAlgorithm(long cCtx);
 
@@ -512,6 +516,8 @@ public class FoundationJNI {
 
     public native void keyInfo_close(long cCtx);
 
+    public native long keyInfo_new(AlgInfo algInfo);
+
     public native boolean keyInfo_isCompound(long cCtx);
 
     public native boolean keyInfo_isHybrid(long cCtx);
@@ -549,6 +555,8 @@ public class FoundationJNI {
     public native long paddingParams_new();
 
     public native void paddingParams_close(long cCtx);
+
+    public native long paddingParams_new(int frame, int frameMax);
 
     public native int paddingParams_frame(long cCtx);
 
@@ -664,7 +672,7 @@ public class FoundationJNI {
 
     public native byte[] aes256Gcm_finish(long cCtx) throws FoundationException;
 
-    public native Aes256GcmAuthEncryptResult aes256Gcm_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
+    public native AuthEncryptAuthEncryptResult aes256Gcm_authEncrypt(long cCtx, byte[] data, byte[] authData) throws FoundationException;
 
     public native int aes256Gcm_authEncryptedLen(long cCtx, int dataLen);
 
@@ -674,7 +682,7 @@ public class FoundationJNI {
 
     public native void aes256Gcm_setAuthData(long cCtx, byte[] authData);
 
-    public native Aes256GcmFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
+    public native CipherAuthFinishAuthEncryptionResult aes256Gcm_finishAuthEncryption(long cCtx) throws FoundationException;
 
     public native byte[] aes256Gcm_finishAuthDecryption(long cCtx, byte[] tag) throws FoundationException;
 
@@ -1000,7 +1008,7 @@ public class FoundationJNI {
 
     public native int ecc_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native EccKemEncapsulateResult ecc_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native KemKemEncapsulateResult ecc_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] ecc_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1354,7 +1362,7 @@ public class FoundationJNI {
 
     public native int ed25519_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native Ed25519KemEncapsulateResult ed25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native KemKemEncapsulateResult ed25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] ed25519_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1400,7 +1408,7 @@ public class FoundationJNI {
 
     public native int curve25519_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native Curve25519KemEncapsulateResult curve25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native KemKemEncapsulateResult curve25519_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] curve25519_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1464,7 +1472,7 @@ public class FoundationJNI {
 
     public native int round5_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
 
-    public native Round5KemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native KemKemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
 
     public native byte[] round5_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
 
@@ -1662,6 +1670,8 @@ public class FoundationJNI {
 
     public native void simpleAlgInfo_close(long cCtx);
 
+    public native long simpleAlgInfo_new(AlgId algId);
+
     public native AlgId simpleAlgInfo_algId(long cCtx);
 
     public native long hashBasedAlgInfo_new();
@@ -1675,6 +1685,8 @@ public class FoundationJNI {
     public native long cipherAlgInfo_new();
 
     public native void cipherAlgInfo_close(long cCtx);
+
+    public native long cipherAlgInfo_new(AlgId algId, byte[] nonce);
 
     public native byte[] cipherAlgInfo_nonce(long cCtx);
 
@@ -1705,6 +1717,8 @@ public class FoundationJNI {
     public native long eccAlgInfo_new();
 
     public native void eccAlgInfo_close(long cCtx);
+
+    public native long eccAlgInfo_new(AlgId algId, OidId keyId, OidId domainId);
 
     public native OidId eccAlgInfo_keyId(long cCtx);
 

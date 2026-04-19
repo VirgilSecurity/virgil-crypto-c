@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface AuthDecrypt extends CipherAuthInfo {
+    byte[] authDecrypt(byte[] data, byte[] authData, byte[] tag) throws FoundationException;
+
+    int authDecryptedLen(int dataLen);
+
 }

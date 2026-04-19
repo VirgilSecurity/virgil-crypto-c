@@ -98,7 +98,7 @@ public class GroupSessionMessage implements AutoCloseable {
         return FoundationJNI.INSTANCE.groupSessionMessage_serialize(this.cCtx);
     }
 
-    public GroupSessionMessage deserialize(byte[] input) throws FoundationException {
+    public static GroupSessionMessage deserialize(byte[] input) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSessionMessage_deserialize(input);
     }
 

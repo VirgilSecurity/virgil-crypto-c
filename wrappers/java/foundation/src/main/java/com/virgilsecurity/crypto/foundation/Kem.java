@@ -37,4 +37,12 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Kem {
+    int kemSharedKeyLen(Key key);
+
+    int kemEncapsulatedKeyLen(PublicKey publicKey);
+
+    KemKemEncapsulateResult kemEncapsulate(PublicKey publicKey) throws FoundationException;
+
+    byte[] kemDecapsulate(byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+
 }

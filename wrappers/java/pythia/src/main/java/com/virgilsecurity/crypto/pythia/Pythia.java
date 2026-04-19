@@ -38,79 +38,79 @@ package com.virgilsecurity.crypto.pythia;
 
 public class Pythia {
 
-    public void configure() throws PythiaException {
+    public static void configure() throws PythiaException {
         PythiaJNI.INSTANCE.pythia_configure();
     }
 
-    public void cleanup() {
+    public static void cleanup() {
         PythiaJNI.INSTANCE.pythia_cleanup();
     }
 
-    public int blindedPasswordBufLen() {
+    public static int blindedPasswordBufLen() {
         return PythiaJNI.INSTANCE.pythia_blindedPasswordBufLen();
     }
 
-    public int deblindedPasswordBufLen() {
+    public static int deblindedPasswordBufLen() {
         return PythiaJNI.INSTANCE.pythia_deblindedPasswordBufLen();
     }
 
-    public int blindingSecretBufLen() {
+    public static int blindingSecretBufLen() {
         return PythiaJNI.INSTANCE.pythia_blindingSecretBufLen();
     }
 
-    public int transformationPrivateKeyBufLen() {
+    public static int transformationPrivateKeyBufLen() {
         return PythiaJNI.INSTANCE.pythia_transformationPrivateKeyBufLen();
     }
 
-    public int transformationPublicKeyBufLen() {
+    public static int transformationPublicKeyBufLen() {
         return PythiaJNI.INSTANCE.pythia_transformationPublicKeyBufLen();
     }
 
-    public int transformedPasswordBufLen() {
+    public static int transformedPasswordBufLen() {
         return PythiaJNI.INSTANCE.pythia_transformedPasswordBufLen();
     }
 
-    public int transformedTweakBufLen() {
+    public static int transformedTweakBufLen() {
         return PythiaJNI.INSTANCE.pythia_transformedTweakBufLen();
     }
 
-    public int proofValueBufLen() {
+    public static int proofValueBufLen() {
         return PythiaJNI.INSTANCE.pythia_proofValueBufLen();
     }
 
-    public int passwordUpdateTokenBufLen() {
+    public static int passwordUpdateTokenBufLen() {
         return PythiaJNI.INSTANCE.pythia_passwordUpdateTokenBufLen();
     }
 
-    public PythiaBlindResult blind(byte[] password) throws PythiaException {
+    public static PythiaBlindResult blind(byte[] password) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_blind(password);
     }
 
-    public byte[] deblind(byte[] transformedPassword, byte[] blindingSecret) throws PythiaException {
+    public static byte[] deblind(byte[] transformedPassword, byte[] blindingSecret) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_deblind(transformedPassword, blindingSecret);
     }
 
-    public PythiaComputeTransformationKeyPairResult computeTransformationKeyPair(byte[] transformationKeyId, byte[] pythiaSecret, byte[] pythiaScopeSecret) throws PythiaException {
+    public static PythiaComputeTransformationKeyPairResult computeTransformationKeyPair(byte[] transformationKeyId, byte[] pythiaSecret, byte[] pythiaScopeSecret) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_computeTransformationKeyPair(transformationKeyId, pythiaSecret, pythiaScopeSecret);
     }
 
-    public PythiaTransformResult transform(byte[] blindedPassword, byte[] tweak, byte[] transformationPrivateKey) throws PythiaException {
+    public static PythiaTransformResult transform(byte[] blindedPassword, byte[] tweak, byte[] transformationPrivateKey) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_transform(blindedPassword, tweak, transformationPrivateKey);
     }
 
-    public PythiaProveResult prove(byte[] transformedPassword, byte[] blindedPassword, byte[] transformedTweak, byte[] transformationPrivateKey, byte[] transformationPublicKey) throws PythiaException {
+    public static PythiaProveResult prove(byte[] transformedPassword, byte[] blindedPassword, byte[] transformedTweak, byte[] transformationPrivateKey, byte[] transformationPublicKey) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_prove(transformedPassword, blindedPassword, transformedTweak, transformationPrivateKey, transformationPublicKey);
     }
 
-    public boolean verify(byte[] transformedPassword, byte[] blindedPassword, byte[] tweak, byte[] transformationPublicKey, byte[] proofValueC, byte[] proofValueU) throws PythiaException {
+    public static boolean verify(byte[] transformedPassword, byte[] blindedPassword, byte[] tweak, byte[] transformationPublicKey, byte[] proofValueC, byte[] proofValueU) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_verify(transformedPassword, blindedPassword, tweak, transformationPublicKey, proofValueC, proofValueU);
     }
 
-    public byte[] getPasswordUpdateToken(byte[] previousTransformationPrivateKey, byte[] newTransformationPrivateKey) throws PythiaException {
+    public static byte[] getPasswordUpdateToken(byte[] previousTransformationPrivateKey, byte[] newTransformationPrivateKey) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_getPasswordUpdateToken(previousTransformationPrivateKey, newTransformationPrivateKey);
     }
 
-    public byte[] updateDeblindedWithToken(byte[] deblindedPassword, byte[] passwordUpdateToken) throws PythiaException {
+    public static byte[] updateDeblindedWithToken(byte[] deblindedPassword, byte[] passwordUpdateToken) throws PythiaException {
         return PythiaJNI.INSTANCE.pythia_updateDeblindedWithToken(deblindedPassword, passwordUpdateToken);
     }
 

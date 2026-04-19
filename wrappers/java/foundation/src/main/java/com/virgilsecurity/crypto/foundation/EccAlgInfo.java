@@ -45,6 +45,11 @@ public class EccAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = FoundationJNI.INSTANCE.eccAlgInfo_new();
     }
 
+    public EccAlgInfo(AlgId algId, OidId keyId, OidId domainId) {
+        super();
+        this.cCtx = FoundationJNI.INSTANCE.eccAlgInfo_new(algId, keyId, domainId);
+    }
+
     EccAlgInfo(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }

@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface EntropySource {
+    boolean isStrong();
+
+    byte[] gather(int len) throws FoundationException;
+
 }

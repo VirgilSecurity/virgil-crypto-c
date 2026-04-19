@@ -38,23 +38,23 @@ package com.virgilsecurity.crypto.foundation;
 
 public class Pem {
 
-    public int wrappedLen(String title, int dataLen) {
+    public static int wrappedLen(String title, int dataLen) {
         return FoundationJNI.INSTANCE.pem_wrappedLen(title, dataLen);
     }
 
-    public byte[] wrap(String title, byte[] data) {
+    public static byte[] wrap(String title, byte[] data) {
         return FoundationJNI.INSTANCE.pem_wrap(title, data);
     }
 
-    public int unwrappedLen(int pemLen) {
+    public static int unwrappedLen(int pemLen) {
         return FoundationJNI.INSTANCE.pem_unwrappedLen(pemLen);
     }
 
-    public byte[] unwrap(byte[] pem) throws FoundationException {
+    public static byte[] unwrap(byte[] pem) throws FoundationException {
         return FoundationJNI.INSTANCE.pem_unwrap(pem);
     }
 
-    public byte[] title(byte[] pem) {
+    public static byte[] title(byte[] pem) {
         return FoundationJNI.INSTANCE.pem_title(pem);
     }
 

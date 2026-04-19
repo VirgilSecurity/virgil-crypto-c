@@ -36,7 +36,7 @@
 
 package com.virgilsecurity.crypto.pythia;
 
-public class PythiaException extends Exception {
+public class PythiaException extends RuntimeException {
 
     public static final int SUCCESS = 0;
 

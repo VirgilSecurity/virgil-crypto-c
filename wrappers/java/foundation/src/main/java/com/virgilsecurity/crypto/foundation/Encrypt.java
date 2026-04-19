@@ -37,4 +37,10 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Encrypt {
+    byte[] encrypt(byte[] data) throws FoundationException;
+
+    int encryptedLen(int dataLen);
+
+    int preciseEncryptedLen(int dataLen);
+
 }

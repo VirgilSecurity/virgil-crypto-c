@@ -37,4 +37,10 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface CipherAuth extends Cipher, AuthEncrypt, AuthDecrypt {
+    void setAuthData(byte[] authData);
+
+    CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException;
+
+    byte[] finishAuthDecryption(byte[] tag) throws FoundationException;
+
 }

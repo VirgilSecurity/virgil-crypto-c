@@ -37,4 +37,12 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface KeySerializer {
+    int serializedPublicKeyLen(RawPublicKey publicKey);
+
+    byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException;
+
+    int serializedPrivateKeyLen(RawPrivateKey privateKey);
+
+    byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException;
+
 }

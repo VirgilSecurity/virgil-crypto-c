@@ -37,4 +37,14 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Key {
+    AlgId algId();
+
+    AlgInfo algInfo();
+
+    int len();
+
+    int bitlen();
+
+    boolean isValid();
+
 }

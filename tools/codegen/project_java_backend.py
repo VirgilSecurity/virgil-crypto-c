@@ -386,10 +386,8 @@ def _generate_enum(project_ir: IRProject, enum: IREnum) -> str:
     lines.append(f"package {_java_package(project_ir.name)};")
     lines.append("")
 
-    lines.append(f"public class {enum_name} {{")
-    lines.append("")
-
-    # Enum constants
+    # Build constant name → integer value mapping
+    constants: list[tuple[str, str]] = []
     next_val = 0
     for const in enum.constants:
         value = const.attrs.get("value")
@@ -397,24 +395,37 @@ def _generate_enum(project_ir: IRProject, enum: IREnum) -> str:
             val_str = resolve_constant_value(value, None, project_ir)
         else:
             val_str = str(next_val)
-        lines.append(f"    public static final int {_upper_snake(const.name)} = {val_str};")
+        constants.append((_upper_snake(const.name), val_str))
         try:
             next_val = int(val_str, 0) + 1
         except ValueError:
             next_val += 1
-    lines.append("")
 
-    # fromCode / getCode
+    lines.append(f"public enum {enum_name} {{")
+    lines.append("")
+    # Enum values with code
+    for i, (cname, cval) in enumerate(constants):
+        sep = ";" if i == len(constants) - 1 else ","
+        lines.append(f"    {cname}({cval}){sep}")
+    lines.append("")
     lines.append("    private final int code;")
     lines.append("")
-    lines.append(f"    public {enum_name}(int code) {{")
+    lines.append(f"    private {enum_name}(int code) {{")
     lines.append("        this.code = code;")
     lines.append("    }")
     lines.append("")
     lines.append("    public int getCode() {")
-    lines.append("        return this.code;")
+    lines.append("        return code;")
     lines.append("    }")
-
+    lines.append("")
+    lines.append(f"    public static {enum_name} fromCode(int code) {{")
+    lines.append(f"        for ({enum_name} a : {enum_name}.values()) {{")
+    lines.append("            if (a.code == code) {")
+    lines.append("                return a;")
+    lines.append("            }")
+    lines.append("        }")
+    lines.append("        return null;")
+    lines.append("    }")
     lines.append("}")
     lines.append("")
     return "\n".join(lines)
@@ -437,7 +448,19 @@ def _generate_interface(project_ir: IRProject, iface: IRInterface) -> str:
     inherits = [_pascal(p) for p in iface.inherits if p]
     extends_str = f" extends {', '.join(inherits)}" if inherits else ""
 
+    pname = project_ir.name
+    exception_class = _exception_class(pname)
     lines.append(f"public interface {iface_name}{extends_str} {{")
+    for method in iface.methods:
+        if not _method_should_wrap(method):
+            continue
+        method_camel = _method_camel(method.name)
+        ret_type = _java_return_type(method, pname, iface_name)
+        params = _java_param_list(method, pname, include_ctx=False)
+        params_str = ", ".join(f"{t} {n}" for t, n in params)
+        throws = f" throws {exception_class}" if _method_has_error(method) else ""
+        lines.append(f"    {ret_type} {method_camel}({params_str}){throws};")
+        lines.append("")
     lines.append("}")
     lines.append("")
     return "\n".join(lines)
@@ -467,7 +490,7 @@ def _collect_all_methods(
         for m in iface.methods:
             if not _method_should_wrap(m, project_ir):
                 continue
-            methods.append((m, impl.name))
+            methods.append((m, iface.name))
 
     for m in impl.methods:
         if not _method_should_wrap(m, project_ir):
@@ -532,15 +555,28 @@ def _generate_method_body(
     method: IRCMethod,
     entity_name: str,
     is_static: bool,
+    *,
+    java_is_static: bool | None = None,
+    return_entity_name: str | None = None,
 ) -> list[str]:
-    """Generate method delegation body lines for a single method."""
+    """Generate method delegation body lines for a single method.
+
+    ``is_static`` controls whether ``this.cCtx`` is omitted from the JNI call
+    (i.e. whether the underlying C function is context-free).
+    ``java_is_static`` overrides the Java ``static`` keyword independently —
+    used for interface-inherited C-static methods that must be instance methods
+    in Java to satisfy the interface contract.
+    ``return_entity_name`` overrides the entity name used for result-class
+    naming (e.g. the interface name instead of the implementation name).
+    """
     pname = project_ir.name
     jni = _jni_class(pname)
     entity_camel = _entity_camel(entity_name)
     method_camel = _method_camel(method.name)
     exception = _exception_class(pname)
 
-    ret_type = _java_return_type(method, pname, entity_name)
+    _ret_entity = return_entity_name if return_entity_name is not None else entity_name
+    ret_type = _java_return_type(method, pname, _ret_entity)
     has_error = _method_has_error(method)
     params = _java_param_list(method, pname)
 
@@ -557,8 +593,10 @@ def _generate_method_body(
 
     jni_call = f"{jni}.INSTANCE.{entity_camel}_{method_camel}({jni_args_str})"
 
+    _java_static = java_is_static if java_is_static is not None else is_static
     lines: list[str] = []
-    sig = f"    public {ret_type} {method_camel}({params_str}){throws} {{"
+    static_kw = "static " if _java_static else ""
+    sig = f"    public {static_kw}{ret_type} {method_camel}({params_str}){throws} {{"
     lines.append(sig)
     if ret_type == "void":
         lines.append(f"        {jni_call};")
@@ -630,6 +668,7 @@ def _generate_class_file(
     methods: list[tuple[IRCMethod, str]],
     constant_getters: list[tuple[str, str, str]],
     class_constants: list[IRCConstant] | None = None,
+    constructors: list[IRCMethod] | None = None,
 ) -> str:
     """Generate a complete Java class file for an implementation or class entity."""
     pname = project_ir.name
@@ -670,6 +709,21 @@ def _generate_class_file(
         lines.append(f"        this.cCtx = {jni}.INSTANCE.{entity_camel}_new();")
         lines.append("    }")
         lines.append("")
+
+        # Named constructors from impl/class constructors list
+        for ctor in (constructors or []):
+            if not _method_should_wrap(ctor):
+                continue
+            ctor_params = _java_param_list(ctor, pname, include_ctx=False)
+            if not ctor_params:
+                continue
+            ctor_params_str = ", ".join(f"{t} {n}" for t, n in ctor_params)
+            ctor_args_str = ", ".join(n for _, n in ctor_params)
+            lines.append(f"    public {class_name}({ctor_params_str}) {{")
+            lines.append("        super();")
+            lines.append(f"        this.cCtx = {jni}.INSTANCE.{entity_camel}_new({ctor_args_str});")
+            lines.append("    }")
+            lines.append("")
 
         # Package-private constructor from context holder (no modifier = package-private)
         lines.append(f"    {class_name}({ctx_holder} contextHolder) {{")
@@ -756,9 +810,18 @@ def _generate_class_file(
 
     # Methods
     for method, origin in methods:
+        from_iface = (origin != entity_name)
+        # jni_static: whether to omit this.cCtx (C function is context-free)
+        jni_static = is_static or _is_static_method(method)
+        # java_static: whether to put `static` in the Java signature.
+        # Interface-inherited methods must be non-static (instance) in Java
+        # even when the underlying C function is context-free.
+        java_static = is_static if from_iface else jni_static
         method_lines = _generate_method_body(
             project_ir, method, entity_name,
-            is_static=is_static or _is_static_method(method),
+            is_static=jni_static,
+            java_is_static=java_static,
+            return_entity_name=origin,
         )
         lines.extend(method_lines)
         lines.append("")
@@ -780,6 +843,7 @@ def _generate_impl_file(project_ir: IRProject, impl: IRImplementation) -> str:
         dependencies=impl.dependencies,
         methods=methods,
         constant_getters=constant_getters,
+        constructors=impl.constructors,
     )
 
 
@@ -800,6 +864,7 @@ def _generate_class_entity_file(project_ir: IRProject, cls: IRClass) -> str:
         methods=methods,
         constant_getters=[],
         class_constants=cls.constants,
+        constructors=cls.constructors,
     )
 
 
@@ -919,6 +984,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
         is_static: bool,
         interface_bindings: list | None = None,
         is_implementation: bool = False,
+        constructors: list | None = None,
     ) -> None:
         entity_camel = _entity_camel(entity_name)
         iface_by_name = {i.name: i for i in project_ir.interfaces}
@@ -929,6 +995,17 @@ def _generate_jni_java(project_ir: IRProject) -> str:
             lines.append("")
             lines.append(f"    public native void {entity_camel}_close(long cCtx);")
             lines.append("")
+
+            # Named constructor overloads
+            for ctor in (constructors or []):
+                if not _method_should_wrap(ctor):
+                    continue
+                ctor_params = _java_param_list(ctor, pname, include_ctx=False)
+                if not ctor_params:
+                    continue
+                ctor_params_str = ", ".join(f"{t} {n}" for t, n in ctor_params)
+                lines.append(f"    public native long {entity_camel}_new({ctor_params_str});")
+                lines.append("")
 
         # Dependency setters
         for dep in dependencies:
@@ -952,8 +1029,9 @@ def _generate_jni_java(project_ir: IRProject) -> str:
                     if m.name not in existing_names:
                         all_methods.append(m)
 
-        # Method declarations — use entity_name for result class naming
-        # to match _collect_all_methods() which uses impl.name for all methods
+        # Method declarations: use iface.name as origin for interface-inherited
+        # methods so result-class names match the interface (e.g. KemKemEncapsulateResult,
+        # not Ed25519KemEncapsulateResult), matching the main-branch GSL codegen output.
         method_origins: list[tuple[IRCMethod, str]] = []
         for m in methods:
             if is_implementation and _is_internal_own_method(m):
@@ -967,7 +1045,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
                 existing_names = {m.name for m, _ in method_origins}
                 for m in iface.methods:
                     if m.name not in existing_names:
-                        method_origins.append((m, entity_name))
+                        method_origins.append((m, iface.name))
 
         for method, origin_name in method_origins:
             if not _method_should_wrap(method):
@@ -1005,6 +1083,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
         _emit_native_methods(
             cls.name, cls.methods, cls.dependencies,
             _is_static_class(cls),
+            constructors=cls.constructors,
         )
 
     for impl in project_ir.implementations:
@@ -1015,6 +1094,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
             False,
             interface_bindings=impl.interface_bindings,
             is_implementation=True,
+            constructors=impl.constructors,
         )
 
     lines.append("}")
@@ -1033,7 +1113,7 @@ def _generate_exception(project_ir: IRProject) -> str:
     lines.append("")
     lines.append(f"package {_java_package(pname)};")
     lines.append("")
-    lines.append(f"public class {exception_class} extends Exception {{")
+    lines.append(f"public class {exception_class} extends RuntimeException {{")
     lines.append("")
 
     if status is not None:
@@ -1226,6 +1306,134 @@ def _jni_func_name(project_ir: IRProject, entity_name: str, method_name: str) ->
     entity_escaped = _entity_camel(entity_name).replace("_", "_1")
     method_escaped = _method_camel(method_name).replace("_", "_1")
     return f"Java_{pkg_path}_{jni_class}_{entity_escaped}_1{method_escaped}"
+
+
+def _jni_ctor_arg_descriptor(arg: IRCArgument, pname: str) -> str:
+    """JNI type descriptor for one constructor arg (for overloaded C function name suffix)."""
+    if arg.enum_name:
+        pkg = _java_package(pname).replace(".", "_")
+        return f"L{pkg}_{_pascal(arg.enum_name)}_2"
+    if arg.interface_name:
+        pkg = _java_package(pname).replace(".", "_")
+        return f"L{pkg}_{_pascal(arg.interface_name)}_2"
+    if arg.class_name == "data":
+        return "_3B"
+    type_name = (arg.type_name or "").lower()
+    if type_name in ("size", "integer", "unsigned"):
+        return "I"
+    if type_name == "boolean":
+        return "Z"
+    if type_name == "byte":
+        return "B"
+    return ""
+
+
+def _jni_ctor_overload_suffix(ctor: IRCMethod, pname: str) -> str:
+    """JNI overloaded function name suffix for a named constructor.
+
+    E.g. for AlgId arg: ``__Lcom_virgilsecurity_crypto_foundation_AlgId_2``
+    """
+    parts: list[str] = []
+    for arg in ctor.arguments:
+        if arg.class_name in ("buffer", "error") or arg.type_name == "self":
+            continue
+        desc = _jni_ctor_arg_descriptor(arg, pname)
+        if desc:
+            parts.append(desc)
+    return "__" + "".join(parts)
+
+
+def _generate_jni_c_named_constructor(
+    project_ir: IRProject,
+    entity_name: str,
+    ctor: IRCMethod,
+) -> list[str]:
+    """Generate JNI C wrapper for a named constructor (e.g. new_with_alg_id)."""
+    prefix = _c_prefix(project_ir)
+    prefix_upper = project_ir.prefix.upper()
+    pname = project_ir.name
+    entity_snake = _snake(entity_name)
+    c_func = f"{prefix}_{entity_snake}_new_{_snake(ctor.name)}"
+    c_type = f"{prefix}_{entity_snake}_t"
+
+    pkg_path = _jni_package_path(pname).replace("/", "_")
+    jni_class = _jni_class(pname)
+    entity_escaped = _entity_camel(entity_name).replace("_", "_1")
+    overload_suffix = _jni_ctor_overload_suffix(ctor, pname)
+    func_name = f"Java_{pkg_path}_{jni_class}_{entity_escaped}_1new{overload_suffix}"
+
+    # Build JNI parameter list
+    params: list[str] = ["JNIEnv *jenv", "jobject jobj"]
+    for arg in ctor.arguments:
+        if arg.class_name in ("buffer", "error") or arg.type_name == "self":
+            continue
+        jtype = _jni_type_for_arg(arg)
+        params.append(f"{jtype} j{_camel(arg.name)}")
+
+    lines: list[str] = []
+    lines.append(f"JNIEXPORT jlong JNICALL {func_name} ({', '.join(params)}) {{")
+
+    # Track data args for cleanup
+    data_args: list[str] = []
+
+    # Unwrap arguments
+    for arg in ctor.arguments:
+        if arg.class_name in ("buffer", "error") or arg.type_name == "self":
+            continue
+        arg_camel = _camel(arg.name)
+        arg_snake = _snake(arg.name)
+        if arg.enum_name:
+            enum_c_type = f"{prefix}_{_snake(arg.enum_name)}_t"
+            lines.append(f"    // Wrap enums")
+            lines.append(f"    jclass {arg_camel}_cls = (*jenv)->GetObjectClass(jenv, j{arg_camel});")
+            lines.append(f"    jmethodID {arg_camel}_methodID = (*jenv)->GetMethodID(jenv, {arg_camel}_cls, \"getCode\", \"()I\");")
+            lines.append(f"    {enum_c_type} /*8*/ {arg_snake} = ({enum_c_type} /*8*/) (*jenv)->CallIntMethod(jenv, j{arg_camel}, {arg_camel}_methodID);")
+            lines.append(f"    ")
+        elif arg.class_name == "data":
+            lines.append(f"    // Wrap input data")
+            lines.append(f"    byte* {arg_snake}_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, j{arg_camel}, NULL);")
+            lines.append(f"    vsc_data_t {arg_snake} = vsc_data({arg_snake}_arr, (*jenv)->GetArrayLength(jenv, j{arg_camel}));")
+            lines.append(f"    ")
+            data_args.append((arg_camel, arg_snake))
+        elif arg.interface_name:
+            iface_pascal = _pascal(arg.interface_name)
+            impl_prefix = _resolve_project_prefix(project_ir, arg.project)
+            lines.append(f"    // Wrap Java interfaces")
+            lines.append(f"    jclass {arg_snake}_cls = (*jenv)->GetObjectClass(jenv, j{arg_camel});")
+            lines.append(f"    if (NULL == {arg_snake}_cls) {{")
+            lines.append(f"        {prefix_upper}_ASSERT(\"Class {iface_pascal} not found.\");")
+            lines.append(f"    }}")
+            lines.append(f"    jfieldID {arg_snake}_fidCtx = (*jenv)->GetFieldID(jenv, {arg_snake}_cls, \"cCtx\", \"J\");")
+            lines.append(f"    if (NULL == {arg_snake}_fidCtx) {{")
+            lines.append(f"        {prefix_upper}_ASSERT(\"Class '{iface_pascal}' has no field 'cCtx'.\");")
+            lines.append(f"    }}")
+            lines.append(f"    jlong {arg_snake}_c_ctx = (*jenv)->GetLongField(jenv, j{arg_camel}, {arg_snake}_fidCtx);")
+            lines.append(f"    {impl_prefix}_impl_t */*6*/ {arg_snake} = *({impl_prefix}_impl_t */*6*/*)&{arg_snake}_c_ctx;")
+            lines.append(f"    ")
+
+    # Build C call args
+    call_args: list[str] = []
+    for arg in ctor.arguments:
+        if arg.type_name == "self" or arg.class_name in ("buffer", "error"):
+            continue
+        type_name = (arg.type_name or "").lower()
+        if type_name in ("size", "integer", "unsigned", "boolean"):
+            call_args.append(f"j{_camel(arg.name)}")
+        else:
+            call_args.append(_snake(arg.name))
+
+    lines.append(f"    jlong proxyResult = (jlong) {c_func}({', '.join(call_args)});")
+
+    # Release data arrays
+    for arg_camel, arg_snake in data_args:
+        lines.append(f"    // Free resources")
+        lines.append(f"    (*jenv)->ReleaseByteArrayElements(jenv, j{arg_camel}, (jbyte*) {arg_snake}_arr, 0);")
+        lines.append(f"    ")
+
+    lines.append(f"    return proxyResult;")
+    lines.append(f"}}")
+    lines.append(f"")
+    return lines
 
 
 def _generate_jni_c_method(
@@ -2008,6 +2216,16 @@ def _generate_jni_c(project_ir: IRProject) -> str:
             lifecycle = _generate_jni_c_entity_lifecycle(project_ir, cls.name)
             lines.extend(lifecycle)
 
+            # Named constructors
+            for ctor in cls.constructors:
+                if not _method_should_wrap(ctor):
+                    continue
+                ctor_params = _java_param_list(ctor, pname, include_ctx=False)
+                if not ctor_params:
+                    continue
+                ctor_lines = _generate_jni_c_named_constructor(project_ir, cls.name, ctor)
+                lines.extend(ctor_lines)
+
         for m in cls.methods:
             if not _method_should_wrap(m, project_ir):
                 continue
@@ -2025,6 +2243,16 @@ def _generate_jni_c(project_ir: IRProject) -> str:
         # Lifecycle
         lifecycle = _generate_jni_c_entity_lifecycle(project_ir, impl.name)
         lines.extend(lifecycle)
+
+        # Named constructors
+        for ctor in impl.constructors:
+            if not _method_should_wrap(ctor):
+                continue
+            ctor_params = _java_param_list(ctor, pname, include_ctx=False)
+            if not ctor_params:
+                continue
+            ctor_lines = _generate_jni_c_named_constructor(project_ir, impl.name, ctor)
+            lines.extend(ctor_lines)
 
         # Dependency setters
         for dep in impl.dependencies:
@@ -2132,6 +2360,21 @@ def _generate_jni_h(project_ir: IRProject) -> str:
                 f"(JNIEnv *, jobject);"
             )
             lines.append("")
+            # Named constructor overload declarations
+            for ctor in cls.constructors:
+                if not _method_should_wrap(ctor):
+                    continue
+                ctor_params = _java_param_list(ctor, pname, include_ctx=False)
+                if not ctor_params:
+                    continue
+                overload_suffix = _jni_ctor_overload_suffix(ctor, pname)
+                h_params = ["JNIEnv *", "jobject"] + [_jni_type_for_arg(a) for a in ctor.arguments if a.class_name not in ("buffer", "error") and a.type_name != "self"]
+                lines.append(
+                    f"JNIEXPORT jlong JNICALL "
+                    f"Java_{pkg_path}_{jni_class}_{entity_escaped}_1new{overload_suffix} "
+                    f"({', '.join(h_params)});"
+                )
+                lines.append("")
             # close declaration
             lines.append(
                 f"JNIEXPORT void JNICALL "
@@ -2162,6 +2405,21 @@ def _generate_jni_h(project_ir: IRProject) -> str:
             f"(JNIEnv *, jobject);"
         )
         lines.append("")
+        # Named constructor overload declarations
+        for ctor in impl.constructors:
+            if not _method_should_wrap(ctor):
+                continue
+            ctor_params = _java_param_list(ctor, pname, include_ctx=False)
+            if not ctor_params:
+                continue
+            overload_suffix = _jni_ctor_overload_suffix(ctor, pname)
+            h_params = ["JNIEnv *", "jobject"] + [_jni_type_for_arg(a) for a in ctor.arguments if a.class_name not in ("buffer", "error") and a.type_name != "self"]
+            lines.append(
+                f"JNIEXPORT jlong JNICALL "
+                f"Java_{pkg_path}_{jni_class}_{entity_escaped}_1new{overload_suffix} "
+                f"({', '.join(h_params)});"
+            )
+            lines.append("")
         # close
         lines.append(
             f"JNIEXPORT void JNICALL "

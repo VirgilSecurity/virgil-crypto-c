@@ -38,27 +38,27 @@ package com.virgilsecurity.crypto.foundation;
 
 public class AlgFactory {
 
-    public Hash createHashFromInfo(AlgInfo algInfo) {
+    public static Hash createHashFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createHashFromInfo(algInfo);
     }
 
-    public Mac createMacFromInfo(AlgInfo algInfo) {
+    public static Mac createMacFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createMacFromInfo(algInfo);
     }
 
-    public Kdf createKdfFromInfo(AlgInfo algInfo) {
+    public static Kdf createKdfFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createKdfFromInfo(algInfo);
     }
 
-    public SaltedKdf createSaltedKdfFromInfo(AlgInfo algInfo) {
+    public static SaltedKdf createSaltedKdfFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createSaltedKdfFromInfo(algInfo);
     }
 
-    public Cipher createCipherFromInfo(AlgInfo algInfo) {
+    public static Cipher createCipherFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createCipherFromInfo(algInfo);
     }
 
-    public Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
+    public static Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
         return FoundationJNI.INSTANCE.algFactory_createPaddingFromInfo(algInfo, random);
     }
 

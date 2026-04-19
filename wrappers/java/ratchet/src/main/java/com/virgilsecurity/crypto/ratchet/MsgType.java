@@ -36,18 +36,27 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-public class MsgType {
+public enum MsgType {
 
-    public static final int REGULAR = 1;
-    public static final int PREKEY = 2;
+    REGULAR(1),
+    PREKEY(2);
 
     private final int code;
 
-    public MsgType(int code) {
+    private MsgType(int code) {
         this.code = code;
     }
 
     public int getCode() {
-        return this.code;
+        return code;
+    }
+
+    public static MsgType fromCode(int code) {
+        for (MsgType a : MsgType.values()) {
+            if (a.code == code) {
+                return a;
+            }
+        }
+        return null;
     }
 }

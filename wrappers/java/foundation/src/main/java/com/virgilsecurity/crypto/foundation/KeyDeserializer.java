@@ -37,4 +37,8 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface KeyDeserializer {
+    RawPublicKey deserializePublicKey(byte[] publicKeyData) throws FoundationException;
+
+    RawPrivateKey deserializePrivateKey(byte[] privateKeyData) throws FoundationException;
+
 }

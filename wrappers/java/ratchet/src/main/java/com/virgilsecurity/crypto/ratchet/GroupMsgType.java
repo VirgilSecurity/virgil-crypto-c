@@ -36,18 +36,27 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-public class GroupMsgType {
+public enum GroupMsgType {
 
-    public static final int GROUP_INFO = 1;
-    public static final int REGULAR = 2;
+    GROUP_INFO(1),
+    REGULAR(2);
 
     private final int code;
 
-    public GroupMsgType(int code) {
+    private GroupMsgType(int code) {
         this.code = code;
     }
 
     public int getCode() {
-        return this.code;
+        return code;
+    }
+
+    public static GroupMsgType fromCode(int code) {
+        for (GroupMsgType a : GroupMsgType.values()) {
+            if (a.code == code) {
+                return a;
+            }
+        }
+        return null;
     }
 }

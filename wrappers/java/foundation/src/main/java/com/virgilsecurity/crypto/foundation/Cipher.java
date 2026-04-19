@@ -37,4 +37,22 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Cipher extends Encrypt, Decrypt, CipherInfo {
+    void setNonce(byte[] nonce);
+
+    void setKey(byte[] key);
+
+    void startEncryption();
+
+    void startDecryption();
+
+    byte[] update(byte[] data);
+
+    int outLen(int dataLen);
+
+    int encryptedOutLen(int dataLen);
+
+    int decryptedOutLen(int dataLen);
+
+    byte[] finish() throws FoundationException;
+
 }

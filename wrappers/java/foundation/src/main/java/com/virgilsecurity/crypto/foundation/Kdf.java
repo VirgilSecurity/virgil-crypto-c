@@ -37,4 +37,6 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Kdf {
+    byte[] derive(byte[] data, int keyLen);
+
 }

@@ -158,7 +158,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         return FoundationJNI.INSTANCE.aes256Gcm_finish(this.cCtx);
     }
 
-    public Aes256GcmAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException {
+    public AuthEncryptAuthEncryptResult authEncrypt(byte[] data, byte[] authData) throws FoundationException {
         return FoundationJNI.INSTANCE.aes256Gcm_authEncrypt(this.cCtx, data, authData);
     }
 
@@ -178,7 +178,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         FoundationJNI.INSTANCE.aes256Gcm_setAuthData(this.cCtx, authData);
     }
 
-    public Aes256GcmFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException {
+    public CipherAuthFinishAuthEncryptionResult finishAuthEncryption() throws FoundationException {
         return FoundationJNI.INSTANCE.aes256Gcm_finishAuthEncryption(this.cCtx);
     }
 

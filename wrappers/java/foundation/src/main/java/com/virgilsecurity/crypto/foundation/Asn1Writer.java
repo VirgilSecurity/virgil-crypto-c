@@ -37,4 +37,66 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface Asn1Writer {
+    void reset(byte[] out, int outLen);
+
+    int finish(boolean doNotAdjust);
+
+    byte bytes();
+
+    int len();
+
+    int writtenLen();
+
+    int unwrittenLen();
+
+    boolean hasError();
+
+    void status() throws FoundationException;
+
+    byte reserve(int len);
+
+    int writeTag(int tag);
+
+    int writeContextTag(int tag, int len);
+
+    int writeLen(int len);
+
+    int writeInt(int value);
+
+    int writeInt8(byte value);
+
+    int writeInt16(short value);
+
+    int writeInt32(int value);
+
+    int writeInt64(long value);
+
+    int writeUint(int value);
+
+    int writeUint8(int value);
+
+    int writeUint16(int value);
+
+    int writeUint32(int value);
+
+    int writeUint64(long value);
+
+    int writeBool(boolean value);
+
+    int writeNull();
+
+    int writeOctetStr(byte[] value);
+
+    int writeOctetStrAsBitstring(byte[] value);
+
+    int writeData(byte[] data);
+
+    int writeUtf8Str(byte[] value);
+
+    int writeOid(byte[] value);
+
+    int writeSequence(int len);
+
+    int writeSet(int len);
+
 }

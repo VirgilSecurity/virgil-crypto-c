@@ -37,4 +37,6 @@
 package com.virgilsecurity.crypto.foundation;
 
 public interface AlgInfoDeserializer {
+    AlgInfo deserialize(byte[] data) throws FoundationException;
+
 }
