@@ -513,6 +513,10 @@ const initHybridKeyAlg = (Module, modules) => {
             }
         }
 
+        configCipher(cipher, hash, sharedKey) {
+            return HybridKeyAlg.configCipher(cipher, hash, sharedKey);
+        }
+
     }
 
     return HybridKeyAlg;

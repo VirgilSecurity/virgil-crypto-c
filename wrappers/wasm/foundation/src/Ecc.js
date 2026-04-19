@@ -520,7 +520,7 @@ const initEcc = (Module, modules) => {
                 const encapsulatedKeyPtr = Module._vsc_buffer_bytes(encapsulatedKeyCtxPtr);
                 const encapsulatedKeyPtrLen = Module._vsc_buffer_len(encapsulatedKeyCtxPtr);
                 const encapsulatedKey = Module.HEAPU8.slice(encapsulatedKeyPtr, encapsulatedKeyPtr + encapsulatedKeyPtrLen);
-                return sharedKey;
+                return { sharedKey, encapsulatedKey };
             } finally {
                 Module._vsc_buffer_delete(sharedKeyCtxPtr);
                 Module._vsc_buffer_delete(encapsulatedKeyCtxPtr);
@@ -587,6 +587,10 @@ const initEcc = (Module, modules) => {
             }
         }
 
+        writeSignature(r, s) {
+            return Ecc.writeSignature(r, s);
+        }
+
         static readSignature(signature, r, s) {
             precondition.ensureByteArray('signature', signature);
             precondition.ensureClass('r', r, modules.MbedtlsMpi);
@@ -611,6 +615,10 @@ const initEcc = (Module, modules) => {
                 Module._free(signaturePtr);
                 Module._free(signatureCtxPtr);
             }
+        }
+
+        readSignature(signature, r, s) {
+            return Ecc.readSignature(signature, r, s);
         }
 
         generateKey(algId) {

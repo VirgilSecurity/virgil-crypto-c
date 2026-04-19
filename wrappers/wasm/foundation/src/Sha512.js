@@ -140,6 +140,10 @@ const initSha512 = (Module, modules) => {
             }
         }
 
+        hash(data) {
+            return Sha512.hash(data);
+        }
+
         start() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_sha512_start(this.ctxPtr);

@@ -160,7 +160,7 @@ const initBrainkeyClient = (Module, modules) => {
                 const blindedPointPtr = Module._vsc_buffer_bytes(blindedPointCtxPtr);
                 const blindedPointPtrLen = Module._vsc_buffer_len(blindedPointCtxPtr);
                 const blindedPoint = Module.HEAPU8.slice(blindedPointPtr, blindedPointPtr + blindedPointPtrLen);
-                return deblindFactor;
+                return { deblindFactor, blindedPoint };
             } finally {
                 Module._free(passwordPtr);
                 Module._free(passwordCtxPtr);

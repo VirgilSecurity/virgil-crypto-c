@@ -387,6 +387,10 @@ const initRatchetSession = (Module, modules) => {
             }
         }
 
+        deserialize(input) {
+            return RatchetSession.deserialize(input);
+        }
+
     }
 
     return RatchetSession;

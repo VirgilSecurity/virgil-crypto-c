@@ -140,6 +140,10 @@ const initSha256 = (Module, modules) => {
             }
         }
 
+        hash(data) {
+            return Sha256.hash(data);
+        }
+
         start() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_sha256_start(this.ctxPtr);

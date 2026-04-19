@@ -410,7 +410,7 @@ const initAes256Gcm = (Module, modules) => {
                 const tagPtr = Module._vsc_buffer_bytes(tagCtxPtr);
                 const tagPtrLen = Module._vsc_buffer_len(tagCtxPtr);
                 const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagPtrLen);
-                return out;
+                return { out, tag };
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
@@ -547,7 +547,7 @@ const initAes256Gcm = (Module, modules) => {
                 const tagPtr = Module._vsc_buffer_bytes(tagCtxPtr);
                 const tagPtrLen = Module._vsc_buffer_len(tagCtxPtr);
                 const tag = Module.HEAPU8.slice(tagPtr, tagPtr + tagPtrLen);
-                return out;
+                return { out, tag };
             } finally {
                 Module._vsc_buffer_delete(outCtxPtr);
                 Module._vsc_buffer_delete(tagCtxPtr);

@@ -166,6 +166,10 @@ const initGroupSessionMessage = (Module, modules) => {
             }
         }
 
+        deserialize(input) {
+            return GroupSessionMessage.deserialize(input);
+        }
+
     }
 
     return GroupSessionMessage;

@@ -467,10 +467,18 @@ const initAsn1wr = (Module, modules) => {
             return proxyResult;
         }
 
+        getCurrentElementLen(curr, end) {
+            return Asn1wr.getCurrentElementLen(curr, end);
+        }
+
         static swapElementsOfSet(toStart, toLen, fromStart, fromLen) {
             precondition.ensureNumber('toLen', toLen);
             precondition.ensureNumber('fromLen', fromLen);
             Module._vscf_asn1wr_swap_elements_of_set(toStart, toLen, fromStart, fromLen);
+        }
+
+        swapElementsOfSet(toStart, toLen, fromStart, fromLen) {
+            return Asn1wr.swapElementsOfSet(toStart, toLen, fromStart, fromLen);
         }
 
         static secondElementOfSetIsLess(firstStart, firstLen, secondStart, secondLen) {
@@ -482,6 +490,10 @@ const initAsn1wr = (Module, modules) => {
             
             const booleanResult = !!proxyResult;
             return booleanResult;
+        }
+
+        secondElementOfSetIsLess(firstStart, firstLen, secondStart, secondLen) {
+            return Asn1wr.secondElementOfSetIsLess(firstStart, firstLen, secondStart, secondLen);
         }
 
         sortElementsOfSet(len) {

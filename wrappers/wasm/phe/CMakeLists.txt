@@ -61,6 +61,7 @@ function(wasm_add_common_wasm_options target)
             "-s WASM=1"
             "-s ALLOW_MEMORY_GROWTH=1"
             "-s EXPORTED_FUNCTIONS=\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\""
+            "-s EXPORTED_RUNTIME_METHODS=[\"HEAP8\",\"HEAPU8\",\"HEAP16\",\"HEAPU16\",\"HEAP32\",\"HEAPU32\",\"HEAPF32\",\"HEAPF64\"]"
             "-s MODULARIZE=1"
             "-s EXPORT_NAME=PheModule"
             "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1>"

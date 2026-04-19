@@ -165,6 +165,10 @@ const initRatchetMessage = (Module, modules) => {
             }
         }
 
+        deserialize(input) {
+            return RatchetMessage.deserialize(input);
+        }
+
     }
 
     return RatchetMessage;

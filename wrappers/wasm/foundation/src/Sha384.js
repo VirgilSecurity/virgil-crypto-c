@@ -140,6 +140,10 @@ const initSha384 = (Module, modules) => {
             }
         }
 
+        hash(data) {
+            return Sha384.hash(data);
+        }
+
         start() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             Module._vscf_sha384_start(this.ctxPtr);

@@ -573,9 +573,12 @@ def _gen_method_body(
             lines.append("    const booleanResult = !!proxyResult;")
             lines.append("    return booleanResult;")
         elif buffer_outputs:
-            # Return the first buffer output
-            local = _camel_case(buffer_outputs[0].name)
-            lines.append(f"    return {local};")
+            if len(buffer_outputs) == 1:
+                local = _camel_case(buffer_outputs[0].name)
+                lines.append(f"    return {local};")
+            else:
+                props = ", ".join(_camel_case(b.name) for b in buffer_outputs)
+                lines.append(f"    return {{ {props} }};")
 
         # Finally block
         lines.append("} finally {")
@@ -1119,17 +1122,31 @@ def _generate_class_js(
                 continue
             js_args.append(_camel_case(arg.name))
 
-        static_kw = "static " if is_method_static else ""
         args_str = ", ".join(js_args)
-        lines.append(f"        {static_kw}{method_name}({args_str}) {{")
-
-        body = _gen_method_body(
-            project_ir, entity_name, method, is_method_static or not not is_static,
-            all_entities,
-        )
-        for bl in body:
-            lines.append(f"            {bl}")
-        lines.append(f"        }}")
+        if is_method_static and not is_static:
+            # Emit static method first, then an instance wrapper that delegates to it.
+            lines.append(f"        static {method_name}({args_str}) {{")
+            body = _gen_method_body(
+                project_ir, entity_name, method, True,
+                all_entities,
+            )
+            for bl in body:
+                lines.append(f"            {bl}")
+            lines.append(f"        }}")
+            lines.append("")
+            lines.append(f"        {method_name}({args_str}) {{")
+            lines.append(f"            return {class_name}.{method_name}({args_str});")
+            lines.append(f"        }}")
+        else:
+            static_kw = "static " if is_method_static else ""
+            lines.append(f"        {static_kw}{method_name}({args_str}) {{")
+            body = _gen_method_body(
+                project_ir, entity_name, method, is_method_static or not not is_static,
+                all_entities,
+            )
+            for bl in body:
+                lines.append(f"            {bl}")
+            lines.append(f"        }}")
         lines.append("")
 
     lines.append("    }")
@@ -1274,6 +1291,7 @@ def _generate_cmake(project_ir: IRProject) -> str:
     lines.append('            "-s WASM=1"')
     lines.append('            "-s ALLOW_MEMORY_GROWTH=1"')
     lines.append('            "-s EXPORTED_FUNCTIONS=\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\""')
+    lines.append('            "-s EXPORTED_RUNTIME_METHODS=[\\"HEAP8\\",\\"HEAPU8\\",\\"HEAP16\\",\\"HEAPU16\\",\\"HEAP32\\",\\"HEAPU32\\",\\"HEAPF32\\",\\"HEAPF64\\"]"')
     lines.append('            "-s MODULARIZE=1"')
     lines.append(f'            "-s EXPORT_NAME={mod_name}"')
     lines.append('            "$<$<CONFIG:Release>:--llvm-lto 1 -Os --closure 1>"')

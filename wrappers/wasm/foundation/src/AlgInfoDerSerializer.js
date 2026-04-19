@@ -116,6 +116,10 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             return booleanResult;
         }
 
+        isAlgRequireNullParams(algId) {
+            return AlgInfoDerSerializer.isAlgRequireNullParams(algId);
+        }
+
         serializedSimpleAlgInfoLen(algInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);

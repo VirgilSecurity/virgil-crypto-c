@@ -268,7 +268,7 @@ const initRound5 = (Module, modules) => {
                 const encapsulatedKeyPtr = Module._vsc_buffer_bytes(encapsulatedKeyCtxPtr);
                 const encapsulatedKeyPtrLen = Module._vsc_buffer_len(encapsulatedKeyCtxPtr);
                 const encapsulatedKey = Module.HEAPU8.slice(encapsulatedKeyPtr, encapsulatedKeyPtr + encapsulatedKeyPtrLen);
-                return sharedKey;
+                return { sharedKey, encapsulatedKey };
             } finally {
                 Module._vsc_buffer_delete(sharedKeyCtxPtr);
                 Module._vsc_buffer_delete(encapsulatedKeyCtxPtr);

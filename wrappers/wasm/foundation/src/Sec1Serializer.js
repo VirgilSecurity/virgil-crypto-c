@@ -187,6 +187,10 @@ const initSec1Serializer = (Module, modules) => {
             return booleanResult;
         }
 
+        isEcKey(key) {
+            return Sec1Serializer.isEcKey(key);
+        }
+
     }
 
     return Sec1Serializer;

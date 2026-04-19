@@ -192,7 +192,7 @@ const initUokmsClient = (Module, modules) => {
                 const encryptionKeyPtr = Module._vsc_buffer_bytes(encryptionKeyCtxPtr);
                 const encryptionKeyPtrLen = Module._vsc_buffer_len(encryptionKeyCtxPtr);
                 const encryptionKey = Module.HEAPU8.slice(encryptionKeyPtr, encryptionKeyPtr + encryptionKeyPtrLen);
-                return wrap;
+                return { wrap, encryptionKey };
             } finally {
                 Module._vsc_buffer_delete(wrapCtxPtr);
                 Module._vsc_buffer_delete(encryptionKeyCtxPtr);
@@ -267,7 +267,7 @@ const initUokmsClient = (Module, modules) => {
                 const decryptRequestPtr = Module._vsc_buffer_bytes(decryptRequestCtxPtr);
                 const decryptRequestPtrLen = Module._vsc_buffer_len(decryptRequestCtxPtr);
                 const decryptRequest = Module.HEAPU8.slice(decryptRequestPtr, decryptRequestPtr + decryptRequestPtrLen);
-                return deblindFactor;
+                return { deblindFactor, decryptRequest };
             } finally {
                 Module._free(wrapPtr);
                 Module._free(wrapCtxPtr);
@@ -442,7 +442,7 @@ const initUokmsClient = (Module, modules) => {
                 const newServerPublicKeyPtr = Module._vsc_buffer_bytes(newServerPublicKeyCtxPtr);
                 const newServerPublicKeyPtrLen = Module._vsc_buffer_len(newServerPublicKeyCtxPtr);
                 const newServerPublicKey = Module.HEAPU8.slice(newServerPublicKeyPtr, newServerPublicKeyPtr + newServerPublicKeyPtrLen);
-                return newClientPrivateKey;
+                return { newClientPrivateKey, newServerPublicKey };
             } finally {
                 Module._free(updateTokenPtr);
                 Module._free(updateTokenCtxPtr);

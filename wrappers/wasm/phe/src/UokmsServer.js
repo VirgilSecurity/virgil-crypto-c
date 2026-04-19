@@ -107,7 +107,7 @@ const initUokmsServer = (Module, modules) => {
                 const serverPublicKeyPtr = Module._vsc_buffer_bytes(serverPublicKeyCtxPtr);
                 const serverPublicKeyPtrLen = Module._vsc_buffer_len(serverPublicKeyCtxPtr);
                 const serverPublicKey = Module.HEAPU8.slice(serverPublicKeyPtr, serverPublicKeyPtr + serverPublicKeyPtrLen);
-                return serverPrivateKey;
+                return { serverPrivateKey, serverPublicKey };
             } finally {
                 Module._vsc_buffer_delete(serverPrivateKeyCtxPtr);
                 Module._vsc_buffer_delete(serverPublicKeyCtxPtr);
@@ -211,7 +211,7 @@ const initUokmsServer = (Module, modules) => {
                 const updateTokenPtr = Module._vsc_buffer_bytes(updateTokenCtxPtr);
                 const updateTokenPtrLen = Module._vsc_buffer_len(updateTokenCtxPtr);
                 const updateToken = Module.HEAPU8.slice(updateTokenPtr, updateTokenPtr + updateTokenPtrLen);
-                return newServerPrivateKey;
+                return { newServerPrivateKey, newServerPublicKey, updateToken };
             } finally {
                 Module._free(serverPrivateKeyPtr);
                 Module._free(serverPrivateKeyCtxPtr);

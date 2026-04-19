@@ -200,7 +200,7 @@ const initPheClient = (Module, modules) => {
                 const accountKeyPtr = Module._vsc_buffer_bytes(accountKeyCtxPtr);
                 const accountKeyPtrLen = Module._vsc_buffer_len(accountKeyCtxPtr);
                 const accountKey = Module.HEAPU8.slice(accountKeyPtr, accountKeyPtr + accountKeyPtrLen);
-                return enrollmentRecord;
+                return { enrollmentRecord, accountKey };
             } finally {
                 Module._free(enrollmentResponsePtr);
                 Module._free(enrollmentResponseCtxPtr);
@@ -365,7 +365,7 @@ const initPheClient = (Module, modules) => {
                 const newServerPublicKeyPtr = Module._vsc_buffer_bytes(newServerPublicKeyCtxPtr);
                 const newServerPublicKeyPtrLen = Module._vsc_buffer_len(newServerPublicKeyCtxPtr);
                 const newServerPublicKey = Module.HEAPU8.slice(newServerPublicKeyPtr, newServerPublicKeyPtr + newServerPublicKeyPtrLen);
-                return newClientPrivateKey;
+                return { newClientPrivateKey, newServerPublicKey };
             } finally {
                 Module._free(updateTokenPtr);
                 Module._free(updateTokenCtxPtr);
