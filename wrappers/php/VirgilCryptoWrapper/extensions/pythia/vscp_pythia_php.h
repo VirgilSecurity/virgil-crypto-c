@@ -73,15 +73,9 @@ extern "C" {
 //
 // Constants
 //
-VSCP_PHP_PUBLIC const char*
-vscp_impl_t_php_res_name(void);
-
 //
 // Registered resources
 //
-VSCP_PHP_PUBLIC int
-le_vscp_impl_t(void);
-
 #ifdef __cplusplus
 }
 #endif

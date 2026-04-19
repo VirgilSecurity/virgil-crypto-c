@@ -1940,8 +1940,9 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     # Resource-type entities (non-static classes + implementations)
     all_entities = _collect_all_wrapped_entities(project_ir)
 
-    # impl_t resource name
-    lines.append(f'static const char {prefix_upper}_IMPL_T_PHP_RES_NAME[] = "{prefix}_impl_t";')
+    # impl_t resource name (only when project has interface implementations)
+    if project_ir.implementations:
+        lines.append(f'static const char {prefix_upper}_IMPL_T_PHP_RES_NAME[] = "{prefix}_impl_t";')
 
     for ename, ekind in all_entities:
         entity_snake = _snake_case(ename)
@@ -1954,10 +1955,11 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append("//")
     lines.append("// Constants func wrapping")
     lines.append("//")
-    lines.append(f"{prefix_upper}_PHP_PUBLIC const char* {prefix}_impl_t_php_res_name(void) {{")
-    lines.append(f"    return {prefix_upper}_IMPL_T_PHP_RES_NAME;")
-    lines.append("}")
-    lines.append("")
+    if project_ir.implementations:
+        lines.append(f"{prefix_upper}_PHP_PUBLIC const char* {prefix}_impl_t_php_res_name(void) {{")
+        lines.append(f"    return {prefix_upper}_IMPL_T_PHP_RES_NAME;")
+        lines.append("}")
+        lines.append("")
 
     for ename, ekind in all_entities:
         entity_snake = _snake_case(ename)
@@ -1971,7 +1973,8 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append("//")
     lines.append("// Registered resources")
     lines.append("//")
-    lines.append(f"int LE_{prefix_upper}_IMPL_T;")
+    if project_ir.implementations:
+        lines.append(f"int LE_{prefix_upper}_IMPL_T;")
     for ename, ekind in all_entities:
         entity_snake = _snake_case(ename)
         entity_upper = entity_snake.upper()
@@ -1982,9 +1985,10 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append("//")
     lines.append("// Registered resources func wrapping")
     lines.append("//")
-    lines.append(f"{prefix_upper}_PHP_PUBLIC int le_{prefix}_impl_t(void) {{")
-    lines.append(f"    return LE_{prefix_upper}_IMPL_T;")
-    lines.append("}")
+    if project_ir.implementations:
+        lines.append(f"{prefix_upper}_PHP_PUBLIC int le_{prefix}_impl_t(void) {{")
+        lines.append(f"    return LE_{prefix_upper}_IMPL_T;")
+        lines.append("}")
     lines.append("")
 
     for ename, ekind in all_entities:
@@ -2202,10 +2206,11 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append("// Extension init functions definition")
     lines.append("//")
 
-    # impl_t destructor
-    lines.append(f"static void {prefix}_impl_dtor_php(zend_resource *rsrc) {{")
-    lines.append(f"    {prefix}_impl_delete(({prefix}_impl_t *)rsrc->ptr);")
-    lines.append("}")
+    # impl_t destructor (only when project has interface implementations)
+    if project_ir.implementations:
+        lines.append(f"static void {prefix}_impl_dtor_php(zend_resource *rsrc) {{")
+        lines.append(f"    {prefix}_impl_delete(({prefix}_impl_t *)rsrc->ptr);")
+        lines.append("}")
 
     for ename, ekind in all_entities:
         if _is_impl_type(project_ir, ename):
@@ -2224,8 +2229,9 @@ def generate_c_extension_source(project_ir: IRProject) -> str:
     lines.append(f'    INIT_CLASS_ENTRY({prefix}_ce, "{project_pascal}Exception", NULL);')
     lines.append(f"    {prefix}_exception_ce = zend_register_internal_class_ex(&{prefix}_ce, zend_ce_exception);")
 
-    # Register resource types
-    lines.append(f"    LE_{prefix_upper}_IMPL_T = zend_register_list_destructors_ex({prefix}_impl_dtor_php, NULL, {prefix}_impl_t_php_res_name(), module_number);")
+    # Register resource types (impl_t only when project has interface implementations)
+    if project_ir.implementations:
+        lines.append(f"    LE_{prefix_upper}_IMPL_T = zend_register_list_destructors_ex({prefix}_impl_dtor_php, NULL, {prefix}_impl_t_php_res_name(), module_number);")
 
     for ename, ekind in all_entities:
         entity_snake = _snake_case(ename)
@@ -2303,10 +2309,11 @@ def generate_c_extension_header(project_ir: IRProject) -> str:
     lines.append("// Constants")
     lines.append("//")
 
-    # impl_t first
-    lines.append(f"{prefix_upper}_PHP_PUBLIC const char*")
-    lines.append(f"{prefix}_impl_t_php_res_name(void);")
-    lines.append("")
+    # impl_t first (only when project has interface implementations)
+    if project_ir.implementations:
+        lines.append(f"{prefix_upper}_PHP_PUBLIC const char*")
+        lines.append(f"{prefix}_impl_t_php_res_name(void);")
+        lines.append("")
 
     all_entities = _collect_all_wrapped_entities(project_ir)
     for ename, ekind in all_entities:
@@ -2320,9 +2327,10 @@ def generate_c_extension_header(project_ir: IRProject) -> str:
     lines.append("// Registered resources")
     lines.append("//")
 
-    lines.append(f"{prefix_upper}_PHP_PUBLIC int")
-    lines.append(f"le_{prefix}_impl_t(void);")
-    lines.append("")
+    if project_ir.implementations:
+        lines.append(f"{prefix_upper}_PHP_PUBLIC int")
+        lines.append(f"le_{prefix}_impl_t(void);")
+        lines.append("")
 
     for ename, ekind in all_entities:
         entity_snake = _snake_case(ename)

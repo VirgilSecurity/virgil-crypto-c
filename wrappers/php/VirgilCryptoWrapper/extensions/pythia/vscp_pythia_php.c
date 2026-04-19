@@ -70,26 +70,17 @@ vscp_handle_throw_exception(vscp_status_t status) {
 const char VSCP_PYTHIA_PHP_VERSION[] = "0.17.3";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
 
-static const char VSCP_IMPL_T_PHP_RES_NAME[] = "vscp_impl_t";
 
 //
 // Constants func wrapping
 //
-VSCP_PHP_PUBLIC const char* vscp_impl_t_php_res_name(void) {
-    return VSCP_IMPL_T_PHP_RES_NAME;
-}
-
 //
 // Registered resources
 //
-int LE_VSCP_IMPL_T;
 
 //
 // Registered resources func wrapping
 //
-VSCP_PHP_PUBLIC int le_vscp_impl_t(void) {
-    return LE_VSCP_IMPL_T;
-}
 
 //
 // Extension init functions declaration
@@ -1203,14 +1194,10 @@ ZEND_GET_MODULE(vscp_pythia_php)
 //
 // Extension init functions definition
 //
-static void vscp_impl_dtor_php(zend_resource *rsrc) {
-    vscp_impl_delete((vscp_impl_t *)rsrc->ptr);
-}
 PHP_MINIT_FUNCTION(vscp_pythia_php) {
     zend_class_entry vscp_ce;
     INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
     vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_ce_exception);
-    LE_VSCP_IMPL_T = zend_register_list_destructors_ex(vscp_impl_dtor_php, NULL, vscp_impl_t_php_res_name(), module_number);
     return SUCCESS;
 }
 PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php) {

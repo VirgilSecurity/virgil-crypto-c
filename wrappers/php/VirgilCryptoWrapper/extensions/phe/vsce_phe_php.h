@@ -74,9 +74,6 @@ extern "C" {
 // Constants
 //
 VSCE_PHP_PUBLIC const char*
-vsce_impl_t_php_res_name(void);
-
-VSCE_PHP_PUBLIC const char*
 vsce_phe_cipher_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
@@ -97,9 +94,6 @@ vsce_uokms_wrap_rotation_t_php_res_name(void);
 //
 // Registered resources
 //
-VSCE_PHP_PUBLIC int
-le_vsce_impl_t(void);
-
 VSCE_PHP_PUBLIC int
 le_vsce_phe_cipher_t(void);
 

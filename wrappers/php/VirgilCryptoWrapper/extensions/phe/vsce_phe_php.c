@@ -88,7 +88,6 @@ vsce_handle_throw_exception(vsce_status_t status) {
 const char VSCE_PHE_PHP_VERSION[] = "0.17.3";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
-static const char VSCE_IMPL_T_PHP_RES_NAME[] = "vsce_impl_t";
 static const char VSCE_PHE_CIPHER_T_PHP_RES_NAME[] = "vsce_phe_cipher_t";
 static const char VSCE_PHE_CLIENT_T_PHP_RES_NAME[] = "vsce_phe_client_t";
 static const char VSCE_PHE_SERVER_T_PHP_RES_NAME[] = "vsce_phe_server_t";
@@ -99,10 +98,6 @@ static const char VSCE_UOKMS_WRAP_ROTATION_T_PHP_RES_NAME[] = "vsce_uokms_wrap_r
 //
 // Constants func wrapping
 //
-VSCE_PHP_PUBLIC const char* vsce_impl_t_php_res_name(void) {
-    return VSCE_IMPL_T_PHP_RES_NAME;
-}
-
 VSCE_PHP_PUBLIC const char* vsce_phe_cipher_t_php_res_name(void) {
     return VSCE_PHE_CIPHER_T_PHP_RES_NAME;
 }
@@ -130,7 +125,6 @@ VSCE_PHP_PUBLIC const char* vsce_uokms_wrap_rotation_t_php_res_name(void) {
 //
 // Registered resources
 //
-int LE_VSCE_IMPL_T;
 int LE_VSCE_PHE_CIPHER_T;
 int LE_VSCE_PHE_CLIENT_T;
 int LE_VSCE_PHE_SERVER_T;
@@ -141,9 +135,6 @@ int LE_VSCE_UOKMS_WRAP_ROTATION_T;
 //
 // Registered resources func wrapping
 //
-VSCE_PHP_PUBLIC int le_vsce_impl_t(void) {
-    return LE_VSCE_IMPL_T;
-}
 
 VSCE_PHP_PUBLIC int le_vsce_phe_cipher_t(void) {
     return LE_VSCE_PHE_CIPHER_T;
@@ -3826,9 +3817,6 @@ ZEND_GET_MODULE(vsce_phe_php)
 //
 // Extension init functions definition
 //
-static void vsce_impl_dtor_php(zend_resource *rsrc) {
-    vsce_impl_delete((vsce_impl_t *)rsrc->ptr);
-}
 static void vsce_phe_cipher_dtor_php(zend_resource *rsrc) {
     vsce_phe_cipher_delete((vsce_phe_cipher_t *)rsrc->ptr);
 }
@@ -3851,7 +3839,6 @@ PHP_MINIT_FUNCTION(vsce_phe_php) {
     zend_class_entry vsce_ce;
     INIT_CLASS_ENTRY(vsce_ce, "PheException", NULL);
     vsce_exception_ce = zend_register_internal_class_ex(&vsce_ce, zend_ce_exception);
-    LE_VSCE_IMPL_T = zend_register_list_destructors_ex(vsce_impl_dtor_php, NULL, vsce_impl_t_php_res_name(), module_number);
     LE_VSCE_PHE_CIPHER_T = zend_register_list_destructors_ex(vsce_phe_cipher_dtor_php, NULL, vsce_phe_cipher_t_php_res_name(), module_number);
     LE_VSCE_PHE_CLIENT_T = zend_register_list_destructors_ex(vsce_phe_client_dtor_php, NULL, vsce_phe_client_t_php_res_name(), module_number);
     LE_VSCE_PHE_SERVER_T = zend_register_list_destructors_ex(vsce_phe_server_dtor_php, NULL, vsce_phe_server_t_php_res_name(), module_number);
