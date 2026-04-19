@@ -82,46 +82,6 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
         FoundationJNI.INSTANCE.algInfoDerDeserializer_setupDefaults(this.cCtx);
     }
 
-    public AlgInfo deserializeSimpleAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeSimpleAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeKdfAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeKdfAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeHkdfAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeHkdfAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeHmacAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeHmacAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeCipherAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeCipherAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializePbkdf2AlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializePbkdf2AlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializePbes2AlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializePbes2AlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeEccAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeEccAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeCompoundKeyAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeCompoundKeyAlgInfo(this.cCtx, oidId);
-    }
-
-    public AlgInfo deserializeHybridKeyAlgInfo(OidId oidId) throws FoundationException {
-        return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeHybridKeyAlgInfo(this.cCtx, oidId);
-    }
-
     public AlgInfo deserializeInplace() throws FoundationException {
         return FoundationJNI.INSTANCE.algInfoDerDeserializer_deserializeInplace(this.cCtx);
     }

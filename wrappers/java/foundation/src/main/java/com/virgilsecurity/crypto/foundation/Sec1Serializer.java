@@ -102,8 +102,4 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
     }
 
-    public boolean isEcKey(Key key) {
-        return FoundationJNI.INSTANCE.sec1Serializer_isEcKey(key);
-    }
-
 }

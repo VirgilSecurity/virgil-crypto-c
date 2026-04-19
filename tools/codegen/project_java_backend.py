@@ -198,15 +198,16 @@ def _method_should_wrap(method: IRCMethod, project_ir: IRProject | None = None) 
 
 
 def _is_internal_own_method(method: IRCMethod) -> bool:
-    """Return True if this method is explicitly marked as private or internal.
+    """Return True if this is a private C helper on an implementation.
 
-    Methods loaded from model XML files have no declaration/visibility attrs
-    but are public by default. Only skip methods that are explicitly private
-    or internal via their attrs.
+    Implementation own methods that have no declaration/visibility attrs are
+    private C-level helpers not present in public headers. Class methods also
+    have no attrs by default but should never be passed to this function.
     """
-    decl = method.declaration or method.attrs.get("declaration", "")
-    vis = method.visibility or method.attrs.get("visibility", "")
-    return decl in ("private", "internal") or vis in ("private", "internal")
+    return (method.declaration is None
+            and method.visibility is None
+            and method.attrs.get("declaration") is None
+            and method.attrs.get("visibility") is None)
 
 
 def _method_has_internal_types(method: IRCMethod, project_ir: IRProject) -> bool:
@@ -917,6 +918,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
         dependencies: list,
         is_static: bool,
         interface_bindings: list | None = None,
+        is_implementation: bool = False,
     ) -> None:
         entity_camel = _entity_camel(entity_name)
         iface_by_name = {i.name: i for i in project_ir.interfaces}
@@ -954,7 +956,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
         # to match _collect_all_methods() which uses impl.name for all methods
         method_origins: list[tuple[IRCMethod, str]] = []
         for m in methods:
-            if _is_internal_own_method(m):
+            if is_implementation and _is_internal_own_method(m):
                 continue
             method_origins.append((m, entity_name))
         if interface_bindings:
@@ -1012,6 +1014,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
             impl.name, impl.methods, impl.dependencies,
             False,
             interface_bindings=impl.interface_bindings,
+            is_implementation=True,
         )
 
     lines.append("}")

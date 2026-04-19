@@ -94,12 +94,4 @@ public class KeyAsn1Deserializer implements AutoCloseable, KeyDeserializer {
         return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePrivateKeyInplace(this.cCtx);
     }
 
-    public RawPrivateKey deserializePkcs8PrivateKeyInplace(int seqLeftLen, int version) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializePkcs8PrivateKeyInplace(this.cCtx, seqLeftLen, version);
-    }
-
-    public RawPrivateKey deserializeSec1PrivateKeyInplace(int seqLeftLen, int version, AlgInfo algInfo) throws FoundationException {
-        return FoundationJNI.INSTANCE.keyAsn1Deserializer_deserializeSec1PrivateKeyInplace(this.cCtx, seqLeftLen, version, algInfo);
-    }
-
 }
