@@ -67,7 +67,7 @@ const initRandomPadding = (Module, modules) => {
             }
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_random_padding_release_random(this.ctxPtr)

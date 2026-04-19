@@ -67,7 +67,7 @@ const initPkcs5Pbkdf2 = (Module, modules) => {
             }
         }
 
-        hmac(hmac) {
+        set hmac(hmac) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('hmac', hmac, 'Foundation.Mac', modules.FoundationInterfaceTag.MAC, modules.FoundationInterface);
             Module._vscf_pkcs5_pbkdf2_release_hmac(this.ctxPtr)

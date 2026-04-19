@@ -67,35 +67,35 @@ const initEcies = (Module, modules) => {
             }
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_ecies_release_random(this.ctxPtr)
             Module._vscf_ecies_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        cipher(cipher) {
+        set cipher(cipher) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('cipher', cipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_ecies_release_cipher(this.ctxPtr)
             Module._vscf_ecies_use_cipher(this.ctxPtr, cipher.ctxPtr)
         }
 
-        mac(mac) {
+        set mac(mac) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('mac', mac, 'Foundation.Mac', modules.FoundationInterfaceTag.MAC, modules.FoundationInterface);
             Module._vscf_ecies_release_mac(this.ctxPtr)
             Module._vscf_ecies_use_mac(this.ctxPtr, mac.ctxPtr)
         }
 
-        kdf(kdf) {
+        set kdf(kdf) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('kdf', kdf, 'Foundation.Kdf', modules.FoundationInterfaceTag.KDF, modules.FoundationInterface);
             Module._vscf_ecies_release_kdf(this.ctxPtr)
             Module._vscf_ecies_use_kdf(this.ctxPtr, kdf.ctxPtr)
         }
 
-        ephemeralKey(ephemeralKey) {
+        set ephemeralKey(ephemeralKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('ephemeralKey', ephemeralKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             Module._vscf_ecies_release_ephemeral_key(this.ctxPtr)

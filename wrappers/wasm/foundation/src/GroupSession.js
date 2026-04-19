@@ -67,7 +67,7 @@ const initGroupSession = (Module, modules) => {
             }
         }
 
-        rng(rng) {
+        set rng(rng) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_group_session_release_rng(this.ctxPtr)
@@ -149,15 +149,24 @@ const initGroupSession = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             
                 const jsResult = modules.GroupSessionMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(plainTextPtr);
                 Module._free(plainTextCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 
@@ -193,8 +202,24 @@ const initGroupSession = (Module, modules) => {
 
         createGroupTicket() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            const proxyResult = Module._vscf_group_session_create_group_ticket(this.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_group_session_create_group_ticket(this.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.GroupSessionTicket.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
     }

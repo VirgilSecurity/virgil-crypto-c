@@ -67,14 +67,14 @@ const initSigner = (Module, modules) => {
             }
         }
 
-        hash(hash) {
+        set hash(hash) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_signer_release_hash(this.ctxPtr)
             Module._vscf_signer_use_hash(this.ctxPtr, hash.ctxPtr)
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_signer_release_random(this.ctxPtr)

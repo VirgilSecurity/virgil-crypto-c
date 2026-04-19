@@ -42,29 +42,93 @@ const initKeyAlgFactory = (Module, modules) => {
 
         static createFromAlgId(algId, random) {
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-            const proxyResult = Module._vscf_key_alg_factory_create_from_alg_id(algId, random.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_key_alg_factory_create_from_alg_id(algId, random.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         static createFromKey(key, random) {
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-            const proxyResult = Module._vscf_key_alg_factory_create_from_key(key.ctxPtr, random.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_key_alg_factory_create_from_key(key.ctxPtr, random.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         static createFromRawPublicKey(publicKey, random) {
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-            const proxyResult = Module._vscf_key_alg_factory_create_from_raw_public_key(publicKey.ctxPtr, random.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_key_alg_factory_create_from_raw_public_key(publicKey.ctxPtr, random.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         static createFromRawPrivateKey(privateKey, random) {
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-            const proxyResult = Module._vscf_key_alg_factory_create_from_raw_private_key(privateKey.ctxPtr, random.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_key_alg_factory_create_from_raw_private_key(privateKey.ctxPtr, random.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
     }

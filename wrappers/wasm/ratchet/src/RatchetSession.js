@@ -67,7 +67,7 @@ const initRatchetSession = (Module, modules) => {
             }
         }
 
-        rng(rng) {
+        set rng(rng) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscr_ratchet_session_release_rng(this.ctxPtr)
@@ -293,15 +293,24 @@ const initRatchetSession = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
             
+            const errorCtxSize = Module._vscr_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscr_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscr_ratchet_session_encrypt(this.ctxPtr, plainTextCtxPtr);
-                modules.RatchetError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscr_ratchet_session_encrypt(this.ctxPtr, plainTextCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
+                modules.RatchetError.handleStatusCode(errorStatus);
             
                 const jsResult = modules.RatchetMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(plainTextPtr);
                 Module._free(plainTextCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 
@@ -357,15 +366,24 @@ const initRatchetSession = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(inputCtxPtr, inputPtr, inputSize);
             
+            const errorCtxSize = Module._vscr_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscr_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscr_ratchet_session_deserialize(inputCtxPtr);
-                modules.RatchetError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscr_ratchet_session_deserialize(inputCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscr_error_status(errorCtxPtr);
+                modules.RatchetError.handleStatusCode(errorStatus);
             
                 const jsResult = modules.Self.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(inputPtr);
                 Module._free(inputCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 

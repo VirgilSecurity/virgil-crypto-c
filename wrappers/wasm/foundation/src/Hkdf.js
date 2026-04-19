@@ -67,7 +67,7 @@ const initHkdf = (Module, modules) => {
             }
         }
 
-        hash(hash) {
+        set hash(hash) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('hash', hash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_hkdf_release_hash(this.ctxPtr)

@@ -67,7 +67,7 @@ const initMessageInfoEditor = (Module, modules) => {
             }
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_message_info_editor_release_random(this.ctxPtr)

@@ -67,7 +67,7 @@ const initCompoundKeyAlg = (Module, modules) => {
             }
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_compound_key_alg_release_random(this.ctxPtr)
@@ -134,36 +134,116 @@ const initCompoundKeyAlg = (Module, modules) => {
         generateEphemeralKey(key) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('key', key, 'Foundation.Key', modules.FoundationInterfaceTag.KEY, modules.FoundationInterface);
-            const proxyResult = Module._vscf_compound_key_alg_generate_ephemeral_key(this.ctxPtr, key.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_compound_key_alg_generate_ephemeral_key(this.ctxPtr, key.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         importPublicKey(rawKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPublicKey);
-            const proxyResult = Module._vscf_compound_key_alg_import_public_key(this.ctxPtr, rawKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_compound_key_alg_import_public_key(this.ctxPtr, rawKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         exportPublicKey(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            const proxyResult = Module._vscf_compound_key_alg_export_public_key(this.ctxPtr, publicKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_compound_key_alg_export_public_key(this.ctxPtr, publicKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.RawPublicKey.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         importPrivateKey(rawKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('rawKey', rawKey, modules.RawPrivateKey);
-            const proxyResult = Module._vscf_compound_key_alg_import_private_key(this.ctxPtr, rawKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_compound_key_alg_import_private_key(this.ctxPtr, rawKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         exportPrivateKey(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            const proxyResult = Module._vscf_compound_key_alg_export_private_key(this.ctxPtr, privateKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_compound_key_alg_export_private_key(this.ctxPtr, privateKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.RawPrivateKey.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         canEncrypt(publicKey, dataLen) {
@@ -399,8 +479,24 @@ const initCompoundKeyAlg = (Module, modules) => {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('cipherKey', cipherKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
             precondition.ensureImplementInterface('signerKey', signerKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            const proxyResult = Module._vscf_compound_key_alg_make_key(this.ctxPtr, cipherKey.ctxPtr, signerKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_compound_key_alg_make_key(this.ctxPtr, cipherKey.ctxPtr, signerKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
+                return jsResult;
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
     }

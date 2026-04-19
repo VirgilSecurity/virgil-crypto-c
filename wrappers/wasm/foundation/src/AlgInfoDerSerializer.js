@@ -67,7 +67,7 @@ const initAlgInfoDerSerializer = (Module, modules) => {
             }
         }
 
-        asn1Writer(asn1Writer) {
+        set asn1Writer(asn1Writer) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_alg_info_der_serializer_release_asn1_writer(this.ctxPtr)

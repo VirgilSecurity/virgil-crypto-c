@@ -67,14 +67,14 @@ const initPkcs5Pbes2 = (Module, modules) => {
             }
         }
 
-        kdf(kdf) {
+        set kdf(kdf) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('kdf', kdf, 'Foundation.SaltedKdf', modules.FoundationInterfaceTag.SALTED_KDF, modules.FoundationInterface);
             Module._vscf_pkcs5_pbes2_release_kdf(this.ctxPtr)
             Module._vscf_pkcs5_pbes2_use_kdf(this.ctxPtr, kdf.ctxPtr)
         }
 
-        cipher(cipher) {
+        set cipher(cipher) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('cipher', cipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_pkcs5_pbes2_release_cipher(this.ctxPtr)

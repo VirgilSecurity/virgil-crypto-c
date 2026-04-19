@@ -67,35 +67,35 @@ const initRecipientCipher = (Module, modules) => {
             }
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_random(this.ctxPtr)
             Module._vscf_recipient_cipher_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        encryptionCipher(encryptionCipher) {
+        set encryptionCipher(encryptionCipher) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('encryptionCipher', encryptionCipher, 'Foundation.Cipher', modules.FoundationInterfaceTag.CIPHER, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_encryption_cipher(this.ctxPtr)
             Module._vscf_recipient_cipher_use_encryption_cipher(this.ctxPtr, encryptionCipher.ctxPtr)
         }
 
-        encryptionPadding(encryptionPadding) {
+        set encryptionPadding(encryptionPadding) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('encryptionPadding', encryptionPadding, 'Foundation.Padding', modules.FoundationInterfaceTag.PADDING, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_encryption_padding(this.ctxPtr)
             Module._vscf_recipient_cipher_use_encryption_padding(this.ctxPtr, encryptionPadding.ctxPtr)
         }
 
-        paddingParams(paddingParams) {
+        set paddingParams(paddingParams) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('paddingParams', paddingParams, modules.PaddingParams);
             Module._vscf_recipient_cipher_release_padding_params(this.ctxPtr)
             Module._vscf_recipient_cipher_use_padding_params(this.ctxPtr, paddingParams.ctxPtr)
         }
 
-        signerHash(signerHash) {
+        set signerHash(signerHash) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('signerHash', signerHash, 'Foundation.Hash', modules.FoundationInterfaceTag.HASH, modules.FoundationInterface);
             Module._vscf_recipient_cipher_release_signer_hash(this.ctxPtr)

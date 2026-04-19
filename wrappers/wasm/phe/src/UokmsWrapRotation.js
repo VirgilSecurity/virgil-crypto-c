@@ -67,7 +67,7 @@ const initUokmsWrapRotation = (Module, modules) => {
             }
         }
 
-        operationRandom(operationRandom) {
+        set operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_uokms_wrap_rotation_release_operation_random(this.ctxPtr)

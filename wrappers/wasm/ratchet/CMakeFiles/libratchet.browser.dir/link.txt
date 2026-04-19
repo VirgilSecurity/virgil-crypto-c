@@ -1,0 +1,1 @@
+/Users/ssiroshtan/Library/emsdk/upstream/emscripten/emcc -O3 -DNDEBUG @CMakeFiles/libratchet.browser.dir/objects1.rsp -o libratchet.browser.js @CMakeFiles/libratchet.browser.dir/linkLibs.rsp

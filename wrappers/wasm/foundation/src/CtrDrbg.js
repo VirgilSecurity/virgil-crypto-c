@@ -67,7 +67,7 @@ const initCtrDrbg = (Module, modules) => {
             }
         }
 
-        entropySource(entropySource) {
+        set entropySource(entropySource) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('entropySource', entropySource, 'Foundation.EntropySource', modules.FoundationInterfaceTag.ENTROPY_SOURCE, modules.FoundationInterface);
             Module._vscf_ctr_drbg_release_entropy_source(this.ctxPtr)

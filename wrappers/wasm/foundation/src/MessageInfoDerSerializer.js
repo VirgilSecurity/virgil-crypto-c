@@ -67,14 +67,14 @@ const initMessageInfoDerSerializer = (Module, modules) => {
             }
         }
 
-        asn1Reader(asn1Reader) {
+        set asn1Reader(asn1Reader) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Reader', asn1Reader, 'Foundation.Asn1Reader', modules.FoundationInterfaceTag.ASN1_READER, modules.FoundationInterface);
             Module._vscf_message_info_der_serializer_release_asn1_reader(this.ctxPtr)
             Module._vscf_message_info_der_serializer_use_asn1_reader(this.ctxPtr, asn1Reader.ctxPtr)
         }
 
-        asn1Writer(asn1Writer) {
+        set asn1Writer(asn1Writer) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_message_info_der_serializer_release_asn1_writer(this.ctxPtr)
@@ -159,15 +159,24 @@ const initMessageInfoDerSerializer = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_message_info_der_serializer_deserialize(this.ctxPtr, dataCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize(this.ctxPtr, dataCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             
                 const jsResult = modules.MessageInfo.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 
@@ -215,15 +224,24 @@ const initMessageInfoDerSerializer = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(dataCtxPtr, dataPtr, dataSize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_message_info_der_serializer_deserialize_footer(this.ctxPtr, dataCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_footer(this.ctxPtr, dataCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             
                 const jsResult = modules.MessageInfoFooter.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(dataPtr);
                 Module._free(dataCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 
@@ -424,92 +442,261 @@ const initMessageInfoDerSerializer = (Module, modules) => {
         deserializeCustomParams(customParams) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('customParams', customParams, modules.MessageInfoCustomParams);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_custom_params(this.ctxPtr, customParams.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_custom_params(this.ctxPtr, customParams.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeCipherKdf(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_cipher_kdf(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_cipher_kdf(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeCipherPadding(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_cipher_padding(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_cipher_padding(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeFooterInfo(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_footer_info(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_footer_info(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeSignedDataInfo(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_signed_data_info(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_signed_data_info(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeKeyRecipientInfo(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_key_recipient_info(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_key_recipient_info(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializePasswordRecipientInfo(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_password_recipient_info(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_password_recipient_info(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeRecipientInfos(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_recipient_infos(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_recipient_infos(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeEncryptedContentInfo(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_encrypted_content_info(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_encrypted_content_info(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeEnvelopedData(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_enveloped_data(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_enveloped_data(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeCmsContentInfo(messageInfo) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfo', messageInfo, modules.MessageInfo);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_cms_content_info(this.ctxPtr, messageInfo.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_cms_content_info(this.ctxPtr, messageInfo.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeSignerInfos(messageInfoFooter) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfoFooter', messageInfoFooter, modules.MessageInfoFooter);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_signer_infos(this.ctxPtr, messageInfoFooter.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_signer_infos(this.ctxPtr, messageInfoFooter.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         deserializeSignerInfo(messageInfoFooter) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('messageInfoFooter', messageInfoFooter, modules.MessageInfoFooter);
-            const proxyResult = Module._vscf_message_info_der_serializer_deserialize_signer_info(this.ctxPtr, messageInfoFooter.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_message_info_der_serializer_deserialize_signer_info(this.ctxPtr, messageInfoFooter.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
     }

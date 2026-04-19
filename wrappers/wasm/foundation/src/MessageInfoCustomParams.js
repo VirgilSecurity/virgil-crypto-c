@@ -215,12 +215,21 @@ const initMessageInfoCustomParams = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_message_info_custom_params_find_int(this.ctxPtr, keyCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_message_info_custom_params_find_int(this.ctxPtr, keyCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             } finally {
                 Module._free(keyPtr);
                 Module._free(keyCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 
@@ -240,12 +249,21 @@ const initMessageInfoCustomParams = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_message_info_custom_params_find_string(this.ctxPtr, keyCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_message_info_custom_params_find_string(this.ctxPtr, keyCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             } finally {
                 Module._free(keyPtr);
                 Module._free(keyCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 
@@ -265,12 +283,21 @@ const initMessageInfoCustomParams = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(keyCtxPtr, keyPtr, keySize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_message_info_custom_params_find_data(this.ctxPtr, keyCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_message_info_custom_params_find_data(this.ctxPtr, keyCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             } finally {
                 Module._free(keyPtr);
                 Module._free(keyCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 

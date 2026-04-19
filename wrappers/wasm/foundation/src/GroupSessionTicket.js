@@ -67,7 +67,7 @@ const initGroupSessionTicket = (Module, modules) => {
             }
         }
 
-        rng(rng) {
+        set rng(rng) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vscf_group_session_ticket_release_rng(this.ctxPtr)

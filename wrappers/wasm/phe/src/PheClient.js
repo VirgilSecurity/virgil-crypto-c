@@ -67,14 +67,14 @@ const initPheClient = (Module, modules) => {
             }
         }
 
-        random(random) {
+        set random(random) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_client_release_random(this.ctxPtr)
             Module._vsce_phe_client_use_random(this.ctxPtr, random.ctxPtr)
         }
 
-        operationRandom(operationRandom) {
+        set operationRandom(operationRandom) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('operationRandom', operationRandom, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
             Module._vsce_phe_client_release_operation_random(this.ctxPtr)

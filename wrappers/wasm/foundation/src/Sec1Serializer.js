@@ -67,7 +67,7 @@ const initSec1Serializer = (Module, modules) => {
             }
         }
 
-        asn1Writer(asn1Writer) {
+        set asn1Writer(asn1Writer) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('asn1Writer', asn1Writer, 'Foundation.Asn1Writer', modules.FoundationInterfaceTag.ASN1_WRITER, modules.FoundationInterface);
             Module._vscf_sec1_serializer_release_asn1_writer(this.ctxPtr)
@@ -140,15 +140,41 @@ const initSec1Serializer = (Module, modules) => {
         serializePublicKeyInplace(publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('publicKey', publicKey, modules.RawPublicKey);
-            const proxyResult = Module._vscf_sec1_serializer_serialize_public_key_inplace(this.ctxPtr, publicKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_sec1_serializer_serialize_public_key_inplace(this.ctxPtr, publicKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         serializePrivateKeyInplace(privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('privateKey', privateKey, modules.RawPrivateKey);
-            const proxyResult = Module._vscf_sec1_serializer_serialize_private_key_inplace(this.ctxPtr, privateKey.ctxPtr);
-            modules.FoundationError.handleStatusCode(proxyResult);
+            
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
+            try {
+                proxyResult = Module._vscf_sec1_serializer_serialize_private_key_inplace(this.ctxPtr, privateKey.ctxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
+            } finally {
+                Module._free(errorCtxPtr);
+            }
         }
 
         static isEcKey(key) {

@@ -472,7 +472,13 @@ def _gen_method_body(
         free_bufs.append(f"{local}CtxPtr")
 
     # Determine what the method returns
-    has_status = _method_has_status_return(method) or _method_has_error_arg(method)
+    has_status_return = _method_has_status_return(method)
+    has_error_arg = _method_has_error_arg(method)
+    # Direct status return: the C function itself returns the status code (no error arg).
+    has_status = has_status_return and not has_error_arg
+    # Error output parameter pattern: C function returns an object pointer; error is
+    # reported via a <prefix>_error_t* output parameter that we allocate and pass.
+    has_error_ctx = has_error_arg
     has_iface_return = _method_has_interface_return(method)
     has_class_return = _method_has_class_return(method)
     has_boolean_return = _method_has_boolean_return(method)
@@ -482,23 +488,38 @@ def _gen_method_body(
         for r in method.returns
     ) and not has_iface_return and not has_class_return and not has_boolean_return and not has_data_return
 
-    # Determine error handling class — might come from a dependent project
-    # If the method returns status, the error class to use is typically the
-    # project's own error class. But methods using foundation types might use
-    # FoundationError. We use the local error class by default.
     error_handler = f"modules.{error_class}"
+    proj_prefix = _c_prefix(project_ir)
 
-    needs_try = bool(free_ptrs) or bool(free_bufs)
+    # error_ctx methods always need try/finally to free the error context pointer
+    needs_try = bool(free_ptrs) or bool(free_bufs) or has_error_ctx
+
+    # Append error context pointer as last C argument for error-output-parameter methods
+    if has_error_ctx:
+        c_call_args.append("errorCtxPtr")
 
     # Build the C call and result handling
     call_str = f"{c_func}({', '.join(c_call_args)})"
 
     if needs_try:
         lines.append("")
+        if has_error_ctx:
+            lines.append(f"const errorCtxSize = Module._{proj_prefix}_error_ctx_size();")
+            lines.append(f"const errorCtxPtr = Module._malloc(errorCtxSize);")
+            lines.append(f"Module._{proj_prefix}_error_reset(errorCtxPtr);")
+            lines.append("")
         if has_status:
             lines.append("try {")
             lines.append(f"    const proxyResult = {call_str};")
             lines.append(f"    {error_handler}.handleStatusCode(proxyResult);")
+        elif has_error_ctx:
+            lines.append("let proxyResult;")
+            lines.append("")
+            lines.append("try {")
+            lines.append(f"    proxyResult = {call_str};")
+            lines.append("")
+            lines.append(f"    const errorStatus = Module._{proj_prefix}_error_status(errorCtxPtr);")
+            lines.append(f"    {error_handler}.handleStatusCode(errorStatus);")
         elif has_iface_return or has_class_return or has_boolean_return or has_data_return or has_value_return:
             if has_value_return and not buffer_outputs:
                 lines.append("let proxyResult;")
@@ -562,6 +583,8 @@ def _gen_method_body(
             lines.append(f"    Module._free({ptr});")
         for buf in free_bufs:
             lines.append(f"    Module._vsc_buffer_delete({buf});")
+        if has_error_ctx:
+            lines.append(f"    Module._free(errorCtxPtr);")
         lines.append("}")
     else:
         # No try/finally needed
@@ -1053,7 +1076,7 @@ def _generate_class_js(
     for dep in dependencies:
         dep_local = _camel_case(dep.name)
         dep_body = _gen_dependency_setter(project_ir, entity_name, dep)
-        lines.append(f"        {dep_local}({dep_local}) {{")
+        lines.append(f"        set {dep_local}({dep_local}) {{")
         for bl in dep_body:
             lines.append(f"            {bl}")
         lines.append(f"        }}")
