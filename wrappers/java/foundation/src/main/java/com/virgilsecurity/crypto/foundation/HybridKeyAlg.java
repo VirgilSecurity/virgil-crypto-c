@@ -170,4 +170,8 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
         return FoundationJNI.INSTANCE.hybridKeyAlg_makeKey(this.cCtx, firstKey, secondKey);
     }
 
+    public void configCipher(Cipher cipher, Hash hash, byte[] sharedKey) {
+        FoundationJNI.INSTANCE.hybridKeyAlg_configCipher(cipher, hash, sharedKey);
+    }
+
 }

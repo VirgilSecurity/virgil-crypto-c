@@ -82,4 +82,8 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
     }
 
+    public void moveForward() {
+        FoundationJNI.INSTANCE.seedEntropySource_moveForward(this.cCtx);
+    }
+
 }

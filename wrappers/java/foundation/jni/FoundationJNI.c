@@ -6414,6 +6414,27 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     return ret;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1mbedtlsHasError (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jcode) {
+    // Cast class context
+    vscf_asn1rd_t /*9*/* asn1rd_ctx = *(vscf_asn1rd_t /*9*/**) &c_ctx;
+    
+    jboolean ret = (jboolean) vscf_asn1rd_mbedtls_has_error(asn1rd_ctx /*a1*/, jcode /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1rd_1readTagData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jtag) {
+    // Cast class context
+    vscf_asn1rd_t /*9*/* asn1rd_ctx = *(vscf_asn1rd_t /*9*/**) &c_ctx;
+    
+    const vsc_data_t /*3*/ proxyResult = vscf_asn1rd_read_tag_data(asn1rd_ctx /*a1*/, jtag /*a9*/);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_asn1wr_t **)&c_ctx = vscf_asn1wr_new();
@@ -6710,6 +6731,36 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     
     jint ret = (jint) vscf_asn1wr_write_set(asn1wr_ctx /*a1*/, jlen /*a9*/);
     return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1mbedtlsHasError (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jcode) {
+    // Cast class context
+    vscf_asn1wr_t /*9*/* asn1wr_ctx = *(vscf_asn1wr_t /*9*/**) &c_ctx;
+    
+    jboolean ret = (jboolean) vscf_asn1wr_mbedtls_has_error(asn1wr_ctx /*a1*/, jcode /*a9*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1writeTagData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jdata, jint jtag) {
+    // Wrap input data
+    byte* data_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jdata, NULL);
+    vsc_data_t data = vsc_data(data_arr, (*jenv)->GetArrayLength(jenv, jdata));
+    
+    // Cast class context
+    vscf_asn1wr_t /*9*/* asn1wr_ctx = *(vscf_asn1wr_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_asn1wr_write_tag_data(asn1wr_ctx /*a1*/, data /*a3*/, jtag /*a9*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jdata, (jbyte*) data_arr, 0);
+    
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_asn1wr_1sortElementsOfSet (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jlen) {
+    // Cast class context
+    vscf_asn1wr_t /*9*/* asn1wr_ctx = *(vscf_asn1wr_t /*9*/**) &c_ctx;
+    
+    vscf_asn1wr_sort_elements_of_set(asn1wr_ctx /*a1*/, jlen /*a9*/);
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_rsaPublicKey_1new__ (JNIEnv *jenv, jobject jobj) {
@@ -8222,6 +8273,28 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecc_1produceAlgInfoForKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkey) {
+    // Wrap Java interfaces
+    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
+    if (NULL == key_cls) {
+        VSCF_ASSERT("Class Key not found.");
+    }
+    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
+    if (NULL == key_fidCtx) {
+        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    }
+    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
+    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+    
+    // Cast class context
+    vscf_ecc_t /*9*/* ecc_ctx = *(vscf_ecc_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_ecc_produce_alg_info_for_key(ecc_ctx /*a1*/, key /*a6*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_entropyAccumulator_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_entropy_accumulator_t **)&c_ctx = vscf_entropy_accumulator_new();
@@ -9305,6 +9378,13 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_seedEntropySource_1moveForward (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_seed_entropy_source_t /*9*/* seed_entropy_source_ctx = *(vscf_seed_entropy_source_t /*9*/**) &c_ctx;
+    
+    vscf_seed_entropy_source_move_forward(seed_entropy_source_ctx /*a1*/);
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyMaterialRng_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_key_material_rng_t **)&c_ctx = vscf_key_material_rng_new();
@@ -9941,6 +10021,23 @@ JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     return ret;
 }
 
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_sec1Serializer_1isEcKey (JNIEnv *jenv, jobject jobj, jobject jkey) {
+    // Wrap Java interfaces
+    jclass key_cls = (*jenv)->GetObjectClass(jenv, jkey);
+    if (NULL == key_cls) {
+        VSCF_ASSERT("Class Key not found.");
+    }
+    jfieldID key_fidCtx = (*jenv)->GetFieldID(jenv, key_cls, "cCtx", "J");
+    if (NULL == key_fidCtx) {
+        VSCF_ASSERT("Class 'Key' has no field 'cCtx'.");
+    }
+    jlong key_c_ctx = (*jenv)->GetLongField(jenv, jkey, key_fidCtx);
+    vscf_impl_t */*6*/ key = *(vscf_impl_t */*6*/*)&key_c_ctx;
+    
+    jboolean ret = (jboolean) vscf_sec1_serializer_is_ec_key(key /*a6*/);
+    return ret;
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Serializer_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_key_asn1_serializer_t **)&c_ctx = vscf_key_asn1_serializer_new();
@@ -10260,6 +10357,68 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = *(vscf_key_asn1_deserializer_t /*9*/**) &c_ctx;
     
     const vscf_raw_private_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_private_key_inplace(key_asn1_deserializer_ctx /*a1*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawPrivateKey");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class RawPrivateKey not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawPrivateKey;");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class RawPrivateKey has no 'getInstance' method.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializePkcs8PrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jseqLeftLen, jint jversion) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Cast class context
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = *(vscf_key_asn1_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(key_asn1_deserializer_ctx /*a1*/, jseqLeftLen /*a9*/, jversion /*a9*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/RawPrivateKey");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class RawPrivateKey not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/RawPrivateKey;");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class RawPrivateKey has no 'getInstance' method.");
+    }
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyAsn1Deserializer_1deserializeSec1PrivateKeyInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jint jseqLeftLen, jint jversion, jobject jalgInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_key_asn1_deserializer_t /*9*/* key_asn1_deserializer_ctx = *(vscf_key_asn1_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_raw_private_key_t */*5*/ proxyResult = vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(key_asn1_deserializer_ctx /*a1*/, jseqLeftLen /*a9*/, jversion /*a9*/, alg_info /*a6*/, &error /*a4*/);
     
     if (error.status != vscf_status_SUCCESS) {
         throwFoundationException(jenv, jobj, error.status);
@@ -13927,6 +14086,41 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     return ret;
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_hybridKeyAlg_1configCipher (JNIEnv *jenv, jobject jobj, jobject jcipher, jobject jhash, jbyteArray jsharedKey) {
+    // Wrap Java interfaces
+    jclass cipher_cls = (*jenv)->GetObjectClass(jenv, jcipher);
+    if (NULL == cipher_cls) {
+        VSCF_ASSERT("Class Cipher not found.");
+    }
+    jfieldID cipher_fidCtx = (*jenv)->GetFieldID(jenv, cipher_cls, "cCtx", "J");
+    if (NULL == cipher_fidCtx) {
+        VSCF_ASSERT("Class 'Cipher' has no field 'cCtx'.");
+    }
+    jlong cipher_c_ctx = (*jenv)->GetLongField(jenv, jcipher, cipher_fidCtx);
+    vscf_impl_t */*6*/ cipher = *(vscf_impl_t */*6*/*)&cipher_c_ctx;
+    
+    // Wrap Java interfaces
+    jclass hash_cls = (*jenv)->GetObjectClass(jenv, jhash);
+    if (NULL == hash_cls) {
+        VSCF_ASSERT("Class Hash not found.");
+    }
+    jfieldID hash_fidCtx = (*jenv)->GetFieldID(jenv, hash_cls, "cCtx", "J");
+    if (NULL == hash_fidCtx) {
+        VSCF_ASSERT("Class 'Hash' has no field 'cCtx'.");
+    }
+    jlong hash_c_ctx = (*jenv)->GetLongField(jenv, jhash, hash_fidCtx);
+    vscf_impl_t */*6*/ hash = *(vscf_impl_t */*6*/*)&hash_c_ctx;
+    
+    // Wrap input data
+    byte* shared_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jsharedKey, NULL);
+    vsc_data_t shared_key = vsc_data(shared_key_arr, (*jenv)->GetArrayLength(jenv, jsharedKey));
+    
+    vscf_hybrid_key_alg_config_cipher(cipher /*a6*/, hash /*a6*/, shared_key /*a3*/);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jsharedKey, (jbyte*) shared_key_arr, 0);
+    
+}
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_simpleAlgInfo_1new__ (JNIEnv *jenv, jobject jobj) {
     jlong c_ctx = 0;
     *(vscf_simple_alg_info_t **)&c_ctx = vscf_simple_alg_info_new();
@@ -14284,6 +14478,416 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     vscf_alg_info_der_serializer_setup_defaults(alg_info_der_serializer_ctx /*a1*/);
 }
 
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1isAlgRequireNullParams (JNIEnv *jenv, jobject jobj, jobject jalgId) {
+    // Wrap enums
+    jclass algId_cls = (*jenv)->GetObjectClass(jenv, jalgId);
+    jmethodID algId_methodID = (*jenv)->GetMethodID(jenv, algId_cls, "getCode", "()I");
+    vscf_alg_id_t /*8*/ alg_id = (vscf_alg_id_t /*8*/) (*jenv)->CallIntMethod(jenv, jalgId, algId_methodID);
+    
+    jboolean ret = (jboolean) vscf_alg_info_der_serializer_is_alg_require_null_params(alg_id /*a7*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedSimpleAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_simple_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeSimpleAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_simple_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedKdfAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeKdfAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_kdf_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedHkdfAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeHkdfAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_hkdf_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedHmacAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeHmacAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_hmac_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedCipherAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeCipherAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_cipher_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedPbkdf2AlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializePbkdf2AlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedPbes2AlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializePbes2AlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_pbes2_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedEccAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeEccAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_ecc_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedCompoundKeyAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeCompoundKeyAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_compound_key_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializedHybridKeyAlgInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeHybridKeyAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
+    // Wrap Java interfaces
+    jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
+    if (NULL == alg_info_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID alg_info_fidCtx = (*jenv)->GetFieldID(jenv, alg_info_cls, "cCtx", "J");
+    if (NULL == alg_info_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong alg_info_c_ctx = (*jenv)->GetLongField(jenv, jalgInfo, alg_info_fidCtx);
+    vscf_impl_t */*6*/ alg_info = *(vscf_impl_t */*6*/*)&alg_info_c_ctx;
+    
+    // Cast class context
+    vscf_alg_info_der_serializer_t /*9*/* alg_info_der_serializer_ctx = *(vscf_alg_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info(alg_info_der_serializer_ctx /*a1*/, alg_info /*a6*/);
+    return ret;
+}
+
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerSerializer_1serializeInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jalgInfo) {
     // Wrap Java interfaces
     jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);
@@ -14360,6 +14964,236 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_a
     vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
     
     vscf_alg_info_der_deserializer_setup_defaults(alg_info_der_deserializer_ctx /*a1*/);
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeSimpleAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_simple_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeKdfAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeHkdfAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeHmacAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeCipherAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializePbkdf2AlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializePbes2AlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeEccAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeCompoundKeyAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeHybridKeyAlgInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joidId) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap enums
+    jclass oidId_cls = (*jenv)->GetObjectClass(jenv, joidId);
+    jmethodID oidId_methodID = (*jenv)->GetMethodID(jenv, oidId_cls, "getCode", "()I");
+    vscf_oid_id_t /*8*/ oid_id = (vscf_oid_id_t /*8*/) (*jenv)->CallIntMethod(jenv, joidId, oidId_methodID);
+    
+    // Cast class context
+    vscf_alg_info_der_deserializer_t /*9*/* alg_info_der_deserializer_ctx = *(vscf_alg_info_der_deserializer_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(alg_info_der_deserializer_ctx /*a1*/, oid_id /*a7*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return NULL;
+    }
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
 }
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algInfoDerDeserializer_1deserializeInplace (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -14598,6 +15432,777 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_m
     vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
     
     vscf_message_info_der_serializer_setup_defaults(message_info_der_serializer_ctx /*a1*/);
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedCustomParamsLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcustomParams) {
+    // Wrap Java objects
+    jclass custom_params_cls = (*jenv)->GetObjectClass(jenv, jcustomParams);
+    if (NULL == custom_params_cls) {
+        VSCF_ASSERT("Class MessageInfoCustomParams not found.");
+    }
+    jfieldID custom_params_fidCtx = (*jenv)->GetFieldID(jenv, custom_params_cls, "cCtx", "J");
+    if (NULL == custom_params_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoCustomParams' has no field 'cCtx'.");
+    }
+    jlong custom_params_c_ctx = (*jenv)->GetLongField(jenv, jcustomParams, custom_params_fidCtx);
+    vscf_message_info_custom_params_t */*5*/ custom_params = *(vscf_message_info_custom_params_t */*5*/*)&custom_params_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_custom_params_len(message_info_der_serializer_ctx /*a1*/, custom_params /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeCustomParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcustomParams) {
+    // Wrap Java objects
+    jclass custom_params_cls = (*jenv)->GetObjectClass(jenv, jcustomParams);
+    if (NULL == custom_params_cls) {
+        VSCF_ASSERT("Class MessageInfoCustomParams not found.");
+    }
+    jfieldID custom_params_fidCtx = (*jenv)->GetFieldID(jenv, custom_params_cls, "cCtx", "J");
+    if (NULL == custom_params_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoCustomParams' has no field 'cCtx'.");
+    }
+    jlong custom_params_c_ctx = (*jenv)->GetLongField(jenv, jcustomParams, custom_params_fidCtx);
+    vscf_message_info_custom_params_t */*5*/ custom_params = *(vscf_message_info_custom_params_t */*5*/*)&custom_params_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_custom_params(message_info_der_serializer_ctx /*a1*/, custom_params /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedFooterInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jfooterInfo) {
+    // Wrap Java objects
+    jclass footer_info_cls = (*jenv)->GetObjectClass(jenv, jfooterInfo);
+    if (NULL == footer_info_cls) {
+        VSCF_ASSERT("Class FooterInfo not found.");
+    }
+    jfieldID footer_info_fidCtx = (*jenv)->GetFieldID(jenv, footer_info_cls, "cCtx", "J");
+    if (NULL == footer_info_fidCtx) {
+        VSCF_ASSERT("Class 'FooterInfo' has no field 'cCtx'.");
+    }
+    jlong footer_info_c_ctx = (*jenv)->GetLongField(jenv, jfooterInfo, footer_info_fidCtx);
+    vscf_footer_info_t */*5*/ footer_info = *(vscf_footer_info_t */*5*/*)&footer_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_footer_info_len(message_info_der_serializer_ctx /*a1*/, footer_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeFooterInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jfooterInfo) {
+    // Wrap Java objects
+    jclass footer_info_cls = (*jenv)->GetObjectClass(jenv, jfooterInfo);
+    if (NULL == footer_info_cls) {
+        VSCF_ASSERT("Class FooterInfo not found.");
+    }
+    jfieldID footer_info_fidCtx = (*jenv)->GetFieldID(jenv, footer_info_cls, "cCtx", "J");
+    if (NULL == footer_info_fidCtx) {
+        VSCF_ASSERT("Class 'FooterInfo' has no field 'cCtx'.");
+    }
+    jlong footer_info_c_ctx = (*jenv)->GetLongField(jenv, jfooterInfo, footer_info_fidCtx);
+    vscf_footer_info_t */*5*/ footer_info = *(vscf_footer_info_t */*5*/*)&footer_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_footer_info(message_info_der_serializer_ctx /*a1*/, footer_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeSignedDataInfoInternal (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsignedDataInfo) {
+    // Wrap Java objects
+    jclass signed_data_info_cls = (*jenv)->GetObjectClass(jenv, jsignedDataInfo);
+    if (NULL == signed_data_info_cls) {
+        VSCF_ASSERT("Class SignedDataInfo not found.");
+    }
+    jfieldID signed_data_info_fidCtx = (*jenv)->GetFieldID(jenv, signed_data_info_cls, "cCtx", "J");
+    if (NULL == signed_data_info_fidCtx) {
+        VSCF_ASSERT("Class 'SignedDataInfo' has no field 'cCtx'.");
+    }
+    jlong signed_data_info_c_ctx = (*jenv)->GetLongField(jenv, jsignedDataInfo, signed_data_info_fidCtx);
+    vscf_signed_data_info_t */*5*/ signed_data_info = *(vscf_signed_data_info_t */*5*/*)&signed_data_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_signed_data_info_internal(message_info_der_serializer_ctx /*a1*/, signed_data_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedKeyRecipientInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkeyRecipientInfo) {
+    // Wrap Java objects
+    jclass key_recipient_info_cls = (*jenv)->GetObjectClass(jenv, jkeyRecipientInfo);
+    if (NULL == key_recipient_info_cls) {
+        VSCF_ASSERT("Class KeyRecipientInfo not found.");
+    }
+    jfieldID key_recipient_info_fidCtx = (*jenv)->GetFieldID(jenv, key_recipient_info_cls, "cCtx", "J");
+    if (NULL == key_recipient_info_fidCtx) {
+        VSCF_ASSERT("Class 'KeyRecipientInfo' has no field 'cCtx'.");
+    }
+    jlong key_recipient_info_c_ctx = (*jenv)->GetLongField(jenv, jkeyRecipientInfo, key_recipient_info_fidCtx);
+    vscf_key_recipient_info_t */*5*/ key_recipient_info = *(vscf_key_recipient_info_t */*5*/*)&key_recipient_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_key_recipient_info_len(message_info_der_serializer_ctx /*a1*/, key_recipient_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeKeyRecipientInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkeyRecipientInfo) {
+    // Wrap Java objects
+    jclass key_recipient_info_cls = (*jenv)->GetObjectClass(jenv, jkeyRecipientInfo);
+    if (NULL == key_recipient_info_cls) {
+        VSCF_ASSERT("Class KeyRecipientInfo not found.");
+    }
+    jfieldID key_recipient_info_fidCtx = (*jenv)->GetFieldID(jenv, key_recipient_info_cls, "cCtx", "J");
+    if (NULL == key_recipient_info_fidCtx) {
+        VSCF_ASSERT("Class 'KeyRecipientInfo' has no field 'cCtx'.");
+    }
+    jlong key_recipient_info_c_ctx = (*jenv)->GetLongField(jenv, jkeyRecipientInfo, key_recipient_info_fidCtx);
+    vscf_key_recipient_info_t */*5*/ key_recipient_info = *(vscf_key_recipient_info_t */*5*/*)&key_recipient_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_key_recipient_info(message_info_der_serializer_ctx /*a1*/, key_recipient_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedPasswordRecipientInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpasswordRecipientInfo) {
+    // Wrap Java objects
+    jclass password_recipient_info_cls = (*jenv)->GetObjectClass(jenv, jpasswordRecipientInfo);
+    if (NULL == password_recipient_info_cls) {
+        VSCF_ASSERT("Class PasswordRecipientInfo not found.");
+    }
+    jfieldID password_recipient_info_fidCtx = (*jenv)->GetFieldID(jenv, password_recipient_info_cls, "cCtx", "J");
+    if (NULL == password_recipient_info_fidCtx) {
+        VSCF_ASSERT("Class 'PasswordRecipientInfo' has no field 'cCtx'.");
+    }
+    jlong password_recipient_info_c_ctx = (*jenv)->GetLongField(jenv, jpasswordRecipientInfo, password_recipient_info_fidCtx);
+    vscf_password_recipient_info_t */*5*/ password_recipient_info = *(vscf_password_recipient_info_t */*5*/*)&password_recipient_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_password_recipient_info_len(message_info_der_serializer_ctx /*a1*/, password_recipient_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializePasswordRecipientInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpasswordRecipientInfo) {
+    // Wrap Java objects
+    jclass password_recipient_info_cls = (*jenv)->GetObjectClass(jenv, jpasswordRecipientInfo);
+    if (NULL == password_recipient_info_cls) {
+        VSCF_ASSERT("Class PasswordRecipientInfo not found.");
+    }
+    jfieldID password_recipient_info_fidCtx = (*jenv)->GetFieldID(jenv, password_recipient_info_cls, "cCtx", "J");
+    if (NULL == password_recipient_info_fidCtx) {
+        VSCF_ASSERT("Class 'PasswordRecipientInfo' has no field 'cCtx'.");
+    }
+    jlong password_recipient_info_c_ctx = (*jenv)->GetLongField(jenv, jpasswordRecipientInfo, password_recipient_info_fidCtx);
+    vscf_password_recipient_info_t */*5*/ password_recipient_info = *(vscf_password_recipient_info_t */*5*/*)&password_recipient_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_password_recipient_info(message_info_der_serializer_ctx /*a1*/, password_recipient_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedRecipientInfosLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_recipient_infos_len(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeRecipientInfos (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_recipient_infos(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedEncryptedContentInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_encrypted_content_info_len(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeEncryptedContentInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_encrypted_content_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedEnvelopedDataLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_enveloped_data_len(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeEnvelopedData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_enveloped_data(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedCmsContentInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_cms_content_info_len(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeCmsContentInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_cms_content_info_(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedSignerInfosLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfoFooter) {
+    // Wrap Java objects
+    jclass message_info_footer_cls = (*jenv)->GetObjectClass(jenv, jmessageInfoFooter);
+    if (NULL == message_info_footer_cls) {
+        VSCF_ASSERT("Class MessageInfoFooter not found.");
+    }
+    jfieldID message_info_footer_fidCtx = (*jenv)->GetFieldID(jenv, message_info_footer_cls, "cCtx", "J");
+    if (NULL == message_info_footer_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoFooter' has no field 'cCtx'.");
+    }
+    jlong message_info_footer_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfoFooter, message_info_footer_fidCtx);
+    vscf_message_info_footer_t */*5*/ message_info_footer = *(vscf_message_info_footer_t */*5*/*)&message_info_footer_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_signer_infos_len(message_info_der_serializer_ctx /*a1*/, message_info_footer /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeSignerInfos (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfoFooter) {
+    // Wrap Java objects
+    jclass message_info_footer_cls = (*jenv)->GetObjectClass(jenv, jmessageInfoFooter);
+    if (NULL == message_info_footer_cls) {
+        VSCF_ASSERT("Class MessageInfoFooter not found.");
+    }
+    jfieldID message_info_footer_fidCtx = (*jenv)->GetFieldID(jenv, message_info_footer_cls, "cCtx", "J");
+    if (NULL == message_info_footer_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoFooter' has no field 'cCtx'.");
+    }
+    jlong message_info_footer_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfoFooter, message_info_footer_fidCtx);
+    vscf_message_info_footer_t */*5*/ message_info_footer = *(vscf_message_info_footer_t */*5*/*)&message_info_footer_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_signer_infos(message_info_der_serializer_ctx /*a1*/, message_info_footer /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializedSignerInfoLen (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsignerInfo) {
+    // Wrap Java objects
+    jclass signer_info_cls = (*jenv)->GetObjectClass(jenv, jsignerInfo);
+    if (NULL == signer_info_cls) {
+        VSCF_ASSERT("Class SignerInfo not found.");
+    }
+    jfieldID signer_info_fidCtx = (*jenv)->GetFieldID(jenv, signer_info_cls, "cCtx", "J");
+    if (NULL == signer_info_fidCtx) {
+        VSCF_ASSERT("Class 'SignerInfo' has no field 'cCtx'.");
+    }
+    jlong signer_info_c_ctx = (*jenv)->GetLongField(jenv, jsignerInfo, signer_info_fidCtx);
+    vscf_signer_info_t */*5*/ signer_info = *(vscf_signer_info_t */*5*/*)&signer_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialized_signer_info_len(message_info_der_serializer_ctx /*a1*/, signer_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1serializeSignerInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsignerInfo) {
+    // Wrap Java objects
+    jclass signer_info_cls = (*jenv)->GetObjectClass(jenv, jsignerInfo);
+    if (NULL == signer_info_cls) {
+        VSCF_ASSERT("Class SignerInfo not found.");
+    }
+    jfieldID signer_info_fidCtx = (*jenv)->GetFieldID(jenv, signer_info_cls, "cCtx", "J");
+    if (NULL == signer_info_fidCtx) {
+        VSCF_ASSERT("Class 'SignerInfo' has no field 'cCtx'.");
+    }
+    jlong signer_info_c_ctx = (*jenv)->GetLongField(jenv, jsignerInfo, signer_info_fidCtx);
+    vscf_signer_info_t */*5*/ signer_info = *(vscf_signer_info_t */*5*/*)&signer_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    jint ret = (jint) vscf_message_info_der_serializer_serialize_signer_info(message_info_der_serializer_ctx /*a1*/, signer_info /*a5*/);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeCustomParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcustomParams) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass custom_params_cls = (*jenv)->GetObjectClass(jenv, jcustomParams);
+    if (NULL == custom_params_cls) {
+        VSCF_ASSERT("Class MessageInfoCustomParams not found.");
+    }
+    jfieldID custom_params_fidCtx = (*jenv)->GetFieldID(jenv, custom_params_cls, "cCtx", "J");
+    if (NULL == custom_params_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoCustomParams' has no field 'cCtx'.");
+    }
+    jlong custom_params_c_ctx = (*jenv)->GetLongField(jenv, jcustomParams, custom_params_fidCtx);
+    vscf_message_info_custom_params_t */*5*/ custom_params = *(vscf_message_info_custom_params_t */*5*/*)&custom_params_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_custom_params(message_info_der_serializer_ctx /*a1*/, custom_params /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeCipherKdf (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_cipher_kdf(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeCipherPadding (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_cipher_padding(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeFooterInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_footer_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeSignedDataInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_signed_data_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeKeyRecipientInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_key_recipient_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializePasswordRecipientInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_password_recipient_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeRecipientInfos (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_recipient_infos(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeEncryptedContentInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_encrypted_content_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeEnvelopedData (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_enveloped_data(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeCmsContentInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfo) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_cls = (*jenv)->GetObjectClass(jenv, jmessageInfo);
+    if (NULL == message_info_cls) {
+        VSCF_ASSERT("Class MessageInfo not found.");
+    }
+    jfieldID message_info_fidCtx = (*jenv)->GetFieldID(jenv, message_info_cls, "cCtx", "J");
+    if (NULL == message_info_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfo' has no field 'cCtx'.");
+    }
+    jlong message_info_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfo, message_info_fidCtx);
+    vscf_message_info_t */*5*/ message_info = *(vscf_message_info_t */*5*/*)&message_info_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_cms_content_info(message_info_der_serializer_ctx /*a1*/, message_info /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeSignerInfos (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfoFooter) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_footer_cls = (*jenv)->GetObjectClass(jenv, jmessageInfoFooter);
+    if (NULL == message_info_footer_cls) {
+        VSCF_ASSERT("Class MessageInfoFooter not found.");
+    }
+    jfieldID message_info_footer_fidCtx = (*jenv)->GetFieldID(jenv, message_info_footer_cls, "cCtx", "J");
+    if (NULL == message_info_footer_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoFooter' has no field 'cCtx'.");
+    }
+    jlong message_info_footer_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfoFooter, message_info_footer_fidCtx);
+    vscf_message_info_footer_t */*5*/ message_info_footer = *(vscf_message_info_footer_t */*5*/*)&message_info_footer_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_signer_infos(message_info_der_serializer_ctx /*a1*/, message_info_footer /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoDerSerializer_1deserializeSignerInfo (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmessageInfoFooter) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
+    // Wrap Java objects
+    jclass message_info_footer_cls = (*jenv)->GetObjectClass(jenv, jmessageInfoFooter);
+    if (NULL == message_info_footer_cls) {
+        VSCF_ASSERT("Class MessageInfoFooter not found.");
+    }
+    jfieldID message_info_footer_fidCtx = (*jenv)->GetFieldID(jenv, message_info_footer_cls, "cCtx", "J");
+    if (NULL == message_info_footer_fidCtx) {
+        VSCF_ASSERT("Class 'MessageInfoFooter' has no field 'cCtx'.");
+    }
+    jlong message_info_footer_c_ctx = (*jenv)->GetLongField(jenv, jmessageInfoFooter, message_info_footer_fidCtx);
+    vscf_message_info_footer_t */*5*/ message_info_footer = *(vscf_message_info_footer_t */*5*/*)&message_info_footer_c_ctx;
+    
+    // Cast class context
+    vscf_message_info_der_serializer_t /*9*/* message_info_der_serializer_ctx = *(vscf_message_info_der_serializer_t /*9*/**) &c_ctx;
+    
+    vscf_message_info_der_serializer_deserialize_signer_info(message_info_der_serializer_ctx /*a1*/, message_info_footer /*a5*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
+        return;
+    }
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_randomPadding_1new__ (JNIEnv *jenv, jobject jobj) {

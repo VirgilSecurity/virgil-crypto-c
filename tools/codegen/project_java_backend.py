@@ -198,17 +198,15 @@ def _method_should_wrap(method: IRCMethod, project_ir: IRProject | None = None) 
 
 
 def _is_internal_own_method(method: IRCMethod) -> bool:
-    """Return True if this looks like an internal implementation-specific method.
+    """Return True if this method is explicitly marked as private or internal.
 
-    Methods that have no ``declaration`` or ``visibility`` in their attrs
-    are typically internal C helpers that should not be exposed via JNI.
-    Interface methods and explicitly public methods always have these
-    attrs set by the resolved XML pipeline.
+    Methods loaded from model XML files have no declaration/visibility attrs
+    but are public by default. Only skip methods that are explicitly private
+    or internal via their attrs.
     """
-    return (method.declaration is None
-            and method.visibility is None
-            and method.attrs.get("declaration") is None
-            and method.attrs.get("visibility") is None)
+    decl = method.declaration or method.attrs.get("declaration", "")
+    vis = method.visibility or method.attrs.get("visibility", "")
+    return decl in ("private", "internal") or vis in ("private", "internal")
 
 
 def _method_has_internal_types(method: IRCMethod, project_ir: IRProject) -> bool:

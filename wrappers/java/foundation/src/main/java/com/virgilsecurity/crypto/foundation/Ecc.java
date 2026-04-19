@@ -190,4 +190,8 @@ public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Compute
         return FoundationJNI.INSTANCE.ecc_generateKey(this.cCtx, algId);
     }
 
+    public AlgInfo produceAlgInfoForKey(Key key) {
+        return FoundationJNI.INSTANCE.ecc_produceAlgInfoForKey(this.cCtx, key);
+    }
+
 }

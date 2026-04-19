@@ -186,4 +186,12 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
         return FoundationJNI.INSTANCE.asn1rd_readSet(this.cCtx);
     }
 
+    public boolean mbedtlsHasError(int code) {
+        return FoundationJNI.INSTANCE.asn1rd_mbedtlsHasError(this.cCtx, code);
+    }
+
+    public byte[] readTagData(int tag) {
+        return FoundationJNI.INSTANCE.asn1rd_readTagData(this.cCtx, tag);
+    }
+
 }
