@@ -129,7 +129,7 @@ vscf_oid_equal(vsc_data_t lhs, vsc_data_t rhs);
 //  Return string representation of the given OID.
 //
 VSCF_PRIVATE void
-vscf_oid_to_string(vsc_data_t oid, char *str);
+vscf_oid_to_string(vsc_data_t oid, char str[64]);
 
 // --------------------------------------------------------------------------
 //  Generated section end.

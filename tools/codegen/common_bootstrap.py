@@ -524,7 +524,9 @@ def render_callback(elem: ET.Element) -> str:
     modifiers = " ".join(m.attrib["value"] for m in elem.findall("c_modifier"))
     args = []
     for arg in elem.findall("c_argument"):
-        rendered = c_decl(arg.attrib['type'], arg.attrib.get('name',''), arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, arg.attrib.get('array') is not None, arg.attrib.get('type_is'))
+        _arr = arg.attrib.get('array')
+        _arr_len = _arr if _arr and _arr not in ('given', 'derived') else None
+        rendered = c_decl(arg.attrib['type'], arg.attrib.get('name', ''), arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, _arr is not None, arg.attrib.get('type_is'), array_length=_arr_len)
         args.append(rendered)
     arg_str = ", ".join(args) if args else "void"
     left = f"typedef {modifiers} {ret_type}".replace("  ", " ").strip()
@@ -680,7 +682,9 @@ def render_method_signature(elem: ET.Element, for_definition: bool) -> str:
         elif arg.attrib.get("type") == "...":
             args.append("...")
         else:
-            args.append(c_decl(arg.attrib['type'], arg.attrib['name'], arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, arg.attrib.get('array') is not None, arg.attrib.get('type_is')))
+            _arr = arg.attrib.get('array')
+            _arr_len = _arr if _arr and _arr not in ('given', 'derived') else None
+            args.append(c_decl(arg.attrib['type'], arg.attrib['name'], arg.attrib.get('accessed_by', 'value'), arg.attrib.get('is_const_type'), arg.attrib.get('string') is not None, _arr is not None, arg.attrib.get('type_is'), array_length=_arr_len))
     arg_str = ", ".join(args) if args else "void"
     # Attributes (e.g. VSCF_NODISCARD) are placed after the closing paren — only in declarations
     if not for_definition:

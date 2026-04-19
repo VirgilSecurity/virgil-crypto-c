@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 import xml.etree.ElementTree as ET
 
-from tools.codegen.common_bootstrap import direct_c_renderers, iter_project_xml_paths, merge_generated_section, render_enum, render_one
+from tools.codegen.common_bootstrap import c_decl, direct_c_renderers, iter_project_xml_paths, merge_generated_section, render_callback, render_enum, render_method_signature, render_one
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -118,6 +118,63 @@ class CommonBootstrapTest(unittest.TestCase):
                 "// handwritten suffix\n",
                 written[0].read_text(),
             )
+
+
+class CDeclarationRenderingTests(unittest.TestCase):
+    """Tests for c_decl and render_method_signature fixed-array argument handling."""
+
+    def _make_method(self, arg_attribs: list[dict]) -> ET.Element:
+        method = ET.Element("c_method", name="test_fn", visibility="public", declaration="public")
+        ET.SubElement(method, "c_return", type="void", accessed_by="value")
+        for attribs in arg_attribs:
+            ET.SubElement(method, "c_argument", **attribs)
+        return method
+
+    def test_c_decl_fixed_array_renders_bracketed_size(self) -> None:
+        result = c_decl("char", "str", "value", None, False, True, "primitive", array_length="64")
+        self.assertEqual("char str[64]", result)
+
+    def test_c_decl_dynamic_array_renders_as_pointer(self) -> None:
+        result = c_decl("char", "str", "value", None, False, True, "primitive", array_length=None)
+        self.assertEqual("char *str", result)
+
+    def test_render_method_signature_fixed_array_arg_renders_bracketed_size(self) -> None:
+        method = self._make_method([
+            {"type": "char", "name": "str", "accessed_by": "value", "type_is": "primitive", "array": "64"},
+        ])
+        sig = render_method_signature(method, for_definition=False)
+        self.assertIn("char str[64]", sig)
+
+    def test_render_method_signature_dynamic_array_arg_renders_as_pointer(self) -> None:
+        method = self._make_method([
+            {"type": "char", "name": "buf", "accessed_by": "value", "type_is": "primitive", "array": "given"},
+        ])
+        sig = render_method_signature(method, for_definition=False)
+        self.assertIn("char *buf", sig)
+        self.assertNotIn("[", sig)
+
+    def test_render_method_signature_derived_array_arg_renders_as_pointer(self) -> None:
+        method = self._make_method([
+            {"type": "char", "name": "buf", "accessed_by": "value", "type_is": "primitive", "array": "derived"},
+        ])
+        sig = render_method_signature(method, for_definition=False)
+        self.assertIn("char *buf", sig)
+        self.assertNotIn("[", sig)
+
+    def test_render_callback_fixed_array_arg_renders_bracketed_size(self) -> None:
+        cb = ET.Element("c_callback", name="my_fn_t")
+        ET.SubElement(cb, "c_return", type="void", accessed_by="value")
+        ET.SubElement(cb, "c_argument", type="char", name="str", accessed_by="value", type_is="primitive", array="64")
+        rendered = render_callback(cb)
+        self.assertIn("char str[64]", rendered)
+
+    def test_render_callback_dynamic_array_arg_renders_as_pointer(self) -> None:
+        cb = ET.Element("c_callback", name="my_fn_t")
+        ET.SubElement(cb, "c_return", type="void", accessed_by="value")
+        ET.SubElement(cb, "c_argument", type="char", name="buf", accessed_by="value", type_is="primitive", array="given")
+        rendered = render_callback(cb)
+        self.assertIn("char *buf", rendered)
+        self.assertNotIn("[", rendered)
 
 
 if __name__ == "__main__":
