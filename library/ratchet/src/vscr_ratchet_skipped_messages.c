@@ -269,7 +269,7 @@ vscr_ratchet_skipped_messages_find_key(
     return NULL;
 }
 
-VSCR_PUBLIC uint32_t
+static uint32_t
 vscr_ratchet_skipped_messages_find_public_key(
         const vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id) {
 
