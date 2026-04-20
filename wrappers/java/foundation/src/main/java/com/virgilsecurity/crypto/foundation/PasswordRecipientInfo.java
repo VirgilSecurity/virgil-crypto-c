@@ -54,7 +54,7 @@ public class PasswordRecipientInfo implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PasswordRecipientInfo getInstance(long cCtx) {
+    public static PasswordRecipientInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PasswordRecipientInfo(ctxHolder);
     }

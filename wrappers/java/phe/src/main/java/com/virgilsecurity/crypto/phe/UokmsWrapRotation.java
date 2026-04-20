@@ -51,7 +51,7 @@ public class UokmsWrapRotation implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public UokmsWrapRotation getInstance(long cCtx) {
+    public static UokmsWrapRotation getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new UokmsWrapRotation(ctxHolder);
     }

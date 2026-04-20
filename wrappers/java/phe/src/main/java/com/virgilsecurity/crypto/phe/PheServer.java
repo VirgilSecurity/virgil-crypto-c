@@ -51,7 +51,7 @@ public class PheServer implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PheServer getInstance(long cCtx) {
+    public static PheServer getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new PheServer(ctxHolder);
     }

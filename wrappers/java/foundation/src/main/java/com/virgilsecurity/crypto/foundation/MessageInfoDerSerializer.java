@@ -49,7 +49,7 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
         this.cCtx = contextHolder.cCtx;
     }
 
-    public MessageInfoDerSerializer getInstance(long cCtx) {
+    public static MessageInfoDerSerializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new MessageInfoDerSerializer(ctxHolder);
     }

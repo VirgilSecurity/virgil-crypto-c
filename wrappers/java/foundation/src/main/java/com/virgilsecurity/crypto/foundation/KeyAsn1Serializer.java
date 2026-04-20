@@ -49,7 +49,7 @@ public class KeyAsn1Serializer implements AutoCloseable, KeySerializer {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public KeyAsn1Serializer getInstance(long cCtx) {
+    public static KeyAsn1Serializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyAsn1Serializer(ctxHolder);
     }

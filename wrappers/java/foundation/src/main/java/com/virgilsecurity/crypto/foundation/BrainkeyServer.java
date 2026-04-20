@@ -49,7 +49,7 @@ public class BrainkeyServer implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public BrainkeyServer getInstance(long cCtx) {
+    public static BrainkeyServer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new BrainkeyServer(ctxHolder);
     }

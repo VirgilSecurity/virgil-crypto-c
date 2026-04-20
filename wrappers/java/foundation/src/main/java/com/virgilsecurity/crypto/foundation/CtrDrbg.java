@@ -49,7 +49,7 @@ public class CtrDrbg implements AutoCloseable, Random {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public CtrDrbg getInstance(long cCtx) {
+    public static CtrDrbg getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CtrDrbg(ctxHolder);
     }

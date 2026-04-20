@@ -49,7 +49,7 @@ public class Pkcs5Pbkdf2 implements AutoCloseable, Alg, Kdf, SaltedKdf {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Pkcs5Pbkdf2 getInstance(long cCtx) {
+    public static Pkcs5Pbkdf2 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Pkcs5Pbkdf2(ctxHolder);
     }

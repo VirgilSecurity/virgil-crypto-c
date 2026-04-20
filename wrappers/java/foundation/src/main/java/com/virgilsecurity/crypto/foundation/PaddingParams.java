@@ -54,7 +54,7 @@ public class PaddingParams implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PaddingParams getInstance(long cCtx) {
+    public static PaddingParams getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PaddingParams(ctxHolder);
     }

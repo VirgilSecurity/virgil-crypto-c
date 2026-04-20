@@ -49,7 +49,7 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Falcon getInstance(long cCtx) {
+    public static Falcon getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Falcon(ctxHolder);
     }

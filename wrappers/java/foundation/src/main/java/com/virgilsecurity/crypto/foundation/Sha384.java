@@ -49,7 +49,7 @@ public class Sha384 implements AutoCloseable, Alg, Hash {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Sha384 getInstance(long cCtx) {
+    public static Sha384 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha384(ctxHolder);
     }

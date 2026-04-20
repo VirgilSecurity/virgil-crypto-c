@@ -49,7 +49,7 @@ public class Asn1rd implements AutoCloseable, Asn1Reader {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Asn1rd getInstance(long cCtx) {
+    public static Asn1rd getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Asn1rd(ctxHolder);
     }

@@ -49,7 +49,7 @@ public class PasswordRecipientInfoList implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PasswordRecipientInfoList getInstance(long cCtx) {
+    public static PasswordRecipientInfoList getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PasswordRecipientInfoList(ctxHolder);
     }

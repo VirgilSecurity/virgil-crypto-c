@@ -49,7 +49,7 @@ public class KeyProvider implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public KeyProvider getInstance(long cCtx) {
+    public static KeyProvider getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyProvider(ctxHolder);
     }

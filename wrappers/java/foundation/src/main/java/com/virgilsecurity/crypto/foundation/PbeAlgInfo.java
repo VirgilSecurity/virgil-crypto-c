@@ -49,7 +49,7 @@ public class PbeAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PbeAlgInfo getInstance(long cCtx) {
+    public static PbeAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new PbeAlgInfo(ctxHolder);
     }

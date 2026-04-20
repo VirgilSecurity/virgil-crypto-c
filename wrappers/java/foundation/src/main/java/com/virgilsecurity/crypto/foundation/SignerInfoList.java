@@ -49,7 +49,7 @@ public class SignerInfoList implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public SignerInfoList getInstance(long cCtx) {
+    public static SignerInfoList getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SignerInfoList(ctxHolder);
     }

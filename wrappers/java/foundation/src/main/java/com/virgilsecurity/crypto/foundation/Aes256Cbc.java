@@ -49,7 +49,7 @@ public class Aes256Cbc implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Aes256Cbc getInstance(long cCtx) {
+    public static Aes256Cbc getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Aes256Cbc(ctxHolder);
     }

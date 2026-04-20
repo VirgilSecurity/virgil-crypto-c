@@ -49,7 +49,7 @@ public class CompoundKeyAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public CompoundKeyAlgInfo getInstance(long cCtx) {
+    public static CompoundKeyAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CompoundKeyAlgInfo(ctxHolder);
     }

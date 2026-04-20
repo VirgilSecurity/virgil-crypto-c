@@ -49,7 +49,7 @@ public class Verifier implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Verifier getInstance(long cCtx) {
+    public static Verifier getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Verifier(ctxHolder);
     }

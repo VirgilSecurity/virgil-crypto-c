@@ -51,7 +51,7 @@ public class PheCipher implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PheCipher getInstance(long cCtx) {
+    public static PheCipher getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new PheCipher(ctxHolder);
     }

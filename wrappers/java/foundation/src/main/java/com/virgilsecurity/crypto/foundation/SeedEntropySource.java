@@ -49,7 +49,7 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public SeedEntropySource getInstance(long cCtx) {
+    public static SeedEntropySource getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SeedEntropySource(ctxHolder);
     }

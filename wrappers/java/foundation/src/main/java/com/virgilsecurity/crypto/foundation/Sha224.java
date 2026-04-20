@@ -49,7 +49,7 @@ public class Sha224 implements AutoCloseable, Alg, Hash {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Sha224 getInstance(long cCtx) {
+    public static Sha224 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha224(ctxHolder);
     }

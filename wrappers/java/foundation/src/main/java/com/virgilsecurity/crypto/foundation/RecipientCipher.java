@@ -49,7 +49,7 @@ public class RecipientCipher implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public RecipientCipher getInstance(long cCtx) {
+    public static RecipientCipher getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RecipientCipher(ctxHolder);
     }

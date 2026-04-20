@@ -49,7 +49,7 @@ public class FooterInfo implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public FooterInfo getInstance(long cCtx) {
+    public static FooterInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new FooterInfo(ctxHolder);
     }

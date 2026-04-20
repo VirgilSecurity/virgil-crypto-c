@@ -49,7 +49,7 @@ public class RawPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public RawPublicKey getInstance(long cCtx) {
+    public static RawPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RawPublicKey(ctxHolder);
     }

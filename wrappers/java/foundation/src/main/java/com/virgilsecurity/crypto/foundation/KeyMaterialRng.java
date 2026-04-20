@@ -49,7 +49,7 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public KeyMaterialRng getInstance(long cCtx) {
+    public static KeyMaterialRng getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyMaterialRng(ctxHolder);
     }

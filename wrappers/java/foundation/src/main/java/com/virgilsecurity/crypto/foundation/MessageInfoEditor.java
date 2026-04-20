@@ -49,7 +49,7 @@ public class MessageInfoEditor implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public MessageInfoEditor getInstance(long cCtx) {
+    public static MessageInfoEditor getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new MessageInfoEditor(ctxHolder);
     }

@@ -49,7 +49,7 @@ public class HybridPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public HybridPrivateKey getInstance(long cCtx) {
+    public static HybridPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridPrivateKey(ctxHolder);
     }

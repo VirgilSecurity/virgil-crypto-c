@@ -49,7 +49,7 @@ public class KeyRecipientInfoList implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public KeyRecipientInfoList getInstance(long cCtx) {
+    public static KeyRecipientInfoList getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyRecipientInfoList(ctxHolder);
     }

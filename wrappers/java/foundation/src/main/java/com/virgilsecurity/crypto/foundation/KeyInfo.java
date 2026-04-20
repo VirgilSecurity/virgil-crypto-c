@@ -54,7 +54,7 @@ public class KeyInfo implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public KeyInfo getInstance(long cCtx) {
+    public static KeyInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyInfo(ctxHolder);
     }

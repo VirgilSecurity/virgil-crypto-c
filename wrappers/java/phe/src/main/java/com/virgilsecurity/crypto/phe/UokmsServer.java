@@ -51,7 +51,7 @@ public class UokmsServer implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public UokmsServer getInstance(long cCtx) {
+    public static UokmsServer getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new UokmsServer(ctxHolder);
     }

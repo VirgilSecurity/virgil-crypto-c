@@ -49,7 +49,7 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Hkdf getInstance(long cCtx) {
+    public static Hkdf getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Hkdf(ctxHolder);
     }

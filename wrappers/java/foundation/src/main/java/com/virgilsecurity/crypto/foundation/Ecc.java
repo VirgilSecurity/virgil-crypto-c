@@ -49,7 +49,7 @@ public class Ecc implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Compute
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Ecc getInstance(long cCtx) {
+    public static Ecc getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Ecc(ctxHolder);
     }

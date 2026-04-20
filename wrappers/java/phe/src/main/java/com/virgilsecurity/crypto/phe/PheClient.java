@@ -51,7 +51,7 @@ public class PheClient implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public PheClient getInstance(long cCtx) {
+    public static PheClient getInstance(long cCtx) {
         PheContextHolder ctxHolder = new PheContextHolder(cCtx);
         return new PheClient(ctxHolder);
     }

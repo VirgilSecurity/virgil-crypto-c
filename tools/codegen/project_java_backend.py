@@ -732,7 +732,7 @@ def _generate_class_file(
         lines.append("")
 
         # getInstance static factory
-        lines.append(f"    public {class_name} getInstance(long cCtx) {{")
+        lines.append(f"    public static {class_name} getInstance(long cCtx) {{")
         lines.append(f"        {ctx_holder} ctxHolder = new {ctx_holder}(cCtx);")
         lines.append(f"        return new {class_name}(ctxHolder);")
         lines.append("    }")

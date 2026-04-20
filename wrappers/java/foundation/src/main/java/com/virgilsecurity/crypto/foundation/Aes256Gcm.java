@@ -49,7 +49,7 @@ public class Aes256Gcm implements AutoCloseable, Alg, Encrypt, Decrypt, CipherIn
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Aes256Gcm getInstance(long cCtx) {
+    public static Aes256Gcm getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Aes256Gcm(ctxHolder);
     }

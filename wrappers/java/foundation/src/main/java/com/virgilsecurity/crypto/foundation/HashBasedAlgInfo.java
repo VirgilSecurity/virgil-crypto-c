@@ -49,7 +49,7 @@ public class HashBasedAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public HashBasedAlgInfo getInstance(long cCtx) {
+    public static HashBasedAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HashBasedAlgInfo(ctxHolder);
     }

@@ -49,7 +49,7 @@ public class Round5 implements AutoCloseable, KeyAlg, Kem {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Round5 getInstance(long cCtx) {
+    public static Round5 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Round5(ctxHolder);
     }

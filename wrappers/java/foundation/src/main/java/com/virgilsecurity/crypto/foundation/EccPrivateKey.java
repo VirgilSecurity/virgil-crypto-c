@@ -49,7 +49,7 @@ public class EccPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public EccPrivateKey getInstance(long cCtx) {
+    public static EccPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new EccPrivateKey(ctxHolder);
     }

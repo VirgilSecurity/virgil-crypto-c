@@ -49,7 +49,7 @@ public class Ecies implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Ecies getInstance(long cCtx) {
+    public static Ecies getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Ecies(ctxHolder);
     }

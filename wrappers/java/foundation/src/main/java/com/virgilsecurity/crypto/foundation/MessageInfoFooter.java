@@ -49,7 +49,7 @@ public class MessageInfoFooter implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public MessageInfoFooter getInstance(long cCtx) {
+    public static MessageInfoFooter getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new MessageInfoFooter(ctxHolder);
     }

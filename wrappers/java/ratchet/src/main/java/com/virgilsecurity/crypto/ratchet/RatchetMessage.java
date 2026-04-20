@@ -49,7 +49,7 @@ public class RatchetMessage implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public RatchetMessage getInstance(long cCtx) {
+    public static RatchetMessage getInstance(long cCtx) {
         RatchetContextHolder ctxHolder = new RatchetContextHolder(cCtx);
         return new RatchetMessage(ctxHolder);
     }

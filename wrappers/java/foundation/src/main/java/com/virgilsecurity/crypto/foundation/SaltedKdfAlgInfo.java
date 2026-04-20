@@ -49,7 +49,7 @@ public class SaltedKdfAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public SaltedKdfAlgInfo getInstance(long cCtx) {
+    public static SaltedKdfAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SaltedKdfAlgInfo(ctxHolder);
     }

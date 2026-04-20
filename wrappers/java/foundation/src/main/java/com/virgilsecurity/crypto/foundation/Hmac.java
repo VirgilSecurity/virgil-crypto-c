@@ -49,7 +49,7 @@ public class Hmac implements AutoCloseable, Alg, Mac {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Hmac getInstance(long cCtx) {
+    public static Hmac getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Hmac(ctxHolder);
     }

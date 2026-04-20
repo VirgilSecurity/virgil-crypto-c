@@ -49,7 +49,7 @@ public class RsaPrivateKey implements AutoCloseable, Key, PrivateKey {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public RsaPrivateKey getInstance(long cCtx) {
+    public static RsaPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RsaPrivateKey(ctxHolder);
     }

@@ -49,7 +49,7 @@ public class CompoundPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public CompoundPublicKey getInstance(long cCtx) {
+    public static CompoundPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CompoundPublicKey(ctxHolder);
     }

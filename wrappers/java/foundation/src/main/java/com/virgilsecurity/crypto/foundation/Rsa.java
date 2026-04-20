@@ -49,7 +49,7 @@ public class Rsa implements AutoCloseable, KeyAlg, KeyCipher, KeySigner {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Rsa getInstance(long cCtx) {
+    public static Rsa getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Rsa(ctxHolder);
     }

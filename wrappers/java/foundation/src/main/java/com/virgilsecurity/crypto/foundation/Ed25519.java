@@ -49,7 +49,7 @@ public class Ed25519 implements AutoCloseable, KeyAlg, KeyCipher, KeySigner, Com
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Ed25519 getInstance(long cCtx) {
+    public static Ed25519 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Ed25519(ctxHolder);
     }

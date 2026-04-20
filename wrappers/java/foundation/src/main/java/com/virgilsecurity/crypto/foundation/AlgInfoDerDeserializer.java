@@ -49,7 +49,7 @@ public class AlgInfoDerDeserializer implements AutoCloseable, AlgInfoDeserialize
         this.cCtx = contextHolder.cCtx;
     }
 
-    public AlgInfoDerDeserializer getInstance(long cCtx) {
+    public static AlgInfoDerDeserializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new AlgInfoDerDeserializer(ctxHolder);
     }

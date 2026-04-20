@@ -49,7 +49,7 @@ public class GroupSession implements AutoCloseable {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public GroupSession getInstance(long cCtx) {
+    public static GroupSession getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new GroupSession(ctxHolder);
     }

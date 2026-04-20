@@ -49,7 +49,7 @@ public class HybridKeyAlg implements AutoCloseable, KeyAlg, KeyCipher, KeySigner
         this.cCtx = contextHolder.cCtx;
     }
 
-    public HybridKeyAlg getInstance(long cCtx) {
+    public static HybridKeyAlg getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridKeyAlg(ctxHolder);
     }

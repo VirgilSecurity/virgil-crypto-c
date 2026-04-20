@@ -49,7 +49,7 @@ public class EntropyAccumulator implements AutoCloseable, EntropySource {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public EntropyAccumulator getInstance(long cCtx) {
+    public static EntropyAccumulator getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new EntropyAccumulator(ctxHolder);
     }

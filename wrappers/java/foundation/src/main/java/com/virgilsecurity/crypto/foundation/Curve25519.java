@@ -49,7 +49,7 @@ public class Curve25519 implements AutoCloseable, KeyAlg, KeyCipher, ComputeShar
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Curve25519 getInstance(long cCtx) {
+    public static Curve25519 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Curve25519(ctxHolder);
     }

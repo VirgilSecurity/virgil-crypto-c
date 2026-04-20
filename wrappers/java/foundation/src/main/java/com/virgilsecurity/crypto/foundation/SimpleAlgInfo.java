@@ -54,7 +54,7 @@ public class SimpleAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public SimpleAlgInfo getInstance(long cCtx) {
+    public static SimpleAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SimpleAlgInfo(ctxHolder);
     }

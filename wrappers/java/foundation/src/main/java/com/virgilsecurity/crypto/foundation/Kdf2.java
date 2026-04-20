@@ -49,7 +49,7 @@ public class Kdf2 implements AutoCloseable, Alg, Kdf {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Kdf2 getInstance(long cCtx) {
+    public static Kdf2 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Kdf2(ctxHolder);
     }

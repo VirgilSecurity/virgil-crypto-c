@@ -49,7 +49,7 @@ public class HybridKeyAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public HybridKeyAlgInfo getInstance(long cCtx) {
+    public static HybridKeyAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridKeyAlgInfo(ctxHolder);
     }

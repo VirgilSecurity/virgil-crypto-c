@@ -49,7 +49,7 @@ public class FakeRandom implements AutoCloseable, Random, EntropySource {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public FakeRandom getInstance(long cCtx) {
+    public static FakeRandom getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new FakeRandom(ctxHolder);
     }

@@ -49,7 +49,7 @@ public class Sha512 implements AutoCloseable, Alg, Hash {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Sha512 getInstance(long cCtx) {
+    public static Sha512 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha512(ctxHolder);
     }

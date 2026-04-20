@@ -49,7 +49,7 @@ public class CompoundKeyAlg implements AutoCloseable, Alg, KeyAlg, KeyCipher, Ke
         this.cCtx = contextHolder.cCtx;
     }
 
-    public CompoundKeyAlg getInstance(long cCtx) {
+    public static CompoundKeyAlg getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CompoundKeyAlg(ctxHolder);
     }

@@ -54,7 +54,7 @@ public class CipherAlgInfo implements AutoCloseable, AlgInfo {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public CipherAlgInfo getInstance(long cCtx) {
+    public static CipherAlgInfo getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new CipherAlgInfo(ctxHolder);
     }

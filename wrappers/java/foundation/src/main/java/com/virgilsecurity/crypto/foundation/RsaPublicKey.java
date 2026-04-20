@@ -49,7 +49,7 @@ public class RsaPublicKey implements AutoCloseable, Key, PublicKey {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public RsaPublicKey getInstance(long cCtx) {
+    public static RsaPublicKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RsaPublicKey(ctxHolder);
     }

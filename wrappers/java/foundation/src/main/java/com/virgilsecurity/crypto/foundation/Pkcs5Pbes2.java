@@ -49,7 +49,7 @@ public class Pkcs5Pbes2 implements AutoCloseable, Alg, Encrypt, Decrypt {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Pkcs5Pbes2 getInstance(long cCtx) {
+    public static Pkcs5Pbes2 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Pkcs5Pbes2(ctxHolder);
     }

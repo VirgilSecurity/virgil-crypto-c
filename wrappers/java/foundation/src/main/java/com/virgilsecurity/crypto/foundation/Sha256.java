@@ -49,7 +49,7 @@ public class Sha256 implements AutoCloseable, Alg, Hash {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public Sha256 getInstance(long cCtx) {
+    public static Sha256 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha256(ctxHolder);
     }

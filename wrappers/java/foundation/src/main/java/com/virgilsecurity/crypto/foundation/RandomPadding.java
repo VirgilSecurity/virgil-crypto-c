@@ -49,7 +49,7 @@ public class RandomPadding implements AutoCloseable, Alg, Padding {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public RandomPadding getInstance(long cCtx) {
+    public static RandomPadding getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new RandomPadding(ctxHolder);
     }
