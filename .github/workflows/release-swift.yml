@@ -2,7 +2,8 @@ name: Release Swift
 on:
   push:
     tags:
-      - "*"
+      - 'v*.*.*'
+      - 'v*.*.*-*'
 jobs:
   release-apple-xcframeworks:
     runs-on: macos-26

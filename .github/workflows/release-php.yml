@@ -3,8 +3,8 @@ name: Release PHP
 on:
   push:
     tags:
-      - 'v*.*.*'           # Release tags (v1.2.3)
-      - 'v*.*.*-rc*'       # Release candidate tags (v1.2.3-rc1)
+      - 'v*.*.*'
+      - 'v*.*.*-*'
 
 jobs:
   build-php:

@@ -3,8 +3,8 @@ name: Release Java
 on:
   push:
     tags:
-      - 'v*.*.*'           # Release tags (v1.2.3)
-      - 'v*.*.*-rc*'       # Release candidate tags (v1.2.3-rc1)
+      - 'v*.*.*'
+      - 'v*.*.*-*'
   workflow_dispatch:
     inputs:
       tag:

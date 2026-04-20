@@ -3,7 +3,8 @@ name: Release WASM
 on:
   push:
     tags:
-      - "v*"
+      - 'v*.*.*'
+      - 'v*.*.*-*'
 
 jobs:
   build-and-test:
