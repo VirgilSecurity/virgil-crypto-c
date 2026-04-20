@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,9 +50,6 @@
 
 #ifndef VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED
 #define VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -67,11 +62,25 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -163,6 +172,18 @@ VSCF_PUBLIC void
 vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
 
 //
+//  Return buffer size enough to hold serialized algorithm.
+//
+VSCF_PUBLIC size_t
+vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
+
+//
+//  Serialize algorithm info to buffer class.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info, vsc_buffer_t *out);
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
@@ -176,31 +197,15 @@ vscf_alg_info_der_serializer_setup_defaults(vscf_alg_info_der_serializer_t *self
 VSCF_PUBLIC size_t
 vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
-//
-//  Return buffer size enough to hold serialized algorithm.
-//
-VSCF_PUBLIC size_t
-vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
-
-//
-//  Serialize algorithm info to buffer class.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_serialize(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info,
-        vsc_buffer_t *out);
-
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ALG_INFO_DER_SERIALIZER_H_INCLUDED

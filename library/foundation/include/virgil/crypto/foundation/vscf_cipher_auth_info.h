@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,18 +46,29 @@
 #ifndef VSCF_CIPHER_AUTH_INFO_H_INCLUDED
 #define VSCF_CIPHER_AUTH_INFO_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_api.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -95,18 +105,15 @@ vscf_cipher_auth_info_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_cipher_auth_info_api_tag(const vscf_cipher_auth_info_api_t *cipher_auth_info_api);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_CIPHER_AUTH_INFO_H_INCLUDED

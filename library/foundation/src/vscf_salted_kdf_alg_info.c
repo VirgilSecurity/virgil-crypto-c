@@ -73,7 +73,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_salted_kdf_alg_info_init() is called.

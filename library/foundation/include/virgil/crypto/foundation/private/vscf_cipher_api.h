@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,15 +50,6 @@
 
 #ifndef VSCF_CIPHER_API_H_INCLUDED
 #define VSCF_CIPHER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_encrypt.h"
-#include "vscf_decrypt.h"
-#include "vscf_cipher_info.h"
-#include "vscf_cipher_state.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -75,11 +64,31 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_encrypt.h"
+#include "vscf_decrypt.h"
+#include "vscf_cipher_info.h"
+#include "vscf_cipher_state.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -119,22 +128,22 @@ typedef void (*vscf_cipher_api_update_fn)(vscf_impl_t *impl, vsc_data_t data, vs
 
 //
 //  Callback. Return buffer length required to hold an output of the methods
-//          "update" or "finish" in an current mode.
-//          Pass zero length to define buffer length of the method "finish".
+//  "update" or "finish" in an current mode.
+//  Pass zero length to define buffer length of the method "finish".
 //
 typedef size_t (*vscf_cipher_api_out_len_fn)(vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Return buffer length required to hold an output of the methods
-//          "update" or "finish" in an encryption mode.
-//          Pass zero length to define buffer length of the method "finish".
+//  "update" or "finish" in an encryption mode.
+//  Pass zero length to define buffer length of the method "finish".
 //
 typedef size_t (*vscf_cipher_api_encrypted_out_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
 //
 //  Callback. Return buffer length required to hold an output of the methods
-//          "update" or "finish" in an decryption mode.
-//          Pass zero length to define buffer length of the method "finish".
+//  "update" or "finish" in an decryption mode.
+//  Pass zero length to define buffer length of the method "finish".
 //
 typedef size_t (*vscf_cipher_api_decrypted_out_len_fn)(const vscf_impl_t *impl, size_t data_len);
 
@@ -216,18 +225,15 @@ struct vscf_cipher_api_t {
     vscf_cipher_api_finish_fn finish_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_CIPHER_API_H_INCLUDED

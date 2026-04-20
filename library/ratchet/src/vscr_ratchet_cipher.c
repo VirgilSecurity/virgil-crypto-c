@@ -234,7 +234,6 @@ vscr_ratchet_cipher_shallow_copy(vscr_ratchet_cipher_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_cipher_init() is called.

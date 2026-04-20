@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,16 +51,27 @@
 #ifndef VSCF_LIST_KEY_VALUE_NODE_H_INCLUDED
 #define VSCF_LIST_KEY_VALUE_NODE_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -119,18 +128,15 @@ vscf_list_key_value_node_destroy(vscf_list_key_value_node_t **self_ref);
 VSCF_PUBLIC vscf_list_key_value_node_t *
 vscf_list_key_value_node_shallow_copy(vscf_list_key_value_node_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_LIST_KEY_VALUE_NODE_H_INCLUDED

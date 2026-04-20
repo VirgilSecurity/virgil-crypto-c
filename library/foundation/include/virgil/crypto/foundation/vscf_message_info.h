@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -54,6 +52,15 @@
 #ifndef VSCF_MESSAGE_INFO_H_INCLUDED
 #define VSCF_MESSAGE_INFO_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_key_recipient_info.h"
 #include "vscf_password_recipient_info.h"
@@ -63,14 +70,16 @@
 #include "vscf_footer_info.h"
 #include "vscf_impl.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -137,8 +146,7 @@ vscf_message_info_add_key_recipient(vscf_message_info_t *self, vscf_key_recipien
 //  Add recipient that is defined by password.
 //
 VSCF_PRIVATE void
-vscf_message_info_add_password_recipient(vscf_message_info_t *self,
-        vscf_password_recipient_info_t **password_recipient_ref);
+vscf_message_info_add_password_recipient(vscf_message_info_t *self, vscf_password_recipient_info_t **password_recipient_ref);
 
 //
 //  Set information about algorithm that was used for data encryption.
@@ -280,18 +288,15 @@ vscf_message_info_remove_footer_info(vscf_message_info_t *self);
 VSCF_PUBLIC void
 vscf_message_info_clear(vscf_message_info_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_H_INCLUDED

@@ -75,6 +75,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Setup dependency to the interface 'mac' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac);
+
+//
+//  Setup dependency to the interface 'mac' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac);
+
+//
+//  Release dependency to the interface 'mac'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self);
+
 static const vscf_api_t *
 vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag);
 
@@ -84,7 +103,7 @@ vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -111,7 +130,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_kdf_api_t kdf_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'kdf' MUST be equal to the 'vscf_api_tag_KDF'.
+    //  For interface 'kdf' MUST be equal to the  'vscf_api_tag_KDF'.
     //
     vscf_api_tag_KDF,
     //
@@ -130,7 +149,7 @@ static const vscf_kdf_api_t kdf_api = {
 static const vscf_salted_kdf_api_t salted_kdf_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'salted_kdf' MUST be equal to the 'vscf_api_tag_SALTED_KDF'.
+    //  For interface 'salted kdf' MUST be equal to the  'vscf_api_tag_SALTED_KDF'.
     //
     vscf_api_tag_SALTED_KDF,
     //
@@ -176,6 +195,48 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'mac' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT(self->hmac == NULL);
+
+    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
+
+    self->hmac = vscf_impl_shallow_copy(hmac);
+}
+
+//
+//  Setup dependency to the interface 'mac' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT(self->hmac == NULL);
+
+    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
+
+    self->hmac = hmac;
+}
+
+//
+//  Release dependency to the interface 'mac'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->hmac);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -201,8 +262,6 @@ vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *self) {
     if (self == NULL) {
         return;
     }
-
-    vscf_pkcs5_pbkdf2_release_hmac(self);
 
     vscf_pkcs5_pbkdf2_cleanup_ctx(self);
 
@@ -314,58 +373,16 @@ vscf_pkcs5_pbkdf2_impl_const(const vscf_pkcs5_pbkdf2_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'mac' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_use_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT(self->hmac == NULL);
-
-    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
-
-    self->hmac = vscf_impl_shallow_copy(hmac);
-}
-
-//
-//  Setup dependency to the interface 'mac' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_take_hmac(vscf_pkcs5_pbkdf2_t *self, vscf_impl_t *hmac) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT(self->hmac == NULL);
-
-    VSCF_ASSERT(vscf_mac_is_implemented(hmac));
-
-    self->hmac = hmac;
-}
-
-//
-//  Release dependency to the interface 'mac'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->hmac);
-}
-
 static const vscf_api_t *
 vscf_pkcs5_pbkdf2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_KDF:
-            return (const vscf_api_t *) &kdf_api;
+        return (const vscf_api_t *)                 &kdf_api;
         case vscf_api_tag_SALTED_KDF:
-            return (const vscf_api_t *) &salted_kdf_api;
+        return (const vscf_api_t *)                 &salted_kdf_api;
         default:
             return NULL;
     }

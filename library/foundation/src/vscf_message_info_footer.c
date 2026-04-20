@@ -220,7 +220,6 @@ vscf_message_info_footer_shallow_copy(vscf_message_info_footer_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_info_footer_init() is called.

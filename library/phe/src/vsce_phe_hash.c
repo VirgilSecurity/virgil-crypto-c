@@ -226,7 +226,6 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vsce_phe_hash_init() is called.

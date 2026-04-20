@@ -145,7 +145,6 @@ vscr_assert_trigger_unhandled_error_of_project_foundation(int error, const char 
 
     char error_message[48] = {0x00};
     snprintf(error_message, sizeof(error_message), "Unhandled vsc::foundation error -0x%04x", error);
-
     vscr_assert_trigger(error_message, file, line);
 }
 

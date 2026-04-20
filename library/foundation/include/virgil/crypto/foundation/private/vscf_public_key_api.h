@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,19 +51,30 @@
 #ifndef VSCF_PUBLIC_KEY_API_H_INCLUDED
 #define VSCF_PUBLIC_KEY_API_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_key.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -79,7 +88,7 @@ extern "C" {
 struct vscf_public_key_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
+    //  For interface 'public key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -92,18 +101,15 @@ struct vscf_public_key_api_t {
     const vscf_key_api_t *key_api;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PUBLIC_KEY_API_H_INCLUDED

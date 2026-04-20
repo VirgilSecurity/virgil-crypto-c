@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,22 +36,38 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* CMS based serialization of the class "message info".
-*/
 public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSerializer, MessageInfoFooterSerializer {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public MessageInfoDerSerializer() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.messageInfoDerSerializer_new();
     }
 
-    /* Wrap underlying C context. */
     MessageInfoDerSerializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
+    }
+
+    public static MessageInfoDerSerializer getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new MessageInfoDerSerializer(ctxHolder);
+    }
+
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.messageInfoDerSerializer_close(ctx);
+        }
+    }
+
+    public void close() {
+        clearResources();
+    }
+
+    protected void finalize() throws Throwable {
+        clearResources();
     }
 
     public void setAsn1Reader(Asn1Reader asn1Reader) {
@@ -62,96 +78,40 @@ public class MessageInfoDerSerializer implements AutoCloseable, MessageInfoSeria
         FoundationJNI.INSTANCE.messageInfoDerSerializer_setAsn1Writer(this.cCtx, asn1Writer);
     }
 
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.messageInfoDerSerializer_setupDefaults(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
-    public static MessageInfoDerSerializer getInstance(long cCtx) {
-        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
-        return new MessageInfoDerSerializer(ctxHolder);
-    }
-
-    /* Clear resources. */
-    private void clearResources() {
-        long ctx = this.cCtx;
-        if (this.cCtx > 0) {
-            this.cCtx = 0;
-            FoundationJNI.INSTANCE.messageInfoDerSerializer_close(ctx);
-        }
-    }
-
-    /* Close resource. */
-    public void close() {
-        clearResources();
-    }
-
-    /* Finalize resource. */
-    protected void finalize() throws Throwable {
-        clearResources();
-    }
-
     public int getPrefixLen() {
         return 32;
     }
 
-    /*
-    * Return buffer size enough to hold serialized message info.
-    */
     public int serializedLen(MessageInfo messageInfo) {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_serializedLen(this.cCtx, messageInfo);
     }
 
-    /*
-    * Serialize class "message info".
-    */
     public byte[] serialize(MessageInfo messageInfo) {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_serialize(this.cCtx, messageInfo);
     }
 
-    /*
-    * Read message info prefix from the given data, and if it is valid,
-    * return a length of bytes of the whole message info.
-    *
-    * Zero returned if length can not be determined from the given data,
-    * and this means that there is no message info at the data beginning.
-    */
     public int readPrefix(byte[] data) {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_readPrefix(this.cCtx, data);
     }
 
-    /*
-    * Deserialize class "message info".
-    */
     public MessageInfo deserialize(byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_deserialize(this.cCtx, data);
     }
 
-    /*
-    * Return buffer size enough to hold serialized message info footer.
-    */
     public int serializedFooterLen(MessageInfoFooter messageInfoFooter) {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_serializedFooterLen(this.cCtx, messageInfoFooter);
     }
 
-    /*
-    * Serialize class "message info footer".
-    */
     public byte[] serializeFooter(MessageInfoFooter messageInfoFooter) {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_serializeFooter(this.cCtx, messageInfoFooter);
     }
 
-    /*
-    * Deserialize class "message info footer".
-    */
     public MessageInfoFooter deserializeFooter(byte[] data) throws FoundationException {
         return FoundationJNI.INSTANCE.messageInfoDerSerializer_deserializeFooter(this.cCtx, data);
     }
-}
 
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.messageInfoDerSerializer_setupDefaults(this.cCtx);
+    }
+
+}

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -70,14 +70,12 @@ class VscfBrainkeyClient(object):
         return vscf_brainkey_client_delete(ctx)
 
     def vscf_brainkey_client_use_random(self, ctx, random):
-        """Random used for key generation, proofs, etc."""
         vscf_brainkey_client_use_random = self._lib.vscf_brainkey_client_use_random
         vscf_brainkey_client_use_random.argtypes = [POINTER(vscf_brainkey_client_t), POINTER(vscf_impl_t)]
         vscf_brainkey_client_use_random.restype = None
         return vscf_brainkey_client_use_random(ctx, random)
 
     def vscf_brainkey_client_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vscf_brainkey_client_use_operation_random = self._lib.vscf_brainkey_client_use_operation_random
         vscf_brainkey_client_use_operation_random.argtypes = [POINTER(vscf_brainkey_client_t), POINTER(vscf_impl_t)]
         vscf_brainkey_client_use_operation_random.restype = None

@@ -229,7 +229,6 @@ vscf_verifier_shallow_copy(vscf_verifier_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_verifier_init() is called.

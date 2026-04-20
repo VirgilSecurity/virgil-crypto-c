@@ -87,7 +87,6 @@ vsc_data_ctx_size(void) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Creates data from the preallocated bytes.
 //

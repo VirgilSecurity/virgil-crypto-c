@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_OID_H_INCLUDED
 #define VSCF_OID_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_alg_id.h"
-#include "vscf_oid_id.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -68,11 +62,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_alg_id.h"
+#include "vscf_oid_id.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -122,18 +131,15 @@ vscf_oid_equal(vsc_data_t lhs, vsc_data_t rhs);
 VSCF_PRIVATE void
 vscf_oid_to_string(vsc_data_t oid, char str[64]);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_OID_H_INCLUDED

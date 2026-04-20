@@ -74,7 +74,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_hybrid_public_key_init() is called.

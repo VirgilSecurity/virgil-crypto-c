@@ -83,6 +83,25 @@ vscf_key_asn1_deserializer_did_setup_asn1_reader(vscf_key_asn1_deserializer_t *s
 VSCF_PRIVATE void
 vscf_key_asn1_deserializer_did_release_asn1_reader(vscf_key_asn1_deserializer_t *self);
 
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_use_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_take_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_release_asn1_reader(vscf_key_asn1_deserializer_t *self);
+
 static const vscf_api_t *
 vscf_key_asn1_deserializer_find_api(vscf_api_tag_t api_tag);
 
@@ -92,7 +111,7 @@ vscf_key_asn1_deserializer_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_deserializer_api_t key_deserializer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_deserializer' MUST be equal to the 'vscf_api_tag_KEY_DESERIALIZER'.
+    //  For interface 'key deserializer' MUST be equal to the  'vscf_api_tag_KEY_DESERIALIZER'.
     //
     vscf_api_tag_KEY_DESERIALIZER,
     //
@@ -133,6 +152,54 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_use_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+
+    vscf_key_asn1_deserializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_take_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = asn1_reader;
+
+    vscf_key_asn1_deserializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_deserializer_release_asn1_reader(vscf_key_asn1_deserializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+
+    vscf_key_asn1_deserializer_did_release_asn1_reader(self);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -158,8 +225,6 @@ vscf_key_asn1_deserializer_cleanup(vscf_key_asn1_deserializer_t *self) {
     if (self == NULL) {
         return;
     }
-
-    vscf_key_asn1_deserializer_release_asn1_reader(self);
 
     vscf_key_asn1_deserializer_cleanup_ctx(self);
 
@@ -271,60 +336,12 @@ vscf_key_asn1_deserializer_impl_const(const vscf_key_asn1_deserializer_t *self) 
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 reader' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_deserializer_use_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT(self->asn1_reader == NULL);
-
-    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
-
-    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
-
-    vscf_key_asn1_deserializer_did_setup_asn1_reader(self);
-}
-
-//
-//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_deserializer_take_asn1_reader(vscf_key_asn1_deserializer_t *self, vscf_impl_t *asn1_reader) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT(self->asn1_reader == NULL);
-
-    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
-
-    self->asn1_reader = asn1_reader;
-
-    vscf_key_asn1_deserializer_did_setup_asn1_reader(self);
-}
-
-//
-//  Release dependency to the interface 'asn1 reader'.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_deserializer_release_asn1_reader(vscf_key_asn1_deserializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_reader);
-
-    vscf_key_asn1_deserializer_did_release_asn1_reader(self);
-}
-
 static const vscf_api_t *
 vscf_key_asn1_deserializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY_DESERIALIZER:
-            return (const vscf_api_t *) &key_deserializer_api;
+        return (const vscf_api_t *)                 &key_deserializer_api;
         default:
             return NULL;
     }

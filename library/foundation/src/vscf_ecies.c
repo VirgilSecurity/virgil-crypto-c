@@ -135,9 +135,13 @@ vscf_ecies_cleanup(vscf_ecies_t *self) {
     vscf_ecies_cleanup_ctx(self);
 
     vscf_ecies_release_random(self);
+
     vscf_ecies_release_cipher(self);
+
     vscf_ecies_release_mac(self);
+
     vscf_ecies_release_kdf(self);
+
     vscf_ecies_release_ephemeral_key(self);
 
     vscf_zeroize(self, sizeof(vscf_ecies_t));
@@ -460,7 +464,6 @@ vscf_ecies_release_ephemeral_key(vscf_ecies_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

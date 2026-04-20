@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,20 +51,31 @@
 #ifndef VSCR_RATCHET_SKIPPED_MESSAGES_DEFS_H_INCLUDED
 #define VSCR_RATCHET_SKIPPED_MESSAGES_DEFS_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscr_library.h"
 #include "vscr_atomic.h"
 #include "vscr_ratchet_common_hidden.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_skipped_messages_root_node.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -86,14 +95,10 @@ struct vscr_ratchet_skipped_messages_t {
     //  Reference counter.
     //
     VSCR_ATOMIC size_t refcnt;
-
     uint32_t roots_count;
-
     vscr_ratchet_key_id_t key_ids[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
-
     vscr_ratchet_skipped_messages_root_node_t *root_nodes[vscr_ratchet_common_hidden_MAX_SKIPPED_DH];
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -101,11 +106,9 @@ struct vscr_ratchet_skipped_messages_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_SKIPPED_MESSAGES_DEFS_H_INCLUDED

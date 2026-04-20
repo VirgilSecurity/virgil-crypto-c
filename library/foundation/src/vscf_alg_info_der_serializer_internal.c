@@ -71,6 +71,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self);
+
 static const vscf_api_t *
 vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 
@@ -80,7 +99,7 @@ vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_info_serializer_api_t alg_info_serializer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_serializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_SERIALIZER'.
+    //  For interface 'alg info serializer' MUST be equal to the  'vscf_api_tag_ALG_INFO_SERIALIZER'.
     //
     vscf_api_tag_ALG_INFO_SERIALIZER,
     //
@@ -121,6 +140,48 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = asn1_writer;
+}
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_writer);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -132,6 +193,8 @@ vscf_alg_info_der_serializer_init(vscf_alg_info_der_serializer_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
+
+    vscf_alg_info_der_serializer_init_ctx(self);
 }
 
 //
@@ -145,7 +208,7 @@ vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *self) {
         return;
     }
 
-    vscf_alg_info_der_serializer_release_asn1_writer(self);
+    vscf_alg_info_der_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_alg_info_der_serializer_t));
 }
@@ -227,6 +290,28 @@ vscf_alg_info_der_serializer_shallow_copy(vscf_alg_info_der_serializer_t *self) 
 }
 
 //
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_alg_info_der_serializer_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_alg_info_der_serializer_init_ctx(vscf_alg_info_der_serializer_t *self) {
+
+    VSCF_UNUSED(self);
+}
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_alg_info_der_serializer_cleanup_ctx(vscf_alg_info_der_serializer_t *self) {
+
+    vscf_alg_info_der_serializer_release_asn1_writer(self);
+}
+
+//
 //  Return size of 'vscf_alg_info_der_serializer_t' type.
 //
 VSCF_PUBLIC size_t
@@ -255,54 +340,12 @@ vscf_alg_info_der_serializer_impl_const(const vscf_alg_info_der_serializer_t *se
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_use_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
-}
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_take_asn1_writer(vscf_alg_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = asn1_writer;
-}
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_alg_info_der_serializer_release_asn1_writer(vscf_alg_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_writer);
-}
-
 static const vscf_api_t *
 vscf_alg_info_der_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO_SERIALIZER:
-            return (const vscf_api_t *) &alg_info_serializer_api;
+        return (const vscf_api_t *)                 &alg_info_serializer_api;
         default:
             return NULL;
     }

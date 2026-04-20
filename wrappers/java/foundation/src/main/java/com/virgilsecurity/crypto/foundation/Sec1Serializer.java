@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,64 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Implements SEC 1 key serialization to DER format.
-* See also RFC 5480 and RFC 5915.
-*/
 public class Sec1Serializer implements AutoCloseable, KeySerializer {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public Sec1Serializer() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.sec1Serializer_new();
     }
 
-    /* Wrap underlying C context. */
     Sec1Serializer(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    public void setAsn1Writer(Asn1Writer asn1Writer) {
-        FoundationJNI.INSTANCE.sec1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
-    }
-
-    /*
-    * Setup predefined values to the uninitialized class dependencies.
-    */
-    public void setupDefaults() {
-        FoundationJNI.INSTANCE.sec1Serializer_setupDefaults(this.cCtx);
-    }
-
-    /*
-    * Serialize Public Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
-    public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
-    }
-
-    /*
-    * Serialize Private Key by using internal ASN.1 writer.
-    * Note, that caller code is responsible to reset ASN.1 writer with
-    * an output buffer.
-    */
-    public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
-        return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
     public static Sec1Serializer getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sec1Serializer(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -102,50 +62,44 @@ public class Sec1Serializer implements AutoCloseable, KeySerializer {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Calculate buffer size enough to hold serialized public key.
-    *
-    * Precondition: public key must be exportable.
-    */
+    public void setAsn1Writer(Asn1Writer asn1Writer) {
+        FoundationJNI.INSTANCE.sec1Serializer_setAsn1Writer(this.cCtx, asn1Writer);
+    }
+
     public int serializedPublicKeyLen(RawPublicKey publicKey) {
         return FoundationJNI.INSTANCE.sec1Serializer_serializedPublicKeyLen(this.cCtx, publicKey);
     }
 
-    /*
-    * Serialize given public key to an interchangeable format.
-    *
-    * Precondition: public key must be exportable.
-    */
     public byte[] serializePublicKey(RawPublicKey publicKey) throws FoundationException {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKey(this.cCtx, publicKey);
     }
 
-    /*
-    * Calculate buffer size enough to hold serialized private key.
-    *
-    * Precondition: private key must be exportable.
-    */
     public int serializedPrivateKeyLen(RawPrivateKey privateKey) {
         return FoundationJNI.INSTANCE.sec1Serializer_serializedPrivateKeyLen(this.cCtx, privateKey);
     }
 
-    /*
-    * Serialize given private key to an interchangeable format.
-    *
-    * Precondition: private key must be exportable.
-    */
     public byte[] serializePrivateKey(RawPrivateKey privateKey) throws FoundationException {
         return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKey(this.cCtx, privateKey);
     }
-}
 
+    public void setupDefaults() {
+        FoundationJNI.INSTANCE.sec1Serializer_setupDefaults(this.cCtx);
+    }
+
+    public int serializePublicKeyInplace(RawPublicKey publicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.sec1Serializer_serializePublicKeyInplace(this.cCtx, publicKey);
+    }
+
+    public int serializePrivateKeyInplace(RawPrivateKey privateKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.sec1Serializer_serializePrivateKeyInplace(this.cCtx, privateKey);
+    }
+
+}

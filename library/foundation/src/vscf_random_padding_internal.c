@@ -73,6 +73,25 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_random_padding_use_random(vscf_random_padding_t *self, vscf_impl_t *random);
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_random_padding_take_random(vscf_random_padding_t *self, vscf_impl_t *random);
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_random_padding_release_random(vscf_random_padding_t *self);
+
 static const vscf_api_t *
 vscf_random_padding_find_api(vscf_api_tag_t api_tag);
 
@@ -82,7 +101,7 @@ vscf_random_padding_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -109,7 +128,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_padding_api_t padding_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'padding' MUST be equal to the 'vscf_api_tag_PADDING'.
+    //  For interface 'padding' MUST be equal to the  'vscf_api_tag_PADDING'.
     //
     vscf_api_tag_PADDING,
     //
@@ -190,6 +209,48 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_random_padding_use_random(vscf_random_padding_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_random_padding_take_random(vscf_random_padding_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_random_padding_release_random(vscf_random_padding_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -215,8 +276,6 @@ vscf_random_padding_cleanup(vscf_random_padding_t *self) {
     if (self == NULL) {
         return;
     }
-
-    vscf_random_padding_release_random(self);
 
     vscf_random_padding_cleanup_ctx(self);
 
@@ -328,56 +387,14 @@ vscf_random_padding_impl_const(const vscf_random_padding_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_random_padding_use_random(vscf_random_padding_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_random_padding_take_random(vscf_random_padding_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_random_padding_release_random(vscf_random_padding_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
-
 static const vscf_api_t *
 vscf_random_padding_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_PADDING:
-            return (const vscf_api_t *) &padding_api;
+        return (const vscf_api_t *)                 &padding_api;
         default:
             return NULL;
     }

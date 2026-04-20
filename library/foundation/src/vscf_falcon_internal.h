@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -54,24 +52,17 @@
 #ifndef VSCF_FALCON_INTERNAL_H_INCLUDED
 #define VSCF_FALCON_INTERNAL_H_INCLUDED
 
-#include "vscf_library.h"
-#include "vscf_falcon.h"
-
 // clang-format on
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
+//  @generated_header_includes
 // --------------------------------------------------------------------------
 // clang-format off
-//  Generated section start.
+//  Generated header includes start.
 // --------------------------------------------------------------------------
 
+#include "vscf_library.h"
+#include "vscf_falcon.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -81,9 +72,40 @@ extern "C" {
 
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_falcon_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_falcon_init_ctx(vscf_falcon_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_falcon_cleanup_ctx(vscf_falcon_t *self);
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+#ifdef __cplusplus
+}
+#endif
 
 //  @footer
 #endif // VSCF_FALCON_INTERNAL_H_INCLUDED

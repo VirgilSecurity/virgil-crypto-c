@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,6 +45,15 @@
 
 #ifndef VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
 #define VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED
+
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
@@ -57,14 +65,16 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -77,17 +87,9 @@ extern "C" {
 //
 typedef struct vscr_ratchet_message_key_t vscr_ratchet_message_key_t;
 struct vscr_ratchet_message_key_t {
-    //
-    //  Function do deallocate self context.
-    //
     vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
     VSCR_ATOMIC size_t refcnt;
-
     uint32_t index;
-
     vscr_ratchet_symmetric_key_t key;
 };
 
@@ -141,18 +143,15 @@ vscr_ratchet_message_key_serialize(const vscr_ratchet_message_key_t *self, vscr_
 VSCR_PUBLIC void
 vscr_ratchet_message_key_deserialize(const vscr_MessageKey *message_key_pb, vscr_ratchet_message_key_t *message_key);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_MESSAGE_KEY_H_INCLUDED

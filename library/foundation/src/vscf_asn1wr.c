@@ -101,8 +101,7 @@ vscf_asn1wr_swap_elements_of_set(byte *to_start, size_t to_len, byte *from_start
 //  Return true if second element is lexicographical less then first.
 //
 static bool
-vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start,
-        size_t second_len);
+vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start, size_t second_len);
 
 //
 //  Perform lexicographical sorting of the given elements of set.
@@ -116,7 +115,6 @@ vscf_asn1wr_sort_elements_of_set(vscf_asn1wr_t *self, size_t len);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Provides initialization of the implementation specific context.

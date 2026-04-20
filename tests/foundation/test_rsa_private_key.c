@@ -227,7 +227,8 @@ test__rsa_private_key_sign_hash__with_imported_2048_PRIVATE_KEY_PKCS1_and_random
     TEST_ASSERT_NOT_NULL(public_key);
 
     vsc_data_t sig_data = vsc_buffer_data(signature);
-    TEST_ASSERT_TRUE(vscf_rsa_verify_hash(rsa, public_key, vscf_alg_id_SHA512, test_rsa_DATA_1_SHA512_DIGEST, sig_data));
+    TEST_ASSERT_TRUE(
+            vscf_rsa_verify_hash(rsa, public_key, vscf_alg_id_SHA512, test_rsa_DATA_1_SHA512_DIGEST, sig_data));
 
     //  Cleanup
     vscf_rsa_destroy(&rsa);

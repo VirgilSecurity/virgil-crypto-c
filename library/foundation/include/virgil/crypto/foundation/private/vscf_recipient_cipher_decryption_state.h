@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -50,11 +49,9 @@
 // clang-format on
 //  @end
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -73,18 +70,15 @@ enum vscf_recipient_cipher_decryption_state_t {
 };
 typedef enum vscf_recipient_cipher_decryption_state_t vscf_recipient_cipher_decryption_state_t;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_RECIPIENT_CIPHER_DECRYPTION_STATE_H_INCLUDED

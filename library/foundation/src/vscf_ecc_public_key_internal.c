@@ -81,7 +81,7 @@ vscf_ecc_public_key_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_api_t key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key' MUST be equal to the 'vscf_api_tag_KEY'.
+    //  For interface 'key' MUST be equal to the  'vscf_api_tag_KEY'.
     //
     vscf_api_tag_KEY,
     //
@@ -121,7 +121,7 @@ static const vscf_key_api_t key_api = {
 static const vscf_public_key_api_t public_key_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'public_key' MUST be equal to the 'vscf_api_tag_PUBLIC_KEY'.
+    //  For interface 'public key' MUST be equal to the  'vscf_api_tag_PUBLIC_KEY'.
     //
     vscf_api_tag_PUBLIC_KEY,
     //
@@ -266,15 +266,6 @@ vscf_ecc_public_key_shallow_copy(vscf_ecc_public_key_t *self) {
 }
 
 //
-//  Returns instance of the implemented interface 'public key'.
-//
-VSCF_PUBLIC const vscf_public_key_api_t *
-vscf_ecc_public_key_public_key_api(void) {
-
-    return &public_key_api;
-}
-
-//
 //  Return size of 'vscf_ecc_public_key_t' type.
 //
 VSCF_PUBLIC size_t
@@ -308,9 +299,9 @@ vscf_ecc_public_key_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY:
-            return (const vscf_api_t *) &key_api;
+        return (const vscf_api_t *)                 &key_api;
         case vscf_api_tag_PUBLIC_KEY:
-            return (const vscf_api_t *) &public_key_api;
+        return (const vscf_api_t *)                 &public_key_api;
         default:
             return NULL;
     }

@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Group chat encryption session.
-*/
 class GroupSession
 {
 
@@ -73,16 +70,16 @@ class GroupSession
     }
 
     /**
-    * @param Random $rng
+    *
+    * @param Random $$rng
     * @return void
     */
-    public function useRng(Random $rng): void
+    public function useRng(Random $$rng): void
     {
-        vscf_group_session_use_rng_php($this->ctx, $rng->getCtx());
+        vscf_group_session_use_rng_php($this->ctx, $$rng);
     }
 
     /**
-    * Returns current epoch.
     *
     * @return int
     */
@@ -92,8 +89,6 @@ class GroupSession
     }
 
     /**
-    * Setups default dependencies:
-    * - RNG: CTR DRBG
     *
     * @return void
     * @throws \Exception
@@ -104,7 +99,6 @@ class GroupSession
     }
 
     /**
-    * Returns session id.
     *
     * @return string
     */
@@ -114,59 +108,55 @@ class GroupSession
     }
 
     /**
-    * Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
-    * Epoch message should be encrypted and signed by trusted group chat member (admin).
     *
-    * @param GroupSessionMessage $message
+    * @param GroupSessionMessage $$message
     * @return void
     * @throws \Exception
     */
-    public function addEpoch(GroupSessionMessage $message): void
+    public function addEpoch(GroupSessionMessage $$message): void
     {
-        vscf_group_session_add_epoch_php($this->ctx, $message->getCtx());
+        vscf_group_session_add_epoch_php($this->ctx, $$message);
     }
 
     /**
-    * Encrypts data
     *
-    * @param string $plainText
-    * @param PrivateKey $privateKey
+    * @param string $$plainText
+    * @param PrivateKey $$privateKey
     * @return GroupSessionMessage
+    * @throws \Exception
     */
-    public function encrypt(string $plainText, PrivateKey $privateKey): GroupSessionMessage
+    public function encrypt(string $$plainText, PrivateKey $$privateKey): GroupSessionMessage
     {
-        $ctx = vscf_group_session_encrypt_php($this->ctx, $plainText, $privateKey->getCtx());
+        $ctx = vscf_group_session_encrypt_php($this->ctx, $$plainText, $$privateKey->getCtx());
         return new GroupSessionMessage($ctx);
     }
 
     /**
-    * Calculates size of buffer sufficient to store decrypted message
     *
-    * @param GroupSessionMessage $message
+    * @param GroupSessionMessage $$message
     * @return int
     */
-    public function decryptLen(GroupSessionMessage $message): int
+    public function decryptLen(GroupSessionMessage $$message): int
     {
-        return vscf_group_session_decrypt_len_php($this->ctx, $message->getCtx());
+        return vscf_group_session_decrypt_len_php($this->ctx, $$message);
     }
 
     /**
-    * Decrypts message
     *
-    * @param GroupSessionMessage $message
-    * @param PublicKey $publicKey
+    * @param GroupSessionMessage $$message
+    * @param PublicKey $$publicKey
     * @return string
     * @throws \Exception
     */
-    public function decrypt(GroupSessionMessage $message, PublicKey $publicKey): string
+    public function decrypt(GroupSessionMessage $$message, PublicKey $$publicKey): string
     {
-        return vscf_group_session_decrypt_php($this->ctx, $message->getCtx(), $publicKey->getCtx());
+        return vscf_group_session_decrypt_php($this->ctx, $$message, $$publicKey->getCtx());
     }
 
     /**
-    * Creates ticket with new key for removing participants or proactive to rotate encryption key.
     *
     * @return GroupSessionTicket
+    * @throws \Exception
     */
     public function createGroupTicket(): GroupSessionTicket
     {

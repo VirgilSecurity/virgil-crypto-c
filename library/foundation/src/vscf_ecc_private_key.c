@@ -75,7 +75,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_ecc_private_key_init() is called.

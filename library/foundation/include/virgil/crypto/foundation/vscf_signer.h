@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_SIGNER_H_INCLUDED
 #define VSCF_SIGNER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,11 +64,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -193,18 +202,15 @@ vscf_signer_signature_len(const vscf_signer_t *self, const vscf_impl_t *private_
 VSCF_PUBLIC vscf_status_t
 vscf_signer_sign(const vscf_signer_t *self, const vscf_impl_t *private_key, vsc_buffer_t *signature) VSCF_NODISCARD;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_SIGNER_H_INCLUDED

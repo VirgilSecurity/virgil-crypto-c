@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,11 +51,6 @@
 
 #ifndef VSCF_SALTED_KDF_H_INCLUDED
 #define VSCF_SALTED_KDF_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_kdf.h"
-#include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,11 +63,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_kdf.h"
+#include "vscf_api.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -124,18 +133,15 @@ vscf_salted_kdf_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_salted_kdf_api_tag(const vscf_salted_kdf_api_t *salted_kdf_api);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_SALTED_KDF_H_INCLUDED

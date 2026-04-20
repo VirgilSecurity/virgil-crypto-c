@@ -76,14 +76,6 @@ vscf_error_ctx_size(void) {
     return sizeof(vscf_error_t);
 }
 
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
 //
 //  Reset context to the "no error" state.
 //
@@ -115,7 +107,6 @@ VSCF_PUBLIC bool
 vscf_error_has_error(const vscf_error_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
     return self->status != vscf_status_SUCCESS;
 }
 
@@ -126,6 +117,12 @@ VSCF_PUBLIC vscf_status_t
 vscf_error_status(const vscf_error_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
     return self->status;
 }
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

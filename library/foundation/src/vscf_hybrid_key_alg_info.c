@@ -73,7 +73,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_hybrid_key_alg_info_init() is called.

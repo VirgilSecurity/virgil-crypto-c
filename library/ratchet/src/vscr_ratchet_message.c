@@ -227,7 +227,6 @@ vscr_ratchet_message_shallow_copy(vscr_ratchet_message_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_message_init() is called.

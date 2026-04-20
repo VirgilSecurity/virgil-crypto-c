@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,11 +50,6 @@
 
 #ifndef VSCF_PKCS5_PBES2_H_INCLUDED
 #define VSCF_PKCS5_PBES2_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -71,11 +64,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -186,12 +195,6 @@ VSCF_PUBLIC void
 vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self);
 
 //
-//  Configure cipher with a new password.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t pwd);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -239,6 +242,11 @@ vscf_pkcs5_pbes2_decrypt(vscf_pkcs5_pbes2_t *self, vsc_data_t data, vsc_buffer_t
 VSCF_PUBLIC size_t
 vscf_pkcs5_pbes2_decrypted_len(const vscf_pkcs5_pbes2_t *self, size_t data_len);
 
+//
+//  Configure cipher with a new password.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t pwd);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -246,11 +254,9 @@ vscf_pkcs5_pbes2_decrypted_len(const vscf_pkcs5_pbes2_t *self, size_t data_len);
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PKCS5_PBES2_H_INCLUDED

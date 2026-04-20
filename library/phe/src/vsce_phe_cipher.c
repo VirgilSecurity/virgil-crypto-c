@@ -75,15 +75,6 @@
 // --------------------------------------------------------------------------
 
 //
-//  Private integral constants.
-//
-enum {
-    vsce_phe_cipher_SALT_LEN = 32,
-    vsce_phe_cipher_KEY_LEN = 32,
-    vsce_phe_cipher_NONCE_LEN = 12
-};
-
-//
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vsce_phe_cipher_init() is called.
 //  Note, that context is already zeroed.
@@ -285,7 +276,6 @@ vsce_phe_cipher_release_random(vsce_phe_cipher_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

@@ -87,7 +87,7 @@ vscf_aes256_cbc_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -114,7 +114,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_encrypt_api_t encrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
+    //  For interface 'encrypt' MUST be equal to the  'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_ENCRYPT,
     //
@@ -141,7 +141,7 @@ static const vscf_encrypt_api_t encrypt_api = {
 static const vscf_decrypt_api_t decrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
+    //  For interface 'decrypt' MUST be equal to the  'vscf_api_tag_DECRYPT'.
     //
     vscf_api_tag_DECRYPT,
     //
@@ -164,7 +164,7 @@ static const vscf_decrypt_api_t decrypt_api = {
 static const vscf_cipher_info_api_t cipher_info_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher_info' MUST be equal to the 'vscf_api_tag_CIPHER_INFO'.
+    //  For interface 'cipher info' MUST be equal to the  'vscf_api_tag_CIPHER_INFO'.
     //
     vscf_api_tag_CIPHER_INFO,
     //
@@ -195,7 +195,7 @@ static const vscf_cipher_info_api_t cipher_info_api = {
 static const vscf_cipher_api_t cipher_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'cipher' MUST be equal to the 'vscf_api_tag_CIPHER'.
+    //  For interface 'cipher' MUST be equal to the  'vscf_api_tag_CIPHER'.
     //
     vscf_api_tag_CIPHER,
     //
@@ -394,15 +394,6 @@ vscf_aes256_cbc_shallow_copy(vscf_aes256_cbc_t *self) {
 }
 
 //
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_cbc_cipher_info_api(void) {
-
-    return &cipher_info_api;
-}
-
-//
 //  Return size of 'vscf_aes256_cbc_t' type.
 //
 VSCF_PUBLIC size_t
@@ -436,15 +427,15 @@ vscf_aes256_cbc_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-            return (const vscf_api_t *) &alg_api;
+        return (const vscf_api_t *)                 &alg_api;
         case vscf_api_tag_CIPHER:
-            return (const vscf_api_t *) &cipher_api;
+        return (const vscf_api_t *)                 &cipher_api;
         case vscf_api_tag_CIPHER_INFO:
-            return (const vscf_api_t *) &cipher_info_api;
+        return (const vscf_api_t *)                 &cipher_info_api;
         case vscf_api_tag_DECRYPT:
-            return (const vscf_api_t *) &decrypt_api;
+        return (const vscf_api_t *)                 &decrypt_api;
         case vscf_api_tag_ENCRYPT:
-            return (const vscf_api_t *) &encrypt_api;
+        return (const vscf_api_t *)                 &encrypt_api;
         default:
             return NULL;
     }

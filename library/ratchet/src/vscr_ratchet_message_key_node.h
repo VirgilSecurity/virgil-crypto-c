@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,19 +46,30 @@
 #ifndef VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED
 #define VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscr_library.h"
 #include "vscr_atomic.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_message_key_node.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -72,19 +82,10 @@ extern "C" {
 //
 typedef struct vscr_ratchet_message_key_node_t vscr_ratchet_message_key_node_t;
 struct vscr_ratchet_message_key_node_t {
-    //
-    //  Function do deallocate self context.
-    //
     vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
     VSCR_ATOMIC size_t refcnt;
-
     vscr_ratchet_message_key_t *value;
-
     vscr_ratchet_message_key_node_t *next;
-
     vscr_ratchet_message_key_node_t *prev;
 };
 
@@ -132,18 +133,15 @@ vscr_ratchet_message_key_node_destroy(vscr_ratchet_message_key_node_t **self_ref
 VSCR_PUBLIC vscr_ratchet_message_key_node_t *
 vscr_ratchet_message_key_node_shallow_copy(vscr_ratchet_message_key_node_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_MESSAGE_KEY_NODE_H_INCLUDED

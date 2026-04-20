@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,12 +50,6 @@
 
 #ifndef VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_H_INCLUDED
 #define VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_message_info_footer.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -72,11 +64,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_message_info_footer.h"
+#include "vscf_error.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -87,20 +96,17 @@ extern "C" {
 //
 //  Callback. Return buffer size enough to hold serialized message info footer.
 //
-typedef size_t (*vscf_message_info_footer_serializer_api_serialized_footer_len_fn)(vscf_impl_t *impl,
-        const vscf_message_info_footer_t *message_info_footer);
+typedef size_t (*vscf_message_info_footer_serializer_api_serialized_footer_len_fn)(vscf_impl_t *impl, const vscf_message_info_footer_t *message_info_footer);
 
 //
 //  Callback. Serialize class "message info footer".
 //
-typedef void (*vscf_message_info_footer_serializer_api_serialize_footer_fn)(vscf_impl_t *impl,
-        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+typedef void (*vscf_message_info_footer_serializer_api_serialize_footer_fn)(vscf_impl_t *impl, const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
 
 //
 //  Callback. Deserialize class "message info footer".
 //
-typedef vscf_message_info_footer_t * (*vscf_message_info_footer_serializer_api_deserialize_footer_fn)(
-        vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
+typedef vscf_message_info_footer_t * (*vscf_message_info_footer_serializer_api_deserialize_footer_fn)(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'message info footer serializer'.
@@ -108,7 +114,7 @@ typedef vscf_message_info_footer_t * (*vscf_message_info_footer_serializer_api_d
 struct vscf_message_info_footer_serializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'message_info_footer_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
+    //  For interface 'message info footer serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -129,18 +135,15 @@ struct vscf_message_info_footer_serializer_api_t {
     vscf_message_info_footer_serializer_api_deserialize_footer_fn deserialize_footer_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_API_H_INCLUDED

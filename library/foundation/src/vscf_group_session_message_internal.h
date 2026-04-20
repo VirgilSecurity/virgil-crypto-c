@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,17 +46,28 @@
 #ifndef VSCF_GROUP_SESSION_MESSAGE_INTERNAL_H_INCLUDED
 #define VSCF_GROUP_SESSION_MESSAGE_INTERNAL_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_group_session_message.h"
 #include "vscf_group_msg_type.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -68,18 +78,15 @@ extern "C" {
 VSCF_PUBLIC void
 vscf_group_session_message_set_type(vscf_group_session_message_t *self, vscf_group_msg_type_t type);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_GROUP_SESSION_MESSAGE_INTERNAL_H_INCLUDED

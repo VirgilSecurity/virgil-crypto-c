@@ -95,7 +95,7 @@ static void
 vscf_group_session_ticket_set_session_id(vscf_group_session_ticket_t *self, vsc_data_t session_id);
 
 static vscf_status_t
-vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self) VSCF_NODISCARD;
+vscf_group_session_ticket_generate_key(vscf_group_session_ticket_t *self);
 
 //
 //  Return size of 'vscf_group_session_ticket_t'.
@@ -283,7 +283,6 @@ vscf_group_session_ticket_release_rng(vscf_group_session_ticket_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

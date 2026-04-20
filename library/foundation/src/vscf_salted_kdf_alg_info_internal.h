@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,11 +51,6 @@
 
 #ifndef VSCF_SALTED_KDF_ALG_INFO_INTERNAL_H_INCLUDED
 #define VSCF_SALTED_KDF_ALG_INFO_INTERNAL_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_salted_kdf_alg_info.h"
-#include "vscf_alg_id.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,11 +63,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_salted_kdf_alg_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -103,9 +112,7 @@ vscf_salted_kdf_alg_info_cleanup_ctx(vscf_salted_kdf_alg_info_t *self);
 //  salt and iteration count.
 //
 VSCF_PUBLIC void
-vscf_salted_kdf_alg_info_init_ctx_with_members(vscf_salted_kdf_alg_info_t *self, vscf_alg_id_t alg_id,
-        vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count);
-
+vscf_salted_kdf_alg_info_init_ctx_with_members(vscf_salted_kdf_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **hash_alg_info_ref, vsc_data_t salt, size_t iteration_count);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -113,11 +120,9 @@ vscf_salted_kdf_alg_info_init_ctx_with_members(vscf_salted_kdf_alg_info_t *self,
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_SALTED_KDF_ALG_INFO_INTERNAL_H_INCLUDED

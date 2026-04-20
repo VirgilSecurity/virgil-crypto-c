@@ -73,7 +73,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Write given MbedTLS big number as ASN.1 INTEGER type.
 //  Returns size of written data.

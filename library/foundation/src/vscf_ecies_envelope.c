@@ -141,7 +141,6 @@ vscf_ecies_envelope_ctx_size(void) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Return buffer length required to hold packed ECIES-Envelope.
 //

@@ -121,7 +121,6 @@ vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, const vscf_impl_t *key
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  This method is called when class 'ecies' was setup.
 //
@@ -842,8 +841,7 @@ vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_
     } else {
         mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
         mbed_status = mbedtls_ecdsa_sign_det_ext(
-                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg,
-                NULL, NULL);
+                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg, NULL, NULL);
     }
 
     if (mbed_status != 0) {

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -58,7 +58,7 @@ class GroupSessionTicket(object):
 
     def setup_defaults(self):
         """Setups default dependencies:
-        - RNG: CTR DRBG"""
+- RNG: CTR DRBG"""
         status = self._lib_vscf_group_session_ticket.vscf_group_session_ticket_setup_defaults(self.ctx)
         VscfStatus.handle_status(status)
 
@@ -71,8 +71,7 @@ class GroupSessionTicket(object):
     def get_ticket_message(self):
         """Returns message that should be sent to all participants using secure channel."""
         result = self._lib_vscf_group_session_ticket.vscf_group_session_ticket_get_ticket_message(self.ctx)
-        instance = GroupSessionMessage.use_c_ctx(result)
-        return instance
+        return GroupSessionMessage.use_c_ctx(result)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

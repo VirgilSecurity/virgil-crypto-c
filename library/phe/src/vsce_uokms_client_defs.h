@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,14 +50,6 @@
 
 #ifndef VSCE_UOKMS_CLIENT_DEFS_H_INCLUDED
 #define VSCE_UOKMS_CLIENT_DEFS_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_atomic.h"
-#include "vsce_phe_common.h"
-#include "vsce_uokms_proof_verifier.h"
-
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -72,11 +62,30 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_atomic.h"
+#include "vsce_phe_common.h"
+#include "vsce_uokms_proof_verifier.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -104,22 +113,14 @@ struct vsce_uokms_client_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
-
     vsce_uokms_proof_verifier_t *proof_verifier;
-
     mbedtls_ecp_group group;
-
     mbedtls_mpi kc_private;
-
     mbedtls_ecp_point ks_public;
-
     mbedtls_ecp_point k_public;
-
     bool keys_are_set;
-
     bool multiparty_mode;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -127,11 +128,9 @@ struct vsce_uokms_client_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_UOKMS_CLIENT_DEFS_H_INCLUDED

@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Random number generator that generate deterministic sequence based
-* on a given seed.
-* This RNG can be used to transform key material rial to the private key.
-*/
 class KeyMaterialRng implements Random
 {
 
@@ -73,31 +68,17 @@ class KeyMaterialRng implements Random
     }
 
     /**
-    * Set a new key material.
     *
-    * @param string $keyMaterial
-    * @return void
-    */
-    public function resetKeyMaterial(string $keyMaterial): void
-    {
-        vscf_key_material_rng_reset_key_material_php($this->ctx, $keyMaterial);
-    }
-
-    /**
-    * Generate random bytes.
-    * All RNG implementations must be thread-safe.
-    *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return string
     * @throws \Exception
     */
-    public function random(int $dataLen): string
+    public function random(int $$dataLen): string
     {
-        return vscf_key_material_rng_random_php($this->ctx, $dataLen);
+        return vscf_key_material_rng_random_php($this->ctx, $$dataLen);
     }
 
     /**
-    * Retrieve new seed data from the entropy sources.
     *
     * @return void
     * @throws \Exception
@@ -105,6 +86,16 @@ class KeyMaterialRng implements Random
     public function reseed(): void
     {
         vscf_key_material_rng_reseed_php($this->ctx);
+    }
+
+    /**
+    *
+    * @param string $$keyMaterial
+    * @return void
+    */
+    public function resetKeyMaterial(string $$keyMaterial): void
+    {
+        vscf_key_material_rng_reset_key_material_php($this->ctx, $$keyMaterial);
     }
 
     /**

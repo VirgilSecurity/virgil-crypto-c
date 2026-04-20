@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -53,7 +53,7 @@ class SignedDataInfo(object):
     def hash_alg_info(self):
         """Return information about algorithm that was used to produce data digest."""
         result = self._lib_vscf_signed_data_info.vscf_signed_data_info_hash_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     @classmethod

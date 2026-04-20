@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,11 +50,6 @@
 
 #ifndef VSCF_ALG_INFO_DESERIALIZER_API_H_INCLUDED
 #define VSCF_ALG_INFO_DESERIALIZER_API_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -69,11 +62,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_error.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -84,8 +93,7 @@ extern "C" {
 //
 //  Callback. Deserialize algorithm from the data.
 //
-typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data,
-        vscf_error_t *error);
+typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl_t *impl, vsc_data_t data, vscf_error_t *error);
 
 //
 //  Contains API requirements of the interface 'alg info deserializer'.
@@ -93,7 +101,7 @@ typedef vscf_impl_t * (*vscf_alg_info_deserializer_api_deserialize_fn)(vscf_impl
 struct vscf_alg_info_deserializer_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info_deserializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_DESERIALIZER'.
+    //  For interface 'alg info deserializer' MUST be equal to the 'vscf_api_tag_ALG_INFO_DESERIALIZER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -106,18 +114,15 @@ struct vscf_alg_info_deserializer_api_t {
     vscf_alg_info_deserializer_api_deserialize_fn deserialize_cb;
 };
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ALG_INFO_DESERIALIZER_API_H_INCLUDED

@@ -76,14 +76,6 @@ vscr_error_ctx_size(void) {
     return sizeof(vscr_error_t);
 }
 
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
-
 //
 //  Reset context to the "no error" state.
 //
@@ -115,7 +107,6 @@ VSCR_PUBLIC bool
 vscr_error_has_error(const vscr_error_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
     return self->status != vscr_status_SUCCESS;
 }
 
@@ -126,6 +117,12 @@ VSCR_PUBLIC vscr_status_t
 vscr_error_status(const vscr_error_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
     return self->status;
 }
+
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end

@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,10 +45,6 @@
 
 #ifndef VSCF_BRAINKEY_CLIENT_H_INCLUDED
 #define VSCF_BRAINKEY_CLIENT_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -64,11 +59,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -186,13 +196,10 @@ VSCF_PUBLIC vscf_status_t
 vscf_brainkey_client_setup_defaults(vscf_brainkey_client_t *self) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t *deblind_factor,
-        vsc_buffer_t *blinded_point) VSCF_NODISCARD;
+vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_buffer_t *deblind_factor, vsc_buffer_t *blinded_point) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point,
-        vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) VSCF_NODISCARD;
-
+vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point, vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) VSCF_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -200,11 +207,9 @@ vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, 
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_BRAINKEY_CLIENT_H_INCLUDED

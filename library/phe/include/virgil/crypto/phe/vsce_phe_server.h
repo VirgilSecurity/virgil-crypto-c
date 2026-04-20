@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,10 +51,6 @@
 
 #ifndef VSCE_PHE_SERVER_H_INCLUDED
 #define VSCE_PHE_SERVER_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -79,11 +73,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -196,8 +205,7 @@ vsce_phe_server_setup_defaults(vsce_phe_server_t *self) VSCE_NODISCARD;
 //  Generates new NIST P-256 server key pair for some client
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *self, vsc_buffer_t *server_private_key,
-        vsc_buffer_t *server_public_key) VSCE_NODISCARD;
+vsce_phe_server_generate_server_key_pair(vsce_phe_server_t *self, vsc_buffer_t *server_private_key, vsc_buffer_t *server_public_key) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit EnrollmentResponse
@@ -209,8 +217,7 @@ vsce_phe_server_enrollment_response_len(vsce_phe_server_t *self);
 //  Generates a new random enrollment and proof for a new user
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
-        vsc_buffer_t *enrollment_response) VSCE_NODISCARD;
+vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key, vsc_buffer_t *enrollment_response) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit VerifyPasswordResponse
@@ -222,8 +229,7 @@ vsce_phe_server_verify_password_response_len(vsce_phe_server_t *self);
 //  Verifies existing user's password and generates response with proof
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key,
-        vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) VSCE_NODISCARD;
+vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_data_t server_public_key, vsc_data_t verify_password_request, vsc_buffer_t *verify_password_response) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit UpdateToken
@@ -235,10 +241,7 @@ vsce_phe_server_update_token_len(vsce_phe_server_t *self);
 //  Updates server's private and public keys and issues an update token for use on client's side
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_key,
-        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key,
-        vsc_buffer_t *update_token) VSCE_NODISCARD;
-
+vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_key, vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) VSCE_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -246,11 +249,9 @@ vsce_phe_server_rotate_keys(vsce_phe_server_t *self, vsc_data_t server_private_k
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_PHE_SERVER_H_INCLUDED

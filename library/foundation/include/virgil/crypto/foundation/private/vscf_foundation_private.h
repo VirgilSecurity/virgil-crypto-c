@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -106,9 +106,9 @@
 #include "vscf_hybrid_private_key_defs.h"
 #include "vscf_hybrid_public_key_defs.h"
 #include "vscf_impl_private.h"
-#include "vscf_kdf_api.h"
 #include "vscf_kdf1_defs.h"
 #include "vscf_kdf2_defs.h"
+#include "vscf_kdf_api.h"
 #include "vscf_kem_api.h"
 #include "vscf_key_alg_api.h"
 #include "vscf_key_api.h"

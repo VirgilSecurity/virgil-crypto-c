@@ -98,6 +98,44 @@ vscf_message_info_der_serializer_did_setup_asn1_writer(vscf_message_info_der_ser
 VSCF_PRIVATE void
 vscf_message_info_der_serializer_did_release_asn1_writer(vscf_message_info_der_serializer_t *self);
 
+//
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader);
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *self);
+
+//
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *self);
+
 static const vscf_api_t *
 vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 
@@ -107,7 +145,7 @@ vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag);
 static const vscf_message_info_serializer_api_t message_info_serializer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'message_info_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
+    //  For interface 'message info serializer' MUST be equal to the  'vscf_api_tag_MESSAGE_INFO_SERIALIZER'.
     //
     vscf_api_tag_MESSAGE_INFO_SERIALIZER,
     //
@@ -143,7 +181,7 @@ static const vscf_message_info_serializer_api_t message_info_serializer_api = {
 static const vscf_message_info_footer_serializer_api_t message_info_footer_serializer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'message_info_footer_serializer' MUST be equal to the 'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
+    //  For interface 'message info footer serializer' MUST be equal to the  'vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER'.
     //
     vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER,
     //
@@ -188,6 +226,102 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'asn1 reader' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
+
+    vscf_message_info_der_serializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_reader);
+    VSCF_ASSERT(self->asn1_reader == NULL);
+
+    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
+
+    self->asn1_reader = asn1_reader;
+
+    vscf_message_info_der_serializer_did_setup_asn1_reader(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 reader'.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_reader);
+
+    vscf_message_info_der_serializer_did_release_asn1_reader(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+
+    vscf_message_info_der_serializer_did_setup_asn1_writer(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = asn1_writer;
+
+    vscf_message_info_der_serializer_did_setup_asn1_writer(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_writer);
+
+    vscf_message_info_der_serializer_did_release_asn1_writer(self);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -213,9 +347,6 @@ vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *sel
     if (self == NULL) {
         return;
     }
-
-    vscf_message_info_der_serializer_release_asn1_reader(self);
-    vscf_message_info_der_serializer_release_asn1_writer(self);
 
     vscf_message_info_der_serializer_cleanup_ctx(self);
 
@@ -327,110 +458,14 @@ vscf_message_info_der_serializer_impl_const(const vscf_message_info_der_serializ
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 reader' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_use_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT(self->asn1_reader == NULL);
-
-    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
-
-    self->asn1_reader = vscf_impl_shallow_copy(asn1_reader);
-
-    vscf_message_info_der_serializer_did_setup_asn1_reader(self);
-}
-
-//
-//  Setup dependency to the interface 'asn1 reader' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_take_asn1_reader(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_reader) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_reader);
-    VSCF_ASSERT(self->asn1_reader == NULL);
-
-    VSCF_ASSERT(vscf_asn1_reader_is_implemented(asn1_reader));
-
-    self->asn1_reader = asn1_reader;
-
-    vscf_message_info_der_serializer_did_setup_asn1_reader(self);
-}
-
-//
-//  Release dependency to the interface 'asn1 reader'.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_release_asn1_reader(vscf_message_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_reader);
-
-    vscf_message_info_der_serializer_did_release_asn1_reader(self);
-}
-
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_use_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
-
-    vscf_message_info_der_serializer_did_setup_asn1_writer(self);
-}
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_take_asn1_writer(vscf_message_info_der_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = asn1_writer;
-
-    vscf_message_info_der_serializer_did_setup_asn1_writer(self);
-}
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_message_info_der_serializer_release_asn1_writer(vscf_message_info_der_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_writer);
-
-    vscf_message_info_der_serializer_did_release_asn1_writer(self);
-}
-
 static const vscf_api_t *
 vscf_message_info_der_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_MESSAGE_INFO_FOOTER_SERIALIZER:
-            return (const vscf_api_t *) &message_info_footer_serializer_api;
+        return (const vscf_api_t *)                 &message_info_footer_serializer_api;
         case vscf_api_tag_MESSAGE_INFO_SERIALIZER:
-            return (const vscf_api_t *) &message_info_serializer_api;
+        return (const vscf_api_t *)                 &message_info_serializer_api;
         default:
             return NULL;
     }

@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCE_UOKMS_CLIENT_H_INCLUDED
 #define VSCE_UOKMS_CLIENT_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -78,11 +72,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -205,53 +214,45 @@ vsce_uokms_client_set_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t client
 //  This function should be called only once
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_key,
-        vsc_data_t server_public_key) VSCE_NODISCARD;
+vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_key, vsc_data_t server_public_key) VSCE_NODISCARD;
 
 //
 //  Generates client private key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_generate_client_private_key(vsce_uokms_client_t *self,
-        vsc_buffer_t *client_private_key) VSCE_NODISCARD;
+vsce_uokms_client_generate_client_private_key(vsce_uokms_client_t *self, vsc_buffer_t *client_private_key) VSCE_NODISCARD;
 
 //
 //  Generates new encrypt wrap (which should be stored and then used for decryption) + encryption key
 //  of "encryption key len" that can be used for symmetric encryption
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t *wrap, size_t encryption_key_len,
-        vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+vsce_uokms_client_generate_encrypt_wrap(vsce_uokms_client_t *self, vsc_buffer_t *wrap, size_t encryption_key_len, vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
 //  Decrypt
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_decrypt_oneparty(vsce_uokms_client_t *self, vsc_data_t wrap, size_t encryption_key_len,
-        vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+vsce_uokms_client_decrypt_oneparty(vsce_uokms_client_t *self, vsc_data_t wrap, size_t encryption_key_len, vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
 //  Generates request to decrypt data, this request should be sent to the server.
 //  Server response is then passed to "process decrypt response" where encryption key can be decapsulated
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_generate_decrypt_request(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_buffer_t *deblind_factor,
-        vsc_buffer_t *decrypt_request) VSCE_NODISCARD;
+vsce_uokms_client_generate_decrypt_request(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_buffer_t *deblind_factor, vsc_buffer_t *decrypt_request) VSCE_NODISCARD;
 
 //
 //  Processed server response, checks server proof and decapsulates encryption key
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request,
-        vsc_data_t decrypt_response, vsc_data_t deblind_factor, size_t encryption_key_len,
-        vsc_buffer_t *encryption_key) VSCE_NODISCARD;
+vsce_uokms_client_process_decrypt_response(vsce_uokms_client_t *self, vsc_data_t wrap, vsc_data_t decrypt_request, vsc_data_t decrypt_response, vsc_data_t deblind_factor, size_t encryption_key_len, vsc_buffer_t *encryption_key) VSCE_NODISCARD;
 
 //
 //  Rotates client key using given update token obtained from server
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_rotate_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t update_token,
-        vsc_buffer_t *new_client_private_key) VSCE_NODISCARD;
+vsce_uokms_client_rotate_keys_oneparty(vsce_uokms_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key) VSCE_NODISCARD;
 
 //
 //  Generates update token for one-party mode
@@ -263,9 +264,7 @@ vsce_uokms_client_generate_update_token_oneparty(vsce_uokms_client_t *self, vsc_
 //  Rotates client and server keys using given update token obtained from server
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key,
-        vsc_buffer_t *new_server_public_key) VSCE_NODISCARD;
-
+vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key, vsc_buffer_t *new_server_public_key) VSCE_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -273,11 +272,9 @@ vsce_uokms_client_rotate_keys(vsce_uokms_client_t *self, vsc_data_t update_token
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_UOKMS_CLIENT_H_INCLUDED

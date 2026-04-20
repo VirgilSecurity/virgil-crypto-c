@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_ENTROPY_ACCUMULATOR_H_INCLUDED
 #define VSCF_ENTROPY_ACCUMULATOR_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -68,11 +62,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -152,6 +161,18 @@ VSCF_PUBLIC vscf_entropy_accumulator_t *
 vscf_entropy_accumulator_shallow_copy(vscf_entropy_accumulator_t *self);
 
 //
+//  Defines that implemented source is strong.
+//
+VSCF_PUBLIC bool
+vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *self);
+
+//
+//  Gather entropy of the requested length.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
+
+//
 //  Setup predefined values to the uninitialized class dependencies.
 //
 VSCF_PUBLIC void
@@ -165,30 +186,15 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self);
 VSCF_PUBLIC void
 vscf_entropy_accumulator_add_source(vscf_entropy_accumulator_t *self, vscf_impl_t *source, size_t threshold);
 
-//
-//  Defines that implemented source is strong.
-//
-VSCF_PUBLIC bool
-vscf_entropy_accumulator_is_strong(vscf_entropy_accumulator_t *self);
-
-//
-//  Gather entropy of the requested length.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_entropy_accumulator_gather(vscf_entropy_accumulator_t *self, size_t len, vsc_buffer_t *out) VSCF_NODISCARD;
-
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_ENTROPY_ACCUMULATOR_H_INCLUDED

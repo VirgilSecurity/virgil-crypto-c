@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,8 +45,8 @@ class vscf_ctr_drbg_t(Structure):
 
 class VscfCtrDrbg(object):
     """Implementation of the RNG using deterministic random bit generators
-    based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
-    This class is thread-safe if the build option VSCF_MULTI_THREADING was enabled."""
+based on block ciphers in counter mode (CTR_DRBG from NIST SP800-90A).
+This class is thread-safe if the build option .(c_global_macros_multi_threading) was enabled."""
 
     # The interval before reseed is performed by default.
     RESEED_INTERVAL = 10000
@@ -73,12 +73,44 @@ class VscfCtrDrbg(object):
     def vscf_ctr_drbg_use_entropy_source(self, ctx, entropy_source):
         vscf_ctr_drbg_use_entropy_source = self._lib.vscf_ctr_drbg_use_entropy_source
         vscf_ctr_drbg_use_entropy_source.argtypes = [POINTER(vscf_ctr_drbg_t), POINTER(vscf_impl_t)]
-        vscf_ctr_drbg_use_entropy_source.restype = None
+        vscf_ctr_drbg_use_entropy_source.restype = c_int
         return vscf_ctr_drbg_use_entropy_source(ctx, entropy_source)
+
+    def vscf_ctr_drbg_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_ctr_drbg_setup_defaults = self._lib.vscf_ctr_drbg_setup_defaults
+        vscf_ctr_drbg_setup_defaults.argtypes = [POINTER(vscf_ctr_drbg_t)]
+        vscf_ctr_drbg_setup_defaults.restype = c_int
+        return vscf_ctr_drbg_setup_defaults(ctx)
+
+    def vscf_ctr_drbg_enable_prediction_resistance(self, ctx):
+        """Force entropy to be gathered at the beginning of every call to
+the .(class_ctr_drbg_method_random)() method.
+Note, use this if your entropy source has sufficient throughput."""
+        vscf_ctr_drbg_enable_prediction_resistance = self._lib.vscf_ctr_drbg_enable_prediction_resistance
+        vscf_ctr_drbg_enable_prediction_resistance.argtypes = [POINTER(vscf_ctr_drbg_t)]
+        vscf_ctr_drbg_enable_prediction_resistance.restype = None
+        return vscf_ctr_drbg_enable_prediction_resistance(ctx)
+
+    def vscf_ctr_drbg_set_reseed_interval(self, ctx, interval):
+        """Sets the reseed interval.
+Default value is .(class_ctr_drbg_constant_reseed_interval)."""
+        vscf_ctr_drbg_set_reseed_interval = self._lib.vscf_ctr_drbg_set_reseed_interval
+        vscf_ctr_drbg_set_reseed_interval.argtypes = [POINTER(vscf_ctr_drbg_t), c_size_t]
+        vscf_ctr_drbg_set_reseed_interval.restype = None
+        return vscf_ctr_drbg_set_reseed_interval(ctx, interval)
+
+    def vscf_ctr_drbg_set_entropy_len(self, ctx, len):
+        """Sets the amount of entropy grabbed on each seed or reseed.
+The default value is .(class_ctr_drbg_constant_entropy_len)."""
+        vscf_ctr_drbg_set_entropy_len = self._lib.vscf_ctr_drbg_set_entropy_len
+        vscf_ctr_drbg_set_entropy_len.argtypes = [POINTER(vscf_ctr_drbg_t), c_size_t]
+        vscf_ctr_drbg_set_entropy_len.restype = None
+        return vscf_ctr_drbg_set_entropy_len(ctx, len)
 
     def vscf_ctr_drbg_random(self, ctx, data_len, data):
         """Generate random bytes.
-        All RNG implementations must be thread-safe."""
+All RNG implementations must be thread-safe."""
         vscf_ctr_drbg_random = self._lib.vscf_ctr_drbg_random
         vscf_ctr_drbg_random.argtypes = [POINTER(vscf_ctr_drbg_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_ctr_drbg_random.restype = c_int
@@ -90,38 +122,6 @@ class VscfCtrDrbg(object):
         vscf_ctr_drbg_reseed.argtypes = [POINTER(vscf_ctr_drbg_t)]
         vscf_ctr_drbg_reseed.restype = c_int
         return vscf_ctr_drbg_reseed(ctx)
-
-    def vscf_ctr_drbg_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_ctr_drbg_setup_defaults = self._lib.vscf_ctr_drbg_setup_defaults
-        vscf_ctr_drbg_setup_defaults.argtypes = [POINTER(vscf_ctr_drbg_t)]
-        vscf_ctr_drbg_setup_defaults.restype = c_int
-        return vscf_ctr_drbg_setup_defaults(ctx)
-
-    def vscf_ctr_drbg_enable_prediction_resistance(self, ctx):
-        """Force entropy to be gathered at the beginning of every call to
-        the random() method.
-        Note, use this if your entropy source has sufficient throughput."""
-        vscf_ctr_drbg_enable_prediction_resistance = self._lib.vscf_ctr_drbg_enable_prediction_resistance
-        vscf_ctr_drbg_enable_prediction_resistance.argtypes = [POINTER(vscf_ctr_drbg_t)]
-        vscf_ctr_drbg_enable_prediction_resistance.restype = None
-        return vscf_ctr_drbg_enable_prediction_resistance(ctx)
-
-    def vscf_ctr_drbg_set_reseed_interval(self, ctx, interval):
-        """Sets the reseed interval.
-        Default value is reseed interval."""
-        vscf_ctr_drbg_set_reseed_interval = self._lib.vscf_ctr_drbg_set_reseed_interval
-        vscf_ctr_drbg_set_reseed_interval.argtypes = [POINTER(vscf_ctr_drbg_t), c_size_t]
-        vscf_ctr_drbg_set_reseed_interval.restype = None
-        return vscf_ctr_drbg_set_reseed_interval(ctx, interval)
-
-    def vscf_ctr_drbg_set_entropy_len(self, ctx, len):
-        """Sets the amount of entropy grabbed on each seed or reseed.
-        The default value is entropy len."""
-        vscf_ctr_drbg_set_entropy_len = self._lib.vscf_ctr_drbg_set_entropy_len
-        vscf_ctr_drbg_set_entropy_len.argtypes = [POINTER(vscf_ctr_drbg_t), c_size_t]
-        vscf_ctr_drbg_set_entropy_len.restype = None
-        return vscf_ctr_drbg_set_entropy_len(ctx, len)
 
     def vscf_ctr_drbg_shallow_copy(self, ctx):
         vscf_ctr_drbg_shallow_copy = self._lib.vscf_ctr_drbg_shallow_copy

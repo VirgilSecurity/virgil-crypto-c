@@ -83,6 +83,25 @@ vscf_key_asn1_serializer_did_setup_asn1_writer(vscf_key_asn1_serializer_t *self)
 VSCF_PRIVATE void
 vscf_key_asn1_serializer_did_release_asn1_writer(vscf_key_asn1_serializer_t *self);
 
+//
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_use_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_take_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer);
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_release_asn1_writer(vscf_key_asn1_serializer_t *self);
+
 static const vscf_api_t *
 vscf_key_asn1_serializer_find_api(vscf_api_tag_t api_tag);
 
@@ -92,7 +111,7 @@ vscf_key_asn1_serializer_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_serializer_api_t key_serializer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key_serializer' MUST be equal to the 'vscf_api_tag_KEY_SERIALIZER'.
+    //  For interface 'key serializer' MUST be equal to the  'vscf_api_tag_KEY_SERIALIZER'.
     //
     vscf_api_tag_KEY_SERIALIZER,
     //
@@ -149,6 +168,54 @@ static const vscf_impl_info_t info = {
 };
 
 //
+//  Setup dependency to the interface 'asn1 writer' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_use_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
+
+    vscf_key_asn1_serializer_did_setup_asn1_writer(self);
+}
+
+//
+//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_take_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(asn1_writer);
+    VSCF_ASSERT(self->asn1_writer == NULL);
+
+    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
+
+    self->asn1_writer = asn1_writer;
+
+    vscf_key_asn1_serializer_did_setup_asn1_writer(self);
+}
+
+//
+//  Release dependency to the interface 'asn1 writer'.
+//
+VSCF_PUBLIC void
+vscf_key_asn1_serializer_release_asn1_writer(vscf_key_asn1_serializer_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->asn1_writer);
+
+    vscf_key_asn1_serializer_did_release_asn1_writer(self);
+}
+
+//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -174,8 +241,6 @@ vscf_key_asn1_serializer_cleanup(vscf_key_asn1_serializer_t *self) {
     if (self == NULL) {
         return;
     }
-
-    vscf_key_asn1_serializer_release_asn1_writer(self);
 
     vscf_key_asn1_serializer_cleanup_ctx(self);
 
@@ -287,60 +352,12 @@ vscf_key_asn1_serializer_impl_const(const vscf_key_asn1_serializer_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
-//
-//  Setup dependency to the interface 'asn1 writer' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_serializer_use_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = vscf_impl_shallow_copy(asn1_writer);
-
-    vscf_key_asn1_serializer_did_setup_asn1_writer(self);
-}
-
-//
-//  Setup dependency to the interface 'asn1 writer' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_serializer_take_asn1_writer(vscf_key_asn1_serializer_t *self, vscf_impl_t *asn1_writer) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(asn1_writer);
-    VSCF_ASSERT(self->asn1_writer == NULL);
-
-    VSCF_ASSERT(vscf_asn1_writer_is_implemented(asn1_writer));
-
-    self->asn1_writer = asn1_writer;
-
-    vscf_key_asn1_serializer_did_setup_asn1_writer(self);
-}
-
-//
-//  Release dependency to the interface 'asn1 writer'.
-//
-VSCF_PUBLIC void
-vscf_key_asn1_serializer_release_asn1_writer(vscf_key_asn1_serializer_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->asn1_writer);
-
-    vscf_key_asn1_serializer_did_release_asn1_writer(self);
-}
-
 static const vscf_api_t *
 vscf_key_asn1_serializer_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY_SERIALIZER:
-            return (const vscf_api_t *) &key_serializer_api;
+        return (const vscf_api_t *)                 &key_serializer_api;
         default:
             return NULL;
     }

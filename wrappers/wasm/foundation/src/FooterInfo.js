@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,16 +38,8 @@
 const precondition = require('./precondition');
 
 const initFooterInfo = (Module, modules) => {
-    /**
-     * Handle meta information about footer.
-     */
     class FooterInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'FooterInfo';
 
@@ -58,29 +50,16 @@ const initFooterInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new FooterInfo(Module._vscf_footer_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new FooterInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_footer_info_delete(this.ctxPtr);
@@ -88,51 +67,40 @@ const initFooterInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Retrun true if signed data info present.
-         */
         hasSignedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_footer_info_has_signed_data_info(this.ctxPtr);
-
+            
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
-        /**
-         * Return signed data info.
-         */
         signedDataInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_footer_info_signed_data_info(this.ctxPtr);
-
+            
             const jsResult = modules.SignedDataInfo.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
-        /**
-         * Set data size.
-         */
         setDataSize(dataSize) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureNumber('dataSize', dataSize);
             Module._vscf_footer_info_set_data_size(this.ctxPtr, dataSize);
         }
 
-        /**
-         * Return data size.
-         */
         dataSize() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_footer_info_data_size(this.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return FooterInfo;

@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCE_PHE_PROOF_VERIFIER_DEFS_H_INCLUDED
 #define VSCE_PHE_PROOF_VERIFIER_DEFS_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_atomic.h"
-#include "vsce_phe_hash.h"
-#include "vsce_proof_verifier.h"
-
-#include <mbedtls/bignum.h>
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -71,11 +62,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_atomic.h"
+#include "vsce_phe_hash.h"
+#include "vsce_proof_verifier.h"
+
+#include <mbedtls/bignum.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -95,6 +104,9 @@ struct vsce_phe_proof_verifier_t {
     //  Reference counter.
     //
     VSCE_ATOMIC size_t refcnt;
+    vsce_phe_hash_t *phe_hash;
+    vsce_proof_verifier_t *proof_verifier;
+    mbedtls_mpi one;
     //
     //  Dependency to the interface 'random'.
     //
@@ -103,14 +115,7 @@ struct vsce_phe_proof_verifier_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *operation_random;
-
-    vsce_phe_hash_t *phe_hash;
-
-    vsce_proof_verifier_t *proof_verifier;
-
-    mbedtls_mpi one;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -118,11 +123,9 @@ struct vsce_phe_proof_verifier_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_PHE_PROOF_VERIFIER_DEFS_H_INCLUDED

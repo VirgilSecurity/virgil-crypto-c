@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -54,17 +52,28 @@
 #ifndef VSCF_PKCS5_PBKDF2_INTERNAL_H_INCLUDED
 #define VSCF_PKCS5_PBKDF2_INTERNAL_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_pkcs5_pbkdf2.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -88,18 +97,15 @@ vscf_pkcs5_pbkdf2_init_ctx(vscf_pkcs5_pbkdf2_t *self);
 VSCF_PRIVATE void
 vscf_pkcs5_pbkdf2_cleanup_ctx(vscf_pkcs5_pbkdf2_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PKCS5_PBKDF2_INTERNAL_H_INCLUDED

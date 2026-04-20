@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,51 +36,30 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Create algorithms based on the given information.
-*/
 public class AlgFactory {
 
-    /*
-    * Create algorithm that implements "hash stream" interface.
-    */
     public static Hash createHashFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createHashFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "mac stream" interface.
-    */
     public static Mac createMacFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createMacFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "kdf" interface.
-    */
     public static Kdf createKdfFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createKdfFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "salted kdf" interface.
-    */
     public static SaltedKdf createSaltedKdfFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createSaltedKdfFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "cipher" interface.
-    */
     public static Cipher createCipherFromInfo(AlgInfo algInfo) {
         return FoundationJNI.INSTANCE.algFactory_createCipherFromInfo(algInfo);
     }
 
-    /*
-    * Create algorithm that implements "padding" interface.
-    */
     public static Padding createPaddingFromInfo(AlgInfo algInfo, Random random) {
         return FoundationJNI.INSTANCE.algFactory_createPaddingFromInfo(algInfo, random);
     }
-}
 
+}

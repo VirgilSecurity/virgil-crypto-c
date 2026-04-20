@@ -60,7 +60,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="compute initiator pqc shared secret" scope="internal">
+    <method name="compute initiator pqc shared secret">
         <argument name="sender identity private key second signer" interface="private key" project="foundation"/>
         <argument name="receiver identity public key second" interface="public key" project="foundation"/>
         <argument name="receiver long term public key second" interface="public key" project="foundation"/>
@@ -100,7 +100,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="compute responder pqc shared secret" scope="internal">
+    <method name="compute responder pqc shared secret">
         <argument name="sender identity public key second verifier" interface="private key" project="foundation"/>
         <argument name="receiver identity private key second" interface="public key" project="foundation"/>
         <argument name="receiver long term private key second" interface="public key" project="foundation"/>
@@ -116,7 +116,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="derive key" is_static="1" scope="internal">
+    <method name="derive key" is_static="1">
         <argument name="shared secret" class="data"/>
         <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
     </method>

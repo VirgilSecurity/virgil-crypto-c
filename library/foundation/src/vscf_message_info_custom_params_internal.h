@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,10 +45,6 @@
 
 #ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_INTERNAL_H_INCLUDED
 #define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_INTERNAL_H_INCLUDED
-
-#include "vscf_message_info_custom_params.h"
-#include "vscf_list_key_value_node.h"
-#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -62,11 +57,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_message_info_custom_params.h"
+#include "vscf_list_key_value_node.h"
+#include "vscf_error.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -78,15 +88,13 @@ extern "C" {
 //  Add given node to the list ending.
 //
 VSCF_PUBLIC void
-vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self,
-        vscf_list_key_value_node_t **node_ref);
+vscf_message_info_custom_params_add_node(vscf_message_info_custom_params_t *self, vscf_list_key_value_node_t **node_ref);
 
 //
 //  Add given node to the list ending.
 //
 VSCF_PUBLIC const vscf_list_key_value_node_t *
-vscf_message_info_custom_params_find_node(vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag,
-        vscf_error_t *error);
+vscf_message_info_custom_params_find_node(vscf_message_info_custom_params_t *self, vsc_data_t key, int value_tag, vscf_error_t *error);
 
 //
 //  Return first param, or NULL if does not exist.
@@ -142,18 +150,15 @@ vscf_message_info_custom_params_is_data_param(const vscf_list_key_value_node_t *
 VSCF_PUBLIC vsc_data_t
 vscf_message_info_custom_params_as_data_value(const vscf_list_key_value_node_t *param);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_INTERNAL_H_INCLUDED

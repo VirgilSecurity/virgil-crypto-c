@@ -309,7 +309,6 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_session_init() is called.

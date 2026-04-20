@@ -75,6 +75,13 @@ endif()
 # ---------------------------------------------------------------------------
 set(ROUND5_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/round5)
 
+# Round5 has pointer-type issues with newer clang/gcc; suppress on non-MSVC only.
+if(NOT MSVC)
+    set(ROUND5_EXTRA_C_FLAGS "-Wno-incompatible-pointer-types")
+else()
+    set(ROUND5_EXTRA_C_FLAGS "")
+endif()
+
 include(ExternalProject)
 ExternalProject_Add(round5-ext
         GIT_REPOSITORY
@@ -109,6 +116,7 @@ ExternalProject_Add(round5-ext
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${ROUND5_INSTALL_LOCATION}"
+            "-DCMAKE_C_FLAGS=${ROUND5_EXTRA_C_FLAGS}"
             "-DCMAKE_INSTALL_LIBDIR=lib"
             "-DMBEDTLS_INSTALL_LOCATION=${MBEDTLS_INSTALL_LOCATION}"
             # Pick algorithm

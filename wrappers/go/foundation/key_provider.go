@@ -11,7 +11,7 @@ import "runtime"
 * relies on the software default implementations.
 */
 type KeyProvider struct {
-    cCtx *C.vscf_key_provider_t /*ct2*/
+    cCtx *C.vscf_key_provider_t
 }
 
 /* Handle underlying C context. */
@@ -31,7 +31,7 @@ func NewKeyProvider() *KeyProvider {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyProviderWithCtx(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
+func newKeyProviderWithCtx(ctx *C.vscf_key_provider_t) *KeyProvider {
     obj := &KeyProvider {
         cCtx: ctx,
     }
@@ -42,7 +42,7 @@ func newKeyProviderWithCtx(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyProviderCopy(ctx *C.vscf_key_provider_t /*ct2*/) *KeyProvider {
+func newKeyProviderCopy(ctx *C.vscf_key_provider_t) *KeyProvider {
     obj := &KeyProvider {
         cCtx: C.vscf_key_provider_shallow_copy(ctx),
     }
@@ -80,7 +80,7 @@ func (obj *KeyProvider) SetRandom(random Random) {
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (obj *KeyProvider) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_key_provider_setup_defaults(obj.cCtx)
+    proxyResult := C.vscf_key_provider_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -96,7 +96,7 @@ func (obj *KeyProvider) SetupDefaults() error {
 * Setup parameters that is used during RSA key generation.
 */
 func (obj *KeyProvider) SetRsaParams(bitlen uint) {
-    C.vscf_key_provider_set_rsa_params(obj.cCtx, (C.size_t)(bitlen)/*pa10*/)
+    C.vscf_key_provider_set_rsa_params(obj.cCtx, (C.size_t)(bitlen))
 
     runtime.KeepAlive(obj)
 
@@ -110,7 +110,7 @@ func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_generate_private_key(obj.cCtx, C.vscf_alg_id_t(algId) /*pa7*/, &error)
+    proxyResult := C.vscf_key_provider_generate_private_key(obj.cCtx, C.vscf_alg_id_t(algId), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -119,7 +119,7 @@ func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -127,18 +127,18 @@ func (obj *KeyProvider) GeneratePrivateKey(algId AlgId) (PrivateKey, error) {
 * Note, that a post-quantum key combines classic private keys
 * alongside with post-quantum private keys.
 * Current structure is "compound private key" is:
-* - cipher private key is "hybrid private key" where:
-* - first key is a classic private key;
-* - second key is a post-quantum private key;
-* - signer private key "hybrid private key" where:
-* - first key is a classic private key;
-* - second key is a post-quantum private key.
+*     - cipher private key is "hybrid private key" where:
+*         - first key is a classic private key;
+*         - second key is a post-quantum private key;
+*     - signer private key "hybrid private key" where:
+*         - first key is a classic private key;
+*         - second key is a post-quantum private key.
 */
 func (obj *KeyProvider) GeneratePostQuantumPrivateKey() (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_generate_post_quantum_private_key(obj.cCtx, &error)
+    proxyResult := C.vscf_key_provider_generate_post_quantum_private_key(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -147,7 +147,7 @@ func (obj *KeyProvider) GeneratePostQuantumPrivateKey() (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -157,7 +157,7 @@ func (obj *KeyProvider) GenerateCompoundPrivateKey(cipherAlgId AlgId, signerAlgI
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_generate_compound_private_key(obj.cCtx, C.vscf_alg_id_t(cipherAlgId) /*pa7*/, C.vscf_alg_id_t(signerAlgId) /*pa7*/, &error)
+    proxyResult := C.vscf_key_provider_generate_compound_private_key(obj.cCtx, C.vscf_alg_id_t(cipherAlgId), C.vscf_alg_id_t(signerAlgId), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -166,7 +166,7 @@ func (obj *KeyProvider) GenerateCompoundPrivateKey(cipherAlgId AlgId, signerAlgI
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -176,7 +176,7 @@ func (obj *KeyProvider) GenerateHybridPrivateKey(firstKeyAlgId AlgId, secondKeyA
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_generate_hybrid_private_key(obj.cCtx, C.vscf_alg_id_t(firstKeyAlgId) /*pa7*/, C.vscf_alg_id_t(secondKeyAlgId) /*pa7*/, &error)
+    proxyResult := C.vscf_key_provider_generate_hybrid_private_key(obj.cCtx, C.vscf_alg_id_t(firstKeyAlgId), C.vscf_alg_id_t(secondKeyAlgId), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -185,7 +185,7 @@ func (obj *KeyProvider) GenerateHybridPrivateKey(firstKeyAlgId AlgId, secondKeyA
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -198,7 +198,7 @@ func (obj *KeyProvider) GenerateCompoundHybridPrivateKey(cipherFirstKeyAlgId Alg
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_generate_compound_hybrid_private_key(obj.cCtx, C.vscf_alg_id_t(cipherFirstKeyAlgId) /*pa7*/, C.vscf_alg_id_t(cipherSecondKeyAlgId) /*pa7*/, C.vscf_alg_id_t(signerFirstKeyAlgId) /*pa7*/, C.vscf_alg_id_t(signerSecondKeyAlgId) /*pa7*/, &error)
+    proxyResult := C.vscf_key_provider_generate_compound_hybrid_private_key(obj.cCtx, C.vscf_alg_id_t(cipherFirstKeyAlgId), C.vscf_alg_id_t(cipherSecondKeyAlgId), C.vscf_alg_id_t(signerFirstKeyAlgId), C.vscf_alg_id_t(signerSecondKeyAlgId), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -207,7 +207,7 @@ func (obj *KeyProvider) GenerateCompoundHybridPrivateKey(cipherFirstKeyAlgId Alg
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -216,9 +216,10 @@ func (obj *KeyProvider) GenerateCompoundHybridPrivateKey(cipherFirstKeyAlgId Alg
 func (obj *KeyProvider) ImportPrivateKey(keyData []byte) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     keyDataData := helperWrapData (keyData)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_import_private_key(obj.cCtx, keyDataData, &error)
+    proxyResult := C.vscf_key_provider_import_private_key(obj.cCtx, keyDataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -227,7 +228,7 @@ func (obj *KeyProvider) ImportPrivateKey(keyData []byte) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -236,9 +237,10 @@ func (obj *KeyProvider) ImportPrivateKey(keyData []byte) (PrivateKey, error) {
 func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     keyDataData := helperWrapData (keyData)
 
-    proxyResult := /*pr4*/C.vscf_key_provider_import_public_key(obj.cCtx, keyDataData, &error)
+    proxyResult := C.vscf_key_provider_import_public_key(obj.cCtx, keyDataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -247,7 +249,7 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult)
 }
 
 /*
@@ -256,13 +258,13 @@ func (obj *KeyProvider) ImportPublicKey(keyData []byte) (PublicKey, error) {
 * Precondition: public key must be exportable.
 */
 func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) uint {
-    proxyResult := /*pr4*/C.vscf_key_provider_exported_public_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := C.vscf_key_provider_exported_public_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -271,14 +273,14 @@ func (obj *KeyProvider) ExportedPublicKeyLen(publicKey PublicKey) uint {
 * Precondition: public key must be exportable.
 */
 func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.ExportedPublicKeyLen(publicKey.(PublicKey)) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.ExportedPublicKeyLen(publicKey)))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_key_provider_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
+    proxyResult := C.vscf_key_provider_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -289,7 +291,7 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
 
     runtime.KeepAlive(publicKey)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }
 
 /*
@@ -298,13 +300,13 @@ func (obj *KeyProvider) ExportPublicKey(publicKey PublicKey) ([]byte, error) {
 * Precondition: private key must be exportable.
 */
 func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) uint {
-    proxyResult := /*pr4*/C.vscf_key_provider_exported_private_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := C.vscf_key_provider_exported_private_key_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -313,14 +315,14 @@ func (obj *KeyProvider) ExportedPrivateKeyLen(privateKey PrivateKey) uint {
 * Precondition: private key must be exportable.
 */
 func (obj *KeyProvider) ExportPrivateKey(privateKey PrivateKey) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.ExportedPrivateKeyLen(privateKey.(PrivateKey)) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.ExportedPrivateKeyLen(privateKey)))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_key_provider_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
+    proxyResult := C.vscf_key_provider_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -331,5 +333,5 @@ func (obj *KeyProvider) ExportPrivateKey(privateKey PrivateKey) ([]byte, error) 
 
     runtime.KeepAlive(privateKey)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }

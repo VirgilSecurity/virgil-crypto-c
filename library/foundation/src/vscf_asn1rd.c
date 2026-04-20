@@ -90,7 +90,6 @@ vscf_asn1rd_read_tag_data(vscf_asn1rd_t *self, int tag);
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_asn1rd_init() is called.

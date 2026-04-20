@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,6 +45,7 @@ class vscf_hash_based_alg_info_t(Structure):
 class VscfHashBasedAlgInfo(object):
     """Handle hashed based algorithm information, i.e. HKDF, HMAC, etc."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -62,19 +63,19 @@ class VscfHashBasedAlgInfo(object):
         vscf_hash_based_alg_info_delete.restype = None
         return vscf_hash_based_alg_info_delete(ctx)
 
-    def vscf_hash_based_alg_info_alg_id(self, ctx):
-        """Provide algorithm identificator."""
-        vscf_hash_based_alg_info_alg_id = self._lib.vscf_hash_based_alg_info_alg_id
-        vscf_hash_based_alg_info_alg_id.argtypes = [POINTER(vscf_hash_based_alg_info_t)]
-        vscf_hash_based_alg_info_alg_id.restype = c_int
-        return vscf_hash_based_alg_info_alg_id(ctx)
-
     def vscf_hash_based_alg_info_hash_alg_info(self, ctx):
         """Return hash algorithm information."""
         vscf_hash_based_alg_info_hash_alg_info = self._lib.vscf_hash_based_alg_info_hash_alg_info
         vscf_hash_based_alg_info_hash_alg_info.argtypes = [POINTER(vscf_hash_based_alg_info_t)]
         vscf_hash_based_alg_info_hash_alg_info.restype = POINTER(vscf_impl_t)
         return vscf_hash_based_alg_info_hash_alg_info(ctx)
+
+    def vscf_hash_based_alg_info_alg_id(self, ctx):
+        """Provide algorithm identificator."""
+        vscf_hash_based_alg_info_alg_id = self._lib.vscf_hash_based_alg_info_alg_id
+        vscf_hash_based_alg_info_alg_id.argtypes = [POINTER(vscf_hash_based_alg_info_t)]
+        vscf_hash_based_alg_info_alg_id.restype = c_int
+        return vscf_hash_based_alg_info_alg_id(ctx)
 
     def vscf_hash_based_alg_info_shallow_copy(self, ctx):
         vscf_hash_based_alg_info_shallow_copy = self._lib.vscf_hash_based_alg_info_shallow_copy

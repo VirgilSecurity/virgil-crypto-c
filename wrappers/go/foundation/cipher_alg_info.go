@@ -2,26 +2,41 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
 * Handle symmetric cipher algorithm information.
 */
 type CipherAlgInfo struct {
-    cCtx *C.vscf_cipher_alg_info_t /*ct10*/
+    cCtx *C.vscf_cipher_alg_info_t
+}
+
+/*
+* Create symmetric cipher algorithm info with identificator and input vector.
+*/
+func NewCipherAlgInfoWithMembers(algId AlgId, nonce []byte) *CipherAlgInfo {
+    nonceData := helperWrapData (nonce)
+
+    proxyResult := C.vscf_cipher_alg_info_new_with_members(C.vscf_alg_id_t(algId), nonceData)
+
+    obj := &CipherAlgInfo {
+        cCtx: proxyResult,
+    }
+    runtime.SetFinalizer(obj, (*CipherAlgInfo).Delete)
+    return obj
 }
 
 /*
 * Return IV.
 */
 func (obj *CipherAlgInfo) Nonce() []byte {
-    proxyResult := /*pr4*/C.vscf_cipher_alg_info_nonce(obj.cCtx)
+    proxyResult := C.vscf_cipher_alg_info_nonce(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -41,7 +56,7 @@ func NewCipherAlgInfo() *CipherAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newCipherAlgInfoWithCtx(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInfo {
+func newCipherAlgInfoWithCtx(ctx *C.vscf_cipher_alg_info_t) *CipherAlgInfo {
     obj := &CipherAlgInfo {
         cCtx: ctx,
     }
@@ -52,7 +67,7 @@ func newCipherAlgInfoWithCtx(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgI
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newCipherAlgInfoCopy(ctx *C.vscf_cipher_alg_info_t /*ct10*/) *CipherAlgInfo {
+func newCipherAlgInfoCopy(ctx *C.vscf_cipher_alg_info_t) *CipherAlgInfo {
     obj := &CipherAlgInfo {
         cCtx: C.vscf_cipher_alg_info_shallow_copy(ctx),
     }
@@ -79,27 +94,12 @@ func (obj *CipherAlgInfo) delete() {
 }
 
 /*
-* Create symmetric cipher algorithm info with identificator and input vector.
-*/
-func NewCipherAlgInfoWithMembers(algId AlgId, nonce []byte) *CipherAlgInfo {
-    nonceData := helperWrapData (nonce)
-
-    proxyResult := /*pr4*/C.vscf_cipher_alg_info_new_with_members(C.vscf_alg_id_t(algId) /*pa7*/, nonceData)
-
-    obj := &CipherAlgInfo {
-        cCtx: proxyResult,
-    }
-    runtime.SetFinalizer(obj, (*CipherAlgInfo).Delete)
-    return obj
-}
-
-/*
 * Provide algorithm identificator.
 */
 func (obj *CipherAlgInfo) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_cipher_alg_info_alg_id(obj.cCtx)
+    proxyResult := C.vscf_cipher_alg_info_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }

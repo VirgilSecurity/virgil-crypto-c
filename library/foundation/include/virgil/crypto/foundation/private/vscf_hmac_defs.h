@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -56,12 +54,6 @@
 #ifndef VSCF_HMAC_DEFS_H_INCLUDED
 #define VSCF_HMAC_DEFS_H_INCLUDED
 
-#include "vscf_library.h"
-#include "vscf_impl_private.h"
-#include "vscf_hmac.h"
-#include "vscf_atomic.h"
-#include "vscf_impl.h"
-
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
 #endif
@@ -73,11 +65,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl_private.h"
+#include "vscf_hmac.h"
+#include "vscf_atomic.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -98,15 +107,14 @@ struct vscf_hmac_t {
     //
     VSCF_ATOMIC size_t refcnt;
     //
-    //  Dependency to the interface 'hash'.
-    //
-    vscf_impl_t *hash;
-    //
     //  Implementation specific context.
     //
     vsc_buffer_t *ipad;
+    //
+    //  Dependency to the interface 'hash'.
+    //
+    vscf_impl_t *hash;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -114,11 +122,9 @@ struct vscf_hmac_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_HMAC_DEFS_H_INCLUDED

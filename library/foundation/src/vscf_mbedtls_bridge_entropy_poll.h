@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,26 +46,16 @@
 #ifndef VSCF_MBEDTLS_BRIDGE_ENTROPY_POLL_H_INCLUDED
 #define VSCF_MBEDTLS_BRIDGE_ENTROPY_POLL_H_INCLUDED
 
-#include "vscf_library.h"
-
 // clang-format on
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
+//  @generated_header_includes
 // --------------------------------------------------------------------------
 // clang-format off
-//  Generated section start.
+//  Generated header includes start.
 // --------------------------------------------------------------------------
 
-VSCF_PRIVATE int
-vscf_mbedtls_bridge_entropy_poll(void *ctx, byte *data, size_t len, size_t *olen);
-
+#include "vscf_library.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -76,9 +65,27 @@ vscf_mbedtls_bridge_entropy_poll(void *ctx, byte *data, size_t len, size_t *olen
 
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+int
+vscf_mbedtls_bridge_entropy_poll(void *ctx, byte *data, size_t len, size_t *olen);
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+#ifdef __cplusplus
+}
+#endif
 
 //  @footer
 #endif // VSCF_MBEDTLS_BRIDGE_ENTROPY_POLL_H_INCLUDED

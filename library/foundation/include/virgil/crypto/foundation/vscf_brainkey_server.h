@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,10 +45,6 @@
 
 #ifndef VSCF_BRAINKEY_SERVER_H_INCLUDED
 #define VSCF_BRAINKEY_SERVER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -64,11 +59,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -183,13 +193,10 @@ VSCF_PUBLIC vscf_status_t
 vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self,
-        vsc_buffer_t *identity_secret) VSCF_NODISCARD;
+vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self, vsc_buffer_t *identity_secret) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point,
-        vsc_buffer_t *hardened_point) VSCF_NODISCARD;
-
+vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point, vsc_buffer_t *hardened_point) VSCF_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -197,11 +204,9 @@ vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_se
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_BRAINKEY_SERVER_H_INCLUDED

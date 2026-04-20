@@ -213,7 +213,6 @@ vscr_ratchet_skipped_messages_root_node_shallow_copy(vscr_ratchet_skipped_messag
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_skipped_messages_root_node_init() is called.

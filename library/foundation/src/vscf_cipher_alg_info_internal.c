@@ -79,7 +79,7 @@ vscf_cipher_alg_info_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_info_api_t alg_info_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg_info' MUST be equal to the 'vscf_api_tag_ALG_INFO'.
+    //  For interface 'alg info' MUST be equal to the  'vscf_api_tag_ALG_INFO'.
     //
     vscf_api_tag_ALG_INFO,
     //
@@ -288,7 +288,7 @@ vscf_cipher_alg_info_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG_INFO:
-            return (const vscf_api_t *) &alg_info_api;
+        return (const vscf_api_t *)                 &alg_info_api;
         default:
             return NULL;
     }

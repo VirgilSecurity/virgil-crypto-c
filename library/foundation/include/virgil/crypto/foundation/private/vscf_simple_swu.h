@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,11 +45,6 @@
 
 #ifndef VSCF_SIMPLE_SWU_H_INCLUDED
 #define VSCF_SIMPLE_SWU_H_INCLUDED
-
-#include "vscf_library.h"
-
-#include <mbedtls/ecp.h>
-#include <mbedtls/bignum.h>
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -63,11 +57,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+
+#include <mbedtls/ecp.h>
+#include <mbedtls/bignum.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -137,18 +147,15 @@ vscf_simple_swu_bignum_to_point(vscf_simple_swu_t *self, const mbedtls_mpi *t, m
 VSCF_PUBLIC void
 vscf_simple_swu_data_to_point(vscf_simple_swu_t *self, vsc_data_t data, mbedtls_ecp_point *p);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_SIMPLE_SWU_H_INCLUDED

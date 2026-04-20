@@ -76,20 +76,12 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Private integral constants.
-//
-enum {
-    vscf_round5_SEED_LEN = 48
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Setup predefined values to the uninitialized class dependencies.

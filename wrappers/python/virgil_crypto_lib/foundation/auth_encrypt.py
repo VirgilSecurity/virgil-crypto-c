@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,7 +44,7 @@ class AuthEncrypt(object):
     @abstractmethod
     def auth_encrypt(self, data, auth_data):
         """Encrypt given data.
-        If 'tag' is not given, then it will written to the 'enc'."""
+If 'tag' is not given, then it will written to the 'enc'."""
         raise NotImplementedError()
 
     @abstractmethod

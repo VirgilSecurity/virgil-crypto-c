@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,9 +50,6 @@
 
 #ifndef VSCF_KEY_RECIPIENT_INFO_H_INCLUDED
 #define VSCF_KEY_RECIPIENT_INFO_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -69,11 +64,25 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -115,32 +124,28 @@ vscf_key_recipient_info_new(void);
 //  Create object and define all properties.
 //
 VSCF_PRIVATE void
-vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref);
+vscf_key_recipient_info_init_with_buffer(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
 VSCF_PRIVATE vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
-        vsc_buffer_t **encrypted_key_ref);
+vscf_key_recipient_info_new_with_buffer(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm, vsc_buffer_t **encrypted_key_ref);
 
 //
 //  Perform initialization of pre-allocated context.
 //  Create object and define all properties.
 //
 VSCF_PUBLIC void
-vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id,
-        const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
+vscf_key_recipient_info_init_with_data(vscf_key_recipient_info_t *self, vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
 
 //
 //  Allocate class context and perform it's initialization.
 //  Create object and define all properties.
 //
 VSCF_PUBLIC vscf_key_recipient_info_t *
-vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm,
-        vsc_data_t encrypted_key);
+vscf_key_recipient_info_new_with_data(vsc_data_t recipient_id, const vscf_impl_t *key_encryption_algorithm, vsc_data_t encrypted_key);
 
 //
 //  Release all inner resources and deallocate context if needed.
@@ -181,18 +186,15 @@ vscf_key_recipient_info_key_encryption_algorithm(const vscf_key_recipient_info_t
 VSCF_PUBLIC vsc_data_t
 vscf_key_recipient_info_encrypted_key(const vscf_key_recipient_info_t *self);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_RECIPIENT_INFO_H_INCLUDED

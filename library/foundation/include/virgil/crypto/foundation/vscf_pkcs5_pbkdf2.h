@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,11 +50,6 @@
 
 #ifndef VSCF_PKCS5_PBKDF2_H_INCLUDED
 #define VSCF_PKCS5_PBKDF2_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -71,11 +64,27 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -167,12 +176,6 @@ VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_release_hmac(vscf_pkcs5_pbkdf2_t *self);
 
 //
-//  Setup predefined values to the uninitialized class dependencies.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self);
-
-//
 //  Provide algorithm identificator.
 //
 VSCF_PUBLIC vscf_alg_id_t
@@ -209,6 +212,11 @@ vscf_pkcs5_pbkdf2_reset(vscf_pkcs5_pbkdf2_t *self, vsc_data_t salt, size_t itera
 VSCF_PUBLIC void
 vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *self, vsc_data_t info);
 
+//
+//  Setup predefined values to the uninitialized class dependencies.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbkdf2_setup_defaults(vscf_pkcs5_pbkdf2_t *self);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -216,11 +224,9 @@ vscf_pkcs5_pbkdf2_set_info(vscf_pkcs5_pbkdf2_t *self, vsc_data_t info);
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_PKCS5_PBKDF2_H_INCLUDED

@@ -298,7 +298,6 @@ vscr_ratchet_xxdh_release_rng(vscr_ratchet_xxdh_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_xxdh_init() is called.

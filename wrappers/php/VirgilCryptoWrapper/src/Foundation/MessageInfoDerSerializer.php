@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* CMS based serialization of the class "message info".
-*/
 class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFooterSerializer
 {
 
@@ -47,8 +44,6 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     * @var
     */
     private $ctx;
-
-    const PREFIX_LEN = 32;
 
     /**
     * Create underlying C context.
@@ -70,25 +65,100 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     }
 
     /**
-    * @param Asn1Reader $asn1Reader
+    *
+    * @param Asn1Reader $$asn1Reader
     * @return void
     */
-    public function useAsn1Reader(Asn1Reader $asn1Reader): void
+    public function useAsn1Reader(Asn1Reader $$asn1Reader): void
     {
-        vscf_message_info_der_serializer_use_asn1_reader_php($this->ctx, $asn1Reader->getCtx());
+        vscf_message_info_der_serializer_use_asn1_reader_php($this->ctx, $$asn1Reader);
     }
 
     /**
-    * @param Asn1Writer $asn1Writer
+    *
+    * @param Asn1Writer $$asn1Writer
     * @return void
     */
-    public function useAsn1Writer(Asn1Writer $asn1Writer): void
+    public function useAsn1Writer(Asn1Writer $$asn1Writer): void
     {
-        vscf_message_info_der_serializer_use_asn1_writer_php($this->ctx, $asn1Writer->getCtx());
+        vscf_message_info_der_serializer_use_asn1_writer_php($this->ctx, $$asn1Writer);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializedLen(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_len_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return string
+    */
+    public function serialize(MessageInfo $$messageInfo): string
+    {
+        return vscf_message_info_der_serializer_serialize_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @return int
+    */
+    public function readPrefix(string $$data): int
+    {
+        return vscf_message_info_der_serializer_read_prefix_php($this->ctx, $$data);
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @return MessageInfo
+    * @throws \Exception
+    */
+    public function deserialize(string $$data): MessageInfo
+    {
+        $ctx = vscf_message_info_der_serializer_deserialize_php($this->ctx, $$data);
+        return new MessageInfo($ctx);
+    }
+
+    /**
+    *
+    * @param MessageInfoFooter $$messageInfoFooter
+    * @return int
+    */
+    public function serializedFooterLen(MessageInfoFooter $$messageInfoFooter): int
+    {
+        return vscf_message_info_der_serializer_serialized_footer_len_php($this->ctx, $$messageInfoFooter);
+    }
+
+    /**
+    *
+    * @param MessageInfoFooter $$messageInfoFooter
+    * @return string
+    */
+    public function serializeFooter(MessageInfoFooter $$messageInfoFooter): string
+    {
+        return vscf_message_info_der_serializer_serialize_footer_php($this->ctx, $$messageInfoFooter);
+    }
+
+    /**
+    *
+    * @param string $$data
+    * @return MessageInfoFooter
+    * @throws \Exception
+    */
+    public function deserializeFooter(string $$data): MessageInfoFooter
+    {
+        $ctx = vscf_message_info_der_serializer_deserialize_footer_php($this->ctx, $$data);
+        return new MessageInfoFooter($ctx);
+    }
+
+    /**
     *
     * @return void
     */
@@ -98,86 +168,356 @@ class MessageInfoDerSerializer implements MessageInfoSerializer, MessageInfoFoot
     }
 
     /**
-    * Return buffer size enough to hold serialized message info.
     *
-    * @param MessageInfo $messageInfo
+    * @param MessageInfoCustomParams $$customParams
     * @return int
     */
-    public function serializedLen(MessageInfo $messageInfo): int
+    public function serializedCustomParamsLen(MessageInfoCustomParams $$customParams): int
     {
-        return vscf_message_info_der_serializer_serialized_len_php($this->ctx, $messageInfo->getCtx());
+        return vscf_message_info_der_serializer_serialized_custom_params_len_php($this->ctx, $$customParams);
     }
 
     /**
-    * Serialize class "message info".
     *
-    * @param MessageInfo $messageInfo
-    * @return string
-    */
-    public function serialize(MessageInfo $messageInfo): string
-    {
-        return vscf_message_info_der_serializer_serialize_php($this->ctx, $messageInfo->getCtx());
-    }
-
-    /**
-    * Read message info prefix from the given data, and if it is valid,
-    * return a length of bytes of the whole message info.
-    *
-    * Zero returned if length can not be determined from the given data,
-    * and this means that there is no message info at the data beginning.
-    *
-    * @param string $data
+    * @param MessageInfoCustomParams $$customParams
     * @return int
     */
-    public function readPrefix(string $data): int
+    public function serializeCustomParams(MessageInfoCustomParams $$customParams): int
     {
-        return vscf_message_info_der_serializer_read_prefix_php($this->ctx, $data);
+        return vscf_message_info_der_serializer_serialize_custom_params_php($this->ctx, $$customParams);
     }
 
     /**
-    * Deserialize class "message info".
     *
-    * @param string $data
-    * @return MessageInfo
-    */
-    public function deserialize(string $data): MessageInfo
-    {
-        $ctx = vscf_message_info_der_serializer_deserialize_php($this->ctx, $data);
-        return new MessageInfo($ctx);
-    }
-
-    /**
-    * Return buffer size enough to hold serialized message info footer.
-    *
-    * @param MessageInfoFooter $messageInfoFooter
+    * @param FooterInfo $$footerInfo
     * @return int
     */
-    public function serializedFooterLen(MessageInfoFooter $messageInfoFooter): int
+    public function serializedFooterInfoLen(FooterInfo $$footerInfo): int
     {
-        return vscf_message_info_der_serializer_serialized_footer_len_php($this->ctx, $messageInfoFooter->getCtx());
+        return vscf_message_info_der_serializer_serialized_footer_info_len_php($this->ctx, $$footerInfo);
     }
 
     /**
-    * Serialize class "message info footer".
     *
-    * @param MessageInfoFooter $messageInfoFooter
-    * @return string
+    * @param FooterInfo $$footerInfo
+    * @return int
     */
-    public function serializeFooter(MessageInfoFooter $messageInfoFooter): string
+    public function serializeFooterInfo(FooterInfo $$footerInfo): int
     {
-        return vscf_message_info_der_serializer_serialize_footer_php($this->ctx, $messageInfoFooter->getCtx());
+        return vscf_message_info_der_serializer_serialize_footer_info_php($this->ctx, $$footerInfo);
     }
 
     /**
-    * Deserialize class "message info footer".
     *
-    * @param string $data
-    * @return MessageInfoFooter
+    * @param SignedDataInfo $$signedDataInfo
+    * @return int
     */
-    public function deserializeFooter(string $data): MessageInfoFooter
+    public function serializeSignedDataInfoInternal(SignedDataInfo $$signedDataInfo): int
     {
-        $ctx = vscf_message_info_der_serializer_deserialize_footer_php($this->ctx, $data);
-        return new MessageInfoFooter($ctx);
+        return vscf_message_info_der_serializer_serialize_signed_data_info_internal_php($this->ctx, $$signedDataInfo);
+    }
+
+    /**
+    *
+    * @param KeyRecipientInfo $$keyRecipientInfo
+    * @return int
+    */
+    public function serializedKeyRecipientInfoLen(KeyRecipientInfo $$keyRecipientInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_key_recipient_info_len_php($this->ctx, $$keyRecipientInfo);
+    }
+
+    /**
+    *
+    * @param KeyRecipientInfo $$keyRecipientInfo
+    * @return int
+    */
+    public function serializeKeyRecipientInfo(KeyRecipientInfo $$keyRecipientInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_key_recipient_info_php($this->ctx, $$keyRecipientInfo);
+    }
+
+    /**
+    *
+    * @param PasswordRecipientInfo $$passwordRecipientInfo
+    * @return int
+    */
+    public function serializedPasswordRecipientInfoLen(PasswordRecipientInfo $$passwordRecipientInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_password_recipient_info_len_php($this->ctx, $$passwordRecipientInfo);
+    }
+
+    /**
+    *
+    * @param PasswordRecipientInfo $$passwordRecipientInfo
+    * @return int
+    */
+    public function serializePasswordRecipientInfo(PasswordRecipientInfo $$passwordRecipientInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_password_recipient_info_php($this->ctx, $$passwordRecipientInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializedRecipientInfosLen(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_recipient_infos_len_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializeRecipientInfos(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_recipient_infos_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializedEncryptedContentInfoLen(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_encrypted_content_info_len_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializeEncryptedContentInfo(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_encrypted_content_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializedEnvelopedDataLen(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_enveloped_data_len_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializeEnvelopedData(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_enveloped_data_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializedCmsContentInfoLen(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_cms_content_info_len_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return int
+    */
+    public function serializeCmsContentInfo(MessageInfo $$messageInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_cms_content_info__php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfoFooter $$messageInfoFooter
+    * @return int
+    */
+    public function serializedSignerInfosLen(MessageInfoFooter $$messageInfoFooter): int
+    {
+        return vscf_message_info_der_serializer_serialized_signer_infos_len_php($this->ctx, $$messageInfoFooter);
+    }
+
+    /**
+    *
+    * @param MessageInfoFooter $$messageInfoFooter
+    * @return int
+    */
+    public function serializeSignerInfos(MessageInfoFooter $$messageInfoFooter): int
+    {
+        return vscf_message_info_der_serializer_serialize_signer_infos_php($this->ctx, $$messageInfoFooter);
+    }
+
+    /**
+    *
+    * @param SignerInfo $$signerInfo
+    * @return int
+    */
+    public function serializedSignerInfoLen(SignerInfo $$signerInfo): int
+    {
+        return vscf_message_info_der_serializer_serialized_signer_info_len_php($this->ctx, $$signerInfo);
+    }
+
+    /**
+    *
+    * @param SignerInfo $$signerInfo
+    * @return int
+    */
+    public function serializeSignerInfo(SignerInfo $$signerInfo): int
+    {
+        return vscf_message_info_der_serializer_serialize_signer_info_php($this->ctx, $$signerInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfoCustomParams $$customParams
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeCustomParams(MessageInfoCustomParams $$customParams): void
+    {
+        vscf_message_info_der_serializer_deserialize_custom_params_php($this->ctx, $$customParams);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeCipherKdf(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_cipher_kdf_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeCipherPadding(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_cipher_padding_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeFooterInfo(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_footer_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeSignedDataInfo(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_signed_data_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeKeyRecipientInfo(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_key_recipient_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializePasswordRecipientInfo(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_password_recipient_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeRecipientInfos(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_recipient_infos_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeEncryptedContentInfo(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_encrypted_content_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeEnvelopedData(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_enveloped_data_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfo $$messageInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeCmsContentInfo(MessageInfo $$messageInfo): void
+    {
+        vscf_message_info_der_serializer_deserialize_cms_content_info_php($this->ctx, $$messageInfo);
+    }
+
+    /**
+    *
+    * @param MessageInfoFooter $$messageInfoFooter
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeSignerInfos(MessageInfoFooter $$messageInfoFooter): void
+    {
+        vscf_message_info_der_serializer_deserialize_signer_infos_php($this->ctx, $$messageInfoFooter);
+    }
+
+    /**
+    *
+    * @param MessageInfoFooter $$messageInfoFooter
+    * @return void
+    * @throws \Exception
+    */
+    public function deserializeSignerInfo(MessageInfoFooter $$messageInfoFooter): void
+    {
+        vscf_message_info_der_serializer_deserialize_signer_info_php($this->ctx, $$messageInfoFooter);
     }
 
     /**

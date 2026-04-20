@@ -2,37 +2,37 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
 * Handle information about compound key algorithm.
 */
 type CompoundKeyAlgInfo struct {
-    cCtx *C.vscf_compound_key_alg_info_t /*ct10*/
+    cCtx *C.vscf_compound_key_alg_info_t
 }
 
 /*
 * Return information about encrypt/decrypt algorithm.
 */
 func (obj *CompoundKeyAlgInfo) CipherAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_compound_key_alg_info_cipher_alg_info(obj.cCtx)
+    proxyResult := C.vscf_compound_key_alg_info_cipher_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /*
 * Return information about sign/verify algorithm.
 */
 func (obj *CompoundKeyAlgInfo) SignerAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_compound_key_alg_info_signer_alg_info(obj.cCtx)
+    proxyResult := C.vscf_compound_key_alg_info_signer_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -52,7 +52,7 @@ func NewCompoundKeyAlgInfo() *CompoundKeyAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newCompoundKeyAlgInfoWithCtx(ctx *C.vscf_compound_key_alg_info_t /*ct10*/) *CompoundKeyAlgInfo {
+func newCompoundKeyAlgInfoWithCtx(ctx *C.vscf_compound_key_alg_info_t) *CompoundKeyAlgInfo {
     obj := &CompoundKeyAlgInfo {
         cCtx: ctx,
     }
@@ -63,7 +63,7 @@ func newCompoundKeyAlgInfoWithCtx(ctx *C.vscf_compound_key_alg_info_t /*ct10*/) 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newCompoundKeyAlgInfoCopy(ctx *C.vscf_compound_key_alg_info_t /*ct10*/) *CompoundKeyAlgInfo {
+func newCompoundKeyAlgInfoCopy(ctx *C.vscf_compound_key_alg_info_t) *CompoundKeyAlgInfo {
     obj := &CompoundKeyAlgInfo {
         cCtx: C.vscf_compound_key_alg_info_shallow_copy(ctx),
     }
@@ -93,9 +93,9 @@ func (obj *CompoundKeyAlgInfo) delete() {
 * Provide algorithm identificator.
 */
 func (obj *CompoundKeyAlgInfo) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_compound_key_alg_info_alg_id(obj.cCtx)
+    proxyResult := C.vscf_compound_key_alg_info_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }

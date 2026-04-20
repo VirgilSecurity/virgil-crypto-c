@@ -81,7 +81,7 @@ vscf_fake_random_find_api(vscf_api_tag_t api_tag);
 static const vscf_random_api_t random_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'random' MUST be equal to the 'vscf_api_tag_RANDOM'.
+    //  For interface 'random' MUST be equal to the  'vscf_api_tag_RANDOM'.
     //
     vscf_api_tag_RANDOM,
     //
@@ -105,7 +105,7 @@ static const vscf_random_api_t random_api = {
 static const vscf_entropy_source_api_t entropy_source_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
+    //  For interface 'entropy source' MUST be equal to the  'vscf_api_tag_ENTROPY_SOURCE'.
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
@@ -287,9 +287,9 @@ vscf_fake_random_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ENTROPY_SOURCE:
-            return (const vscf_api_t *) &entropy_source_api;
+        return (const vscf_api_t *)                 &entropy_source_api;
         case vscf_api_tag_RANDOM:
-            return (const vscf_api_t *) &random_api;
+        return (const vscf_api_t *)                 &random_api;
         default:
             return NULL;
     }

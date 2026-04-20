@@ -78,12 +78,14 @@ static mbedtls_ctr_drbg_context g_rng;
 //
 //  Create pythia_buf_t object initializer from common class 'buffer'.
 //
-#define VSCP_PYTHIA_BUFFER_FROM_DATA(X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+#define VSCP_PYTHIA_BUFFER_FROM_DATA(X) \
+        {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
 
 //
 //  Create pythia_buf_t object initializer from common class 'buffer'.
 //
-#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
+#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) \
+        {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
 
 //
 //  Callback for the pythia random.
@@ -97,7 +99,6 @@ vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Performs global initialization of the pythia library.
@@ -121,8 +122,7 @@ vscp_pythia_configure(void) {
     mbedtls_ctr_drbg_init(&g_rng);
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, 32,
-            MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
 
     const unsigned char pers[] = "vscp_pythia";

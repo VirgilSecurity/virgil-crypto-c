@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,12 +45,6 @@
 
 #ifndef VSCE_PROOF_GENERATOR_H_INCLUDED
 #define VSCE_PROOF_GENERATOR_H_INCLUDED
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
-
-#include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -64,11 +57,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
+
+#include <mbedtls/ecp.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -164,11 +174,7 @@ VSCE_PUBLIC void
 vsce_proof_generator_release_operation_random(vsce_proof_generator_t *self);
 
 VSCE_PUBLIC vsce_status_t
-vsce_proof_generator_prove_success(vsce_proof_generator_t *self, mbedtls_ecp_group *op_group, const mbedtls_mpi *priv,
-        const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p1, const mbedtls_ecp_point *p2,
-        const mbedtls_ecp_point *q1, const mbedtls_ecp_point *q2, mbedtls_mpi *blind_x, mbedtls_ecp_point *term1,
-        mbedtls_ecp_point *term2, mbedtls_ecp_point *term3) VSCE_NODISCARD;
-
+vsce_proof_generator_prove_success(vsce_proof_generator_t *self, mbedtls_ecp_group *op_group, const mbedtls_mpi *priv, const mbedtls_ecp_point *pub, const mbedtls_ecp_point *p1, const mbedtls_ecp_point *p2, const mbedtls_ecp_point *q1, const mbedtls_ecp_point *q2, mbedtls_mpi *blind_x, mbedtls_ecp_point *term1, mbedtls_ecp_point *term2, mbedtls_ecp_point *term3) VSCE_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -176,11 +182,9 @@ vsce_proof_generator_prove_success(vsce_proof_generator_t *self, mbedtls_ecp_gro
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCE_PROOF_GENERATOR_H_INCLUDED

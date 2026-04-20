@@ -124,6 +124,7 @@ vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self) {
     vscf_brainkey_client_cleanup_ctx(self);
 
     vscf_brainkey_client_release_random(self);
+
     vscf_brainkey_client_release_operation_random(self);
 
     vscf_zeroize(self, sizeof(vscf_brainkey_client_t));
@@ -320,7 +321,6 @@ vscf_brainkey_client_release_operation_random(vscf_brainkey_client_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

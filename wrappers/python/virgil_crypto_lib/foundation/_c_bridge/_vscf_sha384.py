@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -47,10 +47,6 @@ class vscf_sha384_t(Structure):
 class VscfSha384(object):
     """This is MbedTLS implementation of SHA384."""
 
-    # Length of the digest (hashing output) in bytes.
-    DIGEST_LEN = 48
-    # Block length of the digest function in bytes.
-    BLOCK_LEN = 128
 
     def __init__(self):
         """Create underlying C context."""

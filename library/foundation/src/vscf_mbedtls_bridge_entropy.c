@@ -69,7 +69,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 VSCF_PUBLIC int
 vscf_mbedtls_bridge_entropy(void *ctx, byte *data, size_t len) {
 

@@ -213,7 +213,6 @@ vscf_group_session_epoch_node_shallow_copy(vscf_group_session_epoch_node_t *self
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_group_session_epoch_node_init() is called.

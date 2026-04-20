@@ -33,7 +33,7 @@ jobs:
       - name: Install Emscripten SDK
         uses: mymindstorm/setup-emsdk@v14
         with:
-          version: '3.1.51'
+          version: '4.0.4'
 
       - name: Install system dependencies
         run: |
@@ -45,7 +45,6 @@ jobs:
 
       - name: Build C libraries with Emscripten
         run: |
-          source .venv/bin/activate
           emcmake cmake -Cconfigs/wasm-config.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DENABLE_CLANGFORMAT=OFF \

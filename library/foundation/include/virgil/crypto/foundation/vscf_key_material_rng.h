@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_KEY_MATERIAL_RNG_H_INCLUDED
 #define VSCF_KEY_MATERIAL_RNG_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -70,11 +64,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -161,12 +170,6 @@ VSCF_PUBLIC vscf_key_material_rng_t *
 vscf_key_material_rng_shallow_copy(vscf_key_material_rng_t *self);
 
 //
-//  Set a new key material.
-//
-VSCF_PUBLIC void
-vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t key_material);
-
-//
 //  Generate random bytes.
 //  All RNG implementations must be thread-safe.
 //
@@ -179,6 +182,11 @@ vscf_key_material_rng_random(const vscf_key_material_rng_t *self, size_t data_le
 VSCF_PUBLIC vscf_status_t
 vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) VSCF_NODISCARD;
 
+//
+//  Set a new key material.
+//
+VSCF_PUBLIC void
+vscf_key_material_rng_reset_key_material(vscf_key_material_rng_t *self, vsc_data_t key_material);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -186,11 +194,9 @@ vscf_key_material_rng_reseed(vscf_key_material_rng_t *self) VSCF_NODISCARD;
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_MATERIAL_RNG_H_INCLUDED

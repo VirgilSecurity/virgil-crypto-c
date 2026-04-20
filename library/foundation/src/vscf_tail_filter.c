@@ -226,7 +226,6 @@ vscf_tail_filter_shallow_copy(vscf_tail_filter_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_tail_filter_init() is called.

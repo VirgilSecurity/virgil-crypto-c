@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -42,6 +42,7 @@ from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 class VscfBase64(object):
     """Implementation of the Base64 algorithm RFC 1421 and RFC 2045."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -56,7 +57,7 @@ class VscfBase64(object):
 
     def vscf_base64_encode(self, data, str):
         """Encode given data to the base64 format.
-        Note, written buffer is NOT null-terminated."""
+Note, written buffer is NOT null-terminated."""
         vscf_base64_encode = self._lib.vscf_base64_encode
         vscf_base64_encode.argtypes = [vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_base64_encode.restype = None

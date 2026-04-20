@@ -85,8 +85,7 @@ vscf_password_recipient_info_cleanup_ctx(vscf_password_recipient_info_t *self);
 //  Create object and define all properties.
 //
 static void
-vscf_password_recipient_info_init_ctx_with_members(vscf_password_recipient_info_t *self,
-        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
+vscf_password_recipient_info_init_ctx_with_members(vscf_password_recipient_info_t *self, vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key);
 
 //
 //  Return size of 'vscf_password_recipient_info_t'.
@@ -148,8 +147,7 @@ vscf_password_recipient_info_new(void) {
 //  Create object and define all properties.
 //
 VSCF_PUBLIC void
-vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *self,
-        vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
+vscf_password_recipient_info_init_with_members(vscf_password_recipient_info_t *self, vscf_impl_t **key_encryption_algorithm_ref, vsc_data_t encrypted_key) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -260,7 +258,6 @@ vscf_password_recipient_info_shallow_copy(vscf_password_recipient_info_t *self) 
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

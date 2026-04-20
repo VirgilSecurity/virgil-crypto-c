@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,8 +36,8 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
 
 class vscf_brainkey_server_t(Structure):
@@ -67,14 +67,12 @@ class VscfBrainkeyServer(object):
         return vscf_brainkey_server_delete(ctx)
 
     def vscf_brainkey_server_use_random(self, ctx, random):
-        """Random used for key generation, proofs, etc."""
         vscf_brainkey_server_use_random = self._lib.vscf_brainkey_server_use_random
         vscf_brainkey_server_use_random.argtypes = [POINTER(vscf_brainkey_server_t), POINTER(vscf_impl_t)]
         vscf_brainkey_server_use_random.restype = None
         return vscf_brainkey_server_use_random(ctx, random)
 
     def vscf_brainkey_server_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vscf_brainkey_server_use_operation_random = self._lib.vscf_brainkey_server_use_operation_random
         vscf_brainkey_server_use_operation_random.argtypes = [POINTER(vscf_brainkey_server_t), POINTER(vscf_impl_t)]
         vscf_brainkey_server_use_operation_random.restype = None

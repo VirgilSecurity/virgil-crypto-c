@@ -189,7 +189,6 @@ static const vsc_data_t oid_round5_cca_ND_1CCA_5D = {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Return OID for given algorithm identifier.
 //

@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCF_GROUP_SESSION_H_INCLUDED
 #define VSCF_GROUP_SESSION_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_group_session_message.h"
-#include "vscf_error.h"
-#include "vscf_group_session_ticket.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -73,11 +64,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_group_session_message.h"
+#include "vscf_error.h"
+#include "vscf_group_session_ticket.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -209,8 +218,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 //  Encrypts data
 //
 VSCF_PUBLIC vscf_group_session_message_t *
-vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key,
-        vscf_error_t *error);
+vscf_group_session_encrypt(vscf_group_session_t *self, vsc_data_t plain_text, const vscf_impl_t *private_key, vscf_error_t *error);
 
 //
 //  Calculates size of buffer sufficient to store decrypted message
@@ -222,8 +230,7 @@ vscf_group_session_decrypt_len(vscf_group_session_t *self, const vscf_group_sess
 //  Decrypts message
 //
 VSCF_PUBLIC vscf_status_t
-vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message,
-        const vscf_impl_t *public_key, vsc_buffer_t *plain_text) VSCF_NODISCARD;
+vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_message_t *message, const vscf_impl_t *public_key, vsc_buffer_t *plain_text) VSCF_NODISCARD;
 
 //
 //  Creates ticket with new key for removing participants or proactive to rotate encryption key.
@@ -231,18 +238,15 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
 VSCF_PUBLIC vscf_group_session_ticket_t *
 vscf_group_session_create_group_ticket(const vscf_group_session_t *self, vscf_error_t *error);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_GROUP_SESSION_H_INCLUDED

@@ -110,9 +110,7 @@ static void
 vscr_ratchet_keys_did_release_rng(vscr_ratchet_keys_t *self);
 
 static void
-vscr_ratchet_keys_create_chain_key_finish(const vscr_ratchet_symmetric_key_t root_key,
-        const vsc_buffer_t *shared_secret, vscr_ratchet_symmetric_key_t new_root_key,
-        vscr_ratchet_chain_key_t *chain_key);
+vscr_ratchet_keys_create_chain_key_finish(const vscr_ratchet_symmetric_key_t root_key, const vsc_buffer_t *shared_secret, vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key);
 
 static const uint8_t ratchet_chain_key_seed[] = {
     0x02
@@ -310,7 +308,6 @@ vscr_ratchet_keys_release_rng(vscr_ratchet_keys_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,6 +46,7 @@ class vscf_signer_t(Structure):
 
 class VscfSigner(object):
     """Sign data of any size."""
+
 
     def __init__(self):
         """Create underlying C context."""

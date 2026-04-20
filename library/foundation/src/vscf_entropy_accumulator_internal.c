@@ -79,7 +79,7 @@ vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag);
 static const vscf_entropy_source_api_t entropy_source_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
+    //  For interface 'entropy source' MUST be equal to the  'vscf_api_tag_ENTROPY_SOURCE'.
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
@@ -261,7 +261,7 @@ vscf_entropy_accumulator_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ENTROPY_SOURCE:
-            return (const vscf_api_t *) &entropy_source_api;
+        return (const vscf_api_t *)                 &entropy_source_api;
         default:
             return NULL;
     }

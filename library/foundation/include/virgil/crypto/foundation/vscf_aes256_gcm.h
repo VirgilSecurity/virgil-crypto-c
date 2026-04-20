@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,14 +50,6 @@
 
 #ifndef VSCF_AES256_GCM_H_INCLUDED
 #define VSCF_AES256_GCM_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_cipher_info.h"
-#include "vscf_cipher_auth_info.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
-#include "vscf_cipher_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -74,11 +64,30 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_cipher_info.h"
+#include "vscf_cipher_auth_info.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+#include "vscf_cipher_state.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -175,18 +184,6 @@ vscf_aes256_gcm_destroy(vscf_aes256_gcm_t **self_ref);
 //
 VSCF_PUBLIC vscf_aes256_gcm_t *
 vscf_aes256_gcm_shallow_copy(vscf_aes256_gcm_t *self);
-
-//
-//  Returns instance of the implemented interface 'cipher info'.
-//
-VSCF_PUBLIC const vscf_cipher_info_api_t *
-vscf_aes256_gcm_cipher_info_api(void);
-
-//
-//  Returns instance of the implemented interface 'cipher auth info'.
-//
-VSCF_PUBLIC const vscf_cipher_auth_info_api_t *
-vscf_aes256_gcm_cipher_auth_info_api(void);
 
 //
 //  Provide algorithm identificator.
@@ -307,8 +304,7 @@ vscf_aes256_gcm_finish(vscf_aes256_gcm_t *self, vsc_buffer_t *out) VSCF_NODISCAR
 //  If 'tag' is not given, then it will written to the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out,
-        vsc_buffer_t *tag) VSCF_NODISCARD;
+vscf_aes256_gcm_auth_encrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_buffer_t *out, vsc_buffer_t *tag) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the authenticated encrypted data.
@@ -321,8 +317,7 @@ vscf_aes256_gcm_auth_encrypted_len(const vscf_aes256_gcm_t *self, size_t data_le
 //  If 'tag' is not given, then it will be taken from the 'enc'.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag,
-        vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_aes256_gcm_auth_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_data_t auth_data, vsc_data_t tag, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Calculate required buffer length to hold the authenticated decrypted data.
@@ -354,18 +349,15 @@ vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *ou
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_finish_auth_decryption(vscf_aes256_gcm_t *self, vsc_data_t tag, vsc_buffer_t *out) VSCF_NODISCARD;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_AES256_GCM_H_INCLUDED

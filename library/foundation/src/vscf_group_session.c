@@ -299,7 +299,6 @@ vscf_group_session_release_rng(vscf_group_session_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_group_session_init() is called.

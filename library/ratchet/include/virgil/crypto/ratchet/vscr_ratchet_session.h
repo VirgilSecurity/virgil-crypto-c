@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,13 +50,6 @@
 
 #ifndef VSCR_RATCHET_SESSION_H_INCLUDED
 #define VSCR_RATCHET_SESSION_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_ratchet_message.h"
-#include "vscr_error.h"
-#include "vscr_ratchet_session.h"
-#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -81,11 +72,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_ratchet_message.h"
+#include "vscr_error.h"
+#include "vscr_ratchet_session.h"
+#include "vscr_status.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -176,38 +185,25 @@ vscr_ratchet_session_setup_defaults(vscr_ratchet_session_t *self) VSCR_NODISCARD
 //  Initiates session
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *sender_identity_private_key,
-        vsc_data_t sender_identity_key_id, const vscf_impl_t *receiver_identity_public_key,
-        vsc_data_t receiver_identity_key_id, vscf_impl_t *receiver_long_term_public_key,
-        vsc_data_t receiver_long_term_key_id, vscf_impl_t *receiver_one_time_public_key,
-        vsc_data_t receiver_one_time_key_id, bool enable_post_quantum) VSCR_NODISCARD;
+vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *sender_identity_private_key, vsc_data_t sender_identity_key_id, const vscf_impl_t *receiver_identity_public_key, vsc_data_t receiver_identity_key_id, vscf_impl_t *receiver_long_term_public_key, vsc_data_t receiver_long_term_key_id, vscf_impl_t *receiver_one_time_public_key, vsc_data_t receiver_one_time_key_id, bool enable_post_quantum) VSCR_NODISCARD;
 
 //
 //  Initiates session
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_initiate_no_one_time_key(vscr_ratchet_session_t *self,
-        const vscf_impl_t *sender_identity_private_key, vsc_data_t sender_identity_key_id,
-        const vscf_impl_t *receiver_identity_public_key, vsc_data_t receiver_identity_key_id,
-        vscf_impl_t *receiver_long_term_public_key, vsc_data_t receiver_long_term_key_id,
-        bool enable_post_quantum) VSCR_NODISCARD;
+vscr_ratchet_session_initiate_no_one_time_key(vscr_ratchet_session_t *self, const vscf_impl_t *sender_identity_private_key, vsc_data_t sender_identity_key_id, const vscf_impl_t *receiver_identity_public_key, vsc_data_t receiver_identity_key_id, vscf_impl_t *receiver_long_term_public_key, vsc_data_t receiver_long_term_key_id, bool enable_post_quantum) VSCR_NODISCARD;
 
 //
 //  Responds to session initiation
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
-        const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
-        const vscf_impl_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message,
-        bool enable_post_quantum) VSCR_NODISCARD;
+vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key, const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key, const vscf_impl_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message, bool enable_post_quantum) VSCR_NODISCARD;
 
 //
 //  Responds to session initiation
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_respond_no_one_time_key(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
-        const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
-        const vscr_ratchet_message_t *message, bool enable_post_quantum) VSCR_NODISCARD;
+vscr_ratchet_session_respond_no_one_time_key(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key, const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key, const vscr_ratchet_message_t *message, bool enable_post_quantum) VSCR_NODISCARD;
 
 //
 //  Returns flag that indicates is this session was initiated or responded
@@ -249,8 +245,7 @@ vscr_ratchet_session_decrypt_len(vscr_ratchet_session_t *self, const vscr_ratche
 //  Decrypts message
 //
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_session_decrypt(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message,
-        vsc_buffer_t *plain_text) VSCR_NODISCARD;
+vscr_ratchet_session_decrypt(vscr_ratchet_session_t *self, const vscr_ratchet_message_t *message, vsc_buffer_t *plain_text) VSCR_NODISCARD;
 
 //
 //  Serializes session to buffer
@@ -265,18 +260,15 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self);
 VSCR_PUBLIC vscr_ratchet_session_t *
 vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_SESSION_H_INCLUDED

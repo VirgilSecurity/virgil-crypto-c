@@ -224,7 +224,6 @@ vscf_group_session_message_shallow_copy(vscf_group_session_message_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_group_session_message_init() is called.

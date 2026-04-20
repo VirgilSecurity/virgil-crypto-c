@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,285 +37,313 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides interface to the ASN.1 writer.
-* Note, elements are written starting from the buffer ending.
-* Note, that all "write" methods move writing position backward.
-*/
 interface Asn1Writer extends Ctx
 {
 
     /**
-    * Reset all internal states and prepare to new ASN.1 writing operations.
     *
-    * @param int $out
-    * @param int $outLen
+    * @param string $$out
+    * @param int $$outLen
     * @return void
     */
-    public function reset(int $out, int $outLen): void;
+    public function reset(string $$out, int $$outLen): void
+    {
+        ($this->ctx, $$out, $$outLen);
+    }
 
     /**
-    * Finalize writing and forbid further operations.
     *
-    * Note, that ASN.1 structure is always written to the buffer end, and
-    * if argument "do not adjust" is false, then data is moved to the
-    * beginning, otherwise - data is left at the buffer end.
-    *
-    * Returns length of the written bytes.
-    *
-    * @param bool $doNotAdjust
+    * @param bool $$doNotAdjust
     * @return int
     */
-    public function finish(bool $doNotAdjust): int;
+    public function finish(bool $$doNotAdjust): int
+    {
+        return ($this->ctx, $$doNotAdjust);
+    }
 
     /**
-    * Returns pointer to the inner buffer.
     *
     * @return string
     */
-    public function bytes(): string;
+    public function bytes(): string
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Returns total inner buffer length.
     *
     * @return int
     */
-    public function len(): int;
+    public function len(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Returns how many bytes were already written to the ASN.1 structure.
     *
     * @return int
     */
-    public function writtenLen(): int;
+    public function writtenLen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Returns how many bytes are available for writing.
     *
     * @return int
     */
-    public function unwrittenLen(): int;
+    public function unwrittenLen(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Return true if status is not "success".
     *
     * @return bool
     */
-    public function hasError(): bool;
+    public function hasError(): bool
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Return error code.
     *
     * @return void
     * @throws \Exception
     */
-    public function status(): void;
+    public function status(): void
+    {
+        ($this->ctx);
+    }
 
     /**
-    * Move writing position backward for the given length.
-    * Return current writing position.
     *
-    * @param int $len
+    * @param int $$len
     * @return string
     */
-    public function reserve(int $len): string;
+    public function reserve(int $$len): string
+    {
+        return ($this->ctx, $$len);
+    }
 
     /**
-    * Write ASN.1 tag.
-    * Return count of written bytes.
     *
-    * @param int $tag
+    * @param int $$tag
     * @return int
     */
-    public function writeTag(int $tag): int;
+    public function writeTag(int $$tag): int
+    {
+        return ($this->ctx, $$tag);
+    }
 
     /**
-    * Write context-specific ASN.1 tag.
-    * Return count of written bytes.
     *
-    * @param int $tag
-    * @param int $len
+    * @param int $$tag
+    * @param int $$len
     * @return int
     */
-    public function writeContextTag(int $tag, int $len): int;
+    public function writeContextTag(int $$tag, int $$len): int
+    {
+        return ($this->ctx, $$tag, $$len);
+    }
 
     /**
-    * Write length of the following data.
-    * Return count of written bytes.
     *
-    * @param int $len
+    * @param int $$len
     * @return int
     */
-    public function writeLen(int $len): int;
+    public function writeLen(int $$len): int
+    {
+        return ($this->ctx, $$len);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt(int $value): int;
+    public function writeInt(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt8(int $value): int;
+    public function writeInt8(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt16(int $value): int;
+    public function writeInt16(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt32(int $value): int;
+    public function writeInt32(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeInt64(int $value): int;
+    public function writeInt64(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint(int $value): int;
+    public function writeUint(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint8(int $value): int;
+    public function writeUint8(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint16(int $value): int;
+    public function writeUint16(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint32(int $value): int;
+    public function writeUint32(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: INTEGER.
-    * Return count of written bytes.
     *
-    * @param int $value
+    * @param int $$value
     * @return int
     */
-    public function writeUint64(int $value): int;
+    public function writeUint64(int $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: BOOLEAN.
-    * Return count of written bytes.
     *
-    * @param bool $value
+    * @param bool $$value
     * @return int
     */
-    public function writeBool(bool $value): int;
+    public function writeBool(bool $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: NULL.
     *
     * @return int
     */
-    public function writeNull(): int;
+    public function writeNull(): int
+    {
+        return ($this->ctx);
+    }
 
     /**
-    * Write ASN.1 type: OCTET STRING.
-    * Return count of written bytes.
     *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeOctetStr(string $value): int;
+    public function writeOctetStr(string $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: BIT STRING with all zero unused bits.
     *
-    * Return count of written bytes.
-    *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeOctetStrAsBitstring(string $value): int;
+    public function writeOctetStrAsBitstring(string $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write raw data directly to the ASN.1 structure.
-    * Return count of written bytes.
-    * Note, use this method carefully.
     *
-    * @param string $data
+    * @param string $$data
     * @return int
     */
-    public function writeData(string $data): int;
+    public function writeData(string $$data): int
+    {
+        return ($this->ctx, $$data);
+    }
 
     /**
-    * Write ASN.1 type: UTF8String.
-    * Return count of written bytes.
     *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeUtf8Str(string $value): int;
+    public function writeUtf8Str(string $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Write ASN.1 type: OID.
-    * Return count of written bytes.
     *
-    * @param string $value
+    * @param string $$value
     * @return int
     */
-    public function writeOid(string $value): int;
+    public function writeOid(string $$value): int
+    {
+        return ($this->ctx, $$value);
+    }
 
     /**
-    * Mark previously written data of given length as ASN.1 type: SEQUENCE.
-    * Return count of written bytes.
     *
-    * @param int $len
+    * @param int $$len
     * @return int
     */
-    public function writeSequence(int $len): int;
+    public function writeSequence(int $$len): int
+    {
+        return ($this->ctx, $$len);
+    }
 
     /**
-    * Mark previously written data of given length as ASN.1 type: SET.
-    * Return count of written bytes.
     *
-    * @param int $len
+    * @param int $$len
     * @return int
     */
-    public function writeSet(int $len): int;
+    public function writeSet(int $$len): int
+    {
+        return ($this->ctx, $$len);
+    }
+
 }

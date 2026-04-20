@@ -34,7 +34,6 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 function ensureNumber(arg, value) {
     if (!(typeof value === 'number' || value instanceof Number)) {
         throw new TypeError(`'${arg}' is not a number`);

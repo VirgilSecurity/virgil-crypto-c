@@ -75,7 +75,6 @@
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_entropy_accumulator_init() is called.
@@ -116,8 +115,7 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
     bool has_strong = 0;
 
 #if defined(MBEDTLS_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&self->ctx, mbedtls_platform_entropy_poll, NULL, 32,
-            MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&self->ctx, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
     has_strong = true;
 #endif
 

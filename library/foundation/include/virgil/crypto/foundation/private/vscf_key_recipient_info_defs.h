@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,10 +50,6 @@
 
 #ifndef VSCF_KEY_RECIPIENT_INFO_DEFS_H_INCLUDED
 #define VSCF_KEY_RECIPIENT_INFO_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_impl.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -68,11 +62,26 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_atomic.h"
+#include "vscf_impl.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -92,14 +101,10 @@ struct vscf_key_recipient_info_t {
     //  Reference counter.
     //
     VSCF_ATOMIC size_t refcnt;
-
     vsc_buffer_t *recipient_id;
-
     const vscf_impl_t *key_encryption_algorithm;
-
     vsc_buffer_t *encrypted_key;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -107,11 +112,9 @@ struct vscf_key_recipient_info_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_RECIPIENT_INFO_DEFS_H_INCLUDED

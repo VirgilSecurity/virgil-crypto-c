@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,18 +51,29 @@
 #ifndef VSCF_KEY_PROVIDER_DEFS_H_INCLUDED
 #define VSCF_KEY_PROVIDER_DEFS_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_atomic.h"
 #include "vscf_impl.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -88,14 +97,10 @@ struct vscf_key_provider_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *random;
-
     size_t rsa_bitlen;
-
     vscf_impl_t *key_asn1_serializer;
-
     vscf_impl_t *key_asn1_deserializer;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -103,11 +108,9 @@ struct vscf_key_provider_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_PROVIDER_DEFS_H_INCLUDED

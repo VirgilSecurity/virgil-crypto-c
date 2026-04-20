@@ -7,7 +7,7 @@ import "runtime"
 
 
 type BrainkeyClient struct {
-    cCtx *C.vscf_brainkey_client_t /*ct2*/
+    cCtx *C.vscf_brainkey_client_t
 }
 const (
     BrainkeyClientPointLen uint = 65
@@ -34,7 +34,7 @@ func NewBrainkeyClient() *BrainkeyClient {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newBrainkeyClientWithCtx(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClient {
+func newBrainkeyClientWithCtx(ctx *C.vscf_brainkey_client_t) *BrainkeyClient {
     obj := &BrainkeyClient {
         cCtx: ctx,
     }
@@ -45,7 +45,7 @@ func newBrainkeyClientWithCtx(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyCl
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t /*ct2*/) *BrainkeyClient {
+func newBrainkeyClientCopy(ctx *C.vscf_brainkey_client_t) *BrainkeyClient {
     obj := &BrainkeyClient {
         cCtx: C.vscf_brainkey_client_shallow_copy(ctx),
     }
@@ -71,9 +71,6 @@ func (obj *BrainkeyClient) delete() {
     C.vscf_brainkey_client_delete(obj.cCtx)
 }
 
-/*
-* Random used for key generation, proofs, etc.
-*/
 func (obj *BrainkeyClient) SetRandom(random Random) {
     C.vscf_brainkey_client_release_random(obj.cCtx)
     C.vscf_brainkey_client_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
@@ -82,9 +79,6 @@ func (obj *BrainkeyClient) SetRandom(random Random) {
     runtime.KeepAlive(obj)
 }
 
-/*
-* Random used for crypto operations to make them const-time
-*/
 func (obj *BrainkeyClient) SetOperationRandom(operationRandom Random) {
     C.vscf_brainkey_client_release_operation_random(obj.cCtx)
     C.vscf_brainkey_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
@@ -94,7 +88,7 @@ func (obj *BrainkeyClient) SetOperationRandom(operationRandom Random) {
 }
 
 func (obj *BrainkeyClient) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_brainkey_client_setup_defaults(obj.cCtx)
+    proxyResult := C.vscf_brainkey_client_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -107,20 +101,20 @@ func (obj *BrainkeyClient) SetupDefaults() error {
 }
 
 func (obj *BrainkeyClient) Blind(password []byte) ([]byte, []byte, error) {
-    deblindFactorBuf, deblindFactorBufErr := newBuffer(int(BrainkeyClientMpiLen /* lg4 */))
+    deblindFactorBuf, deblindFactorBufErr := newBuffer(int(BrainkeyClientMpiLen))
     if deblindFactorBufErr != nil {
         return nil, nil, deblindFactorBufErr
     }
     defer deblindFactorBuf.delete()
 
-    blindedPointBuf, blindedPointBufErr := newBuffer(int(BrainkeyClientPointLen /* lg4 */))
+    blindedPointBuf, blindedPointBufErr := newBuffer(int(BrainkeyClientPointLen))
     if blindedPointBufErr != nil {
         return nil, nil, blindedPointBufErr
     }
     defer blindedPointBuf.delete()
     passwordData := helperWrapData (password)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_client_blind(obj.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
+    proxyResult := C.vscf_brainkey_client_blind(obj.cCtx, passwordData, deblindFactorBuf.ctx, blindedPointBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -129,11 +123,11 @@ func (obj *BrainkeyClient) Blind(password []byte) ([]byte, []byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return deblindFactorBuf.getData() /* r7 */, blindedPointBuf.getData() /* r7 */, nil
+    return deblindFactorBuf.getData(), blindedPointBuf.getData(), nil
 }
 
 func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblindFactor []byte, keyName []byte) ([]byte, error) {
-    seedBuf, seedBufErr := newBuffer(int(BrainkeyClientPointLen /* lg4 */))
+    seedBuf, seedBufErr := newBuffer(int(BrainkeyClientPointLen))
     if seedBufErr != nil {
         return nil, seedBufErr
     }
@@ -143,7 +137,7 @@ func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblin
     deblindFactorData := helperWrapData (deblindFactor)
     keyNameData := helperWrapData (keyName)
 
-    proxyResult := /*pr4*/C.vscf_brainkey_client_deblind(obj.cCtx, passwordData, hardenedPointData, deblindFactorData, keyNameData, seedBuf.ctx)
+    proxyResult := C.vscf_brainkey_client_deblind(obj.cCtx, passwordData, hardenedPointData, deblindFactorData, keyNameData, seedBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -152,5 +146,5 @@ func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblin
 
     runtime.KeepAlive(obj)
 
-    return seedBuf.getData() /* r7 */, nil
+    return seedBuf.getData(), nil
 }

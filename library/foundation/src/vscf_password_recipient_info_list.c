@@ -220,7 +220,6 @@ vscf_password_recipient_info_list_shallow_copy(vscf_password_recipient_info_list
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_password_recipient_info_list_init() is called.

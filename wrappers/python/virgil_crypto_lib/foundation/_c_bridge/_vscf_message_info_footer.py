@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,11 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from ._vscf_signer_info_list import vscf_signer_info_list_t
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_signer_info import vscf_signer_info_t
+from ._vscf_signer_info_list import vscf_signer_info_list_t
 
 
 class vscf_message_info_footer_t(Structure):
@@ -46,6 +48,7 @@ class vscf_message_info_footer_t(Structure):
 
 class VscfMessageInfoFooter(object):
     """Handle message signatures and related information."""
+
 
     def __init__(self):
         """Create underlying C context."""
