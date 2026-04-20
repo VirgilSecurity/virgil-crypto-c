@@ -39,6 +39,7 @@ cd build && ctest --output-on-failure
 - Python wheels use cibuildwheel. CI workflow: `.github/workflows/python-wheels-build.yml`.
 - Go wrapper uses pre-built static libs in `wrappers/go/pkg/<os>_<arch>/`. Use `-DVIRGIL_WRAP_GO=OFF` when building C libs for Go to avoid gosrc/ install conflicts.
 - Apple frameworks: run `./scripts/build_apple_frameworks.sh` on macOS before tagging a release.
+- Ask for approval to push changes.
 
 ## Forbidden
 
