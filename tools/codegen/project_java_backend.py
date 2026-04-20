@@ -1441,6 +1441,7 @@ def _generate_jni_c_method(
     method: IRCMethod,
     entity_name: str,
     is_static: bool,
+    result_entity_name: str | None = None,
 ) -> list[str]:
     """Generate JNI C code for a single method implementation."""
     pname = project_ir.name
@@ -1773,7 +1774,8 @@ def _generate_jni_c_method(
             f"vsc_buffer_len({buf_snake}), (jbyte*) vsc_buffer_bytes({buf_snake}));"
         )
     elif buf_outs and len(buf_outs) >= 2:
-        result_class = f"{_pascal(entity_name)}{_pascal(method.name)}Result"
+        _result_entity = result_entity_name or entity_name
+        result_class = f"{_pascal(_result_entity)}{_pascal(method.name)}Result"
         lines.append(
             f'jclass result_cls = (*jenv)->FindClass(jenv, '
             f'"{pkg_path}/{result_class}");'
@@ -2100,6 +2102,7 @@ def _generate_jni_c_wrapped_method(
     method: IRCMethod,
     entity_name: str,
     is_static: bool,
+    result_entity_name: str | None = None,
 ) -> list[str]:
     """Generate a complete JNIEXPORT function wrapping a method body."""
     jni_ret = _jni_return_type(method)
@@ -2129,6 +2132,7 @@ def _generate_jni_c_wrapped_method(
     # Get method body lines
     body = _generate_jni_c_method(
         project_ir, method, entity_name, is_static=is_static,
+        result_entity_name=result_entity_name,
     )
     for bline in body:
         lines.append(f"    {bline}")
@@ -2269,6 +2273,7 @@ def _generate_jni_c(project_ir: IRProject) -> str:
                     continue
                 method_lines = _generate_jni_c_wrapped_method(
                     project_ir, m, impl.name, is_static=_is_static_method(m),
+                    result_entity_name=binding.name,
                 )
                 lines.extend(method_lines)
 

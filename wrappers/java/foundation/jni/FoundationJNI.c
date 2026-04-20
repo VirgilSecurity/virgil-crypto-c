@@ -5822,9 +5822,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         throwFoundationException(jenv, jobj, status);
         return NULL;
     }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/Aes256GcmAuthEncryptResult");
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/AuthEncryptAuthEncryptResult");
     if (NULL == result_cls) {
-        VSCF_ASSERT("Class Aes256GcmAuthEncryptResult not found.");
+        VSCF_ASSERT("Class AuthEncryptAuthEncryptResult not found.");
     }
     jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
     jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
@@ -5931,9 +5931,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         throwFoundationException(jenv, jobj, status);
         return NULL;
     }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/Aes256GcmFinishAuthEncryptionResult");
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/CipherAuthFinishAuthEncryptionResult");
     if (NULL == result_cls) {
-        VSCF_ASSERT("Class Aes256GcmFinishAuthEncryptionResult not found.");
+        VSCF_ASSERT("Class CipherAuthFinishAuthEncryptionResult not found.");
     }
     jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
     jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
@@ -8207,9 +8207,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         throwFoundationException(jenv, jobj, status);
         return NULL;
     }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/EccKemEncapsulateResult");
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KemKemEncapsulateResult");
     if (NULL == result_cls) {
-        VSCF_ASSERT("Class EccKemEncapsulateResult not found.");
+        VSCF_ASSERT("Class KemKemEncapsulateResult not found.");
     }
     jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
     jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
@@ -10982,9 +10982,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         throwFoundationException(jenv, jobj, status);
         return NULL;
     }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/Ed25519KemEncapsulateResult");
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KemKemEncapsulateResult");
     if (NULL == result_cls) {
-        VSCF_ASSERT("Class Ed25519KemEncapsulateResult not found.");
+        VSCF_ASSERT("Class KemKemEncapsulateResult not found.");
     }
     jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
     jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
@@ -11556,9 +11556,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         throwFoundationException(jenv, jobj, status);
         return NULL;
     }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/Curve25519KemEncapsulateResult");
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KemKemEncapsulateResult");
     if (NULL == result_cls) {
-        VSCF_ASSERT("Class Curve25519KemEncapsulateResult not found.");
+        VSCF_ASSERT("Class KemKemEncapsulateResult not found.");
     }
     jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
     jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
@@ -12309,9 +12309,9 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
         throwFoundationException(jenv, jobj, status);
         return NULL;
     }
-    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/Round5KemEncapsulateResult");
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KemKemEncapsulateResult");
     if (NULL == result_cls) {
-        VSCF_ASSERT("Class Round5KemEncapsulateResult not found.");
+        VSCF_ASSERT("Class KemKemEncapsulateResult not found.");
     }
     jmethodID result_methodID = (*jenv)->GetMethodID(jenv, result_cls, "<init>", "()V");
     jobject newObj = (*jenv)->NewObject(jenv, result_cls, result_methodID);
