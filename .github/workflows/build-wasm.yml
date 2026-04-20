@@ -1,4 +1,4 @@
-name: Build and Test WASM Wrapper
+name: Build WASM
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
     branches:
       - develop
       - main
+  workflow_call: {}
 
 jobs:
   build-and-test:
@@ -62,3 +63,11 @@ jobs:
       - name: Run Jest tests
         working-directory: build-wasm/wrappers/wasm
         run: npm test
+
+      - name: Upload dist artifacts
+        if: github.event_name == 'workflow_call'
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-dist
+          path: build-wasm/wrappers/wasm/dist/
+          retention-days: 1

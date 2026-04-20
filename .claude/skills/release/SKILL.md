@@ -54,10 +54,11 @@ Create a versioned release with separate commits for each step.
 
 | Workflow | Action |
 |----------|--------|
-| `python-wheels-release.yml` | Wheels to TestPyPI (pre-release) or PyPI (production) |
-| `publish-release.yml` | Java/Android to Maven Central |
-| `release-apple-binaries.yml` | XCFrameworks to GitHub Release |
+| `release-python.yml` | Wheels to TestPyPI (pre-release) or PyPI (production) |
+| `release.yml` | Java/Android to Maven Central |
+| `release-swift.yml` | XCFrameworks to GitHub Release |
 | `release-go.yml` | Go static libs cross-compile, commit, Go module tag |
+| `release-wasm.yml` | WASM bundle to npm |
 
 ## Edge cases
 

@@ -169,7 +169,7 @@ sed_replace "version \".*\"" "version \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
-sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION}\"\2" "${ROOT_DIR}/wrappers/wasm/package.json"
+sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION_FULL}\"\2" "${ROOT_DIR}/wrappers/wasm/package.json"
 
 # ###########################################################################
 show_info "Add version within Carthage spec files."

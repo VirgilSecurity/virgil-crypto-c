@@ -1,4 +1,4 @@
-name: Release Go Wrapper
+name: Release Go
 
 on:
   push:

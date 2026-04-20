@@ -52,7 +52,7 @@ cd build && ctest --output-on-failure
 
 - mbedTLS was upgraded to 3.6.5 LTS. RSA operations require real RNG (no fake random in tests).
 - Pythia does not compile on Windows. Use `-DVIRGIL_LIB_PYTHIA=OFF` for Windows builds.
-- Python wheels use cibuildwheel. CI workflow: `.github/workflows/python-wheels-build.yml`.
+- Python wheels use cibuildwheel. CI workflow: `.github/workflows/build-python.yml`.
 - Go wrapper uses pre-built static libs in `wrappers/go/pkg/<os>_<arch>/`. Use `-DVIRGIL_WRAP_GO=OFF` when building C libs for Go to avoid gosrc/ install conflicts.
 - Apple frameworks: run `./scripts/build_apple_frameworks.sh` on macOS before tagging a release.
 - Ask for approval to push changes.

@@ -1,4 +1,4 @@
-name: Build Java/Android Binaries
+name: Build Java
 
 on:
   push:

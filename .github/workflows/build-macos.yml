@@ -1,11 +1,16 @@
-name: build-macos
+name: Build macOS
 on:
   push:
     branches:
-      - "main"
-      - "develop"
-      - "release/**"
-      - "hotfix/**"
+      - main
+      - develop
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
 jobs:
   build-macos:
     runs-on: macos-26

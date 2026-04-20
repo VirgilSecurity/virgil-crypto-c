@@ -1,4 +1,4 @@
-name: Release Apple Binaries
+name: Release Swift
 on:
   push:
     tags:

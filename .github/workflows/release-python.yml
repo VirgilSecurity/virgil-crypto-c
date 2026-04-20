@@ -1,4 +1,4 @@
-name: python-wheels-release
+name: Release Python
 on:
   push:
     tags:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-and-test:
-    uses: ./.github/workflows/python-wheels-build.yml
+    uses: ./.github/workflows/build-python.yml
 
   is-prerelease:
     name: Check if pre-release

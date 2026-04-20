@@ -1,4 +1,4 @@
-name: Build and Test Go Wrapper
+name: Build Go
 
 on:
   push:

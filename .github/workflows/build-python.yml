@@ -1,5 +1,16 @@
-name: python-wheels-build
+name: Build Python
 on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
   workflow_call:
 
 jobs:

@@ -1,4 +1,4 @@
-name: build-php-binaries
+name: Build PHP
 
 on:
   workflow_call: {}
