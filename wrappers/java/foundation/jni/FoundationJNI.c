@@ -1996,6 +1996,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfoCustomParams has no 'getInstance' method.");
     }
+    vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }
@@ -2944,6 +2945,7 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     if (NULL == result_methodID) {
         VSCF_ASSERT("Class MessageInfoCustomParams has no 'getInstance' method.");
     }
+    vscf_message_info_custom_params_shallow_copy((vscf_message_info_custom_params_t */*5*/) proxyResult);
     jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
     return ret;
 }

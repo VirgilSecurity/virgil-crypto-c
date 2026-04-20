@@ -1861,8 +1861,8 @@ def _generate_jni_c_method(
                 f"""    {prefix_upper}_ASSERT("Class {class_pascal} has no 'getInstance' method.");"""
             )
             lines.append("}")
-            # shallow_copy for readonly access
-            if ret.access in ("readonly", None):
+            # shallow_copy for borrowed references (readonly, readwrite, or unspecified); disown means caller takes ownership
+            if ret.access in ("readonly", "readwrite", None):
                 class_c = f"{prefix}_{_snake(resolved_class)}_t"
                 lines.append(
                     f"{prefix}_{_snake(resolved_class)}_shallow_copy("
