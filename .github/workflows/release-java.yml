@@ -1,4 +1,4 @@
-name: Release
+name: Release Java
 
 on:
   push:
@@ -13,16 +13,10 @@ on:
         type: string
 
 jobs:
-  # Build all binaries first
   build:
     name: Build Binaries
     uses: ./.github/workflows/build-java.yml
 
-  build-php:
-    name: Build PHP Packages
-    uses: ./.github/workflows/build-php.yml
-
-  # Publish JVM artifacts to Maven Central
   publish-jvm-release:
     name: Publish JVM Release
     needs: build
@@ -99,7 +93,6 @@ jobs:
             -Dgpg.passphrase="${GPG_PASSPHRASE}" \
             -DskipTests
 
-  # Publish Android artifacts to Maven Central
   publish-android-release:
     name: Publish Android Release
     needs: build
@@ -329,27 +322,5 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-php-assets:
-    name: Publish PHP Assets
-    if: github.event_name == 'push'
-    needs: [build-php, publish-android-release]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all PHP artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: php-*
-          path: dist
-          merge-multiple: true
-
-      - name: Upload PHP assets to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            dist/**/*.zip
-            dist/**/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
