@@ -1073,16 +1073,14 @@ def main() -> int:
     all_written: list[Path] = []
     all_unexpected: list[tuple[str, str]] = []
 
+    # Read license text once from repo root LICENSE file
+    _license_file = repo_root / "LICENSE"
+    _repo_license_text = _license_file.read_text().strip() if _license_file.exists() else ""
+
     for project in projects:
         project_dir = codegen_root / "generated" / project
 
-        # Load license text from project XML model
-        project_xml_path = codegen_root / "models" / f"project_{project}" / f"project_{project}.xml"
-        project_license = ""
-        if project_xml_path.exists():
-            lic_elem = ET.parse(project_xml_path).getroot().find("license")
-            if lic_elem is not None and lic_elem.text:
-                project_license = lic_elem.text
+        project_license = _repo_license_text
 
         written: list[Path] = []
         skipped: list[tuple[str, str]] = []
@@ -1106,14 +1104,7 @@ def main() -> int:
                 umbrella_fallbacks.append(project_to_ir(load_named_project_source(req.name, repo_root)))
         if umbrella_fallbacks:
             project_ir.fallback_projects = umbrella_fallbacks
-        # Read license text from project XML model
-        project_xml_path = codegen_root / "models" / f"project_{project}" / f"project_{project}.xml"
-        license_text = ""
-        if project_xml_path.exists():
-            project_tree = ET.parse(project_xml_path)
-            lic_elem = project_tree.getroot().find("license")
-            if lic_elem is not None and lic_elem.text:
-                license_text = lic_elem.text
+        license_text = _repo_license_text
         for rel_path, content in generate_umbrella_headers(project_ir, license_text=license_text):
             abs_path = (codegen_root / rel_path).resolve()
             out_path = out_root / abs_path.relative_to(repo_root)
