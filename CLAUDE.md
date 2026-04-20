@@ -8,6 +8,22 @@ C crypto library with language wrappers for Python, Java, Android, Swift, PHP, G
 - **Version bump only**: Use `/bumpver` skill or `./scripts/bumpver.sh <version>`
 - Skills are in `.claude/skills/`
 
+## Codegen
+
+Regenerate all language wrappers from the IR models:
+
+```bash
+python3 -m tools.codegen.common_bootstrap --project all --apply
+```
+
+To regenerate a single project (e.g. `foundation`):
+
+```bash
+python3 -m tools.codegen.common_bootstrap --project foundation --apply
+```
+
+Output goes to the repo root (same paths as the checked-in files). License text is read from the repo root `LICENSE` file automatically.
+
 ## Build
 
 ```bash
