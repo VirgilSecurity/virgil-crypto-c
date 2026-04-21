@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -43,35 +44,13 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
-#define VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
-
-// clang-format on
-//  @end
-
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_group_session_public_key.h"
 #include "vscf_group_session_private_key.h"
-#include "vscf_group_session_symmetric_key.h"
-#include "vscf_group_session_id.h"
-#include "vscf_group_session_salt.h"
+#include "vscf_memory.h"
+#include "vscf_assert.h"
 
-// --------------------------------------------------------------------------
-//  Generated section end.
 // clang-format on
-// --------------------------------------------------------------------------
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -79,16 +58,18 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Return size of 'vscf_group_session_private_key_t'.
+//
+VSCF_PUBLIC size_t
+vscf_group_session_private_key_ctx_size(void) {
+
+    return sizeof(vscf_group_session_private_key_t);
+}
+
+
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
-//  @end
-
-#ifdef __cplusplus
-}
-#endif
-
-//  @footer
-#endif // VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
 //  @end

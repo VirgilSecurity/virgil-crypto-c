@@ -3019,7 +3019,10 @@ def render_class_c_module(
                     **({"project": field.project} if getattr(field, "project", None) is not None else {}),
                     **({"is_reference": "1"} if field.is_reference else {}),
                     **({"is_reference": "0"} if field.is_reference_explicit and not field.is_reference else {}),
-                    **({"array": "given"} if field.is_array else {}),
+                    **({"array": "given"} if field.is_array
+                       else ({"array": "fixed", "array_length_constant": field.array_length_constant}
+                             if getattr(field, "array_kind", None) == "fixed" and getattr(field, "array_length_constant", None)
+                             else {})),
                 }, description=field.description)
                 for field in cls.struct_fields
             ]
@@ -3037,7 +3040,10 @@ def render_class_c_module(
                     **({"project": field.project} if getattr(field, "project", None) is not None else {}),
                     **({"is_reference": "1"} if field.is_reference else {}),
                     **({"is_reference": "0"} if field.is_reference_explicit and not field.is_reference else {}),
-                    **({"array": "given"} if field.is_array else {}),
+                    **({"array": "given"} if field.is_array
+                       else ({"array": "fixed", "array_length_constant": field.array_length_constant}
+                             if getattr(field, "array_kind", None) == "fixed" and getattr(field, "array_length_constant", None)
+                             else {})),
                 }, description=field.description)
                 for field in cls.struct_fields
             ]]

@@ -43,8 +43,8 @@
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
 
-#ifndef VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
-#define VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
+#ifndef VSCF_GROUP_SESSION_SALT_H_INCLUDED
+#define VSCF_GROUP_SESSION_SALT_H_INCLUDED
 
 // clang-format on
 //  @end
@@ -56,11 +56,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
-#include "vscf_group_session_public_key.h"
-#include "vscf_group_session_private_key.h"
-#include "vscf_group_session_symmetric_key.h"
-#include "vscf_group_session_id.h"
-#include "vscf_group_session_salt.h"
+#include "vscf_atomic.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -79,6 +75,20 @@ extern "C" {
 //  Generated section start.
 // --------------------------------------------------------------------------
 
+//
+//  Handle 'group session salt' context.
+//
+typedef struct vscf_group_session_salt_t vscf_group_session_salt_t;
+struct vscf_group_session_salt_t {
+    byte bytes[32];
+};
+
+//
+//  Return size of 'vscf_group_session_salt_t'.
+//
+VSCF_PUBLIC size_t
+vscf_group_session_salt_ctx_size(void);
+
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
@@ -90,5 +100,5 @@ extern "C" {
 #endif
 
 //  @footer
-#endif // VSCF_GROUP_SESSION_TYPEDEFS_H_INCLUDED
+#endif // VSCF_GROUP_SESSION_SALT_H_INCLUDED
 //  @end

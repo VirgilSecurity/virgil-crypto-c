@@ -36,7 +36,6 @@
     <module name="library" from="shared"/>
     <module name="memory" from="shared"/>
     <module name="atomic" from="shared"/>
-
     <module name="group session typedefs"/>
 
     <enum name="status"/>
@@ -114,6 +113,11 @@
     <class name="brainkey server"/>
     <class name="message padding"/>
     <class name="message cipher"/>
+    <class name="group session public key"/>
+    <class name="group session private key"/>
+    <class name="group session symmetric key"/>
+    <class name="group session id"/>
+    <class name="group session salt"/>
     <class name="group session message"/>
     <class name="group session ticket"/>
     <class name="group session"/>
