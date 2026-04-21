@@ -52,8 +52,6 @@ jobs:
       - name: Publish to npm
         working-directory: wrappers/wasm
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-npm-prerelease:
     name: Publish pre-release to npm
@@ -81,5 +79,3 @@ jobs:
       - name: Publish pre-release to npm
         working-directory: wrappers/wasm
         run: npm publish --provenance --access public --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
