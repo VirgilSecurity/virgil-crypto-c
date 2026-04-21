@@ -9,6 +9,8 @@ on:
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-wasm.yml
+    with:
+      upload_artifacts: true
 
   is-prerelease:
     name: Check if pre-release
