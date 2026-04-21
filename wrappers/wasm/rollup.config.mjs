@@ -1,9 +1,9 @@
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 
 import commonjs from '@rollup/plugin-commonjs';
-import copy from 'rollup-plugin-copy';
 import nodeResolve from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import terser from '@rollup/plugin-terser';
@@ -28,6 +28,14 @@ if (typeof project !== 'string') {
 const sourcePath = path.join(__dirname, project);
 const outputPath = path.join(__dirname, 'dist', project);
 
+const copyFile = (src, destDir) => ({
+  name: 'copy-file',
+  writeBundle() {
+    fs.mkdirSync(destDir, { recursive: true });
+    fs.copyFileSync(src, path.join(destDir, path.basename(src)));
+  },
+});
+
 const createEntry = (inputFilePath, libraryFilePath, format, outputFilePath) => ({
   input: inputFilePath,
   output: {
@@ -51,7 +59,7 @@ const createWasmEntry = (inputFilePath, libraryFilePath, wasmFilePath, format, o
   const entry = createEntry(inputFilePath, libraryFilePath, format, outputFilePath);
   entry.plugins.push(
     terser(),
-    copy({ targets: [{ src: wasmFilePath, dest: path.dirname(outputFilePath) }] }),
+    copyFile(wasmFilePath, path.dirname(outputFilePath)),
   );
   return entry;
 };
