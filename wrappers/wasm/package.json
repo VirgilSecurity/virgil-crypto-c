@@ -1,11 +1,86 @@
 {
   "name": "@virgilsecurity/crypto",
   "version": "0.18.0-dev.1",
-  "description": "Virgil Crypto C wrapper",
+  "description": "Virgil Crypto C compiled to WebAssembly — Foundation, PHE, and Ratchet modules",
+  "main": "dist/foundation/node.cjs.js",
+  "exports": {
+    ".": {
+      "require": "./dist/foundation/node.cjs.js",
+      "import": "./dist/foundation/node.es.mjs"
+    },
+    "./foundation": {
+      "browser": "./dist/foundation/browser.es.js",
+      "require": "./dist/foundation/node.cjs.js",
+      "import": "./dist/foundation/node.es.mjs"
+    },
+    "./foundation/browser": {
+      "require": "./dist/foundation/browser.cjs.js",
+      "import": "./dist/foundation/browser.es.js"
+    },
+    "./foundation/worker": {
+      "require": "./dist/foundation/worker.cjs.js",
+      "import": "./dist/foundation/worker.es.js"
+    },
+    "./phe": {
+      "browser": "./dist/phe/browser.es.js",
+      "require": "./dist/phe/node.cjs.js",
+      "import": "./dist/phe/node.es.mjs"
+    },
+    "./phe/browser": {
+      "require": "./dist/phe/browser.cjs.js",
+      "import": "./dist/phe/browser.es.js"
+    },
+    "./phe/worker": {
+      "require": "./dist/phe/worker.cjs.js",
+      "import": "./dist/phe/worker.es.js"
+    },
+    "./ratchet": {
+      "browser": "./dist/ratchet/browser.es.js",
+      "require": "./dist/ratchet/node.cjs.js",
+      "import": "./dist/ratchet/node.es.mjs"
+    },
+    "./ratchet/browser": {
+      "require": "./dist/ratchet/browser.cjs.js",
+      "import": "./dist/ratchet/browser.es.js"
+    },
+    "./ratchet/worker": {
+      "require": "./dist/ratchet/worker.cjs.js",
+      "import": "./dist/ratchet/worker.es.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md"
+  ],
+  "keywords": [
+    "crypto",
+    "cryptography",
+    "virgil",
+    "wasm",
+    "webassembly",
+    "ed25519",
+    "rsa",
+    "aes",
+    "sha",
+    "ecc",
+    "encryption",
+    "decryption",
+    "signing",
+    "phe",
+    "ratchet",
+    "e2ee"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/VirgilSecurity/virgil-crypto-c.git"
   },
+  "bugs": {
+    "url": "https://github.com/VirgilSecurity/virgil-crypto-c/issues"
+  },
+  "homepage": "https://github.com/VirgilSecurity/virgil-crypto-c/tree/main/wrappers/wasm",
   "author": "Virgil Security Inc. <support@virgilsecurity.com>",
   "license": "BSD-3-Clause",
   "scripts": {
