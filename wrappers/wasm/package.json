@@ -1,13 +1,8 @@
 {
-  "name": "@virgilsecurity/crypto",
+  "name": "@virgilsecurity/virgil-crypto-core",
   "version": "0.18.0-dev.1",
   "description": "Virgil Crypto C compiled to WebAssembly — Foundation, PHE, and Ratchet modules",
-  "main": "dist/foundation/node.cjs.js",
   "exports": {
-    ".": {
-      "require": "./dist/foundation/node.cjs.js",
-      "import": "./dist/foundation/node.es.mjs"
-    },
     "./foundation": {
       "browser": "./dist/foundation/browser.es.js",
       "require": "./dist/foundation/node.cjs.js",

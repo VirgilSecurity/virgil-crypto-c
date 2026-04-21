@@ -1,4 +1,4 @@
-# @virgilsecurity/crypto
+# @virgilsecurity/virgil-crypto-core
 
 WebAssembly wrapper for [Virgil Security Crypto C](https://github.com/VirgilSecurity/virgil-crypto-c).
 
@@ -6,14 +6,14 @@ Provides three modules:
 
 | Module | Import path | Contents |
 |--------|------------|---------|
-| **Foundation** | `@virgilsecurity/crypto/foundation` | Symmetric/asymmetric encryption, signing, hashing, key management, group sessions |
-| **PHE** | `@virgilsecurity/crypto/phe` | Password-hardened encryption (PHE) and UOKMS |
-| **Ratchet** | `@virgilsecurity/crypto/ratchet` | Double-ratchet end-to-end encrypted sessions |
+| **Foundation** | `@virgilsecurity/virgil-crypto-core/foundation` | Symmetric/asymmetric encryption, signing, hashing, key management, group sessions |
+| **PHE** | `@virgilsecurity/virgil-crypto-core/phe` | Password-hardened encryption (PHE) and UOKMS |
+| **Ratchet** | `@virgilsecurity/virgil-crypto-core/ratchet` | Double-ratchet end-to-end encrypted sessions |
 
 ## Installation
 
 ```bash
-npm install @virgilsecurity/crypto
+npm install @virgilsecurity/virgil-crypto-core
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ Each module is initialized asynchronously (WASM loads once, then all classes are
 ### Hashing
 
 ```js
-const initFoundation = require('@virgilsecurity/crypto/foundation');
+const initFoundation = require('@virgilsecurity/virgil-crypto-core/foundation');
 
 const foundation = await initFoundation();
 const sha256 = new foundation.Sha256();
@@ -37,7 +37,7 @@ sha256.delete();
 ### Key generation and encryption
 
 ```js
-const initFoundation = require('@virgilsecurity/crypto/foundation');
+const initFoundation = require('@virgilsecurity/virgil-crypto-core/foundation');
 
 const foundation = await initFoundation();
 
@@ -76,7 +76,7 @@ publicKey.delete();
 ### Signing and verification
 
 ```js
-const initFoundation = require('@virgilsecurity/crypto/foundation');
+const initFoundation = require('@virgilsecurity/virgil-crypto-core/foundation');
 
 const foundation = await initFoundation();
 
@@ -104,7 +104,7 @@ publicKey.delete();
 ### PHE (Password-Hardened Encryption)
 
 ```js
-const initPhe = require('@virgilsecurity/crypto/phe');
+const initPhe = require('@virgilsecurity/virgil-crypto-core/phe');
 
 const phe = await initPhe();
 
@@ -129,7 +129,7 @@ pheClient.delete();
 ### Ratchet (double-ratchet E2EE session)
 
 ```js
-const initRatchet = require('@virgilsecurity/crypto/ratchet');
+const initRatchet = require('@virgilsecurity/virgil-crypto-core/ratchet');
 
 const ratchet = await initRatchet();
 
@@ -150,9 +150,9 @@ Each module ships three environment builds. Pick the right import path for your 
 
 | Environment | Import path suffix | Format |
 |------------|-------------------|--------|
-| Node.js (default) | `@virgilsecurity/crypto/foundation` | CJS / ESM |
-| Browser | `@virgilsecurity/crypto/foundation/browser` | ESM |
-| Web Worker | `@virgilsecurity/crypto/foundation/worker` | ESM |
+| Node.js (default) | `@virgilsecurity/virgil-crypto-core/foundation` | CJS / ESM |
+| Browser | `@virgilsecurity/virgil-crypto-core/foundation/browser` | ESM |
+| Web Worker | `@virgilsecurity/virgil-crypto-core/foundation/worker` | ESM |
 
 Replace `foundation` with `phe` or `ratchet` for the other modules.
 
