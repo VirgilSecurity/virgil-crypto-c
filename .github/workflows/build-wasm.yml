@@ -58,7 +58,7 @@ jobs:
 
       - name: Bundle with Rollup
         working-directory: build-wasm/wrappers/wasm
-        run: npm run prepare
+        run: npm run build
 
       - name: Run Jest tests
         working-directory: build-wasm/wrappers/wasm

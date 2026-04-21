@@ -84,7 +84,7 @@
     "build:phe": "cross-env PROJECT=phe node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",
     "build:ratchet": "cross-env PROJECT=ratchet node --max-old-space-size=4096 node_modules/rollup/dist/bin/rollup -c",
     "clean": "rimraf dist",
-    "prepare": "npm run clean && npm run build:foundation && npm run build:phe && npm run build:ratchet"
+    "build": "npm run clean && npm run build:foundation && npm run build:phe && npm run build:ratchet"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
