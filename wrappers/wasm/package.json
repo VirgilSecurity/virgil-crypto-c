@@ -2,7 +2,10 @@
   "name": "@virgilsecurity/crypto",
   "version": "0.17.3",
   "description": "Virgil Crypto C wrapper",
-  "repository": "https://github.com/VirgilSecurity/virgil-crypto-c",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VirgilSecurity/virgil-crypto-c.git"
+  },
   "author": "Virgil Security Inc. <support@virgilsecurity.com>",
   "license": "BSD-3-Clause",
   "scripts": {
