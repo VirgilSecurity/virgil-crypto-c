@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -48,8 +48,10 @@
 #cmakedefine MBEDTLS_ERROR_C
 #cmakedefine MBEDTLS_PLATFORM_C
 
-void *vsc_calloc(size_t count, size_t size);
-void *vsc_dealloc(size_t size);
+void *
+vsc_calloc(size_t count, size_t size);
+void *
+vsc_dealloc(size_t size);
 
 #define MBEDTLS_PLATFORM_MEMORY
 #define MBEDTLS_PLATFORM_CALLOC vsc_calloc
@@ -81,7 +83,7 @@ void *vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_CIPHER_PADDING_PKCS7
 
 #if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#define MBEDTLS_NO_PLATFORM_ENTROPY
 #endif
 
 #cmakedefine MBEDTLS_THREADING_C
@@ -103,8 +105,8 @@ void *vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_ECDSA_C
 
 #if defined(MBEDTLS_ECDSA_C)
-#    define MBEDTLS_ECDSA_DETERMINISTIC
-#    define MBEDTLS_HMAC_DRBG_C
+#define MBEDTLS_ECDSA_DETERMINISTIC
+#define MBEDTLS_HMAC_DRBG_C
 #endif
 
 //
