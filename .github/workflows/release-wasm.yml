@@ -43,6 +43,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Enable OIDC auth (remove token placeholder)
+        run: sed -i '/\/\/registry.npmjs.org\/:_authToken/d' ~/.npmrc
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -69,6 +73,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Enable OIDC auth (remove token placeholder)
+        run: sed -i '/\/\/registry.npmjs.org\/:_authToken/d' ~/.npmrc
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
