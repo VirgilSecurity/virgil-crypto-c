@@ -45,6 +45,8 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Clear token so npm 11 uses OIDC Trusted Publisher
+        run: npm config delete //registry.npmjs.org/:_authToken
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -73,6 +75,8 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Clear token so npm 11 uses OIDC Trusted Publisher
+        run: npm config delete //registry.npmjs.org/:_authToken
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
