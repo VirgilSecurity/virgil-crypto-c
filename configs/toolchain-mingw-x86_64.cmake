@@ -32,20 +32,19 @@
 #
 #   Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+# Cross-compilation toolchain for Windows x86_64 using MinGW-w64.
+# This file is passed to ExternalProject_Add via CMAKE_TOOLCHAIN_FILE so
+# that all third-party sub-projects (mbedTLS, falcon, etc.) also use the
+# correct cross-compiler and can find windows.h / Windows SDK headers.
 
-set(CMAKE_INSTALL_LIBDIR lib CACHE STRING "")
-set(VIRGIL_WRAP_GO OFF CACHE BOOL "")
-set(VIRGIL_C_TESTING OFF CACHE BOOL "")
-set(VIRGIL_LIB_RATCHET OFF CACHE BOOL "")
-set(VIRGIL_LIB_PYTHIA ON CACHE BOOL "")
-set(VIRGIL_INSTALL_GO_SRCDIR gosrc CACHE STRING "")
-set(VIRGIL_INSTALL_WRAP_SRCS OFF CACHE BOOL "")
-set(VIRGIL_INSTALL_WRAP_LIBS ON CACHE BOOL "")
-set(VIRGIL_INSTALL_WRAP_DEPS ON CACHE BOOL "")
-set(VIRGIL_INSTALL_DEPS_HDRS OFF CACHE BOOL "")
-set(VIRGIL_INSTALL_DEPS_LIBS ON CACHE BOOL "")
-set(VIRGIL_INSTALL_DEPS_CMAKE OFF CACHE BOOL "")
-set(VIRGIL_INSTALL_HDRS ON CACHE BOOL "")
-set(VIRGIL_INSTALL_LIBS ON CACHE BOOL "")
-set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "")
-set(VIRGIL_PACKAGE_LANGUAGE go CACHE STRING "")
+set(CMAKE_SYSTEM_NAME Windows)
+set(CMAKE_SYSTEM_PROCESSOR AMD64)
+
+set(CMAKE_C_COMPILER   x86_64-w64-mingw32-gcc)
+set(CMAKE_CXX_COMPILER x86_64-w64-mingw32-g++)
+set(CMAKE_RC_COMPILER  x86_64-w64-mingw32-windres)
+
+set(CMAKE_FIND_ROOT_PATH /usr/x86_64-w64-mingw32)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)

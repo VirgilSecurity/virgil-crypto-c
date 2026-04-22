@@ -44,10 +44,10 @@ jobs:
             run_tests: false
 
           - target: darwin_amd64
-            runner: macos-13
+            runner: macos-14
             cmake_extra: >-
               -DCMAKE_OSX_ARCHITECTURES=x86_64
-            run_tests: true
+            run_tests: false
 
           - target: darwin_arm64
             runner: macos-14
@@ -58,10 +58,7 @@ jobs:
           - target: windows_amd64
             runner: ubuntu-latest
             cmake_extra: >-
-              -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc
-              -DCMAKE_SYSTEM_NAME=Windows
-              -DCMAKE_SYSTEM_PROCESSOR=AMD64
-              -DCMAKE_RC_COMPILER=x86_64-w64-mingw32-windres
+              -DCMAKE_TOOLCHAIN_FILE=configs/toolchain-mingw-x86_64.cmake
             cross_packages: gcc-mingw-w64-x86-64
             run_tests: false
 
