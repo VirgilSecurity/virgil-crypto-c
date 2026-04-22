@@ -54,8 +54,6 @@ jobs:
       - name: Publish to npm
         working-directory: wrappers/wasm
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ steps.oidc.outputs.token }}
 
   publish-npm-prerelease:
     name: Publish pre-release to npm
@@ -85,8 +83,6 @@ jobs:
         working-directory: wrappers/wasm
         run: npm publish --provenance --access public --tag next
         continue-on-error: true
-        env:
-          NODE_AUTH_TOKEN: ${{ steps.oidc.outputs.token }}
 
       - name: Show npm debug log
         if: steps.publish.outcome == 'failure'
