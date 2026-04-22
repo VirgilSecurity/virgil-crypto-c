@@ -12,25 +12,82 @@ on:
     branches:
       - develop
       - main
+  workflow_call:
+    inputs:
+      upload_artifacts:
+        description: 'Upload built libraries as workflow artifacts for release'
+        type: boolean
+        default: false
+
+env:
+  GO_VERSION: '1.21'
+  PYTHON_VERSION: '3.11'
 
 jobs:
-  build-and-test-linux:
-    name: Go (Linux x86_64)
-    runs-on: ubuntu-latest
+  build:
+    name: Go (${{ matrix.target }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: linux_amd64
+            runner: ubuntu-latest
+            cmake_extra: >-
+              -DED25519_AMD64_RADIX_64_24K=ON
+              -DED25519_REF10=OFF
+            run_tests: true
+
+          - target: linux_arm64
+            runner: ubuntu-latest
+            cmake_extra: >-
+              -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc
+              -DCMAKE_SYSTEM_NAME=Linux
+              -DCMAKE_SYSTEM_PROCESSOR=aarch64
+            cross_packages: gcc-aarch64-linux-gnu
+            run_tests: false
+
+          - target: darwin_amd64
+            runner: macos-14
+            cmake_extra: >-
+              -DCMAKE_OSX_ARCHITECTURES=x86_64
+            run_tests: false
+
+          - target: darwin_arm64
+            runner: macos-14
+            cmake_extra: >-
+              -DCMAKE_OSX_ARCHITECTURES=arm64
+            run_tests: true
+
+          - target: windows_amd64
+            runner: ubuntu-latest
+            cmake_extra: >-
+              -DCMAKE_TOOLCHAIN_FILE=configs/toolchain-mingw-x86_64.cmake
+            cross_packages: gcc-mingw-w64-x86-64
+            run_tests: false
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Setup Go
+        if: matrix.run_tests
         uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: ${{ env.GO_VERSION }}
 
-      - name: Install dependencies
+      - name: Install cross-compilation toolchain
+        if: matrix.cross_packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.cross_packages }}
+
+      - name: Install build tools (Linux)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y cmake ninja-build
@@ -42,52 +99,23 @@ jobs:
         run: |
           source .venv/bin/activate
           cmake -Cconfigs/go-config.cmake \
-                -DVIRGIL_WRAP_GO=OFF \
                 -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_INSTALL_PREFIX="wrappers/go/pkg/linux_amd64" \
+                -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/wrappers/go/pkg/${{ matrix.target }}" \
                 -DENABLE_CLANGFORMAT=OFF \
                 -DVIRGIL_POST_QUANTUM=ON \
-                -DED25519_AMD64_RADIX_64_24K=ON \
-                -DED25519_REF10=OFF \
+                ${{ matrix.cmake_extra }} \
                 -Bbuild -S.
-          cmake --build build --target install -j$(nproc)
+          cmake --build build --target install -j$(nproc 2>/dev/null || sysctl -n hw.physicalcpu)
 
       - name: Run Go tests
+        if: matrix.run_tests
         working-directory: wrappers/go
         run: go test ./...
 
-  build-and-test-macos:
-    name: Go (macOS arm64)
-    runs-on: macos-14
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - name: Upload built libraries
+        if: inputs.upload_artifacts
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.11'
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
-      - name: Setup Python virtual environment
-        run: python3 -m venv .venv
-
-      - name: Build native libraries
-        run: |
-          source .venv/bin/activate
-          cmake -Cconfigs/go-config.cmake \
-                -DVIRGIL_WRAP_GO=OFF \
-                -DCMAKE_BUILD_TYPE=Release \
-                -DCMAKE_OSX_ARCHITECTURES=arm64 \
-                -DCMAKE_INSTALL_PREFIX="wrappers/go/pkg/darwin_arm64" \
-                -DENABLE_CLANGFORMAT=OFF \
-                -DVIRGIL_POST_QUANTUM=ON \
-                -Bbuild -S.
-          cmake --build build --target install -j$(sysctl -n hw.physicalcpu)
-
-      - name: Run Go tests
-        working-directory: wrappers/go
-        run: go test ./...
+          name: go-libs-${{ matrix.target }}
+          path: wrappers/go/pkg/${{ matrix.target }}/
+          retention-days: 1
