@@ -85,15 +85,5 @@ jobs:
           path: wrappers/wasm/dist/
 
       - name: Publish pre-release to npm
-        id: publish
         working-directory: wrappers/wasm
         run: npm publish --provenance --access public --tag next
-        continue-on-error: true
-
-      - name: Show npm debug log
-        if: steps.publish.outcome == 'failure'
-        run: cat ~/.npm/_logs/*.log || echo "no debug log found"
-
-      - name: Fail if publish failed
-        if: steps.publish.outcome == 'failure'
-        run: exit 1
