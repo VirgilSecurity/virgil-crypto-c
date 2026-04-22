@@ -11,6 +11,6 @@ package phe
 // #cgo linux,arm64 CFLAGS: -I${SRCDIR}/../pkg/linux_arm64/include/
 // #cgo linux,arm64 LDFLAGS: -L${SRCDIR}/../pkg/linux_arm64/lib -lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
 // #cgo windows CFLAGS: -I${SRCDIR}/../pkg/windows_amd64/include/
-// #cgo windows LDFLAGS: -L${SRCDIR}/../pkg/windows_amd64/lib -lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto
+// #cgo windows LDFLAGS: -L${SRCDIR}/../pkg/windows_amd64/lib -lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lbcrypt
 import "C"
 
