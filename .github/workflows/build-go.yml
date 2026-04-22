@@ -48,13 +48,13 @@ jobs:
             run_tests: false
 
           - target: darwin_amd64
-            runner: macos-14
+            runner: macos-latest
             cmake_extra: >-
               -DCMAKE_OSX_ARCHITECTURES=x86_64
             run_tests: false
 
           - target: darwin_arm64
-            runner: macos-14
+            runner: macos-latest
             cmake_extra: >-
               -DCMAKE_OSX_ARCHITECTURES=arm64
             run_tests: true
