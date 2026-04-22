@@ -42,9 +42,10 @@ jobs:
             runner: ubuntu-latest
             cmake_extra: >-
               -DCMAKE_C_COMPILER=aarch64-linux-gnu-gcc
+              -DCMAKE_CXX_COMPILER=aarch64-linux-gnu-g++
               -DCMAKE_SYSTEM_NAME=Linux
               -DCMAKE_SYSTEM_PROCESSOR=aarch64
-            cross_packages: gcc-aarch64-linux-gnu
+            cross_packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
             run_tests: false
 
           - target: darwin_amd64
@@ -60,11 +61,10 @@ jobs:
             run_tests: true
 
           - target: windows_amd64
-            runner: ubuntu-latest
+            runner: windows-latest
             cmake_extra: >-
-              -DCMAKE_TOOLCHAIN_FILE=configs/toolchain-mingw-x86_64.cmake
-            cross_packages: gcc-mingw-w64-x86-64
-            run_tests: false
+              -G "MinGW Makefiles"
+            run_tests: true
 
     steps:
       - uses: actions/checkout@v4
@@ -93,11 +93,12 @@ jobs:
           sudo apt-get install -y cmake ninja-build
 
       - name: Setup Python virtual environment
+        if: runner.os != 'Windows'
         run: python3 -m venv .venv
 
       - name: Build native libraries
+        shell: bash
         run: |
-          source .venv/bin/activate
           cmake -Cconfigs/go-config.cmake \
                 -DCMAKE_BUILD_TYPE=Release \
                 -DCMAKE_INSTALL_PREFIX="${{ github.workspace }}/wrappers/go/pkg/${{ matrix.target }}" \
@@ -105,7 +106,7 @@ jobs:
                 -DVIRGIL_POST_QUANTUM=ON \
                 ${{ matrix.cmake_extra }} \
                 -Bbuild -S.
-          cmake --build build --target install -j$(nproc 2>/dev/null || sysctl -n hw.physicalcpu)
+          cmake --build build --target install -j$(nproc 2>/dev/null || sysctl -n hw.physicalcpu 2>/dev/null || echo 4)
 
       - name: Run Go tests
         if: matrix.run_tests
