@@ -1,6 +1,6 @@
 {
   "name": "@virgilsecurity/virgil-crypto-core",
-  "version": "0.18.0-dev.2",
+  "version": "0.18.0-dev.3",
   "description": "Virgil Crypto C compiled to WebAssembly — Foundation, PHE, and Ratchet modules",
   "exports": {
     "./foundation": {
