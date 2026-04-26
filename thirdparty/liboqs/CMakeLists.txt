@@ -76,6 +76,8 @@ ExternalProject_Add(liboqs-ext
             "-DOQS_ENABLE_LIBJADE_KEM_KYBER=OFF"
             "-DOQS_ENABLE_SIG_STFL_XMSS=OFF"
             "-DOQS_ENABLE_SIG_STFL_LMS=OFF"
+            # Other disables
+            "-DOQS_USE_OPENSSL=OFF"
 
         BUILD_BYPRODUCTS "${OQS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}liboqs${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
