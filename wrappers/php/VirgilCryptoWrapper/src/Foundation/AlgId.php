@@ -62,5 +62,7 @@ class AlgId extends Enum
     private const FALCON = 19;
     private const ROUND5_ND_1CCA_5D = 20;
     private const RANDOM_PADDING = 21;
+    private const ML_KEM_768 = 22;
+    private const ML_DSA_65 = 23;
 
 }

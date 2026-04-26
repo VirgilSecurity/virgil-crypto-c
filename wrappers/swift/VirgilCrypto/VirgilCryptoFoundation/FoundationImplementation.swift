@@ -71,6 +71,10 @@ import VSCFoundation
             return Pkcs5Pbes2(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
+        case vscf_impl_tag_ML_KEM:
+            return MlKem(take: c_ctx)
+        case vscf_impl_tag_ML_DSA:
+            return MlDsa(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_RANDOM_PADDING:
@@ -422,6 +426,10 @@ import VSCFoundation
             return Falcon(take: c_ctx)
         case vscf_impl_tag_ROUND5:
             return Round5(take: c_ctx)
+        case vscf_impl_tag_ML_KEM:
+            return MlKem(take: c_ctx)
+        case vscf_impl_tag_ML_DSA:
+            return MlDsa(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_HYBRID_KEY_ALG:
@@ -480,6 +488,8 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
+        case vscf_impl_tag_ML_DSA:
+            return MlDsa(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_HYBRID_KEY_ALG:
@@ -532,6 +542,8 @@ import VSCFoundation
             return Curve25519(take: c_ctx)
         case vscf_impl_tag_ROUND5:
             return Round5(take: c_ctx)
+        case vscf_impl_tag_ML_KEM:
+            return MlKem(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }

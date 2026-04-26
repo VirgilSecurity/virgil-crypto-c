@@ -176,6 +176,10 @@ from ._vscf_falcon import vscf_falcon_t
 from ._vscf_falcon import VscfFalcon
 from ._vscf_round5 import vscf_round5_t
 from ._vscf_round5 import VscfRound5
+from ._vscf_ml_kem import vscf_ml_kem_t
+from ._vscf_ml_kem import VscfMlKem
+from ._vscf_ml_dsa import vscf_ml_dsa_t
+from ._vscf_ml_dsa import VscfMlDsa
 from ._vscf_compound_key_alg_info import vscf_compound_key_alg_info_t
 from ._vscf_compound_key_alg_info import VscfCompoundKeyAlgInfo
 from ._vscf_compound_public_key import vscf_compound_public_key_t

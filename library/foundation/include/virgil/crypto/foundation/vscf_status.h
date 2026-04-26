@@ -251,6 +251,22 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239,
     //
+    //  Post-quantum ML-KEM-768 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_KEM_PUBLIC_KEY = -240,
+    //
+    //  Post-quantum ML-KEM-768 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_KEM_PRIVATE_KEY = -241,
+    //
+    //  Post-quantum ML-DSA-65 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_DSA_PUBLIC_KEY = -242,
+    //
+    //  Post-quantum ML-DSA-65 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_DSA_PRIVATE_KEY = -243,
+    //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
     //

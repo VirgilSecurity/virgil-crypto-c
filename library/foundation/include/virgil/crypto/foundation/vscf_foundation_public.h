@@ -143,6 +143,8 @@
 #include "vscf_message_info_footer.h"
 #include "vscf_message_info_footer_serializer.h"
 #include "vscf_message_info_serializer.h"
+#include "vscf_ml_dsa.h"
+#include "vscf_ml_kem.h"
 #include "vscf_oid.h"
 #include "vscf_oid_id.h"
 #include "vscf_padding.h"

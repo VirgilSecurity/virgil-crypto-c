@@ -224,6 +224,12 @@ VSCF_PHP_PUBLIC const char*
 vscf_message_info_footer_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
+vscf_ml_dsa_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
+vscf_ml_kem_t_php_res_name(void);
+
+VSCF_PHP_PUBLIC const char*
 vscf_padding_params_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -459,6 +465,12 @@ le_vscf_message_info_editor_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_message_info_footer_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_ml_dsa_t(void);
+
+VSCF_PHP_PUBLIC int
+le_vscf_ml_kem_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_padding_params_t(void);

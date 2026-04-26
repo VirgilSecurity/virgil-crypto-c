@@ -135,6 +135,8 @@
 #include "vscf_message_info_footer_serializer_api.h"
 #include "vscf_message_info_serializer_api.h"
 #include "vscf_message_padding.h"
+#include "vscf_ml_dsa_defs.h"
+#include "vscf_ml_kem_defs.h"
 #include "vscf_padding_api.h"
 #include "vscf_padding_params_defs.h"
 #include "vscf_password_recipient_info_defs.h"

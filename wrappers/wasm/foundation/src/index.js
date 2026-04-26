@@ -109,6 +109,8 @@ const initEd25519 = require('./Ed25519');
 const initCurve25519 = require('./Curve25519');
 const initFalcon = require('./Falcon');
 const initRound5 = require('./Round5');
+const initMlKem = require('./MlKem');
+const initMlDsa = require('./MlDsa');
 const initCompoundKeyAlgInfo = require('./CompoundKeyAlgInfo');
 const initCompoundPublicKey = require('./CompoundPublicKey');
 const initCompoundPrivateKey = require('./CompoundPrivateKey');
@@ -207,6 +209,8 @@ const initProject = options => {
             modules.Curve25519 = initCurve25519(foundationModule, modules);
             modules.Falcon = initFalcon(foundationModule, modules);
             modules.Round5 = initRound5(foundationModule, modules);
+            modules.MlKem = initMlKem(foundationModule, modules);
+            modules.MlDsa = initMlDsa(foundationModule, modules);
             modules.CompoundKeyAlgInfo = initCompoundKeyAlgInfo(foundationModule, modules);
             modules.CompoundPublicKey = initCompoundPublicKey(foundationModule, modules);
             modules.CompoundPrivateKey = initCompoundPrivateKey(foundationModule, modules);

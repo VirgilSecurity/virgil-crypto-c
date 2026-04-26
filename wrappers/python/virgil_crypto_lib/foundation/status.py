@@ -135,6 +135,14 @@ class Status(object):
     ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238
     # ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239
+    # Post-quantum ML-KEM-768 public key is corrupted.
+    ERROR_BAD_ML_KEM_PUBLIC_KEY = -240
+    # Post-quantum ML-KEM-768 private key is corrupted.
+    ERROR_BAD_ML_KEM_PRIVATE_KEY = -241
+    # Post-quantum ML-DSA-65 public key is corrupted.
+    ERROR_BAD_ML_DSA_PUBLIC_KEY = -242
+    # Post-quantum ML-DSA-65 private key is corrupted.
+    ERROR_BAD_ML_DSA_PRIVATE_KEY = -243
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -243,6 +251,10 @@ class Status(object):
         -237: "ASN.1 AlgorithmIdentifer with ECParameters is corrupted.",
         -238: "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.",
         -239: "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.",
+        -240: "Post-quantum ML-KEM-768 public key is corrupted.",
+        -241: "Post-quantum ML-KEM-768 private key is corrupted.",
+        -242: "Post-quantum ML-DSA-65 public key is corrupted.",
+        -243: "Post-quantum ML-DSA-65 private key is corrupted.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",

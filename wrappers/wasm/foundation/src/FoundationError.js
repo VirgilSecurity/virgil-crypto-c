@@ -224,6 +224,22 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.");
             }
 
+            if (statusCode == -240) {
+                throw new FoundationError("Post-quantum ML-KEM-768 public key is corrupted.");
+            }
+
+            if (statusCode == -241) {
+                throw new FoundationError("Post-quantum ML-KEM-768 private key is corrupted.");
+            }
+
+            if (statusCode == -242) {
+                throw new FoundationError("Post-quantum ML-DSA-65 public key is corrupted.");
+            }
+
+            if (statusCode == -243) {
+                throw new FoundationError("Post-quantum ML-DSA-65 private key is corrupted.");
+            }
+
             if (statusCode == -301) {
                 throw new FoundationError("Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.");
             }

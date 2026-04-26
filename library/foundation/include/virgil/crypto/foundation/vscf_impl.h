@@ -120,6 +120,8 @@ enum vscf_impl_tag_t {
     vscf_impl_tag_KEY_ASN1_SERIALIZER,
     vscf_impl_tag_KEY_MATERIAL_RNG,
     vscf_impl_tag_MESSAGE_INFO_DER_SERIALIZER,
+    vscf_impl_tag_ML_DSA,
+    vscf_impl_tag_ML_KEM,
     vscf_impl_tag_PBE_ALG_INFO,
     vscf_impl_tag_PKCS5_PBES2,
     vscf_impl_tag_PKCS5_PBKDF2,

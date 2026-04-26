@@ -172,6 +172,23 @@ static const byte oid_round5_cca_ND_1CCA_5D_bytes[] = {
         0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0xAC, 0x1B, 0x02, 0x02, 0x09};
 static const vsc_data_t oid_round5_cca_ND_1CCA_5D = {
         oid_round5_cca_ND_1CCA_5D_bytes, sizeof(oid_round5_cca_ND_1CCA_5D_bytes)};
+
+//
+//  2.16.840.1.101.3.4.4.2
+//  joint-iso-itu-t(2) country(16) us(840) organization(1) gov(101) csor(3) nistAlgorithm(4)
+//  kemAlgs(4) id-alg-ml-kem-768(2)
+//
+static const byte oid_ml_kem_768_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x04, 0x02};
+static const vsc_data_t oid_ml_kem_768 = {oid_ml_kem_768_bytes, sizeof(oid_ml_kem_768_bytes)};
+
+//
+//  2.16.840.1.101.3.4.3.18
+//  joint-iso-itu-t(2) country(16) us(840) organization(1) gov(101) csor(3) nistAlgorithm(4)
+//  sigAlgs(3) id-ml-dsa-65(18)
+//
+static const byte oid_ml_dsa_65_bytes[] = {0x60, 0x86, 0x48, 0x01, 0x65, 0x03, 0x04, 0x03, 0x12};
+static const vsc_data_t oid_ml_dsa_65 = {oid_ml_dsa_65_bytes, sizeof(oid_ml_dsa_65_bytes)};
+
 //
 // --------------------------------------------------------------------------
 
@@ -248,6 +265,12 @@ vscf_oid_from_alg_id(vscf_alg_id_t alg_id) {
 
     case vscf_alg_id_ROUND5_ND_1CCA_5D:
         return oid_round5_cca_ND_1CCA_5D;
+
+    case vscf_alg_id_ML_KEM_768:
+        return oid_ml_kem_768;
+
+    case vscf_alg_id_ML_DSA_65:
+        return oid_ml_dsa_65;
 
     case vscf_alg_id_RANDOM_PADDING:
         return oid_random_padding;
@@ -360,6 +383,14 @@ vscf_oid_to_alg_id(vsc_data_t oid) {
 
     if (vscf_oid_equal(oid, oid_round5_cca_ND_1CCA_5D)) {
         return vscf_alg_id_ROUND5_ND_1CCA_5D;
+    }
+
+    if (vscf_oid_equal(oid, oid_ml_kem_768)) {
+        return vscf_alg_id_ML_KEM_768;
+    }
+
+    if (vscf_oid_equal(oid, oid_ml_dsa_65)) {
+        return vscf_alg_id_ML_DSA_65;
     }
 
     if (vscf_oid_equal(oid, oid_random_padding)) {

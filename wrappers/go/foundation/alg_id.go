@@ -29,4 +29,6 @@ const (
     AlgIdFalcon AlgId = 19
     AlgIdRound5Nd1cca5d AlgId = 20
     AlgIdRandomPadding AlgId = 21
+    AlgIdMlKem768 AlgId = 22
+    AlgIdMlDsa65 AlgId = 23
 )

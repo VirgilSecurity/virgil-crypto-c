@@ -15,10 +15,10 @@
     <require library="mbedtls" feature="library"/>
     <require library="liboqs" feature="library"/>
 
-    <cgo_link platform="darwin" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon"/>
-    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lpthread"/>
-    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lpthread"/>
-    <cgo_link platform="windows" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lbcrypt"/>
+    <cgo_link platform="darwin" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lmlkem768 -lmldsa65"/>
+    <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lmlkem768 -lmldsa65 -lpthread"/>
+    <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lmlkem768 -lmldsa65 -lpthread"/>
+    <cgo_link platform="windows" libraries="-lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lround5 -lfalcon -lmlkem768 -lmldsa65 -lbcrypt"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for foundation library.
@@ -31,6 +31,8 @@
 
         <require library="round5" feature="library"/>
         <require library="falcon" feature="library"/>
+        <require library="mlkem" feature="library"/>
+        <require library="mldsa" feature="library"/>
     </feature>
 
     <module name="assert" from="shared"/>

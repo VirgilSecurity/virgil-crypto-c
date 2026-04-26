@@ -175,6 +175,8 @@ target_compile_definitions(foundation
             "VSCF_CURVE25519=$<BOOL:${VSCF_CURVE25519}>"
             "VSCF_FALCON=$<BOOL:${VSCF_FALCON}>"
             "VSCF_ROUND5=$<BOOL:${VSCF_ROUND5}>"
+            "VSCF_ML_KEM=$<BOOL:${VSCF_ML_KEM}>"
+            "VSCF_ML_DSA=$<BOOL:${VSCF_ML_DSA}>"
             "VSCF_COMPOUND_KEY_ALG_INFO=$<BOOL:${VSCF_COMPOUND_KEY_ALG_INFO}>"
             "VSCF_COMPOUND_PUBLIC_KEY=$<BOOL:${VSCF_COMPOUND_PUBLIC_KEY}>"
             "VSCF_COMPOUND_PRIVATE_KEY=$<BOOL:${VSCF_COMPOUND_PRIVATE_KEY}>"

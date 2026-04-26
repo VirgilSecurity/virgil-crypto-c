@@ -94,6 +94,8 @@ target_link_libraries(foundation
             $<$<BOOL:${VSCF_POST_QUANTUM}>:round5>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:falcon>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:liboqs>
+            $<$<BOOL:${VSCF_POST_QUANTUM}>:mlkem768>
+            $<$<BOOL:${VSCF_POST_QUANTUM}>:mldsa65>
         )
 
 #
@@ -107,6 +109,8 @@ target_compile_definitions(foundation
             $<BUILD_INTERFACE:ROUND5_LIBRARY=$<BOOL:${ROUND5_LIBRARY}>>
             $<BUILD_INTERFACE:KECCAK_LIBRARY=$<BOOL:${KECCAK_LIBRARY}>>
             $<BUILD_INTERFACE:FALCON_LIBRARY=$<BOOL:${FALCON_LIBRARY}>>
+            $<BUILD_INTERFACE:MLKEM_LIBRARY=$<BOOL:${MLKEM_LIBRARY}>>
+            $<BUILD_INTERFACE:MLDSA_LIBRARY=$<BOOL:${MLDSA_LIBRARY}>>
         )
 
 #

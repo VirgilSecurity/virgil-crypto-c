@@ -71,6 +71,8 @@
 #include "vscf_ecc.h"
 #include "vscf_falcon.h"
 #include "vscf_round5.h"
+#include "vscf_ml_kem.h"
+#include "vscf_ml_dsa.h"
 #include "vscf_compound_key_alg.h"
 #include "vscf_compound_key_alg_defs.h"
 #include "vscf_hybrid_key_alg.h"
@@ -427,6 +429,27 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
         break;
     }
 #endif // VSCF_ROUND5
+
+#if VSCF_ML_KEM
+    case vscf_alg_id_ML_KEM_768: {
+        vscf_ml_kem_t *ml_kem = vscf_ml_kem_new();
+        vscf_ml_kem_use_random(ml_kem, self->random);
+        key = vscf_ml_kem_generate_key(ml_kem, error);
+        vscf_ml_kem_destroy(&ml_kem);
+        break;
+    }
+#endif // VSCF_ML_KEM
+
+#if VSCF_ML_DSA
+    case vscf_alg_id_ML_DSA_65: {
+        vscf_ml_dsa_t *ml_dsa = vscf_ml_dsa_new();
+        vscf_ml_dsa_use_random(ml_dsa, self->random);
+        key = vscf_ml_dsa_generate_key(ml_dsa, error);
+        vscf_ml_dsa_destroy(&ml_dsa);
+        break;
+    }
+#endif // VSCF_ML_DSA
+
 #endif // VSCF_POST_QUANTUM
 
     default:

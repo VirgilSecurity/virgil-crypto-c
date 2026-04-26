@@ -104,6 +104,8 @@ from .ed25519 import Ed25519
 from .curve25519 import Curve25519
 from .falcon import Falcon
 from .round5 import Round5
+from .ml_kem import MlKem
+from .ml_dsa import MlDsa
 from .compound_key_alg_info import CompoundKeyAlgInfo
 from .compound_public_key import CompoundPublicKey
 from .compound_private_key import CompoundPrivateKey

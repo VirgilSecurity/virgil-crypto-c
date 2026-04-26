@@ -59,7 +59,9 @@ public enum AlgId {
     HYBRID_KEY(18),
     FALCON(19),
     ROUND5_ND_1CCA_5D(20),
-    RANDOM_PADDING(21);
+    RANDOM_PADDING(21),
+    ML_KEM_768(22),
+    ML_DSA_65(23);
 
     private final int code;
 
