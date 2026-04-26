@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -46,12 +46,12 @@
 include_guard()
 
 option(OQS_LIBRARY "Enable build of the 'liboqs' library" ${VIRGIL_POST_QUANTUM})
-option(OQS_ENABLE_KEM_KYBER "Enable support post-quantum algorithm CRYSTALS‑Kyber." ON)
-option(OQS_ENABLE_SIG_DILITHIUM "Enable support post-quantum algorithm CRYSTALS‑Dilithium." ON)
-option(OQS_ENABLE_SIG_FALCON "Enable support post-quantum algorithm Falcon." OFF)
+option(OQS_ENABLE_KEM_ML_KEM "Enable support post-quantum algorithm Falcon." ON)
+option(OQS_ENABLE_SIG_ML_DSA "Enable support post-quantum algorithm Falcon." ON)
+option(OQS_ENABLE_SIG_FALCON "Enable support post-quantum algorithm Falcon." ON)
 mark_as_advanced(
         OQS_LIBRARY
-        OQS_ENABLE_KEM_KYBER
-        OQS_ENABLE_SIG_DILITHIUM
+        OQS_ENABLE_KEM_ML_KEM
+        OQS_ENABLE_SIG_ML_DSA
         OQS_ENABLE_SIG_FALCON
         )

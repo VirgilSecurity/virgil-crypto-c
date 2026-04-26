@@ -47,6 +47,7 @@ cd build && ctest --output-on-failure
 | `configs/`    | CMake config presets per language                                  |
 | `scripts/`    | Build and release scripts                                          |
 | `binaries/`   | Pre-built Apple xcframeworks (Git LFS)                             |
+| `docs/solutions/` | Documented solutions (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`) |
 
 ## Important Notes
 

@@ -25,6 +25,7 @@ from tools.codegen.project_c_backend import (
     interface_api_output,
     snake_name,
 )
+from tools.codegen.project_ir import IRExternalLibrary, IRFeatureRequire
 from tools.codegen.project_ir import IRFeature
 
 
@@ -489,3 +490,140 @@ def generate_cmake_files(project_ir: IRProject, license_text: str = "") -> list[
         (f"{project_path}features.cmake", generate_features_cmake(project_ir, license_text)),
         (f"{project_path}definitions.cmake", generate_definitions_cmake(project_ir, license_text)),
     ]
+
+
+# ---------------------------------------------------------------------------
+# External library cmake generation
+# ---------------------------------------------------------------------------
+
+def _render_cmake_default(value: str) -> str:
+    """Convert a feature default attribute value to a CMake option default token.
+
+    ``"on"`` → ``ON``, ``"off"`` → ``OFF``, ``${VAR}`` → ``${VAR}`` (verbatim,
+    no quotes — CMake resolves variable references at configure time).
+    """
+    if value.lower() == "off":
+        return "OFF"
+    if value.startswith("${"):
+        return value
+    return "ON"
+
+
+def _emit_require_check(lines: list[str], source_flag: str, req: IRFeatureRequire, prefix: str) -> None:
+    """Append FATAL_ERROR blocks for one requirement clause."""
+    dep_flags = [feature_flag_name(prefix, alt) for alt in req.alternatives]
+    if not dep_flags:
+        return
+    if len(dep_flags) == 1:
+        dep = dep_flags[0]
+        lines.append(f"if({source_flag} AND NOT {dep})")
+        lines.append('    message("-- error --")')
+        lines.append('    message("--")')
+        lines.append(f'    message("Feature {source_flag} depends on the feature:")')
+        lines.append(f'    message("     {dep} - which is disabled.")')
+        lines.append('    message("--")')
+        lines.append("    message(FATAL_ERROR)")
+        lines.append("endif()")
+        lines.append("")
+    else:
+        or_expr = " OR ".join(dep_flags)
+        lines.append(f"if({source_flag} AND NOT ({or_expr}))")
+        lines.append('    message("-- error --")')
+        lines.append('    message("--")')
+        lines.append(f'    message("Feature {source_flag} requires at least one of:")')
+        for dep in dep_flags:
+            lines.append(f'    message("     {dep}")')
+        lines.append('    message("--")')
+        lines.append("    message(FATAL_ERROR)")
+        lines.append("endif()")
+        lines.append("")
+
+
+def generate_external_library_features_cmake(lib_ir: IRExternalLibrary, license_text: str = "") -> str:
+    """Generate ``features.cmake`` content for an external thirdparty library."""
+    prefix = lib_ir.prefix
+    lines: list[str] = []
+
+    lines.append(_cmake_prologue(license_text))
+    lines.append("")
+
+    # Resolve the LIBRARY option default from an explicit <feature name="library"> if present.
+    library_default = "ON"
+    for feat in lib_ir.features:
+        if feat.name == "library":
+            library_default = _render_cmake_default(feat.attrs.get("default", "on"))
+            break
+
+    library_flag = f"{prefix.upper()}_LIBRARY"
+    lines.append(f'option({library_flag} "Enable build of the \'{lib_ir.name}\' library" {library_default})')
+
+    non_library_features = [f for f in lib_ir.features if f.name != "library"]
+    for feat in non_library_features:
+        flag = feature_flag_name(prefix, feat.name)
+        default = _render_cmake_default(feat.attrs.get("default", "on"))
+        desc = feat.description.replace("\n", " ").replace('"', '\\"').strip() or f"Enable feature '{feat.name}'."
+        lines.append(f'option({flag} "{desc}" {default})')
+
+    # mark_as_advanced block
+    lines.append("mark_as_advanced(")
+    lines.append(f"        {library_flag}")
+    for feat in non_library_features:
+        lines.append(f"        {feature_flag_name(prefix, feat.name)}")
+    lines.append("        )")
+
+    # Per-feature dependency checks
+    has_checks = False
+    for feat in lib_ir.features:
+        flag = feature_flag_name(prefix, feat.name) if feat.name != "library" else library_flag
+        for req in feat.requires:
+            if not has_checks:
+                lines.append("")
+                has_checks = True
+            _emit_require_check(lines, flag, req, prefix)
+
+    # Library-level mutex / mandatory-one-of checks (e.g. ed25519)
+    for lib_req in lib_ir.library_requires:
+        if not has_checks:
+            lines.append("")
+            has_checks = True
+        flags = [feature_flag_name(prefix, alt) for alt in lib_req.alternatives]
+        # Pairwise mutex: no two may be enabled simultaneously
+        for i, flag_a in enumerate(flags):
+            for flag_b in flags[i + 1:]:
+                lines.append(f"if({flag_a} AND {flag_b})")
+                lines.append('    message("-- error --")')
+                lines.append('    message("--")')
+                lines.append(f'    message("Feature {flag_a} is enabled and alternative feature:")')
+                lines.append(f'    message("     {flag_b} is enabled too.")')
+                lines.append('    message("--")')
+                lines.append("    message(FATAL_ERROR)")
+                lines.append("endif()")
+                lines.append("")
+        # At least one must be enabled
+        or_expr = " OR ".join(flags)
+        flag_list = ", ".join(flags)
+        lines.append(f"if(NOT ({or_expr}))")
+        lines.append('    message("-- error --")')
+        lines.append('    message("--")')
+        lines.append('    message("One of the features must be enabled:")')
+        lines.append(f'    message("     {flag_list}.")')
+        lines.append('    message("--")')
+        lines.append("    message(FATAL_ERROR)")
+        lines.append("endif()")
+        lines.append("")
+
+    return "\n".join(lines) + "\n"
+
+
+def generate_external_library_cmake_files(lib_ir: IRExternalLibrary, license_text: str = "") -> list[tuple[str, str]]:
+    """Generate cmake files for an external library.
+
+    Returns ``[(relative_path, content)]`` tuples relative to the repo root.
+    Currently only ``features.cmake`` is generated.
+    """
+    path = lib_ir.path
+    if path.startswith("../"):
+        path = path[3:]
+    if not path.endswith("/"):
+        path += "/"
+    return [(f"{path}features.cmake", generate_external_library_features_cmake(lib_ir, license_text))]
