@@ -65,10 +65,12 @@
 #include "vscf_ml_kem_defs.h"
 #include "vscf_ml_kem_internal.h"
 
+#if MLKEM_LIBRARY
 #define MLK_CONFIG_API_PARAMETER_SET 768
 #define MLK_CONFIG_API_NAMESPACE_PREFIX mlkem768
 #define MLK_CONFIG_API_NO_SUPERCOP
 #include <mlkem/mlkem_native.h>
+#endif
 
 // clang-format on
 //  @end
@@ -120,6 +122,7 @@ vscf_ml_kem_generate_key(const vscf_ml_kem_t *self, vscf_error_t *error) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
 
+#if MLKEM_LIBRARY
     vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_ml_kem_SEED_LEN);
     const vscf_status_t rng_status = vscf_random(self->random, vscf_ml_kem_SEED_LEN, seed);
     if (rng_status != vscf_status_SUCCESS) {
@@ -152,6 +155,10 @@ vscf_ml_kem_generate_key(const vscf_ml_kem_t *self, vscf_error_t *error) {
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -338,6 +345,7 @@ vscf_ml_kem_import_private_key_data(
         return NULL;
     }
 
+#if MLKEM_LIBRARY
     //  SK layout: [dk_PKE (1152)] [ek_PKE (1184)] [H(ek_PKE) (32)] [z (32)]
     //  Public key (ek_PKE) starts at offset 1152.
     const size_t pk_offset = vscf_ml_kem_SECRET_KEY_LEN - vscf_ml_kem_PUBLIC_KEY_LEN - 2 * MLKEM_SYMBYTES;
@@ -351,6 +359,10 @@ vscf_ml_kem_import_private_key_data(
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -450,6 +462,7 @@ vscf_ml_kem_kem_encapsulate(const vscf_ml_kem_t *self, const vscf_impl_t *public
     VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
     VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_ml_kem_kem_encapsulated_key_len(self, public_key));
 
+#if MLKEM_LIBRARY
     vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_ml_kem_ENC_SEED_LEN);
     const vscf_status_t rng_status = vscf_random(self->random, vscf_ml_kem_ENC_SEED_LEN, seed);
     if (rng_status != vscf_status_SUCCESS) {
@@ -474,6 +487,9 @@ vscf_ml_kem_kem_encapsulate(const vscf_ml_kem_t *self, const vscf_impl_t *public
     vsc_buffer_inc_used(shared_key, vscf_ml_kem_SHARED_KEY_LEN);
 
     return vscf_status_SUCCESS;
+#else
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+#endif
 }
 
 //
@@ -493,6 +509,7 @@ vscf_ml_kem_kem_decapsulate(const vscf_ml_kem_t *self, vsc_data_t encapsulated_k
         return vscf_status_ERROR_BAD_ML_KEM_PRIVATE_KEY;
     }
 
+#if MLKEM_LIBRARY
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vsc_data_t sk_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)(private_key));
 
@@ -505,4 +522,7 @@ vscf_ml_kem_kem_decapsulate(const vscf_ml_kem_t *self, vsc_data_t encapsulated_k
     vsc_buffer_inc_used(shared_key, vscf_ml_kem_SHARED_KEY_LEN);
 
     return vscf_status_SUCCESS;
+#else
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+#endif
 }

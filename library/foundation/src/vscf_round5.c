@@ -63,8 +63,10 @@
 #include "vscf_round5_defs.h"
 #include "vscf_round5_internal.h"
 
+#if ROUND5_LIBRARY
 #include <round5/rng.h>
 #include <round5/kem.h>
+#endif
 
 // clang-format on
 //  @end
@@ -122,6 +124,7 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
         return NULL;
     }
 
+#if ROUND5_LIBRARY
     const size_t sk_len = CRYPTO_SECRETKEYBYTES;
     const size_t pk_len = CRYPTO_PUBLICKEYBYTES;
 
@@ -177,6 +180,10 @@ vscf_round5_generate_key(const vscf_round5_t *self, vscf_alg_id_t alg_id, vscf_e
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -235,6 +242,7 @@ vscf_round5_import_public_key_data(
         return NULL;
     }
 
+#if ROUND5_LIBRARY
     if (key_data.len != CRYPTO_PUBLICKEYBYTES) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY);
         return NULL;
@@ -244,6 +252,10 @@ vscf_round5_import_public_key_data(
             vscf_raw_public_key_new_with_members(key_data, key_alg_info, self->info->impl_tag);
 
     return vscf_raw_public_key_impl(public_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -283,7 +295,11 @@ vscf_round5_exported_public_key_data_len(const vscf_round5_t *self, const vscf_i
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
     VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
 
+#if ROUND5_LIBRARY
     return CRYPTO_PUBLICKEYBYTES;
+#else
+    return 0;
+#endif
 }
 
 //
@@ -353,6 +369,7 @@ vscf_round5_import_private_key_data(
         return NULL;
     }
 
+#if ROUND5_LIBRARY
     const size_t pk_len = CRYPTO_PUBLICKEYBYTES;
     const size_t sk_len = CRYPTO_SECRETKEYBYTES;
 
@@ -378,6 +395,10 @@ vscf_round5_import_private_key_data(
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -417,7 +438,11 @@ vscf_round5_exported_private_key_data_len(const vscf_round5_t *self, const vscf_
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
+#if ROUND5_LIBRARY
     return CRYPTO_SECRETKEYBYTES;
+#else
+    return 0;
+#endif
 }
 
 //
@@ -459,7 +484,11 @@ vscf_round5_kem_shared_key_len(const vscf_round5_t *self, const vscf_impl_t *key
     VSCF_ASSERT_PTR(self);
     VSCF_UNUSED(key);
 
+#if ROUND5_LIBRARY
     return CRYPTO_BYTES;
+#else
+    return 0;
+#endif
 }
 
 //
@@ -471,7 +500,11 @@ vscf_round5_kem_encapsulated_key_len(const vscf_round5_t *self, const vscf_impl_
     VSCF_ASSERT_PTR(self);
     VSCF_UNUSED(public_key);
 
+#if ROUND5_LIBRARY
     return CRYPTO_CIPHERTEXTBYTES;
+#else
+    return 0;
+#endif
 }
 
 //
@@ -491,6 +524,7 @@ vscf_round5_kem_encapsulate(const vscf_round5_t *self, const vscf_impl_t *public
     VSCF_ASSERT(vsc_buffer_is_valid(encapsulated_key));
     VSCF_ASSERT(vsc_buffer_unused_len(encapsulated_key) >= vscf_round5_kem_encapsulated_key_len(self, public_key));
 
+#if ROUND5_LIBRARY
     //
     //  Make random SEED
     //
@@ -527,6 +561,9 @@ vscf_round5_kem_encapsulate(const vscf_round5_t *self, const vscf_impl_t *public
     }
 
     return vscf_status_ERROR_ROUND5;
+#else
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+#endif
 }
 
 //
@@ -546,6 +583,7 @@ vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_k
         return vscf_status_ERROR_ROUND5;
     }
 
+#if ROUND5_LIBRARY
     vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)private_key);
     const int status =
             crypto_kem_dec(vsc_buffer_unused_bytes(shared_key), encapsulated_key.bytes, private_key_data.bytes);
@@ -556,4 +594,7 @@ vscf_round5_kem_decapsulate(const vscf_round5_t *self, vsc_data_t encapsulated_k
     }
 
     return vscf_status_ERROR_ROUND5;
+#else
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+#endif
 }

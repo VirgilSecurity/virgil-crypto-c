@@ -65,10 +65,12 @@
 #include "vscf_ml_dsa_defs.h"
 #include "vscf_ml_dsa_internal.h"
 
+#if MLDSA_LIBRARY
 #define MLD_CONFIG_API_PARAMETER_SET 65
 #define MLD_CONFIG_API_NAMESPACE_PREFIX mldsa65
 #define MLD_CONFIG_API_NO_SUPERCOP
 #include <mldsa/mldsa_native.h>
+#endif
 #include <string.h>
 
 // clang-format on
@@ -121,6 +123,7 @@ vscf_ml_dsa_generate_key(const vscf_ml_dsa_t *self, vscf_error_t *error) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
 
+#if MLDSA_LIBRARY
     vsc_buffer_t *seed = vsc_buffer_new_with_capacity(vscf_ml_dsa_SEED_LEN);
     const vscf_status_t rng_status = vscf_random(self->random, vscf_ml_dsa_SEED_LEN, seed);
     if (rng_status != vscf_status_SUCCESS) {
@@ -153,6 +156,10 @@ vscf_ml_dsa_generate_key(const vscf_ml_dsa_t *self, vscf_error_t *error) {
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -452,6 +459,7 @@ vscf_ml_dsa_sign_hash(const vscf_ml_dsa_t *self, const vscf_impl_t *private_key,
     VSCF_ASSERT(vscf_impl_tag(private_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
     vsc_data_t sk_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)(private_key));
 
+#if MLDSA_LIBRARY
     //  Deterministic signing: rnd = 0^32
     uint8_t rnd_zero[MLDSA_RNDBYTES];
     memset(rnd_zero, 0, sizeof(rnd_zero));
@@ -468,6 +476,10 @@ vscf_ml_dsa_sign_hash(const vscf_ml_dsa_t *self, const vscf_impl_t *private_key,
 
     vsc_buffer_inc_used(signature, sig_len);
     return vscf_status_SUCCESS;
+#else
+    (void)sk_data;
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+#endif
 }
 
 //
@@ -500,9 +512,13 @@ vscf_ml_dsa_verify_hash(const vscf_ml_dsa_t *self, const vscf_impl_t *public_key
     VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
     vsc_data_t pk_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)(public_key));
 
-    const int verify_status =
-            mldsa65_verify_internal(signature.bytes, signature.len, digest.bytes, digest.len,
-                    NULL, 0, pk_data.bytes, 0 /* externalmu=false, pass message directly */);
+#if MLDSA_LIBRARY
+    const int verify_status = mldsa65_verify_internal(signature.bytes, signature.len, digest.bytes, digest.len, NULL, 0,
+            pk_data.bytes, 0 /* externalmu=false, pass message directly */);
 
     return verify_status == 0;
+#else
+    (void)pk_data;
+    return false;
+#endif
 }
