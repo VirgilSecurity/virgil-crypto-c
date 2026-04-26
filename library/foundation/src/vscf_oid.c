@@ -495,6 +495,12 @@ vscf_oid_from_id(vscf_oid_id_t oid_id) {
     case vscf_oid_id_RANDOM_PADDING:
         return oid_random_padding;
 
+    case vscf_oid_id_ML_KEM_768:
+        return oid_ml_kem_768;
+
+    case vscf_oid_id_ML_DSA_65:
+        return oid_ml_dsa_65;
+
     default:
         VSCF_ASSERT(0 && "Unhandled oid identifier");
         return vsc_data_empty();
@@ -625,6 +631,14 @@ vscf_oid_to_id(vsc_data_t oid) {
         return vscf_oid_id_RANDOM_PADDING;
     }
 
+    if (vscf_oid_equal(oid, oid_ml_kem_768)) {
+        return vscf_oid_id_ML_KEM_768;
+    }
+
+    if (vscf_oid_equal(oid, oid_ml_dsa_65)) {
+        return vscf_oid_id_ML_DSA_65;
+    }
+
     return vscf_oid_id_NONE;
 }
 
@@ -701,6 +715,12 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
 
     case vscf_oid_id_RANDOM_PADDING:
         return vscf_alg_id_RANDOM_PADDING;
+
+    case vscf_oid_id_ML_KEM_768:
+        return vscf_alg_id_ML_KEM_768;
+
+    case vscf_oid_id_ML_DSA_65:
+        return vscf_alg_id_ML_DSA_65;
 
     case vscf_oid_id_EC_GENERIC_KEY:
     case vscf_oid_id_CMS_ENVELOPED_DATA:
