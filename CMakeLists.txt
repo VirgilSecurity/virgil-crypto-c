@@ -110,7 +110,7 @@ option(VIRGIL_PROGRAMS "Build programs." OFF)
 #
 # Features
 #
-option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." ON)
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." OFF)
 
 #
 # Wrappers
