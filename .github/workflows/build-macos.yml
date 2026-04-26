@@ -36,7 +36,8 @@ jobs:
           cmake -S. -Bbuild \
           -DVIRGIL_C_MT_TESTING=ON \
           -DENABLE_BENCHMARKING=ON \
-          -DVIRGIL_PROGRAMS=ON
+          -DVIRGIL_PROGRAMS=ON \
+          -DVIRGIL_POST_QUANTUM=ON
       - name: Build project
         run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
       - name: Run tests
