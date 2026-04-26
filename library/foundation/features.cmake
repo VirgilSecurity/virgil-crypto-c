@@ -78,6 +78,11 @@ option(VSCF_BRAINKEY_CLIENT "Enable class 'brainkey client'." ON)
 option(VSCF_BRAINKEY_SERVER "Enable class 'brainkey server'." ON)
 option(VSCF_MESSAGE_PADDING "Enable class 'message padding'." ON)
 option(VSCF_MESSAGE_CIPHER "Enable class 'message cipher'." ON)
+option(VSCF_GROUP_SESSION_PUBLIC_KEY "Enable class 'group session public key'." ON)
+option(VSCF_GROUP_SESSION_PRIVATE_KEY "Enable class 'group session private key'." ON)
+option(VSCF_GROUP_SESSION_SYMMETRIC_KEY "Enable class 'group session symmetric key'." ON)
+option(VSCF_GROUP_SESSION_ID "Enable class 'group session id'." ON)
+option(VSCF_GROUP_SESSION_SALT "Enable class 'group session salt'." ON)
 option(VSCF_GROUP_SESSION_MESSAGE "Enable class 'group session message'." ON)
 option(VSCF_GROUP_SESSION_TICKET "Enable class 'group session ticket'." ON)
 option(VSCF_GROUP_SESSION "Enable class 'group session'." ON)
@@ -214,6 +219,11 @@ mark_as_advanced(
         VSCF_BRAINKEY_SERVER
         VSCF_MESSAGE_PADDING
         VSCF_MESSAGE_CIPHER
+        VSCF_GROUP_SESSION_PUBLIC_KEY
+        VSCF_GROUP_SESSION_PRIVATE_KEY
+        VSCF_GROUP_SESSION_SYMMETRIC_KEY
+        VSCF_GROUP_SESSION_ID
+        VSCF_GROUP_SESSION_SALT
         VSCF_GROUP_SESSION_MESSAGE
         VSCF_GROUP_SESSION_TICKET
         VSCF_GROUP_SESSION
@@ -1398,11 +1408,56 @@ if(VSCF_MESSAGE_CIPHER AND NOT VSCF_HKDF)
     message(FATAL_ERROR)
 endif()
 
+if(VSCF_MESSAGE_CIPHER AND NOT VSCF_GROUP_SESSION_SYMMETRIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_MESSAGE_CIPHER depends on the feature:")
+    message("     VSCF_GROUP_SESSION_SYMMETRIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_MESSAGE_CIPHER AND NOT VSCF_GROUP_SESSION_SALT)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_MESSAGE_CIPHER depends on the feature:")
+    message("     VSCF_GROUP_SESSION_SALT - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION_TICKET AND NOT VSCF_GROUP_SESSION_SYMMETRIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION_TICKET depends on the feature:")
+    message("     VSCF_GROUP_SESSION_SYMMETRIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION_TICKET AND NOT VSCF_GROUP_SESSION_ID)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION_TICKET depends on the feature:")
+    message("     VSCF_GROUP_SESSION_ID - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
 if(VSCF_GROUP_SESSION_TICKET AND NOT VSCF_CTR_DRBG)
     message("-- error --")
     message("--")
     message("Feature VSCF_GROUP_SESSION_TICKET depends on the feature:")
     message("     VSCF_CTR_DRBG - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION AND NOT VSCF_GROUP_SESSION_ID)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION depends on the feature:")
+    message("     VSCF_GROUP_SESSION_ID - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -1439,6 +1494,15 @@ if(VSCF_GROUP_SESSION AND NOT VSCF_PUBLIC_KEY)
     message("--")
     message("Feature VSCF_GROUP_SESSION depends on the feature:")
     message("     VSCF_PUBLIC_KEY - which is disabled.")
+    message("--")
+    message(FATAL_ERROR)
+endif()
+
+if(VSCF_GROUP_SESSION_EPOCH AND NOT VSCF_GROUP_SESSION_SYMMETRIC_KEY)
+    message("-- error --")
+    message("--")
+    message("Feature VSCF_GROUP_SESSION_EPOCH depends on the feature:")
+    message("     VSCF_GROUP_SESSION_SYMMETRIC_KEY - which is disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()

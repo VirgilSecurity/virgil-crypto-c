@@ -1944,6 +1944,8 @@ def generate_python_files(
     for cls in project_ir.classes:
         if _entity_is_public(cls.attrs):
             continue  # Public classes are handled below
+        if not _class_has_context(cls):
+            continue  # Value types (lifecycle="none") are passed by value — no opaque pointer stub needed
         if cls.name in ("error",):
             continue
         snake = _snake_name(cls.name)
