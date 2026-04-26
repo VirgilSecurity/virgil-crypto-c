@@ -58,8 +58,8 @@ ExternalProject_Add(liboqs-ext
             "-DCMAKE_INSTALL_PREFIX=${OQS_INSTALL_LOCATION}"
             "-DOQS_BUILD_ONLY_LIB=ON"
             # Enable or disable algorithms based on the exposed features.
-            "-DOQS_ENABLE_KEM_ML_KEM=ON"
-            "-DOQS_ENABLE_SIG_ML_DSA=ON"
+            "-DOQS_ENABLE_KEM_ML_KEM=${OQS_ENABLE_KEM_ML_KEM}"
+            "-DOQS_ENABLE_SIG_ML_DSA=${OQS_ENABLE_SIG_ML_DSA}"
             "-DOQS_ENABLE_SIG_FALCON=${OQS_ENABLE_SIG_FALCON}"
             # Next algorithms are not supported by Virgil Crypto so far.
             "-DOQS_ENABLE_KEM_KYBER=OFF"
@@ -67,7 +67,6 @@ ExternalProject_Add(liboqs-ext
             "-DOQS_ENABLE_KEM_NTRUPRIME=OFF"
             "-DOQS_ENABLE_KEM_CLASSIC_MCELIECE=OFF"
             "-DOQS_ENABLE_KEM_HQC=OFF"
-            "-DOQS_ENABLE_SIG_DILITHIUM=OFF"
             "-DOQS_ENABLE_SIG_SPHINCS=OFF"
             "-DOQS_ENABLE_SIG_MAYO=OFF"
             "-DOQS_ENABLE_SIG_CROSS=OFF"
