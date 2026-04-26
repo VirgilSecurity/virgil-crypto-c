@@ -93,7 +93,6 @@ target_link_libraries(foundation
             mbed::crypto ed25519
             $<$<BOOL:${VSCF_POST_QUANTUM}>:round5>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:falcon>
-            $<$<BOOL:${VSCF_POST_QUANTUM}>:liboqs>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:mlkem768>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:mldsa65>
         )
