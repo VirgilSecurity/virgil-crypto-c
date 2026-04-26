@@ -211,8 +211,8 @@ test__decapsulate__with_wrong_private_key__shared_keys_differ(void) {
     vsc_buffer_t *encapsulated_key =
             vsc_buffer_new_with_capacity(vscf_ml_kem_kem_encapsulated_key_len(ml_kem, public_key1));
     vsc_buffer_t *shared_key_enc = vsc_buffer_new_with_capacity(vscf_ml_kem_kem_shared_key_len(ml_kem, public_key1));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_ml_kem_kem_encapsulate(ml_kem, public_key1, shared_key_enc, encapsulated_key));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ml_kem_kem_encapsulate(ml_kem, public_key1, shared_key_enc, encapsulated_key));
 
     /* Decapsulate with key 2 (wrong key) — must return different shared key (implicit rejection) */
     vsc_buffer_t *shared_key_wrong = vsc_buffer_new_with_capacity(vscf_ml_kem_SHARED_KEY_LEN);

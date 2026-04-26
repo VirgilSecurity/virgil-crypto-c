@@ -49,12 +49,8 @@
 #include "vscf_hash_based_alg_info.h"
 
 /* Use SHA-256 hash of "hello" as a test digest */
-static const byte test_digest[] = {
-    0x2C, 0xF2, 0x4D, 0xBA, 0x5F, 0xB0, 0xA3, 0x0E,
-    0x26, 0xE8, 0x3B, 0x2A, 0xC5, 0xB9, 0xE2, 0x9E,
-    0x1B, 0x16, 0x1E, 0x5C, 0x1F, 0xA7, 0x42, 0x5E,
-    0x73, 0x04, 0x33, 0x62, 0x93, 0x8B, 0x98, 0x24
-};
+static const byte test_digest[] = {0x2C, 0xF2, 0x4D, 0xBA, 0x5F, 0xB0, 0xA3, 0x0E, 0x26, 0xE8, 0x3B, 0x2A, 0xC5, 0xB9,
+        0xE2, 0x9E, 0x1B, 0x16, 0x1E, 0x5C, 0x1F, 0xA7, 0x42, 0x5E, 0x73, 0x04, 0x33, 0x62, 0x93, 0x8B, 0x98, 0x24};
 
 void
 test__generate_key__key_has_correct_alg_id(void) {
@@ -180,7 +176,8 @@ test__sign_hash_then_verify_hash__success(void) {
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
 
     /* Verify */
-    const bool verified = vscf_ml_dsa_verify_hash(ml_dsa, public_key, vscf_alg_id_SHA256, digest, vsc_buffer_data(signature));
+    const bool verified =
+            vscf_ml_dsa_verify_hash(ml_dsa, public_key, vscf_alg_id_SHA256, digest, vsc_buffer_data(signature));
     TEST_ASSERT_TRUE(verified);
 
     vsc_buffer_destroy(&signature);
@@ -209,11 +206,12 @@ test__verify_hash__with_wrong_public_key__fails(void) {
 
     /* Sign with key 1 */
     vsc_buffer_t *signature = vsc_buffer_new_with_capacity(vscf_ml_dsa_SIGNATURE_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_ml_dsa_sign_hash(ml_dsa, private_key1, vscf_alg_id_SHA256, digest, signature));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ml_dsa_sign_hash(ml_dsa, private_key1, vscf_alg_id_SHA256, digest, signature));
 
     /* Verify with key 2 — must fail */
-    const bool verified = vscf_ml_dsa_verify_hash(ml_dsa, public_key2, vscf_alg_id_SHA256, digest, vsc_buffer_data(signature));
+    const bool verified =
+            vscf_ml_dsa_verify_hash(ml_dsa, public_key2, vscf_alg_id_SHA256, digest, vsc_buffer_data(signature));
     TEST_ASSERT_FALSE(verified);
 
     vsc_buffer_destroy(&signature);
@@ -241,10 +239,10 @@ test__sign_hash__deterministic__same_signature_twice(void) {
     vsc_buffer_t *sig1 = vsc_buffer_new_with_capacity(vscf_ml_dsa_SIGNATURE_LEN);
     vsc_buffer_t *sig2 = vsc_buffer_new_with_capacity(vscf_ml_dsa_SIGNATURE_LEN);
 
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_ml_dsa_sign_hash(ml_dsa, private_key, vscf_alg_id_SHA256, digest, sig1));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_ml_dsa_sign_hash(ml_dsa, private_key, vscf_alg_id_SHA256, digest, sig2));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ml_dsa_sign_hash(ml_dsa, private_key, vscf_alg_id_SHA256, digest, sig1));
+    TEST_ASSERT_EQUAL(
+            vscf_status_SUCCESS, vscf_ml_dsa_sign_hash(ml_dsa, private_key, vscf_alg_id_SHA256, digest, sig2));
 
     /* Deterministic signing: same inputs produce identical signatures */
     TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(sig1), sig2);
