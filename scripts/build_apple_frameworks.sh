@@ -190,8 +190,10 @@ function build_watchos {
     rm -fr "${BUILD_DIR}"
     mkdir -p "${BUILD_DIR}"
 
+    # liboqs does not support watchOS architectures (armv7k, arm64_32, i386).
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS \
+                        -DVIRGIL_POST_QUANTUM=OFF \
                         -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
@@ -199,6 +201,7 @@ function build_watchos {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS_SIM \
+                        -DVIRGIL_POST_QUANTUM=OFF \
                         -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
