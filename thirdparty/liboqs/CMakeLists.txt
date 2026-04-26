@@ -57,6 +57,9 @@ ExternalProject_Add(liboqs-ext
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${OQS_INSTALL_LOCATION}"
             "-DOQS_BUILD_ONLY_LIB=ON"
+            # Build portable code without CPU-specific extensions (required for cross-compilation
+            # and universal macOS binaries — liboqs otherwise tries armv8-a+crypto on x86_64).
+            "-DOQS_DIST_BUILD=ON"
             # Enable or disable algorithms based on the exposed features.
             "-DOQS_ENABLE_KEM_ML_KEM=${OQS_ENABLE_KEM_ML_KEM}"
             "-DOQS_ENABLE_SIG_ML_DSA=${OQS_ENABLE_SIG_ML_DSA}"
@@ -78,7 +81,7 @@ ExternalProject_Add(liboqs-ext
             # Other disables
             "-DOQS_USE_OPENSSL=OFF"
 
-        BUILD_BYPRODUCTS "${OQS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}liboqs${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        BUILD_BYPRODUCTS "${OQS_INSTALL_LOCATION}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}oqs${CMAKE_STATIC_LIBRARY_SUFFIX}"
         )
 
 # ---------------------------------------------------------------------------
