@@ -34,4 +34,6 @@ const (
     OidIdFalcon OidId = 27
     OidIdRound5Nd1cca5d OidId = 28
     OidIdRandomPadding OidId = 29
+    OidIdMlKem768 OidId = 30
+    OidIdMlDsa65 OidId = 31
 )
