@@ -6,7 +6,6 @@
     <library name="relic"/>
     <library name="round5"/>
     <library name="falcon"/>
-    <library name="liboqs"/>
 
     <version major="0" minor="18" patch="0" label="dev.3"/>
 
