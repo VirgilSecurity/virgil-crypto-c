@@ -12,6 +12,7 @@ Per-project infrastructure files (``index.js``, ``precondition.js``,
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from tools.codegen.project_ir import (
@@ -1252,6 +1253,176 @@ def _generate_cmake(project_ir: IRProject) -> str:
 
 
 # ---------------------------------------------------------------------------
+# exported_functions.json generator
+# ---------------------------------------------------------------------------
+
+# These common C symbols are used by every WASM module's JS method bodies
+# (buffer output arguments and data input arguments are hardcoded by the
+# backend's method-body generator, so they must always appear here).
+_WASM_ALWAYS_EXPORTED: list[str] = [
+    "_malloc",
+    "_free",
+    "_vsc_data",
+    "_vsc_data_ctx_size",
+    "_vsc_data_bytes",
+    "_vsc_data_len",
+    "_vsc_buffer_new",
+    "_vsc_buffer_new_with_capacity",
+    "_vsc_buffer_delete",
+    "_vsc_buffer_make_secure",
+    "_vsc_buffer_bytes",
+    "_vsc_buffer_data",
+    "_vsc_buffer_len",
+]
+
+
+def _exported_symbols_for_project(proj: IRProject) -> list[str]:
+    """Return all exported C symbols for one project's public API."""
+    pfx = proj.prefix
+    syms: list[str] = []
+
+    # Error infrastructure
+    syms += [
+        f"_{pfx}_error_ctx_size",
+        f"_{pfx}_error_status",
+        f"_{pfx}_error_reset",
+    ]
+
+    # Impl-tag / interface infrastructure (only for projects with implementations)
+    if proj.implementations:
+        syms += [
+            f"_{pfx}_impl_shallow_copy",
+            f"_{pfx}_impl_tag",
+            f"_{pfx}_impl_delete",
+            f"_{pfx}_impl_api",
+        ]
+
+    # Implementations
+    iface_by_name = {i.name: i for i in proj.interfaces}
+    for impl in proj.implementations:
+        impl_pfx = f"_{pfx}_{_snake_case(impl.name)}"
+        syms += [
+            f"{impl_pfx}_new",
+            f"{impl_pfx}_shallow_copy",
+            f"{impl_pfx}_delete",
+        ]
+        for ctor in impl.constructors:
+            if _method_should_wrap(ctor):
+                syms.append(f"{impl_pfx}_new_{_snake_case(ctor.name)}")
+        for dep in impl.dependencies:
+            dep_s = _snake_case(dep.name)
+            syms += [f"{impl_pfx}_release_{dep_s}", f"{impl_pfx}_use_{dep_s}"]
+        all_methods: list[IRCMethod] = []
+        for binding in impl.interface_bindings:
+            iface = iface_by_name.get(binding.name)
+            if iface is not None:
+                all_methods.extend(iface.methods)
+        all_methods.extend(impl.methods)
+        for m in all_methods:
+            if _method_should_wrap(m):
+                syms.append(f"{impl_pfx}_{_snake_case(m.name)}")
+
+    # Classes (excluding error)
+    for cls in proj.classes:
+        if not _is_public(cls):
+            continue
+        if cls.name == "error":
+            continue
+        cls_pfx = f"_{pfx}_{_snake_case(cls.name)}"
+        is_static = _is_static_class(cls)
+        is_value = cls.attrs.get("is_value_type") == "1"
+        lifecycle_none = cls.attrs.get("lifecycle") == "none"
+
+        if is_value or lifecycle_none:
+            # Stack-allocated value type: ctx_size + named constructors + methods
+            syms.append(f"{cls_pfx}_ctx_size")
+            for ctor in cls.constructors:
+                if _method_should_wrap(ctor):
+                    syms.append(f"{cls_pfx}_{_snake_case(ctor.name)}")
+        elif not is_static:
+            syms += [
+                f"{cls_pfx}_new",
+                f"{cls_pfx}_shallow_copy",
+                f"{cls_pfx}_delete",
+            ]
+            # Named constructors (e.g. _new_with_members, _new_with_alg_id)
+            for ctor in cls.constructors:
+                if _method_should_wrap(ctor):
+                    syms.append(f"{cls_pfx}_new_{_snake_case(ctor.name)}")
+        for dep in cls.dependencies:
+            dep_s = _snake_case(dep.name)
+            syms += [f"{cls_pfx}_release_{dep_s}", f"{cls_pfx}_use_{dep_s}"]
+        for m in cls.methods:
+            if _method_should_wrap(m):
+                syms.append(f"{cls_pfx}_{_snake_case(m.name)}")
+
+    return syms
+
+
+def _generate_exported_functions_json(project_ir: IRProject) -> str:
+    """Generate exported_functions.json content for Emscripten WASM builds."""
+    symbols: list[str] = list(_WASM_ALWAYS_EXPORTED)
+
+    # Dependency project symbols (common is implicit via _WASM_ALWAYS_EXPORTED;
+    # foundation cross-project infra + selected impls for ratchet/phe/etc.)
+    for fp in (getattr(project_ir, "fallback_projects", None) or []):
+        if fp.name == "common":
+            # common symbols are already in _WASM_ALWAYS_EXPORTED; skip.
+            continue
+        if fp.name == "foundation":
+            # Emit foundation error + impl-tag infra
+            fp_pfx = fp.prefix
+            symbols += [
+                f"_{fp_pfx}_error_ctx_size",
+                f"_{fp_pfx}_error_status",
+                f"_{fp_pfx}_error_reset",
+            ]
+            if fp.implementations:
+                symbols += [
+                    f"_{fp_pfx}_impl_shallow_copy",
+                    f"_{fp_pfx}_impl_tag",
+                    f"_{fp_pfx}_impl_api",
+                ]
+            # Emit selected foundation implementations that JS callers need.
+            # Names come from <require impl="..."/> children of the
+            # <require project="foundation" feature="library"> block in the
+            # project XML (e.g. "ctr drbg", "hmac") → snake_case → "ctr_drbg".
+            cross_names = {
+                _snake_case(name)
+                for lr in project_ir.library_requires
+                if lr.kind == "project" and lr.name == "foundation"
+                for name in lr.required_impls
+            }
+            iface_by_name_fp = {i.name: i for i in fp.interfaces}
+            for impl in fp.implementations:
+                if _snake_case(impl.name) not in cross_names:
+                    continue
+                impl_pfx = f"_{fp_pfx}_{_snake_case(impl.name)}"
+                symbols += [
+                    f"{impl_pfx}_new",
+                    f"{impl_pfx}_shallow_copy",
+                    f"{impl_pfx}_delete",
+                ]
+                for dep in impl.dependencies:
+                    dep_s = _snake_case(dep.name)
+                    symbols += [f"{impl_pfx}_release_{dep_s}", f"{impl_pfx}_use_{dep_s}"]
+                all_methods: list[IRCMethod] = []
+                for binding in impl.interface_bindings:
+                    iface = iface_by_name_fp.get(binding.name)
+                    if iface is not None:
+                        all_methods.extend(iface.methods)
+                all_methods.extend(impl.methods)
+                for m in all_methods:
+                    if _method_should_wrap(m):
+                        symbols.append(f"{impl_pfx}_{_snake_case(m.name)}")
+
+    # Main project symbols
+    symbols += _exported_symbols_for_project(project_ir)
+
+    return json.dumps(symbols, indent=4) + "\n"
+
+
+# ---------------------------------------------------------------------------
 # Orchestrator
 # ---------------------------------------------------------------------------
 
@@ -1402,5 +1573,9 @@ def generate_wasm_files(
     # --- CMakeLists.txt ---
     cmake_content = _generate_cmake(project_ir)
     files.append((f"{cmake_dir}CMakeLists.txt", cmake_content))
+
+    # --- exported_functions.json ---
+    json_content = _generate_exported_functions_json(project_ir)
+    files.append((f"{cmake_dir}exported_functions.json", json_content))
 
     return files

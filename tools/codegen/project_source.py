@@ -217,6 +217,7 @@ class LibraryRequireSource:
     kind: str = ""  # 'project' or 'library'
     name: str = ""
     error_message_getter: LibraryErrorMessageGetter | None = None
+    required_impls: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -749,6 +750,12 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         elif "project" in req_elem.attrib:
             lib_req.kind = "project"
             lib_req.name = req_elem.attrib["project"]
+            # Collect child <require impl="..."/> entries
+            lib_req.required_impls = [
+                child.attrib["impl"]
+                for child in req_elem.findall("require")
+                if "impl" in child.attrib
+            ]
             # Load the referenced project's error_message_getter
             try:
                 ref_project_path = project_model_path(lib_req.name, repo_root)

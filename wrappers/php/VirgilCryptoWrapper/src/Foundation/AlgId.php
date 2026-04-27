@@ -60,9 +60,8 @@ class AlgId extends Enum
     private const COMPOUND_KEY = 17;
     private const HYBRID_KEY = 18;
     private const FALCON = 19;
-    private const ROUND5_ND_1CCA_5D = 20;
-    private const RANDOM_PADDING = 21;
-    private const ML_KEM_768 = 22;
-    private const ML_DSA_65 = 23;
+    private const RANDOM_PADDING = 20;
+    private const ML_KEM_768 = 21;
+    private const ML_DSA_65 = 22;
 
 }

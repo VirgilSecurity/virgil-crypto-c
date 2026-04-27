@@ -1448,34 +1448,6 @@ public class FoundationJNI {
 
     public native boolean falcon_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
-    public native long round5_new();
-
-    public native void round5_close(long cCtx);
-
-    public native void round5_setRandom(long cCtx, Random random);
-
-    public native void round5_setupDefaults(long cCtx) throws FoundationException;
-
-    public native PrivateKey round5_generateKey(long cCtx, AlgId algId) throws FoundationException;
-
-    public native PrivateKey round5_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
-
-    public native PublicKey round5_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
-
-    public native RawPublicKey round5_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    public native PrivateKey round5_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
-
-    public native RawPrivateKey round5_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
-
-    public native int round5_kemSharedKeyLen(long cCtx, Key key);
-
-    public native int round5_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
-
-    public native KemKemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
-
-    public native byte[] round5_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
-
     public native long mlKem_new();
 
     public native void mlKem_close(long cCtx);

@@ -290,6 +290,7 @@ class IRLibraryRequire:
     kind: str = ""  # 'project' or 'library'
     name: str = ""
     error_message_getter: "IRLibraryErrorMessageGetter | None" = None
+    required_impls: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -737,6 +738,7 @@ def project_to_ir(project: ProjectSource) -> IRProject:
             IRLibraryRequire(
                 kind=lr.kind,
                 name=lr.name,
+                required_impls=list(lr.required_impls),
                 error_message_getter=(
                     IRLibraryErrorMessageGetter(
                         success_value=lr.error_message_getter.success_value,

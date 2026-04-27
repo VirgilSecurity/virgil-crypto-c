@@ -180,18 +180,6 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Post-quantum Falcon-Sign private key is corrupted.");
             }
 
-            if (statusCode == -229) {
-                throw new FoundationError("Generic Round5 library error.");
-            }
-
-            if (statusCode == -230) {
-                throw new FoundationError("Post-quantum NIST Round5 public key is corrupted.");
-            }
-
-            if (statusCode == -231) {
-                throw new FoundationError("Post-quantum NIST Round5 private key is corrupted.");
-            }
-
             if (statusCode == -232) {
                 throw new FoundationError("Compound public key is corrupted.");
             }

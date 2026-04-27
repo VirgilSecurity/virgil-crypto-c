@@ -108,7 +108,7 @@ struct vscr_ratchet_xxdh_t {
     //  Dependency to the interface 'random'.
     //
     vscf_impl_t *rng;
-    vscf_round5_t *round5;
+    vscf_impl_t *kem;
     vscf_falcon_t *falcon;
 };
 

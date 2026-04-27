@@ -599,11 +599,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_round5.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ml_kem.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -985,9 +980,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_falcon.h>"
             "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_falcon_defs.h>"
             "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon_internal.h>"
-            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_round5.h>"
-            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_round5_defs.h>"
-            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5_internal.h>"
             "$<$<BOOL:${VSCF_ML_KEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ml_kem.h>"
             "$<$<BOOL:${VSCF_ML_KEM}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_ml_kem_defs.h>"
             "$<$<BOOL:${VSCF_ML_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ml_kem_internal.h>"
@@ -1313,9 +1305,6 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon.c>"
             "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon_defs.c>"
             "$<$<BOOL:${VSCF_FALCON}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_falcon_internal.c>"
-            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5.c>"
-            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5_defs.c>"
-            "$<$<BOOL:${VSCF_ROUND5}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_round5_internal.c>"
             "$<$<BOOL:${VSCF_ML_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ml_kem.c>"
             "$<$<BOOL:${VSCF_ML_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ml_kem_defs.c>"
             "$<$<BOOL:${VSCF_ML_KEM}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ml_kem_internal.c>"

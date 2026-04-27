@@ -118,7 +118,7 @@ struct vscr_ratchet_t {
     vscf_impl_t *rng;
     vscr_ratchet_key_utils_t *ratchet_key_utils;
     vscr_ratchet_keys_t *ratchet_keys;
-    vscf_round5_t *round5;
+    vscf_impl_t *kem;
     bool enable_post_quantum;
     vscr_ratchet_cipher_t *cipher;
     vscf_message_padding_t *padding;

@@ -356,10 +356,6 @@ extern "C" {
 #cmakedefine01 VSCF_FALCON
 #endif
 
-#ifndef VSCF_ROUND5
-#cmakedefine01 VSCF_ROUND5
-#endif
-
 #ifndef VSCF_COMPOUND_KEY_ALG_INFO
 #cmakedefine01 VSCF_COMPOUND_KEY_ALG_INFO
 #endif

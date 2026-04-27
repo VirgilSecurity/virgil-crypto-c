@@ -139,15 +139,6 @@ import VSCFoundation
     /// Post-quantum Falcon-Sign private key is corrupted.
     case errorBadFalconPrivateKey = -228
 
-    /// Generic Round5 library error.
-    case errorRound5 = -229
-
-    /// Post-quantum NIST Round5 public key is corrupted.
-    case errorBadRound5PublicKey = -230
-
-    /// Post-quantum NIST Round5 private key is corrupted.
-    case errorBadRound5PrivateKey = -231
-
     /// Compound public key is corrupted.
     case errorBadCompoundPublicKey = -232
 

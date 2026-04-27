@@ -113,12 +113,6 @@ class VscfStatus(object):
     ERROR_BAD_FALCON_PUBLIC_KEY = -227
     # Post-quantum Falcon-Sign private key is corrupted.
     ERROR_BAD_FALCON_PRIVATE_KEY = -228
-    # Generic Round5 library error.
-    ERROR_ROUND5 = -229
-    # Post-quantum NIST Round5 public key is corrupted.
-    ERROR_BAD_ROUND5_PUBLIC_KEY = -230
-    # Post-quantum NIST Round5 private key is corrupted.
-    ERROR_BAD_ROUND5_PRIVATE_KEY = -231
     # Compound public key is corrupted.
     ERROR_BAD_COMPOUND_PUBLIC_KEY = -232
     # Compound private key is corrupted.
@@ -240,9 +234,6 @@ class VscfStatus(object):
         -226: "Key algorithm does not accept given type of private key.",
         -227: "Post-quantum Falcon-Sign public key is corrupted.",
         -228: "Post-quantum Falcon-Sign private key is corrupted.",
-        -229: "Generic Round5 library error.",
-        -230: "Post-quantum NIST Round5 public key is corrupted.",
-        -231: "Post-quantum NIST Round5 private key is corrupted.",
         -232: "Compound public key is corrupted.",
         -233: "Compound private key is corrupted.",
         -234: "Compound public hybrid key is corrupted.",

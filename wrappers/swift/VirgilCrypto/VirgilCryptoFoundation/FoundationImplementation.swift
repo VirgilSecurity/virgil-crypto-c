@@ -424,8 +424,6 @@ import VSCFoundation
             return Curve25519(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
-        case vscf_impl_tag_ROUND5:
-            return Round5(take: c_ctx)
         case vscf_impl_tag_ML_KEM:
             return MlKem(take: c_ctx)
         case vscf_impl_tag_ML_DSA:
@@ -540,8 +538,6 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_CURVE25519:
             return Curve25519(take: c_ctx)
-        case vscf_impl_tag_ROUND5:
-            return Round5(take: c_ctx)
         case vscf_impl_tag_ML_KEM:
             return MlKem(take: c_ctx)
         default:

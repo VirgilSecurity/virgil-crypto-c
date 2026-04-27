@@ -48,54 +48,6 @@
     </implementation>
 
 
-    <implementation name="round5">
-        Provide post-quantum encryption based on the round5 implementation.
-        For algorithm details check https://github.com/round5/code
-
-        <feature name="round5" default="${ROUND5_LIBRARY}"/>
-
-        <require library="round5" feature="library"/>
-        <require header="round5/rng.h"/>
-        <require header="round5/kem.h"/>
-
-        <require interface="public key"/>
-        <require interface="private key"/>
-        <require impl="ctr drbg"/>
-        <require impl="simple alg info"/>
-        <require module="raw public key defs"/>
-        <require module="raw private key defs"/>
-
-        <interface name="key alg">
-            <constant name="can import public key" value="true"/>
-            <constant name="can export public key" value="true"/>
-            <constant name="can import private key" value="true"/>
-            <constant name="can export private key" value="true"/>
-        </interface>
-        <interface name="kem"/>
-
-        <constant name="seed len" value="48"/>
-
-        <dependency name="random" interface="random"/>
-
-        <method name="setup defaults" declaration="public">
-            Setup predefined values to the uninitialized class dependencies.
-
-            <return enum="status"/>
-        </method>
-
-        <method name="generate key" declaration="public" is_const="1">
-            Generate new private key.
-            Note, this operation might be slow.
-
-            <argument name="alg id" enum="alg id"/>
-
-            <argument name="error" class="error" access="readwrite"/>
-
-            <return interface="private key" access="disown"/>
-        </method>
-    </implementation>
-
-
     <implementation name="ml kem">
         Provide post-quantum KEM based on ML-KEM-768 (mlkem-native).
         For algorithm details check https://github.com/pq-code-package/mlkem-native

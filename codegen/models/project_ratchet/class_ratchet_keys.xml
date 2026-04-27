@@ -26,7 +26,7 @@
     </variable>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
-    <property name="round5" class="round5" project="foundation"/>
+    <property name="kem" interface="kem" project="foundation"/>
 
     <method name="create chain key finish" is_static="1" declaration="private">
         <argument name="root key" class="const vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readonly"/>

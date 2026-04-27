@@ -92,8 +92,6 @@ import VSCFoundation
 
     case falcon
 
-    case round5Nd1cca5d
-
     case randomPadding
 
     case mlKem768

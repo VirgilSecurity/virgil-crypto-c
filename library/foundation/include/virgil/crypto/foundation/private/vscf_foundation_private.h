@@ -153,7 +153,6 @@
 #include "vscf_raw_public_key_defs.h"
 #include "vscf_recipient_cipher_decryption_state.h"
 #include "vscf_recipient_cipher_defs.h"
-#include "vscf_round5_defs.h"
 #include "vscf_rsa_defs.h"
 #include "vscf_rsa_private_key_defs.h"
 #include "vscf_rsa_public_key_defs.h"

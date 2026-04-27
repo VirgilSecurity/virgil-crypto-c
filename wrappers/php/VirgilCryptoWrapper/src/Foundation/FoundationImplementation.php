@@ -83,18 +83,17 @@ class FoundationImplementation
     const RANDOM_PADDING = 41;
     const RAW_PRIVATE_KEY = 42;
     const RAW_PUBLIC_KEY = 43;
-    const ROUND5 = 44;
-    const RSA = 45;
-    const RSA_PRIVATE_KEY = 46;
-    const RSA_PUBLIC_KEY = 47;
-    const SALTED_KDF_ALG_INFO = 48;
-    const SEC1_SERIALIZER = 49;
-    const SEED_ENTROPY_SOURCE = 50;
-    const SHA224 = 51;
-    const SHA256 = 52;
-    const SHA384 = 53;
-    const SHA512 = 54;
-    const SIMPLE_ALG_INFO = 55;
+    const RSA = 44;
+    const RSA_PRIVATE_KEY = 45;
+    const RSA_PUBLIC_KEY = 46;
+    const SALTED_KDF_ALG_INFO = 47;
+    const SEC1_SERIALIZER = 48;
+    const SEED_ENTROPY_SOURCE = 49;
+    const SHA224 = 50;
+    const SHA256 = 51;
+    const SHA384 = 52;
+    const SHA512 = 53;
+    const SIMPLE_ALG_INFO = 54;
 
     /**
     *

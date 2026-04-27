@@ -170,9 +170,6 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.RAW_PUBLIC_KEY:
                     return modules.RawPublicKey.newAndTakeCContext(ctxPtr);
 
-                case modules.FoundationImplTag.ROUND5:
-                    return modules.Round5.newAndTakeCContext(ctxPtr);
-
                 case modules.FoundationImplTag.RSA:
                     return modules.Rsa.newAndTakeCContext(ctxPtr);
 

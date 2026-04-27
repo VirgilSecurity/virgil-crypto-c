@@ -27,7 +27,6 @@
     <constant name="compound key"/>
     <constant name="hybrid key"/>
     <constant name="falcon"/>
-    <constant name="round5 nd 1cca 5d"/>
     <constant name="random padding"/>
     <constant name="ml kem 768"/>
     <constant name="ml dsa 65"/>

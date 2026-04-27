@@ -424,8 +424,6 @@ func FoundationImplementationWrapKeyAlg(ctx *C.vscf_impl_t) (KeyAlg, error) {
         return newCurve25519WithCtx((*C.vscf_curve25519_t)(ctx)), nil
     case C.vscf_impl_tag_FALCON:
         return newFalconWithCtx((*C.vscf_falcon_t)(ctx)), nil
-    case C.vscf_impl_tag_ROUND5:
-        return newRound5WithCtx((*C.vscf_round5_t)(ctx)), nil
     case C.vscf_impl_tag_ML_KEM:
         return newMlKemWithCtx((*C.vscf_ml_kem_t)(ctx)), nil
     case C.vscf_impl_tag_ML_DSA:
@@ -548,8 +546,6 @@ func FoundationImplementationWrapKem(ctx *C.vscf_impl_t) (Kem, error) {
         return newEd25519WithCtx((*C.vscf_ed25519_t)(ctx)), nil
     case C.vscf_impl_tag_CURVE25519:
         return newCurve25519WithCtx((*C.vscf_curve25519_t)(ctx)), nil
-    case C.vscf_impl_tag_ROUND5:
-        return newRound5WithCtx((*C.vscf_round5_t)(ctx)), nil
     case C.vscf_impl_tag_ML_KEM:
         return newMlKemWithCtx((*C.vscf_ml_kem_t)(ctx)), nil
     default:

@@ -148,18 +148,6 @@ const (
     */
     FoundationErrorErrorBadFalconPrivateKey int = -228
     /*
-    * Generic Round5 library error.
-    */
-    FoundationErrorErrorRound5 int = -229
-    /*
-    * Post-quantum NIST Round5 public key is corrupted.
-    */
-    FoundationErrorErrorBadRound5PublicKey int = -230
-    /*
-    * Post-quantum NIST Round5 private key is corrupted.
-    */
-    FoundationErrorErrorBadRound5PrivateKey int = -231
-    /*
     * Compound public key is corrupted.
     */
     FoundationErrorErrorBadCompoundPublicKey int = -232
@@ -402,12 +390,6 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Post-quantum Falcon-Sign public key is corrupted."}
         case C.vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY:
             return &FoundationError {int(status), "Post-quantum Falcon-Sign private key is corrupted."}
-        case C.vscf_status_ERROR_ROUND5:
-            return &FoundationError {int(status), "Generic Round5 library error."}
-        case C.vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY:
-            return &FoundationError {int(status), "Post-quantum NIST Round5 public key is corrupted."}
-        case C.vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY:
-            return &FoundationError {int(status), "Post-quantum NIST Round5 private key is corrupted."}
         case C.vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY:
             return &FoundationError {int(status), "Compound public key is corrupted."}
         case C.vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY:

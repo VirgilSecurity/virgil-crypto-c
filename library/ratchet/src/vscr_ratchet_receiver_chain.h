@@ -156,7 +156,7 @@ VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self, vscr_ReceiverChain *receiver_chain_pb);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain, vscf_round5_t *round5) VSCR_NODISCARD;
+vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) VSCR_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.

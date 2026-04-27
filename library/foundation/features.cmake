@@ -2652,7 +2652,6 @@ if(VSCF_FALCON AND NOT VSCF_SIMPLE_ALG_INFO)
     message(FATAL_ERROR)
 endif()
 
-
 if(VSCF_ML_KEM AND NOT VSCF_PUBLIC_KEY)
     message("-- error --")
     message("--")

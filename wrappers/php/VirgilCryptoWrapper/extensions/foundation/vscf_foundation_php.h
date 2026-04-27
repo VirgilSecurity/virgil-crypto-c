@@ -263,9 +263,6 @@ VSCF_PHP_PUBLIC const char*
 vscf_recipient_cipher_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
-vscf_round5_t_php_res_name(void);
-
-VSCF_PHP_PUBLIC const char*
 vscf_rsa_t_php_res_name(void);
 
 VSCF_PHP_PUBLIC const char*
@@ -504,9 +501,6 @@ le_vscf_raw_public_key_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_recipient_cipher_t(void);
-
-VSCF_PHP_PUBLIC int
-le_vscf_round5_t(void);
 
 VSCF_PHP_PUBLIC int
 le_vscf_rsa_t(void);

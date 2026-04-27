@@ -92,8 +92,8 @@
             Receiver one-time key id
         </argument>
         <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and round5 keys.
-            Ephemeral keys without round5 key won't be accepted
+            Ephemeral keys will consist of curve25519 and ML-KEM keys.
+            Ephemeral keys without KEM key won't be accepted
         </argument>
 
         <return enum="status">
@@ -123,8 +123,8 @@
             Receiver long-term key id
         </argument>
         <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and round5 keys.
-            Ephemeral keys without round5 key won't be accepted
+            Ephemeral keys will consist of curve25519 and ML-KEM keys.
+            Ephemeral keys without KEM key won't be accepted
         </argument>
 
         <return enum="status">
@@ -151,8 +151,8 @@
             Message received from initiator
         </argument>
         <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and round5 keys.
-            Ephemeral keys without round5 key won't be accepted
+            Ephemeral keys will consist of curve25519 and ML-KEM keys.
+            Ephemeral keys without KEM key won't be accepted
         </argument>
 
         <return enum="status">
@@ -176,8 +176,8 @@
             Message received from initiator
         </argument>
         <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and round5 keys.
-            Ephemeral keys without round5 key won't be accepted
+            Ephemeral keys will consist of curve25519 and ML-KEM keys.
+            Ephemeral keys without KEM key won't be accepted
         </argument>
 
         <return enum="status">
