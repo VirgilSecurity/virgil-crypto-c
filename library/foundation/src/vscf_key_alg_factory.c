@@ -62,6 +62,8 @@
 #include "vscf_compound_key_alg.h"
 #include "vscf_hybrid_key_alg.h"
 #include "vscf_falcon.h"
+#include "vscf_ml_kem.h"
+#include "vscf_ml_dsa.h"
 
 // clang-format on
 //  @end
@@ -193,6 +195,26 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
     }
 #endif // VSCF_FALCON
 
+#if VSCF_ML_KEM
+    case vscf_alg_id_ML_KEM_768: {
+        vscf_ml_kem_t *ml_kem = vscf_ml_kem_new();
+        if (random) {
+            vscf_ml_kem_use_random(ml_kem, (vscf_impl_t *)random);
+        }
+        return vscf_ml_kem_impl(ml_kem);
+    }
+#endif // VSCF_ML_KEM
+
+#if VSCF_ML_DSA
+    case vscf_alg_id_ML_DSA_65: {
+        vscf_ml_dsa_t *ml_dsa = vscf_ml_dsa_new();
+        if (random) {
+            vscf_ml_dsa_use_random(ml_dsa, (vscf_impl_t *)random);
+        }
+        return vscf_ml_dsa_impl(ml_dsa);
+    }
+#endif // VSCF_ML_DSA
+
 #endif // VSCF_POST_QUANTUM
 
     default:
@@ -238,6 +260,12 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
 
     case vscf_impl_tag_FALCON:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);
+
+    case vscf_impl_tag_ML_KEM:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ML_KEM_768, random, error);
+
+    case vscf_impl_tag_ML_DSA:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ML_DSA_65, random, error);
 
     default:
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);

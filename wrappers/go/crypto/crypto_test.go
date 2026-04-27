@@ -371,7 +371,7 @@ func TestKeyTypes(t *testing.T) {
 		{crypto.Curve25519, nil},
 		{crypto.Ed25519, nil},
 		{crypto.Curve25519Ed25519, nil},
-		{crypto.Curve25519Round5Ed25519Falcon, nil},
+		{crypto.Curve25519MlKem768Ed25519Falcon, nil},
 		{crypto.KeyType(100), crypto.ErrUnsupportedKeyType},
 	}
 

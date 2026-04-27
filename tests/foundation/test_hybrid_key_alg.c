@@ -52,10 +52,11 @@
 #include "vscf_fake_random.h"
 #include "vscf_curve25519.h"
 #include "vscf_key_provider.h"
+#include "vscf_ml_kem.h"
+#include "vscf_ctr_drbg.h"
 
 #include "test_data_curve25519.h"
 #include "test_data_ed25519.h"
-#include "test_data_round5.h"
 #include "test_data_falcon.h"
 #include "test_data_hybrid_key.h"
 
@@ -192,12 +193,42 @@ test__make_key_ed25519_ed25519__is_valid_alg(void) {
 }
 
 void
-test__make_key__curve25519_round5__is_valid_alg(void) {
-#if VSCF_POST_QUANTUM
-    inner_test__make_key__expect_status(test_curve25519_PRIVATE_KEY_PKCS8_DER,
-            test_data_round5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER, vscf_status_SUCCESS);
+test__make_key__curve25519_ml_kem_768__is_valid_alg(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *curve25519_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_CURVE25519, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *ml_kem_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    vscf_impl_t *hybrid_priv = vscf_hybrid_key_alg_make_key(key_alg, curve25519_priv, ml_kem_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(hybrid_priv);
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_alg_id(hybrid_priv));
+
+    vscf_impl_t *hybrid_pub = vscf_private_key_extract_public_key(hybrid_priv);
+    TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_key_alg_id(hybrid_pub));
+
+    vscf_impl_destroy(&hybrid_pub);
+    vscf_impl_destroy(&hybrid_priv);
+    vscf_impl_destroy(&curve25519_priv);
+    vscf_impl_destroy(&ml_kem_priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_ctr_drbg_destroy(&rng);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
@@ -366,34 +397,146 @@ test__import_private_key_then_export_public_key__curve25519_curve25519__should_m
             test_data_hybrid_key_CURVE25519_CURVE25519_PUBLIC_KEY);
 }
 
+static void
+inner_generate_curve25519_ml_kem_768_key_pair(vscf_impl_t **pub_out, vscf_impl_t **priv_out) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
+
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *curve25519_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_CURVE25519, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *ml_kem_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    vscf_impl_t *hybrid_priv = vscf_hybrid_key_alg_make_key(key_alg, curve25519_priv, ml_kem_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_private_key_t *raw_priv = vscf_hybrid_key_alg_export_private_key(key_alg, hybrid_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *imported_priv = vscf_hybrid_key_alg_import_private_key(key_alg, raw_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    *priv_out = imported_priv;
+    *pub_out = vscf_private_key_extract_public_key(imported_priv);
+
+    vscf_raw_private_key_destroy(&raw_priv);
+    vscf_impl_destroy(&hybrid_priv);
+    vscf_impl_destroy(&curve25519_priv);
+    vscf_impl_destroy(&ml_kem_priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_ctr_drbg_destroy(&rng);
+}
+
 void
-test__import_public_key_then_export__curve25519_round5__should_match(void) {
-#if VSCF_POST_QUANTUM
-    inner_test__import_public_key_then_export__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY);
+test__import_public_key_then_export__curve25519_ml_kem_768__roundtrip(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *pub = NULL;
+    vscf_impl_t *priv = NULL;
+    inner_generate_curve25519_ml_kem_768_key_pair(&pub, &priv);
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_hybrid_key_alg_setup_defaults(key_alg));
+
+    vscf_raw_public_key_t *raw1 = vscf_hybrid_key_alg_export_public_key(key_alg, pub, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *imported = vscf_hybrid_key_alg_import_public_key(key_alg, raw1, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_public_key_t *raw2 = vscf_hybrid_key_alg_export_public_key(key_alg, imported, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    TEST_ASSERT_EQUAL_DATA(vscf_raw_public_key_data(raw1), vscf_raw_public_key_data(raw2));
+
+    vscf_raw_public_key_destroy(&raw1);
+    vscf_raw_public_key_destroy(&raw2);
+    vscf_impl_destroy(&imported);
+    vscf_impl_destroy(&pub);
+    vscf_impl_destroy(&priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
 void
-test__import_private_key_then_export__curve25519_round5__should_match(void) {
-#if VSCF_POST_QUANTUM
-    inner_test__import_private_key_then_export__should_match(vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY);
+test__import_private_key_then_export__curve25519_ml_kem_768__roundtrip(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *pub = NULL;
+    vscf_impl_t *priv = NULL;
+    inner_generate_curve25519_ml_kem_768_key_pair(&pub, &priv);
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_hybrid_key_alg_setup_defaults(key_alg));
+
+    vscf_raw_private_key_t *raw1 = vscf_hybrid_key_alg_export_private_key(key_alg, priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *imported = vscf_hybrid_key_alg_import_private_key(key_alg, raw1, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_private_key_t *raw2 = vscf_hybrid_key_alg_export_private_key(key_alg, imported, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    TEST_ASSERT_EQUAL_DATA(vscf_raw_private_key_data(raw1), vscf_raw_private_key_data(raw2));
+
+    vscf_raw_private_key_destroy(&raw1);
+    vscf_raw_private_key_destroy(&raw2);
+    vscf_impl_destroy(&imported);
+    vscf_impl_destroy(&pub);
+    vscf_impl_destroy(&priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
 void
-test__import_private_key_then_export_public_key__curve25519_round5__should_match(void) {
-#if VSCF_POST_QUANTUM
-    inner_test__import_private_key_then_export_public_key__should_match(vscf_alg_id_CURVE25519,
-            vscf_alg_id_ROUND5_ND_1CCA_5D, test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY,
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY);
+test__import_private_key_then_export_public_key__curve25519_ml_kem_768__roundtrip(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
+    vscf_error_t error;
+    vscf_error_reset(&error);
+
+    vscf_impl_t *pub = NULL;
+    vscf_impl_t *priv = NULL;
+    inner_generate_curve25519_ml_kem_768_key_pair(&pub, &priv);
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_hybrid_key_alg_setup_defaults(key_alg));
+
+    vscf_raw_public_key_t *raw_pub = vscf_hybrid_key_alg_export_public_key(key_alg, pub, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *pub_from_priv = vscf_private_key_extract_public_key(priv);
+    vscf_raw_public_key_t *raw_pub_from_priv = vscf_hybrid_key_alg_export_public_key(key_alg, pub_from_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    TEST_ASSERT_EQUAL_DATA(vscf_raw_public_key_data(raw_pub), vscf_raw_public_key_data(raw_pub_from_priv));
+
+    vscf_raw_public_key_destroy(&raw_pub);
+    vscf_raw_public_key_destroy(&raw_pub_from_priv);
+    vscf_impl_destroy(&pub_from_priv);
+    vscf_impl_destroy(&pub);
+    vscf_impl_destroy(&priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
@@ -457,21 +600,18 @@ test__encrypt_decrypt__with_curve25519_and_curve25519_keys__plain_text_match(voi
 }
 
 void
-test__encrypt_decrypt__with_curve25519_and_round5_keys__plain_text_match(void) {
-#if VSCF_POST_QUANTUM
-    vscf_impl_t *public_key = inner_import_raw_public_key(test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY,
-            vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D);
-
-    vscf_impl_t *private_key =
-            inner_import_raw_private_key(test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY,
-                    vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D);
+test__encrypt_decrypt__with_curve25519_and_ml_kem_768_keys__plain_text_match(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
+    vscf_impl_t *public_key = NULL;
+    vscf_impl_t *private_key = NULL;
+    inner_generate_curve25519_ml_kem_768_key_pair(&public_key, &private_key);
 
     inner_test__encrypt_decrypt__plain_text_match(public_key, private_key);
 
     vscf_impl_destroy(&public_key);
     vscf_impl_destroy(&private_key);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
@@ -560,19 +700,19 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__make_key__curve25519_curve25519__is_valid_alg);
     RUN_TEST(test__make_key_ed25519_ed25519__is_valid_alg);
-    RUN_TEST(test__make_key__curve25519_round5__is_valid_alg);
+    RUN_TEST(test__make_key__curve25519_ml_kem_768__is_valid_alg);
     RUN_TEST(test__make_key__curve25519_falcon__returns_error_unsupported_algorithm);
 
     RUN_TEST(test__import_public_key_then_export__curve25519_curve25519__should_match);
     RUN_TEST(test__import_private_key_then_export__curve25519_curve25519__should_match);
     RUN_TEST(test__import_private_key_then_export_public_key__curve25519_curve25519__should_match);
 
-    RUN_TEST(test__import_public_key_then_export__curve25519_round5__should_match);
-    RUN_TEST(test__import_private_key_then_export__curve25519_round5__should_match);
-    RUN_TEST(test__import_private_key_then_export_public_key__curve25519_round5__should_match);
+    RUN_TEST(test__import_public_key_then_export__curve25519_ml_kem_768__roundtrip);
+    RUN_TEST(test__import_private_key_then_export__curve25519_ml_kem_768__roundtrip);
+    RUN_TEST(test__import_private_key_then_export_public_key__curve25519_ml_kem_768__roundtrip);
 
     RUN_TEST(test__encrypt_decrypt__with_curve25519_and_curve25519_keys__plain_text_match);
-    RUN_TEST(test__encrypt_decrypt__with_curve25519_and_round5_keys__plain_text_match);
+    RUN_TEST(test__encrypt_decrypt__with_curve25519_and_ml_kem_768_keys__plain_text_match);
 
     RUN_TEST(test__sign_verify__with_ed25519_and_ed25519_keys__success);
     RUN_TEST(test__sign_verify__with_ed25519_and_falcon_keys__success);

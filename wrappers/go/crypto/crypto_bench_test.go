@@ -119,14 +119,14 @@ func BenchmarkEncryptHybridCurveCurve(b *testing.B) {
 		}
 	}
 }
-func BenchmarkEncryptHybridCurveRound5(b *testing.B) {
+func BenchmarkEncryptHybridCurveMlKem768(b *testing.B) {
 	vcrypto := &crypto.Crypto{}
 
 	// make random data
 	data := make([]byte, 1)
 	rand.Read(data)
 
-	encryptSk, err := vcrypto.GenerateKeypairForType(crypto.Curve25519Round5)
+	encryptSk, err := vcrypto.GenerateKeypairForType(crypto.Curve25519MlKem768)
 	require.NoError(b, err)
 	encryptPk := encryptSk.PublicKey()
 
@@ -180,14 +180,14 @@ func BenchmarkDecryptHybridCurveCurve(b *testing.B) {
 	}
 }
 
-func BenchmarkDecryptHybridCurveRound5(b *testing.B) {
+func BenchmarkDecryptHybridCurveMlKem768(b *testing.B) {
 	vcrypto := &crypto.Crypto{}
 
 	// make random data
 	data := make([]byte, 1)
 	rand.Read(data)
 
-	keypair, err := vcrypto.GenerateKeypairForType(crypto.Curve25519Round5)
+	keypair, err := vcrypto.GenerateKeypairForType(crypto.Curve25519MlKem768)
 	require.NoError(b, err)
 
 	data, err = vcrypto.Encrypt(data, keypair.PublicKey())

@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -10,9 +10,8 @@
 //      notice, this list of conditions and the following disclaimer.
 //
 //      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the distribution.
 //
 //      (3) Neither the name of the copyright holder nor the names of its
 //      contributors may be used to endorse or promote products derived from
@@ -40,103 +39,79 @@
 
 #include <pthread.h>
 
-
-#define TEST_DEPENDENCIES_AVAILABLE (VSCF_POST_QUANTUM && VSCF_ROUND5)
+#define TEST_DEPENDENCIES_AVAILABLE (VSCF_POST_QUANTUM && MLKEM_LIBRARY)
 #if TEST_DEPENDENCIES_AVAILABLE
 
-#include "vscf_fake_random.h"
-#include "vscf_round5.h"
+#include "vscf_ctr_drbg.h"
+#include "vscf_ml_kem.h"
 
-#include "test_data_round5.h"
 
-// --------------------------------------------------------------------------
 static void *
 impl_new(void *ctx) {
     (void)ctx;
-
     for (size_t i = 0; i < 1000000; ++i) {
-        vscf_round5_t *round5 = vscf_round5_new();
-        vscf_round5_destroy(&round5);
+        vscf_ml_kem_t *ml_kem = vscf_ml_kem_new();
+        vscf_ml_kem_destroy(&ml_kem);
     }
-
     return NULL;
 }
 
 void
 test__new__1000000_times_3_threads__no_crash(void) {
-
-    pthread_t t1;
+    pthread_t t1, t2, t3;
     pthread_create(&t1, NULL, impl_new, NULL);
-
-    pthread_t t2;
     pthread_create(&t2, NULL, impl_new, NULL);
-
-    pthread_t t3;
     pthread_create(&t3, NULL, impl_new, NULL);
-
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     pthread_join(t3, NULL);
 }
 
-// --------------------------------------------------------------------------
 static void *
 impl_generate_key(void *ctx) {
-    vscf_round5_t *round5 = (vscf_round5_t *)ctx;
-
+    vscf_ml_kem_t *ml_kem = (vscf_ml_kem_t *)ctx;
     vscf_error_t error;
     vscf_error_reset(&error);
 
     for (size_t i = 0; i < 300; ++i) {
-        vscf_impl_t *private_key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_1CCA_5D, &error);
+        vscf_impl_t *private_key = vscf_ml_kem_generate_key(ml_kem, &error);
         TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
         vscf_impl_destroy(&private_key);
     }
-
     return NULL;
 }
 
 void
-test__generate_key__with__global_rng_300_times_3_threads__no_crash(void) {
+test__generate_key__with_global_rng_300_times_3_threads__no_crash(void) {
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
 
-    vscf_fake_random_t *fake_random = vscf_fake_random_new();
-    vscf_fake_random_setup_source_data(fake_random, test_data_round5_RNG_SEED);
+    vscf_ml_kem_t *ml_kem = vscf_ml_kem_new();
+    vscf_ml_kem_use_random(ml_kem, vscf_ctr_drbg_impl(rng));
 
-    vscf_round5_t *round5 = vscf_round5_new();
-    vscf_round5_take_random(round5, vscf_fake_random_impl(fake_random));
-
-    pthread_t t1;
-    pthread_create(&t1, NULL, impl_generate_key, (void *)round5);
-
-    pthread_t t2;
-    pthread_create(&t2, NULL, impl_generate_key, (void *)round5);
-
-    pthread_t t3;
-    pthread_create(&t3, NULL, impl_generate_key, (void *)round5);
-
+    pthread_t t1, t2, t3;
+    pthread_create(&t1, NULL, impl_generate_key, ml_kem);
+    pthread_create(&t2, NULL, impl_generate_key, ml_kem);
+    pthread_create(&t3, NULL, impl_generate_key, ml_kem);
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
     pthread_join(t3, NULL);
 
-    vscf_round5_destroy(&round5);
+    vscf_ml_kem_destroy(&ml_kem);
+    vscf_ctr_drbg_destroy(&rng);
 }
 
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
-// --------------------------------------------------------------------------
-// Entrypoint.
-// --------------------------------------------------------------------------
 int
 main(void) {
     UNITY_BEGIN();
-
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__new__1000000_times_3_threads__no_crash);
-    RUN_TEST(test__generate_key__with__global_rng_300_times_3_threads__no_crash);
+    RUN_TEST(test__generate_key__with_global_rng_300_times_3_threads__no_crash);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
-
     return UNITY_END();
 }
