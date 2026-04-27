@@ -1317,7 +1317,9 @@ def _exported_symbols_for_project(proj: IRProject) -> list[str]:
             iface = iface_by_name.get(binding.name)
             if iface is not None:
                 all_methods.extend(iface.methods)
-        all_methods.extend(impl.methods)
+        for m in impl.methods:
+            if m.attrs.get("declaration") == "public":
+                all_methods.append(m)
         for m in all_methods:
             if _method_should_wrap(m):
                 syms.append(f"{impl_pfx}_{_snake_case(m.name)}")
@@ -1331,9 +1333,8 @@ def _exported_symbols_for_project(proj: IRProject) -> list[str]:
         cls_pfx = f"_{pfx}_{_snake_case(cls.name)}"
         is_static = _is_static_class(cls)
         is_value = cls.attrs.get("is_value_type") == "1"
-        lifecycle_none = cls.attrs.get("lifecycle") == "none"
 
-        if is_value or lifecycle_none:
+        if is_value:
             # Stack-allocated value type: ctx_size + named constructors + methods
             syms.append(f"{cls_pfx}_ctx_size")
             for ctor in cls.constructors:
@@ -1411,7 +1412,9 @@ def _generate_exported_functions_json(project_ir: IRProject) -> str:
                     iface = iface_by_name_fp.get(binding.name)
                     if iface is not None:
                         all_methods.extend(iface.methods)
-                all_methods.extend(impl.methods)
+                for m in impl.methods:
+                    if m.attrs.get("declaration") == "public":
+                        all_methods.append(m)
                 for m in all_methods:
                     if _method_should_wrap(m):
                         symbols.append(f"{impl_pfx}_{_snake_case(m.name)}")

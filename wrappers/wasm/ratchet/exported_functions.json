@@ -67,7 +67,6 @@
     "_vscr_error_ctx_size",
     "_vscr_error_status",
     "_vscr_error_reset",
-    "_vscr_ratchet_common_ctx_size",
     "_vscr_ratchet_message_new",
     "_vscr_ratchet_message_shallow_copy",
     "_vscr_ratchet_message_delete",

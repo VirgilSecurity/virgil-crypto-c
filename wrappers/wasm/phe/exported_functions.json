@@ -67,7 +67,6 @@
     "_vsce_error_ctx_size",
     "_vsce_error_status",
     "_vsce_error_reset",
-    "_vsce_phe_common_ctx_size",
     "_vsce_phe_server_new",
     "_vsce_phe_server_shallow_copy",
     "_vsce_phe_server_delete",
