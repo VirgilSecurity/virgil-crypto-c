@@ -338,7 +338,7 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
         vscf_key_info_destroy(&key_info);
         key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
 
-        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ROUND5_ND_1CCA_5D) {
+        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ML_KEM_768) {
             const vscf_impl_t *temp = first_key;
             first_key = second_key;
             second_key = temp;
@@ -359,7 +359,7 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
             vscf_key_info_destroy(&key_info);
             key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
 
-            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_1CCA_5D) {
+            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ML_KEM_768) {
                 status = vscr_status_ERROR_INVALID_KEY_TYPE;
                 goto err1;
             }
@@ -485,7 +485,7 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
         vscf_key_info_destroy(&key_info);
         key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
 
-        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ROUND5_ND_1CCA_5D) {
+        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ML_KEM_768) {
             const vscf_impl_t *temp = first_key;
             first_key = second_key;
             second_key = temp;
@@ -506,7 +506,7 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
             vscf_key_info_destroy(&key_info);
             key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
 
-            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ROUND5_ND_1CCA_5D) {
+            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ML_KEM_768) {
                 status = vscr_status_ERROR_INVALID_KEY_TYPE;
                 goto err1;
             }

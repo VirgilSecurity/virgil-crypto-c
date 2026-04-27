@@ -63,7 +63,7 @@ generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pq
 void
 generate_falcon_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
 void
-generate_round5_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
+generate_ml_kem_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
 void generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub, bool curve25519);
 void generate_random_key_id(vscf_ctr_drbg_t *rng, vscr_ratchet_key_id_t id);
 void initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool enable_pqc, bool should_restore);

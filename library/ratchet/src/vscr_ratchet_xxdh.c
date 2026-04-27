@@ -53,6 +53,8 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/foundation/vscf_kem.h>
+#include <virgil/crypto/foundation/vscf_ml_kem.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -308,7 +310,7 @@ vscr_ratchet_xxdh_init_ctx(vscr_ratchet_xxdh_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    self->round5 = vscf_round5_new();
+    self->kem = vscf_ml_kem_impl(vscf_ml_kem_new());
     self->falcon = vscf_falcon_new();
 }
 
@@ -322,7 +324,7 @@ vscr_ratchet_xxdh_cleanup_ctx(vscr_ratchet_xxdh_t *self) {
 
     VSCR_ASSERT_PTR(self);
 
-    vscf_round5_destroy(&self->round5);
+    vscf_impl_destroy(&self->kem);
     vscf_falcon_destroy(&self->falcon);
 }
 
@@ -333,7 +335,7 @@ static void
 vscr_ratchet_xxdh_did_setup_rng(vscr_ratchet_xxdh_t *self) {
 
     if (self->rng != NULL) {
-        vscf_round5_use_random(self->round5, self->rng);
+        vscf_ml_kem_use_random((vscf_ml_kem_t *)self->kem, self->rng);
         vscf_falcon_use_random(self->falcon, self->rng);
     }
 }
@@ -352,18 +354,17 @@ vscr_ratchet_xxdh_encapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
         vsc_buffer_t **encapsulated_key_ref, vsc_buffer_t *shared_secret) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->round5);
+    VSCR_ASSERT_PTR(self->kem);
     VSCR_ASSERT_PTR(public_key);
     VSCR_ASSERT_PTR(encapsulated_key_ref);
     VSCR_ASSERT_PTR(shared_secret);
 
-    size_t len = vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN;
+    size_t len = vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN;
     *encapsulated_key_ref = vsc_buffer_new_with_capacity(len);
-    vscf_status_t f_status =
-            vscf_round5_kem_encapsulate(self->round5, public_key, shared_secret, *encapsulated_key_ref);
+    vscf_status_t f_status = vscf_kem_kem_encapsulate(self->kem, public_key, shared_secret, *encapsulated_key_ref);
 
     if (f_status != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_ROUND5;
+        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
     }
 
     return vscr_status_SUCCESS;
@@ -374,15 +375,15 @@ vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
         vsc_data_t encapsulated_key, vsc_buffer_t *shared_secret) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->round5);
+    VSCR_ASSERT_PTR(self->kem);
     VSCR_ASSERT_PTR(private_key);
     VSCR_ASSERT_PTR(vsc_data_is_valid(encapsulated_key));
     VSCR_ASSERT_PTR(shared_secret);
 
-    vscf_status_t f_status = vscf_round5_kem_decapsulate(self->round5, encapsulated_key, private_key, shared_secret);
+    vscf_status_t f_status = vscf_kem_kem_decapsulate(self->kem, encapsulated_key, private_key, shared_secret);
 
     if (f_status != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_ROUND5;
+        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
     }
 
     return vscr_status_SUCCESS;
@@ -407,15 +408,15 @@ vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
     }
 
     if (receiver_identity_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
     }
 
     if (receiver_long_term_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
     }
 
     if (receiver_one_time_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
     }
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
@@ -589,15 +590,15 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
     }
 
     if (receiver_identity_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
     }
 
     if (receiver_long_term_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
     }
 
     if (receiver_one_time_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
     }
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
