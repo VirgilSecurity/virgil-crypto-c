@@ -1,7 +1,7 @@
 ---
 title: "refactor: Convert group session typedefs to strong struct types"
 type: refactor
-status: active
+status: done
 date: 2026-04-20
 ---
 

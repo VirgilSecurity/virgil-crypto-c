@@ -1,7 +1,7 @@
 ---
 title: "refactor: CI coverage, workflow naming, and WASM toolchain alignment"
 type: refactor
-status: active
+status: done
 date: 2026-04-20
 ---
 
