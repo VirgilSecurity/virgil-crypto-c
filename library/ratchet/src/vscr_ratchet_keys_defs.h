@@ -53,12 +53,10 @@
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_round5.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_round5.h>
 #endif
 
 // clang-format on

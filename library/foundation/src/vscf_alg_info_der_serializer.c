@@ -1127,7 +1127,6 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
     case vscf_alg_id_FALCON:
-    case vscf_alg_id_ROUND5_ND_1CCA_5D:
     case vscf_alg_id_ML_KEM_768:
     case vscf_alg_id_ML_DSA_65:
     case vscf_alg_id_RANDOM_PADDING:
@@ -1194,7 +1193,6 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
     case vscf_alg_id_FALCON:
-    case vscf_alg_id_ROUND5_ND_1CCA_5D:
     case vscf_alg_id_ML_KEM_768:
     case vscf_alg_id_ML_DSA_65:
     case vscf_alg_id_RANDOM_PADDING:
