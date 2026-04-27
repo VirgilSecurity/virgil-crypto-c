@@ -1,7 +1,7 @@
 ---
 title: "feat: Generate thirdparty features.cmake from external library models"
 type: feat
-status: active
+status: done
 date: 2026-04-26
 ---
 

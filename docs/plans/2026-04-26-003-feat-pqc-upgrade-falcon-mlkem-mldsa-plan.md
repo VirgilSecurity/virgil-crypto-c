@@ -1,7 +1,7 @@
 ---
 title: "feat: Upgrade Falcon to 2021 and add ML-KEM-768 and ML-DSA-65 as standalone thirdparty libraries"
 type: feat
-status: active
+status: done
 date: 2026-04-26
 ---
 
