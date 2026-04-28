@@ -100,7 +100,7 @@ enum {
     vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 82,
     vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768,
     vscr_ratchet_common_hidden_MAX_GROUP_SESSION_LEN = 4191503,
-    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 46622
+    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 55000
 };
 
 // --------------------------------------------------------------------------
