@@ -10,6 +10,8 @@
 
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+    <require impl="falcon" project="foundation"/>
+    <require impl="ml kem" project="foundation"/>
 
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
     <property name="kem" interface="kem" project="foundation"/>
