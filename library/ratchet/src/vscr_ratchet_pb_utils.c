@@ -294,9 +294,16 @@ vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_arra
 
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(pb_buffer_ref);
-    VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
 
-    const vscf_raw_public_key_t *raw_key = (const vscf_raw_public_key_t *)key;
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(key, NULL, &error_ctx);
+    VSCR_ASSERT(!vscf_error_has_error(&error_ctx));
+
+    vscf_raw_public_key_t *raw_key = vscf_key_alg_export_public_key(key_alg, key, &error_ctx);
+    VSCR_ASSERT(!vscf_error_has_error(&error_ctx));
+    vscf_impl_destroy(&key_alg);
 
     vscf_key_asn1_serializer_t *serializer = vscf_key_asn1_serializer_new();
     vscf_key_asn1_serializer_setup_defaults(serializer);
@@ -311,6 +318,7 @@ vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_arra
 
     vsc_buffer_destroy(&buf);
     vscf_key_asn1_serializer_destroy(&serializer);
+    vscf_raw_public_key_destroy(&raw_key);
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -356,9 +364,16 @@ vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_arr
 
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(pb_buffer_ref);
-    VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
 
-    const vscf_raw_private_key_t *raw_key = (const vscf_raw_private_key_t *)key;
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_key(key, NULL, &error_ctx);
+    VSCR_ASSERT(!vscf_error_has_error(&error_ctx));
+
+    vscf_raw_private_key_t *raw_key = vscf_key_alg_export_private_key(key_alg, key, &error_ctx);
+    VSCR_ASSERT(!vscf_error_has_error(&error_ctx));
+    vscf_impl_destroy(&key_alg);
 
     vscf_key_asn1_serializer_t *serializer = vscf_key_asn1_serializer_new();
     vscf_key_asn1_serializer_setup_defaults(serializer);
@@ -374,6 +389,7 @@ vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_arr
 
     vsc_buffer_destroy(&buf);
     vscf_key_asn1_serializer_destroy(&serializer);
+    vscf_raw_private_key_destroy(&raw_key);
 }
 
 VSCR_PUBLIC vscr_status_t
