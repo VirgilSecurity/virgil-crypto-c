@@ -317,9 +317,9 @@ test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
     msg1->message_pb.regular_message.cipher_text->size = vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN;
 
     msg1->header_pb.pqc_info.encapsulated_key =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_encapsulated_key1_pqc.len));
     msg1->header_pb.pqc_info.public_key =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_PUBLIC_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_pub_key_pqc.len));
 
     memcpy(msg1->header_pb.pqc_info.encapsulated_key->bytes, test_data_ratchet_message_encapsulated_key1_pqc.bytes,
             test_data_ratchet_message_encapsulated_key1_pqc.len);
@@ -339,28 +339,28 @@ test__serialize_deserialize__prekey_msg_overflow__should_be_equal(void) {
     msg1->message_pb.prekey_message.has_pqc_info = true;
 
     msg1->message_pb.prekey_message.pqc_info.encapsulated_key1 =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_encapsulated_key2_pqc.len));
     memcpy(msg1->message_pb.prekey_message.pqc_info.encapsulated_key1,
             test_data_ratchet_message_encapsulated_key2_pqc.bytes, test_data_ratchet_message_encapsulated_key2_pqc.len);
     msg1->message_pb.prekey_message.pqc_info.encapsulated_key1->size =
             test_data_ratchet_message_encapsulated_key2_pqc.len;
 
     msg1->message_pb.prekey_message.pqc_info.encapsulated_key2 =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_encapsulated_key3_pqc.len));
     memcpy(msg1->message_pb.prekey_message.pqc_info.encapsulated_key2,
             test_data_ratchet_message_encapsulated_key3_pqc.bytes, test_data_ratchet_message_encapsulated_key3_pqc.len);
     msg1->message_pb.prekey_message.pqc_info.encapsulated_key2->size =
             test_data_ratchet_message_encapsulated_key3_pqc.len;
 
     msg1->message_pb.prekey_message.pqc_info.encapsulated_key3 =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_encapsulated_key4_pqc.len));
     memcpy(msg1->message_pb.prekey_message.pqc_info.encapsulated_key3,
             test_data_ratchet_message_encapsulated_key4_pqc.bytes, test_data_ratchet_message_encapsulated_key4_pqc.len);
     msg1->message_pb.prekey_message.pqc_info.encapsulated_key3->size =
             test_data_ratchet_message_encapsulated_key4_pqc.len;
 
     msg1->message_pb.prekey_message.pqc_info.decapsulated_keys_signature =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_decapsulated_keys_signature_pqc.len));
     memcpy(msg1->message_pb.prekey_message.pqc_info.decapsulated_keys_signature,
             test_data_ratchet_message_decapsulated_keys_signature_pqc.bytes,
             test_data_ratchet_message_decapsulated_keys_signature_pqc.len);
@@ -402,9 +402,9 @@ test__serialize_deserialize__regular_msg_overflow__should_be_equal(void) {
             test_data_ratchet_message_pub_key1.len);
 
     msg1->header_pb.pqc_info.encapsulated_key =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_encapsulated_key1_pqc.len));
     msg1->header_pb.pqc_info.public_key =
-            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(vscr_ratchet_common_hidden_KEM_PUBLIC_KEY_LEN));
+            vscr_alloc(PB_BYTES_ARRAY_T_ALLOCSIZE(test_data_ratchet_message_pub_key_pqc.len));
 
     memcpy(msg1->header_pb.pqc_info.encapsulated_key->bytes, test_data_ratchet_message_encapsulated_key1_pqc.bytes,
             test_data_ratchet_message_encapsulated_key1_pqc.len);

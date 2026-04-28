@@ -1002,22 +1002,19 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
 
         if (session->enable_post_quantum) {
-            if (session_pb->pqc_info.encapsulated_key1->size != vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN) {
+            if (session_pb->pqc_info.encapsulated_key1->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
                 goto err;
             }
-            if (session_pb->pqc_info.encapsulated_key2->size != vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN) {
+            if (session_pb->pqc_info.encapsulated_key2->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
                 goto err;
             }
-            if (session_pb->pqc_info.encapsulated_key3 != NULL &&
-                    session_pb->pqc_info.encapsulated_key3->size !=
-                            vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN) {
+            if (session_pb->pqc_info.encapsulated_key3 != NULL && session_pb->pqc_info.encapsulated_key3->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
                 goto err;
             }
-            if (session_pb->pqc_info.decapsulated_keys_signature->size !=
-                    vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN) {
+            if (session_pb->pqc_info.decapsulated_keys_signature->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
                 goto err;
             }

@@ -38,6 +38,12 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+// Fixed KEM/signer sizes for random fake-session generation in serialization tests.
+// These match ML-KEM-768 and Falcon-1024 and exist here only to keep test helper functions
+// compilable after the named constants were removed from vscr_ratchet_common_hidden.h.
+#define VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN 1088
+#define VSCR_TEST_FALCON_SIGNATURE_LEN 809
+
 #include "vscr_memory.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscf_ctr_drbg.h"
@@ -875,10 +881,10 @@ generate_full_session(vscf_ctr_drbg_t *rng) {
     session->receiver_has_one_time_key_first = true;
     generate_random_c(rng, session->receiver_one_time_key_id, vscr_ratchet_common_KEY_ID_LEN);
 
-    session->decapsulated_keys_signature = generate_random_buff(rng, vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
-    session->encapsulated_key_1 = generate_random_buff(rng, vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN);
-    session->encapsulated_key_2 = generate_random_buff(rng, vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN);
-    session->encapsulated_key_3 = generate_random_buff(rng, vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN);
+    session->decapsulated_keys_signature = generate_random_buff(rng, VSCR_TEST_FALCON_SIGNATURE_LEN);
+    session->encapsulated_key_1 = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
+    session->encapsulated_key_2 = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
+    session->encapsulated_key_3 = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
 
     vscr_ratchet_destroy(&session->ratchet);
     session->ratchet = generate_full_ratchet(rng);
@@ -919,7 +925,7 @@ generate_full_sender_chain(vscf_ctr_drbg_t *rng) {
     generate_random_c(rng, sender_chain->public_key_first, sizeof(sender_chain->public_key_first));
     generate_random_c(rng, sender_chain->private_key_first, sizeof(sender_chain->private_key_first));
 
-    sender_chain->encapsulated_key = generate_random_buff(rng, vscr_ratchet_common_hidden_KEM_ENCAPSULATED_KEY_LEN);
+    sender_chain->encapsulated_key = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
     generate_full_chain_key_s(rng, &sender_chain->chain_key);
 
     return sender_chain;
