@@ -15,13 +15,13 @@ jobs:
   build-macos:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check Xcode
         run: |
           xcode-select -p
           xcodebuild -version
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
       - name: Setup Python virtual environment
@@ -47,7 +47,7 @@ jobs:
   SPM:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check Xcode
         run: |
           xcode-select -p

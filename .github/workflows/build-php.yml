@@ -27,7 +27,7 @@ jobs:
             arch-short: x64
     name: Windows PHP ${{ matrix.php-version }} (${{ matrix.arch }})
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -157,7 +157,7 @@ jobs:
           Write-Host "PHP_DEVEL_HOME: $php_devel_home"
 
       - name: Checkout project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Configure project
         shell: cmd
@@ -208,10 +208,10 @@ jobs:
       - name: Check PHP Version
         run: php -v
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
@@ -286,10 +286,10 @@ jobs:
       - name: Check PHP Version
         run: php -v
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
