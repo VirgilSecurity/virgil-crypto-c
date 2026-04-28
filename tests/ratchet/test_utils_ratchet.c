@@ -390,7 +390,7 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
     TEST_ASSERT_EQUAL_INT(
             vscr_status_SUCCESS, vscr_ratchet_session_initiate(*session_alice, alice_priv, vsc_buffer_data(alice_id),
                                          bob_pub, vsc_buffer_data(bob_id), bob_lt_pub, vsc_buffer_data(bob_lt_id),
-                                         bob_ot_pub, vsc_buffer_data(bob_ot_id), enable_pqc));
+                                         bob_ot_pub, vsc_buffer_data(bob_ot_id)));
 
     TEST_ASSERT((*session_alice)->is_initiator);
     TEST_ASSERT(!(*session_alice)->received_first_response);
@@ -430,8 +430,8 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
         restore_session(rng, session_alice);
     }
 
-    TEST_ASSERT_EQUAL_INT(vscr_status_SUCCESS, vscr_ratchet_session_respond(*session_bob, alice_pub, bob_priv,
-                                                       bob_lt_priv, bob_ot_priv, ratchet_message, enable_pqc));
+    TEST_ASSERT_EQUAL_INT(vscr_status_SUCCESS,
+            vscr_ratchet_session_respond(*session_bob, alice_pub, bob_priv, bob_lt_priv, bob_ot_priv, ratchet_message));
 
     TEST_ASSERT(!(*session_bob)->is_initiator);
     TEST_ASSERT(!(*session_bob)->received_first_response);

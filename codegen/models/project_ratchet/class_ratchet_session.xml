@@ -91,10 +91,6 @@
         <argument name="receiver one time key id" class="data">
             Receiver one-time key id
         </argument>
-        <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and ML-KEM keys.
-            Ephemeral keys without KEM key won't be accepted
-        </argument>
 
         <return enum="status">
             Error
@@ -122,10 +118,6 @@
         <argument name="receiver long term key id" class="data">
             Receiver long-term key id
         </argument>
-        <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and ML-KEM keys.
-            Ephemeral keys without KEM key won't be accepted
-        </argument>
 
         <return enum="status">
             Error
@@ -150,10 +142,6 @@
         <argument name="message" class="ratchet message">
             Message received from initiator
         </argument>
-        <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and ML-KEM keys.
-            Ephemeral keys without KEM key won't be accepted
-        </argument>
 
         <return enum="status">
             Error
@@ -174,10 +162,6 @@
         </argument>
         <argument name="message" class="ratchet message">
             Message received from initiator
-        </argument>
-        <argument name="enable post quantum" type="boolean">
-            Ephemeral keys will consist of curve25519 and ML-KEM keys.
-            Ephemeral keys without KEM key won't be accepted
         </argument>
 
         <return enum="status">
