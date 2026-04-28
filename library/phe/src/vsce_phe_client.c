@@ -517,8 +517,6 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(!self->keys_are_set);
 
-    self->keys_are_set = true;
-
     VSCE_ASSERT(client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     memcpy(self->server_public_key, server_public_key.bytes, server_public_key.len);
@@ -548,6 +546,8 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
         status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto err;
     }
+
+    self->keys_are_set = true;
 
 err:
     return status;
@@ -840,7 +840,7 @@ ecp_err:
     mbedtls_ecp_point_free(&t0);
 
 pb_err:
-    vsce_zeroize(&record, sizeof(&record));
+    vsce_zeroize(&record, sizeof(record));
     vsce_phe_client_free_op_group(op_group);
 
     return status;

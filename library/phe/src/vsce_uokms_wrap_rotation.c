@@ -346,6 +346,7 @@ vsce_uokms_wrap_rotation_set_update_token(vsce_uokms_wrap_rotation_t *self, vsc_
 
     mbedtls_status = mbedtls_ecp_check_privkey(&self->group, &self->a);
     if (mbedtls_status != 0) {
+        mbedtls_mpi_free(&self->a);
         return vsce_status_ERROR_INVALID_PRIVATE_KEY;
     }
 

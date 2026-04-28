@@ -195,7 +195,7 @@ vscf_aes256_cbc_precise_encrypted_len(const vscf_aes256_cbc_t *self, size_t data
 
     VSCF_ASSERT_PTR(self);
 
-    const size_t left = data_len % vscf_aes256_cbc_BLOCK_LEN == 0;
+    const size_t left = data_len % vscf_aes256_cbc_BLOCK_LEN;
     return data_len + vscf_aes256_cbc_BLOCK_LEN - left;
 }
 

@@ -906,7 +906,10 @@ vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet
 
     memcpy(ratchet->root_key, ratchet_pb->root_key, sizeof(ratchet->root_key));
 
-    vscr_ratchet_skipped_messages_deserialize(&ratchet_pb->skipped_messages, ratchet->skipped_messages);
+    status = vscr_ratchet_skipped_messages_deserialize(&ratchet_pb->skipped_messages, ratchet->skipped_messages);
+    if (status != vscr_status_SUCCESS) {
+        goto err;
+    }
 
 err:
     return status;

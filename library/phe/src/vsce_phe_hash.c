@@ -555,10 +555,10 @@ vsce_phe_hash_push_points_to_buffer(vsce_phe_hash_t *self, vsc_buffer_t *buffer,
         const mbedtls_ecp_point *p = va_arg(points, const mbedtls_ecp_point *);
 
         if (p != NULL) {
-            mbedtls_ecp_point_write_binary(&self->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                     vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
-            vsc_buffer_inc_used(buffer, olen);
             VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
+            vsc_buffer_inc_used(buffer, olen);
             VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
         }
     }

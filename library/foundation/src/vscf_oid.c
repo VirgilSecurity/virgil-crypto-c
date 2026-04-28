@@ -666,12 +666,12 @@ vscf_oid_id_to_alg_id(vscf_oid_id_t oid_id) {
     case vscf_oid_id_PKCS5_PBES2:
         return vscf_alg_id_PKCS5_PBES2;
 
+    case vscf_oid_id_HMAC_WITH_SHA224:
     case vscf_oid_id_HMAC_WITH_SHA256:
     case vscf_oid_id_HMAC_WITH_SHA384:
     case vscf_oid_id_HMAC_WITH_SHA512:
         return vscf_alg_id_HMAC;
 
-    case vscf_oid_id_HMAC_WITH_SHA224:
     case vscf_oid_id_HKDF_WITH_SHA256:
     case vscf_oid_id_HKDF_WITH_SHA384:
     case vscf_oid_id_HKDF_WITH_SHA512:
