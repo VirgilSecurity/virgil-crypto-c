@@ -425,7 +425,7 @@ vscr_ratchet_keys_create_chain_key_sender(vscr_ratchet_keys_t *self, const vscr_
         vscf_impl_destroy(&kem_alg);
 
         if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+            status = vscr_status_ERROR_KEM_FAILED;
             goto err;
         }
     }
@@ -476,7 +476,7 @@ vscr_ratchet_keys_create_chain_key_receiver(vscr_ratchet_keys_t *self, const vsc
         vscf_impl_destroy(&kem_alg);
 
         if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+            status = vscr_status_ERROR_KEM_FAILED;
             goto err;
         }
     }
