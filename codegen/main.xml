@@ -4,7 +4,8 @@
     <library name="ed25519"/>
     <library name="nanopb"/>
     <library name="relic"/>
-    <library name="round5"/>
+    <library name="mlkem"/>
+    <library name="mldsa"/>
     <library name="falcon"/>
 
     <version major="0" minor="18" patch="0" label="dev.3"/>

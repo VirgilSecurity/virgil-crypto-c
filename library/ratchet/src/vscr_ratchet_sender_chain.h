@@ -51,7 +51,6 @@
 #endif
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_round5.h>
 #   include <virgil/crypto/foundation/vscf_impl.h>
 #endif
 
@@ -61,7 +60,6 @@
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_round5.h>
 #endif
 
 // clang-format on
@@ -166,7 +164,7 @@ VSCR_PUBLIC void
 vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vscr_SenderChain *sender_chain_pb);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_sender_chain_deserialize(const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain, vscf_round5_t *round5) VSCR_NODISCARD;
+vscr_ratchet_sender_chain_deserialize(const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain) VSCR_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.

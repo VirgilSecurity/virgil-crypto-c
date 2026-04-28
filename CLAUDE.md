@@ -42,11 +42,12 @@ cd build && ctest --output-on-failure
 | Directory     | Purpose                                                            |
 | ------------- | ------------------------------------------------------------------ |
 | `library/`    | Core C crypto libraries (common, foundation, pythia, phe, ratchet) |
-| `thirdparty/` | External deps (mbedtls, ed25519, relic, round5, falcon, nanopb)    |
+| `thirdparty/` | External deps (mbedtls, ed25519, relic, falcon, mlkem-native, mldsa-native, nanopb) |
 | `wrappers/`   | Language wrappers (python, java, go, php, wasm, swift)             |
 | `configs/`    | CMake config presets per language                                  |
 | `scripts/`    | Build and release scripts                                          |
 | `binaries/`   | Pre-built Apple xcframeworks (Git LFS)                             |
+| `docs/solutions/` | Documented solutions (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`) |
 
 ## Important Notes
 

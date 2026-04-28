@@ -139,15 +139,6 @@ import VSCFoundation
     /// Post-quantum Falcon-Sign private key is corrupted.
     case errorBadFalconPrivateKey = -228
 
-    /// Generic Round5 library error.
-    case errorRound5 = -229
-
-    /// Post-quantum NIST Round5 public key is corrupted.
-    case errorBadRound5PublicKey = -230
-
-    /// Post-quantum NIST Round5 private key is corrupted.
-    case errorBadRound5PrivateKey = -231
-
     /// Compound public key is corrupted.
     case errorBadCompoundPublicKey = -232
 
@@ -171,6 +162,18 @@ import VSCFoundation
 
     /// ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     case errorBadAsn1AlgorithmHybridKey = -239
+
+    /// Post-quantum ML-KEM-768 public key is corrupted.
+    case errorBadMlKemPublicKey = -240
+
+    /// Post-quantum ML-KEM-768 private key is corrupted.
+    case errorBadMlKemPrivateKey = -241
+
+    /// Post-quantum ML-DSA-65 public key is corrupted.
+    case errorBadMlDsaPublicKey = -242
+
+    /// Post-quantum ML-DSA-65 private key is corrupted.
+    case errorBadMlDsaPrivateKey = -243
 
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.

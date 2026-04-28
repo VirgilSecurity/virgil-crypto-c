@@ -74,25 +74,26 @@ class FoundationImplementation
     const KEY_ASN1_SERIALIZER = 32;
     const KEY_MATERIAL_RNG = 33;
     const MESSAGE_INFO_DER_SERIALIZER = 34;
-    const PBE_ALG_INFO = 35;
-    const PKCS5_PBES2 = 36;
-    const PKCS5_PBKDF2 = 37;
-    const PKCS8_SERIALIZER = 38;
-    const RANDOM_PADDING = 39;
-    const RAW_PRIVATE_KEY = 40;
-    const RAW_PUBLIC_KEY = 41;
-    const ROUND5 = 42;
-    const RSA = 43;
-    const RSA_PRIVATE_KEY = 44;
-    const RSA_PUBLIC_KEY = 45;
-    const SALTED_KDF_ALG_INFO = 46;
-    const SEC1_SERIALIZER = 47;
-    const SEED_ENTROPY_SOURCE = 48;
-    const SHA224 = 49;
-    const SHA256 = 50;
-    const SHA384 = 51;
-    const SHA512 = 52;
-    const SIMPLE_ALG_INFO = 53;
+    const ML_DSA = 35;
+    const ML_KEM = 36;
+    const PBE_ALG_INFO = 37;
+    const PKCS5_PBES2 = 38;
+    const PKCS5_PBKDF2 = 39;
+    const PKCS8_SERIALIZER = 40;
+    const RANDOM_PADDING = 41;
+    const RAW_PRIVATE_KEY = 42;
+    const RAW_PUBLIC_KEY = 43;
+    const RSA = 44;
+    const RSA_PRIVATE_KEY = 45;
+    const RSA_PUBLIC_KEY = 46;
+    const SALTED_KDF_ALG_INFO = 47;
+    const SEC1_SERIALIZER = 48;
+    const SEED_ENTROPY_SOURCE = 49;
+    const SHA224 = 50;
+    const SHA256 = 51;
+    const SHA384 = 52;
+    const SHA512 = 53;
+    const SIMPLE_ALG_INFO = 54;
 
     /**
     *

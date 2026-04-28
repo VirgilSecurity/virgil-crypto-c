@@ -58,7 +58,6 @@
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_round5.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
@@ -68,7 +67,6 @@
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_round5.h>
 #endif
 
 // clang-format on
@@ -167,13 +165,13 @@ VSCR_PUBLIC void
 vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_pb_utils_deserialize_public_key(vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **public_key_ref) VSCR_NODISCARD;
+vscr_ratchet_pb_utils_deserialize_public_key(const pb_bytes_array_t *pb_buffer, vscf_impl_t **public_key_ref) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_array_t **pb_buffer_ref);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_pb_utils_deserialize_private_key(vscf_round5_t *round5, const pb_bytes_array_t *pb_buffer, vscf_impl_t **private_key_ref) VSCR_NODISCARD;
+vscr_ratchet_pb_utils_deserialize_private_key(const pb_bytes_array_t *pb_buffer, vscf_impl_t **private_key_ref) VSCR_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.

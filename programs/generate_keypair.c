@@ -62,13 +62,13 @@ typedef enum {
     key_alg_id_CURVE25519,
     key_alg_id_P256,
     key_alg_id_FALCON,
-    key_alg_id_ROUND5,
+    key_alg_id_ML_KEM_768,
     key_alg_id_CURVE25519_ED25519,
-    key_alg_id_CURVE25519_ROUND5,
-    key_alg_id_CURVE25519_ROUND5_FALCON,
-    key_alg_id_CURVE25519_ROUND5_ED25519,
+    key_alg_id_CURVE25519_ML_KEM_768,
+    key_alg_id_CURVE25519_ML_KEM_768_FALCON,
+    key_alg_id_CURVE25519_ML_KEM_768_ED25519,
     key_alg_id_ED25519_FALCON,
-    key_alg_id_CURVE25519_ROUND5_ED25519_FALCON
+    key_alg_id_CURVE25519_ML_KEM_768_ED25519_FALCON
 } key_alg_id_t;
 
 void
@@ -81,13 +81,13 @@ print_help(const char *prog_name) {
            "      - curve25519\n"
            "      - p256\n"
            "      - falcon\n"
-           "      - round5\n"
+           "      - ml_kem_768\n"
            "      - curve25519_ed25519\n"
-           "      - curve25519_round5\n"
-           "      - curve25519_round5_falcon\n"
-           "      - curve25519_round5_ed25519\n"
+           "      - curve25519_ml_kem_768\n"
+           "      - curve25519_ml_kem_768_falcon\n"
+           "      - curve25519_ml_kem_768_ed25519\n"
            "      - ed25519_falcon\n"
-           "      - curve25519_round5_ed25519_falcon\n");
+           "      - curve25519_ml_kem_768_ed25519_falcon\n");
 }
 
 void
@@ -144,26 +144,26 @@ convert_arg_to_key_alg_id(const char *arg) {
     } else if (strcmp(arg, "falcon") == 0) {
         return key_alg_id_FALCON;
 
-    } else if (strcmp(arg, "round5") == 0) {
-        return key_alg_id_ROUND5;
+    } else if (strcmp(arg, "ml_kem_768") == 0) {
+        return key_alg_id_ML_KEM_768;
 
     } else if (strcmp(arg, "curve25519_ed25519") == 0) {
         return key_alg_id_CURVE25519_ED25519;
 
-    } else if (strcmp(arg, "curve25519_round5") == 0) {
-        return key_alg_id_CURVE25519_ROUND5;
+    } else if (strcmp(arg, "curve25519_ml_kem_768") == 0) {
+        return key_alg_id_CURVE25519_ML_KEM_768;
 
-    } else if (strcmp(arg, "curve25519_round5_falcon") == 0) {
-        return key_alg_id_CURVE25519_ROUND5_FALCON;
+    } else if (strcmp(arg, "curve25519_ml_kem_768_falcon") == 0) {
+        return key_alg_id_CURVE25519_ML_KEM_768_FALCON;
 
-    } else if (strcmp(arg, "curve25519_round5_ed25519") == 0) {
-        return key_alg_id_CURVE25519_ROUND5_ED25519;
+    } else if (strcmp(arg, "curve25519_ml_kem_768_ed25519") == 0) {
+        return key_alg_id_CURVE25519_ML_KEM_768_ED25519;
 
     } else if (strcmp(arg, "ed25519_falcon") == 0) {
         return key_alg_id_ED25519_FALCON;
 
-    } else if (strcmp(arg, "curve25519_round5_ed25519_falcon") == 0) {
-        return key_alg_id_CURVE25519_ROUND5_ED25519_FALCON;
+    } else if (strcmp(arg, "curve25519_ml_kem_768_ed25519_falcon") == 0) {
+        return key_alg_id_CURVE25519_ML_KEM_768_ED25519_FALCON;
     }
 
     return key_alg_id_NONE;
@@ -341,8 +341,8 @@ main(int argc, const char *const *const argv) {
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_FALCON, NULL);
         break;
 
-    case key_alg_id_ROUND5:
-        private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, NULL);
+    case key_alg_id_ML_KEM_768:
+        private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, NULL);
         break;
 
     case key_alg_id_CURVE25519_ED25519:
@@ -350,19 +350,19 @@ main(int argc, const char *const *const argv) {
                 key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ED25519, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ROUND5:
+    case key_alg_id_CURVE25519_ML_KEM_768:
         private_key = vscf_key_provider_generate_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D, NULL);
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ROUND5_ED25519:
+    case key_alg_id_CURVE25519_ML_KEM_768_ED25519:
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_NONE, NULL);
+                vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_NONE, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ROUND5_FALCON:
+    case key_alg_id_CURVE25519_ML_KEM_768_FALCON:
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_FALCON, vscf_alg_id_NONE, NULL);
+                vscf_alg_id_ML_KEM_768, vscf_alg_id_FALCON, vscf_alg_id_NONE, NULL);
         break;
 
     case key_alg_id_ED25519_FALCON:
@@ -370,9 +370,9 @@ main(int argc, const char *const *const argv) {
                 key_provider, vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ROUND5_ED25519_FALCON:
+    case key_alg_id_CURVE25519_ML_KEM_768_ED25519_FALCON:
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
+                vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
         break;
 
     case key_alg_id_NONE:

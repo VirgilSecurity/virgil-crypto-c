@@ -45,6 +45,11 @@
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_compound_key_alg_info.h"
 #include "vscf_hybrid_key_alg_info.h"
+#include "vscf_hybrid_key_alg.h"
+#include "vscf_key_provider.h"
+#include "vscf_private_key.h"
+#include "vscf_pkcs8_serializer.h"
+#include "vscf_alg_info.h"
 
 #include "test_data_rsa.h"
 #include "test_data_ed25519.h"
@@ -532,21 +537,45 @@ test__deserialize_private_key__hybrid_curve25519_curve25519_der__success(void) {
 }
 
 void
-test__deserialize_public_key__hybrid_curve25519_round5_der__success(void) {
-#if VSCF_POST_QUANTUM
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
+test__deserialize_public_key__hybrid_curve25519_ml_kem_768_der__success(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_raw_public_key_t *raw_public_key = vscf_key_asn1_deserializer_deserialize_public_key(
-            key_deserializer, test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY_PKCS8_DER, &error);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
+    vscf_impl_t *curve25519_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_CURVE25519, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    TEST_ASSERT_NOT_NULL(raw_public_key);
 
-    const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(raw_public_key);
+    vscf_impl_t *ml_kem_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_hybrid_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *hybrid_priv = vscf_hybrid_key_alg_make_key(key_alg, curve25519_priv, ml_kem_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_impl_t *hybrid_pub = vscf_private_key_extract_public_key(hybrid_priv);
+    vscf_raw_public_key_t *raw_public_key = vscf_hybrid_key_alg_export_public_key(key_alg, hybrid_pub, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
+    size_t len = vscf_pkcs8_serializer_serialized_public_key_len(pkcs8, raw_public_key);
+    vsc_buffer_t *der = vsc_buffer_new_with_capacity(len);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_public_key(pkcs8, raw_public_key, der));
+
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_raw_public_key_t *deserialized =
+            vscf_key_asn1_deserializer_deserialize_public_key(key_deserializer, vsc_buffer_data(der), &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(deserialized);
+
+    const vscf_impl_t *alg_info = vscf_raw_public_key_alg_info(deserialized);
     TEST_ASSERT_EQUAL(vscf_impl_tag_HYBRID_KEY_ALG_INFO, vscf_impl_tag(alg_info));
     const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)alg_info;
     const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
@@ -554,33 +583,64 @@ test__deserialize_public_key__hybrid_curve25519_round5_der__success(void) {
 
     TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(first_key_alg_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_info_alg_id(second_key_alg_info));
-    TEST_ASSERT_EQUAL_DATA(
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY, vscf_raw_public_key_data(raw_public_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ML_KEM_768, vscf_alg_info_alg_id(second_key_alg_info));
+    TEST_ASSERT_EQUAL_DATA(vscf_raw_public_key_data(raw_public_key), vscf_raw_public_key_data(deserialized));
 
-    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_raw_public_key_destroy(&deserialized);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    vsc_buffer_destroy(&der);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
+    vscf_raw_public_key_destroy(&raw_public_key);
+    vscf_impl_destroy(&hybrid_pub);
+    vscf_impl_destroy(&hybrid_priv);
+    vscf_impl_destroy(&curve25519_priv);
+    vscf_impl_destroy(&ml_kem_priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
+    vscf_key_provider_destroy(&key_provider);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
 void
-test__deserialize_private_key__hybrid_curve25519_round5_der__success(void) {
-#if VSCF_POST_QUANTUM
-    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
-    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
-
+test__deserialize_private_key__hybrid_curve25519_ml_kem_768_der__success(void) {
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
     vscf_error_t error;
     vscf_error_reset(&error);
 
-    vscf_raw_private_key_t *raw_private_key = vscf_key_asn1_deserializer_deserialize_private_key(
-            key_deserializer, test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER, &error);
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
+    vscf_impl_t *curve25519_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_CURVE25519, &error);
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    TEST_ASSERT_NOT_NULL(raw_private_key);
 
-    const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(raw_private_key);
+    vscf_impl_t *ml_kem_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_hybrid_key_alg_t *key_alg = vscf_hybrid_key_alg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_hybrid_key_alg_setup_defaults(key_alg));
+
+    vscf_impl_t *hybrid_priv = vscf_hybrid_key_alg_make_key(key_alg, curve25519_priv, ml_kem_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_raw_private_key_t *raw_private_key = vscf_hybrid_key_alg_export_private_key(key_alg, hybrid_priv, &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+
+    vscf_pkcs8_serializer_t *pkcs8 = vscf_pkcs8_serializer_new();
+    vscf_pkcs8_serializer_setup_defaults(pkcs8);
+    size_t len = vscf_pkcs8_serializer_serialized_private_key_len(pkcs8, raw_private_key);
+    vsc_buffer_t *der = vsc_buffer_new_with_capacity(len);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_pkcs8_serializer_serialize_private_key(pkcs8, raw_private_key, der));
+
+    vscf_key_asn1_deserializer_t *key_deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(key_deserializer);
+
+    vscf_raw_private_key_t *deserialized =
+            vscf_key_asn1_deserializer_deserialize_private_key(key_deserializer, vsc_buffer_data(der), &error);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
+    TEST_ASSERT_NOT_NULL(deserialized);
+
+    const vscf_impl_t *alg_info = vscf_raw_private_key_alg_info(deserialized);
     TEST_ASSERT_EQUAL(vscf_impl_tag_HYBRID_KEY_ALG_INFO, vscf_impl_tag(alg_info));
     const vscf_hybrid_key_alg_info_t *hybrid_key_alg_info = (const vscf_hybrid_key_alg_info_t *)alg_info;
     const vscf_impl_t *first_key_alg_info = vscf_hybrid_key_alg_info_first_key_alg_info(hybrid_key_alg_info);
@@ -588,14 +648,21 @@ test__deserialize_private_key__hybrid_curve25519_round5_der__success(void) {
 
     TEST_ASSERT_EQUAL(vscf_alg_id_HYBRID_KEY, vscf_alg_info_alg_id(alg_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_alg_info_alg_id(first_key_alg_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_info_alg_id(second_key_alg_info));
-    TEST_ASSERT_EQUAL_DATA(
-            test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY, vscf_raw_private_key_data(raw_private_key));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ML_KEM_768, vscf_alg_info_alg_id(second_key_alg_info));
+    TEST_ASSERT_EQUAL_DATA(vscf_raw_private_key_data(raw_private_key), vscf_raw_private_key_data(deserialized));
 
-    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_raw_private_key_destroy(&deserialized);
     vscf_key_asn1_deserializer_destroy(&key_deserializer);
+    vsc_buffer_destroy(&der);
+    vscf_pkcs8_serializer_destroy(&pkcs8);
+    vscf_raw_private_key_destroy(&raw_private_key);
+    vscf_impl_destroy(&hybrid_priv);
+    vscf_impl_destroy(&curve25519_priv);
+    vscf_impl_destroy(&ml_kem_priv);
+    vscf_hybrid_key_alg_destroy(&key_alg);
+    vscf_key_provider_destroy(&key_provider);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY are disabled");
 #endif
 }
 
@@ -635,8 +702,8 @@ main(void) {
 
     RUN_TEST(test__deserialize_public_key__hybrid_curve25519_curve25519_der__success);
     RUN_TEST(test__deserialize_private_key__hybrid_curve25519_curve25519_der__success);
-    RUN_TEST(test__deserialize_public_key__hybrid_curve25519_round5_der__success);
-    RUN_TEST(test__deserialize_private_key__hybrid_curve25519_round5_der__success);
+    RUN_TEST(test__deserialize_public_key__hybrid_curve25519_ml_kem_768_der__success);
+    RUN_TEST(test__deserialize_private_key__hybrid_curve25519_ml_kem_768_der__success);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

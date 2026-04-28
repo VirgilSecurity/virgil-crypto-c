@@ -1,0 +1,5 @@
+<library name="mldsa" path="../thirdparty/mldsa-native">
+    External library: https://github.com/pq-code-package/mldsa-native
+
+    <feature name="library" default="${VIRGIL_POST_QUANTUM}"/>
+</library>

@@ -258,10 +258,9 @@ vscr_ratchet_receiver_chain_serialize(
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain_pb,
-        vscr_ratchet_receiver_chain_t *receiver_chain, vscf_round5_t *round5) {
+vscr_ratchet_receiver_chain_deserialize(
+        const vscr_ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) {
 
-    VSCR_ASSERT_PTR(round5);
     VSCR_ASSERT_PTR(receiver_chain);
     VSCR_ASSERT_PTR(receiver_chain_pb);
 
@@ -274,7 +273,7 @@ vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain
 
     if (receiver_chain_pb->public_key_second != NULL) {
         status = vscr_ratchet_pb_utils_deserialize_public_key(
-                round5, receiver_chain_pb->public_key_second, &receiver_chain->public_key_second);
+                receiver_chain_pb->public_key_second, &receiver_chain->public_key_second);
         if (status != vscr_status_SUCCESS) {
             goto err;
         }

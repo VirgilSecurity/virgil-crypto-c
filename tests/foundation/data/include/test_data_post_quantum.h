@@ -33,12 +33,3 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 #include "vsc_data.h"
-
-extern const vsc_data_t test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PUBLIC_KEY_PKCS8_DER;
-extern const vsc_data_t test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PRIVATE_KEY_PKCS8_DER;
-
-extern const vsc_data_t test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER;
-extern const vsc_data_t test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER;
-
-extern const vsc_data_t test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER;
-extern const vsc_data_t test_data_pqc_CURVE25519_ROUND5_ND_5KEM_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER;

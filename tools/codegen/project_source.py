@@ -189,6 +189,18 @@ class ProjectFeatureSource:
     name: str
     attrs: dict[str, str] = field(default_factory=dict)
     description: str = ""
+    requires: list[list[str]] = field(default_factory=list)
+
+
+@dataclass
+class ExternalLibrarySource:
+    """Parsed representation of a ``codegen/models/external/library_*.xml`` file."""
+    name: str
+    path: str
+    prefix: str = ""
+    description: str = ""
+    features: list[ProjectFeatureSource] = field(default_factory=list)
+    library_requires: list[list[str]] = field(default_factory=list)
 
 
 @dataclass
@@ -205,6 +217,7 @@ class LibraryRequireSource:
     kind: str = ""  # 'project' or 'library'
     name: str = ""
     error_message_getter: LibraryErrorMessageGetter | None = None
+    required_impls: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -737,6 +750,12 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
         elif "project" in req_elem.attrib:
             lib_req.kind = "project"
             lib_req.name = req_elem.attrib["project"]
+            # Collect child <require impl="..."/> entries
+            lib_req.required_impls = [
+                child.attrib["impl"]
+                for child in req_elem.findall("require")
+                if "impl" in child.attrib
+            ]
             # Load the referenced project's error_message_getter
             try:
                 ref_project_path = project_model_path(lib_req.name, repo_root)
@@ -758,3 +777,56 @@ def load_project_source(project_path: str | Path) -> ProjectSource:
 
 def load_named_project_source(project_name: str, repo_root: str | Path = ".") -> ProjectSource:
     return load_project_source(project_model_path(project_name, repo_root))
+
+
+def _parse_feature_requires(feat_elem: ET.Element) -> list[list[str]]:
+    """Parse all ``<require>`` children of a ``<feature>`` element.
+
+    Returns a list of alternative groups.  Each group is a list of feature
+    names: one item = hard dependency; multiple items = OR-group.
+    """
+    result: list[list[str]] = []
+    for req in feat_elem.findall("require"):
+        alternatives = req.findall("alternative")
+        if alternatives:
+            result.append([a.attrib["feature"] for a in alternatives if "feature" in a.attrib])
+        elif "feature" in req.attrib:
+            result.append([req.attrib["feature"]])
+    return result
+
+
+def load_external_library_source(path: Path) -> ExternalLibrarySource:
+    """Parse a ``library_*.xml`` external library model file.
+
+    Reads the ``<library>`` root and all ``<feature>`` children including their
+    ``<require>`` dependency declarations.  Top-level ``<require>`` elements
+    (direct children of ``<library>``, not inside a ``<feature>``) are parsed
+    as mutual-exclusion / mandatory-one-of groups.
+    """
+    root = _parse_legacy_xml(path)
+
+    features: list[ProjectFeatureSource] = []
+    for feat_elem in root.findall("feature"):
+        features.append(ProjectFeatureSource(
+            name=feat_elem.attrib.get("name", ""),
+            attrs=dict(feat_elem.attrib),
+            description=_description(feat_elem),
+            requires=_parse_feature_requires(feat_elem),
+        ))
+
+    library_requires: list[list[str]] = []
+    for req in root.findall("require"):
+        alternatives = req.findall("alternative")
+        if alternatives:
+            library_requires.append([a.attrib["feature"] for a in alternatives if "feature" in a.attrib])
+        elif "feature" in req.attrib:
+            library_requires.append([req.attrib["feature"]])
+
+    return ExternalLibrarySource(
+        name=root.attrib.get("name", ""),
+        path=root.attrib.get("path", ""),
+        prefix=root.attrib.get("prefix", ""),
+        description=_description(root),
+        features=features,
+        library_requires=library_requires,
+    )

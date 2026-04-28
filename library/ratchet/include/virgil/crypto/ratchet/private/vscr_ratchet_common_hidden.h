@@ -85,10 +85,7 @@ enum {
     vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION = 1,
     vscr_ratchet_common_hidden_SESSION_VERSION = 2,
     vscr_ratchet_common_hidden_GROUP_SESSION_VERSION = 1,
-    vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN = 809,
-    vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN = 620,
-    vscr_ratchet_common_hidden_ROUND5_PUBLIC_KEY_LEN = 461,
-    vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN = 16,
+    vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN = 32,
     vscr_ratchet_common_hidden_SHARED_KEY_LEN = 32,
     vscr_ratchet_common_hidden_KEY_LEN = 32,
     vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 200,
@@ -100,7 +97,7 @@ enum {
     vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 82,
     vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768,
     vscr_ratchet_common_hidden_MAX_GROUP_SESSION_LEN = 4191503,
-    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 46622
+    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 55000
 };
 
 // --------------------------------------------------------------------------

@@ -207,18 +207,6 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY = -228,
     //
-    //  Generic Round5 library error.
-    //
-    vscf_status_ERROR_ROUND5 = -229,
-    //
-    //  Post-quantum NIST Round5 public key is corrupted.
-    //
-    vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY = -230,
-    //
-    //  Post-quantum NIST Round5 private key is corrupted.
-    //
-    vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY = -231,
-    //
     //  Compound public key is corrupted.
     //
     vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY = -232,
@@ -250,6 +238,22 @@ enum vscf_status_t {
     //  ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     //
     vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239,
+    //
+    //  Post-quantum ML-KEM-768 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_KEM_PUBLIC_KEY = -240,
+    //
+    //  Post-quantum ML-KEM-768 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_KEM_PRIVATE_KEY = -241,
+    //
+    //  Post-quantum ML-DSA-65 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_DSA_PUBLIC_KEY = -242,
+    //
+    //  Post-quantum ML-DSA-65 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_DSA_PRIVATE_KEY = -243,
     //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.

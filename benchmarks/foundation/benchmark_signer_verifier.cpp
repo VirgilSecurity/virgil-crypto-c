@@ -35,6 +35,7 @@
 
 #include "benchmark/benchmark.h"
 
+#include "vscf_platform.h"
 #include "vscf_key_provider.h"
 #include "vscf_private_key.h"
 #include "vscf_signer.h"
@@ -48,7 +49,8 @@
 constexpr const char k_data_str[] = "this string will be signed";
 const vsc_data_t k_data = vsc_data_from_str(k_data_str, sizeof(k_data_str) - 1);
 
-constexpr const size_t k_signature_len_max = 1024;
+// ML-DSA-65 produces 3309-byte signatures; keep headroom for future algorithms.
+constexpr const size_t k_signature_len_max = 4096;
 
 
 static void
@@ -147,3 +149,13 @@ BENCHMARK(signer_sign)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
 BENCHMARK(verifier_verify)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
 BENCHMARK(verifier_verify)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
 BENCHMARK(verifier_verify)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
+
+#if VSCF_FALCON
+BENCHMARK(signer_sign)->ArgNames({"Falcon"})->Arg(vscf_alg_id_FALCON);
+BENCHMARK(verifier_verify)->ArgNames({"Falcon"})->Arg(vscf_alg_id_FALCON);
+#endif
+
+#if VSCF_ML_DSA
+BENCHMARK(signer_sign)->ArgNames({"MlDsa65"})->Arg(vscf_alg_id_ML_DSA_65);
+BENCHMARK(verifier_verify)->ArgNames({"MlDsa65"})->Arg(vscf_alg_id_ML_DSA_65);
+#endif

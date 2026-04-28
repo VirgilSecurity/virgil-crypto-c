@@ -77,9 +77,11 @@ import VSCFoundation
 
     case falcon
 
-    case round5Nd1cca5d
-
     case randomPadding
+
+    case mlKem768
+
+    case mlDsa65
 
     /// Create enumeration value from the correspond C enumeration value.
     init(fromC algId: vscf_alg_id_t) {

@@ -52,6 +52,9 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
+#include <virgil/crypto/foundation/vscf_kem.h>
+#include <virgil/crypto/foundation/vscf_key_alg_factory.h>
+#include <virgil/crypto/foundation/vscf_error.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
@@ -318,8 +321,6 @@ static void
 vscr_ratchet_keys_init_ctx(vscr_ratchet_keys_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    self->round5 = vscf_round5_new();
 }
 
 //
@@ -331,8 +332,6 @@ static void
 vscr_ratchet_keys_cleanup_ctx(vscr_ratchet_keys_t *self) {
 
     VSCR_ASSERT_PTR(self);
-
-    vscf_round5_destroy(&self->round5);
 }
 
 //
@@ -341,9 +340,7 @@ vscr_ratchet_keys_cleanup_ctx(vscr_ratchet_keys_t *self) {
 static void
 vscr_ratchet_keys_did_setup_rng(vscr_ratchet_keys_t *self) {
 
-    if (self->rng != NULL) {
-        vscf_round5_use_random(self->round5, self->rng);
-    }
+    VSCR_ASSERT_PTR(self);
 }
 
 //
@@ -391,13 +388,12 @@ vscr_ratchet_keys_create_chain_key_sender(vscr_ratchet_keys_t *self, const vscr_
         vscr_ratchet_symmetric_key_t new_root_key, vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->round5);
     VSCR_ASSERT_PTR(chain_key);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
     size_t buffer_len =
-            ED25519_DH_LEN + (public_key_second != NULL ? vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN : 0);
+            ED25519_DH_LEN + (public_key_second != NULL ? vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN : 0);
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(buffer_len);
     vsc_buffer_make_secure(shared_secret);
@@ -412,13 +408,24 @@ vscr_ratchet_keys_create_chain_key_sender(vscr_ratchet_keys_t *self, const vscr_
 
     if (public_key_second != NULL) {
         VSCR_ASSERT_PTR(encapsulated_key_ref);
-        *encapsulated_key_ref = vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+
+        vscf_error_t f_error;
+        vscf_error_reset(&f_error);
+        vscf_impl_t *kem_alg = vscf_key_alg_factory_create_from_key(public_key_second, self->rng, &f_error);
+        if (vscf_error_has_error(&f_error)) {
+            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+            goto err;
+        }
+
+        size_t encap_len = vscf_kem_kem_encapsulated_key_len(kem_alg, public_key_second);
+        *encapsulated_key_ref = vsc_buffer_new_with_capacity(encap_len);
 
         vscf_status_t f_status =
-                vscf_round5_kem_encapsulate(self->round5, public_key_second, shared_secret, *encapsulated_key_ref);
+                vscf_kem_kem_encapsulate(kem_alg, public_key_second, shared_secret, *encapsulated_key_ref);
+        vscf_impl_destroy(&kem_alg);
 
         if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_ROUND5;
+            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
             goto err;
         }
     }
@@ -438,13 +445,12 @@ vscr_ratchet_keys_create_chain_key_receiver(vscr_ratchet_keys_t *self, const vsc
         vscr_ratchet_chain_key_t *chain_key) {
 
     VSCR_ASSERT_PTR(self);
-    VSCR_ASSERT_PTR(self->round5);
     VSCR_ASSERT_PTR(chain_key);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
     size_t buffer_len =
-            ED25519_DH_LEN + (private_key_second != NULL ? vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN : 0);
+            ED25519_DH_LEN + (private_key_second != NULL ? vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN : 0);
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(buffer_len);
     vsc_buffer_make_secure(shared_secret);
@@ -458,11 +464,19 @@ vscr_ratchet_keys_create_chain_key_receiver(vscr_ratchet_keys_t *self, const vsc
     }
 
     if (private_key_second != NULL) {
-        vscf_status_t f_status =
-                vscf_round5_kem_decapsulate(self->round5, encapsulated_key, private_key_second, shared_secret);
+        vscf_error_t f_error;
+        vscf_error_reset(&f_error);
+        vscf_impl_t *kem_alg = vscf_key_alg_factory_create_from_key(private_key_second, self->rng, &f_error);
+        if (vscf_error_has_error(&f_error)) {
+            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+            goto err;
+        }
+
+        vscf_status_t f_status = vscf_kem_kem_decapsulate(kem_alg, encapsulated_key, private_key_second, shared_secret);
+        vscf_impl_destroy(&kem_alg);
 
         if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_ROUND5;
+            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
             goto err;
         }
     }

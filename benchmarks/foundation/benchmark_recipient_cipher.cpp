@@ -228,13 +228,13 @@ BENCHMARK(recipient_cipher_encrypt_with_hybrid_keys)
         ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_CURVE25519});
 
 BENCHMARK(recipient_cipher_encrypt_with_hybrid_keys)
-        ->ArgNames({"Curve25519/Round5"})
-        ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D});
+        ->ArgNames({"Curve25519/MlKem768"})
+        ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768});
 
 BENCHMARK(recipient_cipher_decrypt_with_hybrid_keys)
         ->ArgNames({"Curve25519/Curve25519"})
         ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_CURVE25519});
 
 BENCHMARK(recipient_cipher_decrypt_with_hybrid_keys)
-        ->ArgNames({"Curve25519/Round5"})
-        ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D});
+        ->ArgNames({"Curve25519/MlKem768"})
+        ->Args({vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768});

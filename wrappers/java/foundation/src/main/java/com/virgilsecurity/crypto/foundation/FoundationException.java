@@ -106,12 +106,6 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_FALCON_PRIVATE_KEY = -228;
 
-    public static final int ERROR_ROUND5 = -229;
-
-    public static final int ERROR_BAD_ROUND5_PUBLIC_KEY = -230;
-
-    public static final int ERROR_BAD_ROUND5_PRIVATE_KEY = -231;
-
     public static final int ERROR_BAD_COMPOUND_PUBLIC_KEY = -232;
 
     public static final int ERROR_BAD_COMPOUND_PRIVATE_KEY = -233;
@@ -127,6 +121,14 @@ public class FoundationException extends RuntimeException {
     public static final int ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238;
 
     public static final int ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239;
+
+    public static final int ERROR_BAD_ML_KEM_PUBLIC_KEY = -240;
+
+    public static final int ERROR_BAD_ML_KEM_PRIVATE_KEY = -241;
+
+    public static final int ERROR_BAD_ML_DSA_PUBLIC_KEY = -242;
+
+    public static final int ERROR_BAD_ML_DSA_PRIVATE_KEY = -243;
 
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
@@ -267,12 +269,6 @@ public class FoundationException extends RuntimeException {
             return "Post-quantum Falcon-Sign public key is corrupted.";
         case ERROR_BAD_FALCON_PRIVATE_KEY:
             return "Post-quantum Falcon-Sign private key is corrupted.";
-        case ERROR_ROUND5:
-            return "Generic Round5 library error.";
-        case ERROR_BAD_ROUND5_PUBLIC_KEY:
-            return "Post-quantum NIST Round5 public key is corrupted.";
-        case ERROR_BAD_ROUND5_PRIVATE_KEY:
-            return "Post-quantum NIST Round5 private key is corrupted.";
         case ERROR_BAD_COMPOUND_PUBLIC_KEY:
             return "Compound public key is corrupted.";
         case ERROR_BAD_COMPOUND_PRIVATE_KEY:
@@ -289,6 +285,14 @@ public class FoundationException extends RuntimeException {
             return "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.";
         case ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY:
             return "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.";
+        case ERROR_BAD_ML_KEM_PUBLIC_KEY:
+            return "Post-quantum ML-KEM-768 public key is corrupted.";
+        case ERROR_BAD_ML_KEM_PRIVATE_KEY:
+            return "Post-quantum ML-KEM-768 private key is corrupted.";
+        case ERROR_BAD_ML_DSA_PUBLIC_KEY:
+            return "Post-quantum ML-DSA-65 public key is corrupted.";
+        case ERROR_BAD_ML_DSA_PRIVATE_KEY:
+            return "Post-quantum ML-DSA-65 private key is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:

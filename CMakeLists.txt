@@ -110,7 +110,7 @@ option(VIRGIL_PROGRAMS "Build programs." OFF)
 #
 # Features
 #
-option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." ON)
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography." ON)
 
 #
 # Wrappers
@@ -216,8 +216,12 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    add_subdirectory("thirdparty/round5")
+    set(VSCF_POST_QUANTUM ON CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
     add_subdirectory("thirdparty/falcon")
+    add_subdirectory("thirdparty/mlkem-native")
+    add_subdirectory("thirdparty/mldsa-native")
+else()
+    set(VSCF_POST_QUANTUM OFF CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
 endif()
 
 # ---------------------------------------------------------------------------

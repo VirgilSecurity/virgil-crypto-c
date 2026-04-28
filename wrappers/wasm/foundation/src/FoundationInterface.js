@@ -143,6 +143,12 @@ const initFoundationInterface = (Module, modules) => {
                 case modules.FoundationImplTag.MESSAGE_INFO_DER_SERIALIZER:
                     return modules.MessageInfoDerSerializer.newAndTakeCContext(ctxPtr);
 
+                case modules.FoundationImplTag.ML_DSA:
+                    return modules.MlDsa.newAndTakeCContext(ctxPtr);
+
+                case modules.FoundationImplTag.ML_KEM:
+                    return modules.MlKem.newAndTakeCContext(ctxPtr);
+
                 case modules.FoundationImplTag.PBE_ALG_INFO:
                     return modules.PbeAlgInfo.newAndTakeCContext(ctxPtr);
 
@@ -163,9 +169,6 @@ const initFoundationInterface = (Module, modules) => {
 
                 case modules.FoundationImplTag.RAW_PUBLIC_KEY:
                     return modules.RawPublicKey.newAndTakeCContext(ctxPtr);
-
-                case modules.FoundationImplTag.ROUND5:
-                    return modules.Round5.newAndTakeCContext(ctxPtr);
 
                 case modules.FoundationImplTag.RSA:
                     return modules.Rsa.newAndTakeCContext(ctxPtr);

@@ -38,6 +38,12 @@
 #define TEST_DEPENDENCIES_AVAILABLE VSCR_RATCHET
 #if TEST_DEPENDENCIES_AVAILABLE
 
+// Fixed KEM/signer sizes for random fake-session generation in serialization tests.
+// These match ML-KEM-768 and Falcon-1024 and exist here only to keep test helper functions
+// compilable after the named constants were removed from vscr_ratchet_common_hidden.h.
+#define VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN 1088
+#define VSCR_TEST_FALCON_SIGNATURE_LEN 809
+
 #include "vscr_memory.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscf_ctr_drbg.h"
@@ -257,7 +263,7 @@ generate_identity_private_key(vscf_key_provider_t *key_provider, bool enable_pqc
 
     if (enable_pqc) {
         private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, &error_ctx);
+                vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_FALCON, &error_ctx);
     } else {
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error_ctx);
     }
@@ -276,7 +282,7 @@ generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pq
 
     if (enable_pqc) {
         private_key = vscf_key_provider_generate_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768, &error_ctx);
     } else {
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_CURVE25519, &error_ctx);
     }
@@ -304,14 +310,14 @@ generate_falcon_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **
 }
 
 void
-generate_round5_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub) {
+generate_ml_kem_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub) {
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
     vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
+    *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error_ctx);
 
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error_ctx.status);
 
@@ -384,7 +390,7 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
     TEST_ASSERT_EQUAL_INT(
             vscr_status_SUCCESS, vscr_ratchet_session_initiate(*session_alice, alice_priv, vsc_buffer_data(alice_id),
                                          bob_pub, vsc_buffer_data(bob_id), bob_lt_pub, vsc_buffer_data(bob_lt_id),
-                                         bob_ot_pub, vsc_buffer_data(bob_ot_id), enable_pqc));
+                                         bob_ot_pub, vsc_buffer_data(bob_ot_id)));
 
     TEST_ASSERT((*session_alice)->is_initiator);
     TEST_ASSERT(!(*session_alice)->received_first_response);
@@ -424,8 +430,8 @@ initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ra
         restore_session(rng, session_alice);
     }
 
-    TEST_ASSERT_EQUAL_INT(vscr_status_SUCCESS, vscr_ratchet_session_respond(*session_bob, alice_pub, bob_priv,
-                                                       bob_lt_priv, bob_ot_priv, ratchet_message, enable_pqc));
+    TEST_ASSERT_EQUAL_INT(vscr_status_SUCCESS,
+            vscr_ratchet_session_respond(*session_bob, alice_pub, bob_priv, bob_lt_priv, bob_ot_priv, ratchet_message));
 
     TEST_ASSERT(!(*session_bob)->is_initiator);
     TEST_ASSERT(!(*session_bob)->received_first_response);
@@ -824,7 +830,7 @@ generate_public_key(vscf_ctr_drbg_t *rng) {
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
+    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error_ctx);
 
     TEST_ASSERT(!vscf_error_has_error(&error_ctx));
 
@@ -844,7 +850,7 @@ generate_private_key(vscf_ctr_drbg_t *rng) {
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
+    vscf_impl_t *priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error_ctx);
 
     TEST_ASSERT(!vscf_error_has_error(&error_ctx));
 
@@ -875,10 +881,10 @@ generate_full_session(vscf_ctr_drbg_t *rng) {
     session->receiver_has_one_time_key_first = true;
     generate_random_c(rng, session->receiver_one_time_key_id, vscr_ratchet_common_KEY_ID_LEN);
 
-    session->decapsulated_keys_signature = generate_random_buff(rng, vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
-    session->encapsulated_key_1 = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
-    session->encapsulated_key_2 = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
-    session->encapsulated_key_3 = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+    session->decapsulated_keys_signature = generate_random_buff(rng, VSCR_TEST_FALCON_SIGNATURE_LEN);
+    session->encapsulated_key_1 = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
+    session->encapsulated_key_2 = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
+    session->encapsulated_key_3 = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
 
     vscr_ratchet_destroy(&session->ratchet);
     session->ratchet = generate_full_ratchet(rng);
@@ -919,7 +925,7 @@ generate_full_sender_chain(vscf_ctr_drbg_t *rng) {
     generate_random_c(rng, sender_chain->public_key_first, sizeof(sender_chain->public_key_first));
     generate_random_c(rng, sender_chain->private_key_first, sizeof(sender_chain->private_key_first));
 
-    sender_chain->encapsulated_key = generate_random_buff(rng, vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN);
+    sender_chain->encapsulated_key = generate_random_buff(rng, VSCR_TEST_KEM_ENCAPSULATED_KEY_LEN);
     generate_full_chain_key_s(rng, &sender_chain->chain_key);
 
     return sender_chain;

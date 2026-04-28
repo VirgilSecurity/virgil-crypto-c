@@ -59,5 +59,6 @@ class AlgId(object):
     COMPOUND_KEY = 17
     HYBRID_KEY = 18
     FALCON = 19
-    ROUND5_ND_1CCA_5D = 20
-    RANDOM_PADDING = 21
+    RANDOM_PADDING = 20
+    ML_KEM_768 = 21
+    ML_DSA_65 = 22

@@ -53,12 +53,10 @@
 
 #if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
-#   include <virgil/crypto/foundation/vscf_round5.h>
 #endif
 
 #if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <VSCFoundation/vscf_impl.h>
-#   include <VSCFoundation/vscf_round5.h>
 #endif
 
 // clang-format on
@@ -118,7 +116,7 @@ struct vscr_ratchet_t {
     vscf_impl_t *rng;
     vscr_ratchet_key_utils_t *ratchet_key_utils;
     vscr_ratchet_keys_t *ratchet_keys;
-    vscf_round5_t *round5;
+    vscf_impl_t *kem;
     bool enable_post_quantum;
     vscr_ratchet_cipher_t *cipher;
     vscf_message_padding_t *padding;

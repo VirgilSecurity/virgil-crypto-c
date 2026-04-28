@@ -113,12 +113,6 @@ class VscfStatus(object):
     ERROR_BAD_FALCON_PUBLIC_KEY = -227
     # Post-quantum Falcon-Sign private key is corrupted.
     ERROR_BAD_FALCON_PRIVATE_KEY = -228
-    # Generic Round5 library error.
-    ERROR_ROUND5 = -229
-    # Post-quantum NIST Round5 public key is corrupted.
-    ERROR_BAD_ROUND5_PUBLIC_KEY = -230
-    # Post-quantum NIST Round5 private key is corrupted.
-    ERROR_BAD_ROUND5_PRIVATE_KEY = -231
     # Compound public key is corrupted.
     ERROR_BAD_COMPOUND_PUBLIC_KEY = -232
     # Compound private key is corrupted.
@@ -135,6 +129,14 @@ class VscfStatus(object):
     ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238
     # ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239
+    # Post-quantum ML-KEM-768 public key is corrupted.
+    ERROR_BAD_ML_KEM_PUBLIC_KEY = -240
+    # Post-quantum ML-KEM-768 private key is corrupted.
+    ERROR_BAD_ML_KEM_PRIVATE_KEY = -241
+    # Post-quantum ML-DSA-65 public key is corrupted.
+    ERROR_BAD_ML_DSA_PUBLIC_KEY = -242
+    # Post-quantum ML-DSA-65 private key is corrupted.
+    ERROR_BAD_ML_DSA_PRIVATE_KEY = -243
     # Decryption failed, because message info was not given explicitly,
     # and was not part of an encrypted message.
     ERROR_NO_MESSAGE_INFO = -301
@@ -232,9 +234,6 @@ class VscfStatus(object):
         -226: "Key algorithm does not accept given type of private key.",
         -227: "Post-quantum Falcon-Sign public key is corrupted.",
         -228: "Post-quantum Falcon-Sign private key is corrupted.",
-        -229: "Generic Round5 library error.",
-        -230: "Post-quantum NIST Round5 public key is corrupted.",
-        -231: "Post-quantum NIST Round5 private key is corrupted.",
         -232: "Compound public key is corrupted.",
         -233: "Compound private key is corrupted.",
         -234: "Compound public hybrid key is corrupted.",
@@ -243,6 +242,10 @@ class VscfStatus(object):
         -237: "ASN.1 AlgorithmIdentifer with ECParameters is corrupted.",
         -238: "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.",
         -239: "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.",
+        -240: "Post-quantum ML-KEM-768 public key is corrupted.",
+        -241: "Post-quantum ML-KEM-768 private key is corrupted.",
+        -242: "Post-quantum ML-DSA-65 public key is corrupted.",
+        -243: "Post-quantum ML-DSA-65 private key is corrupted.",
         -301: "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.",
         -302: "Message Info is corrupted.",
         -303: "Recipient defined with id is not found within message info during data decryption.",

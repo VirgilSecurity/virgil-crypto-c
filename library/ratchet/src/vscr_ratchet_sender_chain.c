@@ -47,6 +47,7 @@
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_memory.h"
 #include "vscr_assert.h"
+#include "vscr_ratchet_common_hidden.h"
 
 // clang-format on
 //  @end
@@ -268,11 +269,10 @@ vscr_ratchet_sender_chain_serialize(const vscr_ratchet_sender_chain_t *self, vsc
 
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_sender_chain_deserialize(
-        const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain, vscf_round5_t *round5) {
+        const vscr_SenderChain *sender_chain_pb, vscr_ratchet_sender_chain_t *sender_chain) {
 
     VSCR_ASSERT_PTR(sender_chain);
     VSCR_ASSERT_PTR(sender_chain_pb);
-    VSCR_ASSERT_PTR(round5);
 
     vscr_status_t status = vscr_status_SUCCESS;
 
@@ -285,7 +285,7 @@ vscr_ratchet_sender_chain_deserialize(
 
     if (sender_chain_pb->public_key_second != NULL) {
         status = vscr_ratchet_pb_utils_deserialize_public_key(
-                round5, sender_chain_pb->public_key_second, &sender_chain->public_key_second);
+                sender_chain_pb->public_key_second, &sender_chain->public_key_second);
         if (status != vscr_status_SUCCESS) {
             goto err;
         }
@@ -293,14 +293,13 @@ vscr_ratchet_sender_chain_deserialize(
 
     if (sender_chain_pb->private_key_second != NULL) {
         status = vscr_ratchet_pb_utils_deserialize_private_key(
-                round5, sender_chain_pb->private_key_second, &sender_chain->private_key_second);
+                sender_chain_pb->private_key_second, &sender_chain->private_key_second);
         if (status != vscr_status_SUCCESS) {
             goto err;
         }
     }
 
-    if (sender_chain_pb->encapsulated_key != NULL &&
-            sender_chain_pb->encapsulated_key->size != vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
+    if (sender_chain_pb->encapsulated_key != NULL && sender_chain_pb->encapsulated_key->size == 0) {
         status = vscr_status_ERROR_PROTOBUF_DECODE;
         goto err;
     }

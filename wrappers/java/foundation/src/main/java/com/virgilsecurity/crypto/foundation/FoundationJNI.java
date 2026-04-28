@@ -1448,33 +1448,75 @@ public class FoundationJNI {
 
     public native boolean falcon_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
-    public native long round5_new();
+    public native long mlKem_new();
 
-    public native void round5_close(long cCtx);
+    public native void mlKem_close(long cCtx);
 
-    public native void round5_setRandom(long cCtx, Random random);
+    public native void mlKem_setRandom(long cCtx, Random random);
 
-    public native void round5_setupDefaults(long cCtx) throws FoundationException;
+    public native void mlKem_setupDefaults(long cCtx) throws FoundationException;
 
-    public native PrivateKey round5_generateKey(long cCtx, AlgId algId) throws FoundationException;
+    public native PrivateKey mlKem_generateKey(long cCtx) throws FoundationException;
 
-    public native PrivateKey round5_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+    public native AlgId mlKem_algId(long cCtx);
 
-    public native PublicKey round5_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+    public native AlgInfo mlKem_produceAlgInfo(long cCtx);
 
-    public native RawPublicKey round5_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native void mlKem_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
 
-    public native PrivateKey round5_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+    public native PrivateKey mlKem_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
 
-    public native RawPrivateKey round5_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+    public native PublicKey mlKem_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
 
-    public native int round5_kemSharedKeyLen(long cCtx, Key key);
+    public native RawPublicKey mlKem_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
 
-    public native int round5_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
+    public native PrivateKey mlKem_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
 
-    public native KemKemEncapsulateResult round5_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+    public native RawPrivateKey mlKem_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
 
-    public native byte[] round5_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+    public native int mlKem_kemSharedKeyLen(long cCtx, Key key);
+
+    public native int mlKem_kemEncapsulatedKeyLen(long cCtx, PublicKey publicKey);
+
+    public native KemKemEncapsulateResult mlKem_kemEncapsulate(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native byte[] mlKem_kemDecapsulate(long cCtx, byte[] encapsulatedKey, PrivateKey privateKey) throws FoundationException;
+
+    public native long mlDsa_new();
+
+    public native void mlDsa_close(long cCtx);
+
+    public native void mlDsa_setRandom(long cCtx, Random random);
+
+    public native void mlDsa_setupDefaults(long cCtx) throws FoundationException;
+
+    public native PrivateKey mlDsa_generateKey(long cCtx) throws FoundationException;
+
+    public native AlgId mlDsa_algId(long cCtx);
+
+    public native AlgInfo mlDsa_produceAlgInfo(long cCtx);
+
+    public native void mlDsa_restoreAlgInfo(long cCtx, AlgInfo algInfo) throws FoundationException;
+
+    public native PrivateKey mlDsa_generateEphemeralKey(long cCtx, Key key) throws FoundationException;
+
+    public native PublicKey mlDsa_importPublicKey(long cCtx, RawPublicKey rawKey) throws FoundationException;
+
+    public native RawPublicKey mlDsa_exportPublicKey(long cCtx, PublicKey publicKey) throws FoundationException;
+
+    public native PrivateKey mlDsa_importPrivateKey(long cCtx, RawPrivateKey rawKey) throws FoundationException;
+
+    public native RawPrivateKey mlDsa_exportPrivateKey(long cCtx, PrivateKey privateKey) throws FoundationException;
+
+    public native boolean mlDsa_canSign(long cCtx, PrivateKey privateKey);
+
+    public native int mlDsa_signatureLen(long cCtx, PrivateKey privateKey);
+
+    public native byte[] mlDsa_signHash(long cCtx, PrivateKey privateKey, AlgId hashId, byte[] digest) throws FoundationException;
+
+    public native boolean mlDsa_canVerify(long cCtx, PublicKey publicKey);
+
+    public native boolean mlDsa_verifyHash(long cCtx, PublicKey publicKey, AlgId hashId, byte[] digest, byte[] signature);
 
     public native long compoundKeyAlgInfo_new();
 

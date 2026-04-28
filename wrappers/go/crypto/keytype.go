@@ -52,8 +52,8 @@ const (
 	Curve25519
 	Ed25519
 	Curve25519Ed25519
-	Curve25519Round5Ed25519Falcon
-	Curve25519Round5
+	Curve25519MlKem768Ed25519Falcon
+	Curve25519MlKem768
 	Curve25519Curve25519
 )
 
@@ -76,15 +76,15 @@ var keyTypeMap = map[KeyType]keyGen{
 		signerFirstKeyAlgId:  foundation.AlgIdEd25519,
 		signerSecondKeyAlgId: foundation.AlgIdNone,
 	},
-	Curve25519Round5Ed25519Falcon: &compoundHybridKeyType{
+	Curve25519MlKem768Ed25519Falcon: &compoundHybridKeyType{
 		cipherFirstKeyAlgId:  foundation.AlgIdCurve25519,
-		cipherSecondKeyAlgId: foundation.AlgIdRound5Nd1cca5d,
+		cipherSecondKeyAlgId: foundation.AlgIdMlKem768,
 		signerFirstKeyAlgId:  foundation.AlgIdEd25519,
 		signerSecondKeyAlgId: foundation.AlgIdFalcon,
 	},
-	Curve25519Round5: &hybridKeyType{
+	Curve25519MlKem768: &hybridKeyType{
 		firstKeyAlgId:  foundation.AlgIdCurve25519,
-		secondKeyAlgId: foundation.AlgIdRound5Nd1cca5d,
+		secondKeyAlgId: foundation.AlgIdMlKem768,
 	},
 	Curve25519Curve25519: &hybridKeyType{
 		firstKeyAlgId:  foundation.AlgIdCurve25519,
@@ -147,10 +147,10 @@ func getKeyType(obj deleter) (KeyType, error) {
 	info := foundation.NewKeyInfoWithAlgInfo(algInfo)
 	if info.IsCompound() {
 		if info.CompoundHybridCipherFirstKeyAlgId() == foundation.AlgIdCurve25519 &&
-			info.CompoundHybridCipherSecondKeyAlgId() == foundation.AlgIdRound5Nd1cca5d &&
+			info.CompoundHybridCipherSecondKeyAlgId() == foundation.AlgIdMlKem768 &&
 			info.CompoundHybridSignerFirstKeyAlgId() == foundation.AlgIdEd25519 &&
 			info.CompoundHybridSignerSecondKeyAlgId() == foundation.AlgIdFalcon {
-			return Curve25519Round5Ed25519Falcon, nil
+			return Curve25519MlKem768Ed25519Falcon, nil
 		} else if info.CompoundCipherAlgId() == foundation.AlgIdCurve25519 &&
 			info.CompoundSignerAlgId() == foundation.AlgIdEd25519 {
 			return Curve25519Ed25519, nil
@@ -161,8 +161,8 @@ func getKeyType(obj deleter) (KeyType, error) {
 
 	if info.IsHybrid() {
 		if info.HybridFirstKeyAlgId() == foundation.AlgIdCurve25519 &&
-			info.HybridSecondKeyAlgId() == foundation.AlgIdRound5Nd1cca5d {
-			return Curve25519Round5, nil
+			info.HybridSecondKeyAlgId() == foundation.AlgIdMlKem768 {
+			return Curve25519MlKem768, nil
 		}
 		if info.HybridFirstKeyAlgId() == foundation.AlgIdCurve25519 &&
 			info.HybridSecondKeyAlgId() == foundation.AlgIdCurve25519 {

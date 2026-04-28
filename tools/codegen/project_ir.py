@@ -35,9 +35,32 @@ class IROutputTarget:
 
 
 @dataclass
+class IRFeatureRequire:
+    """One requirement clause on a feature or library.
+
+    ``alternatives`` holds one or more feature names.  A single item is a
+    hard dependency ("X must be enabled"); multiple items form an OR-group
+    ("at least one of X, Y, Z must be enabled").
+    """
+    alternatives: list[str] = field(default_factory=list)
+
+
+@dataclass
 class IRFeature(IRCommented):
     name: str = ""
     attrs: dict[str, str] = field(default_factory=dict)
+    requires: list[IRFeatureRequire] = field(default_factory=list)
+
+
+@dataclass
+class IRExternalLibrary:
+    """Minimal IR for an external thirdparty library parsed from library_*.xml."""
+    name: str = ""
+    prefix: str = ""
+    path: str = ""
+    description: str = ""
+    features: list[IRFeature] = field(default_factory=list)
+    library_requires: list[IRFeatureRequire] = field(default_factory=list)
 
 
 @dataclass
@@ -267,6 +290,7 @@ class IRLibraryRequire:
     kind: str = ""  # 'project' or 'library'
     name: str = ""
     error_message_getter: "IRLibraryErrorMessageGetter | None" = None
+    required_impls: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -714,6 +738,7 @@ def project_to_ir(project: ProjectSource) -> IRProject:
             IRLibraryRequire(
                 kind=lr.kind,
                 name=lr.name,
+                required_impls=list(lr.required_impls),
                 error_message_getter=(
                     IRLibraryErrorMessageGetter(
                         success_value=lr.error_message_getter.success_value,
@@ -996,3 +1021,29 @@ def resolve_constant_value(
             pass
 
     return value
+
+
+def external_library_to_ir(source: "ExternalLibrarySource") -> IRExternalLibrary:  # type: ignore[name-defined]
+    """Build an ``IRExternalLibrary`` from a parsed ``ExternalLibrarySource``."""
+    prefix = source.prefix or source.name
+
+    features: list[IRFeature] = []
+    for feat in source.features:
+        requires = [IRFeatureRequire(alternatives=alts) for alts in feat.requires]
+        features.append(IRFeature(
+            name=feat.name,
+            attrs=feat.attrs,
+            description=feat.description,
+            requires=requires,
+        ))
+
+    library_requires = [IRFeatureRequire(alternatives=alts) for alts in source.library_requires]
+
+    return IRExternalLibrary(
+        name=source.name,
+        prefix=prefix,
+        path=source.path,
+        description=source.description,
+        features=features,
+        library_requires=library_requires,
+    )

@@ -66,8 +66,9 @@ public enum OidId {
     COMPOUND_KEY(25),
     HYBRID_KEY(26),
     FALCON(27),
-    ROUND5_ND_1CCA_5D(28),
-    RANDOM_PADDING(29);
+    RANDOM_PADDING(28),
+    ML_KEM_768(29),
+    ML_DSA_65(30);
 
     private final int code;
 

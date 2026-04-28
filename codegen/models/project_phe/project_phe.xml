@@ -25,7 +25,7 @@
     <cgo_link platform="darwin" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
     <cgo_link platform="linux,!legacy" path="linux_amd64" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
     <cgo_link platform="linux,legacy" path="linux_amd64__legacy_os" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
-    <cgo_link platform="windows" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto"/>
+    <cgo_link platform="windows" libraries="-lvsc_phe -lvsc_phe_pb -lvsc_foundation -lvsc_foundation_pb -led25519 -lprotobuf-nanopb -lvsc_common -lmbedcrypto -lbcrypt"/>
 
     <feature name="multi threading" default="on">
         Enable multi-threading safety for PHE library.

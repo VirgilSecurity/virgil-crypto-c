@@ -41,6 +41,10 @@ func FoundationImplementationWrapAlg(ctx *C.vscf_impl_t) (Alg, error) {
         return newPkcs5Pbes2WithCtx((*C.vscf_pkcs5_pbes2_t)(ctx)), nil
     case C.vscf_impl_tag_FALCON:
         return newFalconWithCtx((*C.vscf_falcon_t)(ctx)), nil
+    case C.vscf_impl_tag_ML_KEM:
+        return newMlKemWithCtx((*C.vscf_ml_kem_t)(ctx)), nil
+    case C.vscf_impl_tag_ML_DSA:
+        return newMlDsaWithCtx((*C.vscf_ml_dsa_t)(ctx)), nil
     case C.vscf_impl_tag_COMPOUND_KEY_ALG:
         return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t)(ctx)), nil
     case C.vscf_impl_tag_RANDOM_PADDING:
@@ -420,8 +424,10 @@ func FoundationImplementationWrapKeyAlg(ctx *C.vscf_impl_t) (KeyAlg, error) {
         return newCurve25519WithCtx((*C.vscf_curve25519_t)(ctx)), nil
     case C.vscf_impl_tag_FALCON:
         return newFalconWithCtx((*C.vscf_falcon_t)(ctx)), nil
-    case C.vscf_impl_tag_ROUND5:
-        return newRound5WithCtx((*C.vscf_round5_t)(ctx)), nil
+    case C.vscf_impl_tag_ML_KEM:
+        return newMlKemWithCtx((*C.vscf_ml_kem_t)(ctx)), nil
+    case C.vscf_impl_tag_ML_DSA:
+        return newMlDsaWithCtx((*C.vscf_ml_dsa_t)(ctx)), nil
     case C.vscf_impl_tag_COMPOUND_KEY_ALG:
         return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t)(ctx)), nil
     case C.vscf_impl_tag_HYBRID_KEY_ALG:
@@ -484,6 +490,8 @@ func FoundationImplementationWrapKeySigner(ctx *C.vscf_impl_t) (KeySigner, error
         return newEd25519WithCtx((*C.vscf_ed25519_t)(ctx)), nil
     case C.vscf_impl_tag_FALCON:
         return newFalconWithCtx((*C.vscf_falcon_t)(ctx)), nil
+    case C.vscf_impl_tag_ML_DSA:
+        return newMlDsaWithCtx((*C.vscf_ml_dsa_t)(ctx)), nil
     case C.vscf_impl_tag_COMPOUND_KEY_ALG:
         return newCompoundKeyAlgWithCtx((*C.vscf_compound_key_alg_t)(ctx)), nil
     case C.vscf_impl_tag_HYBRID_KEY_ALG:
@@ -538,8 +546,8 @@ func FoundationImplementationWrapKem(ctx *C.vscf_impl_t) (Kem, error) {
         return newEd25519WithCtx((*C.vscf_ed25519_t)(ctx)), nil
     case C.vscf_impl_tag_CURVE25519:
         return newCurve25519WithCtx((*C.vscf_curve25519_t)(ctx)), nil
-    case C.vscf_impl_tag_ROUND5:
-        return newRound5WithCtx((*C.vscf_round5_t)(ctx)), nil
+    case C.vscf_impl_tag_ML_KEM:
+        return newMlKemWithCtx((*C.vscf_ml_kem_t)(ctx)), nil
     default:
         return nil, &FoundationError{-1,"Unexpected C implementation cast to the Go implementation."}
     }
