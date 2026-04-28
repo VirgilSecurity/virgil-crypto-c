@@ -36,8 +36,15 @@ jobs:
       - name: Run memcheck
         working-directory: build
         run: |
+          set +e
           ctest -T memcheck --output-on-failure
-          cat Testing/Temporary/MemoryChecker.*.log
+          CTEST_EXIT=$?
+          cat Testing/Temporary/MemoryChecker.*.log 2>/dev/null || true
+          if grep -q "definitely lost" Testing/Temporary/MemoryChecker.*.log 2>/dev/null; then
+            echo "Memory leaks detected — failing job"
+            exit 1
+          fi
+          exit $CTEST_EXIT
       - name: Build multi-threading tests
         run: |
           source .venv/bin/activate
