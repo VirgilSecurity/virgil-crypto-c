@@ -11,7 +11,7 @@
     <require impl="hybrid key alg" is_optional="1"/>
     <require impl="falcon" is_optional="1"/>
     <require impl="ml kem" is_optional="1"/>
-    <require impl="ml sig" is_optional="1"/>
+    <require impl="ml dsa" is_optional="1"/>
 
     <method name="create from alg id" is_static="1">
         Create a key algorithm based on an identifier.
