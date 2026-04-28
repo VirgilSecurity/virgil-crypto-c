@@ -274,6 +274,16 @@ generate_identity_private_key(vscf_key_provider_t *key_provider, bool enable_pqc
 }
 
 vscf_impl_t *
+generate_identity_private_key_ml_dsa(vscf_key_provider_t *key_provider) {
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+    vscf_impl_t *private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider,
+            vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_ML_DSA_65, &error_ctx);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error_ctx.status);
+    return private_key;
+}
+
+vscf_impl_t *
 generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pqc) {
 
     vscf_impl_t *private_key;
