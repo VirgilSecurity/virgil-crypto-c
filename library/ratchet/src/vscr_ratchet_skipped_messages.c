@@ -49,6 +49,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
 // clang-format on
 //  @end
@@ -361,12 +362,16 @@ vscr_ratchet_skipped_messages_serialize(
     }
 }
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_skipped_messages_deserialize(
         const vscr_SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
 
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);
+
+    if (skipped_messages_pb->keys_count > (pb_size_t)vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+        return vscr_status_ERROR_PROTOBUF_DECODE;
+    }
 
     skipped_messages->roots_count = skipped_messages_pb->keys_count;
 
@@ -380,4 +385,6 @@ vscr_ratchet_skipped_messages_deserialize(
 
         skipped_messages->root_nodes[i] = root;
     }
+
+    return vscr_status_SUCCESS;
 }
