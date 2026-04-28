@@ -554,7 +554,7 @@ vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t 
 
     const vscf_status_t trim_status = vscf_padding_finish_padded_data_processing(self->padding, out);
     if (trim_status != vscf_status_SUCCESS) {
-        return status;
+        return trim_status;
     }
 
     return vscf_status_SUCCESS;

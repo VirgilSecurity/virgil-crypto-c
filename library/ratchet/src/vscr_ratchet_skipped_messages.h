@@ -56,6 +56,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_library.h"
+#include "vscr_status.h"
 #include "vscr_ratchet_message_key.h"
 #include "vscr_ratchet_skipped_messages.h"
 
@@ -144,7 +145,7 @@ vscr_ratchet_skipped_messages_add_key(vscr_ratchet_skipped_messages_t *self, vsc
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_serialize(const vscr_ratchet_skipped_messages_t *self, vscr_SkippedMessages *skipped_messages_pb);
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_skipped_messages_deserialize(const vscr_SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages);
 
 // --------------------------------------------------------------------------

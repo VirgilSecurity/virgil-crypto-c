@@ -245,7 +245,7 @@ vscf_compound_public_key_is_valid(const vscf_compound_public_key_t *self) {
         return false;
     }
 
-    const bool is_cipher_key_valid = vscf_key_is_valid(self->signer_key);
-    const bool is_signer_key_valid = vscf_key_is_valid(self->cipher_key);
+    const bool is_cipher_key_valid = vscf_key_is_valid(self->cipher_key);
+    const bool is_signer_key_valid = vscf_key_is_valid(self->signer_key);
     return is_cipher_key_valid && is_signer_key_valid;
 }

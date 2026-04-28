@@ -387,9 +387,6 @@ vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp
         goto err;
     }
 
-    mbedtls_ecp_point_free(&t1);
-    mbedtls_ecp_point_free(&t2);
-
     // if term2 * (c0 ** challenge) != hs0 ** blind_x:
     // return False
 
@@ -405,9 +402,6 @@ vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp
     }
 
     if (tp_mode) {
-        mbedtls_ecp_point_free(&t1);
-        mbedtls_ecp_point_free(&t2);
-
         // if term3 * (c1 ** challenge) != hs1 ** blind_x:
         // return False
 

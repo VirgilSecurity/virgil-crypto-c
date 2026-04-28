@@ -266,7 +266,7 @@ vscf_ecc_generate_key(const vscf_ecc_t *self, vscf_alg_id_t alg_id, vscf_error_t
 
     const int mbed_status = mbedtls_ecp_gen_keypair(&private_key->ecc_grp, &private_key->ecc_priv,
             &private_key->ecc_pub, vscf_mbedtls_bridge_random, self->random);
-    VSCF_ASSERT_ALLOC(status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
+    VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
 
     if (mbed_status != 0) {
         vscf_ecc_private_key_destroy(&private_key);
