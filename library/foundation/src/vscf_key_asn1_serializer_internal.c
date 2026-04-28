@@ -242,6 +242,8 @@ vscf_key_asn1_serializer_cleanup(vscf_key_asn1_serializer_t *self) {
         return;
     }
 
+    vscf_key_asn1_serializer_release_asn1_writer(self);
+
     vscf_key_asn1_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_key_asn1_serializer_t));

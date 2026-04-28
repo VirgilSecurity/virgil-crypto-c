@@ -519,6 +519,10 @@ vscf_ed25519_cleanup(vscf_ed25519_t *self) {
         return;
     }
 
+    vscf_ed25519_release_random(self);
+
+    vscf_ed25519_release_ecies(self);
+
     vscf_ed25519_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_ed25519_t));
@@ -619,8 +623,7 @@ vscf_ed25519_init_ctx(vscf_ed25519_t *self) {
 VSCF_PRIVATE void
 vscf_ed25519_cleanup_ctx(vscf_ed25519_t *self) {
 
-    vscf_ed25519_release_random(self);
-    vscf_ed25519_release_ecies(self);
+    VSCF_UNUSED(self);
 }
 
 //

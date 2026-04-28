@@ -281,6 +281,8 @@ vscf_hkdf_cleanup(vscf_hkdf_t *self) {
         return;
     }
 
+    vscf_hkdf_release_hash(self);
+
     vscf_hkdf_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_hkdf_t));

@@ -477,6 +477,10 @@ vscf_curve25519_cleanup(vscf_curve25519_t *self) {
         return;
     }
 
+    vscf_curve25519_release_random(self);
+
+    vscf_curve25519_release_ecies(self);
+
     vscf_curve25519_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_curve25519_t));
@@ -577,8 +581,7 @@ vscf_curve25519_init_ctx(vscf_curve25519_t *self) {
 VSCF_PRIVATE void
 vscf_curve25519_cleanup_ctx(vscf_curve25519_t *self) {
 
-    vscf_curve25519_release_random(self);
-    vscf_curve25519_release_ecies(self);
+    VSCF_UNUSED(self);
 }
 
 //

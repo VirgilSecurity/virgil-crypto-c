@@ -328,6 +328,10 @@ vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *self) {
         return;
     }
 
+    vscf_pkcs5_pbes2_release_kdf(self);
+
+    vscf_pkcs5_pbes2_release_cipher(self);
+
     vscf_pkcs5_pbes2_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_pkcs5_pbes2_t));

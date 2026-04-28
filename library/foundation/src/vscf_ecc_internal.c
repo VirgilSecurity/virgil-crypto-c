@@ -519,6 +519,10 @@ vscf_ecc_cleanup(vscf_ecc_t *self) {
         return;
     }
 
+    vscf_ecc_release_random(self);
+
+    vscf_ecc_release_ecies(self);
+
     vscf_ecc_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_ecc_t));
@@ -619,8 +623,7 @@ vscf_ecc_init_ctx(vscf_ecc_t *self) {
 VSCF_PRIVATE void
 vscf_ecc_cleanup_ctx(vscf_ecc_t *self) {
 
-    vscf_ecc_release_random(self);
-    vscf_ecc_release_ecies(self);
+    VSCF_UNUSED(self);
 }
 
 //

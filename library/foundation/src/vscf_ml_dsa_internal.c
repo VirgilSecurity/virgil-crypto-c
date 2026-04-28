@@ -364,6 +364,8 @@ vscf_ml_dsa_cleanup(vscf_ml_dsa_t *self) {
         return;
     }
 
+    vscf_ml_dsa_release_random(self);
+
     vscf_ml_dsa_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_ml_dsa_t));
@@ -464,7 +466,7 @@ vscf_ml_dsa_init_ctx(vscf_ml_dsa_t *self) {
 VSCF_PRIVATE void
 vscf_ml_dsa_cleanup_ctx(vscf_ml_dsa_t *self) {
 
-    vscf_ml_dsa_release_random(self);
+    VSCF_UNUSED(self);
 }
 
 //

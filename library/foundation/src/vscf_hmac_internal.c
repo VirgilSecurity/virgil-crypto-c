@@ -254,6 +254,8 @@ vscf_hmac_cleanup(vscf_hmac_t *self) {
         return;
     }
 
+    vscf_hmac_release_hash(self);
+
     vscf_hmac_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_hmac_t));

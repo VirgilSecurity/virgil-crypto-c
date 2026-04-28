@@ -208,6 +208,8 @@ vscf_alg_info_der_serializer_cleanup(vscf_alg_info_der_serializer_t *self) {
         return;
     }
 
+    vscf_alg_info_der_serializer_release_asn1_writer(self);
+
     vscf_alg_info_der_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_alg_info_der_serializer_t));
@@ -308,7 +310,7 @@ vscf_alg_info_der_serializer_init_ctx(vscf_alg_info_der_serializer_t *self) {
 VSCF_PRIVATE void
 vscf_alg_info_der_serializer_cleanup_ctx(vscf_alg_info_der_serializer_t *self) {
 
-    vscf_alg_info_der_serializer_release_asn1_writer(self);
+    VSCF_UNUSED(self);
 }
 
 //

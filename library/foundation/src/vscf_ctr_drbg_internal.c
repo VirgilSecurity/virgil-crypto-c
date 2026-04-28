@@ -228,6 +228,8 @@ vscf_ctr_drbg_cleanup(vscf_ctr_drbg_t *self) {
         return;
     }
 
+    vscf_ctr_drbg_release_entropy_source(self);
+
     vscf_ctr_drbg_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_ctr_drbg_t));

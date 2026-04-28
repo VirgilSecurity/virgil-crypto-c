@@ -226,6 +226,8 @@ vscf_key_asn1_deserializer_cleanup(vscf_key_asn1_deserializer_t *self) {
         return;
     }
 
+    vscf_key_asn1_deserializer_release_asn1_reader(self);
+
     vscf_key_asn1_deserializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_key_asn1_deserializer_t));

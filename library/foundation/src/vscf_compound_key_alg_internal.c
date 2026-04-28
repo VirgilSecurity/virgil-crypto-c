@@ -408,6 +408,8 @@ vscf_compound_key_alg_cleanup(vscf_compound_key_alg_t *self) {
         return;
     }
 
+    vscf_compound_key_alg_release_random(self);
+
     vscf_compound_key_alg_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_compound_key_alg_t));
@@ -508,7 +510,7 @@ vscf_compound_key_alg_init_ctx(vscf_compound_key_alg_t *self) {
 VSCF_PRIVATE void
 vscf_compound_key_alg_cleanup_ctx(vscf_compound_key_alg_t *self) {
 
-    vscf_compound_key_alg_release_random(self);
+    VSCF_UNUSED(self);
 }
 
 //

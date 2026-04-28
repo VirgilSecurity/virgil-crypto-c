@@ -503,6 +503,12 @@ vscf_hybrid_key_alg_cleanup(vscf_hybrid_key_alg_t *self) {
         return;
     }
 
+    vscf_hybrid_key_alg_release_random(self);
+
+    vscf_hybrid_key_alg_release_cipher(self);
+
+    vscf_hybrid_key_alg_release_hash(self);
+
     vscf_hybrid_key_alg_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_hybrid_key_alg_t));
@@ -603,9 +609,7 @@ vscf_hybrid_key_alg_init_ctx(vscf_hybrid_key_alg_t *self) {
 VSCF_PRIVATE void
 vscf_hybrid_key_alg_cleanup_ctx(vscf_hybrid_key_alg_t *self) {
 
-    vscf_hybrid_key_alg_release_random(self);
-    vscf_hybrid_key_alg_release_cipher(self);
-    vscf_hybrid_key_alg_release_hash(self);
+    VSCF_UNUSED(self);
 }
 
 //

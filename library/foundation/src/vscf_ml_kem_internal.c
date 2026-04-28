@@ -355,6 +355,8 @@ vscf_ml_kem_cleanup(vscf_ml_kem_t *self) {
         return;
     }
 
+    vscf_ml_kem_release_random(self);
+
     vscf_ml_kem_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_ml_kem_t));
@@ -455,7 +457,7 @@ vscf_ml_kem_init_ctx(vscf_ml_kem_t *self) {
 VSCF_PRIVATE void
 vscf_ml_kem_cleanup_ctx(vscf_ml_kem_t *self) {
 
-    vscf_ml_kem_release_random(self);
+    VSCF_UNUSED(self);
 }
 
 //

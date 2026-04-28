@@ -362,6 +362,8 @@ vscf_falcon_cleanup(vscf_falcon_t *self) {
         return;
     }
 
+    vscf_falcon_release_random(self);
+
     vscf_falcon_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_falcon_t));
@@ -462,7 +464,7 @@ vscf_falcon_init_ctx(vscf_falcon_t *self) {
 VSCF_PRIVATE void
 vscf_falcon_cleanup_ctx(vscf_falcon_t *self) {
 
-    vscf_falcon_release_random(self);
+    VSCF_UNUSED(self);
 }
 
 //

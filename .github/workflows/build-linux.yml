@@ -29,7 +29,8 @@ jobs:
           -DVIRGIL_C_MT_TESTING=OFF \
           -DENABLE_BENCHMARKING=ON \
           -DVIRGIL_POST_QUANTUM=ON \
-          -DVIRGIL_PROGRAMS=ON
+          -DVIRGIL_PROGRAMS=ON \
+          "-DMEMORYCHECK_COMMAND_OPTIONS=--error-exitcode=1 --leak-check=full --show-leak-kinds=definite --track-origins=yes"
       - name: Build for memcheck
         run: cmake --build build -- -j$(nproc)
       - name: Run memcheck

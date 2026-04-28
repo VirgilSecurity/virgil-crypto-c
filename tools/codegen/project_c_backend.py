@@ -5205,19 +5205,35 @@ def _impl_lifecycle_cleanup_body(
     project_ir: IRProject,
     impl: IRImplementation,
 ) -> str:
-    """Generate the body for the implementation cleanup() method."""
+    """Generate the body for the implementation cleanup() method.
+
+    Dependencies are released before cleanup_ctx so that observer callbacks
+    (did_release_X) can still access sibling fields that cleanup_ctx will destroy.
+    This mirrors the original GSL codegen order.
+    """
     impl_output = cast(IROutputTarget, impl.output)
     struct_type = f"{impl_output.c_symbol}_t"
     cleanup_ctx = f"{impl_output.c_symbol}_cleanup_ctx"
-    return (
-        f"if (self == NULL) {{\n"
-        f"    return;\n"
-        f"}}\n"
-        f"\n"
-        f"{cleanup_ctx}(self);\n"
-        f"\n"
-        f"{project_ir.prefix}_zeroize(self, sizeof({struct_type}));"
-    )
+
+    lines = [
+        "if (self == NULL) {",
+        "    return;",
+        "}",
+    ]
+
+    # Release dependencies first so observers fire before cleanup_ctx destroys
+    # any sibling fields that the observers may reference.
+    for dep in impl.dependencies:
+        release_method = f"{impl_output.c_symbol}_release_{snake_name(dep.name)}"
+        lines.append("")
+        lines.append(f"{release_method}(self);")
+
+    lines.append("")
+    lines.append(f"{cleanup_ctx}(self);")
+    lines.append("")
+    lines.append(f"{project_ir.prefix}_zeroize(self, sizeof({struct_type}));")
+
+    return "\n".join(lines)
 
 
 def _impl_lifecycle_new_body(
@@ -5974,15 +5990,12 @@ def render_implementation_internal_c_module(
         cleanup_ctx_code_type = "stub"
         cleanup_ctx_definition = "external"
     else:
-        # No properties — init_ctx is a no-op, cleanup_ctx releases dependencies
+        # No properties — both init_ctx and cleanup_ctx are no-ops.
+        # Dependency releases are handled in cleanup() before cleanup_ctx is called.
         init_ctx_code = "VSCF_UNUSED(self);"
         init_ctx_code_type = "generated"
         init_ctx_definition = "private"
-        cleanup_lines = []
-        for dep in impl.dependencies:
-            dep_field = snake_name(dep.name)
-            cleanup_lines.append(f"{impl_output.c_symbol}_release_{dep_field}(self);")
-        cleanup_ctx_code = "\n".join(cleanup_lines) if cleanup_lines else "VSCF_UNUSED(self);"
+        cleanup_ctx_code = "VSCF_UNUSED(self);"
         cleanup_ctx_code_type = "generated"
         cleanup_ctx_definition = "private"
     _render_impl_method(

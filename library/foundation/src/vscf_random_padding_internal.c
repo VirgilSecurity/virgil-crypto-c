@@ -277,6 +277,8 @@ vscf_random_padding_cleanup(vscf_random_padding_t *self) {
         return;
     }
 
+    vscf_random_padding_release_random(self);
+
     vscf_random_padding_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_random_padding_t));

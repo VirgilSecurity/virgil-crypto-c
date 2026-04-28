@@ -263,6 +263,8 @@ vscf_pkcs5_pbkdf2_cleanup(vscf_pkcs5_pbkdf2_t *self) {
         return;
     }
 
+    vscf_pkcs5_pbkdf2_release_hmac(self);
+
     vscf_pkcs5_pbkdf2_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_pkcs5_pbkdf2_t));

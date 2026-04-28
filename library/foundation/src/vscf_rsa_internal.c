@@ -379,6 +379,8 @@ vscf_rsa_cleanup(vscf_rsa_t *self) {
         return;
     }
 
+    vscf_rsa_release_random(self);
+
     vscf_rsa_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_rsa_t));
@@ -479,7 +481,7 @@ vscf_rsa_init_ctx(vscf_rsa_t *self) {
 VSCF_PRIVATE void
 vscf_rsa_cleanup_ctx(vscf_rsa_t *self) {
 
-    vscf_rsa_release_random(self);
+    VSCF_UNUSED(self);
 }
 
 //

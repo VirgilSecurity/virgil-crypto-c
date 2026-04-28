@@ -348,6 +348,10 @@ vscf_message_info_der_serializer_cleanup(vscf_message_info_der_serializer_t *sel
         return;
     }
 
+    vscf_message_info_der_serializer_release_asn1_reader(self);
+
+    vscf_message_info_der_serializer_release_asn1_writer(self);
+
     vscf_message_info_der_serializer_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_message_info_der_serializer_t));

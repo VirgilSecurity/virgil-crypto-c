@@ -233,6 +233,8 @@ vscf_kdf2_cleanup(vscf_kdf2_t *self) {
         return;
     }
 
+    vscf_kdf2_release_hash(self);
+
     vscf_kdf2_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_kdf2_t));
@@ -333,7 +335,7 @@ vscf_kdf2_init_ctx(vscf_kdf2_t *self) {
 VSCF_PRIVATE void
 vscf_kdf2_cleanup_ctx(vscf_kdf2_t *self) {
 
-    vscf_kdf2_release_hash(self);
+    VSCF_UNUSED(self);
 }
 
 //
