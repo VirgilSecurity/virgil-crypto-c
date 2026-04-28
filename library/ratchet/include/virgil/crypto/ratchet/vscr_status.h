@@ -189,6 +189,10 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29,
     //
+    //  KEM encapsulate or decapsulate operation failed.
+    //
+    vscr_status_ERROR_KEM_FAILED = -30,
+    //
     //  Signing operation failed.
     //
     vscr_status_ERROR_SIGN_FAILED = -31,

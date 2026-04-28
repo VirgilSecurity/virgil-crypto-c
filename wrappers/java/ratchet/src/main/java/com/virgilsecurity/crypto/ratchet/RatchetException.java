@@ -98,6 +98,8 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29;
 
+    public static final int ERROR_KEM_FAILED = -30;
+
     public static final int ERROR_SIGN_FAILED = -31;
 
     public static final int ERROR_DECAPS_SIGNATURE_INVALID = -32;
@@ -175,6 +177,8 @@ public class RatchetException extends RuntimeException {
             return "Simultaneous group user operation.";
         case ERROR_MYSELF_IS_INCLUDED_IN_INFO:
             return "Myself is included in info.";
+        case ERROR_KEM_FAILED:
+            return "KEM encapsulate or decapsulate operation failed.";
         case ERROR_SIGN_FAILED:
             return "Signing operation failed.";
         case ERROR_DECAPS_SIGNATURE_INVALID:

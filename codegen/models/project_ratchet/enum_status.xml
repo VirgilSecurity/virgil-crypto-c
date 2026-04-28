@@ -121,6 +121,10 @@
         Myself is included in info.
     </constant>
 
+    <constant name="error kem failed" value="-30">
+        KEM encapsulate or decapsulate operation failed.
+    </constant>
+
     <constant name="error sign failed" value="-31">
         Signing operation failed.
     </constant>

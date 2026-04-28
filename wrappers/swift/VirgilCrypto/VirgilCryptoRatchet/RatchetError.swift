@@ -125,6 +125,9 @@ import VSCRatchet
     /// Myself is included in info.
     case errorMyselfIsIncludedInInfo = -29
 
+    /// KEM encapsulate or decapsulate operation failed.
+    case errorKemFailed = -30
+
     /// Signing operation failed.
     case errorSignFailed = -31
 

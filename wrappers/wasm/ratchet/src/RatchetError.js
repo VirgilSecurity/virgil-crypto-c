@@ -164,6 +164,10 @@ const initRatchetError = (Module, modules) => {
                 throw new RatchetError("Myself is included in info.");
             }
 
+            if (statusCode == -30) {
+                throw new RatchetError("KEM encapsulate or decapsulate operation failed.");
+            }
+
             if (statusCode == -31) {
                 throw new RatchetError("Signing operation failed.");
             }
