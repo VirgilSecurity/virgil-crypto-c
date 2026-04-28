@@ -397,6 +397,7 @@ test__import_private_key_then_export_public_key__curve25519_curve25519__should_m
             test_data_hybrid_key_CURVE25519_CURVE25519_PUBLIC_KEY);
 }
 
+#if VSCF_POST_QUANTUM && MLKEM_LIBRARY
 static void
 inner_generate_curve25519_ml_kem_768_key_pair(vscf_impl_t **pub_out, vscf_impl_t **priv_out) {
     vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
@@ -436,6 +437,7 @@ inner_generate_curve25519_ml_kem_768_key_pair(vscf_impl_t **pub_out, vscf_impl_t
     vscf_key_provider_destroy(&key_provider);
     vscf_ctr_drbg_destroy(&rng);
 }
+#endif // VSCF_POST_QUANTUM && MLKEM_LIBRARY
 
 void
 test__import_public_key_then_export__curve25519_ml_kem_768__roundtrip(void) {

@@ -206,6 +206,8 @@ def generate_features_cmake(project_ir: IRProject, license_text: str = "") -> st
             )
             if dep_flag is None or dep_flag == source_flag:
                 continue
+            if req.attrs.get("is_optional") == "1":
+                continue
             lines.append(f"if({source_flag} AND NOT {dep_flag})")
             lines.append('    message("-- error --")')
             lines.append('    message("--")')

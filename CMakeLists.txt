@@ -216,12 +216,12 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    set(VSCF_POST_QUANTUM ON CACHE BOOL "Enable post-quantum cryptography for foundation library [experimental]." FORCE)
+    set(VSCF_POST_QUANTUM ON CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
     add_subdirectory("thirdparty/falcon")
     add_subdirectory("thirdparty/mlkem-native")
     add_subdirectory("thirdparty/mldsa-native")
 else()
-    set(VSCF_POST_QUANTUM OFF CACHE BOOL "Enable post-quantum cryptography for foundation library [experimental]." FORCE)
+    set(VSCF_POST_QUANTUM OFF CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
 endif()
 
 # ---------------------------------------------------------------------------
