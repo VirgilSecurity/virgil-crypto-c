@@ -861,6 +861,7 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb) {
     }
 
     ratchet_pb->prev_sender_chain_count = self->prev_sender_chain_count;
+    ratchet_pb->has_enable_post_quantum = true;
     ratchet_pb->enable_post_quantum = self->enable_post_quantum;
 
     if (self->receiver_chain) {

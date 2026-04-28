@@ -57,9 +57,12 @@
 
 #include <pb_decode.h>
 #include <pb_encode.h>
-#include <virgil/crypto/foundation/vscf_simple_alg_info.h>
-#include <virgil/crypto/foundation/vscf_key_alg.h>
+#include <virgil/crypto/foundation/vscf_key_asn1_serializer.h>
+#include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
 #include <virgil/crypto/foundation/vscf_key_alg_factory.h>
+#include <virgil/crypto/foundation/vscf_key_alg.h>
+#include <virgil/crypto/foundation/vscf_raw_public_key.h>
+#include <virgil/crypto/foundation/vscf_raw_private_key.h>
 
 // clang-format on
 //  @end
@@ -291,9 +294,23 @@ vscr_ratchet_pb_utils_serialize_public_key(const vscf_impl_t *key, pb_bytes_arra
 
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(pb_buffer_ref);
-
     VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
-    vscr_ratchet_pb_utils_serialize_data(vscf_raw_public_key_data((vscf_raw_public_key_t *)key), pb_buffer_ref);
+
+    const vscf_raw_public_key_t *raw_key = (const vscf_raw_public_key_t *)key;
+
+    vscf_key_asn1_serializer_t *serializer = vscf_key_asn1_serializer_new();
+    vscf_key_asn1_serializer_setup_defaults(serializer);
+
+    size_t len = vscf_key_asn1_serializer_serialized_public_key_len(serializer, raw_key);
+    vsc_buffer_t *buf = vsc_buffer_new_with_capacity(len);
+
+    vscf_status_t vscf_st = vscf_key_asn1_serializer_serialize_public_key(serializer, raw_key, buf);
+    VSCR_ASSERT(vscf_st == vscf_status_SUCCESS);
+
+    vscr_ratchet_pb_utils_serialize_data(vsc_buffer_data(buf), pb_buffer_ref);
+
+    vsc_buffer_destroy(&buf);
+    vscf_key_asn1_serializer_destroy(&serializer);
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -302,25 +319,32 @@ vscr_ratchet_pb_utils_deserialize_public_key(const pb_bytes_array_t *pb_buffer, 
     VSCR_ASSERT_PTR(pb_buffer);
     VSCR_ASSERT_PTR(public_key_ref);
 
-    vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
-
-    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ML_KEM_768));
+    vscf_key_asn1_deserializer_t *deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(deserializer);
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ML_KEM_768, NULL, &error_ctx);
-    if (error_ctx.status != vscf_status_SUCCESS) {
-        vscf_impl_destroy(&alg_info);
+    vscf_raw_public_key_t *raw_key = vscf_key_asn1_deserializer_deserialize_public_key(
+            deserializer, vsc_data(pb_buffer->bytes, pb_buffer->size), &error_ctx);
+
+    vscf_key_asn1_deserializer_destroy(&deserializer);
+
+    if (vscf_error_has_error(&error_ctx)) {
         return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
     }
 
-    *public_key_ref = vscf_key_alg_import_public_key_data(key_alg, data, alg_info, &error_ctx);
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_raw_public_key(raw_key, NULL, &error_ctx);
+    if (vscf_error_has_error(&error_ctx)) {
+        vscf_raw_public_key_destroy(&raw_key);
+        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+    }
 
-    vscf_impl_destroy(&alg_info);
+    *public_key_ref = vscf_key_alg_import_public_key(key_alg, raw_key, &error_ctx);
+    vscf_raw_public_key_destroy(&raw_key);
     vscf_impl_destroy(&key_alg);
 
-    if (error_ctx.status != vscf_status_SUCCESS) {
+    if (vscf_error_has_error(&error_ctx)) {
         return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
     }
 
@@ -332,9 +356,24 @@ vscr_ratchet_pb_utils_serialize_private_key(const vscf_impl_t *key, pb_bytes_arr
 
     VSCR_ASSERT_PTR(key);
     VSCR_ASSERT_PTR(pb_buffer_ref);
-
     VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
-    vscr_ratchet_pb_utils_serialize_data(vscf_raw_public_key_data((vscf_raw_public_key_t *)key), pb_buffer_ref);
+
+    const vscf_raw_private_key_t *raw_key = (const vscf_raw_private_key_t *)key;
+
+    vscf_key_asn1_serializer_t *serializer = vscf_key_asn1_serializer_new();
+    vscf_key_asn1_serializer_setup_defaults(serializer);
+
+    size_t len = vscf_key_asn1_serializer_serialized_private_key_len(serializer, raw_key);
+    vsc_buffer_t *buf = vsc_buffer_new_with_capacity(len);
+    vsc_buffer_make_secure(buf);
+
+    vscf_status_t vscf_st = vscf_key_asn1_serializer_serialize_private_key(serializer, raw_key, buf);
+    VSCR_ASSERT(vscf_st == vscf_status_SUCCESS);
+
+    vscr_ratchet_pb_utils_serialize_data(vsc_buffer_data(buf), pb_buffer_ref);
+
+    vsc_buffer_destroy(&buf);
+    vscf_key_asn1_serializer_destroy(&serializer);
 }
 
 VSCR_PUBLIC vscr_status_t
@@ -343,25 +382,32 @@ vscr_ratchet_pb_utils_deserialize_private_key(const pb_bytes_array_t *pb_buffer,
     VSCR_ASSERT_PTR(pb_buffer);
     VSCR_ASSERT_PTR(private_key_ref);
 
-    vsc_data_t data = vsc_data(pb_buffer->bytes, pb_buffer->size);
-
-    vscf_impl_t *alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ML_KEM_768));
+    vscf_key_asn1_deserializer_t *deserializer = vscf_key_asn1_deserializer_new();
+    vscf_key_asn1_deserializer_setup_defaults(deserializer);
 
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ML_KEM_768, NULL, &error_ctx);
-    if (error_ctx.status != vscf_status_SUCCESS) {
-        vscf_impl_destroy(&alg_info);
+    vscf_raw_private_key_t *raw_key = vscf_key_asn1_deserializer_deserialize_private_key(
+            deserializer, vsc_data(pb_buffer->bytes, pb_buffer->size), &error_ctx);
+
+    vscf_key_asn1_deserializer_destroy(&deserializer);
+
+    if (vscf_error_has_error(&error_ctx)) {
         return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
     }
 
-    *private_key_ref = vscf_key_alg_import_private_key_data(key_alg, data, alg_info, &error_ctx);
+    vscf_impl_t *key_alg = vscf_key_alg_factory_create_from_raw_private_key(raw_key, NULL, &error_ctx);
+    if (vscf_error_has_error(&error_ctx)) {
+        vscf_raw_private_key_destroy(&raw_key);
+        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+    }
 
-    vscf_impl_destroy(&alg_info);
+    *private_key_ref = vscf_key_alg_import_private_key(key_alg, raw_key, &error_ctx);
+    vscf_raw_private_key_destroy(&raw_key);
     vscf_impl_destroy(&key_alg);
 
-    if (error_ctx.status != vscf_status_SUCCESS) {
+    if (vscf_error_has_error(&error_ctx)) {
         return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
     }
 

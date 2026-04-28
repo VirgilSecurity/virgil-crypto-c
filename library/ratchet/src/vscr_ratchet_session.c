@@ -850,6 +850,7 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
     session_pb->version = vscr_ratchet_common_hidden_SESSION_VERSION;
     session_pb->received_first_response = self->received_first_response;
     session_pb->is_initiator = self->is_initiator;
+    session_pb->has_enable_post_quantum = true;
     session_pb->enable_post_quantum = self->enable_post_quantum;
     session_pb->receiver_has_one_time_public_key = self->receiver_has_one_time_key_first;
 
