@@ -4,13 +4,13 @@ vscr_MessageKey.key max_size:32 fixed_length:true
 
 vscr_SenderChain.private_key_first max_size:32 fixed_length:true
 vscr_SenderChain.public_key_first max_size:32 fixed_length:true
-vscr_SenderChain.private_key_second type:FT_POINTER
-vscr_SenderChain.public_key_second type:FT_POINTER
-vscr_SenderChain.encapsulated_key type:FT_POINTER
+vscr_SenderChain.private_key_second max_size:2500 type:FT_POINTER
+vscr_SenderChain.public_key_second max_size:1256 type:FT_POINTER
+vscr_SenderChain.encapsulated_key max_size:1088 type:FT_POINTER
 
 vscr_ReceiverChain.public_key_id max_size:8 fixed_length:true
 vscr_ReceiverChain.public_key_first max_size:32 fixed_length:true
-vscr_ReceiverChain.public_key_second type:FT_POINTER
+vscr_ReceiverChain.public_key_second max_size:1256 type:FT_POINTER
 
 vscr_SkippedMessageKey.public_key_id max_size:8 fixed_length:true
 
@@ -24,10 +24,10 @@ vscr_Session.receiver_identity_key_id max_size:8 fixed_length:true
 vscr_Session.receiver_long_term_key_id max_size:8 fixed_length:true
 vscr_Session.receiver_one_time_key_id max_size:8 fixed_length:true
 
-vscr_SessionPqcInfo.encapsulated_key1 type:FT_POINTER
-vscr_SessionPqcInfo.encapsulated_key2 type:FT_POINTER
-vscr_SessionPqcInfo.encapsulated_key3 type:FT_POINTER
-vscr_SessionPqcInfo.decapsulated_keys_signature max_size:809 type:FT_POINTER
+vscr_SessionPqcInfo.encapsulated_key1 max_size:1088 type:FT_POINTER
+vscr_SessionPqcInfo.encapsulated_key2 max_size:1088 type:FT_POINTER
+vscr_SessionPqcInfo.encapsulated_key3 max_size:1088 type:FT_POINTER
+vscr_SessionPqcInfo.decapsulated_keys_signature max_size:3309 type:FT_POINTER
 
 vscr_ParticipantData.id max_size:32 fixed_length:true
 vscr_ParticipantData.pub_key max_size:32 fixed_length:true
