@@ -65,6 +65,10 @@
 #include <virgil/crypto/foundation/vscf_raw_public_key.h>
 #include <virgil/crypto/foundation/vscf_raw_private_key.h>
 #include <virgil/crypto/foundation/vscf_key_asn1_deserializer.h>
+#include <virgil/crypto/foundation/vscf_kem.h>
+#include <virgil/crypto/foundation/vscf_key_signer.h>
+#include <virgil/crypto/foundation/vscf_key_alg_factory.h>
+#include <virgil/crypto/foundation/vscf_error.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -273,6 +277,9 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
     VSCR_ASSERT_PTR(private_key_first);
     VSCR_ASSERT_PTR(private_key_second_ref);
 
+    (void)enable_post_quantum;
+    (void)with_signer;
+
     vscr_status_t status = vscr_status_SUCCESS;
 
     const vscf_impl_t *key = private_key;
@@ -282,42 +289,21 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
     if (vscf_key_info_is_compound(key_info)) {
         VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_COMPOUND_PRIVATE_KEY);
 
-        if (!with_signer) {
-            status = vscr_status_ERROR_INVALID_KEY_TYPE;
-            goto err1;
-        }
-
-        if (enable_post_quantum && private_key_second_signer_ref != NULL) {
+        if (private_key_second_signer_ref != NULL) {
             const vscf_impl_t *signer_key = vscf_compound_private_key_signer_key((vscf_compound_private_key_t *)key);
 
-            vscf_key_info_destroy(&key_info);
+            vscf_error_t f_error;
+            vscf_error_reset(&f_error);
+            vscf_impl_t *signer_alg = vscf_key_alg_factory_create_from_key(signer_key, NULL, &f_error);
 
-            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(signer_key));
-
-            if (!vscf_key_info_is_hybrid(key_info)) {
+            if (vscf_error_has_error(&f_error) || !vscf_key_signer_is_implemented(signer_alg)) {
+                vscf_impl_destroy(&signer_alg);
                 status = vscr_status_ERROR_INVALID_KEY_TYPE;
                 goto err1;
             }
 
-            VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PRIVATE_KEY);
-
-            *private_key_second_signer_ref = vscf_hybrid_private_key_first_key((vscf_hybrid_private_key_t *)signer_key);
-
-            vscf_key_info_destroy(&key_info);
-            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*private_key_second_signer_ref));
-
-            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                *private_key_second_signer_ref =
-                        vscf_hybrid_private_key_second_key((vscf_hybrid_private_key_t *)signer_key);
-
-                vscf_key_info_destroy(&key_info);
-                key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*private_key_second_signer_ref));
-
-                if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                    status = vscr_status_ERROR_INVALID_KEY_TYPE;
-                    goto err1;
-                }
-            }
+            vscf_impl_destroy(&signer_alg);
+            *private_key_second_signer_ref = signer_key;
         }
 
         key = vscf_compound_private_key_cipher_key((vscf_compound_private_key_t *)key);
@@ -338,14 +324,14 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
         vscf_key_info_destroy(&key_info);
         key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
 
-        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ML_KEM_768) {
+        if (vscf_key_info_alg_id(key_info) != vscf_alg_id_CURVE25519) {
             const vscf_impl_t *temp = first_key;
             first_key = second_key;
             second_key = temp;
-        }
 
-        vscf_key_info_destroy(&key_info);
-        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
+            vscf_key_info_destroy(&key_info);
+            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
+        }
 
         if (vscf_key_info_alg_id(key_info) != vscf_alg_id_CURVE25519) {
             status = vscr_status_ERROR_INVALID_KEY_TYPE;
@@ -355,25 +341,19 @@ vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const 
         VSCR_ASSERT(vscf_impl_tag(first_key) == vscf_impl_tag_RAW_PRIVATE_KEY);
         curve25519_private_key = (vscf_raw_private_key_t *)first_key;
 
-        if (enable_post_quantum) {
-            vscf_key_info_destroy(&key_info);
-            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+        vscf_error_t f_error;
+        vscf_error_reset(&f_error);
+        vscf_impl_t *kem_alg = vscf_key_alg_factory_create_from_key(second_key, NULL, &f_error);
 
-            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ML_KEM_768) {
-                status = vscr_status_ERROR_INVALID_KEY_TYPE;
-                goto err1;
-            }
-
-            *private_key_second_ref = second_key;
-        } else {
-            *private_key_second_ref = NULL;
-        }
-    } else {
-        if (enable_post_quantum) {
+        if (vscf_error_has_error(&f_error) || !vscf_kem_is_implemented(kem_alg)) {
+            vscf_impl_destroy(&kem_alg);
             status = vscr_status_ERROR_INVALID_KEY_TYPE;
             goto err1;
         }
 
+        vscf_impl_destroy(&kem_alg);
+        *private_key_second_ref = second_key;
+    } else {
         if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ED25519) {
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PRIVATE_KEY);
             vsc_data_t private_key_data = vscf_raw_private_key_data((vscf_raw_private_key_t *)key);
@@ -418,6 +398,9 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
     VSCR_ASSERT_PTR(public_key_first);
     VSCR_ASSERT_PTR(public_key_second_ref);
 
+    (void)enable_post_quantum;
+    (void)with_signer;
+
     vscr_status_t status = vscr_status_SUCCESS;
 
     const vscf_impl_t *key = public_key;
@@ -427,42 +410,21 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
     if (vscf_key_info_is_compound(key_info)) {
         VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_COMPOUND_PUBLIC_KEY);
 
-        if (!with_signer) {
-            status = vscr_status_ERROR_INVALID_KEY_TYPE;
-            goto err1;
-        }
-
-        if (enable_post_quantum && public_key_second_signer_ref != NULL) {
+        if (public_key_second_signer_ref != NULL) {
             const vscf_impl_t *signer_key = vscf_compound_public_key_signer_key((vscf_compound_public_key_t *)key);
 
-            vscf_key_info_destroy(&key_info);
+            vscf_error_t f_error;
+            vscf_error_reset(&f_error);
+            vscf_impl_t *signer_alg = vscf_key_alg_factory_create_from_key(signer_key, NULL, &f_error);
 
-            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(signer_key));
-
-            if (!vscf_key_info_is_hybrid(key_info)) {
+            if (vscf_error_has_error(&f_error) || !vscf_key_signer_is_implemented(signer_alg)) {
+                vscf_impl_destroy(&signer_alg);
                 status = vscr_status_ERROR_INVALID_KEY_TYPE;
                 goto err1;
             }
 
-            VSCR_ASSERT(vscf_impl_tag(signer_key) == vscf_impl_tag_HYBRID_PUBLIC_KEY);
-
-            *public_key_second_signer_ref = vscf_hybrid_public_key_first_key((vscf_hybrid_public_key_t *)signer_key);
-
-            vscf_key_info_destroy(&key_info);
-            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*public_key_second_signer_ref));
-
-            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                *public_key_second_signer_ref =
-                        vscf_hybrid_public_key_second_key((vscf_hybrid_public_key_t *)signer_key);
-
-                vscf_key_info_destroy(&key_info);
-                key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(*public_key_second_signer_ref));
-
-                if (vscf_key_info_alg_id(key_info) != vscf_alg_id_FALCON) {
-                    status = vscr_status_ERROR_INVALID_KEY_TYPE;
-                    goto err1;
-                }
-            }
+            vscf_impl_destroy(&signer_alg);
+            *public_key_second_signer_ref = signer_key;
         }
 
         key = vscf_compound_public_key_cipher_key((vscf_compound_public_key_t *)public_key);
@@ -485,14 +447,14 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
         vscf_key_info_destroy(&key_info);
         key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
 
-        if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ML_KEM_768) {
+        if (vscf_key_info_alg_id(key_info) != vscf_alg_id_CURVE25519) {
             const vscf_impl_t *temp = first_key;
             first_key = second_key;
             second_key = temp;
-        }
 
-        vscf_key_info_destroy(&key_info);
-        key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
+            vscf_key_info_destroy(&key_info);
+            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(first_key));
+        }
 
         if (vscf_key_info_alg_id(key_info) != vscf_alg_id_CURVE25519) {
             status = vscr_status_ERROR_INVALID_KEY_TYPE;
@@ -502,25 +464,19 @@ vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const v
         VSCR_ASSERT(vscf_impl_tag(first_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
         curve25519_public_key = (vscf_raw_public_key_t *)first_key;
 
-        if (enable_post_quantum) {
-            vscf_key_info_destroy(&key_info);
-            key_info = vscf_key_info_new_with_alg_info(vscf_key_alg_info(second_key));
+        vscf_error_t f_error;
+        vscf_error_reset(&f_error);
+        vscf_impl_t *kem_alg = vscf_key_alg_factory_create_from_key(second_key, NULL, &f_error);
 
-            if (vscf_key_info_alg_id(key_info) != vscf_alg_id_ML_KEM_768) {
-                status = vscr_status_ERROR_INVALID_KEY_TYPE;
-                goto err1;
-            }
-
-            *public_key_second_ref = second_key;
-        } else {
-            *public_key_second_ref = NULL;
-        }
-    } else {
-        if (enable_post_quantum) {
+        if (vscf_error_has_error(&f_error) || !vscf_kem_is_implemented(kem_alg)) {
+            vscf_impl_destroy(&kem_alg);
             status = vscr_status_ERROR_INVALID_KEY_TYPE;
             goto err1;
         }
 
+        vscf_impl_destroy(&kem_alg);
+        *public_key_second_ref = second_key;
+    } else {
         if (vscf_key_info_alg_id(key_info) == vscf_alg_id_ED25519) {
             VSCR_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RAW_PUBLIC_KEY);
             vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)key);
