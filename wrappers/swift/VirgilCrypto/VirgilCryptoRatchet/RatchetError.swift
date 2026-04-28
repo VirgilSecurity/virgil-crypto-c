@@ -125,8 +125,8 @@ import VSCRatchet
     /// Myself is included in info.
     case errorMyselfIsIncludedInInfo = -29
 
-    /// Falcon error.
-    case errorFalcon = -31
+    /// Signing operation failed.
+    case errorSignFailed = -31
 
     /// Decaps signature is invalid.
     case errorDecapsSignatureInvalid = -32

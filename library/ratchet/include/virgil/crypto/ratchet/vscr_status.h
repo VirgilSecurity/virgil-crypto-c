@@ -189,9 +189,9 @@ enum vscr_status_t {
     //
     vscr_status_ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29,
     //
-    //  Falcon error.
+    //  Signing operation failed.
     //
-    vscr_status_ERROR_FALCON = -31,
+    vscr_status_ERROR_SIGN_FAILED = -31,
     //
     //  Decaps signature is invalid.
     //

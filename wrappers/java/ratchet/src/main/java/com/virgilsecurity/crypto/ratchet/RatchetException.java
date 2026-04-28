@@ -98,7 +98,7 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29;
 
-    public static final int ERROR_FALCON = -31;
+    public static final int ERROR_SIGN_FAILED = -31;
 
     public static final int ERROR_DECAPS_SIGNATURE_INVALID = -32;
 
@@ -175,8 +175,8 @@ public class RatchetException extends RuntimeException {
             return "Simultaneous group user operation.";
         case ERROR_MYSELF_IS_INCLUDED_IN_INFO:
             return "Myself is included in info.";
-        case ERROR_FALCON:
-            return "Falcon error.";
+        case ERROR_SIGN_FAILED:
+            return "Signing operation failed.";
         case ERROR_DECAPS_SIGNATURE_INVALID:
             return "Decaps signature is invalid.";
         default:

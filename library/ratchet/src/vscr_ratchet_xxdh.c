@@ -581,7 +581,7 @@ vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_destroy(&hash);
 
         if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_FALCON;
+            status = vscr_status_ERROR_SIGN_FAILED;
             goto err;
         }
     }

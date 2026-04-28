@@ -165,7 +165,7 @@ const initRatchetError = (Module, modules) => {
             }
 
             if (statusCode == -31) {
-                throw new RatchetError("Falcon error.");
+                throw new RatchetError("Signing operation failed.");
             }
 
             if (statusCode == -32) {
