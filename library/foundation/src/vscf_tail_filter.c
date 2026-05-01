@@ -319,6 +319,7 @@ vscf_tail_filter_shift(vscf_tail_filter_t *self, size_t distance) {
 
     if (distance >= vsc_buffer_len(self->tail)) {
         vsc_buffer_reset(self->tail);
+        return;
     }
 
     byte *tail_begin = vsc_buffer_begin(self->tail);
