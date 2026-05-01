@@ -149,17 +149,17 @@ vscf_rsa_generate_ephemeral_key(const vscf_rsa_t *self, const vscf_impl_t *key, 
         return NULL;
     }
 
-    size_t bitlen = 0;
+    size_t len_in_bytes = 0;
     if (vscf_impl_tag(key) == vscf_impl_tag_RSA_PUBLIC_KEY) {
         const vscf_rsa_public_key_t *rsa_public_key = (const vscf_rsa_public_key_t *)key;
-        bitlen = mbedtls_rsa_get_len(&rsa_public_key->rsa_ctx);
+        len_in_bytes = mbedtls_rsa_get_len(&rsa_public_key->rsa_ctx);
     } else {
         VSCF_ASSERT(vscf_impl_tag(key) == vscf_impl_tag_RSA_PRIVATE_KEY);
         const vscf_rsa_private_key_t *rsa_private_key = (const vscf_rsa_private_key_t *)key;
-        bitlen = mbedtls_rsa_get_len(&rsa_private_key->rsa_ctx);
+        len_in_bytes = mbedtls_rsa_get_len(&rsa_private_key->rsa_ctx);
     }
 
-    return vscf_rsa_generate_key(self, bitlen, error);
+    return vscf_rsa_generate_key(self, len_in_bytes * 8, error);
 }
 
 //

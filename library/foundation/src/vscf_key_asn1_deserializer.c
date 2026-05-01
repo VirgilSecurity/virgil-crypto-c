@@ -357,7 +357,7 @@ vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
     if (vscf_impl_tag(alg_info) == vscf_impl_tag_ECC_ALG_INFO) {
         const size_t ecc_seq_left = vscf_asn1_reader_read_tag(self->asn1_reader, vscf_asn1_tag_OCTET_STRING);
         raw_key = vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(
-                self, version, ecc_seq_left, alg_info, error);
+                self, ecc_seq_left, version, alg_info, error);
     } else {
         const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
         if ((alg_id == vscf_alg_id_ED25519) || (alg_id == vscf_alg_id_CURVE25519)) {
