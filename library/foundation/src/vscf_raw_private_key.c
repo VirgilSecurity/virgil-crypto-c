@@ -179,6 +179,7 @@ vscf_raw_private_key_init_ctx_with_members(
     VSCF_ASSERT_PTR(alg_info);
 
     self->buffer = vsc_buffer_new_with_data(key_data);
+    vsc_buffer_make_secure(self->buffer);
     self->alg_info = vscf_impl_shallow_copy((vscf_impl_t *)alg_info);
     self->impl_tag = impl_tag;
 }
