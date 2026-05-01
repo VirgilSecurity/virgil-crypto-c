@@ -112,6 +112,8 @@ func (dr *DecryptReader) Read(d []byte) (int, error) {
 			return 0, err
 		}
 		dr.finished = true
+	} else if err != nil {
+		return 0, err
 	}
 
 	if _, err = dr.buf.Write(buf); err != nil {
