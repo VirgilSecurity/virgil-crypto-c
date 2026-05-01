@@ -298,7 +298,6 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->asn1_reader);
     VSCF_ASSERT(oid_id != vscf_oid_id_NONE);
-    VSCF_UNUSED(error);
 
     vscf_alg_id_t hash_alg_id = vscf_alg_id_NONE;
     switch (oid_id) {
@@ -317,6 +316,11 @@ vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(
     default:
         VSCF_ASSERT(0 && "Unexpected OID.");
         break;
+    }
+
+    if (hash_alg_id == vscf_alg_id_NONE) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+        return NULL;
     }
 
     vscf_impl_t *hash_alg_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(hash_alg_id));
@@ -471,10 +475,12 @@ vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(
 
     if (vsc_data_is_empty(salt)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return NULL;
     }
 
     if (iteration_count < 1) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
+        return NULL;
     }
 
     vscf_impl_t *prf = vscf_alg_info_der_deserializer_deserialize_inplace(self, error);
