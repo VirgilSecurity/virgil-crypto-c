@@ -145,7 +145,19 @@ vscf_alloc(size_t size) {
 VSCF_PUBLIC void *
 vscf_calloc(size_t count, size_t size) {
 
-    return inner_alloc(count * size);
+    if (size != 0 && count > SIZE_MAX / size) {
+        return NULL;
+    }
+
+    size_t total = count * size;
+
+    void *ptr = inner_alloc(total);
+    if (ptr == NULL) {
+        return NULL;
+    }
+
+    vscf_zeroize(ptr, total);
+    return ptr;
 }
 
 //

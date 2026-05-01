@@ -116,7 +116,19 @@
         <return class="any" access="disown"/>
 
         <code>
-            return .(c_class_memory_variable_inner_alloc)(.(_argument_count) * .(_argument_size));
+            if (.(_argument_size) != 0 &amp;&amp; .(_argument_count) > SIZE_MAX / .(_argument_size)) {
+                return NULL;
+            }
+
+            size_t total = .(_argument_count) * .(_argument_size);
+
+            void *ptr = .(c_class_memory_variable_inner_alloc)(total);
+            if (ptr == NULL) {
+                return NULL;
+            }
+
+            .(c_global_method_zeroize)(ptr, total);
+            return ptr;
         </code>
     </method>
 

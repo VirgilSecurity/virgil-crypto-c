@@ -288,9 +288,17 @@ vscf_message_padding_cleanup_ctx(vscf_message_padding_t *self) {
 VSCF_PUBLIC size_t
 vscf_message_padding_padded_len(size_t plain_text_len) {
 
+    if (plain_text_len > SIZE_MAX - vscf_message_padding_PADDING_SIZE_LEN) {
+        return 0;
+    }
+
     size_t full_size = plain_text_len + vscf_message_padding_PADDING_SIZE_LEN;
 
     size_t factor = full_size / vscf_message_padding_PADDING_FACTOR + 1;
+
+    if (factor > SIZE_MAX / vscf_message_padding_PADDING_FACTOR) {
+        return 0;
+    }
 
     return factor * vscf_message_padding_PADDING_FACTOR;
 }
