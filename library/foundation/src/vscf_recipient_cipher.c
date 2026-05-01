@@ -1348,7 +1348,7 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_c
     VSCF_ASSERT_PTR(self->message_info);
     VSCF_ASSERT_PTR(self->decryption_password);
 
-    return vscf_status_SUCCESS;
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
 }
 
 //
