@@ -489,6 +489,7 @@ vscf_hybrid_key_alg_export_public_key(
     const vscf_status_t export_status = vscf_hybrid_key_alg_export_public_key_data(self, public_key, raw_key_buf);
     if (export_status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, export_status);
+        vsc_buffer_destroy(&raw_key_buf);
         return NULL;
     }
 
@@ -821,6 +822,8 @@ vscf_hybrid_key_alg_export_private_key(
 
     if (export_status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, export_status);
+        vsc_buffer_make_secure(raw_key_buf);
+        vsc_buffer_destroy(&raw_key_buf);
         return NULL;
     }
 
@@ -1246,6 +1249,13 @@ vscf_hybrid_key_alg_decrypt(
     const vscf_alg_id_t hash_alg_id = vscf_oid_to_alg_id(hash_oid);
     const vscf_alg_id_t cipher_alg_id = vscf_oid_to_alg_id(cipher_oid);
     if ((hash_alg_id == vscf_alg_id_NONE) || (cipher_alg_id == vscf_alg_id_NONE)) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+
+    if (cipher_alg_id != vscf_alg_id_AES256_GCM) {
+        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    }
+    if (hash_alg_id != vscf_alg_id_SHA512) {
         return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
     }
 

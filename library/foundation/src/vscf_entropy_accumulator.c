@@ -115,8 +115,11 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
     bool has_strong = 0;
 
 #if defined(MBEDTLS_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&self->ctx, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
-    has_strong = true;
+    int mbedtls_status = mbedtls_entropy_add_source(
+            &self->ctx, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    if (mbedtls_status == 0) {
+        has_strong = true;
+    }
 #endif
 
     VSCF_ASSERT(has_strong);

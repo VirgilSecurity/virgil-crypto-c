@@ -456,6 +456,7 @@ vscf_compound_key_alg_export_public_key(
     const vscf_status_t export_status = vscf_compound_key_alg_export_public_key_data(self, public_key, raw_key_buf);
     if (export_status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, export_status);
+        vsc_buffer_destroy(&raw_key_buf);
         return NULL;
     }
 
@@ -783,6 +784,7 @@ vscf_compound_key_alg_export_private_key(
 
     if (export_status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, export_status);
+        vsc_buffer_destroy(&raw_key_buf);
         return NULL;
     }
 

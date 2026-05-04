@@ -666,6 +666,9 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     vsc_buffer_init(&nc);
     vsc_buffer_use(&nc, record.nc, sizeof(record.nc));
 
+    vsc_buffer_t rnd_m;
+    vsc_buffer_init(&rnd_m);
+
     vscf_status_t f_status;
     f_status = vscf_random(self->random, vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH, &nc);
 
@@ -675,9 +678,6 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     }
 
     byte rnd_m_buffer[vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH];
-
-    vsc_buffer_t rnd_m;
-    vsc_buffer_init(&rnd_m);
     vsc_buffer_use(&rnd_m, rnd_m_buffer, sizeof(rnd_m_buffer));
 
     f_status = vscf_random(self->random, vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, &rnd_m);

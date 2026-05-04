@@ -406,6 +406,9 @@ vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self, vsc_
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
 err:
+    if (x.p != NULL) {
+        mbedtls_platform_zeroize(x.p, x.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&x);
 
 input_err:
@@ -490,6 +493,9 @@ vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_se
     VSCF_ASSERT(olen == vscf_brainkey_server_POINT_LEN);
 
 err:
+    if (x.p != NULL) {
+        mbedtls_platform_zeroize(x.p, x.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&x);
     mbedtls_ecp_point_free(&Y);
     mbedtls_ecp_point_free(&A);

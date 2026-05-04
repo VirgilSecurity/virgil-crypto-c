@@ -721,6 +721,8 @@ vscf_aes256_gcm_finish_auth_decryption(vscf_aes256_gcm_t *self, vsc_data_t tag, 
     if (0 == auth_check_status) {
         return vscf_status_SUCCESS;
     } else {
+        vscf_zeroize(vsc_buffer_begin(out), vsc_buffer_len(out));
+        vsc_buffer_reset(out);
         return vscf_status_ERROR_AUTH_FAILED;
     }
 }

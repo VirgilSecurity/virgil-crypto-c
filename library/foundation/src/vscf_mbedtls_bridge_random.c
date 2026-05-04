@@ -50,6 +50,7 @@
 #include "vscf_random.h"
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
+#include <mbedtls/entropy.h>
 
 // clang-format on
 //  @end
@@ -77,10 +78,13 @@ vscf_mbedtls_bridge_random(void *ctx, byte *data, size_t len) {
     vsc_buffer_init(&buffer);
     vsc_buffer_use(&buffer, (byte *)data, len);
 
-    vscf_status_t result = vscf_random(random, len, &buffer);
-    VSCF_ASSERT(len == vsc_buffer_len(&buffer));
+    vscf_status_t status = vscf_random(random, len, &buffer);
 
     vsc_buffer_cleanup(&buffer);
 
-    return (int)result;
+    if (status != vscf_status_SUCCESS) {
+        return MBEDTLS_ERR_ENTROPY_SOURCE_FAILED;
+    }
+
+    return 0;
 }

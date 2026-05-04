@@ -224,7 +224,8 @@ VSC_PUBLIC vsc_data_t
 vsc_data_slice_beg(vsc_data_t self, size_t offset, size_t len) {
 
     VSC_ASSERT(vsc_data_is_valid(self));
-    VSC_ASSERT(self.len >= offset + len);
+    VSC_ASSERT(offset <= self.len);
+    VSC_ASSERT(len <= self.len - offset);
 
     return (vsc_data_t){self.bytes + offset, len};
 }
@@ -236,7 +237,8 @@ VSC_PUBLIC vsc_data_t
 vsc_data_slice_end(vsc_data_t self, size_t offset, size_t len) {
 
     VSC_ASSERT(vsc_data_is_valid(self));
-    VSC_ASSERT(self.len >= offset + len);
+    VSC_ASSERT(offset <= self.len);
+    VSC_ASSERT(len <= self.len - offset);
 
     return (vsc_data_t){self.bytes + self.len - offset - len, len};
 }

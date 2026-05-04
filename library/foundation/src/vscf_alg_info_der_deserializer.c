@@ -414,12 +414,7 @@ vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(
         //  Read GCMParameters.
         vscf_asn1_reader_read_sequence(self->asn1_reader);
         cipher_nonce = vscf_asn1_reader_read_octet_str(self->asn1_reader);
-        size_t nonce_len = vscf_asn1_reader_read_int(self->asn1_reader);
-
-        if (cipher_nonce.len != nonce_len) {
-            VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_ASN1);
-            return NULL;
-        }
+        (void)vscf_asn1_reader_read_int(self->asn1_reader);
     } else {
         //  Read NONCE.
         cipher_nonce = vscf_asn1_reader_read_octet_str(self->asn1_reader);

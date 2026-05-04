@@ -512,8 +512,6 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
 
     vsce_status_t status = vsce_status_SUCCESS;
 
-    self->keys_are_set = true;
-
     int mbedtls_status = 0;
 
     mbedtls_status = mbedtls_mpi_read_binary(&self->kc_private, client_private_key.bytes, client_private_key.len);
@@ -540,6 +538,7 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
                 &self->group, &self->ks_public, server_public_key.bytes, server_public_key.len);
         if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->ks_public) != 0) {
             status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
+            vsce_uokms_client_free_op_group(op_group);
             goto err;
         }
 
@@ -555,9 +554,13 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
         mbedtls_mpi_free(&one);
     }
 
+    self->keys_are_set = true;
     vsce_uokms_client_free_op_group(op_group);
 
 err:
+    if (status != vsce_status_SUCCESS) {
+        self->keys_are_set = false;
+    }
     return status;
 }
 

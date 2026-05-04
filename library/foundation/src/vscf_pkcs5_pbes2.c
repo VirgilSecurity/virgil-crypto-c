@@ -117,6 +117,7 @@ vscf_pkcs5_pbes2_reset(vscf_pkcs5_pbes2_t *self, vsc_data_t pwd) {
 
     vsc_buffer_destroy(&self->password);
     self->password = vsc_buffer_new_with_data(pwd);
+    vsc_buffer_make_secure(self->password);
 }
 
 //

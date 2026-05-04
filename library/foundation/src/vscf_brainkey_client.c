@@ -462,7 +462,13 @@ vscf_brainkey_client_blind(
 
 err:
     mbedtls_ecp_point_free(&A);
+    if (rInv.p != NULL) {
+        mbedtls_platform_zeroize(rInv.p, rInv.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&rInv);
+    if (r.p != NULL) {
+        mbedtls_platform_zeroize(r.p, r.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&r);
     mbedtls_ecp_point_free(&P);
 
@@ -565,6 +571,9 @@ vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, 
     vscf_zeroize(point, sizeof(point));
 
 err:
+    if (rInv.p != NULL) {
+        mbedtls_platform_zeroize(rInv.p, rInv.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&rInv);
     mbedtls_ecp_point_free(&S);
     mbedtls_ecp_point_free(&Y);

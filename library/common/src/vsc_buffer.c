@@ -693,7 +693,7 @@ vsc_buffer_write_data(vsc_buffer_t *self, vsc_data_t data) {
     size_t write_len = data.len > vsc_buffer_unused_len(self) ? vsc_buffer_unused_len(self) : data.len;
 
     if (self->is_reverse) {
-        memcpy(vsc_buffer_unused_bytes(self) - write_len + 1, data.bytes, write_len);
+        memcpy(self->bytes + self->capacity - self->len - write_len, data.bytes, write_len);
     } else {
         memcpy(vsc_buffer_unused_bytes(self), data.bytes, write_len);
     }

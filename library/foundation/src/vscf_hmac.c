@@ -284,6 +284,7 @@ vscf_hmac_finish(vscf_hmac_t *self, vsc_buffer_t *mac) {
     vscf_hash_update(self->hash, vsc_data(vsc_buffer_unused_bytes(mac), digest_len));
     vscf_hash_finish(self->hash, mac);
 
+    vscf_zeroize(opad, opad_len);
     vscf_dealloc(opad);
 }
 

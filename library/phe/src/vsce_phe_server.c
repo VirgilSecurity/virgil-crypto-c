@@ -606,9 +606,9 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
     mbedtls_ecp_point_init(&c0);
     mbedtls_ecp_point_init(&c1);
 
-    mbedtls_status = mbedtls_ecp_mul(&self->group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(&self->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
 
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -743,7 +743,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
     mbedtls_ecp_point hs0x;
     mbedtls_ecp_point_init(&hs0x);
 
-    mbedtls_status = mbedtls_ecp_mul(&self->group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point c1;
@@ -752,8 +752,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
     if (mbedtls_ecp_point_cmp(&c0, &hs0x) == 0) {
         // Password matches
 
-        mbedtls_status =
-                mbedtls_ecp_mul(&self->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
+        mbedtls_status = mbedtls_ecp_mul(op_group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;

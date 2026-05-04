@@ -980,7 +980,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     if (!session->received_first_response && session->is_initiator) {
         if (session_pb->receiver_has_one_time_public_key != session_pb->has_receiver_one_time_key_id) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-
+            vscr_ratchet_session_destroy(&session);
             goto err;
         }
 
@@ -1001,18 +1001,22 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         if (session->enable_post_quantum) {
             if (session_pb->pqc_info.encapsulated_key1->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
             if (session_pb->pqc_info.encapsulated_key2->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
             if (session_pb->pqc_info.encapsulated_key3 != NULL && session_pb->pqc_info.encapsulated_key3->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
             if (session_pb->pqc_info.decapsulated_keys_signature->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
 
@@ -1036,6 +1040,10 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
 err:
     if (pb_status) {
+        if (session_pb->ratchet.has_sender_chain && session_pb->ratchet.sender_chain.private_key_second != NULL) {
+            vscr_zeroize(session_pb->ratchet.sender_chain.private_key_second->bytes,
+                    session_pb->ratchet.sender_chain.private_key_second->size);
+        }
         pb_release(vscr_Session_fields, session_pb);
     }
 

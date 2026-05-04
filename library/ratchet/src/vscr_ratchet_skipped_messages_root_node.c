@@ -362,6 +362,10 @@ vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipp
     }
     VSCR_ASSERT_PTR(skipped_messages);
 
+    if (count > vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES) {
+        return;
+    }
+
     vscr_ratchet_message_key_node_t *prev = NULL;
 
     skipped_messages->count = count;
