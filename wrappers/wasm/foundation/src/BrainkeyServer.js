@@ -274,9 +274,17 @@ const initBrainkeyServer = (Module, modules) => {
             const proofValueSCapacity = this.PROOF_VALUE_LEN;
             const proofValueSCtxPtr = Module._vsc_buffer_new_with_capacity(proofValueSCapacity);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_brainkey_server_prove(this.ctxPtr, blindedPointCtxPtr, hardenedPointCtxPtr, identitySecretCtxPtr, serverPublicKeyCtxPtr, proofValueCCtxPtr, proofValueSCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_brainkey_server_prove(this.ctxPtr, blindedPointCtxPtr, hardenedPointCtxPtr, identitySecretCtxPtr, serverPublicKeyCtxPtr, proofValueCCtxPtr, proofValueSCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             
                 const proofValueCPtr = Module._vsc_buffer_bytes(proofValueCCtxPtr);
                 const proofValueCPtrLen = Module._vsc_buffer_len(proofValueCCtxPtr);
@@ -297,6 +305,7 @@ const initBrainkeyServer = (Module, modules) => {
                 Module._free(serverPublicKeyCtxPtr);
                 Module._vsc_buffer_delete(proofValueCCtxPtr);
                 Module._vsc_buffer_delete(proofValueSCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 

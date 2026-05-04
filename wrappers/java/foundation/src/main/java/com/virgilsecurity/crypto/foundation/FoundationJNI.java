@@ -368,7 +368,7 @@ public class FoundationJNI {
 
     public native byte[] brainkeyClient_deblind(long cCtx, byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException;
 
-    public native void brainkeyClient_verify(long cCtx, byte[] blindedPoint, byte[] hardenedPoint, byte[] serverPublicKey, byte[] proofValueC, byte[] proofValueS) throws FoundationException;
+    public native bool brainkeyClient_verify(long cCtx, byte[] blindedPoint, byte[] hardenedPoint, byte[] serverPublicKey, byte[] proofValueC, byte[] proofValueS) throws FoundationException;
 
     public native long brainkeyServer_new();
 

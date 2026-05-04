@@ -38,6 +38,7 @@ from ._c_bridge import VscfBrainkeyClient
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscf_error import vscf_error_t
 
 
 class BrainkeyClient(object):
@@ -96,8 +97,10 @@ the server response."""
         d_server_public_key = Data(server_public_key)
         d_proof_value_c = Data(proof_value_c)
         d_proof_value_s = Data(proof_value_s)
-        status = self._lib_vscf_brainkey_client.vscf_brainkey_client_verify(self.ctx, d_blinded_point.data, d_hardened_point.data, d_server_public_key.data, d_proof_value_c.data, d_proof_value_s.data)
-        VscfStatus.handle_status(status)
+        error = vscf_error_t()
+        result = self._lib_vscf_brainkey_client.vscf_brainkey_client_verify(self.ctx, d_blinded_point.data, d_hardened_point.data, d_server_public_key.data, d_proof_value_c.data, d_proof_value_s.data, error)
+        VscfStatus.handle_status(error.status)
+        return result
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

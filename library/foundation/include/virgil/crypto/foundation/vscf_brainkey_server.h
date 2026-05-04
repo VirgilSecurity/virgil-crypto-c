@@ -68,6 +68,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_error.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -211,8 +212,8 @@ vscf_brainkey_server_compute_public_key(vscf_brainkey_server_t *self, vsc_data_t
 //  identity secret x as server_public_key = x * G.
 //  Client must call verify() before deblind() to authenticate the server response.
 //
-VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point, vsc_data_t identity_secret, vsc_data_t server_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_s) VSCF_NODISCARD;
+VSCF_PUBLIC bool
+vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point, vsc_data_t identity_secret, vsc_data_t server_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_s, vscf_error_t *error);
 
 // --------------------------------------------------------------------------
 //  Generated section end.

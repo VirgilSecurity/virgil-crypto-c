@@ -168,16 +168,19 @@ func (obj *BrainkeyServer) ComputePublicKey(identitySecret []byte) ([]byte, erro
 * identity secret x as server_public_key = x * G.
 * Client must call verify() before deblind() to authenticate the server response.
 */
-func (obj *BrainkeyServer) Prove(blindedPoint []byte, hardenedPoint []byte, identitySecret []byte, serverPublicKey []byte) ([]byte, []byte, error) {
+func (obj *BrainkeyServer) Prove(blindedPoint []byte, hardenedPoint []byte, identitySecret []byte, serverPublicKey []byte) (bool, []byte, []byte, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+
     proofValueCBuf, proofValueCBufErr := newBuffer(int(BrainkeyServerProofValueLen))
     if proofValueCBufErr != nil {
-        return nil, nil, proofValueCBufErr
+        return false, nil, nil, proofValueCBufErr
     }
     defer proofValueCBuf.delete()
 
     proofValueSBuf, proofValueSBufErr := newBuffer(int(BrainkeyServerProofValueLen))
     if proofValueSBufErr != nil {
-        return nil, nil, proofValueSBufErr
+        return false, nil, nil, proofValueSBufErr
     }
     defer proofValueSBuf.delete()
     blindedPointData := helperWrapData (blindedPoint)
@@ -185,14 +188,14 @@ func (obj *BrainkeyServer) Prove(blindedPoint []byte, hardenedPoint []byte, iden
     identitySecretData := helperWrapData (identitySecret)
     serverPublicKeyData := helperWrapData (serverPublicKey)
 
-    proxyResult := C.vscf_brainkey_server_prove(obj.cCtx, blindedPointData, hardenedPointData, identitySecretData, serverPublicKeyData, proofValueCBuf.ctx, proofValueSBuf.ctx)
+    proxyResult := C.vscf_brainkey_server_prove(obj.cCtx, blindedPointData, hardenedPointData, identitySecretData, serverPublicKeyData, proofValueCBuf.ctx, proofValueSBuf.ctx, &error)
 
-    err := FoundationErrorHandleStatus(proxyResult)
+    err := FoundationErrorHandleStatus(error.status)
     if err != nil {
-        return nil, nil, err
+        return false, nil, nil, err
     }
 
     runtime.KeepAlive(obj)
 
-    return proofValueCBuf.getData(), proofValueSBuf.getData(), nil
+    return proxyResult, proofValueCBuf.getData(), proofValueSBuf.getData(), nil
 }

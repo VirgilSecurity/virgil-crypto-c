@@ -3998,6 +3998,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1verify (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jblindedPoint, jbyteArray jhardenedPoint, jbyteArray jserverPublicKey, jbyteArray jproofValueC, jbyteArray jproofValueS) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
     // Wrap input data
     byte* blinded_point_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPoint, NULL);
     vsc_data_t blinded_point = vsc_data(blinded_point_arr, (*jenv)->GetArrayLength(jenv, jblindedPoint));
@@ -4021,9 +4024,10 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_b
     // Cast class context
     vscf_brainkey_client_t /*9*/* brainkey_client_ctx = *(vscf_brainkey_client_t /*9*/**) &c_ctx;
     
-    vscf_status_t status = vscf_brainkey_client_verify(brainkey_client_ctx /*a1*/, blinded_point /*a3*/, hardened_point /*a3*/, server_public_key /*a3*/, proof_value_c /*a3*/, proof_value_s /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
+    vscf_brainkey_client_verify(brainkey_client_ctx /*a1*/, blinded_point /*a3*/, hardened_point /*a3*/, server_public_key /*a3*/, proof_value_c /*a3*/, proof_value_s /*a3*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
         return;
     }
     // Free resources
@@ -4041,6 +4045,7 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_b
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jproofValueS, (jbyte*) proof_value_s_arr, 0);
     
+    return ret;
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1new__ (JNIEnv *jenv, jobject jobj) {
@@ -4140,6 +4145,9 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_Foundatio
 }
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1prove (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jblindedPoint, jbyteArray jhardenedPoint, jbyteArray jidentitySecret, jbyteArray jserverPublicKey) {
+    // Wrap errors
+    struct vscf_error_t /*4*/ error;
+    vscf_error_reset(&error);
     // Wrap input data
     byte* blinded_point_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jblindedPoint, NULL);
     vsc_data_t blinded_point = vsc_data(blinded_point_arr, (*jenv)->GetArrayLength(jenv, jblindedPoint));
@@ -4163,9 +4171,10 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
     
     vsc_buffer_t *proof_value_s = vsc_buffer_new_with_capacity(vscf_brainkey_server_PROOF_VALUE_LEN);
     
-    vscf_status_t status = vscf_brainkey_server_prove(brainkey_server_ctx /*a1*/, blinded_point /*a3*/, hardened_point /*a3*/, identity_secret /*a3*/, server_public_key /*a3*/, proof_value_c /*a3*/, proof_value_s /*a3*/);
-    if (status != vscf_status_SUCCESS) {
-        throwFoundationException(jenv, jobj, status);
+    vscf_brainkey_server_prove(brainkey_server_ctx /*a1*/, blinded_point /*a3*/, hardened_point /*a3*/, identity_secret /*a3*/, server_public_key /*a3*/, proof_value_c /*a3*/, proof_value_s /*a3*/, &error /*a4*/);
+    
+    if (error.status != vscf_status_SUCCESS) {
+        throwFoundationException(jenv, jobj, error.status);
         return NULL;
     }
     jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/BrainkeyServerProveResult");

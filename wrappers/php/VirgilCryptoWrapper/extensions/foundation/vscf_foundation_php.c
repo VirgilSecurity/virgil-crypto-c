@@ -8338,17 +8338,23 @@ PHP_FUNCTION(vscf_brainkey_client_verify_php) {
     vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_blen);
     vsc_data_t proof_value_c = vsc_data((const byte*)in_proof_value_c, in_proof_value_c_blen);
     vsc_data_t proof_value_s = vsc_data((const byte*)in_proof_value_s, in_proof_value_s_blen);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     //
     // Call main function
     //
-    vscf_status_t status =vscf_brainkey_client_verify(brainkey_client, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s);
+    vscf_brainkey_client_verify(brainkey_client, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s, &error);
 
     //
     // Handle error
     //
+    vscf_status_t status = vscf_error_status(&error);
     VSCF_HANDLE_STATUS(status);
 
+    //
+    // Write returned result
+    //
 }
 
 //
@@ -8796,6 +8802,8 @@ PHP_FUNCTION(vscf_brainkey_server_prove_php) {
     vsc_data_t hardened_point = vsc_data((const byte*)in_hardened_point, in_hardened_point_blen);
     vsc_data_t identity_secret = vsc_data((const byte*)in_identity_secret, in_identity_secret_blen);
     vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_blen);
+    vscf_error_t error;
+    vscf_error_reset(&error);
 
     //
     // Allocate output buffer for output 'proof_value_c'
@@ -8814,11 +8822,12 @@ PHP_FUNCTION(vscf_brainkey_server_prove_php) {
     //
     // Call main function
     //
-    vscf_status_t status =vscf_brainkey_server_prove(brainkey_server, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s);
+    vscf_brainkey_server_prove(brainkey_server, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s, &error);
 
     //
     // Handle error
     //
+    vscf_status_t status = vscf_error_status(&error);
     VSCF_HANDLE_STATUS(status);
 
     //

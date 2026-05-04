@@ -316,9 +316,17 @@ const initBrainkeyClient = (Module, modules) => {
             // Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(proofValueSCtxPtr, proofValueSPtr, proofValueSSize);
             
+            const errorCtxSize = Module._vscf_error_ctx_size();
+            const errorCtxPtr = Module._malloc(errorCtxSize);
+            Module._vscf_error_reset(errorCtxPtr);
+            
+            let proxyResult;
+            
             try {
-                const proxyResult = Module._vscf_brainkey_client_verify(this.ctxPtr, blindedPointCtxPtr, hardenedPointCtxPtr, serverPublicKeyCtxPtr, proofValueCCtxPtr, proofValueSCtxPtr);
-                modules.FoundationError.handleStatusCode(proxyResult);
+                proxyResult = Module._vscf_brainkey_client_verify(this.ctxPtr, blindedPointCtxPtr, hardenedPointCtxPtr, serverPublicKeyCtxPtr, proofValueCCtxPtr, proofValueSCtxPtr, errorCtxPtr);
+            
+                const errorStatus = Module._vscf_error_status(errorCtxPtr);
+                modules.FoundationError.handleStatusCode(errorStatus);
             } finally {
                 Module._free(blindedPointPtr);
                 Module._free(blindedPointCtxPtr);
@@ -330,6 +338,7 @@ const initBrainkeyClient = (Module, modules) => {
                 Module._free(proofValueCCtxPtr);
                 Module._free(proofValueSPtr);
                 Module._free(proofValueSCtxPtr);
+                Module._free(errorCtxPtr);
             }
         }
 

@@ -644,10 +644,10 @@ input_err:
     return status;
 }
 
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC bool
 vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point,
         vsc_data_t identity_secret, vsc_data_t server_public_key, vsc_buffer_t *proof_value_c,
-        vsc_buffer_t *proof_value_s) {
+        vsc_buffer_t *proof_value_s, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(proof_value_c);
@@ -657,32 +657,32 @@ vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_poin
     VSCF_ASSERT(vsc_data_is_valid(identity_secret));
     VSCF_ASSERT(vsc_data_is_valid(server_public_key));
 
-    vscf_status_t status = vscf_status_SUCCESS;
-
     if (identity_secret.len != vscf_brainkey_server_MPI_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN);
+        return false;
     }
     if (blinded_point.len != vscf_brainkey_server_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
     }
     if (hardened_point.len != vscf_brainkey_server_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
     }
     if (server_public_key.len != vscf_brainkey_server_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
     }
     if (vsc_buffer_unused_len(proof_value_c) < vscf_brainkey_server_PROOF_VALUE_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN);
+        return false;
     }
     if (vsc_buffer_unused_len(proof_value_s) < vscf_brainkey_server_PROOF_VALUE_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_BUFFER_LEN);
+        return false;
     }
+
+    vscf_status_t status = vscf_status_SUCCESS;
 
     mbedtls_mpi x, k, c_val, cx, s_val;
     mbedtls_mpi_init(&x);
@@ -817,6 +817,9 @@ err:
     mbedtls_ecp_point_free(&v1);
     mbedtls_ecp_point_free(&v2);
 
-input_err:
-    return status;
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return false;
+    }
+    return true;
 }

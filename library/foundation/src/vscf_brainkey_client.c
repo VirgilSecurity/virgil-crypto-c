@@ -656,9 +656,9 @@ cleanup:
     return mbs;
 }
 
-VSCF_PUBLIC vscf_status_t
+VSCF_PUBLIC bool
 vscf_brainkey_client_verify(vscf_brainkey_client_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point,
-        vsc_data_t server_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_s) {
+        vsc_data_t server_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_s, vscf_error_t *error) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(vsc_data_is_valid(blinded_point));
@@ -667,28 +667,28 @@ vscf_brainkey_client_verify(vscf_brainkey_client_t *self, vsc_data_t blinded_poi
     VSCF_ASSERT(vsc_data_is_valid(proof_value_c));
     VSCF_ASSERT(vsc_data_is_valid(proof_value_s));
 
-    vscf_status_t status = vscf_status_SUCCESS;
-
     if (blinded_point.len != vscf_brainkey_client_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
     }
     if (hardened_point.len != vscf_brainkey_client_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
     }
     if (server_public_key.len != vscf_brainkey_client_POINT_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
     }
     if (proof_value_c.len != vscf_brainkey_client_MPI_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN);
+        return false;
     }
     if (proof_value_s.len != vscf_brainkey_client_MPI_LEN) {
-        status = vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN;
-        goto input_err;
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN);
+        return false;
     }
+
+    vscf_status_t status = vscf_status_SUCCESS;
 
     mbedtls_mpi c_val, s_val, c_prime;
     mbedtls_mpi_init(&c_val);
@@ -778,6 +778,9 @@ err:
     mbedtls_ecp_point_free(&v1);
     mbedtls_ecp_point_free(&v2);
 
-input_err:
-    return status;
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return false;
+    }
+    return true;
 }

@@ -38,6 +38,7 @@ from ._c_bridge import VscfBrainkeyServer
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscf_error import vscf_error_t
 
 
 class BrainkeyServer(object):
@@ -98,11 +99,12 @@ Client must call verify() before deblind() to authenticate the server response."
         d_hardened_point = Data(hardened_point)
         d_identity_secret = Data(identity_secret)
         d_server_public_key = Data(server_public_key)
+        error = vscf_error_t()
         proof_value_c = Buffer(self.PROOF_VALUE_LEN)
         proof_value_s = Buffer(self.PROOF_VALUE_LEN)
-        status = self._lib_vscf_brainkey_server.vscf_brainkey_server_prove(self.ctx, d_blinded_point.data, d_hardened_point.data, d_identity_secret.data, d_server_public_key.data, proof_value_c.c_buffer, proof_value_s.c_buffer)
-        VscfStatus.handle_status(status)
-        return proof_value_c.get_bytes(), proof_value_s.get_bytes()
+        result = self._lib_vscf_brainkey_server.vscf_brainkey_server_prove(self.ctx, d_blinded_point.data, d_hardened_point.data, d_identity_secret.data, d_server_public_key.data, proof_value_c.c_buffer, proof_value_s.c_buffer, error)
+        VscfStatus.handle_status(error.status)
+        return result, proof_value_c.get_bytes(), proof_value_s.get_bytes()
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

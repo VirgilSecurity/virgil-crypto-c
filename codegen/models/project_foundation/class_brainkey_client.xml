@@ -72,8 +72,9 @@
         <argument name="server public key" class="data"/>
         <argument name="proof value c" class="data"/>
         <argument name="proof value s" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
 
-        <return enum="status"/>
+        <return type="bool"/>
     </method>
 
     <method name="get op group" declaration="private">
