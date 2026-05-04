@@ -953,18 +953,22 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    if (self->is_signed_operation) {
-        status = vscf_recipient_cipher_accomplish_signed_encryption(self);
-        if (status != vscf_status_SUCCESS) {
-            goto cleanup;
-        }
-    }
-
     if (self->encryption_padding) {
         VSCF_ASSERT_PTR(self->padding_cipher);
         status = vscf_padding_cipher_finish(self->padding_cipher, out);
     } else {
         status = vscf_cipher_finish(self->encryption_cipher, out);
+    }
+
+    if (status != vscf_status_SUCCESS) {
+        goto cleanup;
+    }
+
+    if (self->is_signed_operation) {
+        status = vscf_recipient_cipher_accomplish_signed_encryption(self);
+        if (status != vscf_status_SUCCESS) {
+            goto cleanup;
+        }
     }
 
 cleanup:

@@ -291,6 +291,7 @@ vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce) {
     VSCF_ASSERT(vscf_aes256_gcm_NONCE_LEN == nonce.len);
 
     memcpy(self->nonce, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
+    self->is_nonce_used = false;
 }
 
 //
@@ -325,6 +326,7 @@ vscf_aes256_gcm_start_encryption(vscf_aes256_gcm_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(!vsc_data_is_zero(vsc_data(self->key, vscf_aes256_gcm_KEY_LEN)));
+    VSCF_ASSERT(!self->is_nonce_used);
 
     self->state = vscf_cipher_state_ENCRYPTION;
 
@@ -656,6 +658,8 @@ vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *ou
             mbedtls_cipher_write_tag(&self->cipher_ctx, vsc_buffer_unused_bytes(tag_dst), vscf_aes256_gcm_AUTH_TAG_LEN);
     vsc_buffer_inc_used(tag_dst, vscf_aes256_gcm_AUTH_TAG_LEN);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+
+    self->is_nonce_used = true;
 
     return vscf_status_SUCCESS;
 }
