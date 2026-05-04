@@ -224,6 +224,14 @@ vscf_aes256_gcm_precise_encrypted_len(const vscf_aes256_gcm_t *self, size_t data
 //
 //  Decrypt given data.
 //
+//  Verifies the GCM authentication tag before writing any plaintext to the
+//  caller's buffer (staging-buffer approach). Plaintext is never exposed on
+//  authentication failure. Safer than the streaming API for this reason, but
+//  requires holding the entire plaintext in an internal buffer — intended for
+//  small data. Use start_decryption / update / finish for large or streaming
+//  data (with the documented limitation that plaintext is released before the
+//  tag is verified).
+//
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
 

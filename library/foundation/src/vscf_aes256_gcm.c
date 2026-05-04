@@ -254,6 +254,14 @@ vscf_aes256_gcm_precise_encrypted_len(const vscf_aes256_gcm_t *self, size_t data
 //
 //  Decrypt given data.
 //
+//  Uses an internal staging buffer: plaintext is decrypted privately, the
+//  authentication tag is verified, and only on success is the plaintext
+//  copied to the caller's buffer. On tag failure the staging buffer is
+//  zeroized and ERROR_AUTH_FAILED is returned — the caller's buffer is
+//  never written. This is safer than the streaming API but requires
+//  holding the entire plaintext in memory; prefer the streaming API
+//  (start_decryption / update / finish) for large data.
+//
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
@@ -262,11 +270,24 @@ vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
     VSCF_ASSERT(data.len >= vscf_aes256_gcm_AUTH_TAG_LEN);
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_decrypted_len(self, data.len));
+
+    const size_t estimated_decrypted_len = vscf_aes256_gcm_decrypted_len(self, data.len);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= estimated_decrypted_len);
+
+    vsc_buffer_t *staging = vsc_buffer_new_with_capacity(estimated_decrypted_len);
+    vsc_buffer_make_secure(staging);
 
     vscf_aes256_gcm_start_decryption(self);
-    vscf_aes256_gcm_update(self, data, out);
-    return vscf_aes256_gcm_finish(self, out);
+    vscf_aes256_gcm_update(self, data, staging);
+    const vscf_status_t status = vscf_aes256_gcm_finish(self, staging);
+
+    if (status == vscf_status_SUCCESS) {
+        vsc_buffer_write_data(out, vsc_buffer_data(staging));
+    }
+
+    vsc_buffer_destroy(&staging);
+
+    return status;
 }
 
 //
