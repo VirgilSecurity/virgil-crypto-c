@@ -94,6 +94,7 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *self) {
 
     vscf_zeroize(self->key, vscf_aes256_gcm_KEY_LEN);
     vscf_zeroize(self->nonce, vscf_aes256_gcm_NONCE_LEN);
+    self->is_nonce_used = true;
 }
 
 //

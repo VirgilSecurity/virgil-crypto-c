@@ -242,14 +242,13 @@ vsc_memory_secure_unique_copy(void *dest, const void *src, size_t len) {
 
     const volatile uint8_t *in_src = (const uint8_t *)src;
     const volatile uint8_t *in_dest = (const uint8_t *)dest;
+    uint8_t *out = (uint8_t *)dest;
     volatile uint8_t diff = 0x00;
 
     for (size_t i = 0; i < len; ++i) {
-        diff |= in_src[i] ^ in_dest[i];
-    }
-
-    if (diff != 0) {
-        memcpy(dest, src, len);
+        uint8_t s = in_src[i];
+        diff |= in_dest[i] ^ s;
+        out[i] = s;
     }
 
     return diff == 0;
