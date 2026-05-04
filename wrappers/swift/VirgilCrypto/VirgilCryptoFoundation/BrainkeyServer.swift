@@ -45,6 +45,8 @@ import VSCFoundation
 
     @objc public let mpiLen: Int = 32
 
+    @objc public let proofValueLen: Int = 32
+
     public override init() {
         self.c_ctx = vscf_brainkey_server_new()
         super.init()
@@ -125,4 +127,84 @@ import VSCFoundation
         return hardenedPoint
     }
 
+    /// Computes the server's public key G_x = x*G from the given identity secret x.
+    /// Required by the client to verify DLEQ proofs.
+    @objc public func computePublicKey(identitySecret: Data) throws -> Data {
+        let publicKeyCount = self.pointLen
+        var publicKey = Data(count: publicKeyCount)
+        let publicKeyBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(publicKeyBuf)
+        }
+
+        let proxyResult = identitySecret.withUnsafeBytes({ (identitySecretPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            return publicKey.withUnsafeMutableBytes({ (publicKeyPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                vsc_buffer_use(publicKeyBuf, publicKeyPointer.bindMemory(to: byte.self).baseAddress, publicKeyCount)
+
+                return vscf_brainkey_server_compute_public_key(self.c_ctx, vsc_data(identitySecretPointer.bindMemory(to: byte.self).baseAddress, identitySecret.count), publicKeyBuf)
+            })
+        })
+        publicKey.count = vsc_buffer_len(publicKeyBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return publicKey
+    }
+
+    /// Generates a DLEQ proof that hardened_point = x * blinded_point using the same
+    /// identity secret x as server_public_key = x * G.
+    /// Client must call verify() before deblind() to authenticate the server response.
+    @objc public func prove(blindedPoint: Data, hardenedPoint: Data, identitySecret: Data, serverPublicKey: Data) throws -> BrainkeyServerProveResult {
+        let proofValueCCount = self.proofValueLen
+        var proofValueC = Data(count: proofValueCCount)
+        let proofValueCBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(proofValueCBuf)
+        }
+
+        let proofValueSCount = self.proofValueLen
+        var proofValueS = Data(count: proofValueSCount)
+        let proofValueSBuf = vsc_buffer_new()
+        defer {
+            vsc_buffer_delete(proofValueSBuf)
+        }
+
+        let proxyResult = blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            return hardenedPoint.withUnsafeBytes({ (hardenedPointPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return identitySecret.withUnsafeBytes({ (identitySecretPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                    return serverPublicKey.withUnsafeBytes({ (serverPublicKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                        return proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                            vsc_buffer_use(proofValueCBuf, proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueCCount)
+
+                            return proofValueS.withUnsafeMutableBytes({ (proofValueSPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+                                vsc_buffer_use(proofValueSBuf, proofValueSPointer.bindMemory(to: byte.self).baseAddress, proofValueSCount)
+
+                                return vscf_brainkey_server_prove(self.c_ctx, vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(identitySecretPointer.bindMemory(to: byte.self).baseAddress, identitySecret.count), vsc_data(serverPublicKeyPointer.bindMemory(to: byte.self).baseAddress, serverPublicKey.count), proofValueCBuf, proofValueSBuf)
+                            })
+                        })
+                    })
+                })
+            })
+        })
+        proofValueC.count = vsc_buffer_len(proofValueCBuf)
+        proofValueS.count = vsc_buffer_len(proofValueSBuf)
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+
+        return BrainkeyServerProveResult(proofValueC: proofValueC, proofValueS: proofValueS)
+    }
+
+}
+
+@objc(VSCFBrainkeyServerProveResult) public class BrainkeyServerProveResult: NSObject {
+
+    @objc public let proofValueC: Data
+
+    @objc public let proofValueS: Data
+
+    internal init(proofValueC: Data, proofValueS: Data) {
+        self.proofValueC = proofValueC
+        self.proofValueS = proofValueS
+        super.init()
+    }
 }

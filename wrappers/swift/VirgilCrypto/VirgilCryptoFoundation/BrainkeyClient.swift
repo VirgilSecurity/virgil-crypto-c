@@ -149,6 +149,25 @@ import VSCFoundation
         return seed
     }
 
+    /// Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+    /// to server_public_key = x * G. Must be called before deblind() to authenticate
+    /// the server response.
+    @objc public func verify(blindedPoint: Data, hardenedPoint: Data, serverPublicKey: Data, proofValueC: Data, proofValueS: Data) throws {
+        let proxyResult = blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+            return hardenedPoint.withUnsafeBytes({ (hardenedPointPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return serverPublicKey.withUnsafeBytes({ (serverPublicKeyPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                    return proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                        return proofValueS.withUnsafeBytes({ (proofValueSPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                            return vscf_brainkey_client_verify(self.c_ctx, vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(serverPublicKeyPointer.bindMemory(to: byte.self).baseAddress, serverPublicKey.count), vsc_data(proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueC.count), vsc_data(proofValueSPointer.bindMemory(to: byte.self).baseAddress, proofValueS.count))
+                        })
+                    })
+                })
+            })
+        })
+
+        try FoundationError.handleStatus(fromC: proxyResult)
+    }
+
 }
 
 @objc(VSCFBrainkeyClientBlindResult) public class BrainkeyClientBlindResult: NSObject {

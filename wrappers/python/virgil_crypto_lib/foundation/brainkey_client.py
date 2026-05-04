@@ -87,6 +87,18 @@ class BrainkeyClient(object):
         VscfStatus.handle_status(status)
         return seed.get_bytes()
 
+    def verify(self, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s):
+        """Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+to server_public_key = x * G. Must be called before deblind() to authenticate
+the server response."""
+        d_blinded_point = Data(blinded_point)
+        d_hardened_point = Data(hardened_point)
+        d_server_public_key = Data(server_public_key)
+        d_proof_value_c = Data(proof_value_c)
+        d_proof_value_s = Data(proof_value_s)
+        status = self._lib_vscf_brainkey_client.vscf_brainkey_client_verify(self.ctx, d_blinded_point.data, d_hardened_point.data, d_server_public_key.data, d_proof_value_c.data, d_proof_value_s.data)
+        VscfStatus.handle_status(status)
+
     @classmethod
     def take_c_ctx(cls, c_ctx):
         inst = cls.__new__(cls)

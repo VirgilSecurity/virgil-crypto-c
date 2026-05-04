@@ -91,7 +91,8 @@ extern "C" {
 //
 enum {
     vscf_brainkey_server_POINT_LEN = 65,
-    vscf_brainkey_server_MPI_LEN = 32
+    vscf_brainkey_server_MPI_LEN = 32,
+    vscf_brainkey_server_PROOF_VALUE_LEN = 32
 };
 
 //
@@ -197,6 +198,21 @@ vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self, vsc_
 
 VSCF_PUBLIC vscf_status_t
 vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point, vsc_buffer_t *hardened_point) VSCF_NODISCARD;
+
+//
+//  Computes the server's public key G_x = x*G from the given identity secret x.
+//  Required by the client to verify DLEQ proofs.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_compute_public_key(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_buffer_t *public_key) VSCF_NODISCARD;
+
+//
+//  Generates a DLEQ proof that hardened_point = x * blinded_point using the same
+//  identity secret x as server_public_key = x * G.
+//  Client must call verify() before deblind() to authenticate the server response.
+//
+VSCF_PUBLIC vscf_status_t
+vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point, vsc_data_t identity_secret, vsc_data_t server_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_s) VSCF_NODISCARD;
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -11,6 +11,7 @@
 
     <constant name="point len" value="65"/>
     <constant name="mpi len" value="32"/>
+    <constant name="proof value len" value="32"/>
 
     <dependency name="random" interface="random">
         Random used for key generation, proofs, etc.
@@ -47,6 +48,37 @@
         <return enum="status">
 
         </return>
+    </method>
+
+    <method name="compute public key">
+        Computes the server's public key G_x = x*G from the given identity secret x.
+        Required by the client to verify DLEQ proofs.
+
+        <argument name="identity secret" class="data"/>
+        <argument name="public key" class="buffer" access="writeonly">
+            <length constant="point len" class="self"/>
+        </argument>
+
+        <return enum="status"/>
+    </method>
+
+    <method name="prove">
+        Generates a DLEQ proof that hardened_point = x * blinded_point using the same
+        identity secret x as server_public_key = x * G.
+        Client must call verify() before deblind() to authenticate the server response.
+
+        <argument name="blinded point" class="data"/>
+        <argument name="hardened point" class="data"/>
+        <argument name="identity secret" class="data"/>
+        <argument name="server public key" class="data"/>
+        <argument name="proof value c" class="buffer" access="writeonly">
+            <length constant="proof value len" class="self"/>
+        </argument>
+        <argument name="proof value s" class="buffer" access="writeonly">
+            <length constant="proof value len" class="self"/>
+        </argument>
+
+        <return enum="status"/>
     </method>
 
     <method name="get op group" declaration="private">

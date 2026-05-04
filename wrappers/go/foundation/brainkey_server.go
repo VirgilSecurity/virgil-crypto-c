@@ -12,6 +12,7 @@ type BrainkeyServer struct {
 const (
     BrainkeyServerPointLen uint = 65
     BrainkeyServerMpiLen uint = 32
+    BrainkeyServerProofValueLen uint = 32
 )
 
 /* Handle underlying C context. */
@@ -136,4 +137,62 @@ func (obj *BrainkeyServer) Harden(identitySecret []byte, blindedPoint []byte) ([
     runtime.KeepAlive(obj)
 
     return hardenedPointBuf.getData(), nil
+}
+
+/*
+* Computes the server's public key G_x = x*G from the given identity secret x.
+* Required by the client to verify DLEQ proofs.
+*/
+func (obj *BrainkeyServer) ComputePublicKey(identitySecret []byte) ([]byte, error) {
+    publicKeyBuf, publicKeyBufErr := newBuffer(int(BrainkeyServerPointLen))
+    if publicKeyBufErr != nil {
+        return nil, publicKeyBufErr
+    }
+    defer publicKeyBuf.delete()
+    identitySecretData := helperWrapData (identitySecret)
+
+    proxyResult := C.vscf_brainkey_server_compute_public_key(obj.cCtx, identitySecretData, publicKeyBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return publicKeyBuf.getData(), nil
+}
+
+/*
+* Generates a DLEQ proof that hardened_point = x * blinded_point using the same
+* identity secret x as server_public_key = x * G.
+* Client must call verify() before deblind() to authenticate the server response.
+*/
+func (obj *BrainkeyServer) Prove(blindedPoint []byte, hardenedPoint []byte, identitySecret []byte, serverPublicKey []byte) ([]byte, []byte, error) {
+    proofValueCBuf, proofValueCBufErr := newBuffer(int(BrainkeyServerProofValueLen))
+    if proofValueCBufErr != nil {
+        return nil, nil, proofValueCBufErr
+    }
+    defer proofValueCBuf.delete()
+
+    proofValueSBuf, proofValueSBufErr := newBuffer(int(BrainkeyServerProofValueLen))
+    if proofValueSBufErr != nil {
+        return nil, nil, proofValueSBufErr
+    }
+    defer proofValueSBuf.delete()
+    blindedPointData := helperWrapData (blindedPoint)
+    hardenedPointData := helperWrapData (hardenedPoint)
+    identitySecretData := helperWrapData (identitySecret)
+    serverPublicKeyData := helperWrapData (serverPublicKey)
+
+    proxyResult := C.vscf_brainkey_server_prove(obj.cCtx, blindedPointData, hardenedPointData, identitySecretData, serverPublicKeyData, proofValueCBuf.ctx, proofValueSBuf.ctx)
+
+    err := FoundationErrorHandleStatus(proxyResult)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return proofValueCBuf.getData(), proofValueSBuf.getData(), nil
 }

@@ -8283,6 +8283,75 @@ PHP_FUNCTION(vscf_brainkey_client_deblind_php) {
 }
 
 //
+// Wrap method: vscf_brainkey_client_verify
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_brainkey_client_verify_php,
+    0 /*return_reference*/,
+    6 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_blinded_point, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_hardened_point, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_server_public_key, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_proof_value_c, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_proof_value_s, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_brainkey_client_verify_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_blinded_point = NULL;
+    size_t in_blinded_point_blen = 0;
+    char *in_hardened_point = NULL;
+    size_t in_hardened_point_blen = 0;
+    char *in_server_public_key = NULL;
+    size_t in_server_public_key_blen = 0;
+    char *in_proof_value_c = NULL;
+    size_t in_proof_value_c_blen = 0;
+    char *in_proof_value_s = NULL;
+    size_t in_proof_value_s_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 6, 6)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_blinded_point, in_blinded_point_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_hardened_point, in_hardened_point_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_server_public_key, in_server_public_key_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_proof_value_c, in_proof_value_c_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_proof_value_s, in_proof_value_s_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_brainkey_client_t *brainkey_client = zend_fetch_resource_ex(in_ctx, vscf_brainkey_client_t_php_res_name(), le_vscf_brainkey_client_t());
+    vsc_data_t blinded_point = vsc_data((const byte*)in_blinded_point, in_blinded_point_blen);
+    vsc_data_t hardened_point = vsc_data((const byte*)in_hardened_point, in_hardened_point_blen);
+    vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_blen);
+    vsc_data_t proof_value_c = vsc_data((const byte*)in_proof_value_c, in_proof_value_c_blen);
+    vsc_data_t proof_value_s = vsc_data((const byte*)in_proof_value_s, in_proof_value_s_blen);
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_brainkey_client_verify(brainkey_client, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+}
+
+//
 // Wrap method: vscf_brainkey_client_use_random
 //
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
@@ -8602,6 +8671,170 @@ PHP_FUNCTION(vscf_brainkey_server_harden_php) {
     }
     else {
         zend_string_free(out_hardened_point);
+    }
+}
+
+//
+// Wrap method: vscf_brainkey_server_compute_public_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_brainkey_server_compute_public_key_php,
+    0 /*return_reference*/,
+    2 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_identity_secret, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_brainkey_server_compute_public_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_identity_secret = NULL;
+    size_t in_identity_secret_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_identity_secret, in_identity_secret_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_brainkey_server_t *brainkey_server = zend_fetch_resource_ex(in_ctx, vscf_brainkey_server_t_php_res_name(), le_vscf_brainkey_server_t());
+    vsc_data_t identity_secret = vsc_data((const byte*)in_identity_secret, in_identity_secret_blen);
+
+    //
+    // Allocate output buffer for output 'public_key'
+    //
+    zend_string *out_public_key = zend_string_alloc(vscf_brainkey_server_POINT_LEN, 0);
+    vsc_buffer_t *public_key = vsc_buffer_new();
+    vsc_buffer_use(public_key, (byte *)ZSTR_VAL(out_public_key), ZSTR_LEN(out_public_key));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_brainkey_server_compute_public_key(brainkey_server, identity_secret, public_key);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_public_key) = vsc_buffer_len(public_key);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_public_key);
+        vsc_buffer_destroy(&public_key);
+    }
+    else {
+        zend_string_free(out_public_key);
+    }
+}
+
+//
+// Wrap method: vscf_brainkey_server_prove
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_brainkey_server_prove_php,
+    0 /*return_reference*/,
+    5 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+    ZEND_ARG_TYPE_INFO(0, in_blinded_point, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_hardened_point, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_identity_secret, IS_STRING, 0)
+    ZEND_ARG_TYPE_INFO(0, in_server_public_key, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_brainkey_server_prove_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+    char *in_blinded_point = NULL;
+    size_t in_blinded_point_blen = 0;
+    char *in_hardened_point = NULL;
+    size_t in_hardened_point_blen = 0;
+    char *in_identity_secret = NULL;
+    size_t in_identity_secret_blen = 0;
+    char *in_server_public_key = NULL;
+    size_t in_server_public_key_blen = 0;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+        Z_PARAM_STRING_EX(in_blinded_point, in_blinded_point_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_hardened_point, in_hardened_point_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_identity_secret, in_identity_secret_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_server_public_key, in_server_public_key_blen, 1 /*check_null*/, 0 /*separate*/)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_brainkey_server_t *brainkey_server = zend_fetch_resource_ex(in_ctx, vscf_brainkey_server_t_php_res_name(), le_vscf_brainkey_server_t());
+    vsc_data_t blinded_point = vsc_data((const byte*)in_blinded_point, in_blinded_point_blen);
+    vsc_data_t hardened_point = vsc_data((const byte*)in_hardened_point, in_hardened_point_blen);
+    vsc_data_t identity_secret = vsc_data((const byte*)in_identity_secret, in_identity_secret_blen);
+    vsc_data_t server_public_key = vsc_data((const byte*)in_server_public_key, in_server_public_key_blen);
+
+    //
+    // Allocate output buffer for output 'proof_value_c'
+    //
+    zend_string *out_proof_value_c = zend_string_alloc(vscf_brainkey_server_PROOF_VALUE_LEN, 0);
+    vsc_buffer_t *proof_value_c = vsc_buffer_new();
+    vsc_buffer_use(proof_value_c, (byte *)ZSTR_VAL(out_proof_value_c), ZSTR_LEN(out_proof_value_c));
+
+    //
+    // Allocate output buffer for output 'proof_value_s'
+    //
+    zend_string *out_proof_value_s = zend_string_alloc(vscf_brainkey_server_PROOF_VALUE_LEN, 0);
+    vsc_buffer_t *proof_value_s = vsc_buffer_new();
+    vsc_buffer_use(proof_value_s, (byte *)ZSTR_VAL(out_proof_value_s), ZSTR_LEN(out_proof_value_s));
+
+    //
+    // Call main function
+    //
+    vscf_status_t status =vscf_brainkey_server_prove(brainkey_server, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s);
+
+    //
+    // Handle error
+    //
+    VSCF_HANDLE_STATUS(status);
+
+    //
+    // Correct string length to the actual
+    //
+    ZSTR_LEN(out_proof_value_c) = vsc_buffer_len(proof_value_c);
+
+    //
+    // Write returned result
+    //
+    if (status == vscf_status_SUCCESS) {
+        RETVAL_STR(out_proof_value_c);
+        vsc_buffer_destroy(&proof_value_c);
+    }
+    else {
+        zend_string_free(out_proof_value_c);
     }
 }
 
@@ -41932,6 +42165,7 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_brainkey_client_setup_defaults_php, arginfo_vscf_brainkey_client_setup_defaults_php)
     PHP_FE(vscf_brainkey_client_blind_php, arginfo_vscf_brainkey_client_blind_php)
     PHP_FE(vscf_brainkey_client_deblind_php, arginfo_vscf_brainkey_client_deblind_php)
+    PHP_FE(vscf_brainkey_client_verify_php, arginfo_vscf_brainkey_client_verify_php)
     PHP_FE(vscf_brainkey_client_use_random_php, arginfo_vscf_brainkey_client_use_random_php)
     PHP_FE(vscf_brainkey_client_use_operation_random_php, arginfo_vscf_brainkey_client_use_operation_random_php)
     PHP_FE(vscf_brainkey_server_new_php, arginfo_vscf_brainkey_server_new_php)
@@ -41939,6 +42173,8 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_brainkey_server_setup_defaults_php, arginfo_vscf_brainkey_server_setup_defaults_php)
     PHP_FE(vscf_brainkey_server_generate_identity_secret_php, arginfo_vscf_brainkey_server_generate_identity_secret_php)
     PHP_FE(vscf_brainkey_server_harden_php, arginfo_vscf_brainkey_server_harden_php)
+    PHP_FE(vscf_brainkey_server_compute_public_key_php, arginfo_vscf_brainkey_server_compute_public_key_php)
+    PHP_FE(vscf_brainkey_server_prove_php, arginfo_vscf_brainkey_server_prove_php)
     PHP_FE(vscf_brainkey_server_use_random_php, arginfo_vscf_brainkey_server_use_random_php)
     PHP_FE(vscf_brainkey_server_use_operation_random_php, arginfo_vscf_brainkey_server_use_operation_random_php)
     PHP_FE(vscf_group_session_message_new_php, arginfo_vscf_group_session_message_new_php)

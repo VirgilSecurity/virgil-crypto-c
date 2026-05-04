@@ -47,6 +47,7 @@ class BrainkeyServer
 
     const POINT_LEN = 65;
     const MPI_LEN = 32;
+    const PROOF_VALUE_LEN = 32;
 
     /**
     * Create underlying C context.
@@ -117,6 +118,31 @@ class BrainkeyServer
     public function harden(string $$identitySecret, string $$blindedPoint): string
     {
         return vscf_brainkey_server_harden_php($this->ctx, $$identitySecret, $$blindedPoint);
+    }
+
+    /**
+    *
+    * @param string $$identitySecret
+    * @return string
+    * @throws \Exception
+    */
+    public function computePublicKey(string $$identitySecret): string
+    {
+        return vscf_brainkey_server_compute_public_key_php($this->ctx, $$identitySecret);
+    }
+
+    /**
+    *
+    * @param string $$blindedPoint
+    * @param string $$hardenedPoint
+    * @param string $$identitySecret
+    * @param string $$serverPublicKey
+    * @return array
+    * @throws \Exception
+    */
+    public function prove(string $$blindedPoint, string $$hardenedPoint, string $$identitySecret, string $$serverPublicKey)
+    {
+        return vscf_brainkey_server_prove_php($this->ctx, $$blindedPoint, $$hardenedPoint, $$identitySecret, $$serverPublicKey);
     }
 
     /**

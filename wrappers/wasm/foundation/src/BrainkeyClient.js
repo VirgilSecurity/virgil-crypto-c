@@ -248,6 +248,91 @@ const initBrainkeyClient = (Module, modules) => {
             }
         }
 
+        verify(blindedPoint, hardenedPoint, serverPublicKey, proofValueC, proofValueS) {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+            precondition.ensureByteArray('blindedPoint', blindedPoint);
+            precondition.ensureByteArray('hardenedPoint', hardenedPoint);
+            precondition.ensureByteArray('serverPublicKey', serverPublicKey);
+            precondition.ensureByteArray('proofValueC', proofValueC);
+            precondition.ensureByteArray('proofValueS', proofValueS);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const blindedPointSize = blindedPoint.length * blindedPoint.BYTES_PER_ELEMENT;
+            const blindedPointPtr = Module._malloc(blindedPointSize);
+            Module.HEAP8.set(blindedPoint, blindedPointPtr);
+            
+            // Create C structure vsc_data_t.
+            const blindedPointCtxSize = Module._vsc_data_ctx_size();
+            const blindedPointCtxPtr = Module._malloc(blindedPointCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(blindedPointCtxPtr, blindedPointPtr, blindedPointSize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const hardenedPointSize = hardenedPoint.length * hardenedPoint.BYTES_PER_ELEMENT;
+            const hardenedPointPtr = Module._malloc(hardenedPointSize);
+            Module.HEAP8.set(hardenedPoint, hardenedPointPtr);
+            
+            // Create C structure vsc_data_t.
+            const hardenedPointCtxSize = Module._vsc_data_ctx_size();
+            const hardenedPointCtxPtr = Module._malloc(hardenedPointCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(hardenedPointCtxPtr, hardenedPointPtr, hardenedPointSize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const serverPublicKeySize = serverPublicKey.length * serverPublicKey.BYTES_PER_ELEMENT;
+            const serverPublicKeyPtr = Module._malloc(serverPublicKeySize);
+            Module.HEAP8.set(serverPublicKey, serverPublicKeyPtr);
+            
+            // Create C structure vsc_data_t.
+            const serverPublicKeyCtxSize = Module._vsc_data_ctx_size();
+            const serverPublicKeyCtxPtr = Module._malloc(serverPublicKeyCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(serverPublicKeyCtxPtr, serverPublicKeyPtr, serverPublicKeySize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const proofValueCSize = proofValueC.length * proofValueC.BYTES_PER_ELEMENT;
+            const proofValueCPtr = Module._malloc(proofValueCSize);
+            Module.HEAP8.set(proofValueC, proofValueCPtr);
+            
+            // Create C structure vsc_data_t.
+            const proofValueCCtxSize = Module._vsc_data_ctx_size();
+            const proofValueCCtxPtr = Module._malloc(proofValueCCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(proofValueCCtxPtr, proofValueCPtr, proofValueCSize);
+            
+            // Copy bytes from JS memory to the WASM memory.
+            const proofValueSSize = proofValueS.length * proofValueS.BYTES_PER_ELEMENT;
+            const proofValueSPtr = Module._malloc(proofValueSSize);
+            Module.HEAP8.set(proofValueS, proofValueSPtr);
+            
+            // Create C structure vsc_data_t.
+            const proofValueSCtxSize = Module._vsc_data_ctx_size();
+            const proofValueSCtxPtr = Module._malloc(proofValueSCtxSize);
+            
+            // Point created vsc_data_t object to the copied bytes.
+            Module._vsc_data(proofValueSCtxPtr, proofValueSPtr, proofValueSSize);
+            
+            try {
+                const proxyResult = Module._vscf_brainkey_client_verify(this.ctxPtr, blindedPointCtxPtr, hardenedPointCtxPtr, serverPublicKeyCtxPtr, proofValueCCtxPtr, proofValueSCtxPtr);
+                modules.FoundationError.handleStatusCode(proxyResult);
+            } finally {
+                Module._free(blindedPointPtr);
+                Module._free(blindedPointCtxPtr);
+                Module._free(hardenedPointPtr);
+                Module._free(hardenedPointCtxPtr);
+                Module._free(serverPublicKeyPtr);
+                Module._free(serverPublicKeyCtxPtr);
+                Module._free(proofValueCPtr);
+                Module._free(proofValueCCtxPtr);
+                Module._free(proofValueSPtr);
+                Module._free(proofValueSCtxPtr);
+            }
+        }
+
     }
 
     return BrainkeyClient;
