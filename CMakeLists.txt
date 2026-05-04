@@ -113,6 +113,11 @@ option(VIRGIL_PROGRAMS "Build programs." OFF)
 option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography." ON)
 
 #
+# Threading
+#
+option(VIRGIL_DISABLE_MULTI_THREADING "Disable multi-threading safety across all libraries (single-threaded targets only)." OFF)
+
+#
 # Wrappers
 #
 option(VIRGIL_WRAP_ALL "Build all available wrappers on the given platform" OFF)
@@ -227,6 +232,14 @@ endif()
 # ---------------------------------------------------------------------------
 #   Library core libraries
 # ---------------------------------------------------------------------------
+
+if(VIRGIL_DISABLE_MULTI_THREADING)
+    set(VSC_MULTI_THREADING  OFF CACHE BOOL "" FORCE)
+    set(VSCF_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCE_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCP_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCR_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+endif()
 
 add_subdirectory("library/platform")
 

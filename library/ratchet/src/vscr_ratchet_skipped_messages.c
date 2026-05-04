@@ -286,7 +286,7 @@ vscr_ratchet_skipped_messages_find_public_key(
     return i;
 }
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_skipped_messages_delete_key(
         vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id, vscr_ratchet_message_key_t *message_key) {
 
@@ -296,10 +296,12 @@ vscr_ratchet_skipped_messages_delete_key(
     size_t i = vscr_ratchet_skipped_messages_find_public_key(self, key_id);
 
     if (i == self->roots_count) {
-        VSCR_ASSERT(false);
+        return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
     }
 
     vscr_ratchet_skipped_messages_root_node_delete_key(self->root_nodes[i], message_key);
+
+    return vscr_status_SUCCESS;
 }
 
 VSCR_PUBLIC void

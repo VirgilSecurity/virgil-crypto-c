@@ -145,7 +145,19 @@ vsc_alloc(size_t size) {
 VSC_PUBLIC void *
 vsc_calloc(size_t count, size_t size) {
 
-    return inner_alloc(count * size);
+    if (size != 0 && count > SIZE_MAX / size) {
+        return NULL;
+    }
+
+    size_t total = count * size;
+
+    void *ptr = inner_alloc(total);
+    if (ptr == NULL) {
+        return NULL;
+    }
+
+    vsc_zeroize(ptr, total);
+    return ptr;
 }
 
 //

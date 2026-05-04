@@ -725,9 +725,13 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_unused_len(enrollment_record));
-    VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &record));
-    vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
+    bool pb_ok = pb_encode(&ostream, EnrollmentRecord_fields, &record);
     vsce_zeroize(&record, sizeof(record));
+    if (!pb_ok) {
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
+    } else {
+        vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
+    }
 
     mbedtls_ecp_point_free(&t0);
     mbedtls_ecp_point_free(&t1);
@@ -829,9 +833,13 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_unused_len(verify_password_request));
-    VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordRequest_fields, &request));
-    vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
+    bool pb_ok = pb_encode(&ostream, VerifyPasswordRequest_fields, &request);
     vsce_zeroize(&request, sizeof(request));
+    if (!pb_ok) {
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
+    } else {
+        vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
+    }
 
     mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&hc0);

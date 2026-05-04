@@ -416,6 +416,14 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
         goto err;
     }
 
+    if (enable_post_quantum) {
+        if (regular_message_header->pqc_info.encapsulated_key == NULL ||
+                regular_message_header->pqc_info.public_key == NULL) {
+            status = vscr_status_ERROR_BAD_MESSAGE_TYPE;
+            goto err;
+        }
+    }
+
     vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
 
     status = vscr_ratchet_keys_create_chain_key_receiver(self->ratchet_keys, shared_key,
@@ -622,14 +630,16 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
                     vsc_data(regular_message->cipher_text->bytes, regular_message->cipher_text->size),
                     skipped_message_key, vsc_data(regular_message->header->bytes, regular_message->header->size),
                     plain_text);
-
             if (result != vscr_status_SUCCESS) {
                 return result;
             }
 
-            vscr_ratchet_skipped_messages_delete_key(self->skipped_messages, key_id, skipped_message_key);
+            result = vscr_ratchet_skipped_messages_delete_key(self->skipped_messages, key_id, skipped_message_key);
+            if (result != vscr_status_SUCCESS) {
+                return result;
+            }
 
-            return vscr_status_SUCCESS;
+            return result;
         }
     }
 

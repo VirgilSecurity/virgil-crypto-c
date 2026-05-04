@@ -133,8 +133,8 @@ vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self
 VSCR_PUBLIC vscr_ratchet_message_key_t *
 vscr_ratchet_skipped_messages_find_key(const vscr_ratchet_skipped_messages_t *self, uint32_t counter, vscr_ratchet_key_id_t key_id);
 
-VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id, vscr_ratchet_message_key_t *message_key);
+VSCR_PUBLIC vscr_status_t
+vscr_ratchet_skipped_messages_delete_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id, vscr_ratchet_message_key_t *message_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_skipped_messages_add_public_key(vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id);

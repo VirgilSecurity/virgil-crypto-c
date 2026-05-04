@@ -153,6 +153,8 @@ vscf_random_padding_configure(vscf_random_padding_t *self, const vscf_padding_pa
     const size_t padding_frame = vscf_padding_params_frame(params);
     const size_t padding_frame_max = vscf_padding_params_frame_max(params);
 
+    VSCF_ASSERT(padding_frame > 0);
+
     self->padding_frame = padding_frame;
     self->padding_frame_max = padding_frame_max;
 }
@@ -164,6 +166,7 @@ VSCF_PUBLIC size_t
 vscf_random_padding_padded_data_len(const vscf_random_padding_t *self, size_t data_len) {
 
     VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(self->padding_frame > 0);
 
     const size_t full_size = data_len + vscf_random_padding_PADDING_SIZE_LEN;
     const size_t factor = full_size / self->padding_frame + 1;
@@ -180,7 +183,7 @@ VSCF_PUBLIC size_t
 vscf_random_padding_len(const vscf_random_padding_t *self) {
 
     VSCF_ASSERT_PTR(self);
-
+    VSCF_ASSERT(self->padding_frame > 0);
 
     const size_t padding_len = self->padding_frame -
                                (self->unpadded_len + vscf_random_padding_PADDING_SIZE_LEN) % self->padding_frame +
