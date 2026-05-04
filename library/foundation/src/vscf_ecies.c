@@ -68,6 +68,7 @@
 #include "vscf_sha384.h"
 #include "vscf_hmac.h"
 #include "vscf_aes256_cbc.h"
+#include "vscf_aes256_gcm.h"
 #include "vscf_ctr_drbg.h"
 #include "vscf_key_alg_factory.h"
 #include "vscf_ecies_envelope.h"
@@ -546,7 +547,7 @@ vscf_ecies_setup_defaults_no_random(vscf_ecies_t *self) {
     VSCF_ASSERT_PTR(self);
 
     if (NULL == self->cipher) {
-        self->cipher = vscf_aes256_cbc_impl(vscf_aes256_cbc_new());
+        self->cipher = vscf_aes256_gcm_impl(vscf_aes256_gcm_new());
     }
 
     if (NULL == self->mac) {
