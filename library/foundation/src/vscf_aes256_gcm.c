@@ -290,8 +290,7 @@ vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce) {
     VSCF_ASSERT(vsc_data_is_valid(nonce));
     VSCF_ASSERT(vscf_aes256_gcm_NONCE_LEN == nonce.len);
 
-    memcpy(self->nonce, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
-    self->is_nonce_used = false;
+    self->is_nonce_used = vscf_memory_secure_unique_copy(self->nonce, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
 }
 
 //

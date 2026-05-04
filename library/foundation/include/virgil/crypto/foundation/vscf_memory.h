@@ -129,6 +129,14 @@ VSCF_PUBLIC bool
 vscf_memory_secure_equal(const void *a, const void *b, size_t len);
 
 //
+//  Perform constant-time memory comparison, then copy source to destination only if they differ.
+//  Returns true if the memory regions are equal (duplicate / reused value detected).
+//  Returns false if they differed (source was copied into destination successfully).
+//
+VSCF_PUBLIC bool
+vscf_memory_secure_unique_copy(void *dest, const void *src, size_t len);
+
+//
 //  Find the first occurrence of find in s, where the search is limited to the
 //  first slen characters of s.
 //

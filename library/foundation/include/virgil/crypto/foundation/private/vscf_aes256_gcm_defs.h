@@ -145,7 +145,7 @@ struct vscf_aes256_gcm_t {
     //
     size_t auth_tag_len;
     //
-    //  True after finish_auth_encryption; cleared by set_nonce. Prevents nonce reuse.
+    //  Implementation specific context.
     //
     bool is_nonce_used;
 };
