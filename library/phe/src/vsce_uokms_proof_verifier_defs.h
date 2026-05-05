@@ -71,6 +71,7 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_proof_verifier.h"
+#include "vsce_impl.h"
 
 #include <mbedtls/bignum.h>
 

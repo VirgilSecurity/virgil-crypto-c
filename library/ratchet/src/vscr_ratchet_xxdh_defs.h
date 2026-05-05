@@ -70,6 +70,7 @@
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
+#include "vscr_impl.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -84,6 +84,8 @@
 #include "vscr_error.h"
 #include "vscr_ratchet_session.h"
 #include "vscr_status.h"
+#include "vscr_random.h"
+#include "vscr_impl.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

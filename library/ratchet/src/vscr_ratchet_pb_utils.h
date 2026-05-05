@@ -80,6 +80,7 @@
 
 #include "vscr_library.h"
 #include "vscr_status.h"
+#include "vscr_impl.h"
 
 #include <pb.h>
 

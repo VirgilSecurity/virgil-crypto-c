@@ -70,6 +70,7 @@
 
 #include "vsce_library.h"
 #include "vsce_atomic.h"
+#include "vsce_impl.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>

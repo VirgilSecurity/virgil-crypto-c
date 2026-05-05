@@ -75,6 +75,8 @@
 #include "vscr_library.h"
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_status.h"
+#include "vscr_random.h"
+#include "vscr_impl.h"
 
 #include <virgil/crypto/common/vsc_buffer.h>
 

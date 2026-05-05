@@ -72,6 +72,7 @@
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
 #include "vsce_proof_verifier.h"
+#include "vsce_impl.h"
 
 #include <mbedtls/bignum.h>
 

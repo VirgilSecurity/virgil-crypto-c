@@ -78,6 +78,7 @@
 #include "vscr_ratchet_sender_chain.h"
 #include "vscr_ratchet_receiver_chain.h"
 #include "vscr_ratchet_skipped_messages.h"
+#include "vscr_impl.h"
 
 #include <virgil/crypto/foundation/private/vscf_message_padding.h>
 
