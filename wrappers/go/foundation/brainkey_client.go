@@ -173,5 +173,5 @@ func (obj *BrainkeyClient) Verify(blindedPoint []byte, hardenedPoint []byte, ser
 
     runtime.KeepAlive(obj)
 
-    return proxyResult, nil
+    return bool(proxyResult), nil
 }

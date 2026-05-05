@@ -197,5 +197,5 @@ func (obj *BrainkeyServer) Prove(blindedPoint []byte, hardenedPoint []byte, iden
 
     runtime.KeepAlive(obj)
 
-    return proxyResult, proofValueCBuf.getData(), proofValueSBuf.getData(), nil
+    return bool(proxyResult), proofValueCBuf.getData(), proofValueSBuf.getData(), nil
 }

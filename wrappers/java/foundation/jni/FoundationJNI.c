@@ -4044,8 +4044,6 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_b
     
     // Free resources
     (*jenv)->ReleaseByteArrayElements(jenv, jproofValueS, (jbyte*) proof_value_s_arr, 0);
-    
-    return ret;
 }
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1new__ (JNIEnv *jenv, jobject jobj) {
