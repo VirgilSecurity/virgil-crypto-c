@@ -73,6 +73,10 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vsc_data.h"
+#include "vsc_buffer.h"
+#include "vscf_hash.h"
+#include "vscf_random.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

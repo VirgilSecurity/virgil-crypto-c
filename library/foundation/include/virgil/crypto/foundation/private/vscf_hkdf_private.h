@@ -66,6 +66,9 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_hkdf.h"
+#include "vscf_library.h"
+#include "vsc_buffer.h"
+#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -79,6 +79,17 @@
 #include "vscf_signer_info.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_key_recipient_list.h"
+#include "vscf_signer_list.h"
+#include "vsc_buffer.h"
+#include "vscf_padding_cipher.h"
+#include "vscf_message_info.h"
+#include "vscf_message_info_footer.h"
+#include "vsc_data.h"
+#include "vscf_random.h"
+#include "vscf_cipher.h"
+#include "vscf_padding.h"
+#include "vscf_hash.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

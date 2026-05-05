@@ -77,6 +77,8 @@
 #include "vscf_auth_encrypt.h"
 #include "vscf_auth_decrypt.h"
 #include "vscf_status.h"
+#include "vsc_data.h"
+#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

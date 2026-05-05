@@ -65,6 +65,8 @@
 
 #include "vscf_group_session_ticket.h"
 #include "vscf_status.h"
+#include "vscf_library.h"
+#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

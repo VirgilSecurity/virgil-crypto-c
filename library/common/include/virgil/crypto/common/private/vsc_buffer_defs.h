@@ -62,6 +62,7 @@
 
 #include "vsc_library.h"
 #include "vsc_atomic.h"
+#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

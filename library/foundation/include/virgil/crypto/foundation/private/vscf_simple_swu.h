@@ -64,6 +64,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
+#include "vsc_data.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>

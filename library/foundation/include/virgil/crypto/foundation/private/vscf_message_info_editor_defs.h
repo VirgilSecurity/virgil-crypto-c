@@ -72,6 +72,7 @@
 #include "vscf_atomic.h"
 #include "vscf_message_info.h"
 #include "vscf_impl.h"
+#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
