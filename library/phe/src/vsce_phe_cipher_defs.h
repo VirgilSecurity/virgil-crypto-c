@@ -72,7 +72,6 @@
 
 #include "vsce_library.h"
 #include "vsce_atomic.h"
-#include "vsce_impl.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -81,8 +81,6 @@
 #include "vsce_library.h"
 #include "vsce_phe_common.h"
 #include "vsce_status.h"
-#include "vsce_random.h"
-#include "vsce_impl.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -71,7 +71,6 @@
 #include "vsce_library.h"
 #include "vsce_atomic.h"
 #include "vsce_uokms_proof_generator.h"
-#include "vsce_impl.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>

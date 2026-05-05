@@ -60,7 +60,6 @@
 //  Generated header includes start.
 // --------------------------------------------------------------------------
 
-#include "vscr_library.h"
 
 #include <stdint.h>
 

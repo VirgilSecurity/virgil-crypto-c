@@ -84,7 +84,6 @@
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_xxdh.h"
 #include "vscr_ratchet.h"
-#include "vscr_impl.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

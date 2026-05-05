@@ -72,7 +72,6 @@
 #include "vsce_atomic.h"
 #include "vsce_phe_hash.h"
 #include "vsce_phe_proof_verifier.h"
-#include "vsce_impl.h"
 
 #include <virgil/crypto/foundation/private/vscf_simple_swu.h>
 

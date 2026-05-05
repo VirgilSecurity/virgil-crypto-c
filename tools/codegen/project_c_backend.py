@@ -2875,27 +2875,30 @@ def _class_dependency_includes(
                 add_include(arg.class_name)
 
         # Dependency includes
-        has_interface_dep = False
+        dep_prefixes_for_impl: set[str] = set()
         for dep in cls.dependencies:
             if dep.type_kind == "class":
                 add_include(dep.type_name)
             elif dep.type_kind in {"interface", "impl"}:
-                iface_include = f"{project_ir.prefix}_{snake_name(dep.type_name)}.h"
+                dep_prefix = _dep_prefix(project_ir, dep)
+                iface_include = f"{dep_prefix}_{snake_name(dep.type_name)}.h"
                 if iface_include not in seen:
                     seen.add(iface_include)
                     includes.append(iface_include)
-                has_interface_dep = True
-        # Any interface/impl reference in deps or method args generates vscf_impl_t * in C code.
-        has_impl_use = has_interface_dep or any(
+                dep_prefixes_for_impl.add(dep_prefix)
+        # Any interface/impl reference in deps or method args generates {prefix}_impl_t * in C code.
+        # Use the actual dep project's prefix so cross-project deps produce the right _impl.h.
+        has_impl_use = bool(dep_prefixes_for_impl) or any(
             arg.kind in {"interface", "impl"}
             for method in [*cls.constructors, *cls.methods]
             for arg in [*method.arguments, *method.returns]
         )
         if has_impl_use:
-            impl_include = f"{project_ir.prefix}_impl.h"
-            if impl_include not in seen:
-                seen.add(impl_include)
-                includes.append(impl_include)
+            for pfx in sorted(dep_prefixes_for_impl or {project_ir.prefix}):
+                impl_include = f"{pfx}_impl.h"
+                if impl_include not in seen:
+                    seen.add(impl_include)
+                    includes.append(impl_include)
         # Internal enum types used in method args or returns need their header (e.g. vscf_status.h).
         # External/library enums (library attribute set) have no corresponding project header.
         enum_names: set[str] = {
@@ -5099,7 +5102,8 @@ def render_class_defs_c_module(
             except KeyError:
                 pass
         elif dep.type_kind in {"interface", "impl"}:
-            _add_include(f"{prefix}_impl.h")
+            dep_prefix = _dep_prefix(project_ir, dep)
+            _add_include(f"{dep_prefix}_impl.h")
 
     # Struct definition
     struct_name = class_type_symbol(project_ir, cls.name)

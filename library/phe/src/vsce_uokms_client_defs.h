@@ -72,7 +72,6 @@
 #include "vsce_atomic.h"
 #include "vsce_phe_common.h"
 #include "vsce_uokms_proof_verifier.h"
-#include "vsce_impl.h"
 
 #include <mbedtls/ecp.h>
 #include <mbedtls/bignum.h>

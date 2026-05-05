@@ -83,7 +83,6 @@
 #include "vscr_error.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_status.h"
-#include "vscr_impl.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
