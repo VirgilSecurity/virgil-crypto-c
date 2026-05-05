@@ -74,6 +74,8 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_cipher.h"
+#include "vscf_padding.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

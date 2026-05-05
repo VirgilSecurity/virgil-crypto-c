@@ -77,6 +77,9 @@
 #include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet.h"
 #include "vscr_status.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_ratchet_sender_chain.h"
+#include "vscr_ratchet_receiver_chain.h"
 
 #include <vscr_RatchetSession.pb.h>
 #include <vscr_RatchetMessage.pb.h>

@@ -57,6 +57,7 @@
 
 #include "vscf_group_session_message.h"
 #include "vscf_group_msg_type.h"
+#include "vscf_library.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

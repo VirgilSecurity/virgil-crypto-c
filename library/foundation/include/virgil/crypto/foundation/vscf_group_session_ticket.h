@@ -72,6 +72,7 @@
 #include "vscf_group_session_message.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_random.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

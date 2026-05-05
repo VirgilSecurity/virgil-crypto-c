@@ -68,6 +68,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_random.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

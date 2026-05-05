@@ -73,6 +73,11 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_random.h"
+#include "vscf_cipher.h"
+#include "vscf_mac.h"
+#include "vscf_kdf.h"
+#include "vscf_private_key.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

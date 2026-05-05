@@ -1020,36 +1020,54 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             # single @generated_header_includes section.
             merged, old_includes = _extract_old_header_includes(merged)
             include_block = generate_header_includes_block(root)
-            # Also preserve includes already in an existing @generated_header_includes section
+            # Build combined block: user-area legacy includes + existing section includes
+            # + renderer includes + system includes.
+            # The renderer is authoritative for ADDING new includes.  Existing section includes
+            # are preserved additively EXCEPT for cross-project bare includes (e.g. "vsc_data.h"
+            # in a vscf_ header) which break CGo CFLAGS and are already covered by the
+            # framework-conditional user-area blocks.
+            self_include = root.attrib.get("c_include_file", "")
+            self_prefix = self_include.split("_")[0] + "_" if "_" in self_include else ""
+            renderer_pub_includes = [
+                render_include(c) for c in root
+                if c.tag == "c_include"
+                and c.attrib.get("scope") == "public"
+                and c.attrib.get("is_system") != "1"
+                and c.attrib.get("file") != self_include
+                and (not self_prefix or c.attrib.get("file", "").startswith(self_prefix))
+            ]
+            # Build a set of bare filenames that exist in this project's library tree so we
+            # can drop stale same-prefix includes that were injected by a prior broken run.
+            lib_dir = repo_root / "library" / project
+            _known_bare: set[str] | None = None
+            if lib_dir.is_dir():
+                _known_bare = {p.name for p in lib_dir.rglob("*.h")}
             existing_section_includes: list[str] = []
             if GENERATED_HEADER_INCLUDES_START in merged:
-                for ln in merged.splitlines():
-                    stripped = ln.strip()
-                    if stripped.startswith("#include "):
-                        # Only grab includes between the header-includes markers
-                        pass
-                # More precise: extract from the section
                 try:
-                    _, _ = split_tagged_section(merged, GENERATED_HEADER_INCLUDES_START)
                     sec_start = merged.index(GENERATED_HEADER_INCLUDES_START)
                     sec_end = merged.index(GENERATED_END, sec_start)
                     for ln in merged[sec_start:sec_end].splitlines():
                         stripped = ln.strip()
-                        if stripped.startswith("#include "):
-                            existing_section_includes.append(stripped)
+                        if not stripped.startswith("#include "):
+                            continue
+                        # Drop cross-project bare includes: they break CGo and are in user area.
+                        if self_prefix and stripped.startswith('#include "'):
+                            fname = stripped[len('#include "'):-1]
+                            if not fname.startswith(self_prefix):
+                                continue
+                            # Drop same-prefix bare includes whose file doesn't exist anywhere
+                            # in this project's library tree (e.g. vscr_impl.h from a buggy run).
+                            if _known_bare is not None and fname not in _known_bare:
+                                continue
+                        existing_section_includes.append(stripped)
                 except ValueError:
                     pass
-            # Build combined block: old includes + existing section includes + renderer includes + system includes
-            # For new files, include ALL public-scope includes from the renderer
-            renderer_pub_includes: list[str] = []
-            if is_new_file:
-                renderer_pub_includes = [render_include(c) for c in root if c.tag == 'c_include' and c.attrib.get('scope') == 'public']
             sys_lines: list[str] = []
             if include_block:
                 for ln in include_block.splitlines():
                     if ln.strip().startswith("#include "):
                         sys_lines.append(ln.strip())
-            # Deduplicate: keep old order, add new includes not already present
             seen: set[str] = set()
             combined: list[str] = []
             for inc in old_includes:
