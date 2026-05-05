@@ -2800,6 +2800,28 @@ def _dep_prefix(project_ir: IRProject, dep: IRDependency) -> str:
     return project_ir.prefix
 
 
+def _project_prefix_for(project_ir: IRProject, project_name: str | None) -> str:
+    """Return the C prefix for a named project, falling back to project_ir's own prefix.
+
+    ``project_ir.fallback_projects`` is a list of IRProject objects that represent
+    other projects whose types are referenced by this project (cross-project
+    dependencies).  For example, a class in ``foundation`` may use an interface
+    defined in ``common``, so ``common`` appears as a fallback project.
+
+    When ``project_name`` matches one of those fallback projects we return its
+    prefix so that generated include paths and symbol names use the correct
+    project-level namespace.  When no match is found we fall back to
+    ``project_ir.prefix``, which means the referenced type lives in the same
+    project as the class being generated.
+    """
+    if project_name is None:
+        return project_ir.prefix
+    return next(
+        (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == project_name),
+        project_ir.prefix,
+    )
+
+
 def _dependency_shallow_copy_call(project_ir: IRProject, dep: IRDependency) -> str:
     """Return the shallow_copy call expression for a dependency (use method).
 
@@ -2889,13 +2911,7 @@ def _class_dependency_includes(
             for arg in [*method.arguments, *method.returns]:
                 if arg.kind in {"interface", "impl"}:
                     arg_project = getattr(arg, "project", None)
-                    if arg_project:
-                        pfx = next(
-                            (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == arg_project),
-                            project_ir.prefix,
-                        )
-                    else:
-                        pfx = project_ir.prefix
+                    pfx = _project_prefix_for(project_ir, arg_project)
                     impl_prefixes.add(pfx)
         for pfx in sorted(impl_prefixes):
             impl_include = f"{pfx}_impl.h"
@@ -3008,10 +3024,7 @@ def render_class_c_module(
                     pass
             if field.interface_name:
                 field_project = getattr(field, "project", None)
-                field_pfx = next(
-                    (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == field_project),
-                    project_ir.prefix,
-                ) if field_project else project_ir.prefix
+                field_pfx = _project_prefix_for(project_ir, field_project)
                 impl_inc = f"{field_pfx}_impl.h"
                 if impl_inc not in resolved_public_includes:
                     resolved_public_includes.append(impl_inc)
@@ -5091,10 +5104,7 @@ def render_class_defs_c_module(
         if field.interface_name is not None:
             # Interface field becomes {source_project}_impl_t pointer.
             field_project = getattr(field, "project", None)
-            field_pfx = next(
-                (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == field_project),
-                prefix,
-            ) if field_project else prefix
+            field_pfx = _project_prefix_for(project_ir, field_project)
             _add_include(f"{field_pfx}_impl.h")
         if field.enum_name is not None:
             enum_name = field.enum_name
