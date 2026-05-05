@@ -1038,6 +1038,22 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             ]
             # Build a set of bare filenames that exist in this project's library tree so we
             # can drop stale same-prefix includes that were injected by a prior broken run.
+            #
+            # WHAT "stale same-prefix includes" are: if a previous codegen run had the
+            # wrong-prefix bug it would have written e.g. `#include "vscr_impl.h"` into
+            # ratchet headers.  The next correct run would see vscr_impl.h in
+            # existing_section_includes and preserve it (additive merge).  _known_bare
+            # breaks this cycle by checking that the include file actually exists in the
+            # project's committed library headers.
+            #
+            # WHY library/<project>/ is the right source of truth: these are the committed
+            # header files.  If a bare include doesn't appear here it was a codegen artifact,
+            # not a real dependency, and should be discarded.
+            #
+            # What _known_bare does NOT catch: includes for files that exist in the library
+            # tree but are wrong for other reasons (e.g. correct filename, wrong project
+            # prefix — that case is handled by the cross-project filter above).
+            # _known_bare is purely an existence guard.
             lib_dir = repo_root / "library" / project
             _known_bare: set[str] | None = None
             if lib_dir.is_dir():
@@ -1056,8 +1072,9 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                             fname = stripped[len('#include "'):-1]
                             if not fname.startswith(self_prefix):
                                 continue
-                            # Drop same-prefix bare includes whose file doesn't exist anywhere
-                            # in this project's library tree (e.g. vscr_impl.h from a buggy run).
+                            # This file doesn't exist in the project's library tree — likely a stale
+                            # artifact from a prior broken codegen run. Drop it so the correct include
+                            # from the renderer takes its place.
                             if _known_bare is not None and fname not in _known_bare:
                                 continue
                         existing_section_includes.append(stripped)

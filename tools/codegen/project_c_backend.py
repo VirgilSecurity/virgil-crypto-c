@@ -2338,6 +2338,22 @@ def _module_return_from_source(parent: ET.Element, src: dict[str, str], *, proje
 
 
 def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Element:
+    """Render a C module XML element for a plain IR module (not a class or enum).
+
+    Unlike render_class_c_module, {prefix}_library.h is NOT injected
+    unconditionally here.  Modules that need it carry an explicit
+    ``<require module="library"/>`` entry in their IR; that require is emitted
+    by the requires loop below.  Pure-typedef or system-include-only modules
+    (e.g. vscr_ratchet_typedefs.h) do NOT carry this require, so they
+    correctly won't get library.h — which matters because those headers have
+    no public API symbols and including library.h would pull in VSCF_PUBLIC
+    macros they don't use.
+
+    Previously library.h was added unconditionally (mirroring render_class_c_module),
+    but that was wrong for pure-typedef modules that carry no API symbols.
+    It was removed when the unconditional injection was found to cause stale
+    includes in typedef-only headers during the wrong-prefix bug investigation.
+    """
     output = cast(IROutputTarget, module.output)
     placeholders = _module_placeholder_map(project_ir)
     root = c_module_root(output, entity_id=snake_name(module.name), scope=module.attrs.get("scope", "public"))
@@ -2351,6 +2367,8 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
             include_attrs["if"] = _resolve_module_placeholders(include_attrs["if"], placeholders, project_prefix=project_ir.prefix) or ""
         include_attrs.setdefault("scope", "public")
         text_element(root, "c_include", **include_attrs)
+    # {prefix}_library.h reaches here only when the module has require module="library" in its IR.
+    # Pure modules like typedefs or constants that don't use VSCF_PUBLIC don't carry this require.
     for require in module.requires:
         req_attrs = require.attrs
         scope = req_attrs.get("scope", "public")
@@ -3004,7 +3022,11 @@ def render_class_c_module(
             if req.name not in resolved_system_includes:
                 resolved_system_includes.append(req.name)
     if will_inline_struct:
-        # When the struct is inlined, we need all the includes that _defs.h would have.
+        # WHY this block runs only when will_inline_struct is True:
+        # When the struct lives in a private _defs.h file, field-type includes
+        # are the responsibility of render_class_defs_c_module instead.  This
+        # block is the will_inline_struct path's parallel to _defs — it mirrors
+        # exactly what _defs.h would add, but into the public header directly.
         # vscf_atomic.h is only needed when the class has a lifecycle (refs counter field).
         if has_lifecycle:
             atomic_inc = f"{project_ir.prefix}_atomic.h"
@@ -3023,6 +3045,13 @@ def render_class_c_module(
                 except KeyError:
                     pass
             if field.interface_name:
+                # WHY _project_prefix_for instead of project_ir.prefix:
+                # field.project is set in the IR when this interface type comes from a
+                # different project.  E.g. a ratchet class holding a "random" interface
+                # field must use vscf_impl.h (foundation), not vscr_impl.h (ratchet).
+                # Using project_ir.prefix unconditionally would be wrong for cross-project
+                # fields.  This is one of three fix sites for the wrong-prefix bug (see
+                # also _class_dependency_includes and render_class_defs_c_module).
                 field_project = getattr(field, "project", None)
                 field_pfx = _project_prefix_for(project_ir, field_project)
                 impl_inc = f"{field_pfx}_impl.h"
@@ -3037,6 +3066,9 @@ def render_class_c_module(
                 except KeyError:
                     pass
             elif dep.type_kind in {"interface", "impl"}:
+                # _dep_prefix resolves to the source project's prefix for cross-project
+                # interface deps (via dep.project + fallback_projects lookup). Same
+                # wrong-prefix fix as the field.interface_name branch above.
                 impl_inc = f"{_dep_prefix(project_ir, dep)}_impl.h"
                 if impl_inc not in resolved_public_includes:
                     resolved_public_includes.append(impl_inc)
@@ -5103,6 +5135,13 @@ def render_class_defs_c_module(
                     pass
         if field.interface_name is not None:
             # Interface field becomes {source_project}_impl_t pointer.
+            # WHY _project_prefix_for: field.project is set by the IR when the interface
+            # comes from a different project (cross-project dependency).  For example, a
+            # ratchet struct field of type "random" (from foundation) must generate
+            # vscf_impl.h, not vscr_impl.h.  Using project_ir.prefix unconditionally
+            # would silently emit the wrong include.  This is one of three fix sites for
+            # the wrong-prefix bug (see also render_class_c_module's will_inline_struct
+            # block and _class_dependency_includes).
             field_project = getattr(field, "project", None)
             field_pfx = _project_prefix_for(project_ir, field_project)
             _add_include(f"{field_pfx}_impl.h")
@@ -5125,6 +5164,8 @@ def render_class_defs_c_module(
             except KeyError:
                 pass
         elif dep.type_kind in {"interface", "impl"}:
+            # _dep_prefix resolves to the source project's prefix for cross-project interface dependencies.
+            # See _project_prefix_for / _dep_prefix for the fallback_projects lookup invariant.
             dep_prefix = _dep_prefix(project_ir, dep)
             _add_include(f"{dep_prefix}_impl.h")
 
