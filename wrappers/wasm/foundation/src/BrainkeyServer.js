@@ -293,7 +293,9 @@ const initBrainkeyServer = (Module, modules) => {
                 const proofValueSPtr = Module._vsc_buffer_bytes(proofValueSCtxPtr);
                 const proofValueSPtrLen = Module._vsc_buffer_len(proofValueSCtxPtr);
                 const proofValueS = Module.HEAPU8.slice(proofValueSPtr, proofValueSPtr + proofValueSPtrLen);
-                return { proofValueC, proofValueS };
+            
+                const booleanResult = !!proxyResult;
+                return booleanResult;
             } finally {
                 Module._free(blindedPointPtr);
                 Module._free(blindedPointCtxPtr);

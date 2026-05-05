@@ -132,10 +132,10 @@ class BrainkeyClient
     * @param string $$serverPublicKey
     * @param string $$proofValueC
     * @param string $$proofValueS
-    * @return 
+    * @return bool
     * @throws \Exception
     */
-    public function verify(string $$blindedPoint, string $$hardenedPoint, string $$serverPublicKey, string $$proofValueC, string $$proofValueS)
+    public function verify(string $$blindedPoint, string $$hardenedPoint, string $$serverPublicKey, string $$proofValueC, string $$proofValueS): bool
     {
         return vscf_brainkey_client_verify_php($this->ctx, $$blindedPoint, $$hardenedPoint, $$serverPublicKey, $$proofValueC, $$proofValueS);
     }

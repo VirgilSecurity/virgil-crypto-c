@@ -112,7 +112,7 @@ identity secret x as server_public_key = x * G.
 Client must call verify() before deblind() to authenticate the server response."""
         vscf_brainkey_server_prove = self._lib.vscf_brainkey_server_prove
         vscf_brainkey_server_prove.argtypes = [POINTER(vscf_brainkey_server_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t), POINTER(vscf_error_t)]
-        vscf_brainkey_server_prove.restype = c_int
+        vscf_brainkey_server_prove.restype = c_bool
         return vscf_brainkey_server_prove(ctx, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s, error)
 
     def vscf_brainkey_server_shallow_copy(self, ctx):

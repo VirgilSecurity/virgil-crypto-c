@@ -8289,7 +8289,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscf_brainkey_client_verify_php,
     0 /*return_reference*/,
     6 /*required_num_args*/,
-    IS_VOID /*type*/,
+    _IS_BOOL /*type*/,
     0 /*allow_null*/)
 
     ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
@@ -8344,7 +8344,7 @@ PHP_FUNCTION(vscf_brainkey_client_verify_php) {
     //
     // Call main function
     //
-    vscf_brainkey_client_verify(brainkey_client, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s, &error);
+    bool res =vscf_brainkey_client_verify(brainkey_client, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s, &error);
 
     //
     // Handle error
@@ -8355,6 +8355,7 @@ PHP_FUNCTION(vscf_brainkey_client_verify_php) {
     //
     // Write returned result
     //
+    RETVAL_BOOL(res);
 }
 
 //
@@ -8822,7 +8823,7 @@ PHP_FUNCTION(vscf_brainkey_server_prove_php) {
     //
     // Call main function
     //
-    vscf_brainkey_server_prove(brainkey_server, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s, &error);
+    bool res =vscf_brainkey_server_prove(brainkey_server, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s, &error);
 
     //
     // Handle error

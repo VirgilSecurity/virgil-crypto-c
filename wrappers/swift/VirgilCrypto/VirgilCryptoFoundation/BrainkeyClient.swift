@@ -152,7 +152,7 @@ import VSCFoundation
     /// Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
     /// to server_public_key = x * G. Must be called before deblind() to authenticate
     /// the server response.
-    @objc public func verify(blindedPoint: Data, hardenedPoint: Data, serverPublicKey: Data, proofValueC: Data, proofValueS: Data) throws {
+    public func verify(blindedPoint: Data, hardenedPoint: Data, serverPublicKey: Data, proofValueC: Data, proofValueS: Data) throws -> Bool {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 

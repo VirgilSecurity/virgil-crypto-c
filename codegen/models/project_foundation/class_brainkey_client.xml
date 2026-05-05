@@ -74,7 +74,7 @@
         <argument name="proof value s" class="data"/>
         <argument name="error" class="error" access="readwrite"/>
 
-        <return type="bool"/>
+        <return type="boolean"/>
     </method>
 
     <method name="get op group" declaration="private">

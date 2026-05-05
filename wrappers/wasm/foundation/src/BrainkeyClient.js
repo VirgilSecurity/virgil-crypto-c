@@ -327,6 +327,9 @@ const initBrainkeyClient = (Module, modules) => {
             
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
+            
+                const booleanResult = !!proxyResult;
+                return booleanResult;
             } finally {
                 Module._free(blindedPointPtr);
                 Module._free(blindedPointCtxPtr);
