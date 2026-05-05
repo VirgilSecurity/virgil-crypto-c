@@ -1036,6 +1036,12 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                 and c.attrib.get("file") != self_include
                 and (not self_prefix or c.attrib.get("file", "").startswith(self_prefix))
             ]
+            # Build a set of bare filenames that exist in this project's library tree so we
+            # can drop stale same-prefix includes that were injected by a prior broken run.
+            lib_dir = repo_root / "library" / project
+            _known_bare: set[str] | None = None
+            if lib_dir.is_dir():
+                _known_bare = {p.name for p in lib_dir.rglob("*.h")}
             existing_section_includes: list[str] = []
             if GENERATED_HEADER_INCLUDES_START in merged:
                 try:
@@ -1049,6 +1055,10 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                         if self_prefix and stripped.startswith('#include "'):
                             fname = stripped[len('#include "'):-1]
                             if not fname.startswith(self_prefix):
+                                continue
+                            # Drop same-prefix bare includes whose file doesn't exist anywhere
+                            # in this project's library tree (e.g. vscr_impl.h from a buggy run).
+                            if _known_bare is not None and fname not in _known_bare:
                                 continue
                         existing_section_includes.append(stripped)
                 except ValueError:

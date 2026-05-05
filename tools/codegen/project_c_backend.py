@@ -2344,9 +2344,6 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
     root.set("has_cmakedefine", module.attrs.get("has_cmakedefine", "0"))
 
     text_element(root, "c_include", file=output.include_file, is_system="0", scope="private")
-    # Ensure {prefix}_library.h is included (matches legacy GSL codegen behavior)
-    if output.c_symbol != f"{project_ir.prefix}_library":
-        text_element(root, "c_include", file=f"{project_ir.prefix}_library.h", is_system="0", scope="public")
     for include in module.c_includes:
         include_attrs = dict(include.attrs)
         include_attrs["file"] = _resolve_module_placeholders(include_attrs.get("file") or include.name, placeholders, project_prefix=project_ir.prefix) or ""
@@ -2874,8 +2871,8 @@ def _class_dependency_includes(
             for arg in [*method.arguments, *method.returns]:
                 add_include(arg.class_name)
 
-        # Dependency includes
-        dep_prefixes_for_impl: set[str] = set()
+        # Dependency includes — collect the source-project prefix for each interface dep.
+        impl_prefixes: set[str] = set()
         for dep in cls.dependencies:
             if dep.type_kind == "class":
                 add_include(dep.type_name)
@@ -2885,20 +2882,26 @@ def _class_dependency_includes(
                 if iface_include not in seen:
                     seen.add(iface_include)
                     includes.append(iface_include)
-                dep_prefixes_for_impl.add(dep_prefix)
-        # Any interface/impl reference in deps or method args generates {prefix}_impl_t * in C code.
-        # Use the actual dep project's prefix so cross-project deps produce the right _impl.h.
-        has_impl_use = bool(dep_prefixes_for_impl) or any(
-            arg.kind in {"interface", "impl"}
-            for method in [*cls.constructors, *cls.methods]
-            for arg in [*method.arguments, *method.returns]
-        )
-        if has_impl_use:
-            for pfx in sorted(dep_prefixes_for_impl or {project_ir.prefix}):
-                impl_include = f"{pfx}_impl.h"
-                if impl_include not in seen:
-                    seen.add(impl_include)
-                    includes.append(impl_include)
+                impl_prefixes.add(dep_prefix)
+        # Method args of interface/impl kind also need {source_project}_impl.h.
+        # IRCArgument carries a 'project' attribute when the interface is cross-project.
+        for method in [*cls.constructors, *cls.methods]:
+            for arg in [*method.arguments, *method.returns]:
+                if arg.kind in {"interface", "impl"}:
+                    arg_project = getattr(arg, "project", None)
+                    if arg_project:
+                        pfx = next(
+                            (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == arg_project),
+                            project_ir.prefix,
+                        )
+                    else:
+                        pfx = project_ir.prefix
+                    impl_prefixes.add(pfx)
+        for pfx in sorted(impl_prefixes):
+            impl_include = f"{pfx}_impl.h"
+            if impl_include not in seen:
+                seen.add(impl_include)
+                includes.append(impl_include)
         # Internal enum types used in method args or returns need their header (e.g. vscf_status.h).
         # External/library enums (library attribute set) have no corresponding project header.
         enum_names: set[str] = {
@@ -3004,7 +3007,12 @@ def render_class_c_module(
                 except KeyError:
                     pass
             if field.interface_name:
-                impl_inc = f"{project_ir.prefix}_impl.h"
+                field_project = getattr(field, "project", None)
+                field_pfx = next(
+                    (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == field_project),
+                    project_ir.prefix,
+                ) if field_project else project_ir.prefix
+                impl_inc = f"{field_pfx}_impl.h"
                 if impl_inc not in resolved_public_includes:
                     resolved_public_includes.append(impl_inc)
         for dep in cls.dependencies:
@@ -3016,7 +3024,7 @@ def render_class_c_module(
                 except KeyError:
                     pass
             elif dep.type_kind in {"interface", "impl"}:
-                impl_inc = f"{project_ir.prefix}_impl.h"
+                impl_inc = f"{_dep_prefix(project_ir, dep)}_impl.h"
                 if impl_inc not in resolved_public_includes:
                     resolved_public_includes.append(impl_inc)
     if include_own_header_public and class_output.include_file not in resolved_public_includes:
@@ -5081,8 +5089,13 @@ def render_class_defs_c_module(
                 except KeyError:
                     pass
         if field.interface_name is not None:
-            # Interface property becomes {prefix}_impl_t pointer
-            _add_include(f"{prefix}_impl.h")
+            # Interface field becomes {source_project}_impl_t pointer.
+            field_project = getattr(field, "project", None)
+            field_pfx = next(
+                (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == field_project),
+                prefix,
+            ) if field_project else prefix
+            _add_include(f"{field_pfx}_impl.h")
         if field.enum_name is not None:
             enum_name = field.enum_name
             if "/" in enum_name:
