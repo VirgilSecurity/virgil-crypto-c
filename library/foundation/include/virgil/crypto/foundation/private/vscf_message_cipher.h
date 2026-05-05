@@ -69,8 +69,6 @@
 #include "vscf_group_session_typedefs.h"
 #include "vscf_message_padding.h"
 #include "vscf_status.h"
-#include "vsc_data.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

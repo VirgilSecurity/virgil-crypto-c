@@ -75,8 +75,6 @@
 #include "vscf_impl.h"
 #include "vscf_padding_params.h"
 #include "vscf_status.h"
-#include "vsc_data.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

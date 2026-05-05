@@ -72,7 +72,6 @@
 #include "vscf_atomic.h"
 #include "vscf_signer_info_list.h"
 #include "vscf_impl.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -72,7 +72,6 @@
 #include "vscf_api.h"
 #include "vscf_impl.h"
 #include "vscf_error.h"
-#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

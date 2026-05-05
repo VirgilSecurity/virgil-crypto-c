@@ -75,8 +75,6 @@
 #include "vscf_key_alg.h"
 #include "vscf_status.h"
 #include "vscf_api.h"
-#include "vsc_data.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

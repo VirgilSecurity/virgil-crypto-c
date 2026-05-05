@@ -177,15 +177,26 @@ class TestHeaderIncludeInjection(unittest.TestCase):
         e = text.find(end, s)
         return text[s:e + len(end)] if e >= 0 else text[s:]
 
-    def test_existing_file_gains_cross_project_includes(self) -> None:
-        """Existing header must gain vsc_buffer.h and vsc_data.h (cross-project deps)."""
+    def test_cross_project_includes_not_in_generated_section(self) -> None:
+        """Cross-project bare includes must NOT appear in the generated section.
+
+        vsc_buffer.h and vsc_data.h live under include/virgil/crypto/common/ and are
+        not reachable via a bare filename lookup in CGo CFLAGS. They are already present
+        in each header's user area as framework-conditional includes. Injecting them as
+        bare names into @generated_header_includes breaks CGo compilation.
+        """
         with tempfile.TemporaryDirectory() as tmpdir:
             text = self._run_render_one(Path(tmpdir))
         section = self._get_generated_includes_section(text)
-        self.assertIn('#include "vsc_buffer.h"', section,
-                      "vsc_buffer.h (cross-project) should be injected into existing header")
-        self.assertIn('#include "vsc_data.h"', section,
-                      "vsc_data.h (cross-project) should be injected into existing header")
+        self.assertNotIn('#include "vsc_buffer.h"', section,
+                         "vsc_buffer.h (cross-project) must not appear as bare include in generated section")
+        self.assertNotIn('#include "vsc_data.h"', section,
+                         "vsc_data.h (cross-project) must not appear as bare include in generated section")
+        # Cross-project includes should still be present somewhere in the file (user area)
+        self.assertIn("vsc_buffer", text,
+                      "vsc_buffer reference must still exist in the file (user-area framework-conditional)")
+        self.assertIn("vsc_data", text,
+                      "vsc_data reference must still exist in the file (user-area framework-conditional)")
 
     def test_interface_dep_include_present(self) -> None:
         """Interface dependency should inject vscf_impl.h into the header."""

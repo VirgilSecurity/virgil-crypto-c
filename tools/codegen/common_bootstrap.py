@@ -1036,12 +1036,14 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             # Apply all public non-system includes from the renderer to both new and existing files.
             # This makes codegen the authoritative source for includes. Self-include is excluded.
             self_include = root.attrib.get("c_include_file", "")
+            self_prefix = self_include.split("_")[0] + "_" if "_" in self_include else ""
             renderer_pub_includes = [
                 render_include(c) for c in root
                 if c.tag == "c_include"
                 and c.attrib.get("scope") == "public"
                 and c.attrib.get("is_system") != "1"
                 and c.attrib.get("file") != self_include
+                and (not self_prefix or c.attrib.get("file", "").startswith(self_prefix))
             ]
             sys_lines: list[str] = []
             if include_block:
@@ -1056,6 +1058,13 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                     combined.append(inc)
                     seen.add(inc)
             for inc in existing_section_includes:
+                # Drop stale cross-project includes (e.g. "vsc_data.h" in a vscf_ header).
+                # These were injected by a prior codegen run but are already covered by the
+                # framework-conditional user-area includes and break CGo CFLAGS lookups.
+                if self_prefix and inc.startswith('#include "'):
+                    fname = inc[len('#include "'):-1]
+                    if not fname.startswith(self_prefix):
+                        continue
                 if inc not in seen:
                     combined.append(inc)
                     seen.add(inc)

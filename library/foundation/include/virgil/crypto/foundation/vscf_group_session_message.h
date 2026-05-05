@@ -74,8 +74,6 @@
 #include "vscf_error.h"
 #include "vscf_group_session_message.h"
 #include "vscf_group_msg_type.h"
-#include "vsc_data.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

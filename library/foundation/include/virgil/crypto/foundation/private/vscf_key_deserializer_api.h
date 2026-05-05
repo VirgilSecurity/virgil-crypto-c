@@ -74,7 +74,6 @@
 #include "vscf_error.h"
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
-#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

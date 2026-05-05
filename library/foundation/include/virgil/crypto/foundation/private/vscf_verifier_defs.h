@@ -73,7 +73,6 @@
 #include "vscf_impl.h"
 #include "vscf_asn1rd.h"
 #include "vscf_alg_info_der_deserializer.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

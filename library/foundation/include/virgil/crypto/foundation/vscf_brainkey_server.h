@@ -69,8 +69,6 @@
 #include "vscf_impl.h"
 #include "vscf_status.h"
 #include "vscf_error.h"
-#include "vsc_buffer.h"
-#include "vsc_data.h"
 #include "vscf_random.h"
 
 // --------------------------------------------------------------------------

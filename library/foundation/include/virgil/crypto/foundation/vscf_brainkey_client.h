@@ -70,8 +70,6 @@
 #include "vscf_status.h"
 #include "vscf_error.h"
 #include "vscf_simple_swu.h"
-#include "vsc_data.h"
-#include "vsc_buffer.h"
 #include "vscf_random.h"
 
 // --------------------------------------------------------------------------

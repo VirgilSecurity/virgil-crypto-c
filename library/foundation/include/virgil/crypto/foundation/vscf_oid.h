@@ -71,7 +71,6 @@
 #include "vscf_library.h"
 #include "vscf_alg_id.h"
 #include "vscf_oid_id.h"
-#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

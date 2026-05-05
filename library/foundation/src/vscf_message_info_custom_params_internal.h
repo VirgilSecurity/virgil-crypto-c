@@ -67,7 +67,6 @@
 #include "vscf_list_key_value_node.h"
 #include "vscf_error.h"
 #include "vscf_library.h"
-#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

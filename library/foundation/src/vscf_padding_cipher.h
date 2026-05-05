@@ -74,8 +74,6 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
-#include "vsc_buffer.h"
-#include "vsc_data.h"
 #include "vscf_cipher.h"
 #include "vscf_padding.h"
 

@@ -79,7 +79,6 @@
 #include "vscf_padding_cipher.h"
 #include "vscf_message_info_der_serializer.h"
 #include "vscf_recipient_cipher_decryption_state.h"
-#include "vsc_buffer.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

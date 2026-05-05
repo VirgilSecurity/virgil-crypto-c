@@ -74,8 +74,6 @@
 #include "vscf_signer_info.h"
 #include "vscf_signer_info_list.h"
 #include "vscf_impl.h"
-#include "vsc_buffer.h"
-#include "vsc_data.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
