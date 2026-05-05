@@ -99,6 +99,16 @@ type DecryptReader struct {
 }
 
 func (dr *DecryptReader) Read(d []byte) (int, error) {
+	// Drain buffered plaintext before reading more ciphertext.
+	// With staging, FinishDecryption returns all plaintext at once, which may
+	// exceed len(d) and require multiple Read calls to drain completely.
+	if dr.buf.Len() > 0 {
+		return dr.buf.Read(d)
+	}
+	if dr.finished {
+		return 0, io.EOF
+	}
+
 	var buf []byte
 	n, err := dr.r.Read(d)
 	if n > 0 {
@@ -106,7 +116,7 @@ func (dr *DecryptReader) Read(d []byte) (int, error) {
 		if err != nil {
 			return 0, err
 		}
-	} else if errors.Is(err, io.EOF) && !dr.finished {
+	} else if errors.Is(err, io.EOF) {
 		buf, err = dr.cipher.FinishDecryption()
 		if err != nil {
 			return 0, err
@@ -124,7 +134,7 @@ func (dr *DecryptReader) Read(d []byte) (int, error) {
 		return dr.buf.Read(d)
 	}
 
-	// check if cipher return 0 bytes
+	// ProcessDecryption returned 0 bytes (data is staged); ask caller to try again.
 	if n > 0 {
 		return 0, nil
 	}
