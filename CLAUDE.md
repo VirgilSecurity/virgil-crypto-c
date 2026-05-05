@@ -39,14 +39,14 @@ cd build && ctest --output-on-failure
 
 ## Key Directories
 
-| Directory     | Purpose                                                            |
-| ------------- | ------------------------------------------------------------------ |
-| `library/`    | Core C crypto libraries (common, foundation, pythia, phe, ratchet) |
-| `thirdparty/` | External deps (mbedtls, ed25519, relic, falcon, mlkem-native, mldsa-native, nanopb) |
-| `wrappers/`   | Language wrappers (python, java, go, php, wasm, swift)             |
-| `configs/`    | CMake config presets per language                                  |
-| `scripts/`    | Build and release scripts                                          |
-| `binaries/`   | Pre-built Apple xcframeworks (Git LFS)                             |
+| Directory         | Purpose                                                                                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `library/`        | Core C crypto libraries (common, foundation, pythia, phe, ratchet)                                                                             |
+| `thirdparty/`     | External deps (mbedtls, ed25519, relic, falcon, mlkem-native, mldsa-native, nanopb)                                                            |
+| `wrappers/`       | Language wrappers (python, java, go, php, wasm, swift)                                                                                         |
+| `configs/`        | CMake config presets per language                                                                                                              |
+| `scripts/`        | Build and release scripts                                                                                                                      |
+| `binaries/`       | Pre-built Apple xcframeworks (Git LFS)                                                                                                         |
 | `docs/solutions/` | Documented solutions (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`) |
 
 ## Important Notes
@@ -68,3 +68,4 @@ cd build && ctest --output-on-failure
     `CTestTestfile.cmake`, `fake.c`, `CMakeCache.txt`) — their presence in `wrappers/` or
     the repo root means an in-source build happened and must be cleaned up with
     `git rm -r --cached <dirs>`.
+  - Do not add yourself as co-author.
