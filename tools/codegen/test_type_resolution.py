@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
+from tools.codegen.common_bootstrap import render_one
 from tools.codegen.project_c_backend import (
     render_class_c_module,
     render_module_c_module,
@@ -135,6 +137,100 @@ class TestCommonRegression(unittest.TestCase):
             output.lower(),
             f"Common codegen should have 0 skips. Output:\n{output[-500:]}",
         )
+
+
+class TestHeaderIncludeInjection(unittest.TestCase):
+    """Unit 2: Include injection adds missing includes to new and existing headers.
+
+    Uses vscf_recipient_cipher as the test subject because its renderer produces
+    several includes (vsc_buffer.h, vsc_data.h, vscf_impl.h, …) that are NOT
+    currently present in the checked-in header — making it easy to verify the
+    fix adds them without removing anything that belongs.
+    """
+
+    CODEGEN_ROOT = REPO_ROOT / "codegen"
+    XML_KEY = "c_module_vscf_recipient_cipher.xml"
+    # header_file attr for recipient_cipher → resolves to this path under repo root
+    HEADER_REL = Path("library/foundation/include/virgil/crypto/foundation/vscf_recipient_cipher.h")
+
+    @classmethod
+    def _run_render_one(cls, out_root: Path) -> str:
+        """Run render_one for recipient_cipher and return the output header text."""
+        xml_path = cls.CODEGEN_ROOT / "generated" / "foundation" / cls.XML_KEY
+        render_one(
+            xml_path,
+            REPO_ROOT,
+            cls.CODEGEN_ROOT,
+            out_root,
+            project="foundation",
+        )
+        header_path = out_root / cls.HEADER_REL
+        return header_path.read_text()
+
+    def _get_generated_includes_section(self, text: str) -> str:
+        """Return the @generated_header_includes section text."""
+        start = "//  @generated_header_includes"
+        end = "//  @end"
+        s = text.find(start)
+        if s < 0:
+            return ""
+        e = text.find(end, s)
+        return text[s:e + len(end)] if e >= 0 else text[s:]
+
+    def test_existing_file_gains_cross_project_includes(self) -> None:
+        """Existing header must gain vsc_buffer.h and vsc_data.h (cross-project deps)."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            text = self._run_render_one(Path(tmpdir))
+        section = self._get_generated_includes_section(text)
+        self.assertIn('#include "vsc_buffer.h"', section,
+                      "vsc_buffer.h (cross-project) should be injected into existing header")
+        self.assertIn('#include "vsc_data.h"', section,
+                      "vsc_data.h (cross-project) should be injected into existing header")
+
+    def test_interface_dep_include_present(self) -> None:
+        """Interface dependency should inject vscf_impl.h into the header."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            text = self._run_render_one(Path(tmpdir))
+        section = self._get_generated_includes_section(text)
+        self.assertIn('#include "vscf_impl.h"', section,
+                      "vscf_impl.h should be present for interface dependencies")
+
+    def test_self_include_excluded(self) -> None:
+        """The header must not include itself in the generated section."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            text = self._run_render_one(Path(tmpdir))
+        section = self._get_generated_includes_section(text)
+        self.assertNotIn('#include "vscf_recipient_cipher.h"', section,
+                         "Header must not include itself in @generated_header_includes")
+
+    def test_existing_includes_preserved(self) -> None:
+        """Includes already in the checked-in header must still be present in output."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            text = self._run_render_one(Path(tmpdir))
+        for inc in ('#include "vscf_library.h"', '#include "vscf_status.h"',
+                    '#include "vscf_signer_info.h"'):
+            self.assertIn(inc, text, f"Pre-existing include {inc} must be preserved")
+
+    def test_framework_conditional_includes_preserved(self) -> None:
+        """Apple-framework conditional includes in the user area must not be disturbed."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            text = self._run_render_one(Path(tmpdir))
+        self.assertIn("VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK", text,
+                      "Framework-conditional includes must be preserved")
+        self.assertIn("#   include <virgil/crypto/common/vsc_data.h>", text,
+                      "Indented framework conditional include must survive codegen")
+
+    def test_idempotency(self) -> None:
+        """Running render_one twice on the same output produces identical results."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            out = Path(tmpdir)
+            first = self._run_render_one(out)
+            # Second run: same out dir, target already exists so is_new_file=False.
+            xml_path = self.CODEGEN_ROOT / "generated" / "foundation" / self.XML_KEY
+            render_one(xml_path, REPO_ROOT, self.CODEGEN_ROOT, out, project="foundation")
+            header_path = out / self.HEADER_REL
+            second = header_path.read_text()
+        self.assertEqual(first, second, "render_one must be idempotent on the same file")
 
 
 if __name__ == "__main__":

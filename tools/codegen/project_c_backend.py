@@ -2941,10 +2941,12 @@ def render_class_c_module(
             if req.name not in resolved_system_includes:
                 resolved_system_includes.append(req.name)
     if will_inline_struct:
-        # When the struct is inlined, we need all the includes that _defs.h would have
-        atomic_inc = f"{project_ir.prefix}_atomic.h"
-        if atomic_inc not in resolved_public_includes:
-            resolved_public_includes.append(atomic_inc)
+        # When the struct is inlined, we need all the includes that _defs.h would have.
+        # vscf_atomic.h is only needed when the class has a lifecycle (refs counter field).
+        if has_lifecycle:
+            atomic_inc = f"{project_ir.prefix}_atomic.h"
+            if atomic_inc not in resolved_public_includes:
+                resolved_public_includes.append(atomic_inc)
         for field in cls.struct_fields:
             if field.library and field.class_name:
                 lib_header = _library_type_header(field.class_name, field.library)
@@ -4871,19 +4873,14 @@ def render_implementation_defs_c_module(
 
     # Library header includes (from requirements needed for struct layout).
     # Only scope="context" belongs in _defs; scope="public" goes in the main module.
+    # Module requirements are NOT included here — they provide functions, not struct types,
+    # and belong in the implementation's .c file or main header.
     for req in impl.requirements:
         if req.kind == "header" and req.attrs.get("scope") == "context":
             text_element(root, "c_include", file=req.name, is_system="1", scope="public")
         elif req.kind == "library" and "header" in req.attrs:
             # Library requirement with explicit header (e.g. from <context>)
             text_element(root, "c_include", file=req.attrs["header"], is_system="1", scope="public")
-        elif req.kind == "module":
-            # Module requirement — include the module's header
-            try:
-                mod_out = entity_output(project_ir, entity_kind="module", entity_name=req.name)
-                text_element(root, "c_include", file=mod_out.include_file, is_system="0", scope="public")
-            except (KeyError, ValueError):
-                pass
 
     # Include vscf_impl.h if there are interface dependencies
     has_iface_dep = any(dep.type_kind in ("interface", "impl") for dep in impl.dependencies)
@@ -4903,12 +4900,6 @@ def render_implementation_defs_c_module(
                     text_element(root, "c_include", file=impl_out_dep.include_file, is_system="0", scope="public")
                 except (KeyError, ValueError):
                     pass
-
-    # Include headers for library header requirements from requirements
-    for req in impl.requirements:
-        if req.kind == "library" and "header" in req.attrs:
-            # Already handled above — skip duplicate
-            pass
 
     # Struct definition
     struct_name = f"{impl_output.c_symbol}_t"

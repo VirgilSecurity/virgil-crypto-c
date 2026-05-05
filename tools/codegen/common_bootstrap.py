@@ -1023,14 +1023,7 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             # Also preserve includes already in an existing @generated_header_includes section
             existing_section_includes: list[str] = []
             if GENERATED_HEADER_INCLUDES_START in merged:
-                for ln in merged.splitlines():
-                    stripped = ln.strip()
-                    if stripped.startswith("#include "):
-                        # Only grab includes between the header-includes markers
-                        pass
-                # More precise: extract from the section
                 try:
-                    _, _ = split_tagged_section(merged, GENERATED_HEADER_INCLUDES_START)
                     sec_start = merged.index(GENERATED_HEADER_INCLUDES_START)
                     sec_end = merged.index(GENERATED_END, sec_start)
                     for ln in merged[sec_start:sec_end].splitlines():
@@ -1040,10 +1033,16 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
                 except ValueError:
                     pass
             # Build combined block: old includes + existing section includes + renderer includes + system includes
-            # For new files, include ALL public-scope includes from the renderer
-            renderer_pub_includes: list[str] = []
-            if is_new_file:
-                renderer_pub_includes = [render_include(c) for c in root if c.tag == 'c_include' and c.attrib.get('scope') == 'public']
+            # Apply all public non-system includes from the renderer to both new and existing files.
+            # This makes codegen the authoritative source for includes. Self-include is excluded.
+            self_include = root.attrib.get("c_include_file", "")
+            renderer_pub_includes = [
+                render_include(c) for c in root
+                if c.tag == "c_include"
+                and c.attrib.get("scope") == "public"
+                and c.attrib.get("is_system") != "1"
+                and c.attrib.get("file") != self_include
+            ]
             sys_lines: list[str] = []
             if include_block:
                 for ln in include_block.splitlines():
