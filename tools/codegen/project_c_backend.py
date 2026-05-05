@@ -2870,17 +2870,37 @@ def _class_dependency_includes(
     scope_filter: str | None = None,
     include_struct_fields: bool = True,
 ) -> list[str]:
-    """Collect includes needed by *cls*.
+    """Collect includes needed by *cls* via three independent scans.
+
+    **Scan 1 — cls.dependencies** (direct interface/impl/class deps declared in
+    the class IR): emits the dep's own header (e.g. ``vscf_hash.h``) plus adds
+    its project prefix to *impl_prefixes* so ``{project}_impl.h`` is emitted.
+
+    **Scan 2 — method arguments** (all constructors and methods): a class can
+    *use* an interface without storing it as a field — e.g. a method that
+    accepts ``vscf_impl_t *`` as a parameter.  These arg-level interface/impl
+    refs are not covered by scan 1, so we scan them separately and add their
+    project prefix to *impl_prefixes*.  ``arg.project`` is set by the IR for
+    cross-project arguments.
+
+    **Scan 3 — struct fields** (only when *include_struct_fields* is ``True``):
+    the struct definition lives in the public header, so field types must be
+    included there; skipped when the struct is private.
+
+    *fallback_projects* (``project_ir.fallback_projects``) is the list of
+    ``IRProject`` objects for projects this project depends on.  It is used by
+    :func:`_dep_prefix` and :func:`_project_prefix_for` to resolve cross-project
+    C prefixes: e.g. a ratchet class with a foundation dep looks up ``"foundation"``
+    in *fallback_projects* to obtain prefix ``"vscf"`` and emit
+    ``vscf_impl.h`` instead of the wrong ``vscr_impl.h``.
+
+    *impl_prefixes* is a ``set`` (not a list) so that multiple deps or args
+    from the same project deduplicate naturally — each ``{project}_impl.h``
+    appears exactly once in the output.
 
     When *scope_filter* is ``None`` (default) only public-scope items are
-    considered (struct fields, variables, public methods).  When set to a
-    specific scope string (e.g. ``"internal"``) only methods matching that
-    scope are scanned.
-
-    *include_struct_fields* controls whether struct-field type includes are
-    collected.  Pass ``False`` when the struct definition lives in a private
-    file (will_inline_struct is False) so that field types do not leak into
-    the public header.
+    considered.  When set to a specific scope string (e.g. ``"internal"``) only
+    methods matching that scope are scanned.
     """
     includes: list[str] = []
     seen: set[str] = set()
@@ -2923,6 +2943,9 @@ def _class_dependency_includes(
                     seen.add(iface_include)
                     includes.append(iface_include)
                 impl_prefixes.add(dep_prefix)
+        # Scan method args separately from deps: a method can accept a cross-project interface
+        # parameter (kind="interface", project="foundation") without the class having that interface
+        # as a stored dependency.  arg.project is set by the IR for cross-project args.
         # Method args of interface/impl kind also need {source_project}_impl.h.
         # IRCArgument carries a 'project' attribute when the interface is cross-project.
         for method in [*cls.constructors, *cls.methods]:
