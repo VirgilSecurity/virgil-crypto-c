@@ -68,6 +68,7 @@
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
+#include "vscf_error.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -200,6 +201,14 @@ vscf_brainkey_client_blind(vscf_brainkey_client_t *self, vsc_data_t password, vs
 
 VSCF_PUBLIC vscf_status_t
 vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, vsc_data_t hardened_point, vsc_data_t deblind_factor, vsc_data_t key_name, vsc_buffer_t *seed) VSCF_NODISCARD;
+
+//
+//  Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+//  to server_public_key = x * G. Must be called before deblind() to authenticate
+//  the server response.
+//
+VSCF_PUBLIC bool
+vscf_brainkey_client_verify(vscf_brainkey_client_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point, vsc_data_t server_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_s, vscf_error_t *error);
 
 // --------------------------------------------------------------------------
 //  Generated section end.

@@ -504,6 +504,7 @@ vscf_group_session_encrypt(
     }
 
     vscf_status_t status;
+    vscf_group_session_message_t *msg = NULL;
 
     vsc_buffer_t *salt = vsc_buffer_new_with_capacity(vscf_group_session_SALT_SIZE);
 
@@ -513,7 +514,7 @@ vscf_group_session_encrypt(
         goto err1;
     }
 
-    vscf_group_session_message_t *msg = vscf_group_session_message_new();
+    msg = vscf_group_session_message_new();
 
     vscf_group_session_message_set_type(msg, vscf_group_msg_type_REGULAR);
 

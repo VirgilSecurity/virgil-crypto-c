@@ -230,6 +230,31 @@ vscf_memory_secure_equal(const void *a, const void *b, size_t len) {
 }
 
 //
+//  Perform constant-time memory comparison, then copy source to destination only if they differ.
+//  Returns true if the memory regions are equal (duplicate / reused value detected).
+//  Returns false if they differed (source was copied into destination successfully).
+//
+VSCF_PUBLIC bool
+vscf_memory_secure_unique_copy(void *dest, const void *src, size_t len) {
+
+    VSCF_ASSERT_PTR(dest);
+    VSCF_ASSERT_PTR(src);
+
+    const volatile uint8_t *in_src = (const uint8_t *)src;
+    const volatile uint8_t *in_dest = (const uint8_t *)dest;
+    uint8_t *out = (uint8_t *)dest;
+    volatile uint8_t diff = 0x00;
+
+    for (size_t i = 0; i < len; ++i) {
+        uint8_t s = in_src[i];
+        diff |= in_dest[i] ^ s;
+        out[i] = s;
+    }
+
+    return diff == 0;
+}
+
+//
 //  Find the first occurrence of find in s, where the search is limited to the
 //  first slen characters of s.
 //

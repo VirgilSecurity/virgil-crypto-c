@@ -160,8 +160,9 @@ vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *self, const vscf_impl_t 
     const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
 
     vscf_impl_t *hmac =
-            vscf_alg_factory_create_hash_from_info(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
+            vscf_alg_factory_create_mac_from_info(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
     VSCF_ASSERT_PTR(hmac);
+    VSCF_ASSERT(vscf_alg_alg_id(hmac) == vscf_alg_id_HMAC);
 
     vscf_pkcs5_pbkdf2_release_hmac(self);
     vscf_pkcs5_pbkdf2_take_hmac(self, hmac);
@@ -191,6 +192,8 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *self, vsc_data_t data, size_t key_
 
     vsc_buffer_t *u_1 = vsc_buffer_new_with_capacity(hash_len);
     vsc_buffer_t *u_2 = vsc_buffer_new_with_capacity(hash_len);
+    vsc_buffer_make_secure(u_1);
+    vsc_buffer_make_secure(u_2);
 
     for (size_t counter = 1; counter < hash_count + 1; ++counter) {
         counter_string[0] = (byte)((counter >> 24) & 255);

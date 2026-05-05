@@ -62,6 +62,21 @@
         </return>
     </method>
 
+    <method name="verify">
+        Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+        to server_public_key = x * G. Must be called before deblind() to authenticate
+        the server response.
+
+        <argument name="blinded point" class="data"/>
+        <argument name="hardened point" class="data"/>
+        <argument name="server public key" class="data"/>
+        <argument name="proof value c" class="data"/>
+        <argument name="proof value s" class="data"/>
+        <argument name="error" class="error" access="readwrite"/>
+
+        <return type="boolean"/>
+    </method>
+
     <method name="get op group" declaration="private">
         <return class="mbedtls_ecp_group" library="mbedtls" access="readwrite"/>
     </method>

@@ -148,3 +148,30 @@ func (obj *BrainkeyClient) Deblind(password []byte, hardenedPoint []byte, deblin
 
     return seedBuf.getData(), nil
 }
+
+/*
+* Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+* to server_public_key = x * G. Must be called before deblind() to authenticate
+* the server response.
+*/
+func (obj *BrainkeyClient) Verify(blindedPoint []byte, hardenedPoint []byte, serverPublicKey []byte, proofValueC []byte, proofValueS []byte) (bool, error) {
+    var error C.vscf_error_t
+    C.vscf_error_reset(&error)
+
+    blindedPointData := helperWrapData (blindedPoint)
+    hardenedPointData := helperWrapData (hardenedPoint)
+    serverPublicKeyData := helperWrapData (serverPublicKey)
+    proofValueCData := helperWrapData (proofValueC)
+    proofValueSData := helperWrapData (proofValueS)
+
+    proxyResult := C.vscf_brainkey_client_verify(obj.cCtx, blindedPointData, hardenedPointData, serverPublicKeyData, proofValueCData, proofValueSData, &error)
+
+    err := FoundationErrorHandleStatus(error.status)
+    if err != nil {
+        return false, err
+    }
+
+    runtime.KeepAlive(obj)
+
+    return bool(proxyResult), nil
+}

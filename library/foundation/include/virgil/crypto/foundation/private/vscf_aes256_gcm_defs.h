@@ -144,6 +144,10 @@ struct vscf_aes256_gcm_t {
     //  Implementation specific context.
     //
     size_t auth_tag_len;
+    //
+    //  Implementation specific context.
+    //
+    bool is_nonce_used;
 };
 
 // --------------------------------------------------------------------------

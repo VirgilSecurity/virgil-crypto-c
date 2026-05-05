@@ -149,7 +149,12 @@ vscf_falcon_generate_key(const vscf_falcon_t *self, vscf_error_t *error) {
     const int falcon_status = falcon_keygen_make(&shake256, vscf_falcon_LOGN_512,
             vsc_buffer_unused_bytes(private_key_buf), vsc_buffer_unused_len(private_key_buf),
             vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_unused_len(public_key_buf), tmp, sizeof(tmp));
-    VSCF_ASSERT(falcon_status == 0);
+    if (falcon_status != 0) {
+        vsc_buffer_destroy(&private_key_buf);
+        vsc_buffer_destroy(&public_key_buf);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
+        return NULL;
+    }
 
     vsc_buffer_inc_used(private_key_buf, FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512));
     vsc_buffer_inc_used(public_key_buf, FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
@@ -399,7 +404,11 @@ vscf_falcon_import_private_key_data(
     vsc_buffer_t *public_key_buf = vsc_buffer_new_with_capacity(FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
     const int ret = falcon_make_public(vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_unused_len(public_key_buf),
             key_data.bytes, key_data.len, tmp, sizeof(tmp));
-    VSCF_ASSERT(ret == 0);
+    if (ret != 0) {
+        vsc_buffer_destroy(&public_key_buf);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY);
+        return NULL;
+    }
     vsc_buffer_inc_used(public_key_buf, FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new();

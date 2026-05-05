@@ -94,6 +94,7 @@ vscf_aes256_gcm_init_ctx(vscf_aes256_gcm_t *self) {
 
     vscf_zeroize(self->key, vscf_aes256_gcm_KEY_LEN);
     vscf_zeroize(self->nonce, vscf_aes256_gcm_NONCE_LEN);
+    self->is_nonce_used = true;
 }
 
 //
@@ -253,6 +254,14 @@ vscf_aes256_gcm_precise_encrypted_len(const vscf_aes256_gcm_t *self, size_t data
 //
 //  Decrypt given data.
 //
+//  Uses an internal staging buffer: plaintext is decrypted privately, the
+//  authentication tag is verified, and only on success is the plaintext
+//  copied to the caller's buffer. On tag failure the staging buffer is
+//  zeroized and ERROR_AUTH_FAILED is returned — the caller's buffer is
+//  never written. This is safer than the streaming API but requires
+//  holding the entire plaintext in memory; prefer the streaming API
+//  (start_decryption / update / finish) for large data.
+//
 VSCF_PUBLIC vscf_status_t
 vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *out) {
 
@@ -261,11 +270,24 @@ vscf_aes256_gcm_decrypt(vscf_aes256_gcm_t *self, vsc_data_t data, vsc_buffer_t *
     VSCF_ASSERT(vsc_buffer_is_valid(out));
 
     VSCF_ASSERT(data.len >= vscf_aes256_gcm_AUTH_TAG_LEN);
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_aes256_gcm_decrypted_len(self, data.len));
+
+    const size_t estimated_decrypted_len = vscf_aes256_gcm_decrypted_len(self, data.len);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= estimated_decrypted_len);
+
+    vsc_buffer_t *staging = vsc_buffer_new_with_capacity(estimated_decrypted_len);
+    vsc_buffer_make_secure(staging);
 
     vscf_aes256_gcm_start_decryption(self);
-    vscf_aes256_gcm_update(self, data, out);
-    return vscf_aes256_gcm_finish(self, out);
+    vscf_aes256_gcm_update(self, data, staging);
+    const vscf_status_t status = vscf_aes256_gcm_finish(self, staging);
+
+    if (status == vscf_status_SUCCESS) {
+        vsc_buffer_write_data(out, vsc_buffer_data(staging));
+    }
+
+    vsc_buffer_destroy(&staging);
+
+    return status;
 }
 
 //
@@ -290,7 +312,7 @@ vscf_aes256_gcm_set_nonce(vscf_aes256_gcm_t *self, vsc_data_t nonce) {
     VSCF_ASSERT(vsc_data_is_valid(nonce));
     VSCF_ASSERT(vscf_aes256_gcm_NONCE_LEN == nonce.len);
 
-    memcpy(self->nonce, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
+    self->is_nonce_used = vscf_memory_secure_unique_copy(self->nonce, nonce.bytes, vscf_aes256_gcm_NONCE_LEN);
 }
 
 //
@@ -325,6 +347,7 @@ vscf_aes256_gcm_start_encryption(vscf_aes256_gcm_t *self) {
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT(!vsc_data_is_zero(vsc_data(self->key, vscf_aes256_gcm_KEY_LEN)));
+    VSCF_ASSERT(!self->is_nonce_used);
 
     self->state = vscf_cipher_state_ENCRYPTION;
 
@@ -657,6 +680,8 @@ vscf_aes256_gcm_finish_auth_encryption(vscf_aes256_gcm_t *self, vsc_buffer_t *ou
     vsc_buffer_inc_used(tag_dst, vscf_aes256_gcm_AUTH_TAG_LEN);
     VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
 
+    self->is_nonce_used = true;
+
     return vscf_status_SUCCESS;
 }
 
@@ -721,6 +746,8 @@ vscf_aes256_gcm_finish_auth_decryption(vscf_aes256_gcm_t *self, vsc_data_t tag, 
     if (0 == auth_check_status) {
         return vscf_status_SUCCESS;
     } else {
+        vscf_zeroize(vsc_buffer_begin(out), vsc_buffer_len(out));
+        vsc_buffer_reset(out);
         return vscf_status_ERROR_AUTH_FAILED;
     }
 }

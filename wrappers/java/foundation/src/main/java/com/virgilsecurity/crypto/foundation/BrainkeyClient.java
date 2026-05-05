@@ -110,4 +110,8 @@ public class BrainkeyClient implements AutoCloseable {
         return FoundationJNI.INSTANCE.brainkeyClient_deblind(this.cCtx, password, hardenedPoint, deblindFactor, keyName);
     }
 
+    public boolean verify(byte[] blindedPoint, byte[] hardenedPoint, byte[] serverPublicKey, byte[] proofValueC, byte[] proofValueS) throws FoundationException {
+        return FoundationJNI.INSTANCE.brainkeyClient_verify(this.cCtx, blindedPoint, hardenedPoint, serverPublicKey, proofValueC, proofValueS);
+    }
+
 }

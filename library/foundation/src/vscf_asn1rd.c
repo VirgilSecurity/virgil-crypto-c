@@ -308,6 +308,11 @@ vscf_asn1rd_get_data_len(vscf_asn1rd_t *self) {
 
     byte *p = self->curr + 1; // skip tag
 
+    if (p >= self->end) {
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
+        return 0;
+    }
+
     size_t length_len = 1;
     if ((*p & 0x80) > 0) {
         length_len += *p & 0x7F;
@@ -436,7 +441,7 @@ vscf_asn1rd_read_int16(vscf_asn1rd_t *self) {
         return 0;
     }
 
-    if (value > (int64_t)INT16_MAX) {
+    if (value > (int64_t)INT16_MAX || value < (int64_t)INT16_MIN) {
         self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
@@ -681,7 +686,10 @@ vscf_asn1rd_read_null(vscf_asn1rd_t *self) {
         return;
     }
 
-    VSCF_ASSERT(0 == len && "length of the NULL must be 0");
+    if (len != 0) {
+        self->status = vscf_status_ERROR_BAD_ASN1;
+        return;
+    }
 }
 
 //

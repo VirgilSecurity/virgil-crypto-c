@@ -607,6 +607,15 @@ vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_imp
         return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
     }
 
+    const byte *const dh_out = vsc_buffer_unused_bytes(shared_key);
+    byte zero_check = 0;
+    for (size_t i = 0; i < ED25519_DH_LEN; i++) {
+        zero_check |= dh_out[i];
+    }
+    if (zero_check == 0) {
+        return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
+    }
+
     vsc_buffer_inc_used(shared_key, vscf_curve25519_shared_key_len(self, public_key));
 
     return vscf_status_SUCCESS;

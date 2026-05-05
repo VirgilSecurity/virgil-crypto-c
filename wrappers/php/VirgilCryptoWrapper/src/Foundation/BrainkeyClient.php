@@ -126,6 +126,21 @@ class BrainkeyClient
     }
 
     /**
+    *
+    * @param string $$blindedPoint
+    * @param string $$hardenedPoint
+    * @param string $$serverPublicKey
+    * @param string $$proofValueC
+    * @param string $$proofValueS
+    * @return bool
+    * @throws \Exception
+    */
+    public function verify(string $$blindedPoint, string $$hardenedPoint, string $$serverPublicKey, string $$proofValueC, string $$proofValueS): bool
+    {
+        return vscf_brainkey_client_verify_php($this->ctx, $$blindedPoint, $$hardenedPoint, $$serverPublicKey, $$proofValueC, $$proofValueS);
+    }
+
+    /**
     * Get C context.
     *
     * @return resource

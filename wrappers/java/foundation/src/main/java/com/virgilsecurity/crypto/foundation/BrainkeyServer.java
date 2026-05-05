@@ -86,6 +86,10 @@ public class BrainkeyServer implements AutoCloseable {
         return 32;
     }
 
+    public int getProofValueLen() {
+        return 32;
+    }
+
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.brainkeyServer_setupDefaults(this.cCtx);
     }
@@ -96,6 +100,14 @@ public class BrainkeyServer implements AutoCloseable {
 
     public byte[] harden(byte[] identitySecret, byte[] blindedPoint) throws FoundationException {
         return FoundationJNI.INSTANCE.brainkeyServer_harden(this.cCtx, identitySecret, blindedPoint);
+    }
+
+    public byte[] computePublicKey(byte[] identitySecret) throws FoundationException {
+        return FoundationJNI.INSTANCE.brainkeyServer_computePublicKey(this.cCtx, identitySecret);
+    }
+
+    public BrainkeyServerProveResult prove(byte[] blindedPoint, byte[] hardenedPoint, byte[] identitySecret, byte[] serverPublicKey) throws FoundationException {
+        return FoundationJNI.INSTANCE.brainkeyServer_prove(this.cCtx, blindedPoint, hardenedPoint, identitySecret, serverPublicKey);
     }
 
 }

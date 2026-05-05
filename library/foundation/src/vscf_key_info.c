@@ -437,7 +437,7 @@ vscf_key_info_is_hybrid_post_quantum_cipher(const vscf_key_info_t *self) {
             (vscf_alg_id_ML_KEM_768 == self->compound_hybrid_cipher_second_key_alg_id) &&
             (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
-    return vscf_key_info_is_compound_hybrid_signer(self) && (is_first_post_quantum || is_second_post_quantum);
+    return vscf_key_info_is_compound_hybrid_cipher(self) && (is_first_post_quantum || is_second_post_quantum);
 }
 
 //

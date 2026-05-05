@@ -398,6 +398,11 @@ vscr_ratchet_message_deserialize(vsc_data_t input, vscr_error_t *error) {
         goto err;
     }
 
+    if (message->message_pb.regular_message.header == NULL) {
+        VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
+        goto err;
+    }
+
     pb_istream_t sub_istream = pb_istream_from_buffer(
             message->message_pb.regular_message.header->bytes, message->message_pb.regular_message.header->size);
 

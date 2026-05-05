@@ -376,6 +376,13 @@ vscf_ecc_import_public_key_data(
         return NULL;
     }
 
+    const int check_status = mbedtls_ecp_check_pubkey(&ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub);
+    if (check_status != 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY);
+        vscf_ecc_public_key_destroy(&ecc_public_key);
+        return NULL;
+    }
+
     return vscf_ecc_public_key_impl(ecc_public_key);
 }
 
@@ -859,7 +866,9 @@ cleanup:
         return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    if (mbed_status != 0) {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
     return vscf_status_SUCCESS;
 }
 

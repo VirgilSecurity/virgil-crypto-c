@@ -382,7 +382,10 @@ vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) {
 
     size_t last_block_len = 0;
     int status = mbedtls_cipher_finish(&self->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len);
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+    if (status != 0) {
+        self->state = vscf_cipher_state_INITIAL;
+        return vscf_status_ERROR_AUTH_FAILED;
+    }
     vsc_buffer_inc_used(out, last_block_len);
 
     self->state = vscf_cipher_state_INITIAL;

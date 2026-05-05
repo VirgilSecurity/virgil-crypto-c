@@ -51,6 +51,7 @@
     <property name="processed encrypted data len" type="size"/>
     <property name="decryption state" enum="recipient cipher decryption state"/>
     <property name="is signed operation" type="boolean"/>
+    <property name="decryption staging" class="buffer"/>
 
     <method name="has key recipient" is_const="1">
         Return true if a key recipient with a given id has been added.

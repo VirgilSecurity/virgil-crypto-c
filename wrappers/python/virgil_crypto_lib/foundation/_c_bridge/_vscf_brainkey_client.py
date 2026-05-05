@@ -38,6 +38,7 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_error import vscf_error_t
 
 
 class vscf_brainkey_client_t(Structure):
@@ -98,6 +99,15 @@ class VscfBrainkeyClient(object):
         vscf_brainkey_client_deblind.argtypes = [POINTER(vscf_brainkey_client_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_brainkey_client_deblind.restype = c_int
         return vscf_brainkey_client_deblind(ctx, password, hardened_point, deblind_factor, key_name, seed)
+
+    def vscf_brainkey_client_verify(self, ctx, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s, error):
+        """Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+to server_public_key = x * G. Must be called before deblind() to authenticate
+the server response."""
+        vscf_brainkey_client_verify = self._lib.vscf_brainkey_client_verify
+        vscf_brainkey_client_verify.argtypes = [POINTER(vscf_brainkey_client_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vscf_error_t)]
+        vscf_brainkey_client_verify.restype = c_bool
+        return vscf_brainkey_client_verify(ctx, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s, error)
 
     def vscf_brainkey_client_shallow_copy(self, ctx):
         vscf_brainkey_client_shallow_copy = self._lib.vscf_brainkey_client_shallow_copy

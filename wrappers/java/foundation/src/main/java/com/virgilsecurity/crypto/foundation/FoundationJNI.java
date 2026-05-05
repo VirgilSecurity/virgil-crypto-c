@@ -368,6 +368,8 @@ public class FoundationJNI {
 
     public native byte[] brainkeyClient_deblind(long cCtx, byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException;
 
+    public native boolean brainkeyClient_verify(long cCtx, byte[] blindedPoint, byte[] hardenedPoint, byte[] serverPublicKey, byte[] proofValueC, byte[] proofValueS) throws FoundationException;
+
     public native long brainkeyServer_new();
 
     public native void brainkeyServer_close(long cCtx);
@@ -381,6 +383,10 @@ public class FoundationJNI {
     public native byte[] brainkeyServer_generateIdentitySecret(long cCtx) throws FoundationException;
 
     public native byte[] brainkeyServer_harden(long cCtx, byte[] identitySecret, byte[] blindedPoint) throws FoundationException;
+
+    public native byte[] brainkeyServer_computePublicKey(long cCtx, byte[] identitySecret) throws FoundationException;
+
+    public native BrainkeyServerProveResult brainkeyServer_prove(long cCtx, byte[] blindedPoint, byte[] hardenedPoint, byte[] identitySecret, byte[] serverPublicKey) throws FoundationException;
 
     public native long groupSessionMessage_new();
 

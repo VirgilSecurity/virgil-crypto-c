@@ -329,6 +329,8 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1deblind (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1verify (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
+
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1close (JNIEnv *, jobject, jlong);
@@ -338,6 +340,10 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_b
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1generateIdentitySecret (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1harden (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1computePublicKey (JNIEnv *, jobject, jlong, jbyteArray);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1prove (JNIEnv *, jobject, jlong, jbyteArray, jbyteArray, jbyteArray, jbyteArray);
 
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionMessage_1new__ (JNIEnv *, jobject);
 

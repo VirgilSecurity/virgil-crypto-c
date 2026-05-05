@@ -150,6 +150,7 @@ struct vscf_recipient_cipher_t {
     size_t processed_encrypted_data_len;
     vscf_recipient_cipher_decryption_state_t decryption_state;
     bool is_signed_operation;
+    vsc_buffer_t *decryption_staging;
 };
 
 // --------------------------------------------------------------------------

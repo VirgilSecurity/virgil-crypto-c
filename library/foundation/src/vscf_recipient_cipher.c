@@ -627,6 +627,7 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vscf_message_info_destroy(&self->message_info);
     vscf_message_info_footer_destroy(&self->message_info_footer);
     vscf_padding_cipher_destroy(&self->padding_cipher);
+    vsc_buffer_destroy(&self->decryption_staging);
 }
 
 //
@@ -953,18 +954,22 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    if (self->is_signed_operation) {
-        status = vscf_recipient_cipher_accomplish_signed_encryption(self);
-        if (status != vscf_status_SUCCESS) {
-            goto cleanup;
-        }
-    }
-
     if (self->encryption_padding) {
         VSCF_ASSERT_PTR(self->padding_cipher);
         status = vscf_padding_cipher_finish(self->padding_cipher, out);
     } else {
         status = vscf_cipher_finish(self->encryption_cipher, out);
+    }
+
+    if (status != vscf_status_SUCCESS) {
+        goto cleanup;
+    }
+
+    if (self->is_signed_operation) {
+        status = vscf_recipient_cipher_accomplish_signed_encryption(self);
+        if (status != vscf_status_SUCCESS) {
+            goto cleanup;
+        }
     }
 
 cleanup:
@@ -1071,8 +1076,16 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
     }
 
     if (self->decryption_padding) {
+        if (data_len == 0 && self->decryption_staging) {
+            //  Finish call: all plaintext is held in staging; report the true size.
+            len += vsc_buffer_len(self->decryption_staging);
+        }
         len += vscf_padding_cipher_decrypted_out_len(self->padding_cipher, data_len);
     } else if (self->decryption_cipher) {
+        if (data_len == 0 && self->decryption_staging) {
+            //  Finish call: all plaintext is held in staging; report the true size.
+            len += vsc_buffer_len(self->decryption_staging);
+        }
         len += vscf_cipher_decrypted_out_len(self->decryption_cipher, data_len);
     } else {
         //
@@ -1138,7 +1151,7 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_decryption_out_len(self, 0));
+    VSCF_ASSERT_PTR(self->decryption_staging);
 
     if (self->decryption_state != vscf_recipient_cipher_decryption_state_PROCESSING_DATA) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
@@ -1146,27 +1159,42 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
 
     VSCF_ASSERT_PTR(self->decryption_cipher);
 
-    const size_t len_before = vsc_buffer_len(out);
+    //
+    //  Finish decryption into a temp buffer, hash it if needed, then append to
+    //  the secure staging buffer (not the caller's buffer yet).
+    //
+    size_t finish_needed;
+    if (self->decryption_padding) {
+        VSCF_ASSERT_PTR(self->padding_cipher);
+        finish_needed = vscf_padding_cipher_decrypted_out_len(self->padding_cipher, 0);
+    } else {
+        finish_needed = vscf_cipher_decrypted_out_len(self->decryption_cipher, 0);
+    }
+
+    vsc_buffer_t *finish_out = vsc_buffer_new_with_capacity(finish_needed);
+    vsc_buffer_make_secure(finish_out);
 
     vscf_status_t status = vscf_status_SUCCESS;
     if (self->decryption_padding) {
-        VSCF_ASSERT_PTR(self->padding_cipher);
-        status = vscf_padding_cipher_finish(self->padding_cipher, out);
+        status = vscf_padding_cipher_finish(self->padding_cipher, finish_out);
     } else {
-        status = vscf_cipher_finish(self->decryption_cipher, out);
+        status = vscf_cipher_finish(self->decryption_cipher, finish_out);
     }
 
     if (status != vscf_status_SUCCESS) {
+        vsc_buffer_destroy(&finish_out);
+        vsc_buffer_destroy(&self->decryption_staging);
         return status;
     }
 
-    const size_t len_after = vsc_buffer_len(out);
     if (self->is_signed_operation) {
-        const size_t written_len = len_after - len_before;
-        vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
+        vscf_hash_update(self->verifier_hash, vsc_buffer_data(finish_out));
     }
 
-    if (vscf_status_SUCCESS == status && vscf_message_info_has_footer_info(self->message_info)) {
+    vsc_buffer_append_data(self->decryption_staging, vsc_buffer_data(finish_out));
+    vsc_buffer_destroy(&finish_out);
+
+    if (vscf_message_info_has_footer_info(self->message_info)) {
         status = vscf_recipient_cipher_unpack_message_info_footer(self);
     }
 
@@ -1177,6 +1205,17 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     }
 
     vsc_buffer_release(self->derived_keys);
+
+    //
+    //  Authentication verified. Copy plaintext to the caller's buffer.
+    //  Plaintext never leaves the staging buffer on any failure path above.
+    //
+    if (status == vscf_status_SUCCESS) {
+        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vsc_buffer_len(self->decryption_staging));
+        vsc_buffer_write_data(out, vsc_buffer_data(self->decryption_staging));
+    }
+
+    vsc_buffer_destroy(&self->decryption_staging);
 
     return status;
 }
@@ -1332,6 +1371,15 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
     //  Configure verifier hash.
     //
     vscf_recipient_cipher_configure_verifier_hash(self);
+
+    //
+    //  Allocate secure staging buffer for EFAIL mitigation: plaintext is held here
+    //  until the authentication tag is verified in finish_decryption, then copied to
+    //  the caller's output buffer. Callers never receive unauthenticated plaintext.
+    //
+    vsc_buffer_destroy(&self->decryption_staging);
+    self->decryption_staging = vsc_buffer_new_with_capacity(0);
+    vsc_buffer_make_secure(self->decryption_staging);
 
     self->decryption_state = vscf_recipient_cipher_decryption_state_PROCESSING_DATA;
 
@@ -2150,20 +2198,34 @@ vscf_recipient_cipher_decrypt_chunk(vscf_recipient_cipher_t *self, vsc_data_t da
         return;
     }
 
-    const size_t len_before = vsc_buffer_len(out);
-
+    //
+    //  Decrypt into a per-chunk temp buffer, then append to the secure staging
+    //  buffer.  Plaintext is released to the caller only after the authentication
+    //  tag is verified in finish_decryption (EFAIL mitigation).
+    //
+    size_t needed;
     if (self->decryption_padding) {
         VSCF_ASSERT_PTR(self->padding_cipher);
-        vscf_padding_cipher_update(self->padding_cipher, filtered_data, out);
+        needed = vscf_padding_cipher_decrypted_out_len(self->padding_cipher, filtered_data.len);
     } else {
-        vscf_cipher_update(self->decryption_cipher, filtered_data, out);
+        needed = vscf_cipher_decrypted_out_len(self->decryption_cipher, filtered_data.len);
     }
 
-    const size_t len_after = vsc_buffer_len(out);
-    const size_t written_len = len_after - len_before;
-    if (self->is_signed_operation) {
-        vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
+    vsc_buffer_t *chunk_out = vsc_buffer_new_with_capacity(needed);
+    vsc_buffer_make_secure(chunk_out);
+
+    if (self->decryption_padding) {
+        vscf_padding_cipher_update(self->padding_cipher, filtered_data, chunk_out);
+    } else {
+        vscf_cipher_update(self->decryption_cipher, filtered_data, chunk_out);
     }
+
+    if (self->is_signed_operation) {
+        vscf_hash_update(self->verifier_hash, vsc_buffer_data(chunk_out));
+    }
+
+    vsc_buffer_append_data(self->decryption_staging, vsc_buffer_data(chunk_out));
+    vsc_buffer_destroy(&chunk_out);
 }
 
 //

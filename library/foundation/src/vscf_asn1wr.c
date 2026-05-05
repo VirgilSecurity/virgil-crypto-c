@@ -443,7 +443,7 @@ vscf_asn1wr_reserve(vscf_asn1wr_t *self, size_t len) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->start > self->curr - len) {
+    if (len > (size_t)(self->curr - self->start)) {
         self->status = vscf_status_ERROR_SMALL_BUFFER;
         return NULL;
     }
