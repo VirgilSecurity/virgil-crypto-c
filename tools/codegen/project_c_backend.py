@@ -2826,13 +2826,24 @@ def _dependency_is_implemented_check(project_ir: IRProject, dep: IRDependency) -
     return None
 
 
-def _class_dependency_includes(project_ir: IRProject, cls: IRClass, *, scope_filter: str | None = None) -> list[str]:
+def _class_dependency_includes(
+    project_ir: IRProject,
+    cls: IRClass,
+    *,
+    scope_filter: str | None = None,
+    include_struct_fields: bool = True,
+) -> list[str]:
     """Collect includes needed by *cls*.
 
     When *scope_filter* is ``None`` (default) only public-scope items are
     considered (struct fields, variables, public methods).  When set to a
     specific scope string (e.g. ``"internal"``) only methods matching that
     scope are scanned.
+
+    *include_struct_fields* controls whether struct-field type includes are
+    collected.  Pass ``False`` when the struct definition lives in a private
+    file (will_inline_struct is False) so that field types do not leak into
+    the public header.
     """
     includes: list[str] = []
     seen: set[str] = set()
@@ -2850,11 +2861,12 @@ def _class_dependency_includes(project_ir: IRProject, cls: IRClass, *, scope_fil
 
     cls_scope = cls.attrs.get("scope", "public")
     if scope_filter is None:
-        # Public module: struct fields, variables, and matching-scope methods
-        for field in cls.struct_fields:
-            add_include(field.class_name)
-        for variable in cls.variables:
-            add_include(variable.class_name)
+        # Struct fields and variables only when the struct is inlined in the public header
+        if include_struct_fields:
+            for field in cls.struct_fields:
+                add_include(field.class_name)
+            for variable in cls.variables:
+                add_include(variable.class_name)
         for method in [*cls.constructors, *cls.methods]:
             method_scope = method.attrs.get("scope", cls_scope)
             if method_scope != cls_scope:
@@ -2863,6 +2875,7 @@ def _class_dependency_includes(project_ir: IRProject, cls: IRClass, *, scope_fil
                 add_include(arg.class_name)
 
         # Dependency includes
+        has_interface_dep = False
         for dep in cls.dependencies:
             if dep.type_kind == "class":
                 add_include(dep.type_name)
@@ -2871,6 +2884,31 @@ def _class_dependency_includes(project_ir: IRProject, cls: IRClass, *, scope_fil
                 if iface_include not in seen:
                     seen.add(iface_include)
                     includes.append(iface_include)
+                has_interface_dep = True
+        # Any interface/impl reference in deps or method args generates vscf_impl_t * in C code.
+        has_impl_use = has_interface_dep or any(
+            arg.kind in {"interface", "impl"}
+            for method in [*cls.constructors, *cls.methods]
+            for arg in [*method.arguments, *method.returns]
+        )
+        if has_impl_use:
+            impl_include = f"{project_ir.prefix}_impl.h"
+            if impl_include not in seen:
+                seen.add(impl_include)
+                includes.append(impl_include)
+        # Internal enum types used in method args or returns need their header (e.g. vscf_status.h).
+        # External/library enums (library attribute set) have no corresponding project header.
+        enum_names: set[str] = {
+            item.enum_name
+            for method in [*cls.constructors, *cls.methods]
+            for item in [*method.arguments, *method.returns]
+            if item.kind == "enum" and item.enum_name and not item.library
+        }
+        for enum_name in sorted(enum_names):
+            enum_include = f"{project_ir.prefix}_{snake_name(enum_name)}.h"
+            if enum_include not in seen:
+                seen.add(enum_include)
+                includes.append(enum_include)
     else:
         # Extended module (e.g. internal): only methods with matching scope
         for method in cls.methods:
@@ -2926,14 +2964,17 @@ def render_class_c_module(
     library_include = include_file_for_entity(project_ir, entity_kind="module", entity_name="library")
     if library_include not in resolved_public_includes:
         resolved_public_includes.insert(0, library_include)
-    for include in _class_dependency_includes(project_ir, cls):
+    # Compute will_inline_struct before collecting dependency includes so that
+    # struct-field types are only added to the public header when the struct
+    # definition actually lives there (not in a private src/_defs.h file).
+    cls_scope = cls.attrs.get("scope", "public")
+    has_explicit_ctx_public_sys = cls_scope == "internal" and cls.attrs.get("context") == "public"
+    will_inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public_sys
+    for include in _class_dependency_includes(project_ir, cls, include_struct_fields=will_inline_struct):
         if include not in resolved_public_includes:
             resolved_public_includes.append(include)
     # Add system includes for external library types used in struct fields,
     # but only when the struct is inline in this module (not in a separate _defs.h).
-    cls_scope = cls.attrs.get("scope", "public")
-    has_explicit_ctx_public_sys = cls_scope == "internal" and cls.attrs.get("context") == "public"
-    will_inline_struct = is_value_type or not has_lifecycle or has_explicit_ctx_public_sys
     resolved_system_includes: list[str] = []
     # Add scope="public" requirement headers (e.g. <require header="pb.h" scope="public"/>)
     for req in cls.requirements:

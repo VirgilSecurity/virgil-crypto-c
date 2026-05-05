@@ -76,9 +76,6 @@
 #include "vscf_group_session_ticket.h"
 #include "vscf_impl.h"
 #include "vscf_status.h"
-#include "vscf_message_cipher.h"
-#include "vscf_message_padding.h"
-#include "vscf_group_session_epoch_node.h"
 #include "vscf_random.h"
 
 // --------------------------------------------------------------------------

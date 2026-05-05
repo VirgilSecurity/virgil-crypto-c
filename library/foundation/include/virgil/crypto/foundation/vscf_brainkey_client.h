@@ -69,7 +69,6 @@
 #include "vscf_impl.h"
 #include "vscf_status.h"
 #include "vscf_error.h"
-#include "vscf_simple_swu.h"
 #include "vscf_random.h"
 
 // --------------------------------------------------------------------------
