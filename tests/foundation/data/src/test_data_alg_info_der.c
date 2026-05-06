@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security Inc.
+//  Copyright (C) 2015-2018 Virgil Security Inc.
 //
 //  All rights reserved.
 //

@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,74 +37,88 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Create algorithms based on the given information.
+*/
 class AlgFactory
 {
 
     /**
+    * Create algorithm that implements "hash stream" interface.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return Hash
+    * @throws \Exception
     */
-    public static function createHashFromInfo(AlgInfo $$algInfo): Hash
+    public static function createHashFromInfo(AlgInfo $algInfo): Hash
     {
-        $ctx = vscf_alg_factory_create_hash_from_info_php($$algInfo->getCtx());
+        $ctx = vscf_alg_factory_create_hash_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapHash($ctx);
     }
 
     /**
+    * Create algorithm that implements "mac stream" interface.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return Mac
+    * @throws \Exception
     */
-    public static function createMacFromInfo(AlgInfo $$algInfo): Mac
+    public static function createMacFromInfo(AlgInfo $algInfo): Mac
     {
-        $ctx = vscf_alg_factory_create_mac_from_info_php($$algInfo->getCtx());
+        $ctx = vscf_alg_factory_create_mac_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapMac($ctx);
     }
 
     /**
+    * Create algorithm that implements "kdf" interface.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return Kdf
+    * @throws \Exception
     */
-    public static function createKdfFromInfo(AlgInfo $$algInfo): Kdf
+    public static function createKdfFromInfo(AlgInfo $algInfo): Kdf
     {
-        $ctx = vscf_alg_factory_create_kdf_from_info_php($$algInfo->getCtx());
+        $ctx = vscf_alg_factory_create_kdf_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapKdf($ctx);
     }
 
     /**
+    * Create algorithm that implements "salted kdf" interface.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return SaltedKdf
+    * @throws \Exception
     */
-    public static function createSaltedKdfFromInfo(AlgInfo $$algInfo): SaltedKdf
+    public static function createSaltedKdfFromInfo(AlgInfo $algInfo): SaltedKdf
     {
-        $ctx = vscf_alg_factory_create_salted_kdf_from_info_php($$algInfo->getCtx());
+        $ctx = vscf_alg_factory_create_salted_kdf_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapSaltedKdf($ctx);
     }
 
     /**
+    * Create algorithm that implements "cipher" interface.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return Cipher
+    * @throws \Exception
     */
-    public static function createCipherFromInfo(AlgInfo $$algInfo): Cipher
+    public static function createCipherFromInfo(AlgInfo $algInfo): Cipher
     {
-        $ctx = vscf_alg_factory_create_cipher_from_info_php($$algInfo->getCtx());
+        $ctx = vscf_alg_factory_create_cipher_from_info_php($algInfo->getCtx());
         return FoundationImplementation::wrapCipher($ctx);
     }
 
     /**
+    * Create algorithm that implements "padding" interface.
     *
-    * @param AlgInfo $$algInfo
-    * @param Random $$random
+    * @param AlgInfo $algInfo
+    * @param Random $random
     * @return Padding
+    * @throws \Exception
     */
-    public static function createPaddingFromInfo(AlgInfo $$algInfo, Random $$random): Padding
+    public static function createPaddingFromInfo(AlgInfo $algInfo, Random $random): Padding
     {
-        $ctx = vscf_alg_factory_create_padding_from_info_php($$algInfo->getCtx(), $$random->getCtx());
+        $ctx = vscf_alg_factory_create_padding_from_info_php($algInfo->getCtx(), $random->getCtx());
         return FoundationImplementation::wrapPadding($ctx);
     }
-
 }

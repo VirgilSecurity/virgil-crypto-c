@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -37,8 +37,8 @@ from ctypes import *
 from ._c_bridge import VsceUokmsWrapRotation
 from ._c_bridge import VsceStatus
 from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.common._c_bridge import Buffer
 from .common import Common
+from virgil_crypto_lib.common._c_bridge import Buffer
 
 
 class UokmsWrapRotation(object):

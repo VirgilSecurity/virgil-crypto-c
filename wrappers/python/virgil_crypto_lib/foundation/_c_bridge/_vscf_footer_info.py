@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,7 +44,6 @@ class vscf_footer_info_t(Structure):
 
 class VscfFooterInfo(object):
     """Handle meta information about footer."""
-
 
     def __init__(self):
         """Create underlying C context."""

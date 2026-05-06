@@ -9,10 +9,10 @@ import foundation "virgil/foundation"
 
 /*
 * Class for client-side PHE crypto operations.
-* This class is thread-safe in case if .(c_global_macros_multi_threading) defined.
+* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
 */
 type PheClient struct {
-    cCtx *C.vsce_phe_client_t
+    cCtx *C.vsce_phe_client_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -32,7 +32,7 @@ func NewPheClient() *PheClient {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPheClientWithCtx(ctx *C.vsce_phe_client_t) *PheClient {
+func newPheClientWithCtx(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: ctx,
     }
@@ -43,7 +43,7 @@ func newPheClientWithCtx(ctx *C.vsce_phe_client_t) *PheClient {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPheClientCopy(ctx *C.vsce_phe_client_t) *PheClient {
+func newPheClientCopy(ctx *C.vsce_phe_client_t /*ct2*/) *PheClient {
     obj := &PheClient {
         cCtx: C.vsce_phe_client_shallow_copy(ctx),
     }
@@ -69,6 +69,9 @@ func (obj *PheClient) delete() {
     C.vsce_phe_client_delete(obj.cCtx)
 }
 
+/*
+* Random used for key generation, proofs, etc.
+*/
 func (obj *PheClient) SetRandom(random foundation.Random) {
     C.vsce_phe_client_release_random(obj.cCtx)
     C.vsce_phe_client_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
@@ -77,6 +80,9 @@ func (obj *PheClient) SetRandom(random foundation.Random) {
     runtime.KeepAlive(obj)
 }
 
+/*
+* Random used for crypto operations to make them const-time
+*/
 func (obj *PheClient) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_phe_client_release_operation_random(obj.cCtx)
     C.vsce_phe_client_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
@@ -89,7 +95,7 @@ func (obj *PheClient) SetOperationRandom(operationRandom foundation.Random) {
 * Setups dependencies with default values.
 */
 func (obj *PheClient) SetupDefaults() error {
-    proxyResult := C.vsce_phe_client_setup_defaults(obj.cCtx)
+    proxyResult := /*pr4*/C.vsce_phe_client_setup_defaults(obj.cCtx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -110,7 +116,7 @@ func (obj *PheClient) SetKeys(clientPrivateKey []byte, serverPublicKey []byte) e
     clientPrivateKeyData := helperWrapData (clientPrivateKey)
     serverPublicKeyData := helperWrapData (serverPublicKey)
 
-    proxyResult := C.vsce_phe_client_set_keys(obj.cCtx, clientPrivateKeyData, serverPublicKeyData)
+    proxyResult := /*pr4*/C.vsce_phe_client_set_keys(obj.cCtx, clientPrivateKeyData, serverPublicKeyData)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -126,14 +132,14 @@ func (obj *PheClient) SetKeys(clientPrivateKey []byte, serverPublicKey []byte) e
 * Generates client private key
 */
 func (obj *PheClient) GenerateClientPrivateKey() ([]byte, error) {
-    clientPrivateKeyBuf, clientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength))
+    clientPrivateKeyBuf, clientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if clientPrivateKeyBufErr != nil {
         return nil, clientPrivateKeyBufErr
     }
     defer clientPrivateKeyBuf.delete()
 
 
-    proxyResult := C.vsce_phe_client_generate_client_private_key(obj.cCtx, clientPrivateKeyBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_phe_client_generate_client_private_key(obj.cCtx, clientPrivateKeyBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -142,18 +148,18 @@ func (obj *PheClient) GenerateClientPrivateKey() ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return clientPrivateKeyBuf.getData(), nil
+    return clientPrivateKeyBuf.getData() /* r7 */, nil
 }
 
 /*
 * Buffer size needed to fit EnrollmentRecord
 */
 func (obj *PheClient) EnrollmentRecordLen() uint {
-    proxyResult := C.vsce_phe_client_enrollment_record_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vsce_phe_client_enrollment_record_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -162,13 +168,13 @@ func (obj *PheClient) EnrollmentRecordLen() uint {
 * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 */
 func (obj *PheClient) EnrollAccount(enrollmentResponse []byte, password []byte) ([]byte, []byte, error) {
-    enrollmentRecordBuf, enrollmentRecordBufErr := newBuffer(int(obj.EnrollmentRecordLen()))
+    enrollmentRecordBuf, enrollmentRecordBufErr := newBuffer(int(obj.EnrollmentRecordLen() /* lg2 */))
     if enrollmentRecordBufErr != nil {
         return nil, nil, enrollmentRecordBufErr
     }
     defer enrollmentRecordBuf.delete()
 
-    accountKeyBuf, accountKeyBufErr := newBuffer(int(PheCommonPheAccountKeyLength))
+    accountKeyBuf, accountKeyBufErr := newBuffer(int(PheCommonPheAccountKeyLength /* lg4 */))
     if accountKeyBufErr != nil {
         return nil, nil, accountKeyBufErr
     }
@@ -176,7 +182,7 @@ func (obj *PheClient) EnrollAccount(enrollmentResponse []byte, password []byte) 
     enrollmentResponseData := helperWrapData (enrollmentResponse)
     passwordData := helperWrapData (password)
 
-    proxyResult := C.vsce_phe_client_enroll_account(obj.cCtx, enrollmentResponseData, passwordData, enrollmentRecordBuf.ctx, accountKeyBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_phe_client_enroll_account(obj.cCtx, enrollmentResponseData, passwordData, enrollmentRecordBuf.ctx, accountKeyBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -185,25 +191,25 @@ func (obj *PheClient) EnrollAccount(enrollmentResponse []byte, password []byte) 
 
     runtime.KeepAlive(obj)
 
-    return enrollmentRecordBuf.getData(), accountKeyBuf.getData(), nil
+    return enrollmentRecordBuf.getData() /* r7 */, accountKeyBuf.getData() /* r7 */, nil
 }
 
 /*
 * Buffer size needed to fit VerifyPasswordRequest
 */
 func (obj *PheClient) VerifyPasswordRequestLen() uint {
-    proxyResult := C.vsce_phe_client_verify_password_request_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vsce_phe_client_verify_password_request_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Creates a request for further password verification at the PHE server side.
 */
 func (obj *PheClient) CreateVerifyPasswordRequest(password []byte, enrollmentRecord []byte) ([]byte, error) {
-    verifyPasswordRequestBuf, verifyPasswordRequestBufErr := newBuffer(int(obj.VerifyPasswordRequestLen()))
+    verifyPasswordRequestBuf, verifyPasswordRequestBufErr := newBuffer(int(obj.VerifyPasswordRequestLen() /* lg2 */))
     if verifyPasswordRequestBufErr != nil {
         return nil, verifyPasswordRequestBufErr
     }
@@ -211,7 +217,7 @@ func (obj *PheClient) CreateVerifyPasswordRequest(password []byte, enrollmentRec
     passwordData := helperWrapData (password)
     enrollmentRecordData := helperWrapData (enrollmentRecord)
 
-    proxyResult := C.vsce_phe_client_create_verify_password_request(obj.cCtx, passwordData, enrollmentRecordData, verifyPasswordRequestBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_phe_client_create_verify_password_request(obj.cCtx, passwordData, enrollmentRecordData, verifyPasswordRequestBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -220,7 +226,7 @@ func (obj *PheClient) CreateVerifyPasswordRequest(password []byte, enrollmentRec
 
     runtime.KeepAlive(obj)
 
-    return verifyPasswordRequestBuf.getData(), nil
+    return verifyPasswordRequestBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -229,7 +235,7 @@ func (obj *PheClient) CreateVerifyPasswordRequest(password []byte, enrollmentRec
 * If login failed account key will be empty
 */
 func (obj *PheClient) CheckResponseAndDecrypt(password []byte, enrollmentRecord []byte, verifyPasswordResponse []byte) ([]byte, error) {
-    accountKeyBuf, accountKeyBufErr := newBuffer(int(PheCommonPheAccountKeyLength))
+    accountKeyBuf, accountKeyBufErr := newBuffer(int(PheCommonPheAccountKeyLength /* lg4 */))
     if accountKeyBufErr != nil {
         return nil, accountKeyBufErr
     }
@@ -238,7 +244,7 @@ func (obj *PheClient) CheckResponseAndDecrypt(password []byte, enrollmentRecord 
     enrollmentRecordData := helperWrapData (enrollmentRecord)
     verifyPasswordResponseData := helperWrapData (verifyPasswordResponse)
 
-    proxyResult := C.vsce_phe_client_check_response_and_decrypt(obj.cCtx, passwordData, enrollmentRecordData, verifyPasswordResponseData, accountKeyBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_phe_client_check_response_and_decrypt(obj.cCtx, passwordData, enrollmentRecordData, verifyPasswordResponseData, accountKeyBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -247,7 +253,7 @@ func (obj *PheClient) CheckResponseAndDecrypt(password []byte, enrollmentRecord 
 
     runtime.KeepAlive(obj)
 
-    return accountKeyBuf.getData(), nil
+    return accountKeyBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -255,20 +261,20 @@ func (obj *PheClient) CheckResponseAndDecrypt(password []byte, enrollmentRecord 
 * Use output values to instantiate new client instance with new keys
 */
 func (obj *PheClient) RotateKeys(updateToken []byte) ([]byte, []byte, error) {
-    newClientPrivateKeyBuf, newClientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength))
+    newClientPrivateKeyBuf, newClientPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if newClientPrivateKeyBufErr != nil {
         return nil, nil, newClientPrivateKeyBufErr
     }
     defer newClientPrivateKeyBuf.delete()
 
-    newServerPublicKeyBuf, newServerPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength))
+    newServerPublicKeyBuf, newServerPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if newServerPublicKeyBufErr != nil {
         return nil, nil, newServerPublicKeyBufErr
     }
     defer newServerPublicKeyBuf.delete()
     updateTokenData := helperWrapData (updateToken)
 
-    proxyResult := C.vsce_phe_client_rotate_keys(obj.cCtx, updateTokenData, newClientPrivateKeyBuf.ctx, newServerPublicKeyBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_phe_client_rotate_keys(obj.cCtx, updateTokenData, newClientPrivateKeyBuf.ctx, newServerPublicKeyBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -277,14 +283,14 @@ func (obj *PheClient) RotateKeys(updateToken []byte) ([]byte, []byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return newClientPrivateKeyBuf.getData(), newServerPublicKeyBuf.getData(), nil
+    return newClientPrivateKeyBuf.getData() /* r7 */, newServerPublicKeyBuf.getData() /* r7 */, nil
 }
 
 /*
 * Updates EnrollmentRecord using server's update token
 */
 func (obj *PheClient) UpdateEnrollmentRecord(enrollmentRecord []byte, updateToken []byte) ([]byte, error) {
-    newEnrollmentRecordBuf, newEnrollmentRecordBufErr := newBuffer(int(obj.EnrollmentRecordLen()))
+    newEnrollmentRecordBuf, newEnrollmentRecordBufErr := newBuffer(int(obj.EnrollmentRecordLen() /* lg2 */))
     if newEnrollmentRecordBufErr != nil {
         return nil, newEnrollmentRecordBufErr
     }
@@ -292,7 +298,7 @@ func (obj *PheClient) UpdateEnrollmentRecord(enrollmentRecord []byte, updateToke
     enrollmentRecordData := helperWrapData (enrollmentRecord)
     updateTokenData := helperWrapData (updateToken)
 
-    proxyResult := C.vsce_phe_client_update_enrollment_record(obj.cCtx, enrollmentRecordData, updateTokenData, newEnrollmentRecordBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_phe_client_update_enrollment_record(obj.cCtx, enrollmentRecordData, updateTokenData, newEnrollmentRecordBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -301,5 +307,5 @@ func (obj *PheClient) UpdateEnrollmentRecord(enrollmentRecord []byte, updateToke
 
     runtime.KeepAlive(obj)
 
-    return newEnrollmentRecordBuf.getData(), nil
+    return newEnrollmentRecordBuf.getData() /* r7 */, nil
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -39,8 +39,8 @@ from abc import *
 
 class Asn1Reader(object):
     """Provides interface to the ASN.1 reader.
-Note, that all "read" methods move reading position forward.
-Note, that all "get" do not change reading position."""
+    Note, that all "read" methods move reading position forward.
+    Note, that all "get" do not change reading position."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -81,14 +81,14 @@ Note, that all "get" do not change reading position."""
     @abstractmethod
     def read_tag(self, tag):
         """Read ASN.1 type: TAG.
-Return element length."""
+        Return element length."""
         raise NotImplementedError()
 
     @abstractmethod
     def read_context_tag(self, tag):
         """Read ASN.1 type: context-specific TAG.
-Return element length.
-Return 0 if current position do not points to the requested tag."""
+        Return element length.
+        Return 0 if current position do not points to the requested tag."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -154,7 +154,7 @@ Return 0 if current position do not points to the requested tag."""
     @abstractmethod
     def read_null_optional(self):
         """Read ASN.1 type: NULL, only if it exists.
-Note, this method is safe to call even no more data is left for reading."""
+        Note, this method is safe to call even no more data is left for reading."""
         raise NotImplementedError()
 
     @abstractmethod
@@ -185,11 +185,11 @@ Note, this method is safe to call even no more data is left for reading."""
     @abstractmethod
     def read_sequence(self):
         """Read ASN.1 type: SEQUENCE.
-Return element length."""
+        Return element length."""
         raise NotImplementedError()
 
     @abstractmethod
     def read_set(self):
         """Read ASN.1 type: SET.
-Return element length."""
+        Return element length."""
         raise NotImplementedError()

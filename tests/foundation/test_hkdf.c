@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -39,7 +39,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCF_HKDF && VSCF_HMAC && VSCF_SHA256
+#define TEST_DEPENDENCIES_AVAILABLE VSCF_HKDF &&VSCF_HMAC &&VSCF_SHA256
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include "vscf_hkdf.h"

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,7 +45,6 @@ class vscf_hybrid_key_alg_info_t(Structure):
 class VscfHybridKeyAlgInfo(object):
     """Handle information about hybrid key algorithm."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -63,6 +62,13 @@ class VscfHybridKeyAlgInfo(object):
         vscf_hybrid_key_alg_info_delete.restype = None
         return vscf_hybrid_key_alg_info_delete(ctx)
 
+    def vscf_hybrid_key_alg_info_alg_id(self, ctx):
+        """Provide algorithm identificator."""
+        vscf_hybrid_key_alg_info_alg_id = self._lib.vscf_hybrid_key_alg_info_alg_id
+        vscf_hybrid_key_alg_info_alg_id.argtypes = [POINTER(vscf_hybrid_key_alg_info_t)]
+        vscf_hybrid_key_alg_info_alg_id.restype = c_int
+        return vscf_hybrid_key_alg_info_alg_id(ctx)
+
     def vscf_hybrid_key_alg_info_first_key_alg_info(self, ctx):
         """Return algorithm information about the first key."""
         vscf_hybrid_key_alg_info_first_key_alg_info = self._lib.vscf_hybrid_key_alg_info_first_key_alg_info
@@ -76,13 +82,6 @@ class VscfHybridKeyAlgInfo(object):
         vscf_hybrid_key_alg_info_second_key_alg_info.argtypes = [POINTER(vscf_hybrid_key_alg_info_t)]
         vscf_hybrid_key_alg_info_second_key_alg_info.restype = POINTER(vscf_impl_t)
         return vscf_hybrid_key_alg_info_second_key_alg_info(ctx)
-
-    def vscf_hybrid_key_alg_info_alg_id(self, ctx):
-        """Provide algorithm identificator."""
-        vscf_hybrid_key_alg_info_alg_id = self._lib.vscf_hybrid_key_alg_info_alg_id
-        vscf_hybrid_key_alg_info_alg_id.argtypes = [POINTER(vscf_hybrid_key_alg_info_t)]
-        vscf_hybrid_key_alg_info_alg_id.restype = c_int
-        return vscf_hybrid_key_alg_info_alg_id(ctx)
 
     def vscf_hybrid_key_alg_info_shallow_copy(self, ctx):
         vscf_hybrid_key_alg_info_shallow_copy = self._lib.vscf_hybrid_key_alg_info_shallow_copy

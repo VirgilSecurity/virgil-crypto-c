@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -51,29 +53,18 @@
 #ifndef VSCF_HYBRID_KEY_ALG_INFO_H_INCLUDED
 #define VSCF_HYBRID_KEY_ALG_INFO_H_INCLUDED
 
-// clang-format on
-//  @end
-
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 
-// --------------------------------------------------------------------------
-//  Generated section end.
 // clang-format on
-// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -152,7 +143,8 @@ vscf_hybrid_key_alg_info_shallow_copy(vscf_hybrid_key_alg_info_t *self);
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE void
-vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, const vscf_impl_t *first_key_alg_info, const vscf_impl_t *second_key_alg_info);
+vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        const vscf_impl_t *first_key_alg_info, const vscf_impl_t *second_key_alg_info);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -161,7 +153,8 @@ vscf_hybrid_key_alg_info_init_with_infos(vscf_hybrid_key_alg_info_t *self, vscf_
 //  Note, keys ownership is preserved.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *first_key_alg_info, const vscf_impl_t *second_key_alg_info);
+vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t *first_key_alg_info,
+        const vscf_impl_t *second_key_alg_info);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -170,7 +163,8 @@ vscf_hybrid_key_alg_info_new_with_infos(vscf_alg_id_t alg_id, const vscf_impl_t 
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE void
-vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
+vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self, vscf_alg_id_t alg_id,
+        vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -179,13 +173,8 @@ vscf_hybrid_key_alg_info_init_with_infos_disown(vscf_hybrid_key_alg_info_t *self
 //  Note, keys ownership is transferred.
 //
 VSCF_PRIVATE vscf_hybrid_key_alg_info_t *
-vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref, vscf_impl_t **second_key_alg_info_ref);
-
-//
-//  Provide algorithm identificator.
-//
-VSCF_PUBLIC vscf_alg_id_t
-vscf_hybrid_key_alg_info_alg_id(const vscf_hybrid_key_alg_info_t *self);
+vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_t alg_id, vscf_impl_t **first_key_alg_info_ref,
+        vscf_impl_t **second_key_alg_info_ref);
 
 //
 //  Return algorithm information about the first key.
@@ -199,15 +188,24 @@ vscf_hybrid_key_alg_info_first_key_alg_info(const vscf_hybrid_key_alg_info_t *se
 VSCF_PUBLIC const vscf_impl_t *
 vscf_hybrid_key_alg_info_second_key_alg_info(const vscf_hybrid_key_alg_info_t *self);
 
+//
+//  Provide algorithm identificator.
+//
+VSCF_PUBLIC vscf_alg_id_t
+vscf_hybrid_key_alg_info_alg_id(const vscf_hybrid_key_alg_info_t *self);
+
+
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_HYBRID_KEY_ALG_INFO_H_INCLUDED

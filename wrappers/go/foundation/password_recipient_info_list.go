@@ -10,7 +10,7 @@ import "runtime"
 * Handles a list of "password recipient info" class objects.
 */
 type PasswordRecipientInfoList struct {
-    cCtx *C.vscf_password_recipient_info_list_t
+    cCtx *C.vscf_password_recipient_info_list_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewPasswordRecipientInfoList() *PasswordRecipientInfoList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPasswordRecipientInfoListWithCtx(ctx *C.vscf_password_recipient_info_list_t) *PasswordRecipientInfoList {
+func newPasswordRecipientInfoListWithCtx(ctx *C.vscf_password_recipient_info_list_t /*ct2*/) *PasswordRecipientInfoList {
     obj := &PasswordRecipientInfoList {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newPasswordRecipientInfoListWithCtx(ctx *C.vscf_password_recipient_info_lis
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPasswordRecipientInfoListCopy(ctx *C.vscf_password_recipient_info_list_t) *PasswordRecipientInfoList {
+func newPasswordRecipientInfoListCopy(ctx *C.vscf_password_recipient_info_list_t /*ct2*/) *PasswordRecipientInfoList {
     obj := &PasswordRecipientInfoList {
         cCtx: C.vscf_password_recipient_info_list_shallow_copy(ctx),
     }
@@ -71,66 +71,66 @@ func (obj *PasswordRecipientInfoList) delete() {
 * Return true if given list has item.
 */
 func (obj *PasswordRecipientInfoList) HasItem() bool {
-    proxyResult := C.vscf_password_recipient_info_list_has_item(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_item(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return list item.
 */
 func (obj *PasswordRecipientInfoList) Item() *PasswordRecipientInfo {
-    proxyResult := C.vscf_password_recipient_info_list_item(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_item(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newPasswordRecipientInfoCopy(proxyResult)
+    return newPasswordRecipientInfoCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return true if list has next item.
 */
 func (obj *PasswordRecipientInfoList) HasNext() bool {
-    proxyResult := C.vscf_password_recipient_info_list_has_next(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_next(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return next list node if exists, or NULL otherwise.
 */
 func (obj *PasswordRecipientInfoList) Next() *PasswordRecipientInfoList {
-    proxyResult := C.vscf_password_recipient_info_list_next(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_next(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newPasswordRecipientInfoListCopy(proxyResult)
+    return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return true if list has previous item.
 */
 func (obj *PasswordRecipientInfoList) HasPrev() bool {
-    proxyResult := C.vscf_password_recipient_info_list_has_prev(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_has_prev(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return previous list node if exists, or NULL otherwise.
 */
 func (obj *PasswordRecipientInfoList) Prev() *PasswordRecipientInfoList {
-    proxyResult := C.vscf_password_recipient_info_list_prev(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_list_prev(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newPasswordRecipientInfoListCopy(proxyResult)
+    return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*

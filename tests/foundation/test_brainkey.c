@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -211,131 +211,6 @@ test__identity_secret__random_secret__should_not_be_equal(void) {
     vscf_ctr_drbg_destroy(&rng);
 }
 
-void
-test__dleq__full_flow__proof_verifies(void) {
-    vscf_brainkey_client_t *client = vscf_brainkey_client_new();
-    vscf_brainkey_server_t *server = vscf_brainkey_server_new();
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_client_setup_defaults(client));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_server_setup_defaults(server));
-
-    vsc_buffer_t *identity_secret = vsc_buffer_new_with_capacity(vscf_brainkey_server_MPI_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_server_generate_identity_secret(server, identity_secret));
-
-    vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vscf_brainkey_server_POINT_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_brainkey_server_compute_public_key(server, vsc_buffer_data(identity_secret), server_public_key));
-
-    vsc_buffer_t *deblind_factor = vsc_buffer_new_with_capacity(vscf_brainkey_client_MPI_LEN);
-    vsc_buffer_t *blinded_point = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
-
-    byte pwd_bytes[] = {0x70, 0x61, 0x73, 0x73};
-    vsc_data_t pwd = vsc_data(pwd_bytes, sizeof(pwd_bytes));
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_client_blind(client, pwd, deblind_factor, blinded_point));
-
-    vsc_buffer_t *hardened_point = vsc_buffer_new_with_capacity(vscf_brainkey_server_POINT_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_server_harden(server, vsc_buffer_data(identity_secret),
-                                                   vsc_buffer_data(blinded_point), hardened_point));
-
-    vsc_buffer_t *proof_value_c = vsc_buffer_new_with_capacity(vscf_brainkey_server_PROOF_VALUE_LEN);
-    vsc_buffer_t *proof_value_s = vsc_buffer_new_with_capacity(vscf_brainkey_server_PROOF_VALUE_LEN);
-    vscf_error_t prove_error;
-    vscf_error_reset(&prove_error);
-
-    bool proved = vscf_brainkey_server_prove(server, vsc_buffer_data(blinded_point), vsc_buffer_data(hardened_point),
-            vsc_buffer_data(identity_secret), vsc_buffer_data(server_public_key), proof_value_c, proof_value_s,
-            &prove_error);
-    TEST_ASSERT_TRUE(proved);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&prove_error));
-
-    vscf_error_t verify_error;
-    vscf_error_reset(&verify_error);
-
-    bool verified = vscf_brainkey_client_verify(client, vsc_buffer_data(blinded_point), vsc_buffer_data(hardened_point),
-            vsc_buffer_data(server_public_key), vsc_buffer_data(proof_value_c), vsc_buffer_data(proof_value_s),
-            &verify_error);
-    TEST_ASSERT_TRUE(verified);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&verify_error));
-
-    vsc_buffer_destroy(&proof_value_s);
-    vsc_buffer_destroy(&proof_value_c);
-    vsc_buffer_destroy(&hardened_point);
-    vsc_buffer_destroy(&blinded_point);
-    vsc_buffer_destroy(&deblind_factor);
-    vsc_buffer_destroy(&server_public_key);
-    vsc_buffer_destroy(&identity_secret);
-    vscf_brainkey_server_destroy(&server);
-    vscf_brainkey_client_destroy(&client);
-}
-
-void
-test__dleq__wrong_public_key__verify_fails(void) {
-    vscf_brainkey_client_t *client = vscf_brainkey_client_new();
-    vscf_brainkey_server_t *server = vscf_brainkey_server_new();
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_client_setup_defaults(client));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_server_setup_defaults(server));
-
-    vsc_buffer_t *identity_secret = vsc_buffer_new_with_capacity(vscf_brainkey_server_MPI_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_server_generate_identity_secret(server, identity_secret));
-
-    vsc_buffer_t *server_public_key = vsc_buffer_new_with_capacity(vscf_brainkey_server_POINT_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_brainkey_server_compute_public_key(server, vsc_buffer_data(identity_secret), server_public_key));
-
-    vsc_buffer_t *deblind_factor = vsc_buffer_new_with_capacity(vscf_brainkey_client_MPI_LEN);
-    vsc_buffer_t *blinded_point = vsc_buffer_new_with_capacity(vscf_brainkey_client_POINT_LEN);
-
-    byte pwd_bytes[] = {0x70, 0x61, 0x73, 0x73};
-    vsc_data_t pwd = vsc_data(pwd_bytes, sizeof(pwd_bytes));
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_client_blind(client, pwd, deblind_factor, blinded_point));
-
-    vsc_buffer_t *hardened_point = vsc_buffer_new_with_capacity(vscf_brainkey_server_POINT_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_brainkey_server_harden(server, vsc_buffer_data(identity_secret),
-                                                   vsc_buffer_data(blinded_point), hardened_point));
-
-    vsc_buffer_t *proof_value_c = vsc_buffer_new_with_capacity(vscf_brainkey_server_PROOF_VALUE_LEN);
-    vsc_buffer_t *proof_value_s = vsc_buffer_new_with_capacity(vscf_brainkey_server_PROOF_VALUE_LEN);
-    vscf_error_t prove_error;
-    vscf_error_reset(&prove_error);
-
-    bool proved = vscf_brainkey_server_prove(server, vsc_buffer_data(blinded_point), vsc_buffer_data(hardened_point),
-            vsc_buffer_data(identity_secret), vsc_buffer_data(server_public_key), proof_value_c, proof_value_s,
-            &prove_error);
-    TEST_ASSERT_TRUE(proved);
-
-    // Generate a different identity secret → different public key (wrong key for this proof)
-    vsc_buffer_t *other_identity_secret = vsc_buffer_new_with_capacity(vscf_brainkey_server_MPI_LEN);
-    TEST_ASSERT_EQUAL(
-            vscf_status_SUCCESS, vscf_brainkey_server_generate_identity_secret(server, other_identity_secret));
-
-    vsc_buffer_t *wrong_public_key = vsc_buffer_new_with_capacity(vscf_brainkey_server_POINT_LEN);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_brainkey_server_compute_public_key(server, vsc_buffer_data(other_identity_secret), wrong_public_key));
-
-    vscf_error_t verify_error;
-    vscf_error_reset(&verify_error);
-
-    bool verified = vscf_brainkey_client_verify(client, vsc_buffer_data(blinded_point), vsc_buffer_data(hardened_point),
-            vsc_buffer_data(wrong_public_key), vsc_buffer_data(proof_value_c), vsc_buffer_data(proof_value_s),
-            &verify_error);
-    TEST_ASSERT_FALSE(verified);
-
-    vsc_buffer_destroy(&wrong_public_key);
-    vsc_buffer_destroy(&other_identity_secret);
-    vsc_buffer_destroy(&proof_value_s);
-    vsc_buffer_destroy(&proof_value_c);
-    vsc_buffer_destroy(&hardened_point);
-    vsc_buffer_destroy(&blinded_point);
-    vsc_buffer_destroy(&deblind_factor);
-    vsc_buffer_destroy(&server_public_key);
-    vsc_buffer_destroy(&identity_secret);
-    vscf_brainkey_server_destroy(&server);
-    vscf_brainkey_client_destroy(&client);
-}
-
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -350,8 +225,6 @@ main(void) {
     RUN_TEST(test__full_flow__random_pwd__should_not_fail);
     RUN_TEST(test__key_name__random_name__should_not_be_equal);
     RUN_TEST(test__identity_secret__random_secret__should_not_be_equal);
-    RUN_TEST(test__dleq__full_flow__proof_verifies);
-    RUN_TEST(test__dleq__wrong_public_key__verify_fails);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

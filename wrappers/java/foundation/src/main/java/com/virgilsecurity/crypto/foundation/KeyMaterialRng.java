@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,24 +36,57 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Random number generator that generate deterministic sequence based
+* on a given seed.
+* This RNG can be used to transform key material rial to the private key.
+*/
 public class KeyMaterialRng implements AutoCloseable, Random {
 
     public long cCtx;
 
+    /* Create underlying C context. */
     public KeyMaterialRng() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.keyMaterialRng_new();
     }
 
+    /* Wrap underlying C context. */
     KeyMaterialRng(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
+    /*
+    * Minimum length in bytes for the key material.
+    */
+    public int getKeyMaterialLenMin() {
+        return 32;
+    }
+
+    /*
+    * Maximum length in bytes for the key material.
+    */
+    public int getKeyMaterialLenMax() {
+        return 512;
+    }
+
+    /*
+    * Set a new key material.
+    */
+    public void resetKeyMaterial(byte[] keyMaterial) {
+        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
     public static KeyMaterialRng getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new KeyMaterialRng(ctxHolder);
     }
 
+    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -62,24 +95,29 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         }
     }
 
+    /* Close resource. */
     public void close() {
         clearResources();
     }
 
+    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
+    /*
+    * Generate random bytes.
+    * All RNG implementations must be thread-safe.
+    */
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.keyMaterialRng_random(this.cCtx, dataLen);
     }
 
+    /*
+    * Retrieve new seed data from the entropy sources.
+    */
     public void reseed() throws FoundationException {
         FoundationJNI.INSTANCE.keyMaterialRng_reseed(this.cCtx);
     }
-
-    public void resetKeyMaterial(byte[] keyMaterial) {
-        FoundationJNI.INSTANCE.keyMaterialRng_resetKeyMaterial(this.cCtx, keyMaterial);
-    }
-
 }
+

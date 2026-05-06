@@ -7,6 +7,7 @@
 
     <require header="mbedtls/ctr_drbg.h" scope="private"/>
     <require header="mbedtls/entropy.h" scope="private"/>
+    <require header="mbedtls/entropy_poll.h" scope="private"/>
 
 
     <macros name="buffer from data" definition="private" is_method="1">

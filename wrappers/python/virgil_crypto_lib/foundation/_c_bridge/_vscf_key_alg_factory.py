@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -37,13 +37,12 @@ from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from ._vscf_error import vscf_error_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
 from ._vscf_raw_public_key import vscf_raw_public_key_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
 
 
 class VscfKeyAlgFactory(object):
     """Create a bridge between "raw keys" and algorithms that can import them."""
-
 
     def __init__(self):
         """Create underlying C context."""

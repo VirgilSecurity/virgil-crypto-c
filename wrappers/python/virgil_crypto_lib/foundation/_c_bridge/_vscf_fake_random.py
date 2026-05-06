@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from ._vscf_impl import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from ._vscf_impl import vscf_impl_t
 
 
 class vscf_fake_random_t(Structure):
@@ -46,7 +46,6 @@ class vscf_fake_random_t(Structure):
 
 class VscfFakeRandom(object):
     """Random number generator that is used for test purposes only."""
-
 
     def __init__(self):
         """Create underlying C context."""
@@ -65,24 +64,9 @@ class VscfFakeRandom(object):
         vscf_fake_random_delete.restype = None
         return vscf_fake_random_delete(ctx)
 
-    def vscf_fake_random_setup_source_byte(self, ctx, byte_source):
-        """Configure random number generator to generate sequence filled with given byte."""
-        vscf_fake_random_setup_source_byte = self._lib.vscf_fake_random_setup_source_byte
-        vscf_fake_random_setup_source_byte.argtypes = [POINTER(vscf_fake_random_t), c_byte]
-        vscf_fake_random_setup_source_byte.restype = None
-        return vscf_fake_random_setup_source_byte(ctx, byte_source)
-
-    def vscf_fake_random_setup_source_data(self, ctx, data_source):
-        """Configure random number generator to generate random sequence from given data.
-Note, that given data is used as circular source."""
-        vscf_fake_random_setup_source_data = self._lib.vscf_fake_random_setup_source_data
-        vscf_fake_random_setup_source_data.argtypes = [POINTER(vscf_fake_random_t), vsc_data_t]
-        vscf_fake_random_setup_source_data.restype = None
-        return vscf_fake_random_setup_source_data(ctx, data_source)
-
     def vscf_fake_random_random(self, ctx, data_len, data):
         """Generate random bytes.
-All RNG implementations must be thread-safe."""
+        All RNG implementations must be thread-safe."""
         vscf_fake_random_random = self._lib.vscf_fake_random_random
         vscf_fake_random_random.argtypes = [POINTER(vscf_fake_random_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_fake_random_random.restype = c_int
@@ -108,6 +92,21 @@ All RNG implementations must be thread-safe."""
         vscf_fake_random_gather.argtypes = [POINTER(vscf_fake_random_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_fake_random_gather.restype = c_int
         return vscf_fake_random_gather(ctx, len, out)
+
+    def vscf_fake_random_setup_source_byte(self, ctx, byte_source):
+        """Configure random number generator to generate sequence filled with given byte."""
+        vscf_fake_random_setup_source_byte = self._lib.vscf_fake_random_setup_source_byte
+        vscf_fake_random_setup_source_byte.argtypes = [POINTER(vscf_fake_random_t), c_byte]
+        vscf_fake_random_setup_source_byte.restype = None
+        return vscf_fake_random_setup_source_byte(ctx, byte_source)
+
+    def vscf_fake_random_setup_source_data(self, ctx, data_source):
+        """Configure random number generator to generate random sequence from given data.
+        Note, that given data is used as circular source."""
+        vscf_fake_random_setup_source_data = self._lib.vscf_fake_random_setup_source_data
+        vscf_fake_random_setup_source_data.argtypes = [POINTER(vscf_fake_random_t), vsc_data_t]
+        vscf_fake_random_setup_source_data.restype = None
+        return vscf_fake_random_setup_source_data(ctx, data_source)
 
     def vscf_fake_random_shallow_copy(self, ctx):
         vscf_fake_random_shallow_copy = self._lib.vscf_fake_random_shallow_copy

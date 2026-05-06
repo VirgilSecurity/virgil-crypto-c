@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* This is MbedTLS implementation of ASN.1 reader.
+*/
 class Asn1rd implements Asn1Reader
 {
 
@@ -65,16 +68,18 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Reset all internal states and prepare to new ASN.1 reading operations.
     *
-    * @param string $$data
+    * @param string $data
     * @return void
     */
-    public function reset(string $$data): void
+    public function reset(string $data): void
     {
-        vscf_asn1rd_reset_php($this->ctx, $$data);
+        vscf_asn1rd_reset_php($this->ctx, $data);
     }
 
     /**
+    * Return length in bytes how many bytes are left for reading.
     *
     * @return int
     */
@@ -84,6 +89,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Return true if status is not "success".
     *
     * @return bool
     */
@@ -93,6 +99,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Return error code.
     *
     * @return void
     * @throws \Exception
@@ -103,6 +110,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Get tag of the current ASN.1 element.
     *
     * @return int
     */
@@ -112,6 +120,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Get length of the current ASN.1 element.
     *
     * @return int
     */
@@ -121,6 +130,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Get length of the current ASN.1 element with tag and length itself.
     *
     * @return int
     */
@@ -130,26 +140,32 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: TAG.
+    * Return element length.
     *
-    * @param int $$tag
+    * @param int $tag
     * @return int
     */
-    public function readTag(int $$tag): int
+    public function readTag(int $tag): int
     {
-        return vscf_asn1rd_read_tag_php($this->ctx, $$tag);
+        return vscf_asn1rd_read_tag_php($this->ctx, $tag);
     }
 
     /**
+    * Read ASN.1 type: context-specific TAG.
+    * Return element length.
+    * Return 0 if current position do not points to the requested tag.
     *
-    * @param int $$tag
+    * @param int $tag
     * @return int
     */
-    public function readContextTag(int $$tag): int
+    public function readContextTag(int $tag): int
     {
-        return vscf_asn1rd_read_context_tag_php($this->ctx, $$tag);
+        return vscf_asn1rd_read_context_tag_php($this->ctx, $tag);
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -159,6 +175,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -168,6 +185,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -177,6 +195,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -186,6 +205,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -195,6 +215,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -204,6 +225,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -213,6 +235,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -222,6 +245,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -231,6 +255,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: INTEGER.
     *
     * @return int
     */
@@ -240,6 +265,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: BOOLEAN.
     *
     * @return bool
     */
@@ -249,6 +275,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: NULL.
     *
     * @return void
     */
@@ -258,6 +285,8 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: NULL, only if it exists.
+    * Note, this method is safe to call even no more data is left for reading.
     *
     * @return void
     */
@@ -267,6 +296,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: OCTET STRING.
     *
     * @return string
     */
@@ -276,6 +306,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: BIT STRING.
     *
     * @return string
     */
@@ -285,6 +316,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: UTF8String.
     *
     * @return string
     */
@@ -294,6 +326,7 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: OID.
     *
     * @return string
     */
@@ -303,16 +336,19 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read raw data of given length.
     *
-    * @param int $$len
+    * @param int $len
     * @return string
     */
-    public function readData(int $$len): string
+    public function readData(int $len): string
     {
-        return vscf_asn1rd_read_data_php($this->ctx, $$len);
+        return vscf_asn1rd_read_data_php($this->ctx, $len);
     }
 
     /**
+    * Read ASN.1 type: SEQUENCE.
+    * Return element length.
     *
     * @return int
     */
@@ -322,32 +358,14 @@ class Asn1rd implements Asn1Reader
     }
 
     /**
+    * Read ASN.1 type: SET.
+    * Return element length.
     *
     * @return int
     */
     public function readSet(): int
     {
         return vscf_asn1rd_read_set_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param int $$code
-    * @return bool
-    */
-    public function mbedtlsHasError(int $$code): bool
-    {
-        return vscf_asn1rd_mbedtls_has_error_php($this->ctx, $$code);
-    }
-
-    /**
-    *
-    * @param int $$tag
-    * @return string
-    */
-    public function readTagData(int $$tag): string
-    {
-        return vscf_asn1rd_read_tag_data_php($this->ctx, $$tag);
     }
 
     /**

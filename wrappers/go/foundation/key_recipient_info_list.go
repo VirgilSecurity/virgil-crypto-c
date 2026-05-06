@@ -10,7 +10,7 @@ import "runtime"
 * Handles a list of "key recipient info" class objects.
 */
 type KeyRecipientInfoList struct {
-    cCtx *C.vscf_key_recipient_info_list_t
+    cCtx *C.vscf_key_recipient_info_list_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewKeyRecipientInfoList() *KeyRecipientInfoList {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyRecipientInfoListWithCtx(ctx *C.vscf_key_recipient_info_list_t) *KeyRecipientInfoList {
+func newKeyRecipientInfoListWithCtx(ctx *C.vscf_key_recipient_info_list_t /*ct2*/) *KeyRecipientInfoList {
     obj := &KeyRecipientInfoList {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newKeyRecipientInfoListWithCtx(ctx *C.vscf_key_recipient_info_list_t) *KeyR
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyRecipientInfoListCopy(ctx *C.vscf_key_recipient_info_list_t) *KeyRecipientInfoList {
+func newKeyRecipientInfoListCopy(ctx *C.vscf_key_recipient_info_list_t /*ct2*/) *KeyRecipientInfoList {
     obj := &KeyRecipientInfoList {
         cCtx: C.vscf_key_recipient_info_list_shallow_copy(ctx),
     }
@@ -71,66 +71,66 @@ func (obj *KeyRecipientInfoList) delete() {
 * Return true if given list has item.
 */
 func (obj *KeyRecipientInfoList) HasItem() bool {
-    proxyResult := C.vscf_key_recipient_info_list_has_item(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_item(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return list item.
 */
 func (obj *KeyRecipientInfoList) Item() *KeyRecipientInfo {
-    proxyResult := C.vscf_key_recipient_info_list_item(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_item(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newKeyRecipientInfoCopy(proxyResult)
+    return newKeyRecipientInfoCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return true if list has next item.
 */
 func (obj *KeyRecipientInfoList) HasNext() bool {
-    proxyResult := C.vscf_key_recipient_info_list_has_next(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_next(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return next list node if exists, or NULL otherwise.
 */
 func (obj *KeyRecipientInfoList) Next() *KeyRecipientInfoList {
-    proxyResult := C.vscf_key_recipient_info_list_next(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_next(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newKeyRecipientInfoListCopy(proxyResult)
+    return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return true if list has previous item.
 */
 func (obj *KeyRecipientInfoList) HasPrev() bool {
-    proxyResult := C.vscf_key_recipient_info_list_has_prev(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_has_prev(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return previous list node if exists, or NULL otherwise.
 */
 func (obj *KeyRecipientInfoList) Prev() *KeyRecipientInfoList {
-    proxyResult := C.vscf_key_recipient_info_list_prev(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_list_prev(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newKeyRecipientInfoListCopy(proxyResult)
+    return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*

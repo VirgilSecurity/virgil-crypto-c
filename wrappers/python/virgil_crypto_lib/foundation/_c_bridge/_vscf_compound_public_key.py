@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,10 +45,9 @@ class vscf_compound_public_key_t(Structure):
 class VscfCompoundPublicKey(object):
     """Handles compound public key.
 
-Compound public key contains 2 public keys and signature:
-    - cipher key - is used for encryption;
-    - signer key - is used for verifying."""
-
+    Compound public key contains 2 public keys and signature:
+        - cipher key - is used for encryption;
+        - signer key - is used for verifying."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -66,20 +65,6 @@ Compound public key contains 2 public keys and signature:
         vscf_compound_public_key_delete.argtypes = [POINTER(vscf_compound_public_key_t)]
         vscf_compound_public_key_delete.restype = None
         return vscf_compound_public_key_delete(ctx)
-
-    def vscf_compound_public_key_cipher_key(self, ctx):
-        """Return a cipher public key suitable for initial encryption."""
-        vscf_compound_public_key_cipher_key = self._lib.vscf_compound_public_key_cipher_key
-        vscf_compound_public_key_cipher_key.argtypes = [POINTER(vscf_compound_public_key_t)]
-        vscf_compound_public_key_cipher_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_public_key_cipher_key(ctx)
-
-    def vscf_compound_public_key_signer_key(self, ctx):
-        """Return public key suitable for verifying."""
-        vscf_compound_public_key_signer_key = self._lib.vscf_compound_public_key_signer_key
-        vscf_compound_public_key_signer_key.argtypes = [POINTER(vscf_compound_public_key_t)]
-        vscf_compound_public_key_signer_key.restype = POINTER(vscf_impl_t)
-        return vscf_compound_public_key_signer_key(ctx)
 
     def vscf_compound_public_key_alg_id(self, ctx):
         """Algorithm identifier the key belongs to."""
@@ -111,11 +96,25 @@ Compound public key contains 2 public keys and signature:
 
     def vscf_compound_public_key_is_valid(self, ctx):
         """Check that key is valid.
-Note, this operation can be slow."""
+        Note, this operation can be slow."""
         vscf_compound_public_key_is_valid = self._lib.vscf_compound_public_key_is_valid
         vscf_compound_public_key_is_valid.argtypes = [POINTER(vscf_compound_public_key_t)]
         vscf_compound_public_key_is_valid.restype = c_bool
         return vscf_compound_public_key_is_valid(ctx)
+
+    def vscf_compound_public_key_cipher_key(self, ctx):
+        """Return a cipher public key suitable for initial encryption."""
+        vscf_compound_public_key_cipher_key = self._lib.vscf_compound_public_key_cipher_key
+        vscf_compound_public_key_cipher_key.argtypes = [POINTER(vscf_compound_public_key_t)]
+        vscf_compound_public_key_cipher_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_public_key_cipher_key(ctx)
+
+    def vscf_compound_public_key_signer_key(self, ctx):
+        """Return public key suitable for verifying."""
+        vscf_compound_public_key_signer_key = self._lib.vscf_compound_public_key_signer_key
+        vscf_compound_public_key_signer_key.argtypes = [POINTER(vscf_compound_public_key_t)]
+        vscf_compound_public_key_signer_key.restype = POINTER(vscf_impl_t)
+        return vscf_compound_public_key_signer_key(ctx)
 
     def vscf_compound_public_key_shallow_copy(self, ctx):
         vscf_compound_public_key_shallow_copy = self._lib.vscf_compound_public_key_shallow_copy

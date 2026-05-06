@@ -10,7 +10,7 @@ import "runtime"
 * Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
 */
 type KeyAsn1Deserializer struct {
-    cCtx *C.vscf_key_asn1_deserializer_t
+    cCtx *C.vscf_key_asn1_deserializer_t /*ct10*/
 }
 
 func (obj *KeyAsn1Deserializer) SetAsn1Reader(asn1Reader Asn1Reader) {
@@ -41,7 +41,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace() (*RawPublicKey, er
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_key_asn1_deserializer_deserialize_public_key_inplace(obj.cCtx, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key_inplace(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -50,7 +50,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKeyInplace() (*RawPublicKey, er
 
     runtime.KeepAlive(obj)
 
-    return newRawPublicKeyWithCtx(proxyResult), nil
+    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /*
@@ -62,7 +62,7 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, 
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_key_asn1_deserializer_deserialize_private_key_inplace(obj.cCtx, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key_inplace(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -71,7 +71,7 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKeyInplace() (*RawPrivateKey, 
 
     runtime.KeepAlive(obj)
 
-    return newRawPrivateKeyWithCtx(proxyResult), nil
+    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /* Handle underlying C context. */
@@ -91,7 +91,7 @@ func NewKeyAsn1Deserializer() *KeyAsn1Deserializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t) *KeyAsn1Deserializer {
+func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *KeyAsn1Deserializer {
     obj := &KeyAsn1Deserializer {
         cCtx: ctx,
     }
@@ -102,7 +102,7 @@ func newKeyAsn1DeserializerWithCtx(ctx *C.vscf_key_asn1_deserializer_t) *KeyAsn1
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t) *KeyAsn1Deserializer {
+func newKeyAsn1DeserializerCopy(ctx *C.vscf_key_asn1_deserializer_t /*ct10*/) *KeyAsn1Deserializer {
     obj := &KeyAsn1Deserializer {
         cCtx: C.vscf_key_asn1_deserializer_shallow_copy(ctx),
     }
@@ -134,10 +134,9 @@ func (obj *KeyAsn1Deserializer) delete() {
 func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-
     publicKeyDataData := helperWrapData (publicKeyData)
 
-    proxyResult := C.vscf_key_asn1_deserializer_deserialize_public_key(obj.cCtx, publicKeyDataData, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_public_key(obj.cCtx, publicKeyDataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -146,7 +145,7 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*Raw
 
     runtime.KeepAlive(obj)
 
-    return newRawPublicKeyWithCtx(proxyResult), nil
+    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /*
@@ -155,10 +154,9 @@ func (obj *KeyAsn1Deserializer) DeserializePublicKey(publicKeyData []byte) (*Raw
 func (obj *KeyAsn1Deserializer) DeserializePrivateKey(privateKeyData []byte) (*RawPrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-
     privateKeyDataData := helperWrapData (privateKeyData)
 
-    proxyResult := C.vscf_key_asn1_deserializer_deserialize_private_key(obj.cCtx, privateKeyDataData, &error)
+    proxyResult := /*pr4*/C.vscf_key_asn1_deserializer_deserialize_private_key(obj.cCtx, privateKeyDataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -167,5 +165,5 @@ func (obj *KeyAsn1Deserializer) DeserializePrivateKey(privateKeyData []byte) (*R
 
     runtime.KeepAlive(obj)
 
-    return newRawPrivateKeyWithCtx(proxyResult), nil
+    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }

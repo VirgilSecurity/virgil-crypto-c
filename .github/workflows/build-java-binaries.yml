@@ -1,0 +1,370 @@
+name: Build Java/Android Binaries
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_call:
+    outputs:
+      version:
+        description: "Project version"
+        value: ${{ jobs.metadata.outputs.version }}
+
+jobs:
+  metadata:
+    name: Extract Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(cat VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Project version: $VERSION"
+
+  # Build JVM native libraries for all platforms
+  build-jvm-linux:
+    name: Build JVM (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+
+      - name: Setup Python virtual environment
+        run: |
+          python3 -m venv .venv
+
+      - name: Build native library
+        run: |
+          source .venv/bin/activate
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/linux" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -DED25519_AMD64_RADIX_64_24K=ON \
+                -DED25519_REF10=OFF \
+                -Bbuild -S.
+          cmake --build build --target install -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-binaries-linux
+          path: wrappers/java/binaries/linux/
+          retention-days: 1
+
+  build-jvm-macos-x86_64:
+    name: Build JVM (macOS x86_64)
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Python virtual environment
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install protobuf grpcio-tools
+
+      - name: Build native library
+        run: |
+          source .venv/bin/activate
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_OSX_ARCHITECTURES=x86_64 \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos_x86_64" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -DED25519_AMD64_RADIX_64_24K=ON \
+                -DED25519_REF10=OFF \
+                -Bbuild -S.
+          cmake --build build --target install -j$(sysctl -n hw.physicalcpu)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-binaries-macos-x86_64
+          path: wrappers/java/binaries/macos_x86_64/
+          retention-days: 1
+
+  build-jvm-macos-arm64:
+    name: Build JVM (macOS arm64)
+    runs-on: macos-14  # M1/ARM runner
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Python virtual environment
+        run: python3 -m venv .venv
+
+      - name: Build native library
+        run: |
+          source .venv/bin/activate
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DCMAKE_OSX_ARCHITECTURES=arm64 \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/macos_arm64" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+                -Bbuild -S.
+          cmake --build build --target install -j$(sysctl -n hw.physicalcpu)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-binaries-macos-arm64
+          path: wrappers/java/binaries/macos_arm64/
+          retention-days: 1
+
+  build-jvm-windows:
+    name: Build JVM (Windows x86_64)
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Setup Python virtual environment
+        shell: pwsh
+        run: python -m venv .venv
+
+      - name: Build native library
+        shell: cmd
+        run: |
+          call .venv\Scripts\activate.bat
+          cmake -G"NMake Makefiles" ^
+                -Cconfigs/java-config.cmake ^
+                -DCMAKE_BUILD_TYPE=Release ^
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/windows" ^
+                -DVIRGIL_LIB_PYTHIA=OFF ^
+                -DENABLE_CLANGFORMAT=OFF ^
+                -Bbuild -S.
+          cmake --build build --target install
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-binaries-windows
+          path: wrappers/java/binaries/windows/
+          retention-days: 1
+
+  # Build Android native libraries for all architectures
+  build-android-x86:
+    name: Build Android (x86)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
+
+      - name: Build native library
+        run: |
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
+                -DANDROID_ABI=x86 \
+                -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                -DCMAKE_INSTALL_LIBDIR="lib/x86" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild -S.
+          cmake --build build --target install -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-binaries-x86
+          path: wrappers/java/binaries/android/lib/x86/
+          retention-days: 1
+
+  build-android-x86_64:
+    name: Build Android (x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
+
+      - name: Build native library
+        run: |
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
+                -DANDROID_ABI=x86_64 \
+                -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                -DCMAKE_INSTALL_LIBDIR="lib/x86_64" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild -S.
+          cmake --build build --target install -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-binaries-x86_64
+          path: wrappers/java/binaries/android/lib/x86_64/
+          retention-days: 1
+
+  build-android-armeabi-v7a:
+    name: Build Android (armeabi-v7a)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
+
+      - name: Build native library
+        run: |
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
+                -DANDROID_ABI=armeabi-v7a \
+                -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                -DCMAKE_INSTALL_LIBDIR="lib/armeabi-v7a" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild -S.
+          cmake --build build --target install -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-binaries-armeabi-v7a
+          path: wrappers/java/binaries/android/lib/armeabi-v7a/
+          retention-days: 1
+
+  build-android-arm64-v8a:
+    name: Build Android (arm64-v8a)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r29
+          add-to-path: true
+
+      - name: Build native library
+        run: |
+          cmake -Cconfigs/java-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DTRANSITIVE_C_FLAGS="-fvisibility=hidden" \
+                -DANDROID_ABI=arm64-v8a \
+                -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+                -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/android" \
+                -DCMAKE_INSTALL_LIBDIR="lib/arm64-v8a" \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild -S.
+          cmake --build build --target install -j$(nproc)
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-binaries-arm64-v8a
+          path: wrappers/java/binaries/android/lib/arm64-v8a/
+          retention-days: 1
+
+  # Test JVM build with all binaries
+  test-jvm:
+    name: Test JVM Build
+    needs: [build-jvm-linux, build-jvm-macos-x86_64, build-jvm-macos-arm64, build-jvm-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+
+      - name: Download all JVM binaries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: java-binaries-*
+          path: wrappers/java/binaries/
+          merge-multiple: false
+
+      - name: Restructure binaries
+        run: |
+          cd wrappers/java/binaries
+          mkdir -p linux macos_x86_64 macos_arm64 windows
+          [ -d java-binaries-linux ] && mv java-binaries-linux/lib linux/ || true
+          [ -d java-binaries-macos-x86_64 ] && mv java-binaries-macos-x86_64/lib macos_x86_64/ || true
+          [ -d java-binaries-macos-arm64 ] && mv java-binaries-macos-arm64/lib macos_arm64/ || true
+          [ -d java-binaries-windows ] && mv java-binaries-windows/lib windows/ || true
+          rm -rf java-binaries-*
+          ls -la
+
+      - name: Test with Maven
+        working-directory: wrappers/java
+        run: ./mvnw clean verify -P foundation,phe,pythia,ratchet

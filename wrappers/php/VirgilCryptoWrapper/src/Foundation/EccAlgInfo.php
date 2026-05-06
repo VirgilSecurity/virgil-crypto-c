@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handle algorithm information about ECP.
+*/
 class EccAlgInfo implements AlgInfo
 {
 
@@ -44,6 +47,20 @@ class EccAlgInfo implements AlgInfo
     * @var
     */
     private $ctx;
+
+    /**
+    * Create algorithm info with EC generic key identificator, EC domain group identificator.
+    *
+    * @param AlgId $algId
+    * @param OidId $keyId
+    * @param OidId $domainId
+    * @return EccAlgInfo
+    */
+    public static function withMembers(AlgId $algId, OidId $keyId, OidId $domainId): EccAlgInfo
+    {
+        $ctx = vscf_ecc_alg_info_with_members_php($algId, $keyId, $domainId);
+        return new EccAlgInfo($ctx);
+    }
 
     /**
     * Create underlying C context.
@@ -65,16 +82,7 @@ class EccAlgInfo implements AlgInfo
     }
 
     /**
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_ecc_alg_info_alg_id_php($this->ctx);
-        return new AlgId($enum);
-    }
-
-    /**
+    * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
     *
     * @return OidId
     */
@@ -85,6 +93,7 @@ class EccAlgInfo implements AlgInfo
     }
 
     /**
+    * Return EC domain group identificator.
     *
     * @return OidId
     */
@@ -92,6 +101,17 @@ class EccAlgInfo implements AlgInfo
     {
         $enum = vscf_ecc_alg_info_domain_id_php($this->ctx);
         return new OidId($enum);
+    }
+
+    /**
+    * Provide algorithm identificator.
+    *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_ecc_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
     }
 
     /**

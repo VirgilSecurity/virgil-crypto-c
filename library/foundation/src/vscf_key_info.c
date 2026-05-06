@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -256,6 +256,7 @@ vscf_key_info_shallow_copy(vscf_key_info_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_key_info_init() is called.
@@ -430,14 +431,14 @@ vscf_key_info_is_hybrid_post_quantum_cipher(const vscf_key_info_t *self) {
     VSCF_ASSERT_PTR(self);
 
     const bool is_first_post_quantum =
-            (vscf_alg_id_ML_KEM_768 == self->compound_hybrid_cipher_first_key_alg_id) &&
+            (vscf_alg_id_ROUND5_ND_1CCA_5D == self->compound_hybrid_cipher_first_key_alg_id) &&
             (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
     const bool is_second_post_quantum =
-            (vscf_alg_id_ML_KEM_768 == self->compound_hybrid_cipher_second_key_alg_id) &&
+            (vscf_alg_id_ROUND5_ND_1CCA_5D == self->compound_hybrid_cipher_second_key_alg_id) &&
             (self->compound_hybrid_cipher_first_key_alg_id != self->compound_hybrid_cipher_second_key_alg_id);
 
-    return vscf_key_info_is_compound_hybrid_cipher(self) && (is_first_post_quantum || is_second_post_quantum);
+    return vscf_key_info_is_compound_hybrid_signer(self) && (is_first_post_quantum || is_second_post_quantum);
 }
 
 //

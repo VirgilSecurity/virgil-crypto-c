@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,7 +45,6 @@ class vscf_key_recipient_info_list_t(Structure):
 class VscfKeyRecipientInfoList(object):
     """Handles a list of "key recipient info" class objects."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -88,7 +87,7 @@ class VscfKeyRecipientInfoList(object):
         """Return next list node if exists, or NULL otherwise."""
         vscf_key_recipient_info_list_next = self._lib.vscf_key_recipient_info_list_next
         vscf_key_recipient_info_list_next.argtypes = [POINTER(vscf_key_recipient_info_list_t)]
-        vscf_key_recipient_info_list_next.restype = POINTER(vscf_self_t)
+        vscf_key_recipient_info_list_next.restype = POINTER(vscf_key_recipient_info_list_t)
         return vscf_key_recipient_info_list_next(ctx)
 
     def vscf_key_recipient_info_list_has_prev(self, ctx):
@@ -102,7 +101,7 @@ class VscfKeyRecipientInfoList(object):
         """Return previous list node if exists, or NULL otherwise."""
         vscf_key_recipient_info_list_prev = self._lib.vscf_key_recipient_info_list_prev
         vscf_key_recipient_info_list_prev.argtypes = [POINTER(vscf_key_recipient_info_list_t)]
-        vscf_key_recipient_info_list_prev.restype = POINTER(vscf_self_t)
+        vscf_key_recipient_info_list_prev.restype = POINTER(vscf_key_recipient_info_list_t)
         return vscf_key_recipient_info_list_prev(ctx)
 
     def vscf_key_recipient_info_list_clear(self, ctx):

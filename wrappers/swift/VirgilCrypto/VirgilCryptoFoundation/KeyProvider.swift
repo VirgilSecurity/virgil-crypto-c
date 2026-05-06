@@ -1,56 +1,63 @@
-// Copyright (C) 2015-2026 Virgil Security, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
-//
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
-//
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-// POSSIBILITY OF SUCH DAMAGE.
-//
-// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+/// Copyright (C) 2015-2022 Virgil Security, Inc.
+///
+/// All rights reserved.
+///
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permitted provided that the following conditions are
+/// met:
+///
+///     (1) Redistributions of source code must retain the above copyright
+///     notice, this list of conditions and the following disclaimer.
+///
+///     (2) Redistributions in binary form must reproduce the above copyright
+///     notice, this list of conditions and the following disclaimer in
+///     the documentation and/or other materials provided with the
+///     distribution.
+///
+///     (3) Neither the name of the copyright holder nor the names of its
+///     contributors may be used to endorse or promote products derived from
+///     this software without specific prior written permission.
+///
+/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+/// POSSIBILITY OF SUCH DAMAGE.
+///
+/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
 import VSCFoundation
 
+/// Provide functionality for private key generation and importing that
+/// relies on the software default implementations.
 @objc(VSCFKeyProvider) public class KeyProvider: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
+    /// Create underlying C context.
     public override init() {
         self.c_ctx = vscf_key_provider_new()
         super.init()
     }
 
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
         super.init()
     }
 
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
         self.c_ctx = vscf_key_provider_shallow_copy(c_ctx)
         super.init()
@@ -94,12 +101,12 @@ import VSCFoundation
     /// Note, that a post-quantum key combines classic private keys
     /// alongside with post-quantum private keys.
     /// Current structure is "compound private key" is:
-    /// - cipher private key is "hybrid private key" where:
-    /// - first key is a classic private key;
-    /// - second key is a post-quantum private key;
-    /// - signer private key "hybrid private key" where:
-    /// - first key is a classic private key;
-    /// - second key is a post-quantum private key.
+    ///     - cipher private key is "hybrid private key" where:
+    ///         - first key is a classic private key;
+    ///         - second key is a post-quantum private key;
+    ///     - signer private key "hybrid private key" where:
+    ///         - first key is a classic private key;
+    ///         - second key is a post-quantum private key.
     @objc public func generatePostQuantumPrivateKey() throws -> PrivateKey {
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
@@ -155,7 +162,8 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
+        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
+
             return vscf_key_provider_import_private_key(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), &error)
         })
 
@@ -169,7 +177,8 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
+        let proxyResult = keyData.withUnsafeBytes({ (keyDataPointer: UnsafeRawBufferPointer) in
+
             return vscf_key_provider_import_public_key(self.c_ctx, vsc_data(keyDataPointer.bindMemory(to: byte.self).baseAddress, keyData.count), &error)
         })
 
@@ -241,5 +250,4 @@ import VSCFoundation
 
         return out
     }
-
 }

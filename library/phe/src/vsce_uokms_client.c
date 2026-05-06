@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -159,7 +159,6 @@ vsce_uokms_client_cleanup(vsce_uokms_client_t *self) {
     vsce_uokms_client_cleanup_ctx(self);
 
     vsce_uokms_client_release_random(self);
-
     vsce_uokms_client_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_uokms_client_t));
@@ -369,6 +368,7 @@ vsce_uokms_client_release_operation_random(vsce_uokms_client_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vsce_uokms_client_init() is called.
@@ -512,6 +512,8 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
 
     vsce_status_t status = vsce_status_SUCCESS;
 
+    self->keys_are_set = true;
+
     int mbedtls_status = 0;
 
     mbedtls_status = mbedtls_mpi_read_binary(&self->kc_private, client_private_key.bytes, client_private_key.len);
@@ -538,7 +540,6 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
                 &self->group, &self->ks_public, server_public_key.bytes, server_public_key.len);
         if (mbedtls_status != 0 || mbedtls_ecp_check_pubkey(&self->group, &self->ks_public) != 0) {
             status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
-            vsce_uokms_client_free_op_group(op_group);
             goto err;
         }
 
@@ -554,13 +555,9 @@ vsce_uokms_client_set_keys(vsce_uokms_client_t *self, vsc_data_t client_private_
         mbedtls_mpi_free(&one);
     }
 
-    self->keys_are_set = true;
     vsce_uokms_client_free_op_group(op_group);
 
 err:
-    if (status != vsce_status_SUCCESS) {
-        self->keys_are_set = false;
-    }
     return status;
 }
 

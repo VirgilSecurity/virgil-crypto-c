@@ -10,10 +10,16 @@ import "runtime"
 * Class represents group session message
 */
 type GroupSessionMessage struct {
-    cCtx *C.vscf_group_session_message_t
+    cCtx *C.vscf_group_session_message_t /*ct2*/
 }
 const (
+    /*
+    * Max message len
+    */
     GroupSessionMessageMaxMessageLen uint = 30188
+    /*
+    * Message version
+    */
     GroupSessionMessageMessageVersion uint = 1
 )
 
@@ -34,7 +40,7 @@ func NewGroupSessionMessage() *GroupSessionMessage {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newGroupSessionMessageWithCtx(ctx *C.vscf_group_session_message_t) *GroupSessionMessage {
+func newGroupSessionMessageWithCtx(ctx *C.vscf_group_session_message_t /*ct2*/) *GroupSessionMessage {
     obj := &GroupSessionMessage {
         cCtx: ctx,
     }
@@ -45,7 +51,7 @@ func newGroupSessionMessageWithCtx(ctx *C.vscf_group_session_message_t) *GroupSe
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newGroupSessionMessageCopy(ctx *C.vscf_group_session_message_t) *GroupSessionMessage {
+func newGroupSessionMessageCopy(ctx *C.vscf_group_session_message_t /*ct2*/) *GroupSessionMessage {
     obj := &GroupSessionMessage {
         cCtx: C.vscf_group_session_message_shallow_copy(ctx),
     }
@@ -75,11 +81,11 @@ func (obj *GroupSessionMessage) delete() {
 * Returns message type.
 */
 func (obj *GroupSessionMessage) GetType() GroupMsgType {
-    proxyResult := C.vscf_group_session_message_get_type(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_group_session_message_get_type(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return GroupMsgType(proxyResult)
+    return GroupMsgType(proxyResult) /* r8 */
 }
 
 /*
@@ -87,40 +93,40 @@ func (obj *GroupSessionMessage) GetType() GroupMsgType {
 * This method should be called only for group info type.
 */
 func (obj *GroupSessionMessage) GetSessionId() []byte {
-    proxyResult := C.vscf_group_session_message_get_session_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_group_session_message_get_session_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Returns message epoch.
 */
 func (obj *GroupSessionMessage) GetEpoch() uint32 {
-    proxyResult := C.vscf_group_session_message_get_epoch(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_group_session_message_get_epoch(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult)
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Buffer len to serialize this class.
 */
 func (obj *GroupSessionMessage) SerializeLen() uint {
-    proxyResult := C.vscf_group_session_message_serialize_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_group_session_message_serialize_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Serializes instance.
 */
 func (obj *GroupSessionMessage) Serialize() []byte {
-    outputBuf, outputBufErr := newBuffer(int(obj.SerializeLen()))
+    outputBuf, outputBufErr := newBuffer(int(obj.SerializeLen() /* lg2 */))
     if outputBufErr != nil {
         return nil
     }
@@ -131,26 +137,23 @@ func (obj *GroupSessionMessage) Serialize() []byte {
 
     runtime.KeepAlive(obj)
 
-    return outputBuf.getData()
+    return outputBuf.getData() /* r7 */
 }
 
 /*
 * Deserializes instance.
 */
-func (obj *GroupSessionMessage) Deserialize(input []byte) (*GroupSessionMessage, error) {
+func GroupSessionMessageDeserialize(input []byte) (*GroupSessionMessage, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
-
     inputData := helperWrapData (input)
 
-    proxyResult := C.vscf_group_session_message_deserialize(inputData, &error)
+    proxyResult := /*pr4*/C.vscf_group_session_message_deserialize(inputData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
         return nil, err
     }
 
-    runtime.KeepAlive(obj)
-
-    return newGroupSessionMessageWithCtx(proxyResult), nil
+    return newGroupSessionMessageWithCtx(proxyResult) /* r6 */, nil
 }

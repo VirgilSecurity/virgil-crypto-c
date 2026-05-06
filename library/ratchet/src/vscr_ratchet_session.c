@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -309,6 +309,7 @@ vscr_ratchet_session_release_rng(vscr_ratchet_session_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_session_init() is called.
@@ -400,7 +401,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
         vsc_data_t sender_identity_key_id, const vscf_impl_t *receiver_identity_public_key,
         vsc_data_t receiver_identity_key_id, vscf_impl_t *receiver_long_term_public_key,
         vsc_data_t receiver_long_term_key_id, vscf_impl_t *receiver_one_time_public_key,
-        vsc_data_t receiver_one_time_key_id) {
+        vsc_data_t receiver_one_time_key_id, bool enable_post_quantum) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
@@ -424,6 +425,8 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
         VSCR_ASSERT(receiver_one_time_key_id.len == sizeof(self->receiver_one_time_key_id));
     }
 
+    self->enable_post_quantum = enable_post_quantum;
+
     vscr_status_t status = vscr_status_SUCCESS;
 
     vscr_ratchet_private_key_t sender_identity_private_key_first;
@@ -431,7 +434,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
 
     status = vscr_ratchet_key_utils_import_private_key(self->key_utils, sender_identity_private_key,
             &sender_identity_private_key_first, &sender_identity_private_key_second,
-            &sender_identity_private_key_second_signer, false, true);
+            &sender_identity_private_key_second_signer, enable_post_quantum, true);
 
     if (status != vscr_status_SUCCESS) {
         goto err1;
@@ -451,7 +454,7 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
     const vscf_impl_t *receiver_identity_public_key_second = NULL;
 
     status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_identity_public_key,
-            &receiver_identity_public_key_first, &receiver_identity_public_key_second, NULL, false, true);
+            &receiver_identity_public_key_first, &receiver_identity_public_key_second, NULL, enable_post_quantum, true);
     if (status != vscr_status_SUCCESS) {
         goto err1;
     }
@@ -461,22 +464,21 @@ vscr_ratchet_session_initiate(vscr_ratchet_session_t *self, const vscf_impl_t *s
     vscr_ratchet_public_key_t receiver_long_term_public_key_first;
     const vscf_impl_t *receiver_long_term_public_key_second = NULL;
     status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_long_term_public_key,
-            &receiver_long_term_public_key_first, &receiver_long_term_public_key_second, NULL, false, false);
+            &receiver_long_term_public_key_first, &receiver_long_term_public_key_second, NULL, enable_post_quantum,
+            false);
     if (status != vscr_status_SUCCESS) {
         goto err1;
     }
 
     memcpy(self->receiver_long_term_key_id, receiver_long_term_key_id.bytes, sizeof(self->receiver_long_term_key_id));
 
-    bool enable_post_quantum = (receiver_long_term_public_key_second != NULL);
-    self->enable_post_quantum = enable_post_quantum;
-
     vscr_ratchet_public_key_t receiver_one_time_public_key_first;
     const vscf_impl_t *receiver_one_time_public_key_second = NULL;
 
     if (receiver_one_time_public_key != NULL) {
         status = vscr_ratchet_key_utils_import_public_key(self->key_utils, receiver_one_time_public_key,
-                &receiver_one_time_public_key_first, &receiver_one_time_public_key_second, NULL, false, false);
+                &receiver_one_time_public_key_first, &receiver_one_time_public_key_second, NULL, enable_post_quantum,
+                false);
         if (status != vscr_status_SUCCESS) {
             goto err1;
         }
@@ -521,11 +523,11 @@ VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_initiate_no_one_time_key(vscr_ratchet_session_t *self,
         const vscf_impl_t *sender_identity_private_key, vsc_data_t sender_identity_key_id,
         const vscf_impl_t *receiver_identity_public_key, vsc_data_t receiver_identity_key_id,
-        vscf_impl_t *receiver_long_term_public_key, vsc_data_t receiver_long_term_key_id) {
+        vscf_impl_t *receiver_long_term_public_key, vsc_data_t receiver_long_term_key_id, bool enable_post_quantum) {
 
     return vscr_ratchet_session_initiate(self, sender_identity_private_key, sender_identity_key_id,
             receiver_identity_public_key, receiver_identity_key_id, receiver_long_term_public_key,
-            receiver_long_term_key_id, NULL, vsc_data_empty());
+            receiver_long_term_key_id, NULL, vsc_data_empty(), enable_post_quantum);
 }
 
 //
@@ -534,7 +536,8 @@ vscr_ratchet_session_initiate_no_one_time_key(vscr_ratchet_session_t *self,
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
         const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
-        const vscf_impl_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message) {
+        const vscf_impl_t *receiver_one_time_private_key, const vscr_ratchet_message_t *message,
+        bool enable_post_quantum) {
 
     VSCR_ASSERT_PTR(self);
     VSCR_ASSERT_PTR(self->rng);
@@ -554,7 +557,6 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
 
     VSCR_ASSERT_PTR(message);
 
-    bool enable_post_quantum = message->header_pb.has_pqc_info;
     self->enable_post_quantum = enable_post_quantum;
 
     vscr_status_t status = vscr_status_SUCCESS;
@@ -571,7 +573,7 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
 
     status = vscr_ratchet_key_utils_import_public_key(self->key_utils, sender_identity_public_key,
             &sender_identity_public_key_first, &sender_identity_public_key_second,
-            &sender_identity_public_key_second_verifier, false, true);
+            &sender_identity_public_key_second_verifier, enable_post_quantum, true);
 
     if (status != vscr_status_SUCCESS) {
         goto err1;
@@ -581,7 +583,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
     const vscf_impl_t *receiver_identity_private_key_second = NULL;
 
     status = vscr_ratchet_key_utils_import_private_key(self->key_utils, receiver_identity_private_key,
-            &receiver_identity_private_key_first, &receiver_identity_private_key_second, NULL, false, true);
+            &receiver_identity_private_key_first, &receiver_identity_private_key_second, NULL, enable_post_quantum,
+            true);
 
     if (status != vscr_status_SUCCESS) {
         goto err2;
@@ -591,7 +594,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
     const vscf_impl_t *receiver_long_term_private_key_second = NULL;
 
     status = vscr_ratchet_key_utils_import_private_key(self->key_utils, receiver_long_term_private_key,
-            &receiver_long_term_private_key_first, &receiver_long_term_private_key_second, NULL, false, false);
+            &receiver_long_term_private_key_first, &receiver_long_term_private_key_second, NULL, enable_post_quantum,
+            false);
 
     if (status != vscr_status_SUCCESS) {
         goto err3;
@@ -604,7 +608,8 @@ vscr_ratchet_session_respond(vscr_ratchet_session_t *self, vscf_impl_t *sender_i
         self->receiver_has_one_time_key_first = true;
 
         status = vscr_ratchet_key_utils_import_private_key(self->key_utils, receiver_one_time_private_key,
-                &receiver_one_time_private_key_first, &receiver_one_time_private_key_second, NULL, false, false);
+                &receiver_one_time_private_key_first, &receiver_one_time_private_key_second, NULL, enable_post_quantum,
+                false);
 
         if (status != vscr_status_SUCCESS) {
             goto err4;
@@ -659,10 +664,10 @@ err1:
 VSCR_PUBLIC vscr_status_t
 vscr_ratchet_session_respond_no_one_time_key(vscr_ratchet_session_t *self, vscf_impl_t *sender_identity_public_key,
         const vscf_impl_t *receiver_identity_private_key, const vscf_impl_t *receiver_long_term_private_key,
-        const vscr_ratchet_message_t *message) {
+        const vscr_ratchet_message_t *message, bool enable_post_quantum) {
 
     return vscr_ratchet_session_respond(self, sender_identity_public_key, receiver_identity_private_key,
-            receiver_long_term_private_key, NULL, message);
+            receiver_long_term_private_key, NULL, message, enable_post_quantum);
 }
 
 //
@@ -846,7 +851,6 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
     session_pb->version = vscr_ratchet_common_hidden_SESSION_VERSION;
     session_pb->received_first_response = self->received_first_response;
     session_pb->is_initiator = self->is_initiator;
-    session_pb->has_enable_post_quantum = true;
     session_pb->enable_post_quantum = self->enable_post_quantum;
     session_pb->receiver_has_one_time_public_key = self->receiver_has_one_time_key_first;
 
@@ -980,7 +984,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
     if (!session->received_first_response && session->is_initiator) {
         if (session_pb->receiver_has_one_time_public_key != session_pb->has_receiver_one_time_key_id) {
             VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-            vscr_ratchet_session_destroy(&session);
+
             goto err;
         }
 
@@ -999,24 +1003,25 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
 
         if (session->enable_post_quantum) {
-            if (session_pb->pqc_info.encapsulated_key1->size == 0) {
+            if (session_pb->pqc_info.encapsulated_key1->size !=
+                    vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
-            if (session_pb->pqc_info.encapsulated_key2->size == 0) {
+            if (session_pb->pqc_info.encapsulated_key2->size !=
+                    vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
-            if (session_pb->pqc_info.encapsulated_key3 != NULL && session_pb->pqc_info.encapsulated_key3->size == 0) {
+            if (session_pb->pqc_info.encapsulated_key3 != NULL &&
+                    session_pb->pqc_info.encapsulated_key3->size !=
+                            vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
-            if (session_pb->pqc_info.decapsulated_keys_signature->size == 0) {
+            if (session_pb->pqc_info.decapsulated_keys_signature->size !=
+                    vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
-                vscr_ratchet_session_destroy(&session);
                 goto err;
             }
 
@@ -1040,10 +1045,6 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
 
 err:
     if (pb_status) {
-        if (session_pb->ratchet.has_sender_chain && session_pb->ratchet.sender_chain.private_key_second != NULL) {
-            vscr_zeroize(session_pb->ratchet.sender_chain.private_key_second->bytes,
-                    session_pb->ratchet.sender_chain.private_key_second->size);
-        }
         pb_release(vscr_Session_fields, session_pb);
     }
 

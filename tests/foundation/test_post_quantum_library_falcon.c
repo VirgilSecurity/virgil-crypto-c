@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -77,9 +77,9 @@ test__sign_dyn__sha512_digest_with_512_degree_key__produce_const_signature(void)
     unsigned char sig[FALCON_SIG_CT_SIZE(LOGN_512)];
     size_t sig_len = sizeof(sig);
 
-    const int status = falcon_sign_dyn(&shake256, sig, &sig_len, FALCON_SIG_CT, test_data_falcon_PRIVATE_KEY_512.bytes,
+    const int status = falcon_sign_dyn(&shake256, sig, &sig_len, test_data_falcon_PRIVATE_KEY_512.bytes,
             test_data_falcon_PRIVATE_KEY_512.len, test_data_falcon_DATA_SHA512_DIGEST.bytes,
-            test_data_falcon_DATA_SHA512_DIGEST.len, tmp, sizeof(tmp));
+            test_data_falcon_DATA_SHA512_DIGEST.len, 1, tmp, sizeof(tmp));
     TEST_ASSERT_EQUAL(0, status);
     TEST_ASSERT_EQUAL(sizeof(sig), sig_len);
 
@@ -91,7 +91,7 @@ void
 test__verify__sha512_digest_and_const_signature_with_512_degree_key__success(void) {
     unsigned char tmp[FALCON_TMPSIZE_VERIFY(LOGN_512)] = {0x00};
 
-    const int status = falcon_verify(test_data_falcon_CONST_SIGNATURE.bytes, test_data_falcon_CONST_SIGNATURE.len, 0,
+    const int status = falcon_verify(test_data_falcon_CONST_SIGNATURE.bytes, test_data_falcon_CONST_SIGNATURE.len,
             test_data_falcon_PUBLIC_KEY_512.bytes, test_data_falcon_PUBLIC_KEY_512.len,
             test_data_falcon_DATA_SHA512_DIGEST.bytes, test_data_falcon_DATA_SHA512_DIGEST.len, tmp, sizeof(tmp));
     TEST_ASSERT_EQUAL(0, status);

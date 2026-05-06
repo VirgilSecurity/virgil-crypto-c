@@ -10,7 +10,7 @@ import "runtime"
 * Provide DER serializer of algorithm information.
 */
 type AlgInfoDerSerializer struct {
-    cCtx *C.vscf_alg_info_der_serializer_t
+    cCtx *C.vscf_alg_info_der_serializer_t /*ct10*/
 }
 
 func (obj *AlgInfoDerSerializer) SetAsn1Writer(asn1Writer Asn1Writer) {
@@ -38,13 +38,13 @@ func (obj *AlgInfoDerSerializer) SetupDefaults() {
 * an output buffer.
 */
 func (obj *AlgInfoDerSerializer) SerializeInplace(algInfo AlgInfo) uint {
-    proxyResult := C.vscf_alg_info_der_serializer_serialize_inplace(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialize_inplace(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(algInfo)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /* Handle underlying C context. */
@@ -64,7 +64,7 @@ func NewAlgInfoDerSerializer() *AlgInfoDerSerializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAlgInfoDerSerializerWithCtx(ctx *C.vscf_alg_info_der_serializer_t) *AlgInfoDerSerializer {
+func newAlgInfoDerSerializerWithCtx(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/) *AlgInfoDerSerializer {
     obj := &AlgInfoDerSerializer {
         cCtx: ctx,
     }
@@ -75,7 +75,7 @@ func newAlgInfoDerSerializerWithCtx(ctx *C.vscf_alg_info_der_serializer_t) *AlgI
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAlgInfoDerSerializerCopy(ctx *C.vscf_alg_info_der_serializer_t) *AlgInfoDerSerializer {
+func newAlgInfoDerSerializerCopy(ctx *C.vscf_alg_info_der_serializer_t /*ct10*/) *AlgInfoDerSerializer {
     obj := &AlgInfoDerSerializer {
         cCtx: C.vscf_alg_info_der_serializer_shallow_copy(ctx),
     }
@@ -105,20 +105,20 @@ func (obj *AlgInfoDerSerializer) delete() {
 * Return buffer size enough to hold serialized algorithm.
 */
 func (obj *AlgInfoDerSerializer) SerializedLen(algInfo AlgInfo) uint {
-    proxyResult := C.vscf_alg_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_alg_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(algInfo)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Serialize algorithm info to buffer class.
 */
 func (obj *AlgInfoDerSerializer) Serialize(algInfo AlgInfo) []byte {
-    outBuf, outBufErr := newBuffer(int(obj.SerializedLen(algInfo)))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedLen(algInfo.(AlgInfo)) /* lg2 */))
     if outBufErr != nil {
         return nil
     }
@@ -131,5 +131,5 @@ func (obj *AlgInfoDerSerializer) Serialize(algInfo AlgInfo) []byte {
 
     runtime.KeepAlive(algInfo)
 
-    return outBuf.getData()
+    return outBuf.getData() /* r7 */
 }

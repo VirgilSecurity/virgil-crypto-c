@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -79,14 +79,16 @@
 //  Deserialize PKCS#8 Private Key by using internal ASN.1 reader.
 //
 static vscf_raw_private_key_t *
-vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_error_t *error);
+vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(vscf_key_asn1_deserializer_t *self,
+        size_t seq_left_len, int version, vscf_error_t *error);
 
 //
 //  Deserialize SEC1 Private Key by using internal ASN.1 reader.
 //  Argument "alg info" can be NULL.
 //
 static vscf_raw_private_key_t *
-vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len, int version, vscf_impl_t *alg_info, vscf_error_t *error);
+vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_deserializer_t *self, size_t seq_left_len,
+        int version, vscf_impl_t *alg_info, vscf_error_t *error);
 
 
 // --------------------------------------------------------------------------
@@ -94,6 +96,7 @@ vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(vscf_key_asn1_de
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Provides initialization of the implementation specific context.
@@ -357,7 +360,7 @@ vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(
     if (vscf_impl_tag(alg_info) == vscf_impl_tag_ECC_ALG_INFO) {
         const size_t ecc_seq_left = vscf_asn1_reader_read_tag(self->asn1_reader, vscf_asn1_tag_OCTET_STRING);
         raw_key = vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(
-                self, ecc_seq_left, version, alg_info, error);
+                self, version, ecc_seq_left, alg_info, error);
     } else {
         const vscf_alg_id_t alg_id = vscf_alg_info_alg_id(alg_info);
         if ((alg_id == vscf_alg_id_ED25519) || (alg_id == vscf_alg_id_CURVE25519)) {

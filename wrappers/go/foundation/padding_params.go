@@ -10,7 +10,7 @@ import "runtime"
 * Handles padding parameters and constraints.
 */
 type PaddingParams struct {
-    cCtx *C.vscf_padding_params_t
+    cCtx *C.vscf_padding_params_t /*ct2*/
 }
 const (
     PaddingParamsDefaultFrameMin uint = 32
@@ -35,7 +35,7 @@ func NewPaddingParams() *PaddingParams {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPaddingParamsWithCtx(ctx *C.vscf_padding_params_t) *PaddingParams {
+func newPaddingParamsWithCtx(ctx *C.vscf_padding_params_t /*ct2*/) *PaddingParams {
     obj := &PaddingParams {
         cCtx: ctx,
     }
@@ -46,7 +46,7 @@ func newPaddingParamsWithCtx(ctx *C.vscf_padding_params_t) *PaddingParams {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPaddingParamsCopy(ctx *C.vscf_padding_params_t) *PaddingParams {
+func newPaddingParamsCopy(ctx *C.vscf_padding_params_t /*ct2*/) *PaddingParams {
     obj := &PaddingParams {
         cCtx: C.vscf_padding_params_shallow_copy(ctx),
     }
@@ -77,7 +77,7 @@ func (obj *PaddingParams) delete() {
 * Next formula can clarify what frame is: padding_length = data_length MOD frame
 */
 func NewPaddingParamsWithConstraints(frame uint, frameMax uint) *PaddingParams {
-    proxyResult := C.vscf_padding_params_new_with_constraints((C.size_t)(frame), (C.size_t)(frameMax))
+    proxyResult := /*pr4*/C.vscf_padding_params_new_with_constraints((C.size_t)(frame)/*pa10*/, (C.size_t)(frameMax)/*pa10*/)
 
     obj := &PaddingParams {
         cCtx: proxyResult,
@@ -90,20 +90,20 @@ func NewPaddingParamsWithConstraints(frame uint, frameMax uint) *PaddingParams {
 * Return padding frame in bytes.
 */
 func (obj *PaddingParams) Frame() uint {
-    proxyResult := C.vscf_padding_params_frame(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_padding_params_frame(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Return maximum padding frame in bytes.
 */
 func (obj *PaddingParams) FrameMax() uint {
-    proxyResult := C.vscf_padding_params_frame_max(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_padding_params_frame_max(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }

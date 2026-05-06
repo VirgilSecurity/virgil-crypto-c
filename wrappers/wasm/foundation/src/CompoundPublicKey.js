@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2026 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * (1) Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  *
- *     (2) Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
+ * (2) Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
  *
- *     (3) Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
+ * (3) Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,8 +38,20 @@
 const precondition = require('./precondition');
 
 const initCompoundPublicKey = (Module, modules) => {
+    /**
+     * Handles compound public key.
+     *
+     * Compound public key contains 2 public keys and signature:
+     * - cipher key - is used for encryption;
+     * - signer key - is used for verifying.
+     */
     class CompoundPublicKey {
 
+        /**
+         * Create object with underlying C context.
+         *
+         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
+         */
         constructor(ctxPtr) {
             this.name = 'CompoundPublicKey';
 
@@ -50,16 +62,29 @@ const initCompoundPublicKey = (Module, modules) => {
             }
         }
 
+        /**
+         * Acquire C context by making it's shallow copy.
+         *
+         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CompoundPublicKey(Module._vscf_compound_public_key_shallow_copy(ctxPtr));
         }
 
+        /**
+         * Acquire C context by taking it ownership.
+         *
+         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new CompoundPublicKey(ctxPtr);
         }
 
+        /**
+         * Release underlying C context.
+         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_compound_public_key_delete(this.ctxPtr);
@@ -67,70 +92,102 @@ const initCompoundPublicKey = (Module, modules) => {
             }
         }
 
+        /**
+         * Algorithm identifier the key belongs to.
+         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
+        /**
+         * Return algorithm information that can be used for serialization.
+         */
         algInfo() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_alg_info(this.ctxPtr);
-            
+
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
+        /**
+         * Length of the key in bytes.
+         */
         len() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_len(this.ctxPtr);
             return proxyResult;
         }
 
+        /**
+         * Length of the key in bits.
+         */
         bitlen() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_bitlen(this.ctxPtr);
             return proxyResult;
         }
 
+        /**
+         * Return tag of an associated algorithm that can handle this key.
+         */
+        implTag() {
+            precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
+
+            let proxyResult;
+            proxyResult = Module._vscf_compound_public_key_impl_tag(this.ctxPtr);
+            return proxyResult;
+        }
+
+        /**
+         * Check that key is valid.
+         * Note, this operation can be slow.
+         */
         isValid() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_is_valid(this.ctxPtr);
-            
+
             const booleanResult = !!proxyResult;
             return booleanResult;
         }
 
+        /**
+         * Return a cipher public key suitable for initial encryption.
+         */
         cipherKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_cipher_key(this.ctxPtr);
-            
+
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
 
+        /**
+         * Return public key suitable for verifying.
+         */
         signerKey() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_compound_public_key_signer_key(this.ctxPtr);
-            
+
             const jsResult = modules.FoundationInterface.newAndUseCContext(proxyResult);
             return jsResult;
         }
-
     }
 
     return CompoundPublicKey;

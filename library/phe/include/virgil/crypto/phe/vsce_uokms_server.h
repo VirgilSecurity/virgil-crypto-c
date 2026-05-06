@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -50,6 +52,10 @@
 
 #ifndef VSCE_UOKMS_SERVER_H_INCLUDED
 #define VSCE_UOKMS_SERVER_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -72,26 +78,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -204,7 +195,8 @@ vsce_uokms_server_setup_defaults(vsce_uokms_server_t *self) VSCE_NODISCARD;
 //  Generates new NIST P-256 server key pair for some client
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_server_generate_server_key_pair(vsce_uokms_server_t *self, vsc_buffer_t *server_private_key, vsc_buffer_t *server_public_key) VSCE_NODISCARD;
+vsce_uokms_server_generate_server_key_pair(vsce_uokms_server_t *self, vsc_buffer_t *server_private_key,
+        vsc_buffer_t *server_public_key) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit DecryptResponse
@@ -216,13 +208,17 @@ vsce_uokms_server_decrypt_response_len(vsce_uokms_server_t *self);
 //  Processed client's decrypt request
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t server_private_key, vsc_data_t decrypt_request, vsc_buffer_t *decrypt_response) VSCE_NODISCARD;
+vsce_uokms_server_process_decrypt_request(vsce_uokms_server_t *self, vsc_data_t server_private_key,
+        vsc_data_t decrypt_request, vsc_buffer_t *decrypt_response) VSCE_NODISCARD;
 
 //
 //  Updates server's private and public keys and issues an update token for use on client's side
 //
 VSCE_PUBLIC vsce_status_t
-vsce_uokms_server_rotate_keys(vsce_uokms_server_t *self, vsc_data_t server_private_key, vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key, vsc_buffer_t *update_token) VSCE_NODISCARD;
+vsce_uokms_server_rotate_keys(vsce_uokms_server_t *self, vsc_data_t server_private_key,
+        vsc_buffer_t *new_server_private_key, vsc_buffer_t *new_server_public_key,
+        vsc_buffer_t *update_token) VSCE_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -230,9 +226,11 @@ vsce_uokms_server_rotate_keys(vsce_uokms_server_t *self, vsc_data_t server_priva
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCE_UOKMS_SERVER_H_INCLUDED

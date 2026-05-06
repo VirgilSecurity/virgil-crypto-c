@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,9 +46,17 @@ class vscf_aes256_cbc_t(Structure):
 
 class VscfAes256Cbc(object):
     """Implementation of the symmetric cipher AES-256 bit in a CBC mode.
-Note, this implementation contains dynamic memory allocations,
-this should be improved in the future releases."""
+    Note, this implementation contains dynamic memory allocations,
+    this should be improved in the future releases."""
 
+    # Cipher nfonce length or IV length in bytes, or 0 if nonce is not required.
+    NONCE_LEN = 16
+    # Cipher key length in bytes.
+    KEY_LEN = 32
+    # Cipher key length in bits.
+    KEY_BITLEN = 256
+    # Cipher block length in bytes.
+    BLOCK_LEN = 16
 
     def __init__(self):
         """Create underlying C context."""
@@ -160,8 +168,8 @@ this should be improved in the future releases."""
 
     def vscf_aes256_cbc_out_len(self, ctx, data_len):
         """Return buffer length required to hold an output of the methods
-"update" or "finish" in an current mode.
-Pass zero length to define buffer length of the method "finish"."""
+        "update" or "finish" in an current mode.
+        Pass zero length to define buffer length of the method "finish"."""
         vscf_aes256_cbc_out_len = self._lib.vscf_aes256_cbc_out_len
         vscf_aes256_cbc_out_len.argtypes = [POINTER(vscf_aes256_cbc_t), c_size_t]
         vscf_aes256_cbc_out_len.restype = c_size_t
@@ -169,8 +177,8 @@ Pass zero length to define buffer length of the method "finish"."""
 
     def vscf_aes256_cbc_encrypted_out_len(self, ctx, data_len):
         """Return buffer length required to hold an output of the methods
-"update" or "finish" in an encryption mode.
-Pass zero length to define buffer length of the method "finish"."""
+        "update" or "finish" in an encryption mode.
+        Pass zero length to define buffer length of the method "finish"."""
         vscf_aes256_cbc_encrypted_out_len = self._lib.vscf_aes256_cbc_encrypted_out_len
         vscf_aes256_cbc_encrypted_out_len.argtypes = [POINTER(vscf_aes256_cbc_t), c_size_t]
         vscf_aes256_cbc_encrypted_out_len.restype = c_size_t
@@ -178,8 +186,8 @@ Pass zero length to define buffer length of the method "finish"."""
 
     def vscf_aes256_cbc_decrypted_out_len(self, ctx, data_len):
         """Return buffer length required to hold an output of the methods
-"update" or "finish" in an decryption mode.
-Pass zero length to define buffer length of the method "finish"."""
+        "update" or "finish" in an decryption mode.
+        Pass zero length to define buffer length of the method "finish"."""
         vscf_aes256_cbc_decrypted_out_len = self._lib.vscf_aes256_cbc_decrypted_out_len
         vscf_aes256_cbc_decrypted_out_len.argtypes = [POINTER(vscf_aes256_cbc_t), c_size_t]
         vscf_aes256_cbc_decrypted_out_len.restype = c_size_t

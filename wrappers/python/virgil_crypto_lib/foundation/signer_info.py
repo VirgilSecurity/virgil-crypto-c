@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,13 +35,13 @@
 
 from ctypes import *
 from ._c_bridge import VscfSignerInfo
-from ._c_bridge import VscfImplTag
 from virgil_crypto_lib.common._c_bridge import Data
+from ._c_bridge import VscfImplTag
 
 
 class SignerInfo(object):
     """Handle information about signer that is defined by an identifer and
-a Public Key."""
+    a Public Key."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -62,7 +62,7 @@ a Public Key."""
     def signer_alg_info(self):
         """Return algorithm information that was used for data signing."""
         result = self._lib_vscf_signer_info.vscf_signer_info_signer_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def signature(self):

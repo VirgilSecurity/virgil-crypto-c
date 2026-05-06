@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2026 Virgil Security Inc.
+#   Copyright (C) 2015-2018 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -46,4 +46,3 @@ set(VIRGIL_PACKAGE_LANGUAGE jni CACHE STRING "")
 set(CMAKE_INSTALL_LIBDIR lib CACHE STRING "")
 set(VIRGIL_PACKAGE_LANGUAGE java CACHE STRING "")
 set(ANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES ON CACHE BOOL "")
-set(VIRGIL_POST_QUANTUM ON CACHE BOOL "")

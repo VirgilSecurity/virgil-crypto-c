@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Implementation based on a simple entropy accumulator.
+*/
 class EntropyAccumulator implements EntropySource
 {
 
@@ -67,26 +70,7 @@ class EntropyAccumulator implements EntropySource
     }
 
     /**
-    *
-    * @return bool
-    */
-    public function isStrong(): bool
-    {
-        return vscf_entropy_accumulator_is_strong_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param int $$len
-    * @return string
-    * @throws \Exception
-    */
-    public function gather(int $$len): string
-    {
-        return vscf_entropy_accumulator_gather_php($this->ctx, $$len);
-    }
-
-    /**
+    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -96,14 +80,39 @@ class EntropyAccumulator implements EntropySource
     }
 
     /**
+    * Add given entropy source to the accumulator.
+    * Threshold defines minimum number of bytes that must be gathered
+    * from the source during accumulation.
     *
-    * @param EntropySource $$source
-    * @param int $$threshold
+    * @param EntropySource $source
+    * @param int $threshold
     * @return void
     */
-    public function addSource(EntropySource $$source, int $$threshold): void
+    public function addSource(EntropySource $source, int $threshold): void
     {
-        vscf_entropy_accumulator_add_source_php($this->ctx, $$source->getCtx(), $$threshold);
+        vscf_entropy_accumulator_add_source_php($this->ctx, $source->getCtx(), $threshold);
+    }
+
+    /**
+    * Defines that implemented source is strong.
+    *
+    * @return bool
+    */
+    public function isStrong(): bool
+    {
+        return vscf_entropy_accumulator_is_strong_php($this->ctx);
+    }
+
+    /**
+    * Gather entropy of the requested length.
+    *
+    * @param int $len
+    * @return string
+    * @throws \Exception
+    */
+    public function gather(int $len): string
+    {
+        return vscf_entropy_accumulator_gather_php($this->ctx, $len);
     }
 
     /**

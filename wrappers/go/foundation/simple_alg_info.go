@@ -10,20 +10,7 @@ import "runtime"
 * Handle simple algorithm information (just id).
 */
 type SimpleAlgInfo struct {
-    cCtx *C.vscf_simple_alg_info_t
-}
-
-/*
-* Create algorithm info with identificator.
-*/
-func NewSimpleAlgInfoWithAlgId(algId AlgId) *SimpleAlgInfo {
-    proxyResult := C.vscf_simple_alg_info_new_with_alg_id(C.vscf_alg_id_t(algId))
-
-    obj := &SimpleAlgInfo {
-        cCtx: proxyResult,
-    }
-    runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
-    return obj
+    cCtx *C.vscf_simple_alg_info_t /*ct10*/
 }
 
 /* Handle underlying C context. */
@@ -43,7 +30,7 @@ func NewSimpleAlgInfo() *SimpleAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSimpleAlgInfoWithCtx(ctx *C.vscf_simple_alg_info_t) *SimpleAlgInfo {
+func newSimpleAlgInfoWithCtx(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInfo {
     obj := &SimpleAlgInfo {
         cCtx: ctx,
     }
@@ -54,7 +41,7 @@ func newSimpleAlgInfoWithCtx(ctx *C.vscf_simple_alg_info_t) *SimpleAlgInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSimpleAlgInfoCopy(ctx *C.vscf_simple_alg_info_t) *SimpleAlgInfo {
+func newSimpleAlgInfoCopy(ctx *C.vscf_simple_alg_info_t /*ct10*/) *SimpleAlgInfo {
     obj := &SimpleAlgInfo {
         cCtx: C.vscf_simple_alg_info_shallow_copy(ctx),
     }
@@ -81,12 +68,25 @@ func (obj *SimpleAlgInfo) delete() {
 }
 
 /*
+* Create algorithm info with identificator.
+*/
+func NewSimpleAlgInfoWithAlgId(algId AlgId) *SimpleAlgInfo {
+    proxyResult := /*pr4*/C.vscf_simple_alg_info_new_with_alg_id(C.vscf_alg_id_t(algId) /*pa7*/)
+
+    obj := &SimpleAlgInfo {
+        cCtx: proxyResult,
+    }
+    runtime.SetFinalizer(obj, (*SimpleAlgInfo).Delete)
+    return obj
+}
+
+/*
 * Provide algorithm identificator.
 */
 func (obj *SimpleAlgInfo) AlgId() AlgId {
-    proxyResult := C.vscf_simple_alg_info_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_simple_alg_info_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }

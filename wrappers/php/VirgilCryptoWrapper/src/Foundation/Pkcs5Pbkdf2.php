@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
+*/
 class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
 {
 
@@ -65,16 +68,26 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     }
 
     /**
-    *
-    * @param Mac $$hmac
+    * @param Mac $hmac
     * @return void
     */
-    public function useHmac(Mac $$hmac): void
+    public function useHmac(Mac $hmac): void
     {
-        vscf_pkcs5_pbkdf2_use_hmac_php($this->ctx, $$hmac);
+        vscf_pkcs5_pbkdf2_use_hmac_php($this->ctx, $hmac->getCtx());
     }
 
     /**
+    * Setup predefined values to the uninitialized class dependencies.
+    *
+    * @return void
+    */
+    public function setupDefaults(): void
+    {
+        vscf_pkcs5_pbkdf2_setup_defaults_php($this->ctx);
+    }
+
+    /**
+    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -85,8 +98,10 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     }
 
     /**
+    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -95,55 +110,51 @@ class Pkcs5Pbkdf2 implements Alg, Kdf, SaltedKdf
     }
 
     /**
+    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $$algInfo): void
+    public function restoreAlgInfo(AlgInfo $algInfo): void
     {
-        vscf_pkcs5_pbkdf2_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
+        vscf_pkcs5_pbkdf2_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
+    * Derive key of the requested length from the given data.
     *
-    * @param string $$data
-    * @param int $$keyLen
+    * @param string $data
+    * @param int $keyLen
     * @return string
     */
-    public function derive(string $$data, int $$keyLen): string
+    public function derive(string $data, int $keyLen): string
     {
-        return vscf_pkcs5_pbkdf2_derive_php($this->ctx, $$data, $$keyLen);
+        return vscf_pkcs5_pbkdf2_derive_php($this->ctx, $data, $keyLen);
     }
 
     /**
+    * Prepare algorithm to derive new key.
     *
-    * @param string $$salt
-    * @param int $$iterationCount
+    * @param string $salt
+    * @param int $iterationCount
     * @return void
     */
-    public function reset(string $$salt, int $$iterationCount): void
+    public function reset(string $salt, int $iterationCount): void
     {
-        vscf_pkcs5_pbkdf2_reset_php($this->ctx, $$salt, $$iterationCount);
+        vscf_pkcs5_pbkdf2_reset_php($this->ctx, $salt, $iterationCount);
     }
 
     /**
+    * Setup application specific information (optional).
+    * Can be empty.
     *
-    * @param string $$info
+    * @param string $info
     * @return void
     */
-    public function setInfo(string $$info): void
+    public function setInfo(string $info): void
     {
-        vscf_pkcs5_pbkdf2_set_info_php($this->ctx, $$info);
-    }
-
-    /**
-    *
-    * @return void
-    */
-    public function setupDefaults(): void
-    {
-        vscf_pkcs5_pbkdf2_setup_defaults_php($this->ctx);
+        vscf_pkcs5_pbkdf2_set_info_php($this->ctx, $info);
     }
 
     /**

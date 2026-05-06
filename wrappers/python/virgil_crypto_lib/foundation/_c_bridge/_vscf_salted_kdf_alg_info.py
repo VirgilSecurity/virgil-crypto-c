@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,7 +46,6 @@ class vscf_salted_kdf_alg_info_t(Structure):
 class VscfSaltedKdfAlgInfo(object):
     """Handle KDF algorithms that are configured with salt and iteration count."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -64,6 +63,13 @@ class VscfSaltedKdfAlgInfo(object):
         vscf_salted_kdf_alg_info_delete.restype = None
         return vscf_salted_kdf_alg_info_delete(ctx)
 
+    def vscf_salted_kdf_alg_info_alg_id(self, ctx):
+        """Provide algorithm identificator."""
+        vscf_salted_kdf_alg_info_alg_id = self._lib.vscf_salted_kdf_alg_info_alg_id
+        vscf_salted_kdf_alg_info_alg_id.argtypes = [POINTER(vscf_salted_kdf_alg_info_t)]
+        vscf_salted_kdf_alg_info_alg_id.restype = c_int
+        return vscf_salted_kdf_alg_info_alg_id(ctx)
+
     def vscf_salted_kdf_alg_info_hash_alg_info(self, ctx):
         """Return hash algorithm information."""
         vscf_salted_kdf_alg_info_hash_alg_info = self._lib.vscf_salted_kdf_alg_info_hash_alg_info
@@ -80,18 +86,11 @@ class VscfSaltedKdfAlgInfo(object):
 
     def vscf_salted_kdf_alg_info_iteration_count(self, ctx):
         """Return KDF iteration count.
-Note, can be 0 if KDF does not need the iteration count."""
+        Note, can be 0 if KDF does not need the iteration count."""
         vscf_salted_kdf_alg_info_iteration_count = self._lib.vscf_salted_kdf_alg_info_iteration_count
         vscf_salted_kdf_alg_info_iteration_count.argtypes = [POINTER(vscf_salted_kdf_alg_info_t)]
         vscf_salted_kdf_alg_info_iteration_count.restype = c_size_t
         return vscf_salted_kdf_alg_info_iteration_count(ctx)
-
-    def vscf_salted_kdf_alg_info_alg_id(self, ctx):
-        """Provide algorithm identificator."""
-        vscf_salted_kdf_alg_info_alg_id = self._lib.vscf_salted_kdf_alg_info_alg_id
-        vscf_salted_kdf_alg_info_alg_id.argtypes = [POINTER(vscf_salted_kdf_alg_info_t)]
-        vscf_salted_kdf_alg_info_alg_id.restype = c_int
-        return vscf_salted_kdf_alg_info_alg_id(ctx)
 
     def vscf_salted_kdf_alg_info_shallow_copy(self, ctx):
         vscf_salted_kdf_alg_info_shallow_copy = self._lib.vscf_salted_kdf_alg_info_shallow_copy

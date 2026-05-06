@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,49 +37,45 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Provide interface for "message info" class serialization.
+*/
 interface MessageInfoSerializer extends Ctx
 {
 
     /**
+    * Return buffer size enough to hold serialized message info.
     *
-    * @param MessageInfo $$messageInfo
+    * @param MessageInfo $messageInfo
     * @return int
     */
-    public function serializedLen(MessageInfo $$messageInfo): int
-    {
-        return ($this->ctx, $$messageInfo);
-    }
+    public function serializedLen(MessageInfo $messageInfo): int;
 
     /**
+    * Serialize class "message info".
     *
-    * @param MessageInfo $$messageInfo
+    * @param MessageInfo $messageInfo
     * @return string
     */
-    public function serialize(MessageInfo $$messageInfo): string
-    {
-        return ($this->ctx, $$messageInfo);
-    }
+    public function serialize(MessageInfo $messageInfo): string;
 
     /**
+    * Read message info prefix from the given data, and if it is valid,
+    * return a length of bytes of the whole message info.
     *
-    * @param string $$data
+    * Zero returned if length can not be determined from the given data,
+    * and this means that there is no message info at the data beginning.
+    *
+    * @param string $data
     * @return int
     */
-    public function readPrefix(string $$data): int
-    {
-        return ($this->ctx, $$data);
-    }
+    public function readPrefix(string $data): int;
 
     /**
+    * Deserialize class "message info".
     *
-    * @param string $$data
+    * @param string $data
     * @return MessageInfo
-    * @throws \Exception
     */
-    public function deserialize(string $$data): MessageInfo
-    {
-        $ctx = ($this->ctx, $$data);
-        return new MessageInfo($ctx);
-    }
-
+    public function deserialize(string $data): MessageInfo;
 }

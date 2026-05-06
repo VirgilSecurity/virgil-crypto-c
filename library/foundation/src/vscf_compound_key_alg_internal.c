@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -77,25 +77,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_use_random(vscf_compound_key_alg_t *self, vscf_impl_t *random);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_take_random(vscf_compound_key_alg_t *self, vscf_impl_t *random);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_release_random(vscf_compound_key_alg_t *self);
-
 static const vscf_api_t *
 vscf_compound_key_alg_find_api(vscf_api_tag_t api_tag);
 
@@ -105,7 +86,7 @@ vscf_compound_key_alg_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -132,7 +113,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_key_alg_api_t key_alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key alg' MUST be equal to the  'vscf_api_tag_KEY_ALG'.
+    //  For interface 'key_alg' MUST be equal to the 'vscf_api_tag_KEY_ALG'.
     //
     vscf_api_tag_KEY_ALG,
     //
@@ -238,7 +219,7 @@ static const vscf_key_alg_api_t key_alg_api = {
 static const vscf_key_cipher_api_t key_cipher_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key cipher' MUST be equal to the  'vscf_api_tag_KEY_CIPHER'.
+    //  For interface 'key_cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
     //
     vscf_api_tag_KEY_CIPHER,
     //
@@ -282,7 +263,7 @@ static const vscf_key_cipher_api_t key_cipher_api = {
 static const vscf_key_signer_api_t key_signer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key signer' MUST be equal to the  'vscf_api_tag_KEY_SIGNER'.
+    //  For interface 'key_signer' MUST be equal to the 'vscf_api_tag_KEY_SIGNER'.
     //
     vscf_api_tag_KEY_SIGNER,
     //
@@ -340,48 +321,6 @@ static const vscf_impl_info_t info = {
 };
 
 //
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_use_random(vscf_compound_key_alg_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = vscf_impl_shallow_copy(random);
-}
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_take_random(vscf_compound_key_alg_t *self, vscf_impl_t *random) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(random);
-    VSCF_ASSERT(self->random == NULL);
-
-    VSCF_ASSERT(vscf_random_is_implemented(random));
-
-    self->random = random;
-}
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_compound_key_alg_release_random(vscf_compound_key_alg_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->random);
-}
-
-//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -393,8 +332,6 @@ vscf_compound_key_alg_init(vscf_compound_key_alg_t *self) {
 
     self->info = &info;
     self->refcnt = 1;
-
-    vscf_compound_key_alg_init_ctx(self);
 }
 
 //
@@ -409,8 +346,6 @@ vscf_compound_key_alg_cleanup(vscf_compound_key_alg_t *self) {
     }
 
     vscf_compound_key_alg_release_random(self);
-
-    vscf_compound_key_alg_cleanup_ctx(self);
 
     vscf_zeroize(self, sizeof(vscf_compound_key_alg_t));
 }
@@ -492,28 +427,6 @@ vscf_compound_key_alg_shallow_copy(vscf_compound_key_alg_t *self) {
 }
 
 //
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_compound_key_alg_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_compound_key_alg_init_ctx(vscf_compound_key_alg_t *self) {
-
-    VSCF_UNUSED(self);
-}
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_compound_key_alg_cleanup_ctx(vscf_compound_key_alg_t *self) {
-
-    VSCF_UNUSED(self);
-}
-
-//
 //  Return size of 'vscf_compound_key_alg_t' type.
 //
 VSCF_PUBLIC size_t
@@ -542,18 +455,60 @@ vscf_compound_key_alg_impl_const(const vscf_compound_key_alg_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
+//
+//  Setup dependency to the interface 'random' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_use_random(vscf_compound_key_alg_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = vscf_impl_shallow_copy(random);
+}
+
+//
+//  Setup dependency to the interface 'random' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_take_random(vscf_compound_key_alg_t *self, vscf_impl_t *random) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(random);
+    VSCF_ASSERT(self->random == NULL);
+
+    VSCF_ASSERT(vscf_random_is_implemented(random));
+
+    self->random = random;
+}
+
+//
+//  Release dependency to the interface 'random'.
+//
+VSCF_PUBLIC void
+vscf_compound_key_alg_release_random(vscf_compound_key_alg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->random);
+}
+
 static const vscf_api_t *
 vscf_compound_key_alg_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-        return (const vscf_api_t *)                 &alg_api;
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_KEY_ALG:
-        return (const vscf_api_t *)                 &key_alg_api;
+            return (const vscf_api_t *) &key_alg_api;
         case vscf_api_tag_KEY_CIPHER:
-        return (const vscf_api_t *)                 &key_cipher_api;
+            return (const vscf_api_t *) &key_cipher_api;
         case vscf_api_tag_KEY_SIGNER:
-        return (const vscf_api_t *)                 &key_signer_api;
+            return (const vscf_api_t *) &key_signer_api;
         default:
             return NULL;
     }

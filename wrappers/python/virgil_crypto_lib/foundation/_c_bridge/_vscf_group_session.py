@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -37,9 +37,9 @@ from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from ._vscf_error import vscf_error_t
 from ._vscf_group_session_message import vscf_group_session_message_t
+from ._vscf_error import vscf_error_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from ._vscf_group_session_ticket import vscf_group_session_ticket_t
 
 
@@ -77,6 +77,7 @@ class VscfGroupSession(object):
         return vscf_group_session_delete(ctx)
 
     def vscf_group_session_use_rng(self, ctx, rng):
+        """Random"""
         vscf_group_session_use_rng = self._lib.vscf_group_session_use_rng
         vscf_group_session_use_rng.argtypes = [POINTER(vscf_group_session_t), POINTER(vscf_impl_t)]
         vscf_group_session_use_rng.restype = None
@@ -91,7 +92,7 @@ class VscfGroupSession(object):
 
     def vscf_group_session_setup_defaults(self, ctx):
         """Setups default dependencies:
-- RNG: CTR DRBG"""
+        - RNG: CTR DRBG"""
         vscf_group_session_setup_defaults = self._lib.vscf_group_session_setup_defaults
         vscf_group_session_setup_defaults.argtypes = [POINTER(vscf_group_session_t)]
         vscf_group_session_setup_defaults.restype = c_int
@@ -106,7 +107,7 @@ class VscfGroupSession(object):
 
     def vscf_group_session_add_epoch(self, ctx, message):
         """Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
-Epoch message should be encrypted and signed by trusted group chat member (admin)."""
+        Epoch message should be encrypted and signed by trusted group chat member (admin)."""
         vscf_group_session_add_epoch = self._lib.vscf_group_session_add_epoch
         vscf_group_session_add_epoch.argtypes = [POINTER(vscf_group_session_t), POINTER(vscf_group_session_message_t)]
         vscf_group_session_add_epoch.restype = c_int

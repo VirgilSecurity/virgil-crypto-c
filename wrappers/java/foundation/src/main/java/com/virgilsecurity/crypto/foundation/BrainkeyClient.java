@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -40,42 +40,15 @@ public class BrainkeyClient implements AutoCloseable {
 
     public long cCtx;
 
+    /* Create underlying C context. */
     public BrainkeyClient() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.brainkeyClient_new();
     }
 
+    /* Wrap underlying C context. */
     BrainkeyClient(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
-    }
-
-    public static BrainkeyClient getInstance(long cCtx) {
-        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
-        return new BrainkeyClient(ctxHolder);
-    }
-
-    private void clearResources() {
-        long ctx = this.cCtx;
-        if (this.cCtx > 0) {
-            this.cCtx = 0;
-            FoundationJNI.INSTANCE.brainkeyClient_close(ctx);
-        }
-    }
-
-    public void close() {
-        clearResources();
-    }
-
-    protected void finalize() throws Throwable {
-        clearResources();
-    }
-
-    public void setRandom(Random random) {
-        FoundationJNI.INSTANCE.brainkeyClient_setRandom(this.cCtx, random);
-    }
-
-    public void setOperationRandom(Random operationRandom) {
-        FoundationJNI.INSTANCE.brainkeyClient_setOperationRandom(this.cCtx, operationRandom);
     }
 
     public int getPointLen() {
@@ -98,6 +71,48 @@ public class BrainkeyClient implements AutoCloseable {
         return 128;
     }
 
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
+    public static BrainkeyClient getInstance(long cCtx) {
+        FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
+        return new BrainkeyClient(ctxHolder);
+    }
+
+    /* Clear resources. */
+    private void clearResources() {
+        long ctx = this.cCtx;
+        if (this.cCtx > 0) {
+            this.cCtx = 0;
+            FoundationJNI.INSTANCE.brainkeyClient_close(ctx);
+        }
+    }
+
+    /* Close resource. */
+    public void close() {
+        clearResources();
+    }
+
+    /* Finalize resource. */
+    protected void finalize() throws Throwable {
+        clearResources();
+    }
+
+    /*
+    * Random used for key generation, proofs, etc.
+    */
+    public void setRandom(Random random) {
+        FoundationJNI.INSTANCE.brainkeyClient_setRandom(this.cCtx, random);
+    }
+
+    /*
+    * Random used for crypto operations to make them const-time
+    */
+    public void setOperationRandom(Random operationRandom) {
+        FoundationJNI.INSTANCE.brainkeyClient_setOperationRandom(this.cCtx, operationRandom);
+    }
+
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.brainkeyClient_setupDefaults(this.cCtx);
     }
@@ -109,9 +124,5 @@ public class BrainkeyClient implements AutoCloseable {
     public byte[] deblind(byte[] password, byte[] hardenedPoint, byte[] deblindFactor, byte[] keyName) throws FoundationException {
         return FoundationJNI.INSTANCE.brainkeyClient_deblind(this.cCtx, password, hardenedPoint, deblindFactor, keyName);
     }
-
-    public boolean verify(byte[] blindedPoint, byte[] hardenedPoint, byte[] serverPublicKey, byte[] proofValueC, byte[] proofValueS) throws FoundationException {
-        return FoundationJNI.INSTANCE.brainkeyClient_verify(this.cCtx, blindedPoint, hardenedPoint, serverPublicKey, proofValueC, proofValueS);
-    }
-
 }
+

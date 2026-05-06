@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2026 Virgil Security Inc.
+ * Copyright (C) 2015-2018 Virgil Security Inc.
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,5 +22,5 @@ const size_t PYTHIA_BN_BUF_SIZE = (size_t)DEF_PYTHIA_BN_BUF_SIZE;
 const size_t PYTHIA_G1_BUF_SIZE = (size_t)DEF_PYTHIA_G1_BUF_SIZE;
 const size_t PYTHIA_G2_BUF_SIZE = (size_t)DEF_PYTHIA_G2_BUF_SIZE;
 const size_t PYTHIA_GT_BUF_SIZE = (size_t)DEF_PYTHIA_GT_BUF_SIZE;
-const size_t PYTHIA_BIN_MIN_BUF_SIZE = (size_t)DEF_PYTHIA_BIN_MIN_BUF_SIZE;
-const size_t PYTHIA_BIN_MAX_BUF_SIZE = (size_t)DEF_PYTHIA_BIN_MAX_BUF_SIZE;
+const size_t PYTHIA_BIN_MIN_BUF_SIZE = (size_t)DEF_PYTHIA_BIN_MAX_BUF_SIZE;
+const size_t PYTHIA_BIN_MAX_BUF_SIZE = (size_t)DEF_PYTHIA_BIN_MIN_BUF_SIZE;

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,11 +36,11 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
+from ._vscf_error import vscf_error_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from ._vscf_error import vscf_error_t
-from ._vscf_raw_private_key import vscf_raw_private_key_t
-from ._vscf_raw_public_key import vscf_raw_public_key_t
 
 
 class vscf_hybrid_key_alg_t(Structure):
@@ -49,9 +49,17 @@ class vscf_hybrid_key_alg_t(Structure):
 
 class VscfHybridKeyAlg(object):
     """Implements public key cryptography over hybrid keys.
-Hybrid encryption - TODO
-Hybrid signatures - TODO"""
+    Hybrid encryption - TODO
+    Hybrid signatures - TODO"""
 
+    # Defines whether a public key can be imported or not.
+    CAN_IMPORT_PUBLIC_KEY = True
+    # Define whether a public key can be exported or not.
+    CAN_EXPORT_PUBLIC_KEY = True
+    # Define whether a private key can be imported or not.
+    CAN_IMPORT_PRIVATE_KEY = True
+    # Define whether a private key can be exported or not.
+    CAN_EXPORT_PRIVATE_KEY = True
 
     def __init__(self):
         """Create underlying C context."""
@@ -88,30 +96,9 @@ Hybrid signatures - TODO"""
         vscf_hybrid_key_alg_use_hash.restype = None
         return vscf_hybrid_key_alg_use_hash(ctx, hash)
 
-    def vscf_hybrid_key_alg_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_hybrid_key_alg_setup_defaults = self._lib.vscf_hybrid_key_alg_setup_defaults
-        vscf_hybrid_key_alg_setup_defaults.argtypes = [POINTER(vscf_hybrid_key_alg_t)]
-        vscf_hybrid_key_alg_setup_defaults.restype = c_int
-        return vscf_hybrid_key_alg_setup_defaults(ctx)
-
-    def vscf_hybrid_key_alg_make_key(self, ctx, first_key, second_key, error):
-        """Make hybrid private key from given keys."""
-        vscf_hybrid_key_alg_make_key = self._lib.vscf_hybrid_key_alg_make_key
-        vscf_hybrid_key_alg_make_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
-        vscf_hybrid_key_alg_make_key.restype = POINTER(vscf_impl_t)
-        return vscf_hybrid_key_alg_make_key(ctx, first_key, second_key, error)
-
-    def vscf_hybrid_key_alg_config_cipher(self, cipher, hash, shared_key):
-        """Derive cipher key and nonce and configure the given cipher."""
-        vscf_hybrid_key_alg_config_cipher = self._lib.vscf_hybrid_key_alg_config_cipher
-        vscf_hybrid_key_alg_config_cipher.argtypes = [POINTER(vscf_impl_t), POINTER(vscf_impl_t), vsc_data_t]
-        vscf_hybrid_key_alg_config_cipher.restype = None
-        return vscf_hybrid_key_alg_config_cipher(cipher, hash, shared_key)
-
     def vscf_hybrid_key_alg_generate_ephemeral_key(self, ctx, key, error):
         """Generate ephemeral private key of the same type.
-Note, this operation might be slow."""
+        Note, this operation might be slow."""
         vscf_hybrid_key_alg_generate_ephemeral_key = self._lib.vscf_hybrid_key_alg_generate_ephemeral_key
         vscf_hybrid_key_alg_generate_ephemeral_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_hybrid_key_alg_generate_ephemeral_key.restype = POINTER(vscf_impl_t)
@@ -120,12 +107,12 @@ Note, this operation might be slow."""
     def vscf_hybrid_key_alg_import_public_key(self, ctx, raw_key, error):
         """Import public key from the raw binary format.
 
-Return public key that is adopted and optimized to be used
-with this particular algorithm.
+        Return public key that is adopted and optimized to be used
+        with this particular algorithm.
 
-Binary format must be defined in the key specification.
-For instance, RSA public key must be imported from the format defined in
-RFC 3447 Appendix A.1.1."""
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be imported from the format defined in
+        RFC 3447 Appendix A.1.1."""
         vscf_hybrid_key_alg_import_public_key = self._lib.vscf_hybrid_key_alg_import_public_key
         vscf_hybrid_key_alg_import_public_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_raw_public_key_t), POINTER(vscf_error_t)]
         vscf_hybrid_key_alg_import_public_key.restype = POINTER(vscf_impl_t)
@@ -134,9 +121,9 @@ RFC 3447 Appendix A.1.1."""
     def vscf_hybrid_key_alg_export_public_key(self, ctx, public_key, error):
         """Export public key to the raw binary format.
 
-Binary format must be defined in the key specification.
-For instance, RSA public key must be exported in format defined in
-RFC 3447 Appendix A.1.1."""
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1."""
         vscf_hybrid_key_alg_export_public_key = self._lib.vscf_hybrid_key_alg_export_public_key
         vscf_hybrid_key_alg_export_public_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_hybrid_key_alg_export_public_key.restype = POINTER(vscf_raw_public_key_t)
@@ -145,12 +132,12 @@ RFC 3447 Appendix A.1.1."""
     def vscf_hybrid_key_alg_import_private_key(self, ctx, raw_key, error):
         """Import private key from the raw binary format.
 
-Return private key that is adopted and optimized to be used
-with this particular algorithm.
+        Return private key that is adopted and optimized to be used
+        with this particular algorithm.
 
-Binary format must be defined in the key specification.
-For instance, RSA private key must be imported from the format defined in
-RFC 3447 Appendix A.1.2."""
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be imported from the format defined in
+        RFC 3447 Appendix A.1.2."""
         vscf_hybrid_key_alg_import_private_key = self._lib.vscf_hybrid_key_alg_import_private_key
         vscf_hybrid_key_alg_import_private_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_raw_private_key_t), POINTER(vscf_error_t)]
         vscf_hybrid_key_alg_import_private_key.restype = POINTER(vscf_impl_t)
@@ -159,9 +146,9 @@ RFC 3447 Appendix A.1.2."""
     def vscf_hybrid_key_alg_export_private_key(self, ctx, private_key, error):
         """Export private key in the raw binary format.
 
-Binary format must be defined in the key specification.
-For instance, RSA private key must be exported in format defined in
-RFC 3447 Appendix A.1.2."""
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2."""
         vscf_hybrid_key_alg_export_private_key = self._lib.vscf_hybrid_key_alg_export_private_key
         vscf_hybrid_key_alg_export_private_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
         vscf_hybrid_key_alg_export_private_key.restype = POINTER(vscf_raw_private_key_t)
@@ -190,7 +177,7 @@ RFC 3447 Appendix A.1.2."""
 
     def vscf_hybrid_key_alg_can_decrypt(self, ctx, private_key, data_len):
         """Check if algorithm can decrypt data with a given key.
-However, success result of decryption is not guaranteed."""
+        However, success result of decryption is not guaranteed."""
         vscf_hybrid_key_alg_can_decrypt = self._lib.vscf_hybrid_key_alg_can_decrypt
         vscf_hybrid_key_alg_can_decrypt.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), c_size_t]
         vscf_hybrid_key_alg_can_decrypt.restype = c_bool
@@ -219,7 +206,7 @@ However, success result of decryption is not guaranteed."""
 
     def vscf_hybrid_key_alg_signature_len(self, ctx, private_key):
         """Return length in bytes required to hold signature.
-Return zero if a given private key can not produce signatures."""
+        Return zero if a given private key can not produce signatures."""
         vscf_hybrid_key_alg_signature_len = self._lib.vscf_hybrid_key_alg_signature_len
         vscf_hybrid_key_alg_signature_len.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t)]
         vscf_hybrid_key_alg_signature_len.restype = c_size_t
@@ -245,6 +232,20 @@ Return zero if a given private key can not produce signatures."""
         vscf_hybrid_key_alg_verify_hash.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), c_int, vsc_data_t, vsc_data_t]
         vscf_hybrid_key_alg_verify_hash.restype = c_bool
         return vscf_hybrid_key_alg_verify_hash(ctx, public_key, hash_id, digest, signature)
+
+    def vscf_hybrid_key_alg_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_hybrid_key_alg_setup_defaults = self._lib.vscf_hybrid_key_alg_setup_defaults
+        vscf_hybrid_key_alg_setup_defaults.argtypes = [POINTER(vscf_hybrid_key_alg_t)]
+        vscf_hybrid_key_alg_setup_defaults.restype = c_int
+        return vscf_hybrid_key_alg_setup_defaults(ctx)
+
+    def vscf_hybrid_key_alg_make_key(self, ctx, first_key, second_key, error):
+        """Make hybrid private key from given keys."""
+        vscf_hybrid_key_alg_make_key = self._lib.vscf_hybrid_key_alg_make_key
+        vscf_hybrid_key_alg_make_key.argtypes = [POINTER(vscf_hybrid_key_alg_t), POINTER(vscf_impl_t), POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_hybrid_key_alg_make_key.restype = POINTER(vscf_impl_t)
+        return vscf_hybrid_key_alg_make_key(ctx, first_key, second_key, error)
 
     def vscf_hybrid_key_alg_shallow_copy(self, ctx):
         vscf_hybrid_key_alg_shallow_copy = self._lib.vscf_hybrid_key_alg_shallow_copy

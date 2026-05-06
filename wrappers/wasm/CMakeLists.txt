@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -59,8 +59,8 @@ endif()
 #   Configure
 # ---------------------------------------------------------------------------
 configure_file(
-        "${CMAKE_CURRENT_LIST_DIR}/rollup.config.mjs"
-        "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.mjs"
+        "${CMAKE_CURRENT_LIST_DIR}/rollup.config.js"
+        "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.js"
         COPYONLY
         )
 
@@ -85,5 +85,6 @@ add_custom_target(copy_wasm_tests ALL
 #   Add per project wrapper build
 # ---------------------------------------------------------------------------
 add_subdirectory("foundation")
+add_subdirectory("pythia")
 add_subdirectory("ratchet")
 add_subdirectory("phe")

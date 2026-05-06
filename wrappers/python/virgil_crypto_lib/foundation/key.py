@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -52,7 +52,7 @@ class Key(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def len(self):
+    def __len__(self):
         """Length of the key in bytes."""
         raise NotImplementedError()
 
@@ -64,5 +64,5 @@ class Key(object):
     @abstractmethod
     def is_valid(self):
         """Check that key is valid.
-Note, this operation can be slow."""
+        Note, this operation can be slow."""
         raise NotImplementedError()

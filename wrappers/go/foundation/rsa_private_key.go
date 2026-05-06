@@ -10,7 +10,7 @@ import "runtime"
 * Handles RSA private key.
 */
 type RsaPrivateKey struct {
-    cCtx *C.vscf_rsa_private_key_t
+    cCtx *C.vscf_rsa_private_key_t /*ct10*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewRsaPrivateKey() *RsaPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRsaPrivateKeyWithCtx(ctx *C.vscf_rsa_private_key_t) *RsaPrivateKey {
+func newRsaPrivateKeyWithCtx(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey {
     obj := &RsaPrivateKey {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newRsaPrivateKeyWithCtx(ctx *C.vscf_rsa_private_key_t) *RsaPrivateKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t) *RsaPrivateKey {
+func newRsaPrivateKeyCopy(ctx *C.vscf_rsa_private_key_t /*ct10*/) *RsaPrivateKey {
     obj := &RsaPrivateKey {
         cCtx: C.vscf_rsa_private_key_shallow_copy(ctx),
     }
@@ -71,44 +71,44 @@ func (obj *RsaPrivateKey) delete() {
 * Algorithm identifier the key belongs to.
 */
 func (obj *RsaPrivateKey) AlgId() AlgId {
-    proxyResult := C.vscf_rsa_private_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Return algorithm information that can be used for serialization.
 */
 func (obj *RsaPrivateKey) AlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_rsa_private_key_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Length of the key in bytes.
 */
 func (obj *RsaPrivateKey) Len() uint {
-    proxyResult := C.vscf_rsa_private_key_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
 func (obj *RsaPrivateKey) Bitlen() uint {
-    proxyResult := C.vscf_rsa_private_key_bitlen(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -116,20 +116,20 @@ func (obj *RsaPrivateKey) Bitlen() uint {
 * Note, this operation can be slow.
 */
 func (obj *RsaPrivateKey) IsValid() bool {
-    proxyResult := C.vscf_rsa_private_key_is_valid(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_is_valid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Extract public key from the private key.
 */
 func (obj *RsaPrivateKey) ExtractPublicKey() (PublicKey, error) {
-    proxyResult := C.vscf_rsa_private_key_extract_public_key(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_private_key_extract_public_key(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPublicKey(proxyResult)
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }

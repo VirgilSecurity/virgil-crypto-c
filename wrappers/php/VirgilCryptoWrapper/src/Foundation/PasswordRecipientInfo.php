@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handle information about recipient that is defined by a password.
+*/
 class PasswordRecipientInfo
 {
 
@@ -44,6 +47,19 @@ class PasswordRecipientInfo
     * @var
     */
     private $ctx;
+
+    /**
+    * Create object and define all properties.
+    *
+    * @param AlgInfo $keyEncryptionAlgorithm
+    * @param string $encryptedKey
+    * @return PasswordRecipientInfo
+    */
+    public static function withMembers(AlgInfo $keyEncryptionAlgorithm, string $encryptedKey): PasswordRecipientInfo
+    {
+        $ctx = vscf_password_recipient_info_with_members_php($keyEncryptionAlgorithm, $encryptedKey);
+        return new PasswordRecipientInfo($ctx);
+    }
 
     /**
     * Create underlying C context.
@@ -65,8 +81,11 @@ class PasswordRecipientInfo
     }
 
     /**
+    * Return algorithm information that was used for encryption
+    * a data encryption key.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function keyEncryptionAlgorithm(): AlgInfo
     {
@@ -75,6 +94,7 @@ class PasswordRecipientInfo
     }
 
     /**
+    * Return an encrypted data encryption key.
     *
     * @return string
     */

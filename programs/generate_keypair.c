@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -62,17 +62,16 @@ typedef enum {
     key_alg_id_CURVE25519,
     key_alg_id_P256,
     key_alg_id_FALCON,
-    key_alg_id_ML_KEM_768,
+    key_alg_id_ROUND5,
     key_alg_id_CURVE25519_ED25519,
-    key_alg_id_CURVE25519_ML_KEM_768,
-    key_alg_id_CURVE25519_ML_KEM_768_FALCON,
-    key_alg_id_CURVE25519_ML_KEM_768_ED25519,
+    key_alg_id_CURVE25519_ROUND5,
+    key_alg_id_CURVE25519_ROUND5_FALCON,
+    key_alg_id_CURVE25519_ROUND5_ED25519,
     key_alg_id_ED25519_FALCON,
-    key_alg_id_CURVE25519_ML_KEM_768_ED25519_FALCON
+    key_alg_id_CURVE25519_ROUND5_ED25519_FALCON
 } key_alg_id_t;
 
-void
-print_help(const char *prog_name) {
+void print_help(const char* prog_name) {
     printf("USAGE:\n");
     printf("    %s [<key_alg>]\n", prog_name);
     printf("OPTIONS:\n");
@@ -81,26 +80,25 @@ print_help(const char *prog_name) {
            "      - curve25519\n"
            "      - p256\n"
            "      - falcon\n"
-           "      - ml_kem_768\n"
+           "      - round5\n"
            "      - curve25519_ed25519\n"
-           "      - curve25519_ml_kem_768\n"
-           "      - curve25519_ml_kem_768_falcon\n"
-           "      - curve25519_ml_kem_768_ed25519\n"
+           "      - curve25519_round5\n"
+           "      - curve25519_round5_falcon\n"
+           "      - curve25519_round5_ed25519\n"
            "      - ed25519_falcon\n"
-           "      - curve25519_ml_kem_768_ed25519_falcon\n");
+           "      - curve25519_round5_ed25519_falcon\n"
+           );
 }
 
-void
-print_error(const char *msg) {
+void print_error(const char* msg) {
     fprintf(stderr, "<ERROR>: %s\n", msg);
 }
 
-void
-print_formatted_error(const char *format, ...) {
+void print_formatted_error(const char* format, ...) {
     va_list args;
     va_start(args, format);
     fprintf(stderr, "<ERROR>: ");
-    vfprintf(stderr, format, args);
+    vfprintf(stderr, format, args );
     va_end(args);
     fprintf(stderr, "\n");
 }
@@ -123,14 +121,12 @@ print_buffer(vsc_buffer_t *buffer) {
     print_data(vsc_buffer_data(buffer));
 }
 
-bool
-is_option(const char *str) {
+bool is_option(const char* str) {
     const bool res = str[0] == '-' && str[1] == '-' && str[2] != '\0';
     return res;
 }
 
-key_alg_id_t
-convert_arg_to_key_alg_id(const char *arg) {
+key_alg_id_t convert_arg_to_key_alg_id(const char* arg) {
 
     if (strcmp(arg, "ed25519") == 0) {
         return key_alg_id_ED25519;
@@ -144,33 +140,32 @@ convert_arg_to_key_alg_id(const char *arg) {
     } else if (strcmp(arg, "falcon") == 0) {
         return key_alg_id_FALCON;
 
-    } else if (strcmp(arg, "ml_kem_768") == 0) {
-        return key_alg_id_ML_KEM_768;
+    } else if (strcmp(arg, "round5") == 0) {
+        return key_alg_id_ROUND5;
 
     } else if (strcmp(arg, "curve25519_ed25519") == 0) {
         return key_alg_id_CURVE25519_ED25519;
 
-    } else if (strcmp(arg, "curve25519_ml_kem_768") == 0) {
-        return key_alg_id_CURVE25519_ML_KEM_768;
+    } else if (strcmp(arg, "curve25519_round5") == 0) {
+        return key_alg_id_CURVE25519_ROUND5;
 
-    } else if (strcmp(arg, "curve25519_ml_kem_768_falcon") == 0) {
-        return key_alg_id_CURVE25519_ML_KEM_768_FALCON;
+    } else if (strcmp(arg, "curve25519_round5_falcon") == 0) {
+        return key_alg_id_CURVE25519_ROUND5_FALCON;
 
-    } else if (strcmp(arg, "curve25519_ml_kem_768_ed25519") == 0) {
-        return key_alg_id_CURVE25519_ML_KEM_768_ED25519;
+    } else if (strcmp(arg, "curve25519_round5_ed25519") == 0) {
+        return key_alg_id_CURVE25519_ROUND5_ED25519;
 
     } else if (strcmp(arg, "ed25519_falcon") == 0) {
         return key_alg_id_ED25519_FALCON;
 
-    } else if (strcmp(arg, "curve25519_ml_kem_768_ed25519_falcon") == 0) {
-        return key_alg_id_CURVE25519_ML_KEM_768_ED25519_FALCON;
+    } else if (strcmp(arg, "curve25519_round5_ed25519_falcon") == 0) {
+        return key_alg_id_CURVE25519_ROUND5_ED25519_FALCON;
     }
 
     return key_alg_id_NONE;
 }
 
-bool
-print_keypair(const char *key_alg_name, const vscf_impl_t *private_key) {
+bool print_keypair(const char* key_alg_name, const vscf_impl_t *private_key) {
 
     vscf_impl_t *key_alg = NULL;
     vscf_impl_t *public_key = NULL;
@@ -246,8 +241,7 @@ print_keypair(const char *key_alg_name, const vscf_impl_t *private_key) {
     //
     // Export private key to PEM format.
     //
-    const size_t pem_private_key_len =
-            vscf_pem_wrapped_len(k_pem_title_PRIVATE_KEY, vsc_buffer_len(der_private_key)) + 1;
+    const size_t pem_private_key_len = vscf_pem_wrapped_len(k_pem_title_PRIVATE_KEY, vsc_buffer_len(der_private_key)) + 1;
 
     pem_private_key = vsc_buffer_new_with_capacity(pem_private_key_len);
 
@@ -304,10 +298,9 @@ end:
     return !has_error;
 }
 
-int
-main(int argc, const char *const *const argv) {
+int main(int argc, const char *const *const argv) {
 
-    const char *prog_name = argv[0] ? argv[0] : "generate_keypair";
+    const char* prog_name = argv[0] ? argv[0] : "generate_keypair";
 
     bool has_error = false;
 
@@ -321,10 +314,10 @@ main(int argc, const char *const *const argv) {
         goto error;
     }
 
-    const char *key_alg_arg = (argc == 2) ? argv[1] : "ed25519";
+    const char* key_alg_arg = (argc == 2) ? argv[1] : "ed25519";
     const key_alg_id_t key_alg_id = convert_arg_to_key_alg_id(key_alg_arg);
 
-    switch (key_alg_id) {
+    switch(key_alg_id) {
     case key_alg_id_ED25519:
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, NULL);
         break;
@@ -341,8 +334,8 @@ main(int argc, const char *const *const argv) {
         private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_FALCON, NULL);
         break;
 
-    case key_alg_id_ML_KEM_768:
-        private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, NULL);
+    case key_alg_id_ROUND5:
+        private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, NULL);
         break;
 
     case key_alg_id_CURVE25519_ED25519:
@@ -350,19 +343,21 @@ main(int argc, const char *const *const argv) {
                 key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ED25519, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ML_KEM_768:
+    case key_alg_id_CURVE25519_ROUND5:
         private_key = vscf_key_provider_generate_hybrid_private_key(
-                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768, NULL);
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ML_KEM_768_ED25519:
-        private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_NONE, NULL);
+    case key_alg_id_CURVE25519_ROUND5_ED25519:
+        private_key = vscf_key_provider_generate_compound_hybrid_private_key(
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
+                vscf_alg_id_ED25519, vscf_alg_id_NONE, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ML_KEM_768_FALCON:
-        private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ML_KEM_768, vscf_alg_id_FALCON, vscf_alg_id_NONE, NULL);
+    case key_alg_id_CURVE25519_ROUND5_FALCON:
+        private_key = vscf_key_provider_generate_compound_hybrid_private_key(
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
+                vscf_alg_id_FALCON, vscf_alg_id_NONE, NULL);
         break;
 
     case key_alg_id_ED25519_FALCON:
@@ -370,9 +365,10 @@ main(int argc, const char *const *const argv) {
                 key_provider, vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
         break;
 
-    case key_alg_id_CURVE25519_ML_KEM_768_ED25519_FALCON:
-        private_key = vscf_key_provider_generate_compound_hybrid_private_key(key_provider, vscf_alg_id_CURVE25519,
-                vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
+    case key_alg_id_CURVE25519_ROUND5_ED25519_FALCON:
+        private_key = vscf_key_provider_generate_compound_hybrid_private_key(
+                key_provider, vscf_alg_id_CURVE25519, vscf_alg_id_ROUND5_ND_1CCA_5D,
+                vscf_alg_id_ED25519, vscf_alg_id_FALCON, NULL);
         break;
 
     case key_alg_id_NONE:

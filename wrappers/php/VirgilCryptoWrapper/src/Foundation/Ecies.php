@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Virgil implementation of the ECIES algorithm.
+*/
 class Ecies
 {
 
@@ -65,66 +68,64 @@ class Ecies
     }
 
     /**
-    *
-    * @param Random $$random
+    * @param Random $random
     * @return void
     */
-    public function useRandom(Random $$random): void
+    public function useRandom(Random $random): void
     {
-        vscf_ecies_use_random_php($this->ctx, $$random);
+        vscf_ecies_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
-    *
-    * @param Cipher $$cipher
+    * @param Cipher $cipher
     * @return void
     */
-    public function useCipher(Cipher $$cipher): void
+    public function useCipher(Cipher $cipher): void
     {
-        vscf_ecies_use_cipher_php($this->ctx, $$cipher);
+        vscf_ecies_use_cipher_php($this->ctx, $cipher->getCtx());
     }
 
     /**
-    *
-    * @param Mac $$mac
+    * @param Mac $mac
     * @return void
     */
-    public function useMac(Mac $$mac): void
+    public function useMac(Mac $mac): void
     {
-        vscf_ecies_use_mac_php($this->ctx, $$mac);
+        vscf_ecies_use_mac_php($this->ctx, $mac->getCtx());
     }
 
     /**
-    *
-    * @param Kdf $$kdf
+    * @param Kdf $kdf
     * @return void
     */
-    public function useKdf(Kdf $$kdf): void
+    public function useKdf(Kdf $kdf): void
     {
-        vscf_ecies_use_kdf_php($this->ctx, $$kdf);
+        vscf_ecies_use_kdf_php($this->ctx, $kdf->getCtx());
     }
 
     /**
-    *
-    * @param PrivateKey $$ephemeralKey
+    * @param PrivateKey $ephemeralKey
     * @return void
     */
-    public function useEphemeralKey(PrivateKey $$ephemeralKey): void
+    public function useEphemeralKey(PrivateKey $ephemeralKey): void
     {
-        vscf_ecies_use_ephemeral_key_php($this->ctx, $$ephemeralKey);
+        vscf_ecies_use_ephemeral_key_php($this->ctx, $ephemeralKey->getCtx());
     }
 
     /**
+    * Set weak reference to the key algorithm.
+    * Key algorithm MUST support shared key computation as well.
     *
-    * @param KeyAlg $$keyAlg
+    * @param KeyAlg $keyAlg
     * @return void
     */
-    public function setKeyAlg(KeyAlg $$keyAlg): void
+    public function setKeyAlg(KeyAlg $keyAlg): void
     {
-        vscf_ecies_set_key_alg_php($this->ctx, $$keyAlg->getCtx());
+        vscf_ecies_set_key_alg_php($this->ctx, $keyAlg->getCtx());
     }
 
     /**
+    * Release weak reference to the key algorithm.
     *
     * @return void
     */
@@ -134,6 +135,7 @@ class Ecies
     }
 
     /**
+    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -144,6 +146,8 @@ class Ecies
     }
 
     /**
+    * Setup predefined values to the uninitialized class dependencies
+    * except random.
     *
     * @return void
     */
@@ -153,49 +157,53 @@ class Ecies
     }
 
     /**
+    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param PublicKey $$publicKey
-    * @param int $$dataLen
+    * @param PublicKey $publicKey
+    * @param int $dataLen
     * @return int
     */
-    public function encryptedLen(PublicKey $$publicKey, int $$dataLen): int
+    public function encryptedLen(PublicKey $publicKey, int $dataLen): int
     {
-        return vscf_ecies_encrypted_len_php($this->ctx, $$publicKey->getCtx(), $$dataLen);
+        return vscf_ecies_encrypted_len_php($this->ctx, $publicKey->getCtx(), $dataLen);
     }
 
     /**
+    * Encrypt data with a given public key.
     *
-    * @param PublicKey $$publicKey
-    * @param string $$data
+    * @param PublicKey $publicKey
+    * @param string $data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(PublicKey $$publicKey, string $$data): string
+    public function encrypt(PublicKey $publicKey, string $data): string
     {
-        return vscf_ecies_encrypt_php($this->ctx, $$publicKey->getCtx(), $$data);
+        return vscf_ecies_encrypt_php($this->ctx, $publicKey->getCtx(), $data);
     }
 
     /**
+    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param PrivateKey $$privateKey
-    * @param int $$dataLen
+    * @param PrivateKey $privateKey
+    * @param int $dataLen
     * @return int
     */
-    public function decryptedLen(PrivateKey $$privateKey, int $$dataLen): int
+    public function decryptedLen(PrivateKey $privateKey, int $dataLen): int
     {
-        return vscf_ecies_decrypted_len_php($this->ctx, $$privateKey->getCtx(), $$dataLen);
+        return vscf_ecies_decrypted_len_php($this->ctx, $privateKey->getCtx(), $dataLen);
     }
 
     /**
+    * Decrypt given data.
     *
-    * @param PrivateKey $$privateKey
-    * @param string $$data
+    * @param PrivateKey $privateKey
+    * @param string $data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(PrivateKey $$privateKey, string $$data): string
+    public function decrypt(PrivateKey $privateKey, string $data): string
     {
-        return vscf_ecies_decrypt_php($this->ctx, $$privateKey->getCtx(), $$data);
+        return vscf_ecies_decrypt_php($this->ctx, $privateKey->getCtx(), $data);
     }
 
     /**

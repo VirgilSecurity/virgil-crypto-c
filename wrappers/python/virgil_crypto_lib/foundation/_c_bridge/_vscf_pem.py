@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -42,7 +42,6 @@ from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 class VscfPem(object):
     """Simple PEM wrapper."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -51,16 +50,16 @@ class VscfPem(object):
     def vscf_pem_wrapped_len(self, title, data_len):
         """Return length in bytes required to hold wrapped PEM format."""
         vscf_pem_wrapped_len = self._lib.vscf_pem_wrapped_len
-        vscf_pem_wrapped_len.argtypes = [c_char_p, c_size_t]
+        vscf_pem_wrapped_len.argtypes = [POINTER(c_char), c_size_t]
         vscf_pem_wrapped_len.restype = c_size_t
         return vscf_pem_wrapped_len(title, data_len)
 
     def vscf_pem_wrap(self, title, data, pem):
         """Takes binary data and wraps it to the simple PEM format - no
-additional information just header-base64-footer.
-Note, written buffer is NOT null-terminated."""
+        additional information just header-base64-footer.
+        Note, written buffer is NOT null-terminated."""
         vscf_pem_wrap = self._lib.vscf_pem_wrap
-        vscf_pem_wrap.argtypes = [c_char_p, vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_pem_wrap.argtypes = [POINTER(c_char), vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_pem_wrap.restype = None
         return vscf_pem_wrap(title, data, pem)
 

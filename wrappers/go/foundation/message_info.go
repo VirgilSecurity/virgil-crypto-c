@@ -11,7 +11,7 @@ import "runtime"
 * that was used for encryption.
 */
 type MessageInfo struct {
-    cCtx *C.vscf_message_info_t
+    cCtx *C.vscf_message_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -31,7 +31,7 @@ func NewMessageInfo() *MessageInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoWithCtx(ctx *C.vscf_message_info_t) *MessageInfo {
+func newMessageInfoWithCtx(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: ctx,
     }
@@ -42,7 +42,7 @@ func newMessageInfoWithCtx(ctx *C.vscf_message_info_t) *MessageInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoCopy(ctx *C.vscf_message_info_t) *MessageInfo {
+func newMessageInfoCopy(ctx *C.vscf_message_info_t /*ct2*/) *MessageInfo {
     obj := &MessageInfo {
         cCtx: C.vscf_message_info_shallow_copy(ctx),
     }
@@ -72,44 +72,44 @@ func (obj *MessageInfo) delete() {
 * Return information about algorithm that was used for the data encryption.
 */
 func (obj *MessageInfo) DataEncryptionAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_message_info_data_encryption_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_data_encryption_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Return list with a "key recipient info" elements.
 */
 func (obj *MessageInfo) KeyRecipientInfoList() *KeyRecipientInfoList {
-    proxyResult := C.vscf_message_info_key_recipient_info_list(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_key_recipient_info_list(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newKeyRecipientInfoListCopy(proxyResult)
+    return newKeyRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return list with a "password recipient info" elements.
 */
 func (obj *MessageInfo) PasswordRecipientInfoList() *PasswordRecipientInfoList {
-    proxyResult := C.vscf_message_info_password_recipient_info_list(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_password_recipient_info_list(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newPasswordRecipientInfoListCopy(proxyResult)
+    return newPasswordRecipientInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return true if message info contains at least one custom param.
 */
 func (obj *MessageInfo) HasCustomParams() bool {
-    proxyResult := C.vscf_message_info_has_custom_params(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_custom_params(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -118,77 +118,77 @@ func (obj *MessageInfo) HasCustomParams() bool {
 * If custom params object was not set then new empty object is created.
 */
 func (obj *MessageInfo) CustomParams() *MessageInfoCustomParams {
-    proxyResult := C.vscf_message_info_custom_params(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_custom_params(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newMessageInfoCustomParamsCopy(proxyResult)
+    return newMessageInfoCustomParamsCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return true if cipher kdf alg info exists.
 */
 func (obj *MessageInfo) HasCipherKdfAlgInfo() bool {
-    proxyResult := C.vscf_message_info_has_cipher_kdf_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_cipher_kdf_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return cipher kdf alg info.
 */
 func (obj *MessageInfo) CipherKdfAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_message_info_cipher_kdf_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_cipher_kdf_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Return true if cipher padding alg info exists.
 */
 func (obj *MessageInfo) HasCipherPaddingAlgInfo() bool {
-    proxyResult := C.vscf_message_info_has_cipher_padding_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_cipher_padding_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return cipher padding alg info.
 */
 func (obj *MessageInfo) CipherPaddingAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_message_info_cipher_padding_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_cipher_padding_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Return true if footer info exists.
 */
 func (obj *MessageInfo) HasFooterInfo() bool {
-    proxyResult := C.vscf_message_info_has_footer_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_has_footer_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return footer info.
 */
 func (obj *MessageInfo) FooterInfo() *FooterInfo {
-    proxyResult := C.vscf_message_info_footer_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newFooterInfoCopy(proxyResult)
+    return newFooterInfoCopy(proxyResult) /* r5 */
 }
 
 /*

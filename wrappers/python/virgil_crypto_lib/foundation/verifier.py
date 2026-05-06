@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,13 +35,13 @@
 
 from ctypes import *
 from ._c_bridge import VscfVerifier
-from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
+from ._c_bridge import VscfStatus
 
 
 class Verifier(object):
     """Verify data of any size.
-Compatible with the class "signer"."""
+    Compatible with the class "signer"."""
 
     def __init__(self):
         """Create underlying C context."""

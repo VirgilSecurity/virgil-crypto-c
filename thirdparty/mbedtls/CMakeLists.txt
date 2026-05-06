@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -92,18 +92,15 @@ endif()
 include(ExternalProject)
 ExternalProject_Add(mbedtls-ext
         GIT_REPOSITORY
-            https://github.com/Mbed-TLS/mbedtls
+            https://github.com/ARMmbed/mbedtls
         GIT_TAG
-            v3.6.5
-        GIT_SHALLOW
-            TRUE
+            v2.28.3
         CMAKE_ARGS
             "${TRANSITIVE_ARGS}"
             "${MBEDTLS_C_FLAGS}"
             "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}"
             "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
             "-DCMAKE_INSTALL_PREFIX=${MBEDTLS_INSTALL_LOCATION}"
-            "-DCMAKE_INSTALL_LIBDIR=lib"
             "-DENABLE_TESTING=OFF"
             "-DENABLE_PROGRAMS=OFF"
             "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
@@ -124,7 +121,7 @@ ExternalProject_Add(mbedtls-ext
         PATCH_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
                     "${CMAKE_CURRENT_BINARY_DIR}/config.h"
-                    "<SOURCE_DIR>/include/mbedtls/mbedtls_config.h"
+                    "<SOURCE_DIR>/include/mbedtls/config.h"
         COMMAND
             ${CMAKE_COMMAND} -E copy
                     ${MBEDTLS_ALT_INCLUDE_FILES}
@@ -160,12 +157,6 @@ set_target_properties(mbedcrypto
         INTERFACE_INCLUDE_DIRECTORIES
             "${MBEDTLS_INSTALL_LOCATION}/include"
         )
-
-# mbedTLS 3.x uses BCryptGenRandom for entropy on Windows
-if(WIN32)
-    set_property(TARGET mbedcrypto APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES bcrypt)
-endif()
 
 
 # ---------------------------------------------------------------------------

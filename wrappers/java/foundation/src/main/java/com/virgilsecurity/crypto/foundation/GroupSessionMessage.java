@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,24 +36,48 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Class represents group session message
+*/
 public class GroupSessionMessage implements AutoCloseable {
 
     public long cCtx;
 
+    /* Create underlying C context. */
     public GroupSessionMessage() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.groupSessionMessage_new();
     }
 
+    /* Wrap underlying C context. */
     GroupSessionMessage(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
+    /*
+    * Max message len
+    */
+    public int getMaxMessageLen() {
+        return 30188;
+    }
+
+    /*
+    * Message version
+    */
+    public int getMessageVersion() {
+        return 1;
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
     public static GroupSessionMessage getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new GroupSessionMessage(ctxHolder);
     }
 
+    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -62,44 +86,57 @@ public class GroupSessionMessage implements AutoCloseable {
         }
     }
 
+    /* Close resource. */
     public void close() {
         clearResources();
     }
 
+    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    public int getMaxMessageLen() {
-        return 30188;
-    }
-
-    public int getMessageVersion() {
-        return 1;
-    }
-
+    /*
+    * Returns message type.
+    */
     public GroupMsgType getType() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getType(this.cCtx);
     }
 
+    /*
+    * Returns session id.
+    * This method should be called only for group info type.
+    */
     public byte[] getSessionId() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getSessionId(this.cCtx);
     }
 
-    public int getEpoch() {
+    /*
+    * Returns message epoch.
+    */
+    public long getEpoch() {
         return FoundationJNI.INSTANCE.groupSessionMessage_getEpoch(this.cCtx);
     }
 
+    /*
+    * Buffer len to serialize this class.
+    */
     public int serializeLen() {
         return FoundationJNI.INSTANCE.groupSessionMessage_serializeLen(this.cCtx);
     }
 
+    /*
+    * Serializes instance.
+    */
     public byte[] serialize() {
         return FoundationJNI.INSTANCE.groupSessionMessage_serialize(this.cCtx);
     }
 
+    /*
+    * Deserializes instance.
+    */
     public static GroupSessionMessage deserialize(byte[] input) throws FoundationException {
         return FoundationJNI.INSTANCE.groupSessionMessage_deserialize(input);
     }
-
 }
+

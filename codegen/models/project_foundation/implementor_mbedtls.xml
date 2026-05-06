@@ -127,10 +127,6 @@
 
         <property name="auth tag len" type="size"/>
 
-        <property name="is nonce used" type="boolean">
-            True after finish_auth_encryption; cleared by set_nonce. Prevents nonce reuse.
-        </property>
-
         <method name="update internal" scope="internal" declaration="private">
             Process buffered encryption/decryption to ensure that data size is
             multiple of the block size of the cipher.

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.foundation._c_bridge import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
 
 
 class vsce_phe_server_t(Structure):
@@ -46,8 +46,7 @@ class vsce_phe_server_t(Structure):
 
 class VscePheServer(object):
     """Class for server-side PHE crypto operations.
-This class is thread-safe in case if .(c_global_macros_multi_threading) defined."""
-
+    This class is thread-safe in case if VSCE_MULTI_THREADING defined."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -67,12 +66,14 @@ This class is thread-safe in case if .(c_global_macros_multi_threading) defined.
         return vsce_phe_server_delete(ctx)
 
     def vsce_phe_server_use_random(self, ctx, random):
+        """Random used for key generation, proofs, etc."""
         vsce_phe_server_use_random = self._lib.vsce_phe_server_use_random
         vsce_phe_server_use_random.argtypes = [POINTER(vsce_phe_server_t), POINTER(vscf_impl_t)]
         vsce_phe_server_use_random.restype = None
         return vsce_phe_server_use_random(ctx, random)
 
     def vsce_phe_server_use_operation_random(self, ctx, operation_random):
+        """Random used for crypto operations to make them const-time"""
         vsce_phe_server_use_operation_random = self._lib.vsce_phe_server_use_operation_random
         vsce_phe_server_use_operation_random.argtypes = [POINTER(vsce_phe_server_t), POINTER(vscf_impl_t)]
         vsce_phe_server_use_operation_random.restype = None

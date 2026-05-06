@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,71 +37,79 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Provide conversion logic between OID and algorithm tags.
+*/
 class Oid
 {
 
     /**
+    * Return OID for given algorithm identifier.
     *
-    * @param AlgId $$algId
+    * @param AlgId $algId
     * @return string
     */
-    public static function fromAlgId(AlgId $$algId): string
+    public static function fromAlgId(AlgId $algId): string
     {
-        return vscf_oid_from_alg_id_php($$algId);
+        return vscf_oid_from_alg_id_php($algId->getValue());
     }
 
     /**
+    * Return algorithm identifier for given OID.
     *
-    * @param string $$oid
+    * @param string $oid
     * @return AlgId
     */
-    public static function toAlgId(string $$oid): AlgId
+    public static function toAlgId(string $oid): AlgId
     {
-        $enum = vscf_oid_to_alg_id_php($$oid);
+        $enum = vscf_oid_to_alg_id_php($oid);
         return new AlgId($enum);
     }
 
     /**
+    * Return OID for a given identifier.
     *
-    * @param OidId $$oidId
+    * @param OidId $oidId
     * @return string
     */
-    public static function fromId(OidId $$oidId): string
+    public static function fromId(OidId $oidId): string
     {
-        return vscf_oid_from_id_php($$oidId);
+        return vscf_oid_from_id_php($oidId->getValue());
     }
 
     /**
+    * Return identifier for a given OID.
     *
-    * @param string $$oid
+    * @param string $oid
     * @return OidId
     */
-    public static function toId(string $$oid): OidId
+    public static function toId(string $oid): OidId
     {
-        $enum = vscf_oid_to_id_php($$oid);
+        $enum = vscf_oid_to_id_php($oid);
         return new OidId($enum);
     }
 
     /**
+    * Map oid identifier to the algorithm identifier.
     *
-    * @param OidId $$oidId
+    * @param OidId $oidId
     * @return AlgId
     */
-    public static function idToAlgId(OidId $$oidId): AlgId
+    public static function idToAlgId(OidId $oidId): AlgId
     {
-        $enum = vscf_oid_id_to_alg_id_php($$oidId);
+        $enum = vscf_oid_id_to_alg_id_php($oidId->getValue());
         return new AlgId($enum);
     }
 
     /**
+    * Return true if given OIDs are equal.
     *
-    * @param string $$lhs
-    * @param string $$rhs
+    * @param string $lhs
+    * @param string $rhs
     * @return bool
     */
-    public static function equal(string $$lhs, string $$rhs): bool
+    public static function equal(string $lhs, string $rhs): bool
     {
-        return vscf_oid_equal_php($$lhs, $$rhs);
+        return vscf_oid_equal_php($lhs, $rhs);
     }
-
 }

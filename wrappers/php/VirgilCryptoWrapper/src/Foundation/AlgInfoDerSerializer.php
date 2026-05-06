@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Provide DER serializer of algorithm information.
+*/
 class AlgInfoDerSerializer implements AlgInfoSerializer
 {
 
@@ -65,36 +68,16 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
     }
 
     /**
-    *
-    * @param Asn1Writer $$asn1Writer
+    * @param Asn1Writer $asn1Writer
     * @return void
     */
-    public function useAsn1Writer(Asn1Writer $$asn1Writer): void
+    public function useAsn1Writer(Asn1Writer $asn1Writer): void
     {
-        vscf_alg_info_der_serializer_use_asn1_writer_php($this->ctx, $$asn1Writer);
+        vscf_alg_info_der_serializer_use_asn1_writer_php($this->ctx, $asn1Writer->getCtx());
     }
 
     /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return string
-    */
-    public function serialize(AlgInfo $$algInfo): string
-    {
-        return vscf_alg_info_der_serializer_serialize_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
+    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     */
@@ -104,223 +87,38 @@ class AlgInfoDerSerializer implements AlgInfoSerializer
     }
 
     /**
+    * Serialize by using internal ASN.1 writer.
+    * Note, that caller code is responsible to reset ASN.1 writer with
+    * an output buffer.
     *
-    * @param AlgId $$algId
-    * @return bool
+    * @param AlgInfo $algInfo
+    * @return int
     */
-    public static function isAlgRequireNullParams(AlgId $$algId): bool
+    public function serializeInplace(AlgInfo $algInfo): int
     {
-        return vscf_alg_info_der_serializer_is_alg_require_null_params_php($$algId);
+        return vscf_alg_info_der_serializer_serialize_inplace_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
+    * Return buffer size enough to hold serialized algorithm.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return int
     */
-    public function serializedSimpleAlgInfoLen(AlgInfo $$algInfo): int
+    public function serializedLen(AlgInfo $algInfo): int
     {
-        return vscf_alg_info_der_serializer_serialized_simple_alg_info_len_php($this->ctx, $$algInfo->getCtx());
+        return vscf_alg_info_der_serializer_serialized_len_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
+    * Serialize algorithm info to buffer class.
     *
-    * @param AlgInfo $$algInfo
-    * @return int
+    * @param AlgInfo $algInfo
+    * @return string
     */
-    public function serializeSimpleAlgInfo(AlgInfo $$algInfo): int
+    public function serialize(AlgInfo $algInfo): string
     {
-        return vscf_alg_info_der_serializer_serialize_simple_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedKdfAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_kdf_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeKdfAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_kdf_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedHkdfAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeHkdfAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_hkdf_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedHmacAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_hmac_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeHmacAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_hmac_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedCipherAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_cipher_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeCipherAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_cipher_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedPbkdf2AlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializePbkdf2AlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedPbes2AlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializePbes2AlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_pbes2_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedEccAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_ecc_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeEccAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_ecc_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedCompoundKeyAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeCompoundKeyAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_compound_key_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializedHybridKeyAlgInfoLen(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeHybridKeyAlgInfo(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return int
-    */
-    public function serializeInplace(AlgInfo $$algInfo): int
-    {
-        return vscf_alg_info_der_serializer_serialize_inplace_php($this->ctx, $$algInfo->getCtx());
+        return vscf_alg_info_der_serializer_serialize_php($this->ctx, $algInfo->getCtx());
     }
 
     /**

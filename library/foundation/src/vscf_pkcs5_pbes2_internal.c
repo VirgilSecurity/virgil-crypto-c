@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -76,44 +76,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Setup dependency to the interface 'salted kdf' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf);
-
-//
-//  Setup dependency to the interface 'salted kdf' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf);
-
-//
-//  Release dependency to the interface 'salted kdf'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self);
-
-//
-//  Setup dependency to the interface 'cipher' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher);
-
-//
-//  Setup dependency to the interface 'cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher);
-
-//
-//  Release dependency to the interface 'cipher'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self);
-
 static const vscf_api_t *
 vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag);
 
@@ -123,7 +85,7 @@ vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -150,7 +112,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_encrypt_api_t encrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'encrypt' MUST be equal to the  'vscf_api_tag_ENCRYPT'.
+    //  For interface 'encrypt' MUST be equal to the 'vscf_api_tag_ENCRYPT'.
     //
     vscf_api_tag_ENCRYPT,
     //
@@ -177,7 +139,7 @@ static const vscf_encrypt_api_t encrypt_api = {
 static const vscf_decrypt_api_t decrypt_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'decrypt' MUST be equal to the  'vscf_api_tag_DECRYPT'.
+    //  For interface 'decrypt' MUST be equal to the 'vscf_api_tag_DECRYPT'.
     //
     vscf_api_tag_DECRYPT,
     //
@@ -218,90 +180,6 @@ static const vscf_impl_info_t info = {
 };
 
 //
-//  Setup dependency to the interface 'salted kdf' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT(self->kdf == NULL);
-
-    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
-
-    self->kdf = vscf_impl_shallow_copy(kdf);
-}
-
-//
-//  Setup dependency to the interface 'salted kdf' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(kdf);
-    VSCF_ASSERT(self->kdf == NULL);
-
-    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
-
-    self->kdf = kdf;
-}
-
-//
-//  Release dependency to the interface 'salted kdf'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->kdf);
-}
-
-//
-//  Setup dependency to the interface 'cipher' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT(self->cipher == NULL);
-
-    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
-
-    self->cipher = vscf_impl_shallow_copy(cipher);
-}
-
-//
-//  Setup dependency to the interface 'cipher' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
-
-    VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(cipher);
-    VSCF_ASSERT(self->cipher == NULL);
-
-    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
-
-    self->cipher = cipher;
-}
-
-//
-//  Release dependency to the interface 'cipher'.
-//
-VSCF_PUBLIC void
-vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_impl_destroy(&self->cipher);
-}
-
-//
 //  Perform initialization of preallocated implementation context.
 //
 VSCF_PUBLIC void
@@ -329,7 +207,6 @@ vscf_pkcs5_pbes2_cleanup(vscf_pkcs5_pbes2_t *self) {
     }
 
     vscf_pkcs5_pbes2_release_kdf(self);
-
     vscf_pkcs5_pbes2_release_cipher(self);
 
     vscf_pkcs5_pbes2_cleanup_ctx(self);
@@ -442,16 +319,100 @@ vscf_pkcs5_pbes2_impl_const(const vscf_pkcs5_pbes2_t *self) {
     return (const vscf_impl_t *)(self);
 }
 
+//
+//  Setup dependency to the interface 'salted kdf' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_use_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT(self->kdf == NULL);
+
+    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
+
+    self->kdf = vscf_impl_shallow_copy(kdf);
+}
+
+//
+//  Setup dependency to the interface 'salted kdf' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_take_kdf(vscf_pkcs5_pbes2_t *self, vscf_impl_t *kdf) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(kdf);
+    VSCF_ASSERT(self->kdf == NULL);
+
+    VSCF_ASSERT(vscf_salted_kdf_is_implemented(kdf));
+
+    self->kdf = kdf;
+}
+
+//
+//  Release dependency to the interface 'salted kdf'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_release_kdf(vscf_pkcs5_pbes2_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->kdf);
+}
+
+//
+//  Setup dependency to the interface 'cipher' with shared ownership.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_use_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT(self->cipher == NULL);
+
+    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+
+    self->cipher = vscf_impl_shallow_copy(cipher);
+}
+
+//
+//  Setup dependency to the interface 'cipher' and transfer ownership.
+//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_take_cipher(vscf_pkcs5_pbes2_t *self, vscf_impl_t *cipher) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT_PTR(cipher);
+    VSCF_ASSERT(self->cipher == NULL);
+
+    VSCF_ASSERT(vscf_cipher_is_implemented(cipher));
+
+    self->cipher = cipher;
+}
+
+//
+//  Release dependency to the interface 'cipher'.
+//
+VSCF_PUBLIC void
+vscf_pkcs5_pbes2_release_cipher(vscf_pkcs5_pbes2_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_impl_destroy(&self->cipher);
+}
+
 static const vscf_api_t *
 vscf_pkcs5_pbes2_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-        return (const vscf_api_t *)                 &alg_api;
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_DECRYPT:
-        return (const vscf_api_t *)                 &decrypt_api;
+            return (const vscf_api_t *) &decrypt_api;
         case vscf_api_tag_ENCRYPT:
-        return (const vscf_api_t *)                 &encrypt_api;
+            return (const vscf_api_t *) &encrypt_api;
         default:
             return NULL;
     }

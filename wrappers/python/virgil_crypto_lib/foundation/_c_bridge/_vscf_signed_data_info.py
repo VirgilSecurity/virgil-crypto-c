@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,7 +44,6 @@ class vscf_signed_data_info_t(Structure):
 
 class VscfSignedDataInfo(object):
     """Handle meta information about signed data."""
-
 
     def __init__(self):
         """Create underlying C context."""

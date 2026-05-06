@@ -10,7 +10,7 @@ import "runtime"
 * Handle message signatures and related information.
 */
 type MessageInfoFooter struct {
-    cCtx *C.vscf_message_info_footer_t
+    cCtx *C.vscf_message_info_footer_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewMessageInfoFooter() *MessageInfoFooter {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoFooterWithCtx(ctx *C.vscf_message_info_footer_t) *MessageInfoFooter {
+func newMessageInfoFooterWithCtx(ctx *C.vscf_message_info_footer_t /*ct2*/) *MessageInfoFooter {
     obj := &MessageInfoFooter {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newMessageInfoFooterWithCtx(ctx *C.vscf_message_info_footer_t) *MessageInfo
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t) *MessageInfoFooter {
+func newMessageInfoFooterCopy(ctx *C.vscf_message_info_footer_t /*ct2*/) *MessageInfoFooter {
     obj := &MessageInfoFooter {
         cCtx: C.vscf_message_info_footer_shallow_copy(ctx),
     }
@@ -71,42 +71,42 @@ func (obj *MessageInfoFooter) delete() {
 * Return true if at least one signer info presents.
 */
 func (obj *MessageInfoFooter) HasSignerInfos() bool {
-    proxyResult := C.vscf_message_info_footer_has_signer_infos(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_has_signer_infos(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return list with a "signer info" elements.
 */
 func (obj *MessageInfoFooter) SignerInfos() *SignerInfoList {
-    proxyResult := C.vscf_message_info_footer_signer_infos(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_infos(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newSignerInfoListCopy(proxyResult)
+    return newSignerInfoListCopy(proxyResult) /* r5 */
 }
 
 /*
 * Return information about algorithm that was used for data hashing.
 */
 func (obj *MessageInfoFooter) SignerHashAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_message_info_footer_signer_hash_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_hash_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Return plain text digest that was used to produce signature.
 */
 func (obj *MessageInfoFooter) SignerDigest() []byte {
-    proxyResult := C.vscf_message_info_footer_signer_digest(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_message_info_footer_signer_digest(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }

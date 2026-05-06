@@ -10,7 +10,7 @@ import "runtime"
 * Virgil Security implementation of the HKDF (RFC 6234) algorithm.
 */
 type Hkdf struct {
-    cCtx *C.vscf_hkdf_t
+    cCtx *C.vscf_hkdf_t /*ct10*/
 }
 
 func (obj *Hkdf) SetHash(hash Hash) {
@@ -38,7 +38,7 @@ func NewHkdf() *Hkdf {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHkdfWithCtx(ctx *C.vscf_hkdf_t) *Hkdf {
+func newHkdfWithCtx(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: ctx,
     }
@@ -49,7 +49,7 @@ func newHkdfWithCtx(ctx *C.vscf_hkdf_t) *Hkdf {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHkdfCopy(ctx *C.vscf_hkdf_t) *Hkdf {
+func newHkdfCopy(ctx *C.vscf_hkdf_t /*ct10*/) *Hkdf {
     obj := &Hkdf {
         cCtx: C.vscf_hkdf_shallow_copy(ctx),
     }
@@ -79,29 +79,29 @@ func (obj *Hkdf) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Hkdf) AlgId() AlgId {
-    proxyResult := C.vscf_hkdf_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_hkdf_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Hkdf) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_hkdf_produce_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_hkdf_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult)
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Hkdf) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := C.vscf_hkdf_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_hkdf_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -126,11 +126,11 @@ func (obj *Hkdf) Derive(data []byte, keyLen uint) []byte {
     defer keyBuf.delete()
     dataData := helperWrapData (data)
 
-    C.vscf_hkdf_derive(obj.cCtx, dataData, (C.size_t)(keyLen), keyBuf.ctx)
+    C.vscf_hkdf_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
     runtime.KeepAlive(obj)
 
-    return keyBuf.getData()
+    return keyBuf.getData() /* r7 */
 }
 
 /*
@@ -139,7 +139,7 @@ func (obj *Hkdf) Derive(data []byte, keyLen uint) []byte {
 func (obj *Hkdf) Reset(salt []byte, iterationCount uint) {
     saltData := helperWrapData (salt)
 
-    C.vscf_hkdf_reset(obj.cCtx, saltData, (C.size_t)(iterationCount))
+    C.vscf_hkdf_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
     runtime.KeepAlive(obj)
 

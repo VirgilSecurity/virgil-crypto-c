@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -50,13 +50,13 @@ class Pythia(object):
 
     def configure(self):
         """Performs global initialization of the pythia library.
-Must be called once for entire application at startup."""
+        Must be called once for entire application at startup."""
         status = self._lib_vscp_pythia.vscp_pythia_configure()
         VscpStatus.handle_status(status)
 
     def cleanup(self):
         """Performs global cleanup of the pythia library.
-Must be called once for entire application before exit."""
+        Must be called once for entire application before exit."""
         self._lib_vscp_pythia.vscp_pythia_cleanup()
 
     def blinded_password_buf_len(self):
@@ -106,7 +106,7 @@ Must be called once for entire application before exit."""
 
     def blind(self, password):
         """Blinds password. Turns password into a pseudo-random string.
-This step is necessary to prevent 3rd-parties from knowledge of end user's password."""
+        This step is necessary to prevent 3rd-parties from knowledge of end user's password."""
         d_password = Data(password)
         blinded_password = Buffer(self.blinded_password_buf_len())
         blinding_secret = Buffer(self.blinding_secret_buf_len())
@@ -160,7 +160,7 @@ This step is necessary to prevent 3rd-parties from knowledge of end user's passw
 
     def verify(self, transformed_password, blinded_password, tweak, transformation_public_key, proof_value_c, proof_value_u):
         """This operation allows client to verify that the output of transform() is correct,
-assuming that client has previously stored transformation public key."""
+        assuming that client has previously stored transformation public key."""
         d_transformed_password = Data(transformed_password)
         d_blinded_password = Data(blinded_password)
         d_tweak = Data(tweak)
@@ -174,9 +174,9 @@ assuming that client has previously stored transformation public key."""
 
     def get_password_update_token(self, previous_transformation_private_key, new_transformation_private_key):
         """Rotates old transformation key to new transformation key and generates 'password update token',
-that can update 'deblinded password'(s).
+        that can update 'deblinded password'(s).
 
-This action should increment version of the 'pythia scope secret'."""
+        This action should increment version of the 'pythia scope secret'."""
         d_previous_transformation_private_key = Data(previous_transformation_private_key)
         d_new_transformation_private_key = Data(new_transformation_private_key)
         password_update_token = Buffer(self.password_update_token_buf_len())
@@ -186,7 +186,7 @@ This action should increment version of the 'pythia scope secret'."""
 
     def update_deblinded_with_token(self, deblinded_password, password_update_token):
         """Updates previously stored 'deblinded password' with 'password update token'.
-After this call, 'transform()' called with new arguments will return corresponding values."""
+        After this call, 'transform()' called with new arguments will return corresponding values."""
         d_deblinded_password = Data(deblinded_password)
         d_password_update_token = Data(password_update_token)
         updated_deblinded_password = Buffer(self.deblinded_password_buf_len())

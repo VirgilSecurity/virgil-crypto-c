@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -47,7 +47,6 @@ class vscf_raw_private_key_t(Structure):
 class VscfRawPrivateKey(object):
     """Handles interchangeable private key representation."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -64,34 +63,6 @@ class VscfRawPrivateKey(object):
         vscf_raw_private_key_delete.argtypes = [POINTER(vscf_raw_private_key_t)]
         vscf_raw_private_key_delete.restype = None
         return vscf_raw_private_key_delete(ctx)
-
-    def vscf_raw_private_key_data(self, ctx):
-        """Return key data."""
-        vscf_raw_private_key_data = self._lib.vscf_raw_private_key_data
-        vscf_raw_private_key_data.argtypes = [POINTER(vscf_raw_private_key_t)]
-        vscf_raw_private_key_data.restype = vsc_data_t
-        return vscf_raw_private_key_data(ctx)
-
-    def vscf_raw_private_key_has_public_key(self, ctx):
-        """Return true if private key contains public key."""
-        vscf_raw_private_key_has_public_key = self._lib.vscf_raw_private_key_has_public_key
-        vscf_raw_private_key_has_public_key.argtypes = [POINTER(vscf_raw_private_key_t)]
-        vscf_raw_private_key_has_public_key.restype = c_bool
-        return vscf_raw_private_key_has_public_key(ctx)
-
-    def vscf_raw_private_key_set_public_key(self, ctx, raw_public_key):
-        """Setup public key related to the private key."""
-        vscf_raw_private_key_set_public_key = self._lib.vscf_raw_private_key_set_public_key
-        vscf_raw_private_key_set_public_key.argtypes = [POINTER(vscf_raw_private_key_t), POINTER(vscf_raw_public_key_t)]
-        vscf_raw_private_key_set_public_key.restype = None
-        return vscf_raw_private_key_set_public_key(ctx, raw_public_key)
-
-    def vscf_raw_private_key_get_public_key(self, ctx):
-        """Return public key related to the private key."""
-        vscf_raw_private_key_get_public_key = self._lib.vscf_raw_private_key_get_public_key
-        vscf_raw_private_key_get_public_key.argtypes = [POINTER(vscf_raw_private_key_t)]
-        vscf_raw_private_key_get_public_key.restype = POINTER(vscf_raw_public_key_t)
-        return vscf_raw_private_key_get_public_key(ctx)
 
     def vscf_raw_private_key_alg_id(self, ctx):
         """Algorithm identifier the key belongs to."""
@@ -123,7 +94,7 @@ class VscfRawPrivateKey(object):
 
     def vscf_raw_private_key_is_valid(self, ctx):
         """Check that key is valid.
-Note, this operation can be slow."""
+        Note, this operation can be slow."""
         vscf_raw_private_key_is_valid = self._lib.vscf_raw_private_key_is_valid
         vscf_raw_private_key_is_valid.argtypes = [POINTER(vscf_raw_private_key_t)]
         vscf_raw_private_key_is_valid.restype = c_bool
@@ -135,6 +106,34 @@ Note, this operation can be slow."""
         vscf_raw_private_key_extract_public_key.argtypes = [POINTER(vscf_raw_private_key_t)]
         vscf_raw_private_key_extract_public_key.restype = POINTER(vscf_impl_t)
         return vscf_raw_private_key_extract_public_key(ctx)
+
+    def vscf_raw_private_key_data(self, ctx):
+        """Return key data."""
+        vscf_raw_private_key_data = self._lib.vscf_raw_private_key_data
+        vscf_raw_private_key_data.argtypes = [POINTER(vscf_raw_private_key_t)]
+        vscf_raw_private_key_data.restype = vsc_data_t
+        return vscf_raw_private_key_data(ctx)
+
+    def vscf_raw_private_key_has_public_key(self, ctx):
+        """Return true if private key contains public key."""
+        vscf_raw_private_key_has_public_key = self._lib.vscf_raw_private_key_has_public_key
+        vscf_raw_private_key_has_public_key.argtypes = [POINTER(vscf_raw_private_key_t)]
+        vscf_raw_private_key_has_public_key.restype = c_bool
+        return vscf_raw_private_key_has_public_key(ctx)
+
+    def vscf_raw_private_key_set_public_key(self, ctx, raw_public_key):
+        """Setup public key related to the private key."""
+        vscf_raw_private_key_set_public_key = self._lib.vscf_raw_private_key_set_public_key
+        vscf_raw_private_key_set_public_key.argtypes = [POINTER(vscf_raw_private_key_t), POINTER(vscf_raw_public_key_t)]
+        vscf_raw_private_key_set_public_key.restype = None
+        return vscf_raw_private_key_set_public_key(ctx, raw_public_key)
+
+    def vscf_raw_private_key_get_public_key(self, ctx):
+        """Return public key related to the private key."""
+        vscf_raw_private_key_get_public_key = self._lib.vscf_raw_private_key_get_public_key
+        vscf_raw_private_key_get_public_key.argtypes = [POINTER(vscf_raw_private_key_t)]
+        vscf_raw_private_key_get_public_key.restype = POINTER(vscf_raw_public_key_t)
+        return vscf_raw_private_key_get_public_key(ctx)
 
     def vscf_raw_private_key_shallow_copy(self, ctx):
         vscf_raw_private_key_shallow_copy = self._lib.vscf_raw_private_key_shallow_copy

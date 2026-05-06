@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handle simple algorithm information (just id).
+*/
 class SimpleAlgInfo implements AlgInfo
 {
 
@@ -44,6 +47,18 @@ class SimpleAlgInfo implements AlgInfo
     * @var
     */
     private $ctx;
+
+    /**
+    * Create algorithm info with identificator.
+    *
+    * @param AlgId $algId
+    * @return SimpleAlgInfo
+    */
+    public static function withAlgId(AlgId $algId): SimpleAlgInfo
+    {
+        $ctx = vscf_simple_alg_info_with_alg_id_php($algId);
+        return new SimpleAlgInfo($ctx);
+    }
 
     /**
     * Create underlying C context.
@@ -65,6 +80,7 @@ class SimpleAlgInfo implements AlgInfo
     }
 
     /**
+    * Provide algorithm identificator.
     *
     * @return AlgId
     */

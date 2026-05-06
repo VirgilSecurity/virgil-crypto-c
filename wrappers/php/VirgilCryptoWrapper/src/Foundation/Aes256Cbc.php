@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,11 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Implementation of the symmetric cipher AES-256 bit in a CBC mode.
+* Note, this implementation contains dynamic memory allocations,
+* this should be improved in the future releases.
+*/
 class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
 {
 
@@ -44,6 +49,11 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     * @var
     */
     private $ctx;
+
+    const NONCE_LEN = 16;
+    const KEY_LEN = 32;
+    const KEY_BITLEN = 256;
+    const BLOCK_LEN = 16;
 
     /**
     * Create underlying C context.
@@ -65,6 +75,7 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     }
 
     /**
+    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -75,8 +86,10 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     }
 
     /**
+    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -85,89 +98,98 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     }
 
     /**
+    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $$algInfo): void
+    public function restoreAlgInfo(AlgInfo $algInfo): void
     {
-        vscf_aes256_cbc_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
+        vscf_aes256_cbc_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
+    * Encrypt given data.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     * @throws \Exception
     */
-    public function encrypt(string $$data): string
+    public function encrypt(string $data): string
     {
-        return vscf_aes256_cbc_encrypt_php($this->ctx, $$data);
+        return vscf_aes256_cbc_encrypt_php($this->ctx, $data);
     }
 
     /**
+    * Calculate required buffer length to hold the encrypted data.
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function encryptedLen(int $$dataLen): int
+    public function encryptedLen(int $dataLen): int
     {
-        return vscf_aes256_cbc_encrypted_len_php($this->ctx, $$dataLen);
+        return vscf_aes256_cbc_encrypted_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Precise length calculation of encrypted data.
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function preciseEncryptedLen(int $$dataLen): int
+    public function preciseEncryptedLen(int $dataLen): int
     {
-        return vscf_aes256_cbc_precise_encrypted_len_php($this->ctx, $$dataLen);
+        return vscf_aes256_cbc_precise_encrypted_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Decrypt given data.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     * @throws \Exception
     */
-    public function decrypt(string $$data): string
+    public function decrypt(string $data): string
     {
-        return vscf_aes256_cbc_decrypt_php($this->ctx, $$data);
+        return vscf_aes256_cbc_decrypt_php($this->ctx, $data);
     }
 
     /**
+    * Calculate required buffer length to hold the decrypted data.
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function decryptedLen(int $$dataLen): int
+    public function decryptedLen(int $dataLen): int
     {
-        return vscf_aes256_cbc_decrypted_len_php($this->ctx, $$dataLen);
+        return vscf_aes256_cbc_decrypted_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Setup IV or nonce.
     *
-    * @param string $$nonce
+    * @param string $nonce
     * @return void
     */
-    public function setNonce(string $$nonce): void
+    public function setNonce(string $nonce): void
     {
-        vscf_aes256_cbc_set_nonce_php($this->ctx, $$nonce);
+        vscf_aes256_cbc_set_nonce_php($this->ctx, $nonce);
     }
 
     /**
+    * Set cipher encryption / decryption key.
     *
-    * @param string $$key
+    * @param string $key
     * @return void
     */
-    public function setKey(string $$key): void
+    public function setKey(string $key): void
     {
-        vscf_aes256_cbc_set_key_php($this->ctx, $$key);
+        vscf_aes256_cbc_set_key_php($this->ctx, $key);
     }
 
     /**
+    * Start sequential encryption.
     *
     * @return void
     */
@@ -177,6 +199,7 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     }
 
     /**
+    * Start sequential decryption.
     *
     * @return void
     */
@@ -186,46 +209,57 @@ class Aes256Cbc implements Alg, Encrypt, Decrypt, CipherInfo, Cipher
     }
 
     /**
+    * Process encryption or decryption of the given data chunk.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     */
-    public function update(string $$data): string
+    public function update(string $data): string
     {
-        return vscf_aes256_cbc_update_php($this->ctx, $$data);
+        return vscf_aes256_cbc_update_php($this->ctx, $data);
     }
 
     /**
+    * Return buffer length required to hold an output of the methods
+    * "update" or "finish" in an current mode.
+    * Pass zero length to define buffer length of the method "finish".
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function outLen(int $$dataLen): int
+    public function outLen(int $dataLen): int
     {
-        return vscf_aes256_cbc_out_len_php($this->ctx, $$dataLen);
+        return vscf_aes256_cbc_out_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Return buffer length required to hold an output of the methods
+    * "update" or "finish" in an encryption mode.
+    * Pass zero length to define buffer length of the method "finish".
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function encryptedOutLen(int $$dataLen): int
+    public function encryptedOutLen(int $dataLen): int
     {
-        return vscf_aes256_cbc_encrypted_out_len_php($this->ctx, $$dataLen);
+        return vscf_aes256_cbc_encrypted_out_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Return buffer length required to hold an output of the methods
+    * "update" or "finish" in an decryption mode.
+    * Pass zero length to define buffer length of the method "finish".
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function decryptedOutLen(int $$dataLen): int
+    public function decryptedOutLen(int $dataLen): int
     {
-        return vscf_aes256_cbc_decrypted_out_len_php($this->ctx, $$dataLen);
+        return vscf_aes256_cbc_decrypted_out_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Accomplish encryption or decryption process.
     *
     * @return string
     * @throws \Exception

@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handles padding parameters and constraints.
+*/
 class PaddingParams
 {
 
@@ -48,6 +51,20 @@ class PaddingParams
     const DEFAULT_FRAME_MIN = 32;
     const DEFAULT_FRAME = 160;
     const DEFAULT_FRAME_MAX = 256;
+
+    /**
+    * Build padding params with given constraints.
+    * Next formula can clarify what frame is: padding_length = data_length MOD frame
+    *
+    * @param int $frame
+    * @param int $frameMax
+    * @return PaddingParams
+    */
+    public static function withConstraints(int $frame, int $frameMax): PaddingParams
+    {
+        $ctx = vscf_padding_params_with_constraints_php($frame, $frameMax);
+        return new PaddingParams($ctx);
+    }
 
     /**
     * Create underlying C context.
@@ -69,6 +86,7 @@ class PaddingParams
     }
 
     /**
+    * Return padding frame in bytes.
     *
     * @return int
     */
@@ -78,6 +96,7 @@ class PaddingParams
     }
 
     /**
+    * Return maximum padding frame in bytes.
     *
     * @return int
     */

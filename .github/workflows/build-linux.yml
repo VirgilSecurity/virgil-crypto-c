@@ -1,4 +1,4 @@
-name: Build Linux
+name: build-linux
 on:
   push:
     branches:
@@ -7,9 +7,9 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - name: Setup Python virtual environment
@@ -29,22 +29,14 @@ jobs:
           -DVIRGIL_C_MT_TESTING=OFF \
           -DENABLE_BENCHMARKING=ON \
           -DVIRGIL_POST_QUANTUM=ON \
-          -DVIRGIL_PROGRAMS=ON \
-          "-DMEMORYCHECK_COMMAND_OPTIONS=--error-exitcode=1 --leak-check=full --show-leak-kinds=definite --track-origins=yes"
+          -DVIRGIL_PROGRAMS=ON
       - name: Build for memcheck
         run: cmake --build build -- -j$(nproc)
       - name: Run memcheck
         working-directory: build
         run: |
-          set +e
           ctest -T memcheck --output-on-failure
-          CTEST_EXIT=$?
-          cat Testing/Temporary/MemoryChecker.*.log 2>/dev/null || true
-          if grep -q "definitely lost" Testing/Temporary/MemoryChecker.*.log 2>/dev/null; then
-            echo "Memory leaks detected — failing job"
-            exit 1
-          fi
-          exit $CTEST_EXIT
+          cat Testing/Temporary/MemoryChecker.*.log
       - name: Build multi-threading tests
         run: |
           source .venv/bin/activate

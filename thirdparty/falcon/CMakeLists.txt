@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -48,9 +48,9 @@ set(FALCON_INSTALL_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/falcon)
 include(ExternalProject)
 ExternalProject_Add(falcon-ext
         URL
-            https://falcon-sign.info/Falcon-impl-20211101.zip
+            https://falcon-sign.info/falcon-20190918.tar.gz
         URL_HASH
-            SHA256=d9f982bd825b9903b57b686d6d26018dac173a1dff09f224cc39302f9d85a595
+            SHA256=229fca9b3116ca3ff1f0952227419fc8b2ce11ce0be74a6e92a3837bacda19a2
         PATCH_COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
                     ${CMAKE_CURRENT_LIST_DIR}/falcon.CMakeLists.txt <SOURCE_DIR>/CMakeLists.txt &&

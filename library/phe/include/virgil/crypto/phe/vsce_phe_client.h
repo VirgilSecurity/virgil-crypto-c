@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -51,6 +53,10 @@
 
 #ifndef VSCE_PHE_CLIENT_H_INCLUDED
 #define VSCE_PHE_CLIENT_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
 
 #if !VSCE_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -73,26 +79,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -207,7 +198,8 @@ vsce_phe_client_setup_defaults(vsce_phe_client_t *self) VSCE_NODISCARD;
 //  This function should be called only once
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key, vsc_data_t server_public_key) VSCE_NODISCARD;
+vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
+        vsc_data_t server_public_key) VSCE_NODISCARD;
 
 //
 //  Generates client private key
@@ -227,7 +219,8 @@ vsce_phe_client_enrollment_record_len(vsce_phe_client_t *self);
 //  Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_response, vsc_data_t password, vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key) VSCE_NODISCARD;
+vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_response, vsc_data_t password,
+        vsc_buffer_t *enrollment_record, vsc_buffer_t *account_key) VSCE_NODISCARD;
 
 //
 //  Buffer size needed to fit VerifyPasswordRequest
@@ -239,7 +232,8 @@ vsce_phe_client_verify_password_request_len(vsce_phe_client_t *self);
 //  Creates a request for further password verification at the PHE server side.
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data_t password, vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request) VSCE_NODISCARD;
+vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data_t password,
+        vsc_data_t enrollment_record, vsc_buffer_t *verify_password_request) VSCE_NODISCARD;
 
 //
 //  Verifies PHE server's answer
@@ -247,20 +241,24 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
 //  If login failed account key will be empty
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t password, vsc_data_t enrollment_record, vsc_data_t verify_password_response, vsc_buffer_t *account_key) VSCE_NODISCARD;
+vsce_phe_client_check_response_and_decrypt(vsce_phe_client_t *self, vsc_data_t password, vsc_data_t enrollment_record,
+        vsc_data_t verify_password_response, vsc_buffer_t *account_key) VSCE_NODISCARD;
 
 //
 //  Updates client's private key and server's public key using server's update token
 //  Use output values to instantiate new client instance with new keys
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key, vsc_buffer_t *new_server_public_key) VSCE_NODISCARD;
+vsce_phe_client_rotate_keys(vsce_phe_client_t *self, vsc_data_t update_token, vsc_buffer_t *new_client_private_key,
+        vsc_buffer_t *new_server_public_key) VSCE_NODISCARD;
 
 //
 //  Updates EnrollmentRecord using server's update token
 //
 VSCE_PUBLIC vsce_status_t
-vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enrollment_record, vsc_data_t update_token, vsc_buffer_t *new_enrollment_record) VSCE_NODISCARD;
+vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enrollment_record, vsc_data_t update_token,
+        vsc_buffer_t *new_enrollment_record) VSCE_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -268,9 +266,11 @@ vsce_phe_client_update_enrollment_record(vsce_phe_client_t *self, vsc_data_t enr
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCE_PHE_CLIENT_H_INCLUDED

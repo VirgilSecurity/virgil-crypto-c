@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -142,13 +142,7 @@ endif()
 #
 if(COMMAND enable_target_pedantic)
     enable_target_pedantic(pythia)
-    # Relic uses longjmp for error handling; GCC's -Wclobbered warns about
-    # variables potentially clobbered by setjmp/longjmp.  Disable -Werror
-    # for this target on all compilers so the warnings are non-fatal.
-    target_compile_options(pythia PRIVATE
-        $<$<C_COMPILER_ID:GNU>:-Wno-error -Wno-clobbered>
-        $<$<OR:$<C_COMPILER_ID:Clang>,$<C_COMPILER_ID:AppleClang>>:-Wno-error>
-    )
+    target_compile_options(pythia PRIVATE $<$<C_COMPILER_ID:GNU>:-Wno-error>)
 else()
     message(STATUS "To enable pedantic mode create function 'enable_target_pedantic(<target>)'.")
 endif()

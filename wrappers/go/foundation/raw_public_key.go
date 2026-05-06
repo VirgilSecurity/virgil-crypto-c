@@ -2,26 +2,26 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
 * Handles interchangeable public key representation.
 */
 type RawPublicKey struct {
-    cCtx *C.vscf_raw_public_key_t
+    cCtx *C.vscf_raw_public_key_t /*ct10*/
 }
 
 /*
 * Return key data.
 */
 func (obj *RawPublicKey) Data() []byte {
-    proxyResult := C.vscf_raw_public_key_data(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_raw_public_key_data(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /* Handle underlying C context. */
@@ -41,7 +41,7 @@ func NewRawPublicKey() *RawPublicKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRawPublicKeyWithCtx(ctx *C.vscf_raw_public_key_t) *RawPublicKey {
+func newRawPublicKeyWithCtx(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: ctx,
     }
@@ -52,7 +52,7 @@ func newRawPublicKeyWithCtx(ctx *C.vscf_raw_public_key_t) *RawPublicKey {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t) *RawPublicKey {
+func newRawPublicKeyCopy(ctx *C.vscf_raw_public_key_t /*ct10*/) *RawPublicKey {
     obj := &RawPublicKey {
         cCtx: C.vscf_raw_public_key_shallow_copy(ctx),
     }
@@ -82,44 +82,44 @@ func (obj *RawPublicKey) delete() {
 * Algorithm identifier the key belongs to.
 */
 func (obj *RawPublicKey) AlgId() AlgId {
-    proxyResult := C.vscf_raw_public_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_raw_public_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Return algorithm information that can be used for serialization.
 */
 func (obj *RawPublicKey) AlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_raw_public_key_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_raw_public_key_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Length of the key in bytes.
 */
 func (obj *RawPublicKey) Len() uint {
-    proxyResult := C.vscf_raw_public_key_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_raw_public_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Length of the key in bits.
 */
 func (obj *RawPublicKey) Bitlen() uint {
-    proxyResult := C.vscf_raw_public_key_bitlen(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_raw_public_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -127,9 +127,9 @@ func (obj *RawPublicKey) Bitlen() uint {
 * Note, this operation can be slow.
 */
 func (obj *RawPublicKey) IsValid() bool {
-    proxyResult := C.vscf_raw_public_key_is_valid(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_raw_public_key_is_valid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }

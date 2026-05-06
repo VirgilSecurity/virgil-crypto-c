@@ -10,7 +10,10 @@
 
     <require impl="sha512" project="foundation" scope="private"/>
     <require impl="hkdf" project="foundation" scope="private"/>
+
     <dependency name="rng" interface="random" project="foundation" has_observers="1"/>
+    <property name="round5" class="round5" project="foundation"/>
+    <property name="falcon" class="falcon" project="foundation"/>
 
     <require module="ratchet typedefs" scope="public"/>
     <require class="ratchet common hidden" scope="private"/>
@@ -57,7 +60,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="compute initiator pqc shared secret">
+    <method name="compute initiator pqc shared secret" scope="internal">
         <argument name="sender identity private key second signer" interface="private key" project="foundation"/>
         <argument name="receiver identity public key second" interface="public key" project="foundation"/>
         <argument name="receiver long term public key second" interface="public key" project="foundation"/>
@@ -97,7 +100,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="compute responder pqc shared secret">
+    <method name="compute responder pqc shared secret" scope="internal">
         <argument name="sender identity public key second verifier" interface="private key" project="foundation"/>
         <argument name="receiver identity private key second" interface="public key" project="foundation"/>
         <argument name="receiver long term private key second" interface="public key" project="foundation"/>
@@ -113,7 +116,7 @@
         <return enum="status"/>
     </method>
 
-    <method name="derive key" is_static="1">
+    <method name="derive key" is_static="1" scope="internal">
         <argument name="shared secret" class="data"/>
         <argument name="shared key" class="vscr_ratchet_symmetric_key_t" is_reference="0" library="internal" access="readwrite"/>
     </method>

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,18 +45,17 @@ class Oid(object):
         """Create underlying C context."""
         self._lib_vscf_oid = VscfOid()
 
+    def __eq__(self, lhs, rhs):
+        """Return true if given OIDs are equal."""
+        result = self._lib_vscf_oid.vscf_oid_equal(lhs, rhs)
+        return result
+
     def from_alg_id(self, alg_id):
         """Return OID for given algorithm identifier."""
         result = self._lib_vscf_oid.vscf_oid_from_alg_id(alg_id)
         instance = Data.take_c_ctx(result)
         cleaned_bytes = bytearray(instance)
         return cleaned_bytes
-
-    def to_alg_id(self, oid):
-        """Return algorithm identifier for given OID."""
-        d_oid = Data(oid)
-        result = self._lib_vscf_oid.vscf_oid_to_alg_id(d_oid.data)
-        return result
 
     def from_id(self, oid_id):
         """Return OID for a given identifier."""
@@ -76,9 +75,8 @@ class Oid(object):
         result = self._lib_vscf_oid.vscf_oid_id_to_alg_id(oid_id)
         return result
 
-    def equal(self, lhs, rhs):
-        """Return true if given OIDs are equal."""
-        d_lhs = Data(lhs)
-        d_rhs = Data(rhs)
-        result = self._lib_vscf_oid.vscf_oid_equal(d_lhs.data, d_rhs.data)
+    def to_alg_id(self, oid):
+        """Return algorithm identifier for given OID."""
+        d_oid = Data(oid)
+        result = self._lib_vscf_oid.vscf_oid_to_alg_id(d_oid.data)
         return result

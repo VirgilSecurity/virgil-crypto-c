@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -43,9 +43,9 @@ from .private_key import PrivateKey
 class CompoundPrivateKey(Key, PrivateKey):
     """Handles compound private key.
 
-Compound private key contains 2 private keys and signature:
-    - cipher key - is used for decryption;
-    - signer key - is used for signing."""
+    Compound private key contains 2 private keys and signature:
+        - cipher key - is used for decryption;
+        - signer key - is used for signing."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -58,32 +58,20 @@ Compound private key contains 2 private keys and signature:
         """Destroy underlying C context."""
         self._lib_vscf_compound_private_key.vscf_compound_private_key_delete(self.ctx)
 
-    def cipher_key(self):
-        """Return primary private key suitable for a final decryption."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_cipher_key(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def signer_key(self):
-        """Return private key suitable for signing."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_signer_key(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
-    def alg_id(self):
-        """Algorithm identifier the key belongs to."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_alg_id(self.ctx)
+    def __len__(self):
+        """Length of the key in bytes."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_len(self.ctx)
         return result
 
     def alg_info(self):
         """Return algorithm information that can be used for serialization."""
         result = self._lib_vscf_compound_private_key.vscf_compound_private_key_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def len(self):
-        """Length of the key in bytes."""
-        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_len(self.ctx)
+    def alg_id(self):
+        """Algorithm identifier the key belongs to."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_alg_id(self.ctx)
         return result
 
     def bitlen(self):
@@ -93,7 +81,7 @@ Compound private key contains 2 private keys and signature:
 
     def is_valid(self):
         """Check that key is valid.
-Note, this operation can be slow."""
+        Note, this operation can be slow."""
         result = self._lib_vscf_compound_private_key.vscf_compound_private_key_is_valid(self.ctx)
         return result
 
@@ -103,8 +91,17 @@ Note, this operation can be slow."""
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def __len__(self):
-        return self.len()
+    def cipher_key(self):
+        """Return primary private key suitable for a final decryption."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_cipher_key(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
+    def signer_key(self):
+        """Return private key suitable for signing."""
+        result = self._lib_vscf_compound_private_key.vscf_compound_private_key_signer_key(self.ctx)
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,8 +35,8 @@
 
 from ctypes import *
 from ._c_bridge import VscfEntropyAccumulator
-from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge import VscfStatus
 from .entropy_source import EntropySource
 
 
@@ -56,16 +56,6 @@ class EntropyAccumulator(EntropySource):
         """Destroy underlying C context."""
         self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_delete(self.ctx)
 
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_setup_defaults(self.ctx)
-
-    def add_source(self, source, threshold):
-        """Add given entropy source to the accumulator.
-Threshold defines minimum number of bytes that must be gathered
-from the source during accumulation."""
-        self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_add_source(self.ctx, source.c_impl, threshold)
-
     def is_strong(self):
         """Defines that implemented source is strong."""
         result = self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_is_strong(self.ctx)
@@ -77,6 +67,16 @@ from the source during accumulation."""
         status = self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_gather(self.ctx, len, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
+
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_setup_defaults(self.ctx)
+
+    def add_source(self, source, threshold):
+        """Add given entropy source to the accumulator.
+        Threshold defines minimum number of bytes that must be gathered
+        from the source during accumulation."""
+        self._lib_vscf_entropy_accumulator.vscf_entropy_accumulator_add_source(self.ctx, source.c_impl, threshold)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

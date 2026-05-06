@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -42,11 +42,7 @@ from virgil_crypto_lib.common._c_bridge import Buffer
 
 class Cipher(object):
     """Class for encryption using PHE account key
-This class is thread-safe."""
-
-    SALT_LEN = 32
-    KEY_LEN = 32
-    NONCE_LEN = 12
+    This class is thread-safe."""
 
     def __init__(self):
         """Create underlying C context."""

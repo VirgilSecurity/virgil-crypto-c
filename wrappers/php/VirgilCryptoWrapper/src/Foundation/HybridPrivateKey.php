@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,11 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handles a hybrid private key.
+*
+* The hybrid private key contains 2 private keys.
+*/
 class HybridPrivateKey implements Key, PrivateKey
 {
 
@@ -65,6 +70,31 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Return first private key.
+    *
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function firstKey(): PrivateKey
+    {
+        $ctx = vscf_hybrid_private_key_first_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Return second private key.
+    *
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function secondKey(): PrivateKey
+    {
+        $ctx = vscf_hybrid_private_key_second_key_php($this->ctx);
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -75,8 +105,10 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -85,6 +117,7 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Length of the key in bytes.
     *
     * @return int
     */
@@ -94,6 +127,7 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Length of the key in bits.
     *
     * @return int
     */
@@ -103,6 +137,8 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Check that key is valid.
+    * Note, this operation can be slow.
     *
     * @return bool
     */
@@ -112,33 +148,15 @@ class HybridPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Extract public key from the private key.
     *
     * @return PublicKey
+    * @throws \Exception
     */
     public function extractPublicKey(): PublicKey
     {
         $ctx = vscf_hybrid_private_key_extract_public_key_php($this->ctx);
         return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @return PrivateKey
-    */
-    public function firstKey(): PrivateKey
-    {
-        $ctx = vscf_hybrid_private_key_first_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @return PrivateKey
-    */
-    public function secondKey(): PrivateKey
-    {
-        $ctx = vscf_hybrid_private_key_second_key_php($this->ctx);
-        return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**

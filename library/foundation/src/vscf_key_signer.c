@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -96,7 +96,8 @@ vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *privat
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature) {
+vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_buffer_t *signature) {
 
     const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
     VSCF_ASSERT_PTR (key_signer_api);
@@ -122,7 +123,8 @@ vscf_key_signer_can_verify(const vscf_impl_t *impl, const vscf_impl_t *public_ke
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature) {
+vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
+        vsc_data_t digest, vsc_data_t signature) {
 
     const vscf_key_signer_api_t *key_signer_api = vscf_key_signer_api(impl);
     VSCF_ASSERT_PTR (key_signer_api);

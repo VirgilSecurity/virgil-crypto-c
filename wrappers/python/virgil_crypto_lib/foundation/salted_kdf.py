@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -39,7 +39,7 @@ from abc import *
 
 class SaltedKdf(object):
     """Provides interface to the key derivation function (KDF) algorithms
-that use salt and teration count."""
+    that use salt and teration count."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -50,5 +50,5 @@ that use salt and teration count."""
     @abstractmethod
     def set_info(self, info):
         """Setup application specific information (optional).
-Can be empty."""
+        Can be empty."""
         raise NotImplementedError()

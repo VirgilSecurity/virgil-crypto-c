@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,28 +37,28 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface SaltedKdf extends Ctx, Kdf
+/**
+* Provides interface to the key derivation function (KDF) algorithms
+* that use salt and teration count.
+*/
+interface SaltedKdf extends Ctx
 {
 
     /**
+    * Prepare algorithm to derive new key.
     *
-    * @param string $$salt
-    * @param int $$iterationCount
+    * @param string $salt
+    * @param int $iterationCount
     * @return void
     */
-    public function reset(string $$salt, int $$iterationCount): void
-    {
-        ($this->ctx, $$salt, $$iterationCount);
-    }
+    public function reset(string $salt, int $iterationCount): void;
 
     /**
+    * Setup application specific information (optional).
+    * Can be empty.
     *
-    * @param string $$info
+    * @param string $info
     * @return void
     */
-    public function setInfo(string $$info): void
-    {
-        ($this->ctx, $$info);
-    }
-
+    public function setInfo(string $info): void;
 }

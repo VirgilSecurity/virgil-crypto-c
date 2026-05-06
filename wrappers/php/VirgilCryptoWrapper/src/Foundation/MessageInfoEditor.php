@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,14 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Add and/or remove recipients and it's parameters within message info.
+*
+* Usage:
+* 1. Unpack binary message info that was obtained from RecipientCipher.
+* 2. Add and/or remove key recipients.
+* 3. Pack MessagInfo to the binary data.
+*/
 class MessageInfoEditor
 {
 
@@ -65,16 +73,16 @@ class MessageInfoEditor
     }
 
     /**
-    *
-    * @param Random $$random
+    * @param Random $random
     * @return void
     */
-    public function useRandom(Random $$random): void
+    public function useRandom(Random $random): void
     {
-        vscf_message_info_editor_use_random_php($this->ctx, $$random);
+        vscf_message_info_editor_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
+    * Set dependencies to it's defaults.
     *
     * @return void
     * @throws \Exception
@@ -85,51 +93,60 @@ class MessageInfoEditor
     }
 
     /**
+    * Unpack serialized message info.
     *
-    * @param string $$messageInfoData
+    * Note that recipients can only be removed but not added.
+    * Note, use "unlock" method to be able to add new recipients as well.
+    *
+    * @param string $messageInfoData
     * @return void
     * @throws \Exception
     */
-    public function unpack(string $$messageInfoData): void
+    public function unpack(string $messageInfoData): void
     {
-        vscf_message_info_editor_unpack_php($this->ctx, $$messageInfoData);
+        vscf_message_info_editor_unpack_php($this->ctx, $messageInfoData);
     }
 
     /**
+    * Decrypt encryption key this allows adding new recipients.
     *
-    * @param string $$ownerRecipientId
-    * @param PrivateKey $$ownerPrivateKey
+    * @param string $ownerRecipientId
+    * @param PrivateKey $ownerPrivateKey
     * @return void
     * @throws \Exception
     */
-    public function unlock(string $$ownerRecipientId, PrivateKey $$ownerPrivateKey): void
+    public function unlock(string $ownerRecipientId, PrivateKey $ownerPrivateKey): void
     {
-        vscf_message_info_editor_unlock_php($this->ctx, $$ownerRecipientId, $$ownerPrivateKey->getCtx());
+        vscf_message_info_editor_unlock_php($this->ctx, $ownerRecipientId, $ownerPrivateKey->getCtx());
     }
 
     /**
+    * Add recipient defined with id and public key.
     *
-    * @param string $$recipientId
-    * @param PublicKey $$publicKey
+    * @param string $recipientId
+    * @param PublicKey $publicKey
     * @return void
     * @throws \Exception
     */
-    public function addKeyRecipient(string $$recipientId, PublicKey $$publicKey): void
+    public function addKeyRecipient(string $recipientId, PublicKey $publicKey): void
     {
-        vscf_message_info_editor_add_key_recipient_php($this->ctx, $$recipientId, $$publicKey->getCtx());
+        vscf_message_info_editor_add_key_recipient_php($this->ctx, $recipientId, $publicKey->getCtx());
     }
 
     /**
+    * Remove recipient with a given id.
+    * Return false if recipient with given id was not found.
     *
-    * @param string $$recipientId
+    * @param string $recipientId
     * @return bool
     */
-    public function removeKeyRecipient(string $$recipientId): bool
+    public function removeKeyRecipient(string $recipientId): bool
     {
-        return vscf_message_info_editor_remove_key_recipient_php($this->ctx, $$recipientId);
+        return vscf_message_info_editor_remove_key_recipient_php($this->ctx, $recipientId);
     }
 
     /**
+    * Remove all existent recipients.
     *
     * @return void
     */
@@ -139,6 +156,8 @@ class MessageInfoEditor
     }
 
     /**
+    * Return length of serialized message info.
+    * Actual length can be obtained right after applying changes.
     *
     * @return int
     */
@@ -148,6 +167,8 @@ class MessageInfoEditor
     }
 
     /**
+    * Return serialized message info.
+    * Precondition: this method can be called after "apply".
     *
     * @return string
     */

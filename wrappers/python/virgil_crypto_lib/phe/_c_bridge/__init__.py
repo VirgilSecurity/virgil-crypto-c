@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,13 +35,6 @@
 
 from ._vsce_status import VirgilCryptoPheError
 from ._vsce_status import VsceStatus
-from ._vsce_phe_hash import vsce_phe_hash_t
-from ._vsce_proof_generator import vsce_proof_generator_t
-from ._vsce_phe_proof_generator import vsce_phe_proof_generator_t
-from ._vsce_proof_verifier import vsce_proof_verifier_t
-from ._vsce_phe_proof_verifier import vsce_phe_proof_verifier_t
-from ._vsce_uokms_proof_generator import vsce_uokms_proof_generator_t
-from ._vsce_uokms_proof_verifier import vsce_uokms_proof_verifier_t
 from ._vsce_error import vsce_error_t
 from ._vsce_error import VsceError
 from ._vsce_phe_common import VscePheCommon

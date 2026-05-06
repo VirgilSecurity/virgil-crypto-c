@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -45,6 +46,9 @@
 
 #ifndef VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
 #define VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_error.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -57,41 +61,17 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_error.h"
-#include "vscf_list_key_value_node.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
 // clang-format off
 //  Generated section start.
 // --------------------------------------------------------------------------
-
-//
-//  Public integral constants.
-//
-enum {
-    vscf_message_info_custom_params_OF_INT_TYPE = 1,
-    vscf_message_info_custom_params_OF_STRING_TYPE = 2,
-    vscf_message_info_custom_params_OF_DATA_TYPE = 3
-};
 
 //
 //  Handle 'message info custom params' context.
@@ -176,7 +156,8 @@ vscf_message_info_custom_params_find_int(vscf_message_info_custom_params_t *self
 //  Return custom parameter with UTF8 string value.
 //
 VSCF_PUBLIC vsc_data_t
-vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key, vscf_error_t *error);
+vscf_message_info_custom_params_find_string(vscf_message_info_custom_params_t *self, vsc_data_t key,
+        vscf_error_t *error);
 
 //
 //  Return custom parameter with octet string value.
@@ -190,15 +171,18 @@ vscf_message_info_custom_params_find_data(vscf_message_info_custom_params_t *sel
 VSCF_PUBLIC bool
 vscf_message_info_custom_params_has_params(const vscf_message_info_custom_params_t *self);
 
+
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_CUSTOM_PARAMS_H_INCLUDED

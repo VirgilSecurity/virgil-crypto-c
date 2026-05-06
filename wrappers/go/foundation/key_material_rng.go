@@ -2,8 +2,8 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
@@ -12,10 +12,16 @@ import "runtime"
 * This RNG can be used to transform key material rial to the private key.
 */
 type KeyMaterialRng struct {
-    cCtx *C.vscf_key_material_rng_t
+    cCtx *C.vscf_key_material_rng_t /*ct10*/
 }
 const (
+    /*
+    * Minimum length in bytes for the key material.
+    */
     KeyMaterialRngKeyMaterialLenMin uint = 32
+    /*
+    * Maximum length in bytes for the key material.
+    */
     KeyMaterialRngKeyMaterialLenMax uint = 512
 )
 
@@ -49,7 +55,7 @@ func NewKeyMaterialRng() *KeyMaterialRng {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t) *KeyMaterialRng {
+func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
     obj := &KeyMaterialRng {
         cCtx: ctx,
     }
@@ -60,7 +66,7 @@ func newKeyMaterialRngWithCtx(ctx *C.vscf_key_material_rng_t) *KeyMaterialRng {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t) *KeyMaterialRng {
+func newKeyMaterialRngCopy(ctx *C.vscf_key_material_rng_t /*ct10*/) *KeyMaterialRng {
     obj := &KeyMaterialRng {
         cCtx: C.vscf_key_material_rng_shallow_copy(ctx),
     }
@@ -98,7 +104,7 @@ func (obj *KeyMaterialRng) Random(dataLen uint) ([]byte, error) {
     defer dataBuf.delete()
 
 
-    proxyResult := C.vscf_key_material_rng_random(obj.cCtx, (C.size_t)(dataLen), dataBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_key_material_rng_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -107,14 +113,14 @@ func (obj *KeyMaterialRng) Random(dataLen uint) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return dataBuf.getData(), nil
+    return dataBuf.getData() /* r7 */, nil
 }
 
 /*
 * Retrieve new seed data from the entropy sources.
 */
 func (obj *KeyMaterialRng) Reseed() error {
-    proxyResult := C.vscf_key_material_rng_reseed(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_material_rng_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {

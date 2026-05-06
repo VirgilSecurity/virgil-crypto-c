@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,10 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Provide post-quantum signature based on the falcon implementation.
+* For algorithm details check https://falcon-sign.info.
+*/
 class Falcon implements Alg, KeyAlg, KeySigner
 {
 
@@ -48,6 +52,10 @@ class Falcon implements Alg, KeyAlg, KeySigner
     const SEED_LEN = 48;
     const LOGN_512 = 9;
     const LOGN_1024 = 10;
+    const CAN_IMPORT_PUBLIC_KEY = true;
+    const CAN_EXPORT_PUBLIC_KEY = true;
+    const CAN_IMPORT_PRIVATE_KEY = true;
+    const CAN_EXPORT_PRIVATE_KEY = true;
 
     /**
     * Create underlying C context.
@@ -69,163 +77,16 @@ class Falcon implements Alg, KeyAlg, KeySigner
     }
 
     /**
-    *
-    * @param Random $$random
+    * @param Random $random
     * @return void
     */
-    public function useRandom(Random $$random): void
+    public function useRandom(Random $random): void
     {
-        vscf_falcon_use_random_php($this->ctx, $$random);
+        vscf_falcon_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_falcon_alg_id_php($this->ctx);
-        return new AlgId($enum);
-    }
-
-    /**
-    *
-    * @return AlgInfo
-    */
-    public function produceAlgInfo(): AlgInfo
-    {
-        $ctx = vscf_falcon_produce_alg_info_php($this->ctx);
-        return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    *
-    * @param AlgInfo $$algInfo
-    * @return void
-    * @throws \Exception
-    */
-    public function restoreAlgInfo(AlgInfo $$algInfo): void
-    {
-        vscf_falcon_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
-    }
-
-    /**
-    *
-    * @param Key $$key
-    * @return PrivateKey
-    * @throws \Exception
-    */
-    public function generateEphemeralKey(Key $$key): PrivateKey
-    {
-        $ctx = vscf_falcon_generate_ephemeral_key_php($this->ctx, $$key->getCtx());
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param RawPublicKey $$rawKey
-    * @return PublicKey
-    * @throws \Exception
-    */
-    public function importPublicKey(RawPublicKey $$rawKey): PublicKey
-    {
-        $ctx = vscf_falcon_import_public_key_php($this->ctx, $$rawKey);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @param PublicKey $$publicKey
-    * @return RawPublicKey
-    * @throws \Exception
-    */
-    public function exportPublicKey(PublicKey $$publicKey): RawPublicKey
-    {
-        $ctx = vscf_falcon_export_public_key_php($this->ctx, $$publicKey->getCtx());
-        return new RawPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @param RawPrivateKey $$rawKey
-    * @return PrivateKey
-    * @throws \Exception
-    */
-    public function importPrivateKey(RawPrivateKey $$rawKey): PrivateKey
-    {
-        $ctx = vscf_falcon_import_private_key_php($this->ctx, $$rawKey);
-        return FoundationImplementation::wrapPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param PrivateKey $$privateKey
-    * @return RawPrivateKey
-    * @throws \Exception
-    */
-    public function exportPrivateKey(PrivateKey $$privateKey): RawPrivateKey
-    {
-        $ctx = vscf_falcon_export_private_key_php($this->ctx, $$privateKey->getCtx());
-        return new RawPrivateKey($ctx);
-    }
-
-    /**
-    *
-    * @param PrivateKey $$privateKey
-    * @return bool
-    */
-    public function canSign(PrivateKey $$privateKey): bool
-    {
-        return vscf_falcon_can_sign_php($this->ctx, $$privateKey->getCtx());
-    }
-
-    /**
-    *
-    * @param PrivateKey $$privateKey
-    * @return int
-    */
-    public function signatureLen(PrivateKey $$privateKey): int
-    {
-        return vscf_falcon_signature_len_php($this->ctx, $$privateKey->getCtx());
-    }
-
-    /**
-    *
-    * @param PrivateKey $$privateKey
-    * @param AlgId $$hashId
-    * @param string $$digest
-    * @return string
-    * @throws \Exception
-    */
-    public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
-    {
-        return vscf_falcon_sign_hash_php($this->ctx, $$privateKey->getCtx(), $$hashId, $$digest);
-    }
-
-    /**
-    *
-    * @param PublicKey $$publicKey
-    * @return bool
-    */
-    public function canVerify(PublicKey $$publicKey): bool
-    {
-        return vscf_falcon_can_verify_php($this->ctx, $$publicKey->getCtx());
-    }
-
-    /**
-    *
-    * @param PublicKey $$publicKey
-    * @param AlgId $$hashId
-    * @param string $$digest
-    * @param string $$signature
-    * @return bool
-    */
-    public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
-    {
-        return vscf_falcon_verify_hash_php($this->ctx, $$publicKey->getCtx(), $$hashId, $$digest, $$signature);
-    }
-
-    /**
+    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -236,6 +97,8 @@ class Falcon implements Alg, KeyAlg, KeySigner
     }
 
     /**
+    * Generate new private key.
+    * Note, this operation might be slow.
     *
     * @return PrivateKey
     * @throws \Exception
@@ -244,6 +107,189 @@ class Falcon implements Alg, KeyAlg, KeySigner
     {
         $ctx = vscf_falcon_generate_key_php($this->ctx);
         return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Provide algorithm identificator.
+    *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_falcon_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
+    * Produce object with algorithm information and configuration parameters.
+    *
+    * @return AlgInfo
+    * @throws \Exception
+    */
+    public function produceAlgInfo(): AlgInfo
+    {
+        $ctx = vscf_falcon_produce_alg_info_php($this->ctx);
+        return FoundationImplementation::wrapAlgInfo($ctx);
+    }
+
+    /**
+    * Restore algorithm configuration from the given object.
+    *
+    * @param AlgInfo $algInfo
+    * @return void
+    * @throws \Exception
+    */
+    public function restoreAlgInfo(AlgInfo $algInfo): void
+    {
+        vscf_falcon_restore_alg_info_php($this->ctx, $algInfo->getCtx());
+    }
+
+    /**
+    * Generate ephemeral private key of the same type.
+    * Note, this operation might be slow.
+    *
+    * @param Key $key
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function generateEphemeralKey(Key $key): PrivateKey
+    {
+        $ctx = vscf_falcon_generate_ephemeral_key_php($this->ctx, $key->getCtx());
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Import public key from the raw binary format.
+    *
+    * Return public key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.1.
+    *
+    * @param RawPublicKey $rawKey
+    * @return PublicKey
+    * @throws \Exception
+    */
+    public function importPublicKey(RawPublicKey $rawKey): PublicKey
+    {
+        $ctx = vscf_falcon_import_public_key_php($this->ctx, $rawKey->getCtx());
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    * Export public key to the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA public key must be exported in format defined in
+    * RFC 3447 Appendix A.1.1.
+    *
+    * @param PublicKey $publicKey
+    * @return RawPublicKey
+    */
+    public function exportPublicKey(PublicKey $publicKey): RawPublicKey
+    {
+        $ctx = vscf_falcon_export_public_key_php($this->ctx, $publicKey->getCtx());
+        return new RawPublicKey($ctx);
+    }
+
+    /**
+    * Import private key from the raw binary format.
+    *
+    * Return private key that is adopted and optimized to be used
+    * with this particular algorithm.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be imported from the format defined in
+    * RFC 3447 Appendix A.1.2.
+    *
+    * @param RawPrivateKey $rawKey
+    * @return PrivateKey
+    * @throws \Exception
+    */
+    public function importPrivateKey(RawPrivateKey $rawKey): PrivateKey
+    {
+        $ctx = vscf_falcon_import_private_key_php($this->ctx, $rawKey->getCtx());
+        return FoundationImplementation::wrapPrivateKey($ctx);
+    }
+
+    /**
+    * Export private key in the raw binary format.
+    *
+    * Binary format must be defined in the key specification.
+    * For instance, RSA private key must be exported in format defined in
+    * RFC 3447 Appendix A.1.2.
+    *
+    * @param PrivateKey $privateKey
+    * @return RawPrivateKey
+    */
+    public function exportPrivateKey(PrivateKey $privateKey): RawPrivateKey
+    {
+        $ctx = vscf_falcon_export_private_key_php($this->ctx, $privateKey->getCtx());
+        return new RawPrivateKey($ctx);
+    }
+
+    /**
+    * Check if algorithm can sign data digest with a given key.
+    *
+    * @param PrivateKey $privateKey
+    * @return bool
+    */
+    public function canSign(PrivateKey $privateKey): bool
+    {
+        return vscf_falcon_can_sign_php($this->ctx, $privateKey->getCtx());
+    }
+
+    /**
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
+    *
+    * @param PrivateKey $privateKey
+    * @return int
+    */
+    public function signatureLen(PrivateKey $privateKey): int
+    {
+        return vscf_falcon_signature_len_php($this->ctx, $privateKey->getCtx());
+    }
+
+    /**
+    * Sign data digest with a given private key.
+    *
+    * @param PrivateKey $privateKey
+    * @param AlgId $hashId
+    * @param string $digest
+    * @return string
+    * @throws \Exception
+    */
+    public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string
+    {
+        return vscf_falcon_sign_hash_php($this->ctx, $privateKey->getCtx(), $hashId->getValue(), $digest);
+    }
+
+    /**
+    * Check if algorithm can verify data digest with a given key.
+    *
+    * @param PublicKey $publicKey
+    * @return bool
+    */
+    public function canVerify(PublicKey $publicKey): bool
+    {
+        return vscf_falcon_can_verify_php($this->ctx, $publicKey->getCtx());
+    }
+
+    /**
+    * Verify data digest with a given public key and signature.
+    *
+    * @param PublicKey $publicKey
+    * @param AlgId $hashId
+    * @param string $digest
+    * @param string $signature
+    * @return bool
+    */
+    public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool
+    {
+        return vscf_falcon_verify_hash_php($this->ctx, $publicKey->getCtx(), $hashId->getValue(), $digest, $signature);
     }
 
     /**

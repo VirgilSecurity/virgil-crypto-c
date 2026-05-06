@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -51,6 +53,10 @@
 
 #ifndef VSCF_MESSAGE_INFO_DER_SERIALIZER_INTERNAL_H_INCLUDED
 #define VSCF_MESSAGE_INFO_DER_SERIALIZER_INTERNAL_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_message_info_der_serializer.h"
+#include "vscf_signed_data_info.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -63,26 +69,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_message_info_der_serializer.h"
-#include "vscf_signed_data_info.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -115,7 +106,8 @@ vscf_message_info_der_serializer_cleanup_ctx(vscf_message_info_der_serializer_t 
 //  }
 //
 VSCF_PRIVATE size_t
-vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self, const vscf_signed_data_info_t *signed_data_info);
+vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info);
 
 //
 //  Serialized signed data info.
@@ -126,7 +118,9 @@ vscf_message_info_der_serializer_serialized_signed_data_info_len(const vscf_mess
 //  }
 //
 VSCF_PRIVATE void
-vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self, const vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out);
+vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_der_serializer_t *self,
+        const vscf_signed_data_info_t *signed_data_info, vsc_buffer_t *out);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -134,9 +128,11 @@ vscf_message_info_der_serializer_serialize_signed_data_info(vscf_message_info_de
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_DER_SERIALIZER_INTERNAL_H_INCLUDED

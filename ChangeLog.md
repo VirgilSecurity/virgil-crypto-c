@@ -1,16 +1,5 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
-## Unreleased
-
-### Breaking changes
-
-- Wrapper/JS (WASM): Pythia module removed from `@virgilsecurity/crypto`. The npm package no longer ships `pythia/` bundles or types. Pythia remains available via the C library, Swift, Java, Python, and PHP wrappers.
-
-### Changes
-
-- WASM build: `thirdparty/relic` is no longer linked into the WASM artifact. Pythia was relic's only WASM consumer; with the WASM pythia wrapper removed, the WASM toolchain no longer compiles relic. `configs/wasm-config.cmake` now sets `VIRGIL_LIB_PYTHIA OFF` by default.
-
-
 ## Version 0.17.2 released 2026-02-10
 
 ### Changes

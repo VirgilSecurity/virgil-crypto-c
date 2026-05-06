@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,6 +36,9 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Defines the library status codes.
+*/
 public class FoundationException extends RuntimeException {
 
     public static final int SUCCESS = 0;
@@ -106,6 +109,12 @@ public class FoundationException extends RuntimeException {
 
     public static final int ERROR_BAD_FALCON_PRIVATE_KEY = -228;
 
+    public static final int ERROR_ROUND5 = -229;
+
+    public static final int ERROR_BAD_ROUND5_PUBLIC_KEY = -230;
+
+    public static final int ERROR_BAD_ROUND5_PRIVATE_KEY = -231;
+
     public static final int ERROR_BAD_COMPOUND_PUBLIC_KEY = -232;
 
     public static final int ERROR_BAD_COMPOUND_PRIVATE_KEY = -233;
@@ -121,14 +130,6 @@ public class FoundationException extends RuntimeException {
     public static final int ERROR_BAD_ASN1_ALGORITHM_COMPOUND_KEY = -238;
 
     public static final int ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239;
-
-    public static final int ERROR_BAD_ML_KEM_PUBLIC_KEY = -240;
-
-    public static final int ERROR_BAD_ML_KEM_PRIVATE_KEY = -241;
-
-    public static final int ERROR_BAD_ML_DSA_PUBLIC_KEY = -242;
-
-    public static final int ERROR_BAD_ML_DSA_PRIVATE_KEY = -243;
 
     public static final int ERROR_NO_MESSAGE_INFO = -301;
 
@@ -190,6 +191,7 @@ public class FoundationException extends RuntimeException {
 
     private int statusCode;
 
+    /* Create new instance. */
     public FoundationException(int statusCode) {
         super();
         this.statusCode = statusCode;
@@ -269,6 +271,12 @@ public class FoundationException extends RuntimeException {
             return "Post-quantum Falcon-Sign public key is corrupted.";
         case ERROR_BAD_FALCON_PRIVATE_KEY:
             return "Post-quantum Falcon-Sign private key is corrupted.";
+        case ERROR_ROUND5:
+            return "Generic Round5 library error.";
+        case ERROR_BAD_ROUND5_PUBLIC_KEY:
+            return "Post-quantum NIST Round5 public key is corrupted.";
+        case ERROR_BAD_ROUND5_PRIVATE_KEY:
+            return "Post-quantum NIST Round5 private key is corrupted.";
         case ERROR_BAD_COMPOUND_PUBLIC_KEY:
             return "Compound public key is corrupted.";
         case ERROR_BAD_COMPOUND_PRIVATE_KEY:
@@ -285,14 +293,6 @@ public class FoundationException extends RuntimeException {
             return "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted.";
         case ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY:
             return "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.";
-        case ERROR_BAD_ML_KEM_PUBLIC_KEY:
-            return "Post-quantum ML-KEM-768 public key is corrupted.";
-        case ERROR_BAD_ML_KEM_PRIVATE_KEY:
-            return "Post-quantum ML-KEM-768 private key is corrupted.";
-        case ERROR_BAD_ML_DSA_PUBLIC_KEY:
-            return "Post-quantum ML-DSA-65 public key is corrupted.";
-        case ERROR_BAD_ML_DSA_PRIVATE_KEY:
-            return "Post-quantum ML-DSA-65 private key is corrupted.";
         case ERROR_NO_MESSAGE_INFO:
             return "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message.";
         case ERROR_BAD_MESSAGE_INFO:
@@ -355,5 +355,5 @@ public class FoundationException extends RuntimeException {
             return "Unknown error";
         }
     }
-
 }
+

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -53,10 +53,6 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
-#include <virgil/crypto/foundation/vscf_kem.h>
-#include <virgil/crypto/foundation/vscf_key_signer.h>
-#include <virgil/crypto/foundation/vscf_key_alg_factory.h>
-#include <virgil/crypto/foundation/vscf_error.h>
 #include <ed25519/ed25519.h>
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
@@ -302,6 +298,7 @@ vscr_ratchet_xxdh_release_rng(vscr_ratchet_xxdh_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_xxdh_init() is called.
@@ -311,6 +308,9 @@ static void
 vscr_ratchet_xxdh_init_ctx(vscr_ratchet_xxdh_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
+    self->round5 = vscf_round5_new();
+    self->falcon = vscf_falcon_new();
 }
 
 //
@@ -322,6 +322,9 @@ static void
 vscr_ratchet_xxdh_cleanup_ctx(vscr_ratchet_xxdh_t *self) {
 
     VSCR_ASSERT_PTR(self);
+
+    vscf_round5_destroy(&self->round5);
+    vscf_falcon_destroy(&self->falcon);
 }
 
 //
@@ -330,7 +333,10 @@ vscr_ratchet_xxdh_cleanup_ctx(vscr_ratchet_xxdh_t *self) {
 static void
 vscr_ratchet_xxdh_did_setup_rng(vscr_ratchet_xxdh_t *self) {
 
-    VSCR_ASSERT_PTR(self);
+    if (self->rng != NULL) {
+        vscf_round5_use_random(self->round5, self->rng);
+        vscf_falcon_use_random(self->falcon, self->rng);
+    }
 }
 
 //
@@ -347,25 +353,18 @@ vscr_ratchet_xxdh_encapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
         vsc_buffer_t **encapsulated_key_ref, vsc_buffer_t *shared_secret) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->round5);
     VSCR_ASSERT_PTR(public_key);
     VSCR_ASSERT_PTR(encapsulated_key_ref);
     VSCR_ASSERT_PTR(shared_secret);
 
-    vscf_error_t f_error;
-    vscf_error_reset(&f_error);
-
-    vscf_impl_t *kem_alg = vscf_key_alg_factory_create_from_key(public_key, self->rng, &f_error);
-    if (vscf_error_has_error(&f_error)) {
-        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
-    }
-
-    size_t len = vscf_kem_kem_encapsulated_key_len(kem_alg, public_key);
+    size_t len = vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN;
     *encapsulated_key_ref = vsc_buffer_new_with_capacity(len);
-    vscf_status_t f_status = vscf_kem_kem_encapsulate(kem_alg, public_key, shared_secret, *encapsulated_key_ref);
-    vscf_impl_destroy(&kem_alg);
+    vscf_status_t f_status =
+            vscf_round5_kem_encapsulate(self->round5, public_key, shared_secret, *encapsulated_key_ref);
 
     if (f_status != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+        return vscr_status_ERROR_ROUND5;
     }
 
     return vscr_status_SUCCESS;
@@ -376,23 +375,15 @@ vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl
         vsc_data_t encapsulated_key, vsc_buffer_t *shared_secret) {
 
     VSCR_ASSERT_PTR(self);
+    VSCR_ASSERT_PTR(self->round5);
     VSCR_ASSERT_PTR(private_key);
     VSCR_ASSERT_PTR(vsc_data_is_valid(encapsulated_key));
     VSCR_ASSERT_PTR(shared_secret);
 
-    vscf_error_t f_error;
-    vscf_error_reset(&f_error);
-
-    vscf_impl_t *kem_alg = vscf_key_alg_factory_create_from_key(private_key, self->rng, &f_error);
-    if (vscf_error_has_error(&f_error)) {
-        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
-    }
-
-    vscf_status_t f_status = vscf_kem_kem_decapsulate(kem_alg, encapsulated_key, private_key, shared_secret);
-    vscf_impl_destroy(&kem_alg);
+    vscf_status_t f_status = vscf_round5_kem_decapsulate(self->round5, encapsulated_key, private_key, shared_secret);
 
     if (f_status != vscf_status_SUCCESS) {
-        return vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
+        return vscr_status_ERROR_ROUND5;
     }
 
     return vscr_status_SUCCESS;
@@ -417,15 +408,15 @@ vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
     }
 
     if (receiver_identity_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
     }
 
     if (receiver_long_term_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
     }
 
     if (receiver_one_time_public_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
     }
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
@@ -562,26 +553,15 @@ vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
         vscf_sha512_hash(pqc_shared_secret, hash);
 
-        vscf_error_t f_error;
-        vscf_error_reset(&f_error);
-        vscf_impl_t *signer_alg =
-                vscf_key_alg_factory_create_from_key(sender_identity_private_key_second_signer, self->rng, &f_error);
-        if (vscf_error_has_error(&f_error)) {
-            vsc_buffer_destroy(&hash);
-            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
-            goto err;
-        }
-
-        size_t sig_len = vscf_key_signer_signature_len(signer_alg, sender_identity_private_key_second_signer);
-        *decapsulated_keys_signature_ref = vsc_buffer_new_with_capacity(sig_len);
-        vscf_status_t f_status = vscf_key_signer_sign_hash(signer_alg, sender_identity_private_key_second_signer,
+        *decapsulated_keys_signature_ref =
+                vsc_buffer_new_with_capacity(vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN);
+        vscf_status_t f_status = vscf_falcon_sign_hash(self->falcon, sender_identity_private_key_second_signer,
                 vscf_alg_id_SHA512, vsc_buffer_data(hash), *decapsulated_keys_signature_ref);
-        vscf_impl_destroy(&signer_alg);
 
         vsc_buffer_destroy(&hash);
 
         if (f_status != vscf_status_SUCCESS) {
-            status = vscr_status_ERROR_SIGN_FAILED;
+            status = vscr_status_ERROR_FALCON;
             goto err;
         }
     }
@@ -610,15 +590,15 @@ vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
     }
 
     if (receiver_identity_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
     }
 
     if (receiver_long_term_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
     }
 
     if (receiver_one_time_private_key_second != NULL) {
-        shared_secret_size += vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN;
+        shared_secret_size += vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN;
     }
 
     vsc_buffer_t *shared_secret = vsc_buffer_new_with_capacity(shared_secret_size);
@@ -732,19 +712,8 @@ vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         vsc_buffer_t *hash = vsc_buffer_new_with_capacity(vscf_sha512_DIGEST_LEN);
         vscf_sha512_hash(pqc_shared_secret, hash);
 
-        vscf_error_t f_error;
-        vscf_error_reset(&f_error);
-        vscf_impl_t *verifier_alg =
-                vscf_key_alg_factory_create_from_key(sender_identity_public_key_second_verifier, self->rng, &f_error);
-        if (vscf_error_has_error(&f_error)) {
-            vsc_buffer_destroy(&hash);
-            status = vscr_status_ERROR_KEY_DESERIALIZATION_FAILED;
-            goto err;
-        }
-
-        bool verified = vscf_key_signer_verify_hash(verifier_alg, sender_identity_public_key_second_verifier,
+        bool verified = vscf_falcon_verify_hash(self->falcon, sender_identity_public_key_second_verifier,
                 vscf_alg_id_SHA512, vsc_buffer_data(hash), decapsulated_keys_signature);
-        vscf_impl_destroy(&verifier_alg);
 
         vsc_buffer_destroy(&hash);
 

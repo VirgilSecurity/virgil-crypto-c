@@ -13,7 +13,7 @@ import "runtime"
 * one for signing/verifying.
 */
 type CompoundKeyAlg struct {
-    cCtx *C.vscf_compound_key_alg_t
+    cCtx *C.vscf_compound_key_alg_t /*ct10*/
 }
 
 func (obj *CompoundKeyAlg) SetRandom(random Random) {
@@ -28,7 +28,7 @@ func (obj *CompoundKeyAlg) SetRandom(random Random) {
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (obj *CompoundKeyAlg) SetupDefaults() error {
-    proxyResult := C.vscf_compound_key_alg_setup_defaults(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -49,7 +49,7 @@ func (obj *CompoundKeyAlg) MakeKey(cipherKey PrivateKey, signerKey PrivateKey) (
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_compound_key_alg_make_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(cipherKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(signerKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_make_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(cipherKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(signerKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -62,7 +62,7 @@ func (obj *CompoundKeyAlg) MakeKey(cipherKey PrivateKey, signerKey PrivateKey) (
 
     runtime.KeepAlive(signerKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult)
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */
@@ -82,7 +82,7 @@ func NewCompoundKeyAlg() *CompoundKeyAlg {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newCompoundKeyAlgWithCtx(ctx *C.vscf_compound_key_alg_t) *CompoundKeyAlg {
+func newCompoundKeyAlgWithCtx(ctx *C.vscf_compound_key_alg_t /*ct10*/) *CompoundKeyAlg {
     obj := &CompoundKeyAlg {
         cCtx: ctx,
     }
@@ -93,7 +93,7 @@ func newCompoundKeyAlgWithCtx(ctx *C.vscf_compound_key_alg_t) *CompoundKeyAlg {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newCompoundKeyAlgCopy(ctx *C.vscf_compound_key_alg_t) *CompoundKeyAlg {
+func newCompoundKeyAlgCopy(ctx *C.vscf_compound_key_alg_t /*ct10*/) *CompoundKeyAlg {
     obj := &CompoundKeyAlg {
         cCtx: C.vscf_compound_key_alg_shallow_copy(ctx),
     }
@@ -123,29 +123,29 @@ func (obj *CompoundKeyAlg) delete() {
 * Provide algorithm identificator.
 */
 func (obj *CompoundKeyAlg) AlgId() AlgId {
-    proxyResult := C.vscf_compound_key_alg_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *CompoundKeyAlg) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_compound_key_alg_produce_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult)
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *CompoundKeyAlg) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := C.vscf_compound_key_alg_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -195,7 +195,7 @@ func (obj *CompoundKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_compound_key_alg_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -206,7 +206,7 @@ func (obj *CompoundKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult)
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /*
@@ -223,7 +223,7 @@ func (obj *CompoundKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, err
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_compound_key_alg_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -234,7 +234,7 @@ func (obj *CompoundKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, err
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPublicKey(proxyResult)
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
 /*
@@ -248,7 +248,7 @@ func (obj *CompoundKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, 
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_compound_key_alg_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -259,7 +259,7 @@ func (obj *CompoundKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, 
 
     runtime.KeepAlive(publicKey)
 
-    return newRawPublicKeyWithCtx(proxyResult), nil
+    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /*
@@ -276,7 +276,7 @@ func (obj *CompoundKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, 
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_compound_key_alg_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -287,7 +287,7 @@ func (obj *CompoundKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, 
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult)
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /*
@@ -301,7 +301,7 @@ func (obj *CompoundKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateK
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_compound_key_alg_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -312,47 +312,47 @@ func (obj *CompoundKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateK
 
     runtime.KeepAlive(privateKey)
 
-    return newRawPrivateKeyWithCtx(proxyResult), nil
+    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /*
 * Check if algorithm can encrypt data with a given key.
 */
 func (obj *CompoundKeyAlg) CanEncrypt(publicKey PublicKey, dataLen uint) bool {
-    proxyResult := C.vscf_compound_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
 func (obj *CompoundKeyAlg) EncryptedLen(publicKey PublicKey, dataLen uint) uint {
-    proxyResult := C.vscf_compound_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Encrypt data with a given public key.
 */
 func (obj *CompoundKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey, uint(len(data)))))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
     dataData := helperWrapData (data)
 
-    proxyResult := C.vscf_compound_key_alg_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -363,7 +363,7 @@ func (obj *CompoundKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, er
 
     runtime.KeepAlive(publicKey)
 
-    return outBuf.getData(), nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -371,40 +371,40 @@ func (obj *CompoundKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, er
 * However, success result of decryption is not guaranteed.
 */
 func (obj *CompoundKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen uint) bool {
-    proxyResult := C.vscf_compound_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
 func (obj *CompoundKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen uint) uint {
-    proxyResult := C.vscf_compound_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *CompoundKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey, uint(len(data)))))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
     dataData := helperWrapData (data)
 
-    proxyResult := C.vscf_compound_key_alg_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -415,20 +415,20 @@ func (obj *CompoundKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, 
 
     runtime.KeepAlive(privateKey)
 
-    return outBuf.getData(), nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
 * Check if algorithm can sign data digest with a given key.
 */
 func (obj *CompoundKeyAlg) CanSign(privateKey PrivateKey) bool {
-    proxyResult := C.vscf_compound_key_alg_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -436,27 +436,27 @@ func (obj *CompoundKeyAlg) CanSign(privateKey PrivateKey) bool {
 * Return zero if a given private key can not produce signatures.
 */
 func (obj *CompoundKeyAlg) SignatureLen(privateKey PrivateKey) uint {
-    proxyResult := C.vscf_compound_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Sign data digest with a given private key.
 */
 func (obj *CompoundKeyAlg) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey)))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
     defer signatureBuf.delete()
     digestData := helperWrapData (digest)
 
-    proxyResult := C.vscf_compound_key_alg_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -467,20 +467,20 @@ func (obj *CompoundKeyAlg) SignHash(privateKey PrivateKey, hashId AlgId, digest 
 
     runtime.KeepAlive(privateKey)
 
-    return signatureBuf.getData(), nil
+    return signatureBuf.getData() /* r7 */, nil
 }
 
 /*
 * Check if algorithm can verify data digest with a given key.
 */
 func (obj *CompoundKeyAlg) CanVerify(publicKey PublicKey) bool {
-    proxyResult := C.vscf_compound_key_alg_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -490,11 +490,11 @@ func (obj *CompoundKeyAlg) VerifyHash(publicKey PublicKey, hashId AlgId, digest 
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
-    proxyResult := C.vscf_compound_key_alg_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureData)
+    proxyResult := /*pr4*/C.vscf_compound_key_alg_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }

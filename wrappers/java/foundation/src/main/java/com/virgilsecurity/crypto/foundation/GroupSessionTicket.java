@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,24 +36,34 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Group ticket used to start group session, remove participants or proactive to rotate encryption key.
+*/
 public class GroupSessionTicket implements AutoCloseable {
 
     public long cCtx;
 
+    /* Create underlying C context. */
     public GroupSessionTicket() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.groupSessionTicket_new();
     }
 
+    /* Wrap underlying C context. */
     GroupSessionTicket(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
     public static GroupSessionTicket getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new GroupSessionTicket(ctxHolder);
     }
 
+    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -62,28 +72,43 @@ public class GroupSessionTicket implements AutoCloseable {
         }
     }
 
+    /* Close resource. */
     public void close() {
         clearResources();
     }
 
+    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
+    /*
+    * Random used to generate keys
+    */
     public void setRng(Random rng) {
         FoundationJNI.INSTANCE.groupSessionTicket_setRng(this.cCtx, rng);
     }
 
+    /*
+    * Setups default dependencies:
+    * - RNG: CTR DRBG
+    */
     public void setupDefaults() throws FoundationException {
         FoundationJNI.INSTANCE.groupSessionTicket_setupDefaults(this.cCtx);
     }
 
+    /*
+    * Set this ticket to start new group session.
+    */
     public void setupTicketAsNew(byte[] sessionId) throws FoundationException {
         FoundationJNI.INSTANCE.groupSessionTicket_setupTicketAsNew(this.cCtx, sessionId);
     }
 
+    /*
+    * Returns message that should be sent to all participants using secure channel.
+    */
     public GroupSessionMessage getTicketMessage() {
         return FoundationJNI.INSTANCE.groupSessionTicket_getTicketMessage(this.cCtx);
     }
-
 }
+

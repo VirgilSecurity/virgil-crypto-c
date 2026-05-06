@@ -116,19 +116,7 @@
         <return class="any" access="disown"/>
 
         <code>
-            if (.(_argument_size) != 0 &amp;&amp; .(_argument_count) > SIZE_MAX / .(_argument_size)) {
-                return NULL;
-            }
-
-            size_t total = .(_argument_count) * .(_argument_size);
-
-            void *ptr = .(c_class_memory_variable_inner_alloc)(total);
-            if (ptr == NULL) {
-                return NULL;
-            }
-
-            .(c_global_method_zeroize)(ptr, total);
-            return ptr;
+            return .(c_class_memory_variable_inner_alloc)(.(_argument_count) * .(_argument_size));
         </code>
     </method>
 
@@ -214,35 +202,6 @@
             }
 
             return c == 0;
-        </code>
-    </method>
-
-    <method name="secure unique copy" of_class="memory">
-        Perform constant-time memory comparison, then copy source to destination only if they differ.
-        Returns true if the memory regions are equal (duplicate / reused value detected).
-        Returns false if they differed (source was copied into destination successfully).
-
-        <argument name="dest" class="any" access="readwrite"/>
-        <argument name="src" class="any"/>
-        <argument name="len" type="size"/>
-        <return type="boolean"/>
-
-        <code>
-            .(c_class_assert_macros_ptr)(.(_argument_dest));
-            .(c_class_assert_macros_ptr)(.(_argument_src));
-
-            const volatile uint8_t *in_src = (const uint8_t *)src;
-            const volatile uint8_t *in_dest = (const uint8_t *)dest;
-            uint8_t *out = (uint8_t *)dest;
-            volatile uint8_t diff = 0x00;
-
-            for (size_t i = 0; i &lt; len; ++i) {
-                uint8_t s = in_src[i];
-                diff |= in_dest[i] ^ s;
-                out[i] = s;
-            }
-
-            return diff == 0;
         </code>
     </method>
 

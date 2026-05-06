@@ -10,7 +10,7 @@ import "runtime"
 * RSA implementation.
 */
 type Rsa struct {
-    cCtx *C.vscf_rsa_t
+    cCtx *C.vscf_rsa_t /*ct10*/
 }
 
 func (obj *Rsa) SetRandom(random Random) {
@@ -25,7 +25,7 @@ func (obj *Rsa) SetRandom(random Random) {
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (obj *Rsa) SetupDefaults() error {
-    proxyResult := C.vscf_rsa_setup_defaults(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_rsa_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -45,7 +45,7 @@ func (obj *Rsa) GenerateKey(bitlen uint) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_rsa_generate_key(obj.cCtx, (C.size_t)(bitlen), &error)
+    proxyResult := /*pr4*/C.vscf_rsa_generate_key(obj.cCtx, (C.size_t)(bitlen)/*pa10*/, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -54,7 +54,7 @@ func (obj *Rsa) GenerateKey(bitlen uint) (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult)
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /* Handle underlying C context. */
@@ -74,7 +74,7 @@ func NewRsa() *Rsa {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRsaWithCtx(ctx *C.vscf_rsa_t) *Rsa {
+func newRsaWithCtx(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     obj := &Rsa {
         cCtx: ctx,
     }
@@ -85,7 +85,7 @@ func newRsaWithCtx(ctx *C.vscf_rsa_t) *Rsa {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRsaCopy(ctx *C.vscf_rsa_t) *Rsa {
+func newRsaCopy(ctx *C.vscf_rsa_t /*ct10*/) *Rsa {
     obj := &Rsa {
         cCtx: C.vscf_rsa_shallow_copy(ctx),
     }
@@ -147,7 +147,7 @@ func (obj *Rsa) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_rsa_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_rsa_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -158,7 +158,7 @@ func (obj *Rsa) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult)
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /*
@@ -175,7 +175,7 @@ func (obj *Rsa) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_rsa_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_rsa_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -186,7 +186,7 @@ func (obj *Rsa) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPublicKey(proxyResult)
+    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
 }
 
 /*
@@ -200,7 +200,7 @@ func (obj *Rsa) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_rsa_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_rsa_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -211,7 +211,7 @@ func (obj *Rsa) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
     runtime.KeepAlive(publicKey)
 
-    return newRawPublicKeyWithCtx(proxyResult), nil
+    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /*
@@ -228,7 +228,7 @@ func (obj *Rsa) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_rsa_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_rsa_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -239,7 +239,7 @@ func (obj *Rsa) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult)
+    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
 }
 
 /*
@@ -253,7 +253,7 @@ func (obj *Rsa) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := C.vscf_rsa_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := /*pr4*/C.vscf_rsa_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -264,47 +264,47 @@ func (obj *Rsa) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, error) 
 
     runtime.KeepAlive(privateKey)
 
-    return newRawPrivateKeyWithCtx(proxyResult), nil
+    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
 }
 
 /*
 * Check if algorithm can encrypt data with a given key.
 */
 func (obj *Rsa) CanEncrypt(publicKey PublicKey, dataLen uint) bool {
-    proxyResult := C.vscf_rsa_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_rsa_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
 func (obj *Rsa) EncryptedLen(publicKey PublicKey, dataLen uint) uint {
-    proxyResult := C.vscf_rsa_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_rsa_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Encrypt data with a given public key.
 */
 func (obj *Rsa) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey, uint(len(data)))))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
     dataData := helperWrapData (data)
 
-    proxyResult := C.vscf_rsa_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_rsa_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -315,7 +315,7 @@ func (obj *Rsa) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 
     runtime.KeepAlive(publicKey)
 
-    return outBuf.getData(), nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
@@ -323,40 +323,40 @@ func (obj *Rsa) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
 * However, success result of decryption is not guaranteed.
 */
 func (obj *Rsa) CanDecrypt(privateKey PrivateKey, dataLen uint) bool {
-    proxyResult := C.vscf_rsa_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_rsa_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
 func (obj *Rsa) DecryptedLen(privateKey PrivateKey, dataLen uint) uint {
-    proxyResult := C.vscf_rsa_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen))
+    proxyResult := /*pr4*/C.vscf_rsa_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *Rsa) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey, uint(len(data)))))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
     dataData := helperWrapData (data)
 
-    proxyResult := C.vscf_rsa_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_rsa_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -367,20 +367,20 @@ func (obj *Rsa) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
 
     runtime.KeepAlive(privateKey)
 
-    return outBuf.getData(), nil
+    return outBuf.getData() /* r7 */, nil
 }
 
 /*
 * Check if algorithm can sign data digest with a given key.
 */
 func (obj *Rsa) CanSign(privateKey PrivateKey) bool {
-    proxyResult := C.vscf_rsa_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_rsa_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -388,27 +388,27 @@ func (obj *Rsa) CanSign(privateKey PrivateKey) bool {
 * Return zero if a given private key can not produce signatures.
 */
 func (obj *Rsa) SignatureLen(privateKey PrivateKey) uint {
-    proxyResult := C.vscf_rsa_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_rsa_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Sign data digest with a given private key.
 */
 func (obj *Rsa) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey)))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
     defer signatureBuf.delete()
     digestData := helperWrapData (digest)
 
-    proxyResult := C.vscf_rsa_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_rsa_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -419,20 +419,20 @@ func (obj *Rsa) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]
 
     runtime.KeepAlive(privateKey)
 
-    return signatureBuf.getData(), nil
+    return signatureBuf.getData() /* r7 */, nil
 }
 
 /*
 * Check if algorithm can verify data digest with a given key.
 */
 func (obj *Rsa) CanVerify(publicKey PublicKey) bool {
-    proxyResult := C.vscf_rsa_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_rsa_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -442,11 +442,11 @@ func (obj *Rsa) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, sig
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
-    proxyResult := C.vscf_rsa_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureData)
+    proxyResult := /*pr4*/C.vscf_rsa_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }

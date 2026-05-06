@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,10 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Provide functionality for private key generation and importing that
+* relies on the software default implementations.
+*/
 class KeyProvider
 {
 
@@ -65,16 +69,16 @@ class KeyProvider
     }
 
     /**
-    *
-    * @param Random $$random
+    * @param Random $random
     * @return void
     */
-    public function useRandom(Random $$random): void
+    public function useRandom(Random $random): void
     {
-        vscf_key_provider_use_random_php($this->ctx, $$random);
+        vscf_key_provider_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
+    * Setup predefined values to the uninitialized class dependencies.
     *
     * @return void
     * @throws \Exception
@@ -85,28 +89,40 @@ class KeyProvider
     }
 
     /**
+    * Setup parameters that is used during RSA key generation.
     *
-    * @param int $$bitlen
+    * @param int $bitlen
     * @return void
     */
-    public function setRsaParams(int $$bitlen): void
+    public function setRsaParams(int $bitlen): void
     {
-        vscf_key_provider_set_rsa_params_php($this->ctx, $$bitlen);
+        vscf_key_provider_set_rsa_params_php($this->ctx, $bitlen);
     }
 
     /**
+    * Generate new private key with a given algorithm.
     *
-    * @param AlgId $$algId
+    * @param AlgId $algId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generatePrivateKey(AlgId $$algId): PrivateKey
+    public function generatePrivateKey(AlgId $algId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_private_key_php($this->ctx, $$algId);
+        $ctx = vscf_key_provider_generate_private_key_php($this->ctx, $algId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
+    * Generate new post-quantum private key with default algorithms.
+    * Note, that a post-quantum key combines classic private keys
+    * alongside with post-quantum private keys.
+    * Current structure is "compound private key" is:
+    * - cipher private key is "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key;
+    * - signer private key "hybrid private key" where:
+    * - first key is a classic private key;
+    * - second key is a post-quantum private key.
     *
     * @return PrivateKey
     * @throws \Exception
@@ -118,110 +134,130 @@ class KeyProvider
     }
 
     /**
+    * Generate new compound private key with given algorithms.
     *
-    * @param AlgId $$cipherAlgId
-    * @param AlgId $$signerAlgId
+    * @param AlgId $cipherAlgId
+    * @param AlgId $signerAlgId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateCompoundPrivateKey(AlgId $$cipherAlgId, AlgId $$signerAlgId): PrivateKey
+    public function generateCompoundPrivateKey(AlgId $cipherAlgId, AlgId $signerAlgId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_compound_private_key_php($this->ctx, $$cipherAlgId, $$signerAlgId);
+        $ctx = vscf_key_provider_generate_compound_private_key_php($this->ctx, $cipherAlgId->getValue(), $signerAlgId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
+    * Generate new hybrid private key with given algorithms.
     *
-    * @param AlgId $$firstKeyAlgId
-    * @param AlgId $$secondKeyAlgId
+    * @param AlgId $firstKeyAlgId
+    * @param AlgId $secondKeyAlgId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateHybridPrivateKey(AlgId $$firstKeyAlgId, AlgId $$secondKeyAlgId): PrivateKey
+    public function generateHybridPrivateKey(AlgId $firstKeyAlgId, AlgId $secondKeyAlgId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_hybrid_private_key_php($this->ctx, $$firstKeyAlgId, $$secondKeyAlgId);
+        $ctx = vscf_key_provider_generate_hybrid_private_key_php($this->ctx, $firstKeyAlgId->getValue(), $secondKeyAlgId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
+    * Generate new compound private key with nested hybrid private keys.
     *
-    * @param AlgId $$cipherFirstKeyAlgId
-    * @param AlgId $$cipherSecondKeyAlgId
-    * @param AlgId $$signerFirstKeyAlgId
-    * @param AlgId $$signerSecondKeyAlgId
+    * Note, second key algorithm identifiers can be NONE, in this case,
+    * a regular key will be crated instead of a hybrid key.
+    *
+    * @param AlgId $cipherFirstKeyAlgId
+    * @param AlgId $cipherSecondKeyAlgId
+    * @param AlgId $signerFirstKeyAlgId
+    * @param AlgId $signerSecondKeyAlgId
     * @return PrivateKey
     * @throws \Exception
     */
-    public function generateCompoundHybridPrivateKey(AlgId $$cipherFirstKeyAlgId, AlgId $$cipherSecondKeyAlgId, AlgId $$signerFirstKeyAlgId, AlgId $$signerSecondKeyAlgId): PrivateKey
+    public function generateCompoundHybridPrivateKey(AlgId $cipherFirstKeyAlgId, AlgId $cipherSecondKeyAlgId, AlgId $signerFirstKeyAlgId, AlgId $signerSecondKeyAlgId): PrivateKey
     {
-        $ctx = vscf_key_provider_generate_compound_hybrid_private_key_php($this->ctx, $$cipherFirstKeyAlgId, $$cipherSecondKeyAlgId, $$signerFirstKeyAlgId, $$signerSecondKeyAlgId);
+        $ctx = vscf_key_provider_generate_compound_hybrid_private_key_php($this->ctx, $cipherFirstKeyAlgId->getValue(), $cipherSecondKeyAlgId->getValue(), $signerFirstKeyAlgId->getValue(), $signerSecondKeyAlgId->getValue());
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
+    * Import private key from the PKCS#8 format.
     *
-    * @param string $$keyData
+    * @param string $keyData
     * @return PrivateKey
     * @throws \Exception
     */
-    public function importPrivateKey(string $$keyData): PrivateKey
+    public function importPrivateKey(string $keyData): PrivateKey
     {
-        $ctx = vscf_key_provider_import_private_key_php($this->ctx, $$keyData);
+        $ctx = vscf_key_provider_import_private_key_php($this->ctx, $keyData);
         return FoundationImplementation::wrapPrivateKey($ctx);
     }
 
     /**
+    * Import public key from the PKCS#8 format.
     *
-    * @param string $$keyData
+    * @param string $keyData
     * @return PublicKey
     * @throws \Exception
     */
-    public function importPublicKey(string $$keyData): PublicKey
+    public function importPublicKey(string $keyData): PublicKey
     {
-        $ctx = vscf_key_provider_import_public_key_php($this->ctx, $$keyData);
+        $ctx = vscf_key_provider_import_public_key_php($this->ctx, $keyData);
         return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**
+    * Calculate buffer size enough to hold exported public key.
     *
-    * @param PublicKey $$publicKey
+    * Precondition: public key must be exportable.
+    *
+    * @param PublicKey $publicKey
     * @return int
     */
-    public function exportedPublicKeyLen(PublicKey $$publicKey): int
+    public function exportedPublicKeyLen(PublicKey $publicKey): int
     {
-        return vscf_key_provider_exported_public_key_len_php($this->ctx, $$publicKey->getCtx());
+        return vscf_key_provider_exported_public_key_len_php($this->ctx, $publicKey->getCtx());
     }
 
     /**
+    * Export given public key to the PKCS#8 DER format.
     *
-    * @param PublicKey $$publicKey
+    * Precondition: public key must be exportable.
+    *
+    * @param PublicKey $publicKey
     * @return string
     * @throws \Exception
     */
-    public function exportPublicKey(PublicKey $$publicKey): string
+    public function exportPublicKey(PublicKey $publicKey): string
     {
-        return vscf_key_provider_export_public_key_php($this->ctx, $$publicKey->getCtx());
+        return vscf_key_provider_export_public_key_php($this->ctx, $publicKey->getCtx());
     }
 
     /**
+    * Calculate buffer size enough to hold exported private key.
     *
-    * @param PrivateKey $$privateKey
+    * Precondition: private key must be exportable.
+    *
+    * @param PrivateKey $privateKey
     * @return int
     */
-    public function exportedPrivateKeyLen(PrivateKey $$privateKey): int
+    public function exportedPrivateKeyLen(PrivateKey $privateKey): int
     {
-        return vscf_key_provider_exported_private_key_len_php($this->ctx, $$privateKey->getCtx());
+        return vscf_key_provider_exported_private_key_len_php($this->ctx, $privateKey->getCtx());
     }
 
     /**
+    * Export given private key to the PKCS#8 or SEC1 DER format.
     *
-    * @param PrivateKey $$privateKey
+    * Precondition: private key must be exportable.
+    *
+    * @param PrivateKey $privateKey
     * @return string
     * @throws \Exception
     */
-    public function exportPrivateKey(PrivateKey $$privateKey): string
+    public function exportPrivateKey(PrivateKey $privateKey): string
     {
-        return vscf_key_provider_export_private_key_php($this->ctx, $$privateKey->getCtx());
+        return vscf_key_provider_export_private_key_php($this->ctx, $privateKey->getCtx());
     }
 
     /**

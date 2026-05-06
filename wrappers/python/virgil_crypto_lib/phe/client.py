@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -37,13 +37,13 @@ from ctypes import *
 from ._c_bridge import VscePheClient
 from ._c_bridge import VsceStatus
 from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.common._c_bridge import Buffer
 from .common import Common
+from virgil_crypto_lib.common._c_bridge import Buffer
 
 
 class Client(object):
     """Class for client-side PHE crypto operations.
-This class is thread-safe in case if .(c_global_macros_multi_threading) defined."""
+    This class is thread-safe in case if VSCE_MULTI_THREADING defined."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -69,8 +69,8 @@ This class is thread-safe in case if .(c_global_macros_multi_threading) defined.
 
     def set_keys(self, client_private_key, server_public_key):
         """Sets client private and server public key
-Call this method before any other methods except `update enrollment record` and `generate client private key`
-This function should be called only once"""
+        Call this method before any other methods except `update enrollment record` and `generate client private key`
+        This function should be called only once"""
         d_client_private_key = Data(client_private_key)
         d_server_public_key = Data(server_public_key)
         status = self._lib_vsce_phe_client.vsce_phe_client_set_keys(self.ctx, d_client_private_key.data, d_server_public_key.data)
@@ -90,8 +90,8 @@ This function should be called only once"""
 
     def enroll_account(self, enrollment_response, password):
         """Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-Also generates a random seed which then can be used to generate symmetric or private key to protect user's data"""
+        a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
+        Also generates a random seed which then can be used to generate symmetric or private key to protect user's data"""
         d_enrollment_response = Data(enrollment_response)
         d_password = Data(password)
         enrollment_record = Buffer(self.enrollment_record_len())
@@ -116,8 +116,8 @@ Also generates a random seed which then can be used to generate symmetric or pri
 
     def check_response_and_decrypt(self, password, enrollment_record, verify_password_response):
         """Verifies PHE server's answer
-If login succeeded, extracts account key
-If login failed account key will be empty"""
+        If login succeeded, extracts account key
+        If login failed account key will be empty"""
         d_password = Data(password)
         d_enrollment_record = Data(enrollment_record)
         d_verify_password_response = Data(verify_password_response)
@@ -128,7 +128,7 @@ If login failed account key will be empty"""
 
     def rotate_keys(self, update_token):
         """Updates client's private key and server's public key using server's update token
-Use output values to instantiate new client instance with new keys"""
+        Use output values to instantiate new client instance with new keys"""
         d_update_token = Data(update_token)
         new_client_private_key = Buffer(Common.PHE_PRIVATE_KEY_LENGTH)
         new_server_public_key = Buffer(Common.PHE_PUBLIC_KEY_LENGTH)

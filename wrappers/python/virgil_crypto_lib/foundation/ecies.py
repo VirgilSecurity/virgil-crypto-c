@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -66,13 +66,13 @@ class Ecies(object):
 
     def set_ephemeral_key(self, ephemeral_key):
         """Set ephemeral key that used for data encryption.
-Public and ephemeral keys should belong to the same curve.
-This dependency is optional."""
+        Public and ephemeral keys should belong to the same curve.
+        This dependency is optional."""
         self._lib_vscf_ecies.vscf_ecies_use_ephemeral_key(self.ctx, ephemeral_key.c_impl)
 
     def set_key_alg(self, key_alg):
         """Set weak reference to the key algorithm.
-Key algorithm MUST support shared key computation as well."""
+        Key algorithm MUST support shared key computation as well."""
         self._lib_vscf_ecies.vscf_ecies_set_key_alg(self.ctx, key_alg.c_impl)
 
     def release_key_alg(self):
@@ -86,7 +86,7 @@ Key algorithm MUST support shared key computation as well."""
 
     def setup_defaults_no_random(self):
         """Setup predefined values to the uninitialized class dependencies
-except random."""
+        except random."""
         self._lib_vscf_ecies.vscf_ecies_setup_defaults_no_random(self.ctx)
 
     def encrypted_len(self, public_key, data_len):

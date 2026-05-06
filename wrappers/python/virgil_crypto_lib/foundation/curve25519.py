@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,13 +35,13 @@
 
 from ctypes import *
 from ._c_bridge import VscfCurve25519
+from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
+from .raw_public_key import RawPublicKey
+from .raw_private_key import RawPrivateKey
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
-from ._c_bridge._vscf_error import vscf_error_t
-from .raw_private_key import RawPrivateKey
-from .raw_public_key import RawPublicKey
 from .key_alg import KeyAlg
 from .key_cipher import KeyCipher
 from .compute_shared_key import ComputeSharedKey
@@ -77,23 +77,9 @@ class Curve25519(KeyAlg, KeyCipher, ComputeSharedKey, Kem):
     def set_ecies(self, ecies):
         self._lib_vscf_curve25519.vscf_curve25519_use_ecies(self.ctx, ecies.ctx)
 
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        status = self._lib_vscf_curve25519.vscf_curve25519_setup_defaults(self.ctx)
-        VscfStatus.handle_status(status)
-
-    def generate_key(self):
-        """Generate new private key.
-Note, this operation might be slow."""
-        error = vscf_error_t()
-        result = self._lib_vscf_curve25519.vscf_curve25519_generate_key(self.ctx, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
-
     def generate_ephemeral_key(self, key):
         """Generate ephemeral private key of the same type.
-Note, this operation might be slow."""
+        Note, this operation might be slow."""
         error = vscf_error_t()
         result = self._lib_vscf_curve25519.vscf_curve25519_generate_ephemeral_key(self.ctx, key.c_impl, error)
         VscfStatus.handle_status(error.status)
@@ -103,12 +89,12 @@ Note, this operation might be slow."""
     def import_public_key(self, raw_key):
         """Import public key from the raw binary format.
 
-Return public key that is adopted and optimized to be used
-with this particular algorithm.
+        Return public key that is adopted and optimized to be used
+        with this particular algorithm.
 
-Binary format must be defined in the key specification.
-For instance, RSA public key must be imported from the format defined in
-RFC 3447 Appendix A.1.1."""
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be imported from the format defined in
+        RFC 3447 Appendix A.1.1."""
         error = vscf_error_t()
         result = self._lib_vscf_curve25519.vscf_curve25519_import_public_key(self.ctx, raw_key.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -118,23 +104,24 @@ RFC 3447 Appendix A.1.1."""
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
-Binary format must be defined in the key specification.
-For instance, RSA public key must be exported in format defined in
-RFC 3447 Appendix A.1.1."""
+        Binary format must be defined in the key specification.
+        For instance, RSA public key must be exported in format defined in
+        RFC 3447 Appendix A.1.1."""
         error = vscf_error_t()
         result = self._lib_vscf_curve25519.vscf_curve25519_export_public_key(self.ctx, public_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        return RawPublicKey.take_c_ctx(result)
+        instance = RawPublicKey.take_c_ctx(result)
+        return instance
 
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
 
-Return private key that is adopted and optimized to be used
-with this particular algorithm.
+        Return private key that is adopted and optimized to be used
+        with this particular algorithm.
 
-Binary format must be defined in the key specification.
-For instance, RSA private key must be imported from the format defined in
-RFC 3447 Appendix A.1.2."""
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be imported from the format defined in
+        RFC 3447 Appendix A.1.2."""
         error = vscf_error_t()
         result = self._lib_vscf_curve25519.vscf_curve25519_import_private_key(self.ctx, raw_key.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -144,13 +131,14 @@ RFC 3447 Appendix A.1.2."""
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
-Binary format must be defined in the key specification.
-For instance, RSA private key must be exported in format defined in
-RFC 3447 Appendix A.1.2."""
+        Binary format must be defined in the key specification.
+        For instance, RSA private key must be exported in format defined in
+        RFC 3447 Appendix A.1.2."""
         error = vscf_error_t()
         result = self._lib_vscf_curve25519.vscf_curve25519_export_private_key(self.ctx, private_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        return RawPrivateKey.take_c_ctx(result)
+        instance = RawPrivateKey.take_c_ctx(result)
+        return instance
 
     def can_encrypt(self, public_key, data_len):
         """Check if algorithm can encrypt data with a given key."""
@@ -172,7 +160,7 @@ RFC 3447 Appendix A.1.2."""
 
     def can_decrypt(self, private_key, data_len):
         """Check if algorithm can decrypt data with a given key.
-However, success result of decryption is not guaranteed."""
+        However, success result of decryption is not guaranteed."""
         result = self._lib_vscf_curve25519.vscf_curve25519_can_decrypt(self.ctx, private_key.c_impl, data_len)
         return result
 
@@ -191,7 +179,7 @@ However, success result of decryption is not guaranteed."""
 
     def compute_shared_key(self, public_key, private_key):
         """Compute shared key for 2 asymmetric keys.
-Note, computed shared key can be used only within symmetric cryptography."""
+        Note, computed shared key can be used only within symmetric cryptography."""
         shared_key = Buffer(self.shared_key_len(key=private_key))
         status = self._lib_vscf_curve25519.vscf_curve25519_compute_shared_key(self.ctx, public_key.c_impl, private_key.c_impl, shared_key.c_buffer)
         VscfStatus.handle_status(status)
@@ -199,7 +187,7 @@ Note, computed shared key can be used only within symmetric cryptography."""
 
     def shared_key_len(self, key):
         """Return number of bytes required to hold shared key.
-Expect Public Key or Private Key."""
+        Expect Public Key or Private Key."""
         result = self._lib_vscf_curve25519.vscf_curve25519_shared_key_len(self.ctx, key.c_impl)
         return result
 
@@ -228,6 +216,20 @@ Expect Public Key or Private Key."""
         status = self._lib_vscf_curve25519.vscf_curve25519_kem_decapsulate(self.ctx, d_encapsulated_key.data, private_key.c_impl, shared_key.c_buffer)
         VscfStatus.handle_status(status)
         return shared_key.get_bytes()
+
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        status = self._lib_vscf_curve25519.vscf_curve25519_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
+
+    def generate_key(self):
+        """Generate new private key.
+        Note, this operation might be slow."""
+        error = vscf_error_t()
+        result = self._lib_vscf_curve25519.vscf_curve25519_generate_key(self.ctx, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):
