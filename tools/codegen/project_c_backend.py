@@ -6887,6 +6887,57 @@ def argument_from_source(
     project_ir: IRProject | None = None,
     owner_class: str = "data",
 ) -> ET.Element:
+    """Map one IR argument dict to a ``c_argument`` XML element appended to *parent*.
+
+    Parameters
+    ----------
+    parent:
+        The XML element that will receive the new ``c_argument`` child.
+    src:
+        An IR argument dict as produced by the IR loader.  Relevant keys:
+
+        * ``interface`` – name of an interface type (mutually exclusive with ``class``/``type``)
+        * ``class``     – name of a class type; the special value ``"self"`` refers to the
+                          owning class resolved via *owner_class*
+        * ``library``   – truthy when the type comes from an external library (skips IR lookup)
+        * ``access``    – pre-resolved access mode: ``"readonly"``, ``"readwrite"``,
+                          ``"writeonly"``, or ``"disown"``
+        * ``project``   – source project name for cross-project interface types
+        * ``name``      – argument name (overridden by the *name* kwarg when provided)
+        * ``passed_by`` – ``"reference"`` forces double-pointer for self-typed args
+        * ``type``      – primitive type tag (``"byte"``, ``"string"``, ``"varargs"``, …)
+
+    name:
+        Override for the argument name; falls back to ``src["name"]`` when ``None``.
+    project_ir:
+        IR of the project that owns the method being emitted.  Pass ``None`` when the
+        caller has no project context (e.g. during stand-alone snippet rendering); a
+        best-effort fallback to ``"vscf"`` prefixes is used in that case.
+    owner_class:
+        The name of the class that owns the method.  Used when ``src["class"] == "self"``
+        to resolve the concrete struct type.
+
+    Returns
+    -------
+    ET.Element
+        The newly created ``c_argument`` element (already attached to *parent*).
+
+    Three main dispatch branches
+    ----------------------------
+    (a) ``src["interface"]`` is set
+        The argument accepts *any* implementation of the named interface, so it maps to a
+        ``{prefix}_impl_t *`` pointer.  ``effective_access == "disown"`` upgrades to a
+        double-pointer (``**``) with a ``_ref`` name suffix — see inline WHY comments.
+    (b) ``src["class"]`` is set
+        The argument is a concrete struct.  Access mode, value-type flag, and array markers
+        determine whether it is passed by value, pointer, or double-pointer.
+    (c) Fallback (buffer, enum, string, primitive, varargs, callback)
+        All other IR type tags fall through to specialised sub-branches that handle the
+        ``type_map`` primitive table, string conventions, varargs, and callback signatures.
+    """
+    # WHY attrs = src: they are the exact same dict.  ``attrs`` is a local alias kept
+    # for readability — it mirrors the naming convention used throughout the codebase
+    # where "attributes" describes the IR dict entries being interrogated.
     attrs = src
     arg_name = name if name is not None else attrs.get("name", "")
     if attrs.get("interface") is not None:
@@ -6895,6 +6946,12 @@ def argument_from_source(
         arg_project = attrs.get("project")
         if arg_project and project_ir is not None:
             prefix = project_ir.prefix  # default
+            # WHY fallback_projects loop: when an interface is declared in a *different*
+            # project (e.g. a ``common`` interface referenced from ``foundation``), the
+            # impl_t type must carry that dependency's prefix, not the current project's
+            # prefix.  ``fallback_projects`` is the list of project IRs that were loaded
+            # as transitive dependencies, so we scan it to find the right prefix instead
+            # of hard-coding the cross-project name.
             for fp in (project_ir.fallback_projects or []):
                 if fp.name == arg_project:
                     prefix = fp.prefix
@@ -6903,11 +6960,18 @@ def argument_from_source(
             prefix = project_ir.prefix if project_ir is not None else "vscf"
         type_name = f"{prefix}_impl_t"
         extra: dict[str, str] = {}
-        # Access is pre-resolved in the IR
+        # WHY effective_access vs raw attrs.get("access"): access is fully resolved in
+        # the IR (inheritances, defaults applied) before reaching this function, so we
+        # read it once into ``effective_access`` and treat it as the canonical value
+        # rather than re-reading the raw key multiple times.
         effective_access = attrs.get("access", "readonly")
         if effective_access == "readonly":
             extra["is_const_type"] = "1"
-        # Disown access → double pointer (reference) with _ref suffix
+        # WHY "disown" produces a _ref suffix with double-pointer (reference) access:
+        # the "disown" convention signals transfer-of-ownership — the callee takes
+        # exclusive ownership of the object and NULLs the caller's pointer.  C
+        # represents this as a ``T **`` parameter (double pointer), and the ``_ref``
+        # suffix makes the intent visible at the call site.
         if effective_access == "disown":
             return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
@@ -6964,7 +7028,10 @@ def argument_from_source(
         # Only apply const for readonly pointer types (not value types)
         if effective_cls_access == "readonly" and accessed_by == "pointer":
             extra["is_const_type"] = "1"
-        # Disown access → double pointer (reference) with _ref suffix
+        # WHY "disown" produces a _ref suffix with double-pointer (reference) access:
+        # same transfer-of-ownership convention as for interface-typed args above — the
+        # callee takes ownership and NULLs the caller's pointer via ``T **``.  Self-typed
+        # arguments are excluded because the owning struct is never disowned through itself.
         if attrs.get("access") == "disown" and attrs.get("class") != "self":
             return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
         return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)

@@ -996,6 +996,72 @@ def _create_file_skeleton(root: ET.Element, is_header: bool, *, license_text: st
 
 
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path, *, project: str = "common", license_text: str = "") -> list[Path]:
+    """Render one codegen XML descriptor to disk and return the paths that were written.
+
+    Reads the XML descriptor at *xml_path* (or generates it on the fly via a direct
+    renderer), then creates or updates the header and/or source file it describes.
+
+    Parameters
+    ----------
+    xml_path:
+        Path to the codegen XML descriptor for the entity being rendered.  The descriptor
+        declares ``header_file`` / ``source_file`` attributes that name the output paths
+        relative to *codegen_root*.
+    repo_root:
+        Root of the repository checkout.  Used to locate ``direct_c_renderers`` and the
+        ``library/<project>/`` tree for stale-include detection.
+    codegen_root:
+        Directory where codegen XML descriptors live (``<repo_root>/codegen/``).  Output
+        file paths from the descriptor are resolved relative to this directory.
+    out_root:
+        Root under which generated files are written.  In ``--apply`` mode this equals
+        *repo_root*; otherwise it is a temporary build directory.
+    project:
+        Project name (e.g. ``"foundation"``).  Used to look up a direct renderer and to
+        locate the project's library header tree for include validation.
+    license_text:
+        Full license text to stamp into the ``@license`` block of each file.
+
+    Returns
+    -------
+    list[Path]
+        Absolute paths of every file that was written (typically one header and/or one
+        source file, but possibly zero if the descriptor has no ``header_file`` /
+        ``source_file`` attributes).
+
+    Two main rendering paths
+    ------------------------
+    New file:
+        If the output path does not yet exist, ``_create_file_skeleton`` builds a fresh
+        file with the standard include guards / license block and an empty ``@generated``
+        section.  The generated content is then merged into that skeleton.
+    Existing file (additive merge):
+        The existing file is read and its ``@generated`` section is replaced with freshly
+        generated content.  Code written by humans between ``@end`` / ``@tag`` block
+        markers is preserved unchanged — the renderer is authoritative only for the
+        ``@generated`` region.
+
+    Key invariants
+    --------------
+    * The renderer is authoritative for *adding* new content to the ``@generated`` section;
+      it never removes hand-written code from user-owned sections.
+    * Cross-project bare includes (e.g. ``"vsc_data.h"`` inside a ``vscf_`` header) are
+      dropped from the ``@generated_header_includes`` section because they break CGo
+      ``CFLAGS`` and are already provided through framework-conditional user-area blocks.
+
+    WHY comments (see inline below)
+    --------------------------------
+    * WHY ``direct_c_renderers`` is checked first — some IR entities have a Python-driven
+      renderer that synthesises the XML programmatically rather than reading an XML file.
+    * WHY additive merge — user code between ``@end`` / ``@tag`` blocks must survive every
+      regeneration cycle without manual intervention.
+    * WHY ``self_prefix`` filter on ``renderer_pub_includes`` — keeps only same-project
+      headers so cross-project headers (already handled separately) are not duplicated.
+    """
+    # WHY direct_c_renderers is checked first: some entities (e.g. umbrella modules or
+    # synthetic shims) have no static XML descriptor — their IR is built entirely in Python.
+    # The renderer map lets those entities participate in render_one without needing an
+    # on-disk XML file, keeping the rendering pipeline uniform for all entity kinds.
     renderer = direct_c_renderers(repo_root, project).get(xml_path.name)
     if renderer is not None:
         root = renderer(repo_root)
@@ -1028,6 +1094,14 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
             # framework-conditional user-area blocks.
             self_include = root.attrib.get("c_include_file", "")
             self_prefix = self_include.split("_")[0] + "_" if "_" in self_include else ""
+            # WHY self_prefix filter on renderer_pub_includes: the renderer's ``c_include``
+            # children can reference headers from other projects (cross-project deps).
+            # Those cross-project headers must NOT be added to the renderer list because
+            # they are already emitted through framework-conditional user-area blocks and
+            # including them here would duplicate the ``#include`` directives — and,
+            # critically, break CGo ``CFLAGS`` which cannot handle bare cross-project
+            # paths without the right ``-I`` flags.  Filtering to ``self_prefix`` keeps
+            # only same-project headers where the include path is guaranteed to be valid.
             renderer_pub_includes = [
                 render_include(c) for c in root
                 if c.tag == "c_include"
@@ -1132,6 +1206,51 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
 
 
 def main() -> int:
+    """Entry point for the new codegen: load IR for one or all projects and render C headers.
+
+    Parses command-line arguments, then for each selected project:
+
+    1. Iterates over codegen XML descriptors (and optional legacy XML fallbacks).
+    2. Calls :func:`render_one` on each descriptor to produce or update C headers / sources.
+    3. Generates umbrella headers, CMake files, and language-wrapper files (Go, Python,
+       Swift, PHP, Java, WASM) for projects that declare the corresponding wrapper.
+    4. Optionally sweeps the entire repo to keep ``@license`` blocks and copyright years
+       current in all source files (``--apply`` mode only).
+
+    Returns
+    -------
+    int
+        Exit code: ``0`` on success, ``1`` if any module was skipped due to an unexpected
+        error (i.e. not listed in ``KNOWN_SKIPS``).
+
+    Key CLI flags
+    -------------
+    --apply
+        Write generated files directly into the repo source tree (``out_root = repo_root``)
+        instead of a temporary build directory.  This is the flag used in normal development
+        and CI to commit regenerated code back to the repository.
+    --legacy-c-modules
+        Include resolved ``c_module`` XML fallback inputs produced by the old codegen
+        pipeline.  Used during the migration period to verify parity between old and new
+        output, and for edge-case modules not yet covered by the IR-based path.
+    --project
+        Restrict rendering to a single project (e.g. ``foundation``) or pass ``all`` to
+        process every project in :func:`supported_projects` order.
+
+    WHY comments (see inline below)
+    --------------------------------
+    * WHY ``KNOWN_SKIPS`` — some modules reference IR entities not yet present in the IR
+      graph; they are expected to fail and are listed here so the exit code stays clean
+      while the graph is being completed incrementally.
+    * WHY ``codegen_root`` is separate from ``out_root`` — ``codegen_root`` (``<repo>/codegen/``)
+      is where the XML descriptors live and is always read-only here; ``out_root`` is where
+      the generated C files are written and varies between ``--apply`` (in-tree) and normal
+      mode (a temp build dir).
+    * WHY the non-``--apply`` path deletes and recreates ``out_root`` — a clean temp dir
+      ensures no stale generated files from a previous run survive; in ``--apply`` mode we
+      write directly into the tree and rely on the existing file update logic in
+      :func:`render_one` to preserve hand-written sections.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--project", default="common", choices=[*supported_projects(), "all"])
@@ -1147,9 +1266,17 @@ def main() -> int:
     projects = list(supported_projects()) if args.project == "all" else [args.project]
 
     repo_root = Path(args.repo_root).resolve()
+    # WHY codegen_root is separate from out_root: codegen_root holds the source XML
+    # descriptors (always under <repo>/codegen/) and is never written to.  out_root is
+    # the destination for generated C files and differs between --apply (repo root,
+    # in-tree edits) and normal mode (ephemeral build dir that is wiped clean first).
     codegen_root = repo_root / "codegen"
 
     if not args.apply:
+        # WHY the non-apply path deletes and recreates out_root: a clean slate avoids
+        # stale generated files from a previous run surviving into the new output.  In
+        # --apply mode the files are written in-tree and render_one's additive merge
+        # preserves hand-written sections, so wiping the directory is never safe there.
         out_root = (repo_root / args.out).resolve()
         if out_root.exists():
             shutil.rmtree(out_root)
@@ -1157,7 +1284,12 @@ def main() -> int:
     else:
         out_root = repo_root
 
-    # Known skips: modules that reference IR entities not yet available.
+    # WHY KNOWN_SKIPS exists: some XML descriptors reference IR entities (classes,
+    # interfaces, enums) that have not yet been added to the IR graph.  Rather than
+    # aborting the whole run for a single missing entity, we allow controlled skipping
+    # so the rest of the project still regenerates cleanly.  Each entry here is an
+    # acknowledged, tracked gap — unexpected errors (not in KNOWN_SKIPS) still surface
+    # as non-zero exit codes so they cannot be silently ignored.
     KNOWN_SKIPS: set[str] = set()
 
     all_written: list[Path] = []
