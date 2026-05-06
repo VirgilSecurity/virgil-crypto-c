@@ -173,7 +173,7 @@ sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION_FULL}\"\2" "${ROOT_DIR}/
 
 # ###########################################################################
 show_info "Add version within Carthage spec files."
-for PROJ in VSCCommon VSCFoundation VSCPythia VSCRatchet; do
+for PROJ in VSCCommon VSCFoundation VSCRatchet; do
 cat <<EOF > "${ROOT_DIR}/carthage-specs/${PROJ}.json"
 {
     "${VERSION_FULL}": "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v${VERSION_FULL}/${PROJ}.xcframework.zip"
