@@ -995,68 +995,128 @@ def _create_file_skeleton(root: ET.Element, is_header: bool, *, license_text: st
     return "\n".join(lines)
 
 
+def _merge_header_includes(
+    root: "ET.Element",
+    merged: str,
+    repo_root: "Path",
+    project: str,
+    old_includes: list[str],
+) -> str:
+    """Merge all include sources into a single ``@generated_header_includes`` section.
+
+    Four sources are combined in priority order (later sources fill gaps, never override):
+
+    1. *old_includes* — includes extracted from the legacy first ``@end`` block of an
+       existing file.  These come first so hand-maintained ordering is preserved.
+    2. *existing_section_includes* — includes already present in the current
+       ``@generated_header_includes`` section, after filtering out stale/invalid entries.
+    3. *renderer_pub_includes* — same-project public includes emitted by the IR-driven
+       renderer (``c_include`` children of *root* with ``scope="public"``).
+    4. *sys_lines* — system ``<...>`` includes from the renderer's ``generate_header_includes_block``.
+
+    WHY cross-project bare includes are filtered from *existing_section_includes*:
+    includes such as ``"vsc_data.h"`` inside a ``vscf_`` header break CGo ``CFLAGS``
+    (which cannot handle bare cross-project paths without the right ``-I`` flags) and
+    are already provided through framework-conditional user-area blocks.
+
+    WHY *_known_bare* is built from ``library/<project>/``:
+    after a broken codegen run that injected wrong-prefix includes, the additive merge
+    would preserve those stale entries on the next run.  Checking against the committed
+    header files breaks this cycle — a bare include that does not exist in the library
+    tree is a codegen artifact, not a real dependency.
+
+    WHY ``self_prefix`` filters *renderer_pub_includes*:
+    renderer ``c_include`` children can reference headers from other projects (cross-project
+    deps).  Those are emitted through user-area blocks and must not be duplicated here.
+
+    Returns the updated *merged* text with the ``@generated_header_includes`` section
+    replaced (or inserted before ``#ifdef __cplusplus``).
+    """
+    include_block = generate_header_includes_block(root)
+    self_include = root.attrib.get("c_include_file", "")
+    self_prefix = self_include.split("_")[0] + "_" if "_" in self_include else ""
+
+    renderer_pub_includes = [
+        render_include(c) for c in root
+        if c.tag == "c_include"
+        and c.attrib.get("scope") == "public"
+        and c.attrib.get("is_system") != "1"
+        and c.attrib.get("file") != self_include
+        and (not self_prefix or c.attrib.get("file", "").startswith(self_prefix))
+    ]
+
+    lib_dir = repo_root / "library" / project
+    _known_bare: set[str] | None = None
+    if lib_dir.is_dir():
+        _known_bare = {p.name for p in lib_dir.rglob("*.h")}
+
+    existing_section_includes: list[str] = []
+    if GENERATED_HEADER_INCLUDES_START in merged:
+        try:
+            sec_start = merged.index(GENERATED_HEADER_INCLUDES_START)
+            sec_end = merged.index(GENERATED_END, sec_start)
+            for ln in merged[sec_start:sec_end].splitlines():
+                stripped = ln.strip()
+                if not stripped.startswith("#include "):
+                    continue
+                if self_prefix and stripped.startswith('#include "'):
+                    fname = stripped[len('#include "'):-1]
+                    if not fname.startswith(self_prefix):
+                        continue
+                    if _known_bare is not None and fname not in _known_bare:
+                        continue
+                existing_section_includes.append(stripped)
+        except ValueError:
+            pass
+
+    sys_lines: list[str] = []
+    if include_block:
+        for ln in include_block.splitlines():
+            if ln.strip().startswith("#include "):
+                sys_lines.append(ln.strip())
+
+    seen: set[str] = set()
+    combined: list[str] = []
+    for inc in (*old_includes, *existing_section_includes, *renderer_pub_includes, *sys_lines):
+        if inc not in seen:
+            combined.append(inc)
+            seen.add(inc)
+
+    if combined:
+        proj = [x for x in combined if x.startswith('#include "')]
+        sys = [x for x in combined if x.startswith("#include <")]
+        out_lines = _generated_block_header(GENERATED_HEADER_INCLUDES_START, "Generated header includes start.")
+        if proj:
+            out_lines.extend(proj)
+            if sys:
+                out_lines.append("")
+        if sys:
+            out_lines.extend(sys)
+        out_lines.append("")
+        out_lines.extend(_generated_block_footer())
+        include_block = "\n".join(out_lines) + "\n"
+
+    if combined or include_block:
+        merged = merge_or_insert_tagged_section(
+            merged,
+            include_block,
+            start_marker=GENERATED_HEADER_INCLUDES_START,
+            anchor_before="#ifdef __cplusplus",
+        )
+    return merged
+
+
 def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Path, *, project: str = "common", license_text: str = "") -> list[Path]:
-    """Render one codegen XML descriptor to disk and return the paths that were written.
+    """Render one codegen XML descriptor to disk; return paths written (header and/or source).
 
-    Reads the XML descriptor at *xml_path* (or generates it on the fly via a direct
-    renderer), then creates or updates the header and/or source file it describes.
-
-    Parameters
-    ----------
-    xml_path:
-        Path to the codegen XML descriptor for the entity being rendered.  The descriptor
-        declares ``header_file`` / ``source_file`` attributes that name the output paths
-        relative to *codegen_root*.
-    repo_root:
-        Root of the repository checkout.  Used to locate ``direct_c_renderers`` and the
-        ``library/<project>/`` tree for stale-include detection.
-    codegen_root:
-        Directory where codegen XML descriptors live (``<repo_root>/codegen/``).  Output
-        file paths from the descriptor are resolved relative to this directory.
-    out_root:
-        Root under which generated files are written.  In ``--apply`` mode this equals
-        *repo_root*; otherwise it is a temporary build directory.
-    project:
-        Project name (e.g. ``"foundation"``).  Used to look up a direct renderer and to
-        locate the project's library header tree for include validation.
-    license_text:
-        Full license text to stamp into the ``@license`` block of each file.
-
-    Returns
-    -------
-    list[Path]
-        Absolute paths of every file that was written (typically one header and/or one
-        source file, but possibly zero if the descriptor has no ``header_file`` /
-        ``source_file`` attributes).
-
-    Two main rendering paths
-    ------------------------
-    New file:
-        If the output path does not yet exist, ``_create_file_skeleton`` builds a fresh
-        file with the standard include guards / license block and an empty ``@generated``
-        section.  The generated content is then merged into that skeleton.
-    Existing file (additive merge):
-        The existing file is read and its ``@generated`` section is replaced with freshly
-        generated content.  Code written by humans between ``@end`` / ``@tag`` block
-        markers is preserved unchanged — the renderer is authoritative only for the
-        ``@generated`` region.
-
-    Key invariants
-    --------------
-    * The renderer is authoritative for *adding* new content to the ``@generated`` section;
-      it never removes hand-written code from user-owned sections.
-    * Cross-project bare includes (e.g. ``"vsc_data.h"`` inside a ``vscf_`` header) are
-      dropped from the ``@generated_header_includes`` section because they break CGo
-      ``CFLAGS`` and are already provided through framework-conditional user-area blocks.
-
-    WHY comments (see inline below)
-    --------------------------------
-    * WHY ``direct_c_renderers`` is checked first — some IR entities have a Python-driven
-      renderer that synthesises the XML programmatically rather than reading an XML file.
-    * WHY additive merge — user code between ``@end`` / ``@tag`` blocks must survive every
-      regeneration cycle without manual intervention.
-    * WHY ``self_prefix`` filter on ``renderer_pub_includes`` — keeps only same-project
-      headers so cross-project headers (already handled separately) are not duplicated.
+    Looks up a direct Python renderer first (for synthetic entities with no static XML file),
+    then falls back to parsing xml_path. For each output file declared in the descriptor:
+    - New file: build a skeleton (include guards + license block + empty @generated section).
+    - Existing file: replace @generated section; preserve user code in @tag/@end blocks (additive merge).
+    For headers, delegates include merging to :func:`_merge_header_includes` which combines four
+    sources (legacy block, existing @generated_header_includes section, renderer c_include elements,
+    system includes) with cross-project filtering and stale-artifact removal — see its docstring.
+    Returns [] if the descriptor declares no header_file or source_file attributes.
     """
     # WHY direct_c_renderers is checked first: some entities (e.g. umbrella modules or
     # synthetic shims) have no static XML descriptor — their IR is built entirely in Python.
@@ -1068,6 +1128,8 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
     else:
         root = ET.parse(xml_path).getroot()
     written = []
+    # Two passes over the same root element: first the public header, then the source file.
+    # Not every descriptor declares both; missing attributes are silently skipped.
     for attr, is_header in [("header_file", True), ("source_file", False)]:
         rel = root.attrib.get(attr)
         if not rel:
@@ -1081,123 +1143,8 @@ def render_one(xml_path: Path, repo_root: Path, codegen_root: Path, out_root: Pa
         generated = generate_block(root, is_header)
         merged = merge_generated_section(existing, generated)
         if is_header:
-            # Extract existing includes from the legacy first @end block
-            # and merge them with codegen-produced system includes into a
-            # single @generated_header_includes section.
             merged, old_includes = _extract_old_header_includes(merged)
-            include_block = generate_header_includes_block(root)
-            # Build combined block: user-area legacy includes + existing section includes
-            # + renderer includes + system includes.
-            # The renderer is authoritative for ADDING new includes.  Existing section includes
-            # are preserved additively EXCEPT for cross-project bare includes (e.g. "vsc_data.h"
-            # in a vscf_ header) which break CGo CFLAGS and are already covered by the
-            # framework-conditional user-area blocks.
-            self_include = root.attrib.get("c_include_file", "")
-            self_prefix = self_include.split("_")[0] + "_" if "_" in self_include else ""
-            # WHY self_prefix filter on renderer_pub_includes: the renderer's ``c_include``
-            # children can reference headers from other projects (cross-project deps).
-            # Those cross-project headers must NOT be added to the renderer list because
-            # they are already emitted through framework-conditional user-area blocks and
-            # including them here would duplicate the ``#include`` directives — and,
-            # critically, break CGo ``CFLAGS`` which cannot handle bare cross-project
-            # paths without the right ``-I`` flags.  Filtering to ``self_prefix`` keeps
-            # only same-project headers where the include path is guaranteed to be valid.
-            renderer_pub_includes = [
-                render_include(c) for c in root
-                if c.tag == "c_include"
-                and c.attrib.get("scope") == "public"
-                and c.attrib.get("is_system") != "1"
-                and c.attrib.get("file") != self_include
-                and (not self_prefix or c.attrib.get("file", "").startswith(self_prefix))
-            ]
-            # Build a set of bare filenames that exist in this project's library tree so we
-            # can drop stale same-prefix includes that were injected by a prior broken run.
-            #
-            # WHAT "stale same-prefix includes" are: if a previous codegen run had the
-            # wrong-prefix bug it would have written e.g. `#include "vscr_impl.h"` into
-            # ratchet headers.  The next correct run would see vscr_impl.h in
-            # existing_section_includes and preserve it (additive merge).  _known_bare
-            # breaks this cycle by checking that the include file actually exists in the
-            # project's committed library headers.
-            #
-            # WHY library/<project>/ is the right source of truth: these are the committed
-            # header files.  If a bare include doesn't appear here it was a codegen artifact,
-            # not a real dependency, and should be discarded.
-            #
-            # What _known_bare does NOT catch: includes for files that exist in the library
-            # tree but are wrong for other reasons (e.g. correct filename, wrong project
-            # prefix — that case is handled by the cross-project filter above).
-            # _known_bare is purely an existence guard.
-            lib_dir = repo_root / "library" / project
-            _known_bare: set[str] | None = None
-            if lib_dir.is_dir():
-                _known_bare = {p.name for p in lib_dir.rglob("*.h")}
-            existing_section_includes: list[str] = []
-            if GENERATED_HEADER_INCLUDES_START in merged:
-                try:
-                    sec_start = merged.index(GENERATED_HEADER_INCLUDES_START)
-                    sec_end = merged.index(GENERATED_END, sec_start)
-                    for ln in merged[sec_start:sec_end].splitlines():
-                        stripped = ln.strip()
-                        if not stripped.startswith("#include "):
-                            continue
-                        # Drop cross-project bare includes: they break CGo and are in user area.
-                        if self_prefix and stripped.startswith('#include "'):
-                            fname = stripped[len('#include "'):-1]
-                            if not fname.startswith(self_prefix):
-                                continue
-                            # This file doesn't exist in the project's library tree — likely a stale
-                            # artifact from a prior broken codegen run. Drop it so the correct include
-                            # from the renderer takes its place.
-                            if _known_bare is not None and fname not in _known_bare:
-                                continue
-                        existing_section_includes.append(stripped)
-                except ValueError:
-                    pass
-            sys_lines: list[str] = []
-            if include_block:
-                for ln in include_block.splitlines():
-                    if ln.strip().startswith("#include "):
-                        sys_lines.append(ln.strip())
-            seen: set[str] = set()
-            combined: list[str] = []
-            for inc in old_includes:
-                if inc not in seen:
-                    combined.append(inc)
-                    seen.add(inc)
-            for inc in existing_section_includes:
-                if inc not in seen:
-                    combined.append(inc)
-                    seen.add(inc)
-            for inc in renderer_pub_includes:
-                if inc not in seen:
-                    combined.append(inc)
-                    seen.add(inc)
-            for inc in sys_lines:
-                if inc not in seen:
-                    combined.append(inc)
-                    seen.add(inc)
-            if combined:
-                # Separate project ("...") and system (<...>) includes
-                proj = [x for x in combined if x.startswith('#include "')]
-                sys = [x for x in combined if x.startswith("#include <")]
-                out_lines = _generated_block_header(GENERATED_HEADER_INCLUDES_START, "Generated header includes start.")
-                if proj:
-                    out_lines.extend(proj)
-                    if sys:
-                        out_lines.append("")
-                if sys:
-                    out_lines.extend(sys)
-                out_lines.append("")
-                out_lines.extend(_generated_block_footer())
-                include_block = "\n".join(out_lines) + "\n"
-            if combined or include_block:
-                merged = merge_or_insert_tagged_section(
-                    merged,
-                    include_block,
-                    start_marker=GENERATED_HEADER_INCLUDES_START,
-                    anchor_before="#ifdef __cplusplus",
-                )
+            merged = _merge_header_includes(root, merged, repo_root, project, old_includes)
         out_path = out_root / target.relative_to(repo_root)
         ensure_parent(out_path)
         out_path.write_text(merged)

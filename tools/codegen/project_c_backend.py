@@ -6960,6 +6960,122 @@ def comment_text(desc: str) -> str:
 
 
 
+def _interface_argument_element(
+    parent: ET.Element,
+    attrs: dict,
+    arg_name: str,
+    project_ir: IRProject | None,
+) -> ET.Element:
+    """Build a ``c_argument`` element for an interface-typed IR argument.
+
+    An interface-typed argument accepts *any* implementation of the named interface,
+    so it maps to a ``{prefix}_impl_t *`` pointer.
+
+    WHY fallback_projects loop: when the interface is declared in a *different* project
+    (e.g. a ``common`` interface referenced from ``foundation``), the ``impl_t`` type must
+    carry that dependency's prefix, not the current project's prefix.  ``fallback_projects``
+    carries the loaded upstream project IRs; scanning it finds the right prefix instead of
+    hard-coding the cross-project name.
+
+    WHY ``disown`` produces a ``_ref`` suffix with double-pointer (``reference``) access:
+    the ``disown`` convention signals transfer-of-ownership — the callee takes exclusive
+    ownership and NULLs the caller's pointer.  C represents this as ``T **``, and the
+    ``_ref`` suffix makes the intent visible at the call site.
+    """
+    arg_project = attrs.get("project")
+    if arg_project and project_ir is not None:
+        prefix = project_ir.prefix
+        for fp in (project_ir.fallback_projects or []):
+            if fp.name == arg_project:
+                prefix = fp.prefix
+                break
+    else:
+        prefix = project_ir.prefix if project_ir is not None else "vscf"
+    type_name = f"{prefix}_impl_t"
+    extra: dict[str, str] = {}
+    effective_access = attrs.get("access", "readonly")
+    if effective_access == "readonly":
+        extra["is_const_type"] = "1"
+    if effective_access == "disown":
+        return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
+    return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
+
+
+def _class_argument_element(
+    parent: ET.Element,
+    attrs: dict,
+    arg_name: str,
+    owner_class: str,
+    project_ir: IRProject | None,
+) -> ET.Element:
+    """Build a ``c_argument`` element for a class-typed IR argument.
+
+    Determines the C type name and ``accessed_by`` mode (``value``, ``pointer``,
+    ``reference``) from the argument's access mode, value-type flag, and array markers.
+
+    Precedence for ``accessed_by`` (first matching rule wins):
+
+    1. ``class == "self"`` + ``passed_by == "reference"`` → ``reference`` (double-pointer self).
+    2. ``class == "self"`` → ``pointer`` unless the owning class is a value type (→ ``value``).
+    3. ``library`` non-self → pointer by default; ``is_reference="0"`` → value;
+       array ``given`` + ``is_reference`` → reference.
+    4. Non-self IR class → pointer unless the target class is a value type (→ ``value``).
+    5. Array marker (``_array``/``array`` == ``"given"``) overrides the above: ``pointer``
+       (or ``reference`` when ``is_reference`` is also set).
+
+    WHY ``disown`` produces a ``_ref`` suffix with double-pointer (``reference``) access:
+    same transfer-of-ownership convention as for interface-typed args — the callee takes
+    ownership and NULLs the caller's pointer via ``T **``.  Self-typed arguments are
+    excluded because the owning struct is never disowned through itself.
+    """
+    resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
+    effective_cls_access = attrs.get("access")
+    extra: dict[str, str] = {}
+    resolved_class_str = cast(str, resolved_class)
+    if resolved_class_str.startswith("const "):
+        resolved_class_str = resolved_class_str[len("const "):]
+        extra["is_const_type"] = "1"
+    if attrs.get("library") and attrs.get("class") != "self":
+        type_name = resolved_class_str
+    else:
+        type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
+    accessed_by = "value"
+    if attrs.get("class") == "self" and attrs.get("passed_by") == "reference":
+        accessed_by = "reference"
+    elif attrs.get("class") == "self" and project_ir is not None:
+        try:
+            is_value = class_ir(project_ir, owner_class).attrs.get("is_value_type") in {"1", "true"}
+        except (KeyError, ValueError):
+            is_value = False  # implementations are never value types
+        if not is_value:
+            accessed_by = "pointer"
+    elif attrs.get("library") and attrs.get("class") != "self":
+        if (attrs.get("_array") == "given" or attrs.get("array") == "given") and attrs.get("is_reference") in {"1", "true"}:
+            accessed_by = "reference"
+        elif attrs.get("is_reference") == "0":
+            accessed_by = "value"
+        else:
+            accessed_by = "pointer"
+    elif attrs.get("class") != "self" and project_ir is not None:
+        target_is_value_type = False
+        for pir in [project_ir, *getattr(project_ir, 'fallback_projects', [])]:
+            try:
+                target_cls = class_ir(pir, resolved_class_str)
+                target_is_value_type = target_cls.attrs.get("is_value_type") in {"1", "true"}
+                break
+            except (KeyError, ValueError):
+                pass
+        if not target_is_value_type:
+            accessed_by = "pointer"
+    if attrs.get("_array") == "given" or attrs.get("array") == "given":
+        accessed_by = "reference" if attrs.get("is_reference") in {"1", "true"} else "pointer"
+    if effective_cls_access == "readonly" and accessed_by == "pointer":
+        extra["is_const_type"] = "1"
+    if attrs.get("access") == "disown" and attrs.get("class") != "self":
+        return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
+    return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
+
+
 def argument_from_source(
     parent: ET.Element,
     src: dict,
@@ -6972,156 +7088,35 @@ def argument_from_source(
 
     Parameters
     ----------
-    parent:
-        The XML element that will receive the new ``c_argument`` child.
     src:
-        An IR argument dict as produced by the IR loader.  Relevant keys:
-
-        * ``interface`` – name of an interface type (mutually exclusive with ``class``/``type``)
-        * ``class``     – name of a class type; the special value ``"self"`` refers to the
-                          owning class resolved via *owner_class*
-        * ``library``   – truthy when the type comes from an external library (skips IR lookup)
-        * ``access``    – pre-resolved access mode: ``"readonly"``, ``"readwrite"``,
-                          ``"writeonly"``, or ``"disown"``
-        * ``project``   – source project name for cross-project interface types
-        * ``name``      – argument name (overridden by the *name* kwarg when provided)
-        * ``passed_by`` – ``"reference"`` forces double-pointer for self-typed args
-        * ``type``      – primitive type tag (``"byte"``, ``"string"``, ``"varargs"``, …)
-
+        IR argument dict with keys: ``interface``, ``class``, ``library``, ``access``
+        (``readonly``/``readwrite``/``writeonly``/``disown``), ``project``, ``name``,
+        ``passed_by``, ``type`` (``byte``/``string``/``varargs``/…).
     name:
-        Override for the argument name; falls back to ``src["name"]`` when ``None``.
+        Override for the argument name; falls back to ``src["name"]``.
     project_ir:
-        IR of the project that owns the method being emitted.  Pass ``None`` when the
-        caller has no project context (e.g. during stand-alone snippet rendering); a
-        best-effort fallback to ``"vscf"`` prefixes is used in that case.
+        IR of the owning project; ``None`` uses ``"vscf"`` fallback prefixes.
     owner_class:
-        The name of the class that owns the method.  Used when ``src["class"] == "self"``
-        to resolve the concrete struct type.
-
-    Returns
-    -------
-    ET.Element
-        The newly created ``c_argument`` element (already attached to *parent*).
+        Owning class name — used when ``src["class"] == "self"`` to resolve the struct type.
 
     Three main dispatch branches
     ----------------------------
-    (a) ``src["interface"]`` is set
-        The argument accepts *any* implementation of the named interface, so it maps to a
-        ``{prefix}_impl_t *`` pointer.  ``effective_access == "disown"`` upgrades to a
-        double-pointer (``**``) with a ``_ref`` name suffix — see inline WHY comments.
-    (b) ``src["class"]`` is set
-        The argument is a concrete struct.  Access mode, value-type flag, and array markers
-        determine whether it is passed by value, pointer, or double-pointer.
-    (c) Fallback (buffer, enum, string, primitive, varargs, callback)
-        All other IR type tags fall through to specialised sub-branches that handle the
-        ``type_map`` primitive table, string conventions, varargs, and callback signatures.
+    (a) ``src["interface"]`` → :func:`_interface_argument_element` (impl_t pointer, disown→ref).
+    (b) ``src["class"]``    → :func:`_class_argument_element` (value/pointer/reference by rules).
+    (c) Fallback: callback, string, enum, varargs, or primitive via ``type_map``.
     """
-    # WHY attrs = src: they are the exact same dict.  ``attrs`` is a local alias kept
-    # for readability — it mirrors the naming convention used throughout the codebase
-    # where "attributes" describes the IR dict entries being interrogated.
-    attrs = src
-    arg_name = name if name is not None else attrs.get("name", "")
-    if attrs.get("interface") is not None:
-        # Interface-typed argument → resolve to {prefix}_impl_t pointer
-        # For cross-project interfaces, use the source project's prefix
-        arg_project = attrs.get("project")
-        if arg_project and project_ir is not None:
-            prefix = project_ir.prefix  # default
-            # WHY fallback_projects loop: when an interface is declared in a *different*
-            # project (e.g. a ``common`` interface referenced from ``foundation``), the
-            # impl_t type must carry that dependency's prefix, not the current project's
-            # prefix.  ``fallback_projects`` is the list of project IRs that were loaded
-            # as transitive dependencies, so we scan it to find the right prefix instead
-            # of hard-coding the cross-project name.
-            for fp in (project_ir.fallback_projects or []):
-                if fp.name == arg_project:
-                    prefix = fp.prefix
-                    break
-        else:
-            prefix = project_ir.prefix if project_ir is not None else "vscf"
-        type_name = f"{prefix}_impl_t"
-        extra: dict[str, str] = {}
-        # WHY effective_access vs raw attrs.get("access"): access is fully resolved in
-        # the IR (inheritances, defaults applied) before reaching this function, so we
-        # read it once into ``effective_access`` and treat it as the canonical value
-        # rather than re-reading the raw key multiple times.
-        effective_access = attrs.get("access", "readonly")
-        if effective_access == "readonly":
-            extra["is_const_type"] = "1"
-        # WHY "disown" produces a _ref suffix with double-pointer (reference) access:
-        # the "disown" convention signals transfer-of-ownership — the callee takes
-        # exclusive ownership of the object and NULLs the caller's pointer.  C
-        # represents this as a ``T **`` parameter (double pointer), and the ``_ref``
-        # suffix makes the intent visible at the call site.
-        if effective_access == "disown":
-            return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
-        return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
-    if attrs.get("class") is not None:
-        resolved_class = owner_class if attrs.get("class") == "self" else attrs.get("class", owner_class)
-        # Access is pre-resolved in the IR
-        effective_cls_access = attrs.get("access")
-        extra: dict[str, str] = {}
-        # Handle const prefix in class name
-        resolved_class_str = cast(str, resolved_class)
-        if resolved_class_str.startswith("const "):
-            resolved_class_str = resolved_class_str[len("const "):]
-            extra["is_const_type"] = "1"
-        if attrs.get("library") and attrs.get("class") != "self":
-            # External or internal library type — use name as-is without IR lookup
-            type_name = resolved_class_str
-        else:
-            type_name = class_type_symbol(project_ir, resolved_class_str) if project_ir is not None else "vsc_data_t"
-        accessed_by = "value"
-        if attrs.get("class") == "self" and attrs.get("passed_by") == "reference":
-            accessed_by = "reference"
-        elif attrs.get("class") == "self" and project_ir is not None:
-            try:
-                is_value = class_ir(project_ir, owner_class).attrs.get("is_value_type") in {"1", "true"}
-            except (KeyError, ValueError):
-                is_value = False  # implementations are never value types
-            if not is_value:
-                accessed_by = "pointer"
-        elif attrs.get("library") and attrs.get("class") != "self":
-            # Library types default to pointer; only value when explicitly is_reference="0".
-            # Array out-parameters such as nanopb repeated fields use a double pointer.
-            if (attrs.get("_array") == "given" or attrs.get("array") == "given") and attrs.get("is_reference") in {"1", "true"}:
-                accessed_by = "reference"
-            elif attrs.get("is_reference") == "0":
-                accessed_by = "value"
-            else:
-                accessed_by = "pointer"
-        elif attrs.get("class") != "self" and project_ir is not None:
-            # Non-self class argument: check if target class is a value type
-            target_is_value_type = False
-            for pir in [project_ir, *getattr(project_ir, 'fallback_projects', [])]:
-                try:
-                    target_cls = class_ir(pir, resolved_class_str)
-                    target_is_value_type = target_cls.attrs.get("is_value_type") in {"1", "true"}
-                    break
-                except (KeyError, ValueError):
-                    pass
-            if not target_is_value_type:
-                accessed_by = "pointer"
-        # Array arguments are pointer-backed in C. When the model also marks the
-        # argument as a reference, preserve the double-pointer form.
-        if attrs.get("_array") == "given" or attrs.get("array") == "given":
-            accessed_by = "reference" if attrs.get("is_reference") in {"1", "true"} else "pointer"
-        # Only apply const for readonly pointer types (not value types)
-        if effective_cls_access == "readonly" and accessed_by == "pointer":
-            extra["is_const_type"] = "1"
-        # WHY "disown" produces a _ref suffix with double-pointer (reference) access:
-        # same transfer-of-ownership convention as for interface-typed args above — the
-        # callee takes ownership and NULLs the caller's pointer via ``T **``.  Self-typed
-        # arguments are excluded because the owning struct is never disowned through itself.
-        if attrs.get("access") == "disown" and attrs.get("class") != "self":
-            return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
-        return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
-    if attrs.get("callback") is not None:
-        callback_type = callback_symbol(project_ir, callback_name_from_ref(attrs.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"
+    arg_name = name if name is not None else src.get("name", "")
+    if src.get("interface") is not None:
+        return _interface_argument_element(parent, src, arg_name, project_ir)
+    if src.get("class") is not None:
+        return _class_argument_element(parent, src, arg_name, owner_class, project_ir)
+    # callback: function-pointer argument — resolve to the typed fn alias (e.g. vsc_dealloc_fn)
+    if src.get("callback") is not None:
+        callback_type = callback_symbol(project_ir, callback_name_from_ref(src.get("callback"))) if project_ir is not None else "vsc_dealloc_fn"
         return text_element(parent, "c_argument", name=c_identifier(arg_name, callback=True), accessed_by="value", type=callback_type, type_is="callback")
-    if attrs.get("type") == "string":
-        if attrs.get("string_length") == "fixed" and attrs.get("string_length_constant"):
-            # Fixed-length writable string buffer: char name[N]
+    # string: fixed-length char array (char name[N]) or null-terminated const char*
+    if src.get("type") == "string":
+        if src.get("string_length") == "fixed" and src.get("string_length_constant"):
             return text_element(
                 parent,
                 "c_argument",
@@ -7129,10 +7124,9 @@ def argument_from_source(
                 accessed_by="value",
                 type="char",
                 type_is="primitive",
-                array=attrs["string_length_constant"],
+                array=src["string_length_constant"],
             )
-        # Default: null-terminated const string: const char *name
-        is_const = "1" if attrs.get("access") in ("readonly", None) else None
+        is_const = "1" if src.get("access") in ("readonly", None) else None
         return text_element(
             parent,
             "c_argument",
@@ -7143,11 +7137,10 @@ def argument_from_source(
             string="given",
             **({"is_const_type": "1"} if is_const else {}),
         )
-    if attrs.get("enum") is not None:
-        # Enum-typed argument → resolve to enum type
-        enum_name = attrs["enum"]
-        if attrs.get("library"):
-            # External library enum type — use raw name as-is
+    # enum: resolve to the typed enum_t symbol; library enums use the raw name as-is
+    if src.get("enum") is not None:
+        enum_name = src["enum"]
+        if src.get("library"):
             rendered_type = enum_name
         elif project_ir is not None:
             try:
@@ -7158,17 +7151,19 @@ def argument_from_source(
         else:
             rendered_type = f"vscf_{snake_name(enum_name)}_t"
         return text_element(parent, "c_argument", name=arg_name, accessed_by="value", type=rendered_type, type_is="primitive")
-    if attrs.get("type") == "varargs":
+    # varargs: the C ellipsis — no name, no type, just "..."
+    if src.get("type") == "varargs":
         return text_element(parent, "c_argument", type="...", accessed_by="value")
-    rendered_type, kind = type_map(attrs.get("type"), attrs.get("size"))
+    # primitive (byte, size, bool, …): look up C type via type_map; byte arrays are pointer/reference
+    rendered_type, kind = type_map(src.get("type"), src.get("size"))
     extra = {}
-    if attrs.get("type") == "byte" and attrs.get("_array") == "given":
+    if src.get("type") == "byte" and src.get("_array") == "given":
         extra["array"] = "given"
-        if attrs.get("access") not in ("readwrite", "writeonly"):
+        if src.get("access") not in ("readwrite", "writeonly"):
             extra["is_const_type"] = "1"
-    elif attrs.get("type") == "byte" and attrs.get("is_reference") in {"1", "true"} and attrs.get("access") != "readwrite":
+    elif src.get("type") == "byte" and src.get("is_reference") in {"1", "true"} and src.get("access") != "readwrite":
         extra["is_const_type"] = "1"
-    accessed_by = "pointer" if attrs.get("is_reference") in {"1", "true"} else "value"
+    accessed_by = "pointer" if src.get("is_reference") in {"1", "true"} else "value"
     return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=rendered_type, type_is=kind, **extra)
 
 
