@@ -1203,22 +1203,50 @@ def discover_renderers(
 ) -> dict[str, DirectCRenderer]:
     """Walk the project IR and build a complete renderer map for all renderable entities.
 
+    A *renderer* is a ``DirectCRenderer`` callable with signature
+    ``(repo_root: Path) -> ET.Element``.  The returned ``ET.Element`` is the
+    root of the codegen XML that ``render_one`` turns into a C header or source
+    file.  The renderer map key is the ``xml_name`` (the bare filename of the
+    codegen XML descriptor, e.g. ``"vscf_hash.xml"``).
+
     Parameters
     ----------
     project_ir:
-        The fully-resolved project IR.
+        The fully-resolved project IR (all entities, fallback_projects, prefix, …).
     entity_kinds:
         Optional filter.  When provided only entities whose kind is in the set
         are included (e.g. ``{"enum"}`` or ``{"module", "class"}``).
         When *None* (the default) all supported kinds are discovered.
     custom_overrides:
-        A ``{xml_name: renderer}`` dict of custom renderers that replace the
-        default IR-driven renderer for the corresponding output file.
+        A ``{xml_name: renderer}`` dict that REPLACES (not wraps) the default
+        IR-driven renderer for the corresponding output file.  Replacement is
+        intentional: overrides opt out of IR-driven generation entirely, usually
+        to supply a hand-crafted or migration-parity renderer for a specific file.
+
+    WHY default-argument capture in lambdas
+    ----------------------------------------
+    Every renderer lambda uses ``_pir=project_ir, _e=enum`` default-argument
+    capture rather than closing over ``project_ir`` and ``enum`` directly.
+    This is the standard Python workaround for the loop late-binding trap:
+    a plain ``lambda: f(project_ir, enum)`` inside a loop would capture the
+    *variable* ``enum``, not its *value at iteration time* — so every renderer
+    would call ``f(project_ir, last_enum)``.  Default arguments are evaluated
+    at the time the lambda is created, binding the correct object immediately.
+
+    WHY overrides are added last (after the IR loop)
+    --------------------------------------------------
+    The final loop copies any override keys that don't correspond to a known IR
+    entity (e.g. derived outputs like ``vscf_buffer_defs.h``).  This lets
+    callers inject entirely new renderers without needing an IR entity to attach
+    them to.
     """
     overrides = custom_overrides or {}
     renderers: dict[str, DirectCRenderer] = {}
     include_all = entity_kinds is None
 
+    # Each block below follows the same pattern: iterate IR entities, check for
+    # a custom override (which replaces the whole renderer), otherwise build a
+    # lambda that captures the current entity by value (see docstring WHY).
     if include_all or "enum" in entity_kinds:  # type: ignore[operator]
         for enum in project_ir.enums:
             xml_name = direct_xml_name(cast(IROutputTarget, enum.output))
@@ -1248,9 +1276,16 @@ def discover_renderers(
                 renderers[xml_name] = (
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
-            # Defs module for non-value-type classes with a struct context.
-            # Skip when struct is inlined (value types, no lifecycle, or
-            # scope="internal" + context="public" which inlines the struct).
+            # --- defs module (render_class_defs_c_module) ---
+            # A separate _defs.h file holds the struct definition when the struct
+            # must NOT be inlined into the public header.  The struct stays private
+            # (in _defs.h) when:
+            #   • the class has a lifecycle (ref-counted heap object) AND
+            #   • is not a value type (value types are passed by copy, struct visible) AND
+            #   • is not scope="internal"+context="public" (that combo inlines the struct
+            #     because internal-scope classes expose their struct to the same TU).
+            # WHY three separate conditions: each is a distinct design choice in the IR
+            # about whether the caller needs to see the struct layout.
             is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
             context = cls.attrs.get("context", "public")
             cls_scope = cls.attrs.get("scope", "public")
@@ -1339,7 +1374,10 @@ def discover_renderers(
                     )
 
     # --- project-global impl infrastructure modules ---
-    # Only registered during full discovery (no entity_kinds filter)
+    # These are shared modules (e.g. vscf_impl.h, vscf_impl_private.h) that
+    # are generated once per project rather than once per implementation entity.
+    # They are only registered during full discovery (no entity_kinds filter)
+    # because they depend on the complete set of implementations being known.
     if include_all:
         _register_impl_infra_renderers(project_ir, renderers, overrides)
 
@@ -6390,15 +6428,40 @@ def render_implementation_c_module(
     *,
     fallback_projects: list[IRProject] | None = None,
 ) -> ET.Element:
-    """Render the main module for an implementation.
+    """Render the public C module XML for an implementation entity.
 
-    Produces:
-    - Interface binding constants (enum)
-    - Struct declaration (definition is in defs module)
-    - Lifecycle methods: init, cleanup, new, delete, destroy, shallow_copy
-    - impl_size, impl, impl_const cast helpers
-    - init_ctx, cleanup_ctx stubs
-    - Interface method implementation stubs
+    An *implementation* in the IR is a concrete class that implements one or
+    more interfaces (e.g. ``vscf_sha256`` implements ``vscf_hash``).  This
+    function renders the *public* header/source module — the entry point for
+    the three-module split that every implementation gets:
+
+    * **Public module** (this function) — ``vscf_sha256.h/.c``:
+      interface binding constants, struct forward declaration, lifecycle API,
+      cast helpers, and interface-method stubs visible to callers.
+    * **Defs module** (``render_implementation_defs_c_module``) — ``vscf_sha256_defs.h``:
+      the actual struct definition (fields, embedded impl tag, ref counter).
+      Kept separate so callers only need the forward declaration.
+    * **Internal module** (``render_implementation_internal_c_module``) — ``vscf_sha256_internal.h/.c``:
+      private helpers, init/cleanup bodies, and interface-method implementations.
+
+    WHY three output targets are computed at the top (*impl_output*, *defs_output*,
+    *internal_output*): they share a naming convention derived from *impl_output*
+    so all three must be in scope when building cross-references (e.g. the public
+    header includes the defs header for the struct, the internal header includes
+    both).  Computing them once at the top avoids scattered ``*_output(...)`` calls
+    throughout the function body.
+
+    WHY *fallback_projects* parameter: when an implementation uses interface types
+    from a different project (e.g. a ratchet impl accepting a foundation ``random``
+    interface), the generated includes must use the dependency's C prefix (``vscf_``).
+    ``fallback_projects`` carries the list of upstream ``IRProject`` objects needed
+    for that prefix lookup.  It mirrors the ``project_ir.fallback_projects`` field
+    but is passed explicitly so call sites can override it (e.g. in tests).
+
+    The function is intentionally long (~590 lines) because it mirrors the full
+    structure of a generated C header: includes → constants → struct → lifecycle →
+    cast helpers → context methods → interface bindings.  Each section is marked
+    with a ``# ---`` comment header.
     """
     impl_output = cast(IROutputTarget, impl.output)
     defs_output = implementation_defs_output(impl_output)
