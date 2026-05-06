@@ -51,10 +51,6 @@ if(TARGET vsc::foundation)
     add_subdirectory(foundation)
 endif()
 
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
-endif()
-
 if(TARGET vsc::ratchet)
     add_subdirectory(ratchet)
 endif()
