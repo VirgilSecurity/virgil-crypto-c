@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,6 +46,9 @@ from .padding import Padding
 class RandomPadding(Alg, Padding):
     """Append a random number of padding bytes to a data."""
 
+    PADDING_SIZE_LEN = 4
+    PADDING_LEN_MIN = 5
+
     def __init__(self):
         """Create underlying C context."""
         self._lib_vscf_random_padding = VscfRandomPadding()
@@ -57,11 +60,8 @@ class RandomPadding(Alg, Padding):
         """Destroy underlying C context."""
         self._lib_vscf_random_padding.vscf_random_padding_delete(self.ctx)
 
-    def __len__(self):
-        """Return an actual number of padding in bytes.
-        Note, this method might be called right before "finish data processing"."""
-        result = self._lib_vscf_random_padding.vscf_random_padding_len(self.ctx)
-        return result
+    def set_random(self, random):
+        self._lib_vscf_random_padding.vscf_random_padding_use_random(self.ctx, random.c_impl)
 
     def alg_id(self):
         """Provide algorithm identificator."""
@@ -88,8 +88,11 @@ class RandomPadding(Alg, Padding):
         result = self._lib_vscf_random_padding.vscf_random_padding_padded_data_len(self.ctx, data_len)
         return result
 
-    def set_random(self, random):
-        self._lib_vscf_random_padding.vscf_random_padding_use_random(self.ctx, random.c_impl)
+    def len(self):
+        """Return an actual number of padding in bytes.
+Note, this method might be called right before "finish data processing"."""
+        result = self._lib_vscf_random_padding.vscf_random_padding_len(self.ctx)
+        return result
 
     def len_max(self):
         """Return a maximum number of padding in bytes."""
@@ -102,7 +105,7 @@ class RandomPadding(Alg, Padding):
 
     def process_data(self, data):
         """Only data length is needed to produce padding later.
-        Return data that should be further proceeded."""
+Return data that should be further proceeded."""
         d_data = Data(data)
         result = self._lib_vscf_random_padding.vscf_random_padding_process_data(self.ctx, d_data.data)
         instance = Data.take_c_ctx(result)
@@ -122,7 +125,7 @@ class RandomPadding(Alg, Padding):
 
     def process_padded_data(self, data):
         """Process padded data.
-        Return filtered data without padding."""
+Return filtered data without padding."""
         d_data = Data(data)
         out = Buffer(len(data))
         self._lib_vscf_random_padding.vscf_random_padding_process_padded_data(self.ctx, d_data.data, out.c_buffer)
@@ -130,7 +133,7 @@ class RandomPadding(Alg, Padding):
 
     def finish_padded_data_processing_out_len(self):
         """Return length in bytes required hold output of the method
-        "finish padded data processing"."""
+"finish padded data processing"."""
         result = self._lib_vscf_random_padding.vscf_random_padding_finish_padded_data_processing_out_len(self.ctx)
         return result
 
@@ -140,6 +143,9 @@ class RandomPadding(Alg, Padding):
         status = self._lib_vscf_random_padding.vscf_random_padding_finish_padded_data_processing(self.ctx, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
+
+    def __len__(self):
+        return self.len()
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

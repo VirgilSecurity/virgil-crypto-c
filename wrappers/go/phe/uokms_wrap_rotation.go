@@ -11,7 +11,7 @@ import foundation "virgil/foundation"
 * Implements wrap rotation.
 */
 type UokmsWrapRotation struct {
-    cCtx *C.vsce_uokms_wrap_rotation_t /*ct2*/
+    cCtx *C.vsce_uokms_wrap_rotation_t
 }
 
 /* Handle underlying C context. */
@@ -31,7 +31,7 @@ func NewUokmsWrapRotation() *UokmsWrapRotation {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newUokmsWrapRotationWithCtx(ctx *C.vsce_uokms_wrap_rotation_t /*ct2*/) *UokmsWrapRotation {
+func newUokmsWrapRotationWithCtx(ctx *C.vsce_uokms_wrap_rotation_t) *UokmsWrapRotation {
     obj := &UokmsWrapRotation {
         cCtx: ctx,
     }
@@ -42,7 +42,7 @@ func newUokmsWrapRotationWithCtx(ctx *C.vsce_uokms_wrap_rotation_t /*ct2*/) *Uok
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newUokmsWrapRotationCopy(ctx *C.vsce_uokms_wrap_rotation_t /*ct2*/) *UokmsWrapRotation {
+func newUokmsWrapRotationCopy(ctx *C.vsce_uokms_wrap_rotation_t) *UokmsWrapRotation {
     obj := &UokmsWrapRotation {
         cCtx: C.vsce_uokms_wrap_rotation_shallow_copy(ctx),
     }
@@ -68,9 +68,6 @@ func (obj *UokmsWrapRotation) delete() {
     C.vsce_uokms_wrap_rotation_delete(obj.cCtx)
 }
 
-/*
-* Random used for crypto operations to make them const-time
-*/
 func (obj *UokmsWrapRotation) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_uokms_wrap_rotation_release_operation_random(obj.cCtx)
     C.vsce_uokms_wrap_rotation_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
@@ -83,7 +80,7 @@ func (obj *UokmsWrapRotation) SetOperationRandom(operationRandom foundation.Rand
 * Setups dependencies with default values.
 */
 func (obj *UokmsWrapRotation) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_setup_defaults(obj.cCtx)
+    proxyResult := C.vsce_uokms_wrap_rotation_setup_defaults(obj.cCtx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -101,7 +98,7 @@ func (obj *UokmsWrapRotation) SetupDefaults() error {
 func (obj *UokmsWrapRotation) SetUpdateToken(updateToken []byte) error {
     updateTokenData := helperWrapData (updateToken)
 
-    proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_set_update_token(obj.cCtx, updateTokenData)
+    proxyResult := C.vsce_uokms_wrap_rotation_set_update_token(obj.cCtx, updateTokenData)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -117,14 +114,14 @@ func (obj *UokmsWrapRotation) SetUpdateToken(updateToken []byte) error {
 * Updates EnrollmentRecord using server's update token
 */
 func (obj *UokmsWrapRotation) UpdateWrap(wrap []byte) ([]byte, error) {
-    newWrapBuf, newWrapBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
+    newWrapBuf, newWrapBufErr := newBuffer(int(PheCommonPhePublicKeyLength))
     if newWrapBufErr != nil {
         return nil, newWrapBufErr
     }
     defer newWrapBuf.delete()
     wrapData := helperWrapData (wrap)
 
-    proxyResult := /*pr4*/C.vsce_uokms_wrap_rotation_update_wrap(obj.cCtx, wrapData, newWrapBuf.ctx)
+    proxyResult := C.vsce_uokms_wrap_rotation_update_wrap(obj.cCtx, wrapData, newWrapBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -133,5 +130,5 @@ func (obj *UokmsWrapRotation) UpdateWrap(wrap []byte) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return newWrapBuf.getData() /* r7 */, nil
+    return newWrapBuf.getData(), nil
 }

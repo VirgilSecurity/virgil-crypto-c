@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -74,7 +74,6 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Provides initialization of the implementation specific context.
@@ -196,7 +195,7 @@ vscf_aes256_cbc_precise_encrypted_len(const vscf_aes256_cbc_t *self, size_t data
 
     VSCF_ASSERT_PTR(self);
 
-    const size_t left = data_len % vscf_aes256_cbc_BLOCK_LEN == 0;
+    const size_t left = data_len % vscf_aes256_cbc_BLOCK_LEN;
     return data_len + vscf_aes256_cbc_BLOCK_LEN - left;
 }
 
@@ -383,7 +382,10 @@ vscf_aes256_cbc_finish(vscf_aes256_cbc_t *self, vsc_buffer_t *out) {
 
     size_t last_block_len = 0;
     int status = mbedtls_cipher_finish(&self->cipher_ctx, vsc_buffer_unused_bytes(out), &last_block_len);
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(status);
+    if (status != 0) {
+        self->state = vscf_cipher_state_INITIAL;
+        return vscf_status_ERROR_AUTH_FAILED;
+    }
     vsc_buffer_inc_used(out, last_block_len);
 
     self->state = vscf_cipher_state_INITIAL;

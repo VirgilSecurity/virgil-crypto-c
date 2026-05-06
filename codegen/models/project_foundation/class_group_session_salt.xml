@@ -1,0 +1,8 @@
+<class name="group session salt" scope="internal" context="public" lifecycle="none">
+    Group session message salt, 32 bytes.
+
+    <property name="bytes" type="byte">
+        <array length="fixed" length_constant="32"/>
+    </property>
+
+</class>

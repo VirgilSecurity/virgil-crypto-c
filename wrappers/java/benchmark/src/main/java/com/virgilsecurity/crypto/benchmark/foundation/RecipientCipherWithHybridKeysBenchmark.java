@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -73,7 +73,7 @@ public class RecipientCipherWithHybridKeysBenchmark {
 	@Param({ "CURVE25519" })
 	private AlgId firstAlgId;
 
-	@Param({ "ROUND5_ND_1CCA_5D" })
+	@Param({ "ML_KEM_768" })
 	private AlgId secondAlgId;
 
 	@Setup(Level.Invocation)

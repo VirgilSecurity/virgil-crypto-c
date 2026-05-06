@@ -10,7 +10,7 @@ import "runtime"
 * This is MbedTLS implementation of SHA384.
 */
 type Sha384 struct {
-    cCtx *C.vscf_sha384_t /*ct10*/
+    cCtx *C.vscf_sha384_t
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewSha384() *Sha384 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSha384WithCtx(ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
+func newSha384WithCtx(ctx *C.vscf_sha384_t) *Sha384 {
     obj := &Sha384 {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newSha384WithCtx(ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSha384Copy(ctx *C.vscf_sha384_t /*ct10*/) *Sha384 {
+func newSha384Copy(ctx *C.vscf_sha384_t) *Sha384 {
     obj := &Sha384 {
         cCtx: C.vscf_sha384_shallow_copy(ctx),
     }
@@ -71,29 +71,29 @@ func (obj *Sha384) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Sha384) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_sha384_alg_id(obj.cCtx)
+    proxyResult := C.vscf_sha384_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Sha384) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_sha384_produce_alg_info(obj.cCtx)
+    proxyResult := C.vscf_sha384_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult)
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Sha384) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_sha384_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := C.vscf_sha384_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -125,7 +125,7 @@ func (obj *Sha384) GetBlockLen() uint {
 * Calculate hash over given data.
 */
 func (obj *Sha384) Hash(data []byte) []byte {
-    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen() /* lg3 */))
+    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen()))
     if digestBufErr != nil {
         return nil
     }
@@ -136,7 +136,7 @@ func (obj *Sha384) Hash(data []byte) []byte {
 
     runtime.KeepAlive(obj)
 
-    return digestBuf.getData() /* r7 */
+    return digestBuf.getData()
 }
 
 /*
@@ -167,7 +167,7 @@ func (obj *Sha384) Update(data []byte) {
 * Accompilsh hashing and return it's result (a message digest).
 */
 func (obj *Sha384) Finish() []byte {
-    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen() /* lg3 */))
+    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen()))
     if digestBufErr != nil {
         return nil
     }
@@ -178,5 +178,5 @@ func (obj *Sha384) Finish() []byte {
 
     runtime.KeepAlive(obj)
 
-    return digestBuf.getData() /* r7 */
+    return digestBuf.getData()
 }

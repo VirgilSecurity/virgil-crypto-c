@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -56,11 +54,24 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -211,18 +222,6 @@ enum vscf_status_t {
     //
     vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY = -228,
     //
-    //  Generic Round5 library error.
-    //
-    vscf_status_ERROR_ROUND5 = -229,
-    //
-    //  Post-quantum NIST Round5 public key is corrupted.
-    //
-    vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY = -230,
-    //
-    //  Post-quantum NIST Round5 private key is corrupted.
-    //
-    vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY = -231,
-    //
     //  Compound public key is corrupted.
     //
     vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY = -232,
@@ -254,6 +253,22 @@ enum vscf_status_t {
     //  ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     //
     vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY = -239,
+    //
+    //  Post-quantum ML-KEM-768 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_KEM_PUBLIC_KEY = -240,
+    //
+    //  Post-quantum ML-KEM-768 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_KEM_PRIVATE_KEY = -241,
+    //
+    //  Post-quantum ML-DSA-65 public key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_DSA_PUBLIC_KEY = -242,
+    //
+    //  Post-quantum ML-DSA-65 private key is corrupted.
+    //
+    vscf_status_ERROR_BAD_ML_DSA_PRIVATE_KEY = -243,
     //
     //  Decryption failed, because message info was not given explicitly,
     //  and was not part of an encrypted message.
@@ -376,18 +391,15 @@ enum vscf_status_t {
 };
 typedef enum vscf_status_t vscf_status_t;
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_STATUS_H_INCLUDED

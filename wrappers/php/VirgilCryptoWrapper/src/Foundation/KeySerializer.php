@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,51 +37,49 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Public and private key serialization to an interchangeable format.
-*/
 interface KeySerializer extends Ctx
 {
 
     /**
-    * Calculate buffer size enough to hold serialized public key.
     *
-    * Precondition: public key must be exportable.
-    *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return int
     */
-    public function serializedPublicKeyLen(RawPublicKey $publicKey): int;
+    public function serializedPublicKeyLen(RawPublicKey $$publicKey): int
+    {
+        return ($this->ctx, $$publicKey);
+    }
 
     /**
-    * Serialize given public key to an interchangeable format.
     *
-    * Precondition: public key must be exportable.
-    *
-    * @param RawPublicKey $publicKey
+    * @param RawPublicKey $$publicKey
     * @return string
     * @throws \Exception
     */
-    public function serializePublicKey(RawPublicKey $publicKey): string;
+    public function serializePublicKey(RawPublicKey $$publicKey): string
+    {
+        return ($this->ctx, $$publicKey);
+    }
 
     /**
-    * Calculate buffer size enough to hold serialized private key.
     *
-    * Precondition: private key must be exportable.
-    *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return int
     */
-    public function serializedPrivateKeyLen(RawPrivateKey $privateKey): int;
+    public function serializedPrivateKeyLen(RawPrivateKey $$privateKey): int
+    {
+        return ($this->ctx, $$privateKey);
+    }
 
     /**
-    * Serialize given private key to an interchangeable format.
     *
-    * Precondition: private key must be exportable.
-    *
-    * @param RawPrivateKey $privateKey
+    * @param RawPrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function serializePrivateKey(RawPrivateKey $privateKey): string;
+    public function serializePrivateKey(RawPrivateKey $$privateKey): string
+    {
+        return ($this->ctx, $$privateKey);
+    }
+
 }

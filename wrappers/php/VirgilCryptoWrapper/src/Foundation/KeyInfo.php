@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -46,18 +46,6 @@ class KeyInfo
     private $ctx;
 
     /**
-    * Build key information based on the generic algorithm information.
-    *
-    * @param AlgInfo $algInfo
-    * @return KeyInfo
-    */
-    public static function withAlgInfo(AlgInfo $algInfo): KeyInfo
-    {
-        $ctx = vscf_key_info_with_alg_info_php($algInfo);
-        return new KeyInfo($ctx);
-    }
-
-    /**
     * Create underlying C context.
     * @param null $ctx
     * @return void
@@ -77,7 +65,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key
     *
     * @return bool
     */
@@ -87,7 +74,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a hybrid key
     *
     * @return bool
     */
@@ -97,8 +83,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key and compounds cipher key
-    * and signer key are hybrid keys.
     *
     * @return bool
     */
@@ -108,8 +92,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key and compounds cipher key
-    * is a hybrid key.
     *
     * @return bool
     */
@@ -119,8 +101,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key and compounds signer key
-    * is a hybrid key.
     *
     * @return bool
     */
@@ -130,9 +110,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key that contains hybrid keys
-    * for encryption/decryption and signing/verifying that itself
-    * contains a combination of classic keys and post-quantum keys.
     *
     * @return bool
     */
@@ -142,9 +119,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key that contains a hybrid key
-    * for encryption/decryption that contains a classic key and
-    * a post-quantum key.
     *
     * @return bool
     */
@@ -154,9 +128,6 @@ class KeyInfo
     }
 
     /**
-    * Return true if a key is a compound key that contains a hybrid key
-    * for signing/verifying that contains a classic key and
-    * a post-quantum key.
     *
     * @return bool
     */
@@ -166,7 +137,6 @@ class KeyInfo
     }
 
     /**
-    * Return common type of the key.
     *
     * @return AlgId
     */
@@ -177,8 +147,6 @@ class KeyInfo
     }
 
     /**
-    * Return compound's cipher key id, if key is compound.
-    * Return None, otherwise.
     *
     * @return AlgId
     */
@@ -189,8 +157,6 @@ class KeyInfo
     }
 
     /**
-    * Return compound's signer key id, if key is compound.
-    * Return None, otherwise.
     *
     * @return AlgId
     */
@@ -201,8 +167,6 @@ class KeyInfo
     }
 
     /**
-    * Return hybrid's first key id, if key is hybrid.
-    * Return None, otherwise.
     *
     * @return AlgId
     */
@@ -213,8 +177,6 @@ class KeyInfo
     }
 
     /**
-    * Return hybrid's second key id, if key is hybrid.
-    * Return None, otherwise.
     *
     * @return AlgId
     */
@@ -225,8 +187,6 @@ class KeyInfo
     }
 
     /**
-    * Return hybrid's first key id of compound's cipher key,
-    * if key is compound(hybrid, ...), None - otherwise.
     *
     * @return AlgId
     */
@@ -237,8 +197,6 @@ class KeyInfo
     }
 
     /**
-    * Return hybrid's second key id of compound's cipher key,
-    * if key is compound(hybrid, ...), None - otherwise.
     *
     * @return AlgId
     */
@@ -249,8 +207,6 @@ class KeyInfo
     }
 
     /**
-    * Return hybrid's first key id of compound's signer key,
-    * if key is compound(..., hybrid), None - otherwise.
     *
     * @return AlgId
     */
@@ -261,8 +217,6 @@ class KeyInfo
     }
 
     /**
-    * Return hybrid's second key id of compound's signer key,
-    * if key is compound(..., hybrid), None - otherwise.
     *
     * @return AlgId
     */

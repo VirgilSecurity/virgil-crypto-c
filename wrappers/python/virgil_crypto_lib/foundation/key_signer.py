@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -39,7 +39,7 @@ from abc import *
 
 class KeySigner(object):
     """Provide an interface for signing and verifying data digest
-    with asymmetric keys."""
+with asymmetric keys."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -50,7 +50,7 @@ class KeySigner(object):
     @abstractmethod
     def signature_len(self, private_key):
         """Return length in bytes required to hold signature.
-        Return zero if a given private key can not produce signatures."""
+Return zero if a given private key can not produce signatures."""
         raise NotImplementedError()
 
     @abstractmethod

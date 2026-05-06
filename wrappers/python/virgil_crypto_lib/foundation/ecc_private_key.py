@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -54,20 +54,20 @@ class EccPrivateKey(Key, PrivateKey):
         """Destroy underlying C context."""
         self._lib_vscf_ecc_private_key.vscf_ecc_private_key_delete(self.ctx)
 
-    def __len__(self):
-        """Length of the key in bytes."""
-        result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_len(self.ctx)
+    def alg_id(self):
+        """Algorithm identifier the key belongs to."""
+        result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_alg_id(self.ctx)
         return result
 
     def alg_info(self):
         """Return algorithm information that can be used for serialization."""
         result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
-    def alg_id(self):
-        """Algorithm identifier the key belongs to."""
-        result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_alg_id(self.ctx)
+    def len(self):
+        """Length of the key in bytes."""
+        result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_len(self.ctx)
         return result
 
     def bitlen(self):
@@ -77,7 +77,7 @@ class EccPrivateKey(Key, PrivateKey):
 
     def is_valid(self):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_is_valid(self.ctx)
         return result
 
@@ -86,6 +86,9 @@ class EccPrivateKey(Key, PrivateKey):
         result = self._lib_vscf_ecc_private_key.vscf_ecc_private_key_extract_public_key(self.ctx)
         instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
+
+    def __len__(self):
+        return self.len()
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

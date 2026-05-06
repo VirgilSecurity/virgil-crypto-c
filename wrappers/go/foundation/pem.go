@@ -18,9 +18,9 @@ func PemWrappedLen(title string, dataLen uint) uint {
     titleStr := C.CString(title)
     defer C.free(unsafe.Pointer(titleStr))
 
-    proxyResult := /*pr4*/C.vscf_pem_wrapped_len(titleStr/*pa9*/, (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := C.vscf_pem_wrapped_len(titleStr, (C.size_t)(dataLen))
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -32,46 +32,46 @@ func PemWrap(title string, data []byte) []byte {
     titleStr := C.CString(title)
     defer C.free(unsafe.Pointer(titleStr))
 
-    pemBuf, pemBufErr := newBuffer(int(PemWrappedLen(title, uint(len(data))) /* lg1 */))
+    pemBuf, pemBufErr := newBuffer(int(PemWrappedLen(title, uint(len(data)))))
     if pemBufErr != nil {
         return nil
     }
     defer pemBuf.delete()
     dataData := helperWrapData (data)
 
-    C.vscf_pem_wrap(titleStr/*pa9*/, dataData, pemBuf.ctx)
+    C.vscf_pem_wrap(titleStr, dataData, pemBuf.ctx)
 
-    return pemBuf.getData() /* r7 */
+    return pemBuf.getData()
 }
 
 /*
 * Return length in bytes required to hold unwrapped binary.
 */
 func PemUnwrappedLen(pemLen uint) uint {
-    proxyResult := /*pr4*/C.vscf_pem_unwrapped_len((C.size_t)(pemLen)/*pa10*/)
+    proxyResult := C.vscf_pem_unwrapped_len((C.size_t)(pemLen))
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Takes PEM data and extract binary data from it.
 */
 func PemUnwrap(pem []byte) ([]byte, error) {
-    dataBuf, dataBufErr := newBuffer(int(PemUnwrappedLen(uint(len(pem))) /* lg1 */))
+    dataBuf, dataBufErr := newBuffer(int(PemUnwrappedLen(uint(len(pem)))))
     if dataBufErr != nil {
         return nil, dataBufErr
     }
     defer dataBuf.delete()
     pemData := helperWrapData (pem)
 
-    proxyResult := /*pr4*/C.vscf_pem_unwrap(pemData, dataBuf.ctx)
+    proxyResult := C.vscf_pem_unwrap(pemData, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
         return nil, err
     }
 
-    return dataBuf.getData() /* r7 */, nil
+    return dataBuf.getData(), nil
 }
 
 /*
@@ -80,7 +80,7 @@ func PemUnwrap(pem []byte) ([]byte, error) {
 func PemTitle(pem []byte) []byte {
     pemData := helperWrapData (pem)
 
-    proxyResult := /*pr4*/C.vscf_pem_title(pemData)
+    proxyResult := C.vscf_pem_title(pemData)
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }

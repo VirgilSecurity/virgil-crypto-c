@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,6 +46,7 @@ class vscf_kdf2_t(Structure):
 
 class VscfKdf2(object):
     """Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm."""
+
 
     def __init__(self):
         """Create underlying C context."""

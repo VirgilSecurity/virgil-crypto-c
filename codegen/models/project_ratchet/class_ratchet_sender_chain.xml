@@ -24,7 +24,6 @@
     <method name="deserialize" is_static="1">
         <argument name="sender chain pb" class="vscr_SenderChain" library="nanopb"/>
         <argument name="sender chain" class="self" access="readwrite"/>
-        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
 
         <return enum="status"/>
     </method>

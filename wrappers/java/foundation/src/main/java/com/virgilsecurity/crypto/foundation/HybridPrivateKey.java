@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,50 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Handles a hybrid private key.
-*
-* The hybrid private key contains 2 private keys.
-*/
 public class HybridPrivateKey implements AutoCloseable, Key, PrivateKey {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public HybridPrivateKey() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.hybridPrivateKey_new();
     }
 
-    /* Wrap underlying C context. */
     HybridPrivateKey(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Return first private key.
-    */
-    public PrivateKey firstKey() {
-        return FoundationJNI.INSTANCE.hybridPrivateKey_firstKey(this.cCtx);
-    }
-
-    /*
-    * Return second private key.
-    */
-    public PrivateKey secondKey() {
-        return FoundationJNI.INSTANCE.hybridPrivateKey_secondKey(this.cCtx);
-    }
-
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
     public static HybridPrivateKey getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new HybridPrivateKey(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -88,57 +62,44 @@ public class HybridPrivateKey implements AutoCloseable, Key, PrivateKey {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Algorithm identifier the key belongs to.
-    */
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hybridPrivateKey_algId(this.cCtx);
     }
 
-    /*
-    * Return algorithm information that can be used for serialization.
-    */
     public AlgInfo algInfo() {
         return FoundationJNI.INSTANCE.hybridPrivateKey_algInfo(this.cCtx);
     }
 
-    /*
-    * Length of the key in bytes.
-    */
     public int len() {
         return FoundationJNI.INSTANCE.hybridPrivateKey_len(this.cCtx);
     }
 
-    /*
-    * Length of the key in bits.
-    */
     public int bitlen() {
         return FoundationJNI.INSTANCE.hybridPrivateKey_bitlen(this.cCtx);
     }
 
-    /*
-    * Check that key is valid.
-    * Note, this operation can be slow.
-    */
     public boolean isValid() {
         return FoundationJNI.INSTANCE.hybridPrivateKey_isValid(this.cCtx);
     }
 
-    /*
-    * Extract public key from the private key.
-    */
     public PublicKey extractPublicKey() {
         return FoundationJNI.INSTANCE.hybridPrivateKey_extractPublicKey(this.cCtx);
     }
-}
 
+    public PrivateKey firstKey() {
+        return FoundationJNI.INSTANCE.hybridPrivateKey_firstKey(this.cCtx);
+    }
+
+    public PrivateKey secondKey() {
+        return FoundationJNI.INSTANCE.hybridPrivateKey_secondKey(this.cCtx);
+    }
+
+}

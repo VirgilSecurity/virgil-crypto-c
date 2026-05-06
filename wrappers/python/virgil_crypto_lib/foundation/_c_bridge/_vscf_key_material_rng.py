@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
 
 class vscf_key_material_rng_t(Structure):
@@ -46,8 +46,8 @@ class vscf_key_material_rng_t(Structure):
 
 class VscfKeyMaterialRng(object):
     """Random number generator that generate deterministic sequence based
-    on a given seed.
-    This RNG can be used to transform key material rial to the private key."""
+on a given seed.
+This RNG can be used to transform key material rial to the private key."""
 
     # Minimum length in bytes for the key material.
     KEY_MATERIAL_LEN_MIN = 32
@@ -71,9 +71,16 @@ class VscfKeyMaterialRng(object):
         vscf_key_material_rng_delete.restype = None
         return vscf_key_material_rng_delete(ctx)
 
+    def vscf_key_material_rng_reset_key_material(self, ctx, key_material):
+        """Set a new key material."""
+        vscf_key_material_rng_reset_key_material = self._lib.vscf_key_material_rng_reset_key_material
+        vscf_key_material_rng_reset_key_material.argtypes = [POINTER(vscf_key_material_rng_t), vsc_data_t]
+        vscf_key_material_rng_reset_key_material.restype = None
+        return vscf_key_material_rng_reset_key_material(ctx, key_material)
+
     def vscf_key_material_rng_random(self, ctx, data_len, data):
         """Generate random bytes.
-        All RNG implementations must be thread-safe."""
+All RNG implementations must be thread-safe."""
         vscf_key_material_rng_random = self._lib.vscf_key_material_rng_random
         vscf_key_material_rng_random.argtypes = [POINTER(vscf_key_material_rng_t), c_size_t, POINTER(vsc_buffer_t)]
         vscf_key_material_rng_random.restype = c_int
@@ -85,13 +92,6 @@ class VscfKeyMaterialRng(object):
         vscf_key_material_rng_reseed.argtypes = [POINTER(vscf_key_material_rng_t)]
         vscf_key_material_rng_reseed.restype = c_int
         return vscf_key_material_rng_reseed(ctx)
-
-    def vscf_key_material_rng_reset_key_material(self, ctx, key_material):
-        """Set a new key material."""
-        vscf_key_material_rng_reset_key_material = self._lib.vscf_key_material_rng_reset_key_material
-        vscf_key_material_rng_reset_key_material.argtypes = [POINTER(vscf_key_material_rng_t), vsc_data_t]
-        vscf_key_material_rng_reset_key_material.restype = None
-        return vscf_key_material_rng_reset_key_material(ctx, key_material)
 
     def vscf_key_material_rng_shallow_copy(self, ctx):
         vscf_key_material_rng_shallow_copy = self._lib.vscf_key_material_rng_shallow_copy

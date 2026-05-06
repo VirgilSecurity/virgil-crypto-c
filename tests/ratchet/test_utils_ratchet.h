@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -52,6 +52,7 @@ size_t generate_number(vscf_ctr_drbg_t *rng, size_t min, size_t max);
 double generate_prob(vscf_ctr_drbg_t *rng);
 size_t generate_size(vscf_ctr_drbg_t *rng);
 void generate_random_data(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer);
+void generate_random_data_of_size(vscf_ctr_drbg_t *rng, vsc_buffer_t **buffer, size_t size);
 void generate_permutation(vscf_ctr_drbg_t *rng, size_t n, size_t *buffer);
 void generate_PKCS8_ed_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
 void generate_PKCS8_curve_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub);
@@ -59,11 +60,13 @@ void generate_random_participant_id(vscf_ctr_drbg_t *rng, vsc_buffer_t **id);
 vscf_impl_t *
 generate_identity_private_key(vscf_key_provider_t *key_provider, bool enable_pqc);
 vscf_impl_t *
+generate_identity_private_key_ml_dsa(vscf_key_provider_t *key_provider);
+vscf_impl_t *
 generate_ephemeral_private_key(vscf_key_provider_t *key_provider, bool enable_pqc);
 void
 generate_falcon_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
 void
-generate_round5_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
+generate_ml_kem_keypair(vscf_ctr_drbg_t *rng, vscf_impl_t **priv, vscf_impl_t **pub);
 void generate_raw_keypair(vscf_ctr_drbg_t *rng, vsc_buffer_t **priv, vsc_buffer_t **pub, bool curve25519);
 void generate_random_key_id(vscf_ctr_drbg_t *rng, vscr_ratchet_key_id_t id);
 void initialize(vscf_ctr_drbg_t *rng, vscr_ratchet_session_t **session_alice, vscr_ratchet_session_t **session_bob, bool enable_one_time, bool enable_pqc, bool should_restore);

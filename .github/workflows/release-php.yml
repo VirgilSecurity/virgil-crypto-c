@@ -1,0 +1,33 @@
+name: Release PHP
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*.*.*-*'
+
+jobs:
+  build-php:
+    name: Build PHP Packages
+    uses: ./.github/workflows/build-php.yml
+
+  publish-php-assets:
+    name: Publish PHP Assets
+    needs: build-php
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all PHP artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: php-*
+          path: dist
+          merge-multiple: true
+
+      - name: Upload PHP assets to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/**/*.zip
+            dist/**/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

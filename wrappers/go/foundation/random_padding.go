@@ -10,7 +10,7 @@ import "runtime"
 * Append a random number of padding bytes to a data.
 */
 type RandomPadding struct {
-    cCtx *C.vscf_random_padding_t /*ct10*/
+    cCtx *C.vscf_random_padding_t
 }
 
 func (obj *RandomPadding) SetRandom(random Random) {
@@ -38,7 +38,7 @@ func NewRandomPadding() *RandomPadding {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRandomPaddingWithCtx(ctx *C.vscf_random_padding_t /*ct10*/) *RandomPadding {
+func newRandomPaddingWithCtx(ctx *C.vscf_random_padding_t) *RandomPadding {
     obj := &RandomPadding {
         cCtx: ctx,
     }
@@ -49,7 +49,7 @@ func newRandomPaddingWithCtx(ctx *C.vscf_random_padding_t /*ct10*/) *RandomPaddi
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRandomPaddingCopy(ctx *C.vscf_random_padding_t /*ct10*/) *RandomPadding {
+func newRandomPaddingCopy(ctx *C.vscf_random_padding_t) *RandomPadding {
     obj := &RandomPadding {
         cCtx: C.vscf_random_padding_shallow_copy(ctx),
     }
@@ -79,29 +79,29 @@ func (obj *RandomPadding) delete() {
 * Provide algorithm identificator.
 */
 func (obj *RandomPadding) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_random_padding_alg_id(obj.cCtx)
+    proxyResult := C.vscf_random_padding_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *RandomPadding) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_random_padding_produce_alg_info(obj.cCtx)
+    proxyResult := C.vscf_random_padding_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult)
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *RandomPadding) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_random_padding_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := C.vscf_random_padding_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -132,11 +132,11 @@ func (obj *RandomPadding) Configure(params *PaddingParams) {
 * Return length in bytes of a data with a padding.
 */
 func (obj *RandomPadding) PaddedDataLen(dataLen uint) uint {
-    proxyResult := /*pr4*/C.vscf_random_padding_padded_data_len(obj.cCtx, (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := C.vscf_random_padding_padded_data_len(obj.cCtx, (C.size_t)(dataLen))
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -144,22 +144,22 @@ func (obj *RandomPadding) PaddedDataLen(dataLen uint) uint {
 * Note, this method might be called right before "finish data processing".
 */
 func (obj *RandomPadding) Len() uint {
-    proxyResult := /*pr4*/C.vscf_random_padding_len(obj.cCtx)
+    proxyResult := C.vscf_random_padding_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Return a maximum number of padding in bytes.
 */
 func (obj *RandomPadding) LenMax() uint {
-    proxyResult := /*pr4*/C.vscf_random_padding_len_max(obj.cCtx)
+    proxyResult := C.vscf_random_padding_len_max(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -180,25 +180,25 @@ func (obj *RandomPadding) StartDataProcessing() {
 func (obj *RandomPadding) ProcessData(data []byte) []byte {
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_random_padding_process_data(obj.cCtx, dataData)
+    proxyResult := C.vscf_random_padding_process_data(obj.cCtx, dataData)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }
 
 /*
 * Accomplish data processing and return padding.
 */
 func (obj *RandomPadding) FinishDataProcessing() ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.Len() /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.Len()))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_random_padding_finish_data_processing(obj.cCtx, outBuf.ctx)
+    proxyResult := C.vscf_random_padding_finish_data_processing(obj.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -207,7 +207,7 @@ func (obj *RandomPadding) FinishDataProcessing() ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }
 
 /*
@@ -226,7 +226,7 @@ func (obj *RandomPadding) StartPaddedDataProcessing() {
 * Return filtered data without padding.
 */
 func (obj *RandomPadding) ProcessPaddedData(data []byte) []byte {
-    outBuf, outBufErr := newBuffer(int(len(data)))
+    outBuf, outBufErr := newBuffer(int(uint(len(data))))
     if outBufErr != nil {
         return nil
     }
@@ -237,7 +237,7 @@ func (obj *RandomPadding) ProcessPaddedData(data []byte) []byte {
 
     runtime.KeepAlive(obj)
 
-    return outBuf.getData() /* r7 */
+    return outBuf.getData()
 }
 
 /*
@@ -245,25 +245,25 @@ func (obj *RandomPadding) ProcessPaddedData(data []byte) []byte {
 * "finish padded data processing".
 */
 func (obj *RandomPadding) FinishPaddedDataProcessingOutLen() uint {
-    proxyResult := /*pr4*/C.vscf_random_padding_finish_padded_data_processing_out_len(obj.cCtx)
+    proxyResult := C.vscf_random_padding_finish_padded_data_processing_out_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Accomplish padded data processing and return left data without a padding.
 */
 func (obj *RandomPadding) FinishPaddedDataProcessing() ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.FinishPaddedDataProcessingOutLen() /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.FinishPaddedDataProcessingOutLen()))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_random_padding_finish_padded_data_processing(obj.cCtx, outBuf.ctx)
+    proxyResult := C.vscf_random_padding_finish_padded_data_processing(obj.cCtx, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -272,5 +272,5 @@ func (obj *RandomPadding) FinishPaddedDataProcessing() ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }

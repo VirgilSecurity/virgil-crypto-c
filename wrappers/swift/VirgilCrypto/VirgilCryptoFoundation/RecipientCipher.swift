@@ -1,64 +1,56 @@
-/// Copyright (C) 2015-2022 Virgil Security, Inc.
-///
-/// All rights reserved.
-///
-/// Redistribution and use in source and binary forms, with or without
-/// modification, are permitted provided that the following conditions are
-/// met:
-///
-///     (1) Redistributions of source code must retain the above copyright
-///     notice, this list of conditions and the following disclaimer.
-///
-///     (2) Redistributions in binary form must reproduce the above copyright
-///     notice, this list of conditions and the following disclaimer in
-///     the documentation and/or other materials provided with the
-///     distribution.
-///
-///     (3) Neither the name of the copyright holder nor the names of its
-///     contributors may be used to endorse or promote products derived from
-///     this software without specific prior written permission.
-///
-/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-/// POSSIBILITY OF SUCH DAMAGE.
-///
-/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
 import VSCFoundation
 
-/// This class provides hybrid encryption algorithm that combines symmetric
-/// cipher for data encryption and asymmetric cipher and password based
-/// cipher for symmetric key encryption.
 @objc(VSCFRecipientCipher) public class RecipientCipher: NSObject {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Create underlying C context.
     public override init() {
         self.c_ctx = vscf_recipient_cipher_new()
         super.init()
     }
 
-    /// Acquire C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
         super.init()
     }
 
-    /// Acquire retained C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
         self.c_ctx = vscf_recipient_cipher_shallow_copy(c_ctx)
         super.init()
@@ -97,9 +89,8 @@ import VSCFoundation
     /// Return true if a key recipient with a given id has been added.
     /// Note, operation has O(N) time complexity.
     @objc public func hasKeyRecipient(recipientId: Data) -> Bool {
-        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> Bool in
-
-            return vscf_recipient_cipher_has_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
+        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) in
+            vscf_recipient_cipher_has_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
         })
 
         return proxyResult
@@ -107,8 +98,7 @@ import VSCFoundation
 
     /// Add recipient defined with id and public key.
     @objc public func addKeyRecipient(recipientId: Data, publicKey: PublicKey) {
-        recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> Void in
-
+        recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) in
             vscf_recipient_cipher_add_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), publicKey.c_ctx)
         })
     }
@@ -122,7 +112,6 @@ import VSCFoundation
     /// Return error if the private key can not sign.
     @objc public func addSigner(signerId: Data, privateKey: PrivateKey) throws {
         let proxyResult = signerId.withUnsafeBytes({ (signerIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-
             return vscf_recipient_cipher_add_signer(self.c_ctx, vsc_data(signerIdPointer.bindMemory(to: byte.self).baseAddress, signerId.count), privateKey.c_ctx)
         })
 
@@ -186,7 +175,7 @@ import VSCFoundation
             vsc_buffer_delete(messageInfoBuf)
         }
 
-        messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutableRawBufferPointer) -> Void in
+        messageInfo.withUnsafeMutableBytes({ (messageInfoPointer: UnsafeMutableRawBufferPointer) in
             vsc_buffer_use(messageInfoBuf, messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfoCount)
 
             vscf_recipient_cipher_pack_message_info(self.c_ctx, messageInfoBuf)
@@ -214,7 +203,7 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_recipient_cipher_process_encryption(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -252,8 +241,7 @@ import VSCFoundation
     /// Message Info can be empty if it was embedded to encrypted data.
     @objc public func startDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data) throws {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-
+            return messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                 return vscf_recipient_cipher_start_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfo.count))
             })
         })
@@ -267,9 +255,8 @@ import VSCFoundation
     /// If footer was embedded, method "start decryption with key" can be used.
     @objc public func startVerifiedDecryptionWithKey(recipientId: Data, privateKey: PrivateKey, messageInfo: Data, messageInfoFooter: Data) throws {
         let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-                messageInfoFooter.withUnsafeBytes({ (messageInfoFooterPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-
+            return messageInfo.withUnsafeBytes({ (messageInfoPointer: UnsafeRawBufferPointer) -> vscf_status_t in
+                return messageInfoFooter.withUnsafeBytes({ (messageInfoFooterPointer: UnsafeRawBufferPointer) -> vscf_status_t in
                     return vscf_recipient_cipher_start_verified_decryption_with_key(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count), privateKey.c_ctx, vsc_data(messageInfoPointer.bindMemory(to: byte.self).baseAddress, messageInfo.count), vsc_data(messageInfoFooterPointer.bindMemory(to: byte.self).baseAddress, messageInfoFooter.count))
                 })
             })
@@ -297,7 +284,7 @@ import VSCFoundation
         }
 
         let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> vscf_status_t in
-            out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
+            return out.withUnsafeMutableBytes({ (outPointer: UnsafeMutableRawBufferPointer) -> vscf_status_t in
                 vsc_buffer_use(outBuf, outPointer.bindMemory(to: byte.self).baseAddress, outCount)
 
                 return vscf_recipient_cipher_process_decryption(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count), outBuf)
@@ -394,4 +381,5 @@ import VSCFoundation
 
         return out
     }
+
 }

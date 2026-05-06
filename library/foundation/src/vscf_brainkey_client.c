@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -54,6 +54,8 @@
 #include "vscf_mbedtls_bridge_random.h"
 #include "vscf_hkdf.h"
 #include "vscf_sha512.h"
+#include "vscf_sha256.h"
+#include <virgil/crypto/common/private/vsc_buffer_defs.h>
 
 // clang-format on
 //  @end
@@ -124,6 +126,7 @@ vscf_brainkey_client_cleanup(vscf_brainkey_client_t *self) {
     vscf_brainkey_client_cleanup_ctx(self);
 
     vscf_brainkey_client_release_random(self);
+
     vscf_brainkey_client_release_operation_random(self);
 
     vscf_zeroize(self, sizeof(vscf_brainkey_client_t));
@@ -321,7 +324,6 @@ vscf_brainkey_client_release_operation_random(vscf_brainkey_client_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_brainkey_client_init() is called.
@@ -462,7 +464,13 @@ vscf_brainkey_client_blind(
 
 err:
     mbedtls_ecp_point_free(&A);
+    if (rInv.p != NULL) {
+        mbedtls_platform_zeroize(rInv.p, rInv.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&rInv);
+    if (r.p != NULL) {
+        mbedtls_platform_zeroize(r.p, r.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&r);
     mbedtls_ecp_point_free(&P);
 
@@ -565,6 +573,9 @@ vscf_brainkey_client_deblind(vscf_brainkey_client_t *self, vsc_data_t password, 
     vscf_zeroize(point, sizeof(point));
 
 err:
+    if (rInv.p != NULL) {
+        mbedtls_platform_zeroize(rInv.p, rInv.n * sizeof(mbedtls_mpi_uint));
+    }
     mbedtls_mpi_free(&rInv);
     mbedtls_ecp_point_free(&S);
     mbedtls_ecp_point_free(&Y);
@@ -599,4 +610,177 @@ vscf_brainkey_client_free_op_group(mbedtls_ecp_group *op_group) {
 #else
     VSCF_UNUSED(op_group);
 #endif
+}
+
+static int
+vscf_brainkey_dleq_challenge_client(const mbedtls_ecp_group *group, const mbedtls_ecp_point *gx,
+        const mbedtls_ecp_point *a, const mbedtls_ecp_point *y, const mbedtls_ecp_point *v1,
+        const mbedtls_ecp_point *v2, mbedtls_mpi *c) {
+
+    byte buf[5 * vscf_brainkey_client_POINT_LEN];
+    size_t olen = 0;
+    int mbs = 0;
+
+    mbs = mbedtls_ecp_point_write_binary(group, gx, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, buf + 0 * 65, 65);
+    if (mbs)
+        goto cleanup;
+    mbs = mbedtls_ecp_point_write_binary(group, a, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, buf + 1 * 65, 65);
+    if (mbs)
+        goto cleanup;
+    mbs = mbedtls_ecp_point_write_binary(group, y, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, buf + 2 * 65, 65);
+    if (mbs)
+        goto cleanup;
+    mbs = mbedtls_ecp_point_write_binary(group, v1, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, buf + 3 * 65, 65);
+    if (mbs)
+        goto cleanup;
+    mbs = mbedtls_ecp_point_write_binary(group, v2, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen, buf + 4 * 65, 65);
+    if (mbs)
+        goto cleanup;
+
+    byte digest[vscf_sha256_DIGEST_LEN];
+    vsc_buffer_t digest_buf;
+    vsc_buffer_init(&digest_buf);
+    vsc_buffer_use(&digest_buf, digest, sizeof(digest));
+    vscf_sha256_hash(vsc_data(buf, sizeof(buf)), &digest_buf);
+    vsc_buffer_cleanup(&digest_buf);
+
+    mbs = mbedtls_mpi_read_binary(c, digest, sizeof(digest));
+    if (mbs)
+        goto cleanup;
+    mbs = mbedtls_mpi_mod_mpi(c, c, &group->N);
+
+    vscf_zeroize(digest, sizeof(digest));
+
+cleanup:
+    vscf_zeroize(buf, sizeof(buf));
+    return mbs;
+}
+
+VSCF_PUBLIC bool
+vscf_brainkey_client_verify(vscf_brainkey_client_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point,
+        vsc_data_t server_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_s, vscf_error_t *error) {
+
+    VSCF_ASSERT_PTR(self);
+    VSCF_ASSERT(vsc_data_is_valid(blinded_point));
+    VSCF_ASSERT(vsc_data_is_valid(hardened_point));
+    VSCF_ASSERT(vsc_data_is_valid(server_public_key));
+    VSCF_ASSERT(vsc_data_is_valid(proof_value_c));
+    VSCF_ASSERT(vsc_data_is_valid(proof_value_s));
+
+    if (blinded_point.len != vscf_brainkey_client_POINT_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
+    }
+    if (hardened_point.len != vscf_brainkey_client_POINT_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
+    }
+    if (server_public_key.len != vscf_brainkey_client_POINT_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_POINT_LEN);
+        return false;
+    }
+    if (proof_value_c.len != vscf_brainkey_client_MPI_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN);
+        return false;
+    }
+    if (proof_value_s.len != vscf_brainkey_client_MPI_LEN) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_INVALID_BRAINKEY_FACTOR_LEN);
+        return false;
+    }
+
+    vscf_status_t status = vscf_status_SUCCESS;
+
+    mbedtls_mpi c_val, s_val, c_prime;
+    mbedtls_mpi_init(&c_val);
+    mbedtls_mpi_init(&s_val);
+    mbedtls_mpi_init(&c_prime);
+
+    mbedtls_ecp_point a, y, gx, v1, v2;
+    mbedtls_ecp_point_init(&a);
+    mbedtls_ecp_point_init(&y);
+    mbedtls_ecp_point_init(&gx);
+    mbedtls_ecp_point_init(&v1);
+    mbedtls_ecp_point_init(&v2);
+
+    int mbedtls_status = 0;
+
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &a, blinded_point.bytes, blinded_point.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+    mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &a);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &y, hardened_point.bytes, hardened_point.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+    mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &y);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+    mbedtls_status = mbedtls_ecp_point_read_binary(&self->group, &gx, server_public_key.bytes, server_public_key.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+    mbedtls_status = mbedtls_ecp_check_pubkey(&self->group, &gx);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INVALID_POINT;
+        goto err;
+    }
+
+    mbedtls_status = mbedtls_mpi_read_binary(&c_val, proof_value_c.bytes, proof_value_c.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
+    mbedtls_status = mbedtls_mpi_read_binary(&s_val, proof_value_s.bytes, proof_value_s.len);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
+
+    // V1' = s*G + c*G_x;  V2' = s*A + c*Y
+    mbedtls_ecp_group *op_group = vscf_brainkey_client_get_op_group(self);
+    mbedtls_status = mbedtls_ecp_muladd(op_group, &v1, &s_val, &op_group->G, &c_val, &gx);
+    if (mbedtls_status == 0) {
+        mbedtls_status = mbedtls_ecp_muladd(op_group, &v2, &s_val, &a, &c_val, &y);
+    }
+    vscf_brainkey_client_free_op_group(op_group);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
+
+    mbedtls_status = vscf_brainkey_dleq_challenge_client(&self->group, &gx, &a, &y, &v1, &v2, &c_prime);
+    if (mbedtls_status != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+        goto err;
+    }
+
+    if (mbedtls_mpi_cmp_mpi(&c_prime, &c_val) != 0) {
+        status = vscf_status_ERROR_BRAINKEY_INTERNAL;
+    }
+
+err:
+    mbedtls_mpi_free(&c_val);
+    mbedtls_mpi_free(&s_val);
+    mbedtls_mpi_free(&c_prime);
+    mbedtls_ecp_point_free(&a);
+    mbedtls_ecp_point_free(&y);
+    mbedtls_ecp_point_free(&gx);
+    mbedtls_ecp_point_free(&v1);
+    mbedtls_ecp_point_free(&v2);
+
+    if (status != vscf_status_SUCCESS) {
+        VSCF_ERROR_SAFE_UPDATE(error, status);
+        return false;
+    }
+    return true;
 }

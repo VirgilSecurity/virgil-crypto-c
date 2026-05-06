@@ -7,7 +7,7 @@ import "runtime"
 
 
 type MessageInfoCustomParams struct {
-    cCtx *C.vscf_message_info_custom_params_t /*ct2*/
+    cCtx *C.vscf_message_info_custom_params_t
 }
 
 /* Handle underlying C context. */
@@ -27,7 +27,7 @@ func NewMessageInfoCustomParams() *MessageInfoCustomParams {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoCustomParamsWithCtx(ctx *C.vscf_message_info_custom_params_t /*ct2*/) *MessageInfoCustomParams {
+func newMessageInfoCustomParamsWithCtx(ctx *C.vscf_message_info_custom_params_t) *MessageInfoCustomParams {
     obj := &MessageInfoCustomParams {
         cCtx: ctx,
     }
@@ -38,7 +38,7 @@ func newMessageInfoCustomParamsWithCtx(ctx *C.vscf_message_info_custom_params_t 
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoCustomParamsCopy(ctx *C.vscf_message_info_custom_params_t /*ct2*/) *MessageInfoCustomParams {
+func newMessageInfoCustomParamsCopy(ctx *C.vscf_message_info_custom_params_t) *MessageInfoCustomParams {
     obj := &MessageInfoCustomParams {
         cCtx: C.vscf_message_info_custom_params_shallow_copy(ctx),
     }
@@ -70,7 +70,7 @@ func (obj *MessageInfoCustomParams) delete() {
 func (obj *MessageInfoCustomParams) AddInt(key []byte, value int32) {
     keyData := helperWrapData (key)
 
-    C.vscf_message_info_custom_params_add_int(obj.cCtx, keyData, (C.int32_t)(value)/*pa10*/)
+    C.vscf_message_info_custom_params_add_int(obj.cCtx, keyData, (C.int32_t)(value))
 
     runtime.KeepAlive(obj)
 
@@ -122,9 +122,10 @@ func (obj *MessageInfoCustomParams) Clear() {
 func (obj *MessageInfoCustomParams) FindInt(key []byte) (int32, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     keyData := helperWrapData (key)
 
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_int(obj.cCtx, keyData, &error)
+    proxyResult := C.vscf_message_info_custom_params_find_int(obj.cCtx, keyData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -133,7 +134,7 @@ func (obj *MessageInfoCustomParams) FindInt(key []byte) (int32, error) {
 
     runtime.KeepAlive(obj)
 
-    return int32(proxyResult) /* r9 */, nil
+    return int32(proxyResult), nil
 }
 
 /*
@@ -142,9 +143,10 @@ func (obj *MessageInfoCustomParams) FindInt(key []byte) (int32, error) {
 func (obj *MessageInfoCustomParams) FindString(key []byte) ([]byte, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     keyData := helperWrapData (key)
 
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_string(obj.cCtx, keyData, &error)
+    proxyResult := C.vscf_message_info_custom_params_find_string(obj.cCtx, keyData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -153,7 +155,7 @@ func (obj *MessageInfoCustomParams) FindString(key []byte) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */, nil
+    return helperExtractData(proxyResult), nil
 }
 
 /*
@@ -162,9 +164,10 @@ func (obj *MessageInfoCustomParams) FindString(key []byte) ([]byte, error) {
 func (obj *MessageInfoCustomParams) FindData(key []byte) ([]byte, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     keyData := helperWrapData (key)
 
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_find_data(obj.cCtx, keyData, &error)
+    proxyResult := C.vscf_message_info_custom_params_find_data(obj.cCtx, keyData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -173,16 +176,16 @@ func (obj *MessageInfoCustomParams) FindData(key []byte) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */, nil
+    return helperExtractData(proxyResult), nil
 }
 
 /*
 * Return true if at least one param exists.
 */
 func (obj *MessageInfoCustomParams) HasParams() bool {
-    proxyResult := /*pr4*/C.vscf_message_info_custom_params_has_params(obj.cCtx)
+    proxyResult := C.vscf_message_info_custom_params_has_params(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }

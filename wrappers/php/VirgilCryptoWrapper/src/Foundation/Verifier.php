@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Verify data of any size.
-* Compatible with the class "signer".
-*/
 class Verifier
 {
 
@@ -69,37 +65,34 @@ class Verifier
     }
 
     /**
-    * Start verifying a signature.
     *
-    * @param string $signature
+    * @param string $$signature
     * @return void
     * @throws \Exception
     */
-    public function reset(string $signature): void
+    public function reset(string $$signature): void
     {
-        vscf_verifier_reset_php($this->ctx, $signature);
+        vscf_verifier_reset_php($this->ctx, $$signature);
     }
 
     /**
-    * Add given data to the signed data.
     *
-    * @param string $data
+    * @param string $$data
     * @return void
     */
-    public function appendData(string $data): void
+    public function appendData(string $$data): void
     {
-        vscf_verifier_append_data_php($this->ctx, $data);
+        vscf_verifier_append_data_php($this->ctx, $$data);
     }
 
     /**
-    * Verify accumulated data.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return bool
     */
-    public function verify(PublicKey $publicKey): bool
+    public function verify(PublicKey $$publicKey): bool
     {
-        return vscf_verifier_verify_php($this->ctx, $publicKey->getCtx());
+        return vscf_verifier_verify_php($this->ctx, $$publicKey->getCtx());
     }
 
     /**

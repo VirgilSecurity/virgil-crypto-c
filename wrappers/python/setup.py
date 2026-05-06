@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -32,9 +32,14 @@
 #
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
+"""Minimal setup.py retained for BinaryDistribution.
 
-from setuptools import setup, find_packages
-from virgil_crypto_lib import __version__, __author__
+All metadata and build configuration lives in pyproject.toml (PEP 621).
+This file exists solely because setuptools needs a Distribution subclass
+to advertise pre-built platform-specific shared libraries.
+"""
+
+from setuptools import setup
 from setuptools.dist import Distribution
 
 
@@ -47,48 +52,4 @@ class BinaryDistribution(Distribution):
         return False
 
 
-setup(
-    name="virgil-crypto-lib",
-    version=__version__,
-    distclass=BinaryDistribution,
-    packages=find_packages(exclude=["doc-source"]),
-    package_data={"virgil_crypto_lib": [
-        "tests/*",
-        "_libs/*"
-    ]},
-    include_package_data=True,
-    zip_safe=False,
-    author=__author__,
-    author_email="support@virgilsecurity.com",
-    url="https://virgilsecurity.com",
-    classifiers=[
-        "Development Status :: 5 - Production/Stable",
-        "License :: OSI Approved :: BSD License",
-        "Natural Language :: English",
-        "Intended Audience :: Developers",
-        "Programming Language :: C",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Topic :: Security",
-        "Topic :: Security :: Cryptography",
-        "Topic :: Software Development :: Libraries :: Application Frameworks",
-        "Topic :: Software Development :: Libraries :: Python Modules"
-        ],
-    project_urls={
-        "Documentation": "https://developer.virgilsecurity.com",
-        "Source": "https://github.com/VirgilSecurity/virgil-crypto-c",
-        "Tracker": "https://github.com/VirgilSecurity/virgil-crypto-c/issues"
-    },
-    license="BSD 3-Clause",
-    description="""
-    This library is designed to be small, flexible and convenient wrapper for a variety crypto algorithms.
-    """,
-    long_description="""
-    This library is designed to be a small, flexible and convenient wrapper for a variety of crypto algorithms. So it can be used in a small microcontroller as well as in a high load server application. Also, it provides several custom hybrid algorithms that combine different crypto algorithms to solve common complex cryptographic problems in an easy way. This eliminates the requirement for developers to have strong cryptographic skills.
-
-    The library is available for different platforms and contains wrappers for other languages.
-    """
-)
+setup(distclass=BinaryDistribution)

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,8 +36,9 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
+from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_error import vscf_error_t
 
 
 class vscf_brainkey_server_t(Structure):
@@ -48,6 +49,7 @@ class VscfBrainkeyServer(object):
 
     POINT_LEN = 65
     MPI_LEN = 32
+    PROOF_VALUE_LEN = 32
 
     def __init__(self):
         """Create underlying C context."""
@@ -67,14 +69,12 @@ class VscfBrainkeyServer(object):
         return vscf_brainkey_server_delete(ctx)
 
     def vscf_brainkey_server_use_random(self, ctx, random):
-        """Random used for key generation, proofs, etc."""
         vscf_brainkey_server_use_random = self._lib.vscf_brainkey_server_use_random
         vscf_brainkey_server_use_random.argtypes = [POINTER(vscf_brainkey_server_t), POINTER(vscf_impl_t)]
         vscf_brainkey_server_use_random.restype = None
         return vscf_brainkey_server_use_random(ctx, random)
 
     def vscf_brainkey_server_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vscf_brainkey_server_use_operation_random = self._lib.vscf_brainkey_server_use_operation_random
         vscf_brainkey_server_use_operation_random.argtypes = [POINTER(vscf_brainkey_server_t), POINTER(vscf_impl_t)]
         vscf_brainkey_server_use_operation_random.restype = None
@@ -97,6 +97,23 @@ class VscfBrainkeyServer(object):
         vscf_brainkey_server_harden.argtypes = [POINTER(vscf_brainkey_server_t), vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_brainkey_server_harden.restype = c_int
         return vscf_brainkey_server_harden(ctx, identity_secret, blinded_point, hardened_point)
+
+    def vscf_brainkey_server_compute_public_key(self, ctx, identity_secret, public_key):
+        """Computes the server's public key G_x = x*G from the given identity secret x.
+Required by the client to verify DLEQ proofs."""
+        vscf_brainkey_server_compute_public_key = self._lib.vscf_brainkey_server_compute_public_key
+        vscf_brainkey_server_compute_public_key.argtypes = [POINTER(vscf_brainkey_server_t), vsc_data_t, POINTER(vsc_buffer_t)]
+        vscf_brainkey_server_compute_public_key.restype = c_int
+        return vscf_brainkey_server_compute_public_key(ctx, identity_secret, public_key)
+
+    def vscf_brainkey_server_prove(self, ctx, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s, error):
+        """Generates a DLEQ proof that hardened_point = x * blinded_point using the same
+identity secret x as server_public_key = x * G.
+Client must call verify() before deblind() to authenticate the server response."""
+        vscf_brainkey_server_prove = self._lib.vscf_brainkey_server_prove
+        vscf_brainkey_server_prove.argtypes = [POINTER(vscf_brainkey_server_t), vsc_data_t, vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t), POINTER(vscf_error_t)]
+        vscf_brainkey_server_prove.restype = c_bool
+        return vscf_brainkey_server_prove(ctx, blinded_point, hardened_point, identity_secret, server_public_key, proof_value_c, proof_value_s, error)
 
     def vscf_brainkey_server_shallow_copy(self, ctx):
         vscf_brainkey_server_shallow_copy = self._lib.vscf_brainkey_server_shallow_copy

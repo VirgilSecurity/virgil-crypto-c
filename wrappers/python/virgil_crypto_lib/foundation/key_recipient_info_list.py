@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -58,8 +58,7 @@ class KeyRecipientInfoList(object):
     def item(self):
         """Return list item."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_item(self.ctx)
-        instance = KeyRecipientInfo.use_c_ctx(result)
-        return instance
+        return KeyRecipientInfo.use_c_ctx(result)
 
     def has_next(self):
         """Return true if list has next item."""
@@ -69,8 +68,7 @@ class KeyRecipientInfoList(object):
     def next(self):
         """Return next list node if exists, or NULL otherwise."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_next(self.ctx)
-        instance = KeyRecipientInfoList.use_c_ctx(result)
-        return instance
+        return Self.use_c_ctx(result)
 
     def has_prev(self):
         """Return true if list has previous item."""
@@ -80,8 +78,7 @@ class KeyRecipientInfoList(object):
     def prev(self):
         """Return previous list node if exists, or NULL otherwise."""
         result = self._lib_vscf_key_recipient_info_list.vscf_key_recipient_info_list_prev(self.ctx)
-        instance = KeyRecipientInfoList.use_c_ctx(result)
-        return instance
+        return Self.use_c_ctx(result)
 
     def clear(self):
         """Remove all items."""

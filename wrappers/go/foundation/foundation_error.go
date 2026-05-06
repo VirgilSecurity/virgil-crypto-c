@@ -148,18 +148,6 @@ const (
     */
     FoundationErrorErrorBadFalconPrivateKey int = -228
     /*
-    * Generic Round5 library error.
-    */
-    FoundationErrorErrorRound5 int = -229
-    /*
-    * Post-quantum NIST Round5 public key is corrupted.
-    */
-    FoundationErrorErrorBadRound5PublicKey int = -230
-    /*
-    * Post-quantum NIST Round5 private key is corrupted.
-    */
-    FoundationErrorErrorBadRound5PrivateKey int = -231
-    /*
     * Compound public key is corrupted.
     */
     FoundationErrorErrorBadCompoundPublicKey int = -232
@@ -191,6 +179,22 @@ const (
     * ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     */
     FoundationErrorErrorBadAsn1AlgorithmHybridKey int = -239
+    /*
+    * Post-quantum ML-KEM-768 public key is corrupted.
+    */
+    FoundationErrorErrorBadMlKemPublicKey int = -240
+    /*
+    * Post-quantum ML-KEM-768 private key is corrupted.
+    */
+    FoundationErrorErrorBadMlKemPrivateKey int = -241
+    /*
+    * Post-quantum ML-DSA-65 public key is corrupted.
+    */
+    FoundationErrorErrorBadMlDsaPublicKey int = -242
+    /*
+    * Post-quantum ML-DSA-65 private key is corrupted.
+    */
+    FoundationErrorErrorBadMlDsaPrivateKey int = -243
     /*
     * Decryption failed, because message info was not given explicitly,
     * and was not part of an encrypted message.
@@ -386,12 +390,6 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "Post-quantum Falcon-Sign public key is corrupted."}
         case C.vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY:
             return &FoundationError {int(status), "Post-quantum Falcon-Sign private key is corrupted."}
-        case C.vscf_status_ERROR_ROUND5:
-            return &FoundationError {int(status), "Generic Round5 library error."}
-        case C.vscf_status_ERROR_BAD_ROUND5_PUBLIC_KEY:
-            return &FoundationError {int(status), "Post-quantum NIST Round5 public key is corrupted."}
-        case C.vscf_status_ERROR_BAD_ROUND5_PRIVATE_KEY:
-            return &FoundationError {int(status), "Post-quantum NIST Round5 private key is corrupted."}
         case C.vscf_status_ERROR_BAD_COMPOUND_PUBLIC_KEY:
             return &FoundationError {int(status), "Compound public key is corrupted."}
         case C.vscf_status_ERROR_BAD_COMPOUND_PRIVATE_KEY:
@@ -408,6 +406,14 @@ func FoundationErrorHandleStatus(status C.vscf_status_t) error {
             return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with CompoundKeyParams is corrupted."}
         case C.vscf_status_ERROR_BAD_ASN1_ALGORITHM_HYBRID_KEY:
             return &FoundationError {int(status), "ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted."}
+        case C.vscf_status_ERROR_BAD_ML_KEM_PUBLIC_KEY:
+            return &FoundationError {int(status), "Post-quantum ML-KEM-768 public key is corrupted."}
+        case C.vscf_status_ERROR_BAD_ML_KEM_PRIVATE_KEY:
+            return &FoundationError {int(status), "Post-quantum ML-KEM-768 private key is corrupted."}
+        case C.vscf_status_ERROR_BAD_ML_DSA_PUBLIC_KEY:
+            return &FoundationError {int(status), "Post-quantum ML-DSA-65 public key is corrupted."}
+        case C.vscf_status_ERROR_BAD_ML_DSA_PRIVATE_KEY:
+            return &FoundationError {int(status), "Post-quantum ML-DSA-65 private key is corrupted."}
         case C.vscf_status_ERROR_NO_MESSAGE_INFO:
             return &FoundationError {int(status), "Decryption failed, because message info was not given explicitly, and was not part of an encrypted message."}
         case C.vscf_status_ERROR_BAD_MESSAGE_INFO:

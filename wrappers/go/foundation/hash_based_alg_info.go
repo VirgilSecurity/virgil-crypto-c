@@ -2,26 +2,26 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
 * Handle hashed based algorithm information, i.e. HKDF, HMAC, etc.
 */
 type HashBasedAlgInfo struct {
-    cCtx *C.vscf_hash_based_alg_info_t /*ct10*/
+    cCtx *C.vscf_hash_based_alg_info_t
 }
 
 /*
 * Return hash algorithm information.
 */
 func (obj *HashBasedAlgInfo) HashAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_hash_alg_info(obj.cCtx)
+    proxyResult := C.vscf_hash_based_alg_info_hash_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -41,7 +41,7 @@ func NewHashBasedAlgInfo() *HashBasedAlgInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHashBasedAlgInfoWithCtx(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashBasedAlgInfo {
+func newHashBasedAlgInfoWithCtx(ctx *C.vscf_hash_based_alg_info_t) *HashBasedAlgInfo {
     obj := &HashBasedAlgInfo {
         cCtx: ctx,
     }
@@ -52,7 +52,7 @@ func newHashBasedAlgInfoWithCtx(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *Has
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHashBasedAlgInfoCopy(ctx *C.vscf_hash_based_alg_info_t /*ct10*/) *HashBasedAlgInfo {
+func newHashBasedAlgInfoCopy(ctx *C.vscf_hash_based_alg_info_t) *HashBasedAlgInfo {
     obj := &HashBasedAlgInfo {
         cCtx: C.vscf_hash_based_alg_info_shallow_copy(ctx),
     }
@@ -82,9 +82,9 @@ func (obj *HashBasedAlgInfo) delete() {
 * Provide algorithm identificator.
 */
 func (obj *HashBasedAlgInfo) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_hash_based_alg_info_alg_id(obj.cCtx)
+    proxyResult := C.vscf_hash_based_alg_info_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,9 +36,9 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_padding_params import vscf_padding_params_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
+from ._vscf_padding_params import vscf_padding_params_t
 
 
 class vscf_random_padding_t(Structure):
@@ -47,6 +47,9 @@ class vscf_random_padding_t(Structure):
 
 class VscfRandomPadding(object):
     """Append a random number of padding bytes to a data."""
+
+    PADDING_SIZE_LEN = 4
+    PADDING_LEN_MIN = 5
 
     def __init__(self):
         """Create underlying C context."""
@@ -108,7 +111,7 @@ class VscfRandomPadding(object):
 
     def vscf_random_padding_len(self, ctx):
         """Return an actual number of padding in bytes.
-        Note, this method might be called right before "finish data processing"."""
+Note, this method might be called right before "finish data processing"."""
         vscf_random_padding_len = self._lib.vscf_random_padding_len
         vscf_random_padding_len.argtypes = [POINTER(vscf_random_padding_t)]
         vscf_random_padding_len.restype = c_size_t
@@ -130,7 +133,7 @@ class VscfRandomPadding(object):
 
     def vscf_random_padding_process_data(self, ctx, data):
         """Only data length is needed to produce padding later.
-        Return data that should be further proceeded."""
+Return data that should be further proceeded."""
         vscf_random_padding_process_data = self._lib.vscf_random_padding_process_data
         vscf_random_padding_process_data.argtypes = [POINTER(vscf_random_padding_t), vsc_data_t]
         vscf_random_padding_process_data.restype = vsc_data_t
@@ -152,7 +155,7 @@ class VscfRandomPadding(object):
 
     def vscf_random_padding_process_padded_data(self, ctx, data, out):
         """Process padded data.
-        Return filtered data without padding."""
+Return filtered data without padding."""
         vscf_random_padding_process_padded_data = self._lib.vscf_random_padding_process_padded_data
         vscf_random_padding_process_padded_data.argtypes = [POINTER(vscf_random_padding_t), vsc_data_t, POINTER(vsc_buffer_t)]
         vscf_random_padding_process_padded_data.restype = None
@@ -160,7 +163,7 @@ class VscfRandomPadding(object):
 
     def vscf_random_padding_finish_padded_data_processing_out_len(self, ctx):
         """Return length in bytes required hold output of the method
-        "finish padded data processing"."""
+"finish padded data processing"."""
         vscf_random_padding_finish_padded_data_processing_out_len = self._lib.vscf_random_padding_finish_padded_data_processing_out_len
         vscf_random_padding_finish_padded_data_processing_out_len.argtypes = [POINTER(vscf_random_padding_t)]
         vscf_random_padding_finish_padded_data_processing_out_len.restype = c_size_t

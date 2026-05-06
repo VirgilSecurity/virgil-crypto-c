@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,14 +36,14 @@
 from ctypes import *
 from ._c_bridge import VscePheServer
 from ._c_bridge import VsceStatus
-from .common import Common
-from virgil_crypto_lib.common._c_bridge import Buffer
 from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
+from .common import Common
 
 
 class Server(object):
     """Class for server-side PHE crypto operations.
-    This class is thread-safe in case if VSCE_MULTI_THREADING defined."""
+This class is thread-safe in case if .(c_global_macros_multi_threading) defined."""
 
     def __init__(self):
         """Create underlying C context."""

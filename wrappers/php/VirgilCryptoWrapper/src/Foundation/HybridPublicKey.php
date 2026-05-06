@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,11 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles a hybrid public key.
-*
-* The hybrid public key contains 2 public keys.
-*/
 class HybridPublicKey implements Key, PublicKey
 {
 
@@ -70,31 +65,6 @@ class HybridPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return the first public key.
-    *
-    * @return PublicKey
-    * @throws \Exception
-    */
-    public function firstKey(): PublicKey
-    {
-        $ctx = vscf_hybrid_public_key_first_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    * Return the second public key.
-    *
-    * @return PublicKey
-    * @throws \Exception
-    */
-    public function secondKey(): PublicKey
-    {
-        $ctx = vscf_hybrid_public_key_second_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -105,10 +75,8 @@ class HybridPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -117,7 +85,6 @@ class HybridPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -127,7 +94,6 @@ class HybridPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -137,14 +103,32 @@ class HybridPublicKey implements Key, PublicKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
     public function isValid(): bool
     {
         return vscf_hybrid_public_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function firstKey(): PublicKey
+    {
+        $ctx = vscf_hybrid_public_key_first_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function secondKey(): PublicKey
+    {
+        $ctx = vscf_hybrid_public_key_second_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**

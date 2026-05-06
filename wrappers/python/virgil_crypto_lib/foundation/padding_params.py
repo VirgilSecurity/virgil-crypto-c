@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -52,15 +52,6 @@ class PaddingParams(object):
     def __delete__(self, instance):
         """Destroy underlying C context."""
         self._lib_vscf_padding_params.vscf_padding_params_delete(self.ctx)
-
-    @classmethod
-    def with_constraints(cls, frame, frame_max):
-        """Build padding params with given constraints.
-        Next formula can clarify what frame is: padding_length = data_length MOD frame"""
-        inst = cls.__new__(cls)
-        inst._lib_vscf_padding_params = VscfPaddingParams()
-        inst.ctx = inst._lib_vscf_padding_params.vscf_padding_params_new_with_constraints(frame, frame_max)
-        return inst
 
     def frame(self):
         """Return padding frame in bytes."""

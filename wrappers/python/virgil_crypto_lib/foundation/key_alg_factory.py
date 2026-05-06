@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from ctypes import *
 from ._c_bridge import VscfKeyAlgFactory
-from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
+from ._c_bridge._vscf_error import vscf_error_t
 
 
 class KeyAlgFactory(object):

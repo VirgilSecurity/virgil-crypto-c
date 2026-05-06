@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,9 +45,9 @@ class vscp_error_t(Structure):
 
 class VscpError(object):
     """Error context.
-    Can be used for sequential operations, i.e. parsers, to accumulate error.
-    In this way operation is successful if all steps are successful, otherwise
-    last occurred error code can be obtained."""
+Can be used for sequential operations, i.e. parsers, to accumulate error.
+In this way operation is successful if all steps are successful, otherwise
+last occurred error code can be obtained."""
 
     def __init__(self):
         """Create underlying C context."""

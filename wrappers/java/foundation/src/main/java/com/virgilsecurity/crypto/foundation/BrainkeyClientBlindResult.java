@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,24 +36,10 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/* Encapsulate result of method brainkey client.blind() */
+
 public class BrainkeyClientBlindResult {
 
     private byte[] deblindFactor;
-
-    private byte[] blindedPoint;
-
-    /* Create new instance of BrainkeyClientBlindResult. */
-    BrainkeyClientBlindResult() {
-        super();
-    }
-
-    /** Initialize all properties. */
-    BrainkeyClientBlindResult(byte[] deblindFactor, byte[] blindedPoint) {
-        super();
-        this.deblindFactor = deblindFactor;
-        this.blindedPoint = blindedPoint;
-    }
 
     public byte[] getDeblindFactor() {
         return this.deblindFactor;
@@ -63,6 +49,8 @@ public class BrainkeyClientBlindResult {
         this.deblindFactor = deblindFactor;
     }
 
+    private byte[] blindedPoint;
+
     public byte[] getBlindedPoint() {
         return this.blindedPoint;
     }
@@ -70,5 +58,15 @@ public class BrainkeyClientBlindResult {
     public void setBlindedPoint(byte[] blindedPoint) {
         this.blindedPoint = blindedPoint;
     }
-}
 
+    BrainkeyClientBlindResult() {
+        super();
+    }
+
+    BrainkeyClientBlindResult(byte[] deblindFactor, byte[] blindedPoint) {
+        super();
+        this.deblindFactor = deblindFactor;
+        this.blindedPoint = blindedPoint;
+    }
+
+}

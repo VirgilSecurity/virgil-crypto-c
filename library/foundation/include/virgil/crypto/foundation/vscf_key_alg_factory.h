@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,6 +51,15 @@
 #ifndef VSCF_KEY_ALG_FACTORY_H_INCLUDED
 #define VSCF_KEY_ALG_FACTORY_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_error.h"
 #include "vscf_alg_id.h"
@@ -60,14 +67,16 @@
 #include "vscf_raw_public_key.h"
 #include "vscf_raw_private_key.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -91,16 +100,13 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
 //  Create a key algorithm that can import "raw public key".
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_from_raw_public_key(const vscf_raw_public_key_t *public_key, const vscf_impl_t *random,
-        vscf_error_t *error);
+vscf_key_alg_factory_create_from_raw_public_key(const vscf_raw_public_key_t *public_key, const vscf_impl_t *random, vscf_error_t *error);
 
 //
 //  Create a key algorithm that can import "raw private key".
 //
 VSCF_PUBLIC vscf_impl_t *
-vscf_key_alg_factory_create_from_raw_private_key(const vscf_raw_private_key_t *private_key, const vscf_impl_t *random,
-        vscf_error_t *error);
-
+vscf_key_alg_factory_create_from_raw_private_key(const vscf_raw_private_key_t *private_key, const vscf_impl_t *random, vscf_error_t *error);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -108,11 +114,9 @@ vscf_key_alg_factory_create_from_raw_private_key(const vscf_raw_private_key_t *p
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_ALG_FACTORY_H_INCLUDED

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -263,7 +263,6 @@ vscf_message_padding_release_rng(vscf_message_padding_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_padding_init() is called.
@@ -289,9 +288,17 @@ vscf_message_padding_cleanup_ctx(vscf_message_padding_t *self) {
 VSCF_PUBLIC size_t
 vscf_message_padding_padded_len(size_t plain_text_len) {
 
+    if (plain_text_len > SIZE_MAX - vscf_message_padding_PADDING_SIZE_LEN) {
+        return 0;
+    }
+
     size_t full_size = plain_text_len + vscf_message_padding_PADDING_SIZE_LEN;
 
     size_t factor = full_size / vscf_message_padding_PADDING_FACTOR + 1;
+
+    if (factor > SIZE_MAX / vscf_message_padding_PADDING_FACTOR) {
+        return 0;
+    }
 
     return factor * vscf_message_padding_PADDING_FACTOR;
 }

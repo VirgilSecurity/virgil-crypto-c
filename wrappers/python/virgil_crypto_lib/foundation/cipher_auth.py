@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -39,7 +39,7 @@ from abc import *
 
 class CipherAuth(object):
     """Mix-in interface that provides specific functionality to authenticated
-    encryption and decryption (AEAD ciphers)."""
+encryption and decryption (AEAD ciphers)."""
     __metaclass__ = ABCMeta
 
     @abstractmethod
@@ -51,14 +51,14 @@ class CipherAuth(object):
     def finish_auth_encryption(self):
         """Accomplish an authenticated encryption and place tag separately.
 
-        Note, if authentication tag should be added to an encrypted data,
-        method "finish" can be used."""
+Note, if authentication tag should be added to an encrypted data,
+method "finish" can be used."""
         raise NotImplementedError()
 
     @abstractmethod
     def finish_auth_decryption(self, tag):
         """Accomplish an authenticated decryption with explicitly given tag.
 
-        Note, if authentication tag is a part of an encrypted data then,
-        method "finish" can be used for simplicity."""
+Note, if authentication tag is a part of an encrypted data then,
+method "finish" can be used for simplicity."""
         raise NotImplementedError()

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -43,10 +43,10 @@ from virgil_crypto_lib.common._c_bridge import Buffer
 class MessageInfoEditor(object):
     """Add and/or remove recipients and it's parameters within message info.
 
-    Usage:
-      1. Unpack binary message info that was obtained from RecipientCipher.
-      2. Add and/or remove key recipients.
-      3. Pack MessagInfo to the binary data."""
+Usage:
+  1. Unpack binary message info that was obtained from RecipientCipher.
+  2. Add and/or remove key recipients.
+  3. Pack MessagInfo to the binary data."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -68,8 +68,8 @@ class MessageInfoEditor(object):
     def unpack(self, message_info_data):
         """Unpack serialized message info.
 
-        Note that recipients can only be removed but not added.
-        Note, use "unlock" method to be able to add new recipients as well."""
+Note that recipients can only be removed but not added.
+Note, use "unlock" method to be able to add new recipients as well."""
         d_message_info_data = Data(message_info_data)
         status = self._lib_vscf_message_info_editor.vscf_message_info_editor_unpack(self.ctx, d_message_info_data.data)
         VscfStatus.handle_status(status)
@@ -88,7 +88,7 @@ class MessageInfoEditor(object):
 
     def remove_key_recipient(self, recipient_id):
         """Remove recipient with a given id.
-        Return false if recipient with given id was not found."""
+Return false if recipient with given id was not found."""
         d_recipient_id = Data(recipient_id)
         result = self._lib_vscf_message_info_editor.vscf_message_info_editor_remove_key_recipient(self.ctx, d_recipient_id.data)
         return result
@@ -99,13 +99,13 @@ class MessageInfoEditor(object):
 
     def packed_len(self):
         """Return length of serialized message info.
-        Actual length can be obtained right after applying changes."""
+Actual length can be obtained right after applying changes."""
         result = self._lib_vscf_message_info_editor.vscf_message_info_editor_packed_len(self.ctx)
         return result
 
     def pack(self):
         """Return serialized message info.
-        Precondition: this method can be called after "apply"."""
+Precondition: this method can be called after "apply"."""
         message_info = Buffer(self.packed_len())
         self._lib_vscf_message_info_editor.vscf_message_info_editor_pack(self.ctx, message_info.c_buffer)
         return message_info.get_bytes()

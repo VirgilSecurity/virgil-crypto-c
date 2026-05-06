@@ -1,42 +1,41 @@
-/// Copyright (C) 2015-2022 Virgil Security, Inc.
-///
-/// All rights reserved.
-///
-/// Redistribution and use in source and binary forms, with or without
-/// modification, are permitted provided that the following conditions are
-/// met:
-///
-///     (1) Redistributions of source code must retain the above copyright
-///     notice, this list of conditions and the following disclaimer.
-///
-///     (2) Redistributions in binary form must reproduce the above copyright
-///     notice, this list of conditions and the following disclaimer in
-///     the documentation and/or other materials provided with the
-///     distribution.
-///
-///     (3) Neither the name of the copyright holder nor the names of its
-///     contributors may be used to endorse or promote products derived from
-///     this software without specific prior written permission.
-///
-/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-/// POSSIBILITY OF SUCH DAMAGE.
-///
-/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
 import VSCFoundation
 
-/// Defines the library status codes.
 @objc(VSCFFoundationError) public enum FoundationError: Int, Error {
 
     /// This error should not be returned if assertions is enabled.
@@ -140,15 +139,6 @@ import VSCFoundation
     /// Post-quantum Falcon-Sign private key is corrupted.
     case errorBadFalconPrivateKey = -228
 
-    /// Generic Round5 library error.
-    case errorRound5 = -229
-
-    /// Post-quantum NIST Round5 public key is corrupted.
-    case errorBadRound5PublicKey = -230
-
-    /// Post-quantum NIST Round5 private key is corrupted.
-    case errorBadRound5PrivateKey = -231
-
     /// Compound public key is corrupted.
     case errorBadCompoundPublicKey = -232
 
@@ -172,6 +162,18 @@ import VSCFoundation
 
     /// ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
     case errorBadAsn1AlgorithmHybridKey = -239
+
+    /// Post-quantum ML-KEM-768 public key is corrupted.
+    case errorBadMlKemPublicKey = -240
+
+    /// Post-quantum ML-KEM-768 private key is corrupted.
+    case errorBadMlKemPrivateKey = -241
+
+    /// Post-quantum ML-DSA-65 public key is corrupted.
+    case errorBadMlDsaPublicKey = -242
+
+    /// Post-quantum ML-DSA-65 private key is corrupted.
+    case errorBadMlDsaPrivateKey = -243
 
     /// Decryption failed, because message info was not given explicitly,
     /// and was not part of an encrypted message.
@@ -263,15 +265,13 @@ import VSCFoundation
     /// Plain text too long.
     case errorPlainTextTooLong = -707
 
-    /// Create enumeration value from the correspond C enumeration value.
     internal init(fromC status: vscf_status_t) {
         self.init(rawValue: Int(status.rawValue))!
     }
-
-    /// Check given C status, and if it's not "success" then throw correspond exception.
     internal static func handleStatus(fromC code: vscf_status_t) throws {
         if code != vscf_status_SUCCESS {
             throw FoundationError(fromC: code)
         }
     }
+
 }

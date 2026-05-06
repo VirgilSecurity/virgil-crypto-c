@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,8 +35,8 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
 
 
 class vscf_cipher_alg_info_t(Structure):
@@ -45,6 +45,7 @@ class vscf_cipher_alg_info_t(Structure):
 
 class VscfCipherAlgInfo(object):
     """Handle symmetric cipher algorithm information."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -63,12 +64,12 @@ class VscfCipherAlgInfo(object):
         vscf_cipher_alg_info_delete.restype = None
         return vscf_cipher_alg_info_delete(ctx)
 
-    def vscf_cipher_alg_info_new_with_members(self, alg_id, nonce):
-        """Create symmetric cipher algorithm info with identificator and input vector."""
-        vscf_cipher_alg_info_new_with_members = self._lib.vscf_cipher_alg_info_new_with_members
-        vscf_cipher_alg_info_new_with_members.argtypes = [c_int, vsc_data_t]
-        vscf_cipher_alg_info_new_with_members.restype = POINTER(vscf_cipher_alg_info_t)
-        return vscf_cipher_alg_info_new_with_members(alg_id, nonce)
+    def vscf_cipher_alg_info_nonce(self, ctx):
+        """Return IV."""
+        vscf_cipher_alg_info_nonce = self._lib.vscf_cipher_alg_info_nonce
+        vscf_cipher_alg_info_nonce.argtypes = [POINTER(vscf_cipher_alg_info_t)]
+        vscf_cipher_alg_info_nonce.restype = vsc_data_t
+        return vscf_cipher_alg_info_nonce(ctx)
 
     def vscf_cipher_alg_info_alg_id(self, ctx):
         """Provide algorithm identificator."""
@@ -76,13 +77,6 @@ class VscfCipherAlgInfo(object):
         vscf_cipher_alg_info_alg_id.argtypes = [POINTER(vscf_cipher_alg_info_t)]
         vscf_cipher_alg_info_alg_id.restype = c_int
         return vscf_cipher_alg_info_alg_id(ctx)
-
-    def vscf_cipher_alg_info_nonce(self, ctx):
-        """Return IV."""
-        vscf_cipher_alg_info_nonce = self._lib.vscf_cipher_alg_info_nonce
-        vscf_cipher_alg_info_nonce.argtypes = [POINTER(vscf_cipher_alg_info_t)]
-        vscf_cipher_alg_info_nonce.restype = vsc_data_t
-        return vscf_cipher_alg_info_nonce(ctx)
 
     def vscf_cipher_alg_info_shallow_copy(self, ctx):
         vscf_cipher_alg_info_shallow_copy = self._lib.vscf_cipher_alg_info_shallow_copy

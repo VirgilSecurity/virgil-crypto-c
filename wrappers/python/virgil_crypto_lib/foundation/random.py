@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,7 +44,7 @@ class Random(object):
     @abstractmethod
     def random(self, data_len):
         """Generate random bytes.
-        All RNG implementations must be thread-safe."""
+All RNG implementations must be thread-safe."""
         raise NotImplementedError()
 
     @abstractmethod

@@ -2,15 +2,15 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
 * Implementation based on a simple entropy accumulator.
 */
 type EntropyAccumulator struct {
-    cCtx *C.vscf_entropy_accumulator_t /*ct10*/
+    cCtx *C.vscf_entropy_accumulator_t
 }
 const (
     EntropyAccumulatorSourcesMax uint = 15
@@ -33,7 +33,7 @@ func (obj *EntropyAccumulator) SetupDefaults() {
 * from the source during accumulation.
 */
 func (obj *EntropyAccumulator) AddSource(source EntropySource, threshold uint) {
-    C.vscf_entropy_accumulator_add_source(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(source.Ctx())), (C.size_t)(threshold)/*pa10*/)
+    C.vscf_entropy_accumulator_add_source(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(source.Ctx())), (C.size_t)(threshold))
 
     runtime.KeepAlive(obj)
 
@@ -59,7 +59,7 @@ func NewEntropyAccumulator() *EntropyAccumulator {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEntropyAccumulatorWithCtx(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *EntropyAccumulator {
+func newEntropyAccumulatorWithCtx(ctx *C.vscf_entropy_accumulator_t) *EntropyAccumulator {
     obj := &EntropyAccumulator {
         cCtx: ctx,
     }
@@ -70,7 +70,7 @@ func newEntropyAccumulatorWithCtx(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *E
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t /*ct10*/) *EntropyAccumulator {
+func newEntropyAccumulatorCopy(ctx *C.vscf_entropy_accumulator_t) *EntropyAccumulator {
     obj := &EntropyAccumulator {
         cCtx: C.vscf_entropy_accumulator_shallow_copy(ctx),
     }
@@ -100,11 +100,11 @@ func (obj *EntropyAccumulator) delete() {
 * Defines that implemented source is strong.
 */
 func (obj *EntropyAccumulator) IsStrong() bool {
-    proxyResult := /*pr4*/C.vscf_entropy_accumulator_is_strong(obj.cCtx)
+    proxyResult := C.vscf_entropy_accumulator_is_strong(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -118,7 +118,7 @@ func (obj *EntropyAccumulator) Gather(len uint) ([]byte, error) {
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_entropy_accumulator_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
+    proxyResult := C.vscf_entropy_accumulator_gather(obj.cCtx, (C.size_t)(len), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -127,5 +127,5 @@ func (obj *EntropyAccumulator) Gather(len uint) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }
