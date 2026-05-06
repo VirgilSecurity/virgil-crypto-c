@@ -1277,20 +1277,11 @@ def discover_renderers(
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
             # --- defs module (render_class_defs_c_module) ---
-            # A separate _defs.h file holds the struct definition when the struct
-            # must NOT be inlined into the public header.  The struct stays private
-            # (in _defs.h) when:
-            #   • the class has a lifecycle (ref-counted heap object) AND
-            #   • is not a value type (value types are passed by copy, struct visible) AND
-            #   • is not scope="internal"+context="public" (that combo inlines the struct
-            #     because internal-scope classes expose their struct to the same TU).
-            # WHY three separate conditions: each is a distinct design choice in the IR
-            # about whether the caller needs to see the struct layout.
-            is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+            # A separate _defs.h is emitted when the struct must NOT be visible
+            # in the public header.  See _should_inline_struct for the full rationale.
             context = cls.attrs.get("context", "public")
             cls_scope = cls.attrs.get("scope", "public")
-            has_lifecycle = cls.attrs.get("lifecycle") != "none"
-            inline_struct = is_value_type or not has_lifecycle or (cls_scope == "internal" and context == "public")
+            inline_struct = _should_inline_struct(cls)
             if not inline_struct and context != "none":
                 defs_out = class_defs_output(cast(IROutputTarget, cls.output), context=context, scope=cls_scope)
                 defs_xml = direct_xml_name(defs_out)
@@ -2818,6 +2809,33 @@ def _class_uses_library_types(cls: IRClass) -> bool:
                 return True
     return False
 
+
+
+def _should_inline_struct(cls: IRClass) -> bool:
+    """Return True when the class struct definition should be inlined in the public header.
+
+    When True, the struct definition lives directly in the public ``.h`` file
+    (no separate ``_defs.h``).  A new contributor should read this function
+    before modifying discover_renderers or render_class_c_module.
+
+    Three cases where the caller *must* see the struct layout:
+
+    1. **Value type** (``is_value_type="1"``): passed by copy, so the compiler
+       must see the full layout at every call site.
+    2. **No lifecycle** (``lifecycle="none"``): the class has no ref-counter and
+       is not heap-allocated; there is no benefit to hiding the layout.
+    3. **Internal scope + public context** (``scope="internal"`` and
+       ``context="public"``): the struct is exposed to the same translation unit
+       that defines it, so inlining the definition is intentional.
+
+    In all other cases the struct goes into ``_defs.h`` so external headers only
+    need a forward declaration.
+    """
+    is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+    has_lifecycle = cls.attrs.get("lifecycle") != "none"
+    cls_scope = cls.attrs.get("scope", "public")
+    context = cls.attrs.get("context", "public")
+    return is_value_type or not has_lifecycle or (cls_scope == "internal" and context == "public")
 
 
 def _dependency_type_symbol(project_ir: IRProject, dep: IRDependency) -> str:
