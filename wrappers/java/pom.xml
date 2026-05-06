@@ -242,7 +242,6 @@
 			<modules>
 				<module>foundation</module>
 				<module>phe</module>
-				<module>pythia</module>
 				<module>ratchet</module>
 			</modules>
 		</profile>
@@ -262,12 +261,6 @@
 			<id>phe</id>
 			<modules>
 				<module>phe</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>pythia</id>
-			<modules>
-				<module>pythia</module>
 			</modules>
 		</profile>
 		<profile>
