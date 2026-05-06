@@ -1,0 +1,78 @@
+name: Build WASM
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
+  workflow_call:
+    inputs:
+      upload_artifacts:
+        description: 'Upload dist as a workflow artifact for release'
+        type: boolean
+        default: false
+
+jobs:
+  build-and-test:
+    name: WASM (Emscripten)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Install Emscripten SDK
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: '4.0.4'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build
+
+      - name: Setup Python virtual environment
+        run: python3 -m venv .venv
+
+      - name: Build C libraries with Emscripten
+        run: |
+          emcmake cmake -Cconfigs/wasm-config.cmake \
+                -DCMAKE_BUILD_TYPE=Release \
+                -DENABLE_CLANGFORMAT=OFF \
+                -Bbuild-wasm -S.
+          cmake --build build-wasm -j$(nproc)
+
+      - name: Install npm dependencies
+        working-directory: build-wasm/wrappers/wasm
+        run: npm ci || npm install
+
+      - name: Bundle with Rollup
+        working-directory: build-wasm/wrappers/wasm
+        run: npm run build
+
+      - name: Run Jest tests
+        working-directory: build-wasm/wrappers/wasm
+        run: npm test
+
+      - name: Upload dist artifacts
+        if: inputs.upload_artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-dist
+          path: build-wasm/wrappers/wasm/dist/
+          retention-days: 1

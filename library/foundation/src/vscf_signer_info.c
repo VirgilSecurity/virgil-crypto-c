@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -87,8 +87,7 @@ vscf_signer_info_cleanup_ctx(vscf_signer_info_t *self);
 //  Create object and define all properties.
 //
 static void
-vscf_signer_info_init_ctx_with_members(vscf_signer_info_t *self, vsc_data_t signer_id,
-        vscf_impl_t **signer_alg_info_ref, vsc_buffer_t **signature_ref);
+vscf_signer_info_init_ctx_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref, vsc_buffer_t **signature_ref);
 
 //
 //  Return size of 'vscf_signer_info_t'.
@@ -150,8 +149,7 @@ vscf_signer_info_new(void) {
 //  Create object and define all properties.
 //
 VSCF_PRIVATE void
-vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref,
-        vsc_buffer_t **signature_ref) {
+vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref, vsc_buffer_t **signature_ref) {
 
     VSCF_ASSERT_PTR(self);
 
@@ -167,8 +165,7 @@ vscf_signer_info_init_with_members(vscf_signer_info_t *self, vsc_data_t signer_i
 //  Create object and define all properties.
 //
 VSCF_PRIVATE vscf_signer_info_t *
-vscf_signer_info_new_with_members(vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref,
-        vsc_buffer_t **signature_ref) {
+vscf_signer_info_new_with_members(vsc_data_t signer_id, vscf_impl_t **signer_alg_info_ref, vsc_buffer_t **signature_ref) {
 
     vscf_signer_info_t *self = (vscf_signer_info_t *) vscf_alloc(sizeof (vscf_signer_info_t));
     VSCF_ASSERT_ALLOC(self);
@@ -263,7 +260,6 @@ vscf_signer_info_shallow_copy(vscf_signer_info_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,16 +35,16 @@
 
 from ctypes import *
 from ._c_bridge import VscfKeyProvider
-from ._c_bridge import VscfStatus
-from ._c_bridge._vscf_error import vscf_error_t
 from ._c_bridge import VscfImplTag
+from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscf_error import vscf_error_t
 
 
 class KeyProvider(object):
     """Provide functionality for private key generation and importing that
-    relies on the software default implementations."""
+relies on the software default implementations."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -77,15 +77,15 @@ class KeyProvider(object):
 
     def generate_post_quantum_private_key(self):
         """Generate new post-quantum private key with default algorithms.
-        Note, that a post-quantum key combines classic private keys
-        alongside with post-quantum private keys.
-        Current structure is "compound private key" is:
-            - cipher private key is "hybrid private key" where:
-                - first key is a classic private key;
-                - second key is a post-quantum private key;
-            - signer private key "hybrid private key" where:
-                - first key is a classic private key;
-                - second key is a post-quantum private key."""
+Note, that a post-quantum key combines classic private keys
+alongside with post-quantum private keys.
+Current structure is "compound private key" is:
+    - cipher private key is "hybrid private key" where:
+        - first key is a classic private key;
+        - second key is a post-quantum private key;
+    - signer private key "hybrid private key" where:
+        - first key is a classic private key;
+        - second key is a post-quantum private key."""
         error = vscf_error_t()
         result = self._lib_vscf_key_provider.vscf_key_provider_generate_post_quantum_private_key(self.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -111,8 +111,8 @@ class KeyProvider(object):
     def generate_compound_hybrid_private_key(self, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id):
         """Generate new compound private key with nested hybrid private keys.
 
-        Note, second key algorithm identifiers can be NONE, in this case,
-        a regular key will be crated instead of a hybrid key."""
+Note, second key algorithm identifiers can be NONE, in this case,
+a regular key will be crated instead of a hybrid key."""
         error = vscf_error_t()
         result = self._lib_vscf_key_provider.vscf_key_provider_generate_compound_hybrid_private_key(self.ctx, cipher_first_key_alg_id, cipher_second_key_alg_id, signer_first_key_alg_id, signer_second_key_alg_id, error)
         VscfStatus.handle_status(error.status)
@@ -140,14 +140,14 @@ class KeyProvider(object):
     def exported_public_key_len(self, public_key):
         """Calculate buffer size enough to hold exported public key.
 
-        Precondition: public key must be exportable."""
+Precondition: public key must be exportable."""
         result = self._lib_vscf_key_provider.vscf_key_provider_exported_public_key_len(self.ctx, public_key.c_impl)
         return result
 
     def export_public_key(self, public_key):
         """Export given public key to the PKCS#8 DER format.
 
-        Precondition: public key must be exportable."""
+Precondition: public key must be exportable."""
         out = Buffer(self.exported_public_key_len(public_key=public_key))
         status = self._lib_vscf_key_provider.vscf_key_provider_export_public_key(self.ctx, public_key.c_impl, out.c_buffer)
         VscfStatus.handle_status(status)
@@ -156,14 +156,14 @@ class KeyProvider(object):
     def exported_private_key_len(self, private_key):
         """Calculate buffer size enough to hold exported private key.
 
-        Precondition: private key must be exportable."""
+Precondition: private key must be exportable."""
         result = self._lib_vscf_key_provider.vscf_key_provider_exported_private_key_len(self.ctx, private_key.c_impl)
         return result
 
     def export_private_key(self, private_key):
         """Export given private key to the PKCS#8 or SEC1 DER format.
 
-        Precondition: private key must be exportable."""
+Precondition: private key must be exportable."""
         out = Buffer(self.exported_private_key_len(private_key=private_key))
         status = self._lib_vscf_key_provider.vscf_key_provider_export_private_key(self.ctx, private_key.c_impl, out.c_buffer)
         VscfStatus.handle_status(status)

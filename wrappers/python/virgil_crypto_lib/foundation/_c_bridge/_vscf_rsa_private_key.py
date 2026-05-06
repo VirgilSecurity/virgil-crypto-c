@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,6 +36,7 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
+from ._vscf_raw_private_key import vscf_raw_private_key_t
 
 
 class vscf_rsa_private_key_t(Structure):
@@ -44,6 +45,7 @@ class vscf_rsa_private_key_t(Structure):
 
 class VscfRsaPrivateKey(object):
     """Handles RSA private key."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -92,7 +94,7 @@ class VscfRsaPrivateKey(object):
 
     def vscf_rsa_private_key_is_valid(self, ctx):
         """Check that key is valid.
-        Note, this operation can be slow."""
+Note, this operation can be slow."""
         vscf_rsa_private_key_is_valid = self._lib.vscf_rsa_private_key_is_valid
         vscf_rsa_private_key_is_valid.argtypes = [POINTER(vscf_rsa_private_key_t)]
         vscf_rsa_private_key_is_valid.restype = c_bool

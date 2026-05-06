@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -221,7 +221,6 @@ vscf_signer_list_shallow_copy(vscf_signer_list_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_signer_list_init() is called.
@@ -264,13 +263,18 @@ vscf_signer_list_add(vscf_signer_list_t *self, vsc_data_t signer_id, vscf_impl_t
         VSCF_ASSERT_NULL(self->signer_private_key);
         self->signer_id = vsc_buffer_new_with_data(signer_id);
         self->signer_private_key = vscf_impl_shallow_copy(signer_private_key);
-    } else {
-        if (NULL == self->next) {
-            self->next = vscf_signer_list_new();
-            self->next->prev = self;
-        }
-        vscf_signer_list_add(self->next, signer_id, signer_private_key);
+        return;
     }
+
+    vscf_signer_list_t *node = self;
+    while (node->next != NULL) {
+        node = node->next;
+    }
+
+    node->next = vscf_signer_list_new();
+    node->next->prev = node;
+    node->next->signer_id = vsc_buffer_new_with_data(signer_id);
+    node->next->signer_private_key = vscf_impl_shallow_copy(signer_private_key);
 }
 
 //

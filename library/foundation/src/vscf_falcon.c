@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -63,7 +63,9 @@
 #include "vscf_falcon_defs.h"
 #include "vscf_falcon_internal.h"
 
+#if FALCON_LIBRARY
 #include <falcon/falcon.h>
+#endif
 
 // clang-format on
 //  @end
@@ -75,22 +77,12 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Private integral constants.
-//
-enum {
-    vscf_falcon_SEED_LEN = 48,
-    vscf_falcon_LOGN_512 = 9,
-    vscf_falcon_LOGN_1024 = 10
-};
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -125,6 +117,7 @@ vscf_falcon_generate_key(const vscf_falcon_t *self, vscf_error_t *error) {
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(self->random);
 
+#if FALCON_LIBRARY
     //
     //  Make random SEED
     //
@@ -156,7 +149,12 @@ vscf_falcon_generate_key(const vscf_falcon_t *self, vscf_error_t *error) {
     const int falcon_status = falcon_keygen_make(&shake256, vscf_falcon_LOGN_512,
             vsc_buffer_unused_bytes(private_key_buf), vsc_buffer_unused_len(private_key_buf),
             vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_unused_len(public_key_buf), tmp, sizeof(tmp));
-    VSCF_ASSERT(falcon_status == 0);
+    if (falcon_status != 0) {
+        vsc_buffer_destroy(&private_key_buf);
+        vsc_buffer_destroy(&public_key_buf);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_KEY_GENERATION_FAILED);
+        return NULL;
+    }
 
     vsc_buffer_inc_used(private_key_buf, FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512));
     vsc_buffer_inc_used(public_key_buf, FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
@@ -173,6 +171,10 @@ vscf_falcon_generate_key(const vscf_falcon_t *self, vscf_error_t *error) {
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -264,6 +266,7 @@ vscf_falcon_import_public_key_data(
         return NULL;
     }
 
+#if FALCON_LIBRARY
     if (key_data.len != FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PUBLIC_KEY);
         return NULL;
@@ -273,6 +276,10 @@ vscf_falcon_import_public_key_data(
             vscf_raw_public_key_new_with_members(key_data, key_alg_info, self->info->impl_tag);
 
     return vscf_raw_public_key_impl(public_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -312,7 +319,11 @@ vscf_falcon_exported_public_key_data_len(const vscf_falcon_t *self, const vscf_i
     VSCF_ASSERT(vscf_public_key_is_implemented(public_key));
     VSCF_ASSERT_SAFE(vscf_key_is_valid(public_key));
 
+#if FALCON_LIBRARY
     return FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512);
+#else
+    return 0;
+#endif
 }
 
 //
@@ -382,6 +393,7 @@ vscf_falcon_import_private_key_data(
         return NULL;
     }
 
+#if FALCON_LIBRARY
     if (key_data.len != FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512)) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY);
         return NULL;
@@ -392,7 +404,11 @@ vscf_falcon_import_private_key_data(
     vsc_buffer_t *public_key_buf = vsc_buffer_new_with_capacity(FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
     const int ret = falcon_make_public(vsc_buffer_unused_bytes(public_key_buf), vsc_buffer_unused_len(public_key_buf),
             key_data.bytes, key_data.len, tmp, sizeof(tmp));
-    VSCF_ASSERT(ret == 0);
+    if (ret != 0) {
+        vsc_buffer_destroy(&public_key_buf);
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY);
+        return NULL;
+    }
     vsc_buffer_inc_used(public_key_buf, FALCON_PUBKEY_SIZE(vscf_falcon_LOGN_512));
 
     vscf_raw_public_key_t *raw_public_key = vscf_raw_public_key_new();
@@ -406,6 +422,10 @@ vscf_falcon_import_private_key_data(
     vscf_raw_private_key_set_public_key(raw_private_key, &raw_public_key);
 
     return vscf_raw_private_key_impl(raw_private_key);
+#else
+    VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
+    return NULL;
+#endif
 }
 
 //
@@ -445,7 +465,11 @@ vscf_falcon_exported_private_key_data_len(const vscf_falcon_t *self, const vscf_
     VSCF_ASSERT(vscf_private_key_is_implemented(private_key));
     VSCF_ASSERT_SAFE(vscf_key_is_valid(private_key));
 
+#if FALCON_LIBRARY
     return FALCON_PRIVKEY_SIZE(vscf_falcon_LOGN_512);
+#else
+    return 0;
+#endif
 }
 
 //
@@ -494,8 +518,13 @@ vscf_falcon_can_sign(const vscf_falcon_t *self, const vscf_impl_t *private_key) 
         return false;
     }
 
+#if FALCON_LIBRARY
     const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
     return logn > 0;
+#else
+    (void)private_key_data;
+    return false;
+#endif
 }
 
 //
@@ -515,12 +544,17 @@ vscf_falcon_signature_len(const vscf_falcon_t *self, const vscf_impl_t *private_
         return 0;
     }
 
+#if FALCON_LIBRARY
     const int logn = falcon_get_logn((void *)private_key_data.bytes, private_key_data.len);
     if (logn > 0) {
         return FALCON_SIG_CT_SIZE(logn);
     } else {
         return 0;
     }
+#else
+    (void)private_key_data;
+    return 0;
+#endif
 }
 
 //
@@ -540,6 +574,7 @@ vscf_falcon_sign_hash(const vscf_falcon_t *self, const vscf_impl_t *private_key,
     VSCF_ASSERT(vsc_buffer_is_valid(signature));
     VSCF_ASSERT(vsc_buffer_unused_len(signature) >= vscf_falcon_signature_len(self, private_key));
 
+#if FALCON_LIBRARY
     //
     //  Make random SEED
     //
@@ -568,8 +603,8 @@ vscf_falcon_sign_hash(const vscf_falcon_t *self, const vscf_impl_t *private_key,
 
     unsigned char tmp[FALCON_TMPSIZE_SIGNDYN(vscf_falcon_LOGN_512)] = {0x00};
     size_t sig_len = vsc_buffer_unused_len(signature);
-    const int sign_status = falcon_sign_dyn(&shake256, vsc_buffer_unused_bytes(signature), &sig_len,
-            private_key_data.bytes, private_key_data.len, digest.bytes, digest.len, 1, tmp, sizeof(tmp));
+    const int sign_status = falcon_sign_dyn(&shake256, vsc_buffer_unused_bytes(signature), &sig_len, FALCON_SIG_CT,
+            private_key_data.bytes, private_key_data.len, digest.bytes, digest.len, tmp, sizeof(tmp));
 
     if (sign_status == FALCON_ERR_FORMAT) {
         return vscf_status_ERROR_BAD_FALCON_PRIVATE_KEY;
@@ -578,6 +613,9 @@ vscf_falcon_sign_hash(const vscf_falcon_t *self, const vscf_impl_t *private_key,
     VSCF_ASSERT_OPT(sign_status == 0 && "Unhandled error from 'falcon' library");
     vsc_buffer_inc_used(signature, sig_len);
     return vscf_status_SUCCESS;
+#else
+    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+#endif
 }
 
 //
@@ -596,8 +634,13 @@ vscf_falcon_can_verify(const vscf_falcon_t *self, const vscf_impl_t *public_key)
         return false;
     }
 
+#if FALCON_LIBRARY
     const int logn = falcon_get_logn((void *)public_key_data.bytes, public_key_data.len);
     return logn > 0;
+#else
+    (void)public_key_data;
+    return false;
+#endif
 }
 
 //
@@ -617,9 +660,14 @@ vscf_falcon_verify_hash(const vscf_falcon_t *self, const vscf_impl_t *public_key
     VSCF_ASSERT(vscf_impl_tag(public_key) == vscf_impl_tag_RAW_PUBLIC_KEY);
     vsc_data_t public_key_data = vscf_raw_public_key_data((vscf_raw_public_key_t *)public_key);
 
+#if FALCON_LIBRARY
     unsigned char tmp[FALCON_TMPSIZE_VERIFY(vscf_falcon_LOGN_512)] = {0x00};
-    const int verify_status = falcon_verify(signature.bytes, signature.len, public_key_data.bytes, public_key_data.len,
-            digest.bytes, digest.len, tmp, sizeof(tmp));
+    const int verify_status = falcon_verify(signature.bytes, signature.len, 0, public_key_data.bytes,
+            public_key_data.len, digest.bytes, digest.len, tmp, sizeof(tmp));
 
     return verify_status == 0;
+#else
+    (void)public_key_data;
+    return false;
+#endif
 }

@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -8,17 +8,17 @@
 #   modification, are permitted provided that the following conditions are
 #   met:
 #
-#       (1) Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
+#   (1) Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
 #
-#       (2) Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in
-#       the documentation and/or other materials provided with the
-#       distribution.
+#   (2) Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in
+#   the documentation and/or other materials provided with the
+#   distribution.
 #
-#       (3) Neither the name of the copyright holder nor the names of its
-#       contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
+#   (3) Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -56,6 +56,57 @@ target_compile_definitions(foundation
             "VSCF_LIBRARY=$<BOOL:${VSCF_LIBRARY}>"
             "VSCF_MULTI_THREADING=$<BOOL:${VSCF_MULTI_THREADING}>"
             "VSCF_POST_QUANTUM=$<BOOL:${VSCF_POST_QUANTUM}>"
+            "VSCF_ERROR=$<BOOL:${VSCF_ERROR}>"
+            "VSCF_MBEDTLS_BIGNUM_ASN1_WRITER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>"
+            "VSCF_MBEDTLS_BIGNUM_ASN1_READER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>"
+            "VSCF_MBEDTLS_MD=$<BOOL:${VSCF_MBEDTLS_MD}>"
+            "VSCF_MBEDTLS_ECP=$<BOOL:${VSCF_MBEDTLS_ECP}>"
+            "VSCF_OID=$<BOOL:${VSCF_OID}>"
+            "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
+            "VSCF_PEM=$<BOOL:${VSCF_PEM}>"
+            "VSCF_PEM_TITLE=$<BOOL:${VSCF_PEM_TITLE}>"
+            "VSCF_MESSAGE_INFO=$<BOOL:${VSCF_MESSAGE_INFO}>"
+            "VSCF_KEY_RECIPIENT_INFO=$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>"
+            "VSCF_KEY_RECIPIENT_INFO_LIST=$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>"
+            "VSCF_PASSWORD_RECIPIENT_INFO=$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>"
+            "VSCF_PASSWORD_RECIPIENT_INFO_LIST=$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>"
+            "VSCF_ALG_FACTORY=$<BOOL:${VSCF_ALG_FACTORY}>"
+            "VSCF_KEY_ALG_FACTORY=$<BOOL:${VSCF_KEY_ALG_FACTORY}>"
+            "VSCF_ECIES=$<BOOL:${VSCF_ECIES}>"
+            "VSCF_ECIES_ENVELOPE=$<BOOL:${VSCF_ECIES_ENVELOPE}>"
+            "VSCF_RECIPIENT_CIPHER=$<BOOL:${VSCF_RECIPIENT_CIPHER}>"
+            "VSCF_KEY_RECIPIENT_LIST=$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>"
+            "VSCF_LIST_KEY_VALUE_NODE=$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>"
+            "VSCF_MESSAGE_INFO_CUSTOM_PARAMS=$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>"
+            "VSCF_KEY_PROVIDER=$<BOOL:${VSCF_KEY_PROVIDER}>"
+            "VSCF_SIGNER=$<BOOL:${VSCF_SIGNER}>"
+            "VSCF_VERIFIER=$<BOOL:${VSCF_VERIFIER}>"
+            "VSCF_SIMPLE_SWU=$<BOOL:${VSCF_SIMPLE_SWU}>"
+            "VSCF_BRAINKEY_CLIENT=$<BOOL:${VSCF_BRAINKEY_CLIENT}>"
+            "VSCF_BRAINKEY_SERVER=$<BOOL:${VSCF_BRAINKEY_SERVER}>"
+            "VSCF_MESSAGE_PADDING=$<BOOL:${VSCF_MESSAGE_PADDING}>"
+            "VSCF_MESSAGE_CIPHER=$<BOOL:${VSCF_MESSAGE_CIPHER}>"
+            "VSCF_GROUP_SESSION_PUBLIC_KEY=$<BOOL:${VSCF_GROUP_SESSION_PUBLIC_KEY}>"
+            "VSCF_GROUP_SESSION_PRIVATE_KEY=$<BOOL:${VSCF_GROUP_SESSION_PRIVATE_KEY}>"
+            "VSCF_GROUP_SESSION_SYMMETRIC_KEY=$<BOOL:${VSCF_GROUP_SESSION_SYMMETRIC_KEY}>"
+            "VSCF_GROUP_SESSION_ID=$<BOOL:${VSCF_GROUP_SESSION_ID}>"
+            "VSCF_GROUP_SESSION_SALT=$<BOOL:${VSCF_GROUP_SESSION_SALT}>"
+            "VSCF_GROUP_SESSION_MESSAGE=$<BOOL:${VSCF_GROUP_SESSION_MESSAGE}>"
+            "VSCF_GROUP_SESSION_TICKET=$<BOOL:${VSCF_GROUP_SESSION_TICKET}>"
+            "VSCF_GROUP_SESSION=$<BOOL:${VSCF_GROUP_SESSION}>"
+            "VSCF_GROUP_SESSION_EPOCH=$<BOOL:${VSCF_GROUP_SESSION_EPOCH}>"
+            "VSCF_GROUP_SESSION_EPOCH_NODE=$<BOOL:${VSCF_GROUP_SESSION_EPOCH_NODE}>"
+            "VSCF_MESSAGE_INFO_EDITOR=$<BOOL:${VSCF_MESSAGE_INFO_EDITOR}>"
+            "VSCF_SIGNER_INFO=$<BOOL:${VSCF_SIGNER_INFO}>"
+            "VSCF_SIGNER_INFO_LIST=$<BOOL:${VSCF_SIGNER_INFO_LIST}>"
+            "VSCF_SIGNER_LIST=$<BOOL:${VSCF_SIGNER_LIST}>"
+            "VSCF_MESSAGE_INFO_FOOTER=$<BOOL:${VSCF_MESSAGE_INFO_FOOTER}>"
+            "VSCF_SIGNED_DATA_INFO=$<BOOL:${VSCF_SIGNED_DATA_INFO}>"
+            "VSCF_FOOTER_INFO=$<BOOL:${VSCF_FOOTER_INFO}>"
+            "VSCF_KEY_INFO=$<BOOL:${VSCF_KEY_INFO}>"
+            "VSCF_TAIL_FILTER=$<BOOL:${VSCF_TAIL_FILTER}>"
+            "VSCF_PADDING_PARAMS=$<BOOL:${VSCF_PADDING_PARAMS}>"
+            "VSCF_PADDING_CIPHER=$<BOOL:${VSCF_PADDING_CIPHER}>"
             "VSCF_CIPHER=$<BOOL:${VSCF_CIPHER}>"
             "VSCF_AUTH_ENCRYPT=$<BOOL:${VSCF_AUTH_ENCRYPT}>"
             "VSCF_AUTH_DECRYPT=$<BOOL:${VSCF_AUTH_DECRYPT}>"
@@ -123,7 +174,8 @@ target_compile_definitions(foundation
             "VSCF_ED25519=$<BOOL:${VSCF_ED25519}>"
             "VSCF_CURVE25519=$<BOOL:${VSCF_CURVE25519}>"
             "VSCF_FALCON=$<BOOL:${VSCF_FALCON}>"
-            "VSCF_ROUND5=$<BOOL:${VSCF_ROUND5}>"
+            "VSCF_ML_KEM=$<BOOL:${VSCF_ML_KEM}>"
+            "VSCF_ML_DSA=$<BOOL:${VSCF_ML_DSA}>"
             "VSCF_COMPOUND_KEY_ALG_INFO=$<BOOL:${VSCF_COMPOUND_KEY_ALG_INFO}>"
             "VSCF_COMPOUND_PUBLIC_KEY=$<BOOL:${VSCF_COMPOUND_PUBLIC_KEY}>"
             "VSCF_COMPOUND_PRIVATE_KEY=$<BOOL:${VSCF_COMPOUND_PRIVATE_KEY}>"
@@ -142,50 +194,4 @@ target_compile_definitions(foundation
             "VSCF_ALG_INFO_DER_DESERIALIZER=$<BOOL:${VSCF_ALG_INFO_DER_DESERIALIZER}>"
             "VSCF_MESSAGE_INFO_DER_SERIALIZER=$<BOOL:${VSCF_MESSAGE_INFO_DER_SERIALIZER}>"
             "VSCF_RANDOM_PADDING=$<BOOL:${VSCF_RANDOM_PADDING}>"
-            "VSCF_ERROR=$<BOOL:${VSCF_ERROR}>"
-            "VSCF_MBEDTLS_BIGNUM_ASN1_WRITER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_WRITER}>"
-            "VSCF_MBEDTLS_BIGNUM_ASN1_READER=$<BOOL:${VSCF_MBEDTLS_BIGNUM_ASN1_READER}>"
-            "VSCF_MBEDTLS_MD=$<BOOL:${VSCF_MBEDTLS_MD}>"
-            "VSCF_MBEDTLS_ECP=$<BOOL:${VSCF_MBEDTLS_ECP}>"
-            "VSCF_OID=$<BOOL:${VSCF_OID}>"
-            "VSCF_BASE64=$<BOOL:${VSCF_BASE64}>"
-            "VSCF_PEM=$<BOOL:${VSCF_PEM}>"
-            "VSCF_PEM_TITLE=$<BOOL:${VSCF_PEM_TITLE}>"
-            "VSCF_MESSAGE_INFO=$<BOOL:${VSCF_MESSAGE_INFO}>"
-            "VSCF_KEY_RECIPIENT_INFO=$<BOOL:${VSCF_KEY_RECIPIENT_INFO}>"
-            "VSCF_KEY_RECIPIENT_INFO_LIST=$<BOOL:${VSCF_KEY_RECIPIENT_INFO_LIST}>"
-            "VSCF_PASSWORD_RECIPIENT_INFO=$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>"
-            "VSCF_PASSWORD_RECIPIENT_INFO_LIST=$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>"
-            "VSCF_ALG_FACTORY=$<BOOL:${VSCF_ALG_FACTORY}>"
-            "VSCF_KEY_ALG_FACTORY=$<BOOL:${VSCF_KEY_ALG_FACTORY}>"
-            "VSCF_ECIES=$<BOOL:${VSCF_ECIES}>"
-            "VSCF_ECIES_ENVELOPE=$<BOOL:${VSCF_ECIES_ENVELOPE}>"
-            "VSCF_RECIPIENT_CIPHER=$<BOOL:${VSCF_RECIPIENT_CIPHER}>"
-            "VSCF_KEY_RECIPIENT_LIST=$<BOOL:${VSCF_KEY_RECIPIENT_LIST}>"
-            "VSCF_LIST_KEY_VALUE_NODE=$<BOOL:${VSCF_LIST_KEY_VALUE_NODE}>"
-            "VSCF_MESSAGE_INFO_CUSTOM_PARAMS=$<BOOL:${VSCF_MESSAGE_INFO_CUSTOM_PARAMS}>"
-            "VSCF_KEY_PROVIDER=$<BOOL:${VSCF_KEY_PROVIDER}>"
-            "VSCF_SIGNER=$<BOOL:${VSCF_SIGNER}>"
-            "VSCF_VERIFIER=$<BOOL:${VSCF_VERIFIER}>"
-            "VSCF_SIMPLE_SWU=$<BOOL:${VSCF_SIMPLE_SWU}>"
-            "VSCF_BRAINKEY_CLIENT=$<BOOL:${VSCF_BRAINKEY_CLIENT}>"
-            "VSCF_BRAINKEY_SERVER=$<BOOL:${VSCF_BRAINKEY_SERVER}>"
-            "VSCF_MESSAGE_PADDING=$<BOOL:${VSCF_MESSAGE_PADDING}>"
-            "VSCF_MESSAGE_CIPHER=$<BOOL:${VSCF_MESSAGE_CIPHER}>"
-            "VSCF_GROUP_SESSION_MESSAGE=$<BOOL:${VSCF_GROUP_SESSION_MESSAGE}>"
-            "VSCF_GROUP_SESSION_TICKET=$<BOOL:${VSCF_GROUP_SESSION_TICKET}>"
-            "VSCF_GROUP_SESSION=$<BOOL:${VSCF_GROUP_SESSION}>"
-            "VSCF_GROUP_SESSION_EPOCH=$<BOOL:${VSCF_GROUP_SESSION_EPOCH}>"
-            "VSCF_GROUP_SESSION_EPOCH_NODE=$<BOOL:${VSCF_GROUP_SESSION_EPOCH_NODE}>"
-            "VSCF_MESSAGE_INFO_EDITOR=$<BOOL:${VSCF_MESSAGE_INFO_EDITOR}>"
-            "VSCF_SIGNER_INFO=$<BOOL:${VSCF_SIGNER_INFO}>"
-            "VSCF_SIGNER_INFO_LIST=$<BOOL:${VSCF_SIGNER_INFO_LIST}>"
-            "VSCF_SIGNER_LIST=$<BOOL:${VSCF_SIGNER_LIST}>"
-            "VSCF_MESSAGE_INFO_FOOTER=$<BOOL:${VSCF_MESSAGE_INFO_FOOTER}>"
-            "VSCF_SIGNED_DATA_INFO=$<BOOL:${VSCF_SIGNED_DATA_INFO}>"
-            "VSCF_FOOTER_INFO=$<BOOL:${VSCF_FOOTER_INFO}>"
-            "VSCF_KEY_INFO=$<BOOL:${VSCF_KEY_INFO}>"
-            "VSCF_TAIL_FILTER=$<BOOL:${VSCF_TAIL_FILTER}>"
-            "VSCF_PADDING_PARAMS=$<BOOL:${VSCF_PADDING_PARAMS}>"
-            "VSCF_PADDING_CIPHER=$<BOOL:${VSCF_PADDING_CIPHER}>"
         )

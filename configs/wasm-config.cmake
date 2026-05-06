@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -39,6 +39,7 @@ endif()
 
 set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake" CACHE PATH "")
 set(VIRGIL_WRAP_WASM ON CACHE BOOL "")
+set(VIRGIL_LIB_PYTHIA OFF CACHE BOOL "")
 set(VIRGIL_C_TESTING OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_WRAP_SRCS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_WRAP_LIBS OFF CACHE BOOL "")
@@ -49,3 +50,4 @@ set(VIRGIL_INSTALL_DEPS_CMAKE OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_HDRS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_LIBS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "")
+set(VIRGIL_POST_QUANTUM ON CACHE BOOL "")

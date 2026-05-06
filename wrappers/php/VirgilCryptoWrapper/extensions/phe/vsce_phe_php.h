@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2022 Virgil Security, Inc.
+// Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -43,7 +43,7 @@ extern "C" {
 
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   if VSCE_PHP_SHARED_LIBRARY
+#   if VSCF_PHP_SHARED_LIBRARY
 #       if defined(VSCE_PHP_INTERNAL_BUILD)
 #           ifdef __GNUC__
 #               define VSCE_PHP_PUBLIC __attribute__ ((dllexport))
@@ -74,13 +74,13 @@ extern "C" {
 // Constants
 //
 VSCE_PHP_PUBLIC const char*
-vsce_phe_server_t_php_res_name(void);
+vsce_phe_cipher_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
 vsce_phe_client_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
-vsce_phe_cipher_t_php_res_name(void);
+vsce_phe_server_t_php_res_name(void);
 
 VSCE_PHP_PUBLIC const char*
 vsce_uokms_client_t_php_res_name(void);
@@ -95,13 +95,13 @@ vsce_uokms_wrap_rotation_t_php_res_name(void);
 // Registered resources
 //
 VSCE_PHP_PUBLIC int
-le_vsce_phe_server_t(void);
+le_vsce_phe_cipher_t(void);
 
 VSCE_PHP_PUBLIC int
 le_vsce_phe_client_t(void);
 
 VSCE_PHP_PUBLIC int
-le_vsce_phe_cipher_t(void);
+le_vsce_phe_server_t(void);
 
 VSCE_PHP_PUBLIC int
 le_vsce_uokms_client_t(void);

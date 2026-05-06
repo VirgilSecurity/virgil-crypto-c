@@ -35,7 +35,6 @@
     </method>
 
     <method name="deserialize public key" is_static="1">
-        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
         <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
         <argument name="public key" interface="public key" project="foundation" access="disown"/>
 
@@ -48,7 +47,6 @@
     </method>
 
     <method name="deserialize private key" is_static="1">
-        <argument name="round5" class="round5" project="foundation" access="readwrite"/>
         <argument name="pb buffer" class="pb_bytes_array_t" library="nanopb"/>
         <argument name="private key" interface="public key" project="foundation" access="disown"/>
 

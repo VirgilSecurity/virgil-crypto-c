@@ -1,0 +1,86 @@
+name: Release Go
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - 'v*.*.*-*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to release (e.g. v0.17.3)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    uses: ./.github/workflows/build-go.yml
+    with:
+      upload_artifacts: true
+
+  commit-and-tag:
+    name: Commit Libraries & Tag Go Module
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && 'develop' || github.ref }}
+          lfs: true
+          fetch-depth: 0
+
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs track "wrappers/go/pkg/**/*.a"
+
+      - name: Download all built libraries
+        uses: actions/download-artifact@v4
+        with:
+          pattern: go-libs-*
+          path: wrappers/go/pkg/
+          merge-multiple: false
+
+      - name: Restructure artifacts
+        run: |
+          cd wrappers/go/pkg
+          for dir in go-libs-*; do
+            target="${dir#go-libs-}"
+            if [ -d "$target" ]; then
+              rm -rf "$target"
+            fi
+            mv "$dir" "$target"
+          done
+          echo "Installed targets:"
+          ls -la
+          echo "Library files:"
+          find . -name '*.a' | sort
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "go_module_tag=wrappers/go/$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Commit libraries
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wrappers/go/pkg/ .gitattributes
+          git diff --cached --quiet && echo "No changes to commit" && exit 0
+          git commit -m "chore(go): update pre-built static libraries for ${{ steps.version.outputs.tag }}"
+          git push origin HEAD
+
+      - name: Create Go module tag
+        run: |
+          git tag "${{ steps.version.outputs.go_module_tag }}"
+          git push origin "${{ steps.version.outputs.go_module_tag }}"

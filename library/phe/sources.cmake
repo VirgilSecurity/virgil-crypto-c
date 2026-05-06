@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -8,17 +8,17 @@
 #   modification, are permitted provided that the following conditions are
 #   met:
 #
-#       (1) Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
+#   (1) Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
 #
-#       (2) Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in
-#       the documentation and/or other materials provided with the
-#       distribution.
+#   (2) Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in
+#   the documentation and/or other materials provided with the
+#   distribution.
 #
-#       (3) Neither the name of the copyright holder nor the names of its
-#       contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
+#   (3) Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -79,17 +79,12 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_cipher.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_client.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -100,6 +95,16 @@ set_property(
 
 set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_client.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_cipher.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -119,11 +124,6 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
-    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
-)
-
-set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -135,72 +135,74 @@ target_sources(phe
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_atomic.h"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_platform.h.in"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/phe/vsce_platform.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_private.h"
             "$<$<BOOL:${VSCE_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_error.h>"
-            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_cipher.h>"
-            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher_defs.h>"
-            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_client.h>"
-            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client_defs.h>"
             "$<$<BOOL:${VSCE_PHE_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_common.h>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash.h>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.h>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator.h>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator_defs.h>"
             "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator.h>"
             "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator_defs.h>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier.h>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier_defs.h>"
             "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier.h>"
             "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier_defs.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_server.h>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.h>"
-            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator.h>"
-            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator_defs.h>"
-            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier.h>"
-            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier_defs.h>"
-            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_client.h>"
-            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client_defs.h>"
+            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_client.h>"
+            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client_defs.h>"
+            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_cipher.h>"
+            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher_defs.h>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator.h>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator_defs.h>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier.h>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier_defs.h>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_client.h>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client_defs.h>"
             "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_server.h>"
             "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_server_defs.h>"
             "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_uokms_wrap_rotation.h>"
             "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_wrap_rotation_defs.h>"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_status.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/vsce_phe_public.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/phe/private/vsce_phe_private.h"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_atomic.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsce_const.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_status.c"
             "$<$<BOOL:${VSCE_ERROR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_error.c>"
-            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher.c>"
-            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher_defs.c>"
-            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client.c>"
-            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client_defs.c>"
             "$<$<BOOL:${VSCE_PHE_COMMON}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_common.c>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash.c>"
             "$<$<BOOL:${VSCE_PHE_HASH}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_hash_defs.c>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator.c>"
+            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator_defs.c>"
             "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator.c>"
             "$<$<BOOL:${VSCE_PHE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_generator_defs.c>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier.c>"
+            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier_defs.c>"
             "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier.c>"
             "$<$<BOOL:${VSCE_PHE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_proof_verifier_defs.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server.c>"
             "$<$<BOOL:${VSCE_PHE_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_server_defs.c>"
-            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator.c>"
-            "$<$<BOOL:${VSCE_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_generator_defs.c>"
-            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier.c>"
-            "$<$<BOOL:${VSCE_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_proof_verifier_defs.c>"
-            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client.c>"
-            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client_defs.c>"
+            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client.c>"
+            "$<$<BOOL:${VSCE_PHE_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_client_defs.c>"
+            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher.c>"
+            "$<$<BOOL:${VSCE_PHE_CIPHER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_phe_cipher_defs.c>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator.c>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_GENERATOR}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_generator_defs.c>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier.c>"
             "$<$<BOOL:${VSCE_UOKMS_PROOF_VERIFIER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_proof_verifier_defs.c>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client.c>"
+            "$<$<BOOL:${VSCE_UOKMS_CLIENT}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_client_defs.c>"
             "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_server.c>"
             "$<$<BOOL:${VSCE_UOKMS_SERVER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_server_defs.c>"
             "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_wrap_rotation.c>"
             "$<$<BOOL:${VSCE_UOKMS_WRAP_ROTATION}>:${CMAKE_CURRENT_LIST_DIR}/src/vsce_uokms_wrap_rotation_defs.c>"
-            "${CMAKE_CURRENT_LIST_DIR}/src/vsce_status.c"
         )
 
 target_include_directories(phe

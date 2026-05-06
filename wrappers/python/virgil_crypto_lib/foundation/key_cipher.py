@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -59,7 +59,7 @@ class KeyCipher(object):
     @abstractmethod
     def can_decrypt(self, private_key, data_len):
         """Check if algorithm can decrypt data with a given key.
-        However, success result of decryption is not guaranteed."""
+However, success result of decryption is not guaranteed."""
         raise NotImplementedError()
 
     @abstractmethod

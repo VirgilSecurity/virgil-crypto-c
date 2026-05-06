@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -229,7 +229,6 @@ vscf_verifier_shallow_copy(vscf_verifier_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_verifier_init() is called.
@@ -285,7 +284,7 @@ vscf_verifier_reset(vscf_verifier_t *self, vsc_data_t signature) {
             vscf_alg_info_der_deserializer_deserialize_inplace(self->alg_info_der_deserializer, NULL);
     vsc_data_t raw_signature = vscf_asn1rd_read_octet_str(self->asn1rd);
 
-    if (vscf_asn1rd_has_error(self->asn1rd)) {
+    if (vscf_asn1rd_has_error(self->asn1rd) || hash_alg_info == NULL) {
         vscf_impl_destroy(&hash_alg_info);
         return vscf_status_ERROR_BAD_SIGNATURE;
     }
@@ -333,7 +332,7 @@ vscf_verifier_verify(vscf_verifier_t *self, vscf_impl_t *public_key) {
 
     if (!vscf_key_signer_is_implemented(key_alg)) {
         vscf_impl_destroy(&key_alg);
-        return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+        return false;
     }
 
     //

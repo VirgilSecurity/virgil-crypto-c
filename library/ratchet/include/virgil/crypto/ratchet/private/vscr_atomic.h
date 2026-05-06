@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,8 +51,6 @@
 #ifndef VSCR_ATOMIC_H_INCLUDED
 #define VSCR_ATOMIC_H_INCLUDED
 
-#include "vscr_library.h"
-
 #if VSCR_HAVE_STDATOMIC_H
 #   include <stdatomic.h>
 #endif
@@ -62,11 +58,24 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -91,11 +100,14 @@ extern "C" {
 #if VSCR_MULTI_THREADING
 #   if VSCR_HAVE_STDATOMIC_H && !defined(__STDC_NO_ATOMICS__)
 #       define VSCR_ATOMIC _Atomic
-#       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak(obj, expected, desired)
+#       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) atomic_compare_exchange_weak_explicit(obj, expected, desired, memory_order_acq_rel, memory_order_relaxed)
+#       define VSCR_ATOMIC_STORE_RELEASE(obj, val) atomic_store_explicit(obj, val, memory_order_release)
 #   elif defined(__GNUC__) || defined(__clang__)
-#       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)
+#       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) __atomic_compare_exchange_n(obj, expected, desired, 1, __ATOMIC_ACQ_REL, __ATOMIC_RELAXED)
+#       define VSCR_ATOMIC_STORE_RELEASE(obj, val) __atomic_store_n(obj, val, __ATOMIC_RELEASE)
 #   elif defined(_MSC_VER) && !defined(__INTEL_COMPILER)
 #       define VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(obj, expected, desired) vscr_atomic_compare_exchange_weak(obj, expected, desired)
+#       define VSCR_ATOMIC_STORE_RELEASE(obj, val) (void)_InterlockedExchange((volatile long *)(obj), (long)(val))
 #   else
 #       error "Atomic operations are not suppored for this platform, but CMake option VSCR_MULTI_THREADING is ON."
 #   endif
@@ -109,13 +121,12 @@ extern "C" {
 #if defined(VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK)
 #   define VSCR_ATOMIC_CRITICAL_SECTION_DECLARE(name) static VSCR_ATOMIC int is_busy_##name = 0; int is_not_busy_##name = 0;
 #   define VSCR_ATOMIC_CRITICAL_SECTION_BEGIN(name) do { is_not_busy_##name = 0; } while (!VSCR_ATOMIC_COMPARE_EXCHANGE_WEAK(&is_busy_##name, &is_not_busy_##name, 1))
-#   define VSCR_ATOMIC_CRITICAL_SECTION_END(name) do { is_busy_##name = 0; } while(0)
+#   define VSCR_ATOMIC_CRITICAL_SECTION_END(name) do { VSCR_ATOMIC_STORE_RELEASE(&is_busy_##name, 0); } while(0)
 #else
 #   define VSCR_ATOMIC_CRITICAL_SECTION_DECLARE(name) do {} while(0)
 #   define VSCR_ATOMIC_CRITICAL_SECTION_BEGIN(name) do {} while(0)
 #   define VSCR_ATOMIC_CRITICAL_SECTION_END(name) do {} while(0)
 #endif
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -123,11 +134,9 @@ extern "C" {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_ATOMIC_H_INCLUDED

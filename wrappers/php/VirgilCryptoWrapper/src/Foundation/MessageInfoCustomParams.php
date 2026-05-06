@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -45,10 +45,6 @@ class MessageInfoCustomParams
     */
     private $ctx;
 
-    const OF_INT_TYPE = 1;
-    const OF_STRING_TYPE = 2;
-    const OF_DATA_TYPE = 3;
-
     /**
     * Create underlying C context.
     * @param null $ctx
@@ -69,43 +65,39 @@ class MessageInfoCustomParams
     }
 
     /**
-    * Add custom parameter with integer value.
     *
-    * @param string $key
-    * @param int $value
+    * @param string $$key
+    * @param int $$value
     * @return void
     */
-    public function addInt(string $key, int $value): void
+    public function addInt(string $$key, int $$value): void
     {
-        vscf_message_info_custom_params_add_int_php($this->ctx, $key, $value);
+        vscf_message_info_custom_params_add_int_php($this->ctx, $$key, $$value);
     }
 
     /**
-    * Add custom parameter with UTF8 string value.
     *
-    * @param string $key
-    * @param string $value
+    * @param string $$key
+    * @param string $$value
     * @return void
     */
-    public function addString(string $key, string $value): void
+    public function addString(string $$key, string $$value): void
     {
-        vscf_message_info_custom_params_add_string_php($this->ctx, $key, $value);
+        vscf_message_info_custom_params_add_string_php($this->ctx, $$key, $$value);
     }
 
     /**
-    * Add custom parameter with octet string value.
     *
-    * @param string $key
-    * @param string $value
+    * @param string $$key
+    * @param string $$value
     * @return void
     */
-    public function addData(string $key, string $value): void
+    public function addData(string $$key, string $$value): void
     {
-        vscf_message_info_custom_params_add_data_php($this->ctx, $key, $value);
+        vscf_message_info_custom_params_add_data_php($this->ctx, $$key, $$value);
     }
 
     /**
-    * Remove all parameters.
     *
     * @return void
     */
@@ -115,40 +107,39 @@ class MessageInfoCustomParams
     }
 
     /**
-    * Return custom parameter with integer value.
     *
-    * @param string $key
+    * @param string $$key
     * @return int
+    * @throws \Exception
     */
-    public function findInt(string $key): int
+    public function findInt(string $$key): int
     {
-        return vscf_message_info_custom_params_find_int_php($this->ctx, $key);
+        return vscf_message_info_custom_params_find_int_php($this->ctx, $$key);
     }
 
     /**
-    * Return custom parameter with UTF8 string value.
     *
-    * @param string $key
+    * @param string $$key
     * @return string
+    * @throws \Exception
     */
-    public function findString(string $key): string
+    public function findString(string $$key): string
     {
-        return vscf_message_info_custom_params_find_string_php($this->ctx, $key);
+        return vscf_message_info_custom_params_find_string_php($this->ctx, $$key);
     }
 
     /**
-    * Return custom parameter with octet string value.
     *
-    * @param string $key
+    * @param string $$key
     * @return string
+    * @throws \Exception
     */
-    public function findData(string $key): string
+    public function findData(string $$key): string
     {
-        return vscf_message_info_custom_params_find_data_php($this->ctx, $key);
+        return vscf_message_info_custom_params_find_data_php($this->ctx, $$key);
     }
 
     /**
-    * Return true if at least one param exists.
     *
     * @return bool
     */

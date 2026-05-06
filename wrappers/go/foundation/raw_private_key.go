@@ -2,37 +2,37 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import "runtime"
 import unsafe "unsafe"
+import "runtime"
 
 
 /*
 * Handles interchangeable private key representation.
 */
 type RawPrivateKey struct {
-    cCtx *C.vscf_raw_private_key_t /*ct10*/
+    cCtx *C.vscf_raw_private_key_t
 }
 
 /*
 * Return key data.
 */
 func (obj *RawPrivateKey) Data() []byte {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_data(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_data(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }
 
 /*
 * Return true if private key contains public key.
 */
 func (obj *RawPrivateKey) HasPublicKey() bool {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_has_public_key(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_has_public_key(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -40,7 +40,6 @@ func (obj *RawPrivateKey) HasPublicKey() bool {
 */
 func (obj *RawPrivateKey) SetPublicKey(rawPublicKey *RawPublicKey) {
     rawPublicKeyCopy := C.vscf_raw_public_key_shallow_copy((*C.vscf_raw_public_key_t)(unsafe.Pointer(rawPublicKey.Ctx())))
-
     C.vscf_raw_private_key_set_public_key(obj.cCtx, &rawPublicKeyCopy)
 
     runtime.KeepAlive(obj)
@@ -54,11 +53,11 @@ func (obj *RawPrivateKey) SetPublicKey(rawPublicKey *RawPublicKey) {
 * Return public key related to the private key.
 */
 func (obj *RawPrivateKey) GetPublicKey() *RawPublicKey {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_get_public_key(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_get_public_key(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newRawPublicKeyCopy(proxyResult) /* r5 */
+    return newRawPublicKeyCopy(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -78,7 +77,7 @@ func NewRawPrivateKey() *RawPrivateKey {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRawPrivateKeyWithCtx(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey {
+func newRawPrivateKeyWithCtx(ctx *C.vscf_raw_private_key_t) *RawPrivateKey {
     obj := &RawPrivateKey {
         cCtx: ctx,
     }
@@ -89,7 +88,7 @@ func newRawPrivateKeyWithCtx(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivate
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t /*ct10*/) *RawPrivateKey {
+func newRawPrivateKeyCopy(ctx *C.vscf_raw_private_key_t) *RawPrivateKey {
     obj := &RawPrivateKey {
         cCtx: C.vscf_raw_private_key_shallow_copy(ctx),
     }
@@ -119,44 +118,44 @@ func (obj *RawPrivateKey) delete() {
 * Algorithm identifier the key belongs to.
 */
 func (obj *RawPrivateKey) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_alg_id(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
 * Return algorithm information that can be used for serialization.
 */
 func (obj *RawPrivateKey) AlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_alg_info(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /*
 * Length of the key in bytes.
 */
 func (obj *RawPrivateKey) Len() uint {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_len(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Length of the key in bits.
 */
 func (obj *RawPrivateKey) Bitlen() uint {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_bitlen(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_bitlen(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -164,20 +163,20 @@ func (obj *RawPrivateKey) Bitlen() uint {
 * Note, this operation can be slow.
 */
 func (obj *RawPrivateKey) IsValid() bool {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_is_valid(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_is_valid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
 * Extract public key from the private key.
 */
 func (obj *RawPrivateKey) ExtractPublicKey() (PublicKey, error) {
-    proxyResult := /*pr4*/C.vscf_raw_private_key_extract_public_key(obj.cCtx)
+    proxyResult := C.vscf_raw_private_key_extract_public_key(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult)
 }

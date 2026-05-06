@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -97,30 +97,26 @@ test__skipped_messages__adding_chains__should_be_correct(void) {
     TEST_ASSERT_EQUAL(key2, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id3));
     TEST_ASSERT_EQUAL(key3, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
-
-    vscr_ratchet_skipped_messages_delete_key(msgs, id2, key2);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_skipped_messages_delete_key(msgs, id2, key2));
 
     TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id3));
     TEST_ASSERT_EQUAL(key3, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
-
-    vscr_ratchet_skipped_messages_delete_key(msgs, id3, key3);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_skipped_messages_delete_key(msgs, id3, key3));
 
     TEST_ASSERT_EQUAL(key1, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id1));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
-
-    vscr_ratchet_skipped_messages_delete_key(msgs, id1, key1);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_skipped_messages_delete_key(msgs, id1, key1));
 
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 1, id1));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 2, id2));
     TEST_ASSERT_EQUAL(NULL, vscr_ratchet_skipped_messages_find_key(msgs, 3, id3));
 
     vscr_ratchet_skipped_messages_destroy(&msgs);
-
     vscf_ctr_drbg_destroy(&rng);
 }
 

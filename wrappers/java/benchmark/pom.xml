@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>com.virgilsecurity.crypto</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.17.2</version>
+		<version>0.18.0-dev.3</version>
 	</parent>
 	<artifactId>benchmark</artifactId>
-	
+
 	<name>Virgil Security Crypto Library - Benchmark</name>
 
 	<dependencies>

@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.17.2 LANGUAGES C)
+project(virgil_crypto VERSION 0.18.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev.3" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -110,7 +110,12 @@ option(VIRGIL_PROGRAMS "Build programs." OFF)
 #
 # Features
 #
-option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." ON)
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography." ON)
+
+#
+# Threading
+#
+option(VIRGIL_DISABLE_MULTI_THREADING "Disable multi-threading safety across all libraries (single-threaded targets only)." OFF)
 
 #
 # Wrappers
@@ -182,6 +187,11 @@ execute_process(COMMAND pip3 install -U -r "${CMAKE_CURRENT_SOURCE_DIR}/requirem
 # ---------------------------------------------------------------------------
 
 #
+# Allow access to mbedTLS private struct members during 2.x -> 3.x migration.
+#
+add_compile_definitions(MBEDTLS_ALLOW_PRIVATE_ACCESS)
+
+#
 # MbedTLS
 #
 if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
@@ -211,13 +221,25 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    add_subdirectory("thirdparty/round5")
+    set(VSCF_POST_QUANTUM ON CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
     add_subdirectory("thirdparty/falcon")
+    add_subdirectory("thirdparty/mlkem-native")
+    add_subdirectory("thirdparty/mldsa-native")
+else()
+    set(VSCF_POST_QUANTUM OFF CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
 endif()
 
 # ---------------------------------------------------------------------------
 #   Library core libraries
 # ---------------------------------------------------------------------------
+
+if(VIRGIL_DISABLE_MULTI_THREADING)
+    set(VSC_MULTI_THREADING  OFF CACHE BOOL "" FORCE)
+    set(VSCF_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCE_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCP_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCR_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+endif()
 
 add_subdirectory("library/platform")
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -45,10 +45,6 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1new
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setRandom (JNIEnv *, jobject, jlong, jobject);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1generateServerKeyPair (JNIEnv *, jobject, jlong);
@@ -68,10 +64,6 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1r
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1close (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setRandom (JNIEnv *, jobject, jlong, jobject);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *, jobject, jlong);
 
@@ -97,8 +89,6 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1new
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setRandom (JNIEnv *, jobject, jlong, jobject);
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setupDefaults (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1encryptLen (JNIEnv *, jobject, jlong, jint);
@@ -116,10 +106,6 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher
 JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1new__ (JNIEnv *, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1close (JNIEnv *, jobject, jlong);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setRandom (JNIEnv *, jobject, jlong, jobject);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setupDefaults (JNIEnv *, jobject, jlong);
 
@@ -147,10 +133,6 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1n
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setRandom (JNIEnv *, jobject, jlong, jobject);
-
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setupDefaults (JNIEnv *, jobject, jlong);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1generateServerKeyPair (JNIEnv *, jobject, jlong);
@@ -165,13 +147,12 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotat
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1close (JNIEnv *, jobject, jlong);
 
-JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setOperationRandom (JNIEnv *, jobject, jlong, jobject);
-
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults (JNIEnv *, jobject, jlong);
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setUpdateToken (JNIEnv *, jobject, jlong, jbyteArray);
 
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1updateWrap (JNIEnv *, jobject, jlong, jbyteArray);
+
 
 #ifdef __cplusplus
 }

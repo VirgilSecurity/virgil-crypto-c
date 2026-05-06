@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,98 +38,72 @@
 const precondition = require('./precondition');
 
 const initRatchetCommon = (Module, modules) => {
-    /**
-     * Class with public constants
-     */
     class RatchetCommon {
 
-        /**
-         * Max plain text length allowed to be encrypted
-         */
         static get MAX_PLAIN_TEXT_LEN() {
             return 30000;
         }
 
         get MAX_PLAIN_TEXT_LEN() {
-            return RatchetCommon.MAX_PLAIN_TEXT_LEN;
+            return 30000;
         }
 
-        /**
-         * Max message length
-         */
         static get MAX_MESSAGE_LEN() {
             return 35583;
         }
 
         get MAX_MESSAGE_LEN() {
-            return RatchetCommon.MAX_MESSAGE_LEN;
+            return 35583;
         }
 
-        /**
-         * Key pair id length
-         */
         static get KEY_ID_LEN() {
             return 8;
         }
 
         get KEY_ID_LEN() {
-            return RatchetCommon.KEY_ID_LEN;
+            return 8;
         }
 
-        /**
-         * Participant id length
-         */
         static get PARTICIPANT_ID_LEN() {
             return 32;
         }
 
         get PARTICIPANT_ID_LEN() {
-            return RatchetCommon.PARTICIPANT_ID_LEN;
+            return 32;
         }
 
-        /**
-         * Session id length
-         */
         static get SESSION_ID_LEN() {
             return 32;
         }
 
         get SESSION_ID_LEN() {
-            return RatchetCommon.SESSION_ID_LEN;
+            return 32;
         }
 
-        /**
-         * Max number of group chat participants
-         */
         static get MAX_PARTICIPANTS_COUNT() {
             return 100;
         }
 
         get MAX_PARTICIPANTS_COUNT() {
-            return RatchetCommon.MAX_PARTICIPANTS_COUNT;
+            return 100;
         }
 
-        /**
-         * Min number of group chat participants
-         */
         static get MIN_PARTICIPANTS_COUNT() {
             return 2;
         }
 
         get MIN_PARTICIPANTS_COUNT() {
-            return RatchetCommon.MIN_PARTICIPANTS_COUNT;
+            return 2;
         }
 
-        /**
-         * Max group message length
-         */
         static get MAX_GROUP_MESSAGE_LEN() {
             return 32918;
         }
 
         get MAX_GROUP_MESSAGE_LEN() {
-            return RatchetCommon.MAX_GROUP_MESSAGE_LEN;
+            return 32918;
         }
+
     }
 
     return RatchetCommon;

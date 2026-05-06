@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handle information about password-based encryption algorithm.
-*/
 class PbeAlgInfo implements AlgInfo
 {
 
@@ -68,10 +65,18 @@ class PbeAlgInfo implements AlgInfo
     }
 
     /**
-    * Return KDF algorithm information.
+    *
+    * @return AlgId
+    */
+    public function algId(): AlgId
+    {
+        $enum = vscf_pbe_alg_info_alg_id_php($this->ctx);
+        return new AlgId($enum);
+    }
+
+    /**
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function kdfAlgInfo(): AlgInfo
     {
@@ -80,26 +85,13 @@ class PbeAlgInfo implements AlgInfo
     }
 
     /**
-    * Return cipher algorithm information.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function cipherAlgInfo(): AlgInfo
     {
         $ctx = vscf_pbe_alg_info_cipher_alg_info_php($this->ctx);
         return FoundationImplementation::wrapAlgInfo($ctx);
-    }
-
-    /**
-    * Provide algorithm identificator.
-    *
-    * @return AlgId
-    */
-    public function algId(): AlgId
-    {
-        $enum = vscf_pbe_alg_info_alg_id_php($this->ctx);
-        return new AlgId($enum);
     }
 
     /**

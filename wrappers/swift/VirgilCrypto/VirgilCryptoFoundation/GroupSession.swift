@@ -1,71 +1,68 @@
-/// Copyright (C) 2015-2022 Virgil Security, Inc.
-///
-/// All rights reserved.
-///
-/// Redistribution and use in source and binary forms, with or without
-/// modification, are permitted provided that the following conditions are
-/// met:
-///
-///     (1) Redistributions of source code must retain the above copyright
-///     notice, this list of conditions and the following disclaimer.
-///
-///     (2) Redistributions in binary form must reproduce the above copyright
-///     notice, this list of conditions and the following disclaimer in
-///     the documentation and/or other materials provided with the
-///     distribution.
-///
-///     (3) Neither the name of the copyright holder nor the names of its
-///     contributors may be used to endorse or promote products derived from
-///     this software without specific prior written permission.
-///
-/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-/// POSSIBILITY OF SUCH DAMAGE.
-///
-/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
 import VSCFoundation
 
-/// Group chat encryption session.
 @objc(VSCFGroupSession) public class GroupSession: NSObject {
-
-    /// Sender id len
-    @objc public static let senderIdLen: Int = 32
-    /// Max plain text len
-    @objc public static let maxPlainTextLen: Int = 30000
-    /// Max epochs count
-    @objc public static let maxEpochsCount: Int = 50
-    /// Salt size
-    @objc public static let saltSize: Int = 32
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
-    /// Create underlying C context.
+    /// Sender id len
+    @objc public let senderIdLen: Int = 32
+
+    /// Max plain text len
+    @objc public let maxPlainTextLen: Int = 30000
+
+    /// Max epochs count
+    @objc public let maxEpochsCount: Int = 50
+
+    /// Salt size
+    @objc public let saltSize: Int = 32
+
     public override init() {
         self.c_ctx = vscf_group_session_new()
         super.init()
     }
 
-    /// Acquire C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
         super.init()
     }
 
-    /// Acquire retained C context.
-    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
         self.c_ctx = vscf_group_session_shallow_copy(c_ctx)
         super.init()
@@ -76,7 +73,6 @@ import VSCFoundation
         vscf_group_session_delete(self.c_ctx)
     }
 
-    /// Random
     @objc public func setRng(rng: Random) {
         vscf_group_session_release_rng(self.c_ctx)
         vscf_group_session_use_rng(self.c_ctx, rng.c_ctx)
@@ -117,8 +113,7 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafeRawBufferPointer) in
-
+        let proxyResult = plainText.withUnsafeBytes({ (plainTextPointer: UnsafeRawBufferPointer) -> OpaquePointer? in
             return vscf_group_session_encrypt(self.c_ctx, vsc_data(plainTextPointer.bindMemory(to: byte.self).baseAddress, plainText.count), privateKey.c_ctx, &error)
         })
 
@@ -166,4 +161,5 @@ import VSCFoundation
 
         return GroupSessionTicket.init(take: proxyResult!)
     }
+
 }

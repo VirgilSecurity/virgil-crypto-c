@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,13 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Handles compound public key.
-*
-* Compound public key contains 2 public keys and signature:
-* - cipher key - is used for encryption;
-* - signer key - is used for verifying.
-*/
 class CompoundPublicKey implements Key, PublicKey
 {
 
@@ -72,31 +65,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return a cipher public key suitable for initial encryption.
-    *
-    * @return PublicKey
-    * @throws \Exception
-    */
-    public function cipherKey(): PublicKey
-    {
-        $ctx = vscf_compound_public_key_cipher_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    * Return public key suitable for verifying.
-    *
-    * @return PublicKey
-    * @throws \Exception
-    */
-    public function signerKey(): PublicKey
-    {
-        $ctx = vscf_compound_public_key_signer_key_php($this->ctx);
-        return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -107,10 +75,8 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
-    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -119,7 +85,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bytes.
     *
     * @return int
     */
@@ -129,7 +94,6 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Length of the key in bits.
     *
     * @return int
     */
@@ -139,14 +103,32 @@ class CompoundPublicKey implements Key, PublicKey
     }
 
     /**
-    * Check that key is valid.
-    * Note, this operation can be slow.
     *
     * @return bool
     */
     public function isValid(): bool
     {
         return vscf_compound_public_key_is_valid_php($this->ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function cipherKey(): PublicKey
+    {
+        $ctx = vscf_compound_public_key_cipher_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @return PublicKey
+    */
+    public function signerKey(): PublicKey
+    {
+        $ctx = vscf_compound_public_key_signer_key_php($this->ctx);
+        return FoundationImplementation::wrapPublicKey($ctx);
     }
 
     /**

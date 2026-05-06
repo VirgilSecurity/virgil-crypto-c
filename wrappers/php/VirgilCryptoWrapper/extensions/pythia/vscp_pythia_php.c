@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2022 Virgil Security, Inc.
+// Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -67,13 +67,13 @@ vscp_handle_throw_exception(vscp_status_t status) {
 //
 // Constants
 //
-const char VSCP_PYTHIA_PHP_VERSION[] = "0.17.2";
+const char VSCP_PYTHIA_PHP_VERSION[] = "0.18.0";
 const char VSCP_PYTHIA_PHP_EXTNAME[] = "vscp_pythia_php";
+
 
 //
 // Constants func wrapping
 //
-
 //
 // Registered resources
 //
@@ -101,8 +101,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_VOID /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_configure_php) {
@@ -118,6 +116,10 @@ PHP_FUNCTION(vscp_pythia_configure_php) {
     ZEND_PARSE_PARAMETERS_END();
 
     //
+    // Proxy call
+    //
+
+    //
     // Call main function
     //
     vscp_status_t status =vscp_pythia_configure();
@@ -126,6 +128,7 @@ PHP_FUNCTION(vscp_pythia_configure_php) {
     // Handle error
     //
     VSCP_HANDLE_STATUS(status);
+
 }
 
 //
@@ -137,8 +140,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     0 /*required_num_args*/,
     IS_VOID /*type*/,
     0 /*allow_null*/)
-
-
 
 ZEND_END_ARG_INFO()
 
@@ -155,9 +156,14 @@ PHP_FUNCTION(vscp_pythia_cleanup_php) {
     ZEND_PARSE_PARAMETERS_END();
 
     //
+    // Proxy call
+    //
+
+    //
     // Call main function
     //
     vscp_pythia_cleanup();
+
 }
 
 //
@@ -169,8 +175,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     0 /*required_num_args*/,
     IS_LONG /*type*/,
     0 /*allow_null*/)
-
-
 
 ZEND_END_ARG_INFO()
 
@@ -185,6 +189,10 @@ PHP_FUNCTION(vscp_pythia_blinded_password_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -207,8 +215,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_deblinded_password_buf_len_php) {
@@ -222,6 +228,10 @@ PHP_FUNCTION(vscp_pythia_deblinded_password_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -244,8 +254,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_blinding_secret_buf_len_php) {
@@ -259,6 +267,10 @@ PHP_FUNCTION(vscp_pythia_blinding_secret_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -281,8 +293,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_transformation_private_key_buf_len_php) {
@@ -296,6 +306,10 @@ PHP_FUNCTION(vscp_pythia_transformation_private_key_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -318,8 +332,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_transformation_public_key_buf_len_php) {
@@ -333,6 +345,10 @@ PHP_FUNCTION(vscp_pythia_transformation_public_key_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -355,8 +371,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_transformed_password_buf_len_php) {
@@ -370,6 +384,10 @@ PHP_FUNCTION(vscp_pythia_transformed_password_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -392,8 +410,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_transformed_tweak_buf_len_php) {
@@ -407,6 +423,10 @@ PHP_FUNCTION(vscp_pythia_transformed_tweak_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -429,8 +449,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_proof_value_buf_len_php) {
@@ -444,6 +462,10 @@ PHP_FUNCTION(vscp_pythia_proof_value_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -466,8 +488,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_LONG /*type*/,
     0 /*allow_null*/)
 
-
-
 ZEND_END_ARG_INFO()
 
 PHP_FUNCTION(vscp_pythia_password_update_token_buf_len_php) {
@@ -481,6 +501,10 @@ PHP_FUNCTION(vscp_pythia_password_update_token_buf_len_php) {
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 0)
     ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
 
     //
     // Call main function
@@ -500,9 +524,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscp_pythia_blind_php,
     0 /*return_reference*/,
     1 /*required_num_args*/,
-    IS_ARRAY /*type*/,
+    IS_STRING /*type*/,
     0 /*allow_null*/)
-
 
     ZEND_ARG_TYPE_INFO(0, in_password, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -513,19 +536,19 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     // Declare input argument
     //
     char *in_password = NULL;
-    size_t in_password_len = 0;
+    size_t in_password_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
-        Z_PARAM_STRING_EX(in_password, in_password_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_password, in_password_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t password = vsc_data((const byte*)in_password, in_password_len);
+    vsc_data_t password = vsc_data((const byte*)in_password, in_password_blen);
 
     //
     // Allocate output buffer for output 'blinded_password'
@@ -555,21 +578,16 @@ PHP_FUNCTION(vscp_pythia_blind_php) {
     // Correct string length to the actual
     //
     ZSTR_LEN(out_blinded_password) = vsc_buffer_len(blinded_password);
-    ZSTR_LEN(out_blinding_secret) = vsc_buffer_len(blinding_secret);
 
     //
     // Write returned result
     //
     if (status == vscp_status_SUCCESS) {
-        array_init(return_value);
-        add_next_index_str(return_value, out_blinded_password);
-        add_next_index_str(return_value, out_blinding_secret);
+        RETVAL_STR(out_blinded_password);
         vsc_buffer_destroy(&blinded_password);
-        vsc_buffer_destroy(&blinding_secret);
     }
     else {
         zend_string_free(out_blinded_password);
-        zend_string_free(out_blinding_secret);
     }
 }
 
@@ -583,7 +601,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_STRING /*type*/,
     0 /*allow_null*/)
 
-
     ZEND_ARG_TYPE_INFO(0, in_transformed_password, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_blinding_secret, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -594,23 +611,23 @@ PHP_FUNCTION(vscp_pythia_deblind_php) {
     // Declare input argument
     //
     char *in_transformed_password = NULL;
-    size_t in_transformed_password_len = 0;
+    size_t in_transformed_password_blen = 0;
     char *in_blinding_secret = NULL;
-    size_t in_blinding_secret_len = 0;
+    size_t in_blinding_secret_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
-        Z_PARAM_STRING_EX(in_transformed_password, in_transformed_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_blinding_secret, in_blinding_secret_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformed_password, in_transformed_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_blinding_secret, in_blinding_secret_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t transformed_password = vsc_data((const byte*)in_transformed_password, in_transformed_password_len);
-    vsc_data_t blinding_secret = vsc_data((const byte*)in_blinding_secret, in_blinding_secret_len);
+    vsc_data_t transformed_password = vsc_data((const byte*)in_transformed_password, in_transformed_password_blen);
+    vsc_data_t blinding_secret = vsc_data((const byte*)in_blinding_secret, in_blinding_secret_blen);
 
     //
     // Allocate output buffer for output 'deblinded_password'
@@ -653,9 +670,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscp_pythia_compute_transformation_key_pair_php,
     0 /*return_reference*/,
     3 /*required_num_args*/,
-    IS_ARRAY /*type*/,
+    IS_STRING /*type*/,
     0 /*allow_null*/)
-
 
     ZEND_ARG_TYPE_INFO(0, in_transformation_key_id, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_pythia_secret, IS_STRING, 0)
@@ -668,27 +684,27 @@ PHP_FUNCTION(vscp_pythia_compute_transformation_key_pair_php) {
     // Declare input argument
     //
     char *in_transformation_key_id = NULL;
-    size_t in_transformation_key_id_len = 0;
+    size_t in_transformation_key_id_blen = 0;
     char *in_pythia_secret = NULL;
-    size_t in_pythia_secret_len = 0;
+    size_t in_pythia_secret_blen = 0;
     char *in_pythia_scope_secret = NULL;
-    size_t in_pythia_scope_secret_len = 0;
+    size_t in_pythia_scope_secret_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
-        Z_PARAM_STRING_EX(in_transformation_key_id, in_transformation_key_id_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_pythia_secret, in_pythia_secret_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_pythia_scope_secret, in_pythia_scope_secret_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformation_key_id, in_transformation_key_id_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_pythia_secret, in_pythia_secret_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_pythia_scope_secret, in_pythia_scope_secret_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t transformation_key_id = vsc_data((const byte*)in_transformation_key_id, in_transformation_key_id_len);
-    vsc_data_t pythia_secret = vsc_data((const byte*)in_pythia_secret, in_pythia_secret_len);
-    vsc_data_t pythia_scope_secret = vsc_data((const byte*)in_pythia_scope_secret, in_pythia_scope_secret_len);
+    vsc_data_t transformation_key_id = vsc_data((const byte*)in_transformation_key_id, in_transformation_key_id_blen);
+    vsc_data_t pythia_secret = vsc_data((const byte*)in_pythia_secret, in_pythia_secret_blen);
+    vsc_data_t pythia_scope_secret = vsc_data((const byte*)in_pythia_scope_secret, in_pythia_scope_secret_blen);
 
     //
     // Allocate output buffer for output 'transformation_private_key'
@@ -718,21 +734,16 @@ PHP_FUNCTION(vscp_pythia_compute_transformation_key_pair_php) {
     // Correct string length to the actual
     //
     ZSTR_LEN(out_transformation_private_key) = vsc_buffer_len(transformation_private_key);
-    ZSTR_LEN(out_transformation_public_key) = vsc_buffer_len(transformation_public_key);
 
     //
     // Write returned result
     //
     if (status == vscp_status_SUCCESS) {
-        array_init(return_value);
-        add_next_index_str(return_value, out_transformation_private_key);
-        add_next_index_str(return_value, out_transformation_public_key);
+        RETVAL_STR(out_transformation_private_key);
         vsc_buffer_destroy(&transformation_private_key);
-        vsc_buffer_destroy(&transformation_public_key);
     }
     else {
         zend_string_free(out_transformation_private_key);
-        zend_string_free(out_transformation_public_key);
     }
 }
 
@@ -743,9 +754,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscp_pythia_transform_php,
     0 /*return_reference*/,
     3 /*required_num_args*/,
-    IS_ARRAY /*type*/,
+    IS_STRING /*type*/,
     0 /*allow_null*/)
-
 
     ZEND_ARG_TYPE_INFO(0, in_blinded_password, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_tweak, IS_STRING, 0)
@@ -758,27 +768,27 @@ PHP_FUNCTION(vscp_pythia_transform_php) {
     // Declare input argument
     //
     char *in_blinded_password = NULL;
-    size_t in_blinded_password_len = 0;
+    size_t in_blinded_password_blen = 0;
     char *in_tweak = NULL;
-    size_t in_tweak_len = 0;
+    size_t in_tweak_blen = 0;
     char *in_transformation_private_key = NULL;
-    size_t in_transformation_private_key_len = 0;
+    size_t in_transformation_private_key_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 3, 3)
-        Z_PARAM_STRING_EX(in_blinded_password, in_blinded_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_tweak, in_tweak_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_transformation_private_key, in_transformation_private_key_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_blinded_password, in_blinded_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_tweak, in_tweak_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformation_private_key, in_transformation_private_key_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t blinded_password = vsc_data((const byte*)in_blinded_password, in_blinded_password_len);
-    vsc_data_t tweak = vsc_data((const byte*)in_tweak, in_tweak_len);
-    vsc_data_t transformation_private_key = vsc_data((const byte*)in_transformation_private_key, in_transformation_private_key_len);
+    vsc_data_t blinded_password = vsc_data((const byte*)in_blinded_password, in_blinded_password_blen);
+    vsc_data_t tweak = vsc_data((const byte*)in_tweak, in_tweak_blen);
+    vsc_data_t transformation_private_key = vsc_data((const byte*)in_transformation_private_key, in_transformation_private_key_blen);
 
     //
     // Allocate output buffer for output 'transformed_password'
@@ -808,21 +818,16 @@ PHP_FUNCTION(vscp_pythia_transform_php) {
     // Correct string length to the actual
     //
     ZSTR_LEN(out_transformed_password) = vsc_buffer_len(transformed_password);
-    ZSTR_LEN(out_transformed_tweak) = vsc_buffer_len(transformed_tweak);
 
     //
     // Write returned result
     //
     if (status == vscp_status_SUCCESS) {
-        array_init(return_value);
-        add_next_index_str(return_value, out_transformed_password);
-        add_next_index_str(return_value, out_transformed_tweak);
+        RETVAL_STR(out_transformed_password);
         vsc_buffer_destroy(&transformed_password);
-        vsc_buffer_destroy(&transformed_tweak);
     }
     else {
         zend_string_free(out_transformed_password);
-        zend_string_free(out_transformed_tweak);
     }
 }
 
@@ -833,9 +838,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     arginfo_vscp_pythia_prove_php,
     0 /*return_reference*/,
     5 /*required_num_args*/,
-    IS_ARRAY /*type*/,
+    IS_STRING /*type*/,
     0 /*allow_null*/)
-
 
     ZEND_ARG_TYPE_INFO(0, in_transformed_password, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_blinded_password, IS_STRING, 0)
@@ -850,35 +854,35 @@ PHP_FUNCTION(vscp_pythia_prove_php) {
     // Declare input argument
     //
     char *in_transformed_password = NULL;
-    size_t in_transformed_password_len = 0;
+    size_t in_transformed_password_blen = 0;
     char *in_blinded_password = NULL;
-    size_t in_blinded_password_len = 0;
+    size_t in_blinded_password_blen = 0;
     char *in_transformed_tweak = NULL;
-    size_t in_transformed_tweak_len = 0;
+    size_t in_transformed_tweak_blen = 0;
     char *in_transformation_private_key = NULL;
-    size_t in_transformation_private_key_len = 0;
+    size_t in_transformation_private_key_blen = 0;
     char *in_transformation_public_key = NULL;
-    size_t in_transformation_public_key_len = 0;
+    size_t in_transformation_public_key_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 5, 5)
-        Z_PARAM_STRING_EX(in_transformed_password, in_transformed_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_blinded_password, in_blinded_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_transformed_tweak, in_transformed_tweak_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_transformation_private_key, in_transformation_private_key_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_transformation_public_key, in_transformation_public_key_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformed_password, in_transformed_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_blinded_password, in_blinded_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformed_tweak, in_transformed_tweak_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformation_private_key, in_transformation_private_key_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformation_public_key, in_transformation_public_key_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t transformed_password = vsc_data((const byte*)in_transformed_password, in_transformed_password_len);
-    vsc_data_t blinded_password = vsc_data((const byte*)in_blinded_password, in_blinded_password_len);
-    vsc_data_t transformed_tweak = vsc_data((const byte*)in_transformed_tweak, in_transformed_tweak_len);
-    vsc_data_t transformation_private_key = vsc_data((const byte*)in_transformation_private_key, in_transformation_private_key_len);
-    vsc_data_t transformation_public_key = vsc_data((const byte*)in_transformation_public_key, in_transformation_public_key_len);
+    vsc_data_t transformed_password = vsc_data((const byte*)in_transformed_password, in_transformed_password_blen);
+    vsc_data_t blinded_password = vsc_data((const byte*)in_blinded_password, in_blinded_password_blen);
+    vsc_data_t transformed_tweak = vsc_data((const byte*)in_transformed_tweak, in_transformed_tweak_blen);
+    vsc_data_t transformation_private_key = vsc_data((const byte*)in_transformation_private_key, in_transformation_private_key_blen);
+    vsc_data_t transformation_public_key = vsc_data((const byte*)in_transformation_public_key, in_transformation_public_key_blen);
 
     //
     // Allocate output buffer for output 'proof_value_c'
@@ -908,21 +912,16 @@ PHP_FUNCTION(vscp_pythia_prove_php) {
     // Correct string length to the actual
     //
     ZSTR_LEN(out_proof_value_c) = vsc_buffer_len(proof_value_c);
-    ZSTR_LEN(out_proof_value_u) = vsc_buffer_len(proof_value_u);
 
     //
     // Write returned result
     //
     if (status == vscp_status_SUCCESS) {
-        array_init(return_value);
-        add_next_index_str(return_value, out_proof_value_c);
-        add_next_index_str(return_value, out_proof_value_u);
+        RETVAL_STR(out_proof_value_c);
         vsc_buffer_destroy(&proof_value_c);
-        vsc_buffer_destroy(&proof_value_u);
     }
     else {
         zend_string_free(out_proof_value_c);
-        zend_string_free(out_proof_value_u);
     }
 }
 
@@ -935,7 +934,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     6 /*required_num_args*/,
     _IS_BOOL /*type*/,
     0 /*allow_null*/)
-
 
     ZEND_ARG_TYPE_INFO(0, in_transformed_password, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_blinded_password, IS_STRING, 0)
@@ -951,46 +949,46 @@ PHP_FUNCTION(vscp_pythia_verify_php) {
     // Declare input argument
     //
     char *in_transformed_password = NULL;
-    size_t in_transformed_password_len = 0;
+    size_t in_transformed_password_blen = 0;
     char *in_blinded_password = NULL;
-    size_t in_blinded_password_len = 0;
+    size_t in_blinded_password_blen = 0;
     char *in_tweak = NULL;
-    size_t in_tweak_len = 0;
+    size_t in_tweak_blen = 0;
     char *in_transformation_public_key = NULL;
-    size_t in_transformation_public_key_len = 0;
+    size_t in_transformation_public_key_blen = 0;
     char *in_proof_value_c = NULL;
-    size_t in_proof_value_c_len = 0;
+    size_t in_proof_value_c_blen = 0;
     char *in_proof_value_u = NULL;
-    size_t in_proof_value_u_len = 0;
+    size_t in_proof_value_u_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 6, 6)
-        Z_PARAM_STRING_EX(in_transformed_password, in_transformed_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_blinded_password, in_blinded_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_tweak, in_tweak_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_transformation_public_key, in_transformation_public_key_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_proof_value_c, in_proof_value_c_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_proof_value_u, in_proof_value_u_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformed_password, in_transformed_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_blinded_password, in_blinded_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_tweak, in_tweak_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_transformation_public_key, in_transformation_public_key_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_proof_value_c, in_proof_value_c_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_proof_value_u, in_proof_value_u_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t transformed_password = vsc_data((const byte*)in_transformed_password, in_transformed_password_len);
-    vsc_data_t blinded_password = vsc_data((const byte*)in_blinded_password, in_blinded_password_len);
-    vsc_data_t tweak = vsc_data((const byte*)in_tweak, in_tweak_len);
-    vsc_data_t transformation_public_key = vsc_data((const byte*)in_transformation_public_key, in_transformation_public_key_len);
-    vsc_data_t proof_value_c = vsc_data((const byte*)in_proof_value_c, in_proof_value_c_len);
-    vsc_data_t proof_value_u = vsc_data((const byte*)in_proof_value_u, in_proof_value_u_len);
+    vsc_data_t transformed_password = vsc_data((const byte*)in_transformed_password, in_transformed_password_blen);
+    vsc_data_t blinded_password = vsc_data((const byte*)in_blinded_password, in_blinded_password_blen);
+    vsc_data_t tweak = vsc_data((const byte*)in_tweak, in_tweak_blen);
+    vsc_data_t transformation_public_key = vsc_data((const byte*)in_transformation_public_key, in_transformation_public_key_blen);
+    vsc_data_t proof_value_c = vsc_data((const byte*)in_proof_value_c, in_proof_value_c_blen);
+    vsc_data_t proof_value_u = vsc_data((const byte*)in_proof_value_u, in_proof_value_u_blen);
     vscp_error_t error;
     vscp_error_reset(&error);
 
     //
     // Call main function
     //
-    zend_bool res =vscp_pythia_verify(transformed_password, blinded_password, tweak, transformation_public_key, proof_value_c, proof_value_u, &error);
+    bool res =vscp_pythia_verify(transformed_password, blinded_password, tweak, transformation_public_key, proof_value_c, proof_value_u, &error);
 
     //
     // Handle error
@@ -1001,9 +999,7 @@ PHP_FUNCTION(vscp_pythia_verify_php) {
     //
     // Write returned result
     //
-    if (status == vscp_status_SUCCESS) {
-        RETVAL_BOOL(res);
-    }
+    RETVAL_BOOL(res);
 }
 
 //
@@ -1016,7 +1012,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_STRING /*type*/,
     0 /*allow_null*/)
 
-
     ZEND_ARG_TYPE_INFO(0, in_previous_transformation_private_key, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_new_transformation_private_key, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -1027,23 +1022,23 @@ PHP_FUNCTION(vscp_pythia_get_password_update_token_php) {
     // Declare input argument
     //
     char *in_previous_transformation_private_key = NULL;
-    size_t in_previous_transformation_private_key_len = 0;
+    size_t in_previous_transformation_private_key_blen = 0;
     char *in_new_transformation_private_key = NULL;
-    size_t in_new_transformation_private_key_len = 0;
+    size_t in_new_transformation_private_key_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
-        Z_PARAM_STRING_EX(in_previous_transformation_private_key, in_previous_transformation_private_key_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_new_transformation_private_key, in_new_transformation_private_key_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_previous_transformation_private_key, in_previous_transformation_private_key_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_new_transformation_private_key, in_new_transformation_private_key_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t previous_transformation_private_key = vsc_data((const byte*)in_previous_transformation_private_key, in_previous_transformation_private_key_len);
-    vsc_data_t new_transformation_private_key = vsc_data((const byte*)in_new_transformation_private_key, in_new_transformation_private_key_len);
+    vsc_data_t previous_transformation_private_key = vsc_data((const byte*)in_previous_transformation_private_key, in_previous_transformation_private_key_blen);
+    vsc_data_t new_transformation_private_key = vsc_data((const byte*)in_new_transformation_private_key, in_new_transformation_private_key_blen);
 
     //
     // Allocate output buffer for output 'password_update_token'
@@ -1089,7 +1084,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
     IS_STRING /*type*/,
     0 /*allow_null*/)
 
-
     ZEND_ARG_TYPE_INFO(0, in_deblinded_password, IS_STRING, 0)
     ZEND_ARG_TYPE_INFO(0, in_password_update_token, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -1100,23 +1094,23 @@ PHP_FUNCTION(vscp_pythia_update_deblinded_with_token_php) {
     // Declare input argument
     //
     char *in_deblinded_password = NULL;
-    size_t in_deblinded_password_len = 0;
+    size_t in_deblinded_password_blen = 0;
     char *in_password_update_token = NULL;
-    size_t in_password_update_token_len = 0;
+    size_t in_password_update_token_blen = 0;
 
     //
     // Parse arguments
     //
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
-        Z_PARAM_STRING_EX(in_deblinded_password, in_deblinded_password_len, 1 /*check_null*/, 0 /*separate*/)
-        Z_PARAM_STRING_EX(in_password_update_token, in_password_update_token_len, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_deblinded_password, in_deblinded_password_blen, 1 /*check_null*/, 0 /*separate*/)
+        Z_PARAM_STRING_EX(in_password_update_token, in_password_update_token_blen, 1 /*check_null*/, 0 /*separate*/)
     ZEND_PARSE_PARAMETERS_END();
 
     //
     // Proxy call
     //
-    vsc_data_t deblinded_password = vsc_data((const byte*)in_deblinded_password, in_deblinded_password_len);
-    vsc_data_t password_update_token = vsc_data((const byte*)in_password_update_token, in_password_update_token_len);
+    vsc_data_t deblinded_password = vsc_data((const byte*)in_deblinded_password, in_deblinded_password_blen);
+    vsc_data_t password_update_token = vsc_data((const byte*)in_password_update_token, in_password_update_token_blen);
 
     //
     // Allocate output buffer for output 'updated_deblinded_password'
@@ -1152,9 +1146,6 @@ PHP_FUNCTION(vscp_pythia_update_deblinded_with_token_php) {
     }
 }
 
-//
-// Define all function entries
-//
 static zend_function_entry vscp_pythia_php_functions[] = {
     PHP_FE(vscp_pythia_configure_php, arginfo_vscp_pythia_configure_php)
     PHP_FE(vscp_pythia_cleanup_php, arginfo_vscp_pythia_cleanup_php)
@@ -1203,12 +1194,10 @@ ZEND_GET_MODULE(vscp_pythia_php)
 //
 // Extension init functions definition
 //
-
 PHP_MINIT_FUNCTION(vscp_pythia_php) {
     zend_class_entry vscp_ce;
     INIT_CLASS_ENTRY(vscp_ce, "PythiaException", NULL);
-    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_exception_get_default());
-
+    vscp_exception_ce = zend_register_internal_class_ex(&vscp_ce, zend_ce_exception);
     return SUCCESS;
 }
 PHP_MSHUTDOWN_FUNCTION(vscp_pythia_php) {

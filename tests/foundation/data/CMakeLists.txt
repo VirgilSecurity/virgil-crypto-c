@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -74,7 +74,6 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_group_session.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_message_info.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_falcon.h"
-            "${CMAKE_CURRENT_LIST_DIR}/include/test_data_round5.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_compound_key.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_hybrid_key.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/test_data_post_quantum.h"
@@ -116,7 +115,6 @@ target_sources(test_data_foundation
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_group_session.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_message_info.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_falcon.c"
-            "${CMAKE_CURRENT_LIST_DIR}/src/test_data_round5.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_compound_key.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_hybrid_key.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/test_data_post_quantum.c"

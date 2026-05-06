@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,8 +35,8 @@
 
 from ctypes import *
 from ._c_bridge import VscfAsn1rd
-from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge import VscfStatus
+from virgil_crypto_lib.common._c_bridge import Data
 from .asn1_reader import Asn1Reader
 
 
@@ -53,6 +53,19 @@ class Asn1rd(Asn1Reader):
     def __delete__(self, instance):
         """Destroy underlying C context."""
         self._lib_vscf_asn1rd.vscf_asn1rd_delete(self.ctx)
+
+    def mbedtls_has_error(self, code):
+        """If given mbedtls code is equal to zero, then setup correspond error
+to the context and return true, otherwise return false."""
+        result = self._lib_vscf_asn1rd.vscf_asn1rd_mbedtls_has_error(self.ctx, code)
+        return result
+
+    def read_tag_data(self, tag):
+        """Read raw data of specific tag the from the buffer."""
+        result = self._lib_vscf_asn1rd.vscf_asn1rd_read_tag_data(self.ctx, tag)
+        instance = Data.take_c_ctx(result)
+        cleaned_bytes = bytearray(instance)
+        return cleaned_bytes
 
     def reset(self, data):
         """Reset all internal states and prepare to new ASN.1 reading operations."""
@@ -91,14 +104,14 @@ class Asn1rd(Asn1Reader):
 
     def read_tag(self, tag):
         """Read ASN.1 type: TAG.
-        Return element length."""
+Return element length."""
         result = self._lib_vscf_asn1rd.vscf_asn1rd_read_tag(self.ctx, tag)
         return result
 
     def read_context_tag(self, tag):
         """Read ASN.1 type: context-specific TAG.
-        Return element length.
-        Return 0 if current position do not points to the requested tag."""
+Return element length.
+Return 0 if current position do not points to the requested tag."""
         result = self._lib_vscf_asn1rd.vscf_asn1rd_read_context_tag(self.ctx, tag)
         return result
 
@@ -163,7 +176,7 @@ class Asn1rd(Asn1Reader):
 
     def read_null_optional(self):
         """Read ASN.1 type: NULL, only if it exists.
-        Note, this method is safe to call even no more data is left for reading."""
+Note, this method is safe to call even no more data is left for reading."""
         self._lib_vscf_asn1rd.vscf_asn1rd_read_null_optional(self.ctx)
 
     def read_octet_str(self):
@@ -203,13 +216,13 @@ class Asn1rd(Asn1Reader):
 
     def read_sequence(self):
         """Read ASN.1 type: SEQUENCE.
-        Return element length."""
+Return element length."""
         result = self._lib_vscf_asn1rd.vscf_asn1rd_read_sequence(self.ctx)
         return result
 
     def read_set(self):
         """Read ASN.1 type: SET.
-        Return element length."""
+Return element length."""
         result = self._lib_vscf_asn1rd.vscf_asn1rd_read_set(self.ctx)
         return result
 

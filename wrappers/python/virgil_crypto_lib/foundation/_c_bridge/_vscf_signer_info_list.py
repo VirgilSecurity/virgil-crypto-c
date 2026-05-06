@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,6 +45,7 @@ class vscf_signer_info_list_t(Structure):
 class VscfSignerInfoList(object):
     """Handles a list of "signer info" class objects."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -87,7 +88,7 @@ class VscfSignerInfoList(object):
         """Return next list node if exists, or NULL otherwise."""
         vscf_signer_info_list_next = self._lib.vscf_signer_info_list_next
         vscf_signer_info_list_next.argtypes = [POINTER(vscf_signer_info_list_t)]
-        vscf_signer_info_list_next.restype = POINTER(vscf_signer_info_list_t)
+        vscf_signer_info_list_next.restype = POINTER(vscf_self_t)
         return vscf_signer_info_list_next(ctx)
 
     def vscf_signer_info_list_has_prev(self, ctx):
@@ -101,7 +102,7 @@ class VscfSignerInfoList(object):
         """Return previous list node if exists, or NULL otherwise."""
         vscf_signer_info_list_prev = self._lib.vscf_signer_info_list_prev
         vscf_signer_info_list_prev.argtypes = [POINTER(vscf_signer_info_list_t)]
-        vscf_signer_info_list_prev.restype = POINTER(vscf_signer_info_list_t)
+        vscf_signer_info_list_prev.restype = POINTER(vscf_self_t)
         return vscf_signer_info_list_prev(ctx)
 
     def vscf_signer_info_list_clear(self, ctx):

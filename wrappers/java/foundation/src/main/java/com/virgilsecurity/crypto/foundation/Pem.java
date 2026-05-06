@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,46 +36,26 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* Simple PEM wrapper.
-*/
 public class Pem {
 
-    /*
-    * Return length in bytes required to hold wrapped PEM format.
-    */
     public static int wrappedLen(String title, int dataLen) {
         return FoundationJNI.INSTANCE.pem_wrappedLen(title, dataLen);
     }
 
-    /*
-    * Takes binary data and wraps it to the simple PEM format - no
-    * additional information just header-base64-footer.
-    * Note, written buffer is NOT null-terminated.
-    */
     public static byte[] wrap(String title, byte[] data) {
         return FoundationJNI.INSTANCE.pem_wrap(title, data);
     }
 
-    /*
-    * Return length in bytes required to hold unwrapped binary.
-    */
     public static int unwrappedLen(int pemLen) {
         return FoundationJNI.INSTANCE.pem_unwrappedLen(pemLen);
     }
 
-    /*
-    * Takes PEM data and extract binary data from it.
-    */
     public static byte[] unwrap(byte[] pem) throws FoundationException {
         return FoundationJNI.INSTANCE.pem_unwrap(pem);
     }
 
-    /*
-    * Returns PEM title if PEM data is valid, otherwise - empty data.
-    */
     public static byte[] title(byte[] pem) {
         return FoundationJNI.INSTANCE.pem_title(pem);
     }
-}
 
+}

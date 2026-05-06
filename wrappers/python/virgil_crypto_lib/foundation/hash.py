@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -43,8 +43,9 @@ class Hash(object):
 
     # Length of the digest (hashing output) in bytes.
     DIGEST_LEN = 0
+
     # Block length of the digest function in bytes.
-    BLOCK_LEN = 1
+    BLOCK_LEN = 0
 
     @abstractmethod
     def hash(self, data):

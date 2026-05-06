@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,7 +44,7 @@ class AuthDecrypt(object):
     @abstractmethod
     def auth_decrypt(self, data, auth_data, tag):
         """Decrypt given data.
-        If 'tag' is not given, then it will be taken from the 'enc'."""
+If 'tag' is not given, then it will be taken from the 'enc'."""
         raise NotImplementedError()
 
     @abstractmethod

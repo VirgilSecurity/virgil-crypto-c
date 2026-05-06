@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -94,24 +94,21 @@ vscf_alg_info_der_serializer_is_alg_require_null_params(vscf_alg_id_t alg_id);
 //  AlgorithmIdentifier with no parameters.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_simple_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_simple_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "simple alg info" to the ASN.1 structure
 //  AlgorithmIdentifier with no parameters.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_simple_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Return buffer size enough to hold ASN.1 structure
 //  "KeyDerivationFunction" from the ISO/IEC 18033-2.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "hash based alg info" to the ASN.1 structure
@@ -125,8 +122,7 @@ vscf_alg_info_der_serializer_serialize_kdf_alg_info(vscf_alg_info_der_serializer
 //  "KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "hash based alg info" to the ASN.1 structure
@@ -140,8 +136,7 @@ vscf_alg_info_der_serializer_serialize_hkdf_alg_info(vscf_alg_info_der_serialize
 //  "DigestAlgorithm" from the RFC 4231.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "hash based alg info" to the ASN.1 structure
@@ -157,56 +152,49 @@ vscf_alg_info_der_serializer_serialize_hmac_alg_info(vscf_alg_info_der_serialize
 //      - defined in the RFC 5084.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "cipher alg info" to the ASN.1 structure
 //  "AlgorithmIdentifier" with AES parameters defined in the RFC 5084.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_cipher_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Return buffer size enough to hold ASN.1 structure
 //  "PBKDF2Algorithm" from the RFC 8018.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "salted kdf alg info" to the ASN.1 structure
 //  "PBKDF2Algorithm" from the RFC 8018.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Return buffer size enough to hold ASN.1 structure
 //  "PBESF2Algorithm" from the RFC 8018.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "salted kdf alg info" to the ASN.1 structure
 //  "PBES2Algorithm" from the RFC 8018.
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_pbes2_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Return buffer size enough to hold ASN.1 structure
 //  "AlgorithmIdentifier" with "ECParameters" from the RFC 5480.
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "ecc alg info" to the ASN.1 structure
@@ -231,8 +219,7 @@ vscf_alg_info_der_serializer_serialize_ecc_alg_info(vscf_alg_info_der_serializer
 //  }
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "compound key alg info" to the ASN.1 structure
@@ -250,8 +237,7 @@ vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(const vscf_alg
 //  }
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_compound_key_alg_info(vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_compound_key_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Return buffer size enough to hold ASN.1 structure
@@ -269,8 +255,7 @@ vscf_alg_info_der_serializer_serialize_compound_key_alg_info(vscf_alg_info_der_s
 //  }
 //
 static size_t
-vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len(const vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len(const vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 //
 //  Serialize class "hybrid key alg info" to the ASN.1 structure
@@ -288,8 +273,7 @@ vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len(const vscf_alg_i
 //  }
 //
 static size_t
-vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info(vscf_alg_info_der_serializer_t *self,
-        const vscf_impl_t *alg_info);
+vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info(vscf_alg_info_der_serializer_t *self, const vscf_impl_t *alg_info);
 
 
 // --------------------------------------------------------------------------
@@ -297,7 +281,6 @@ vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info(vscf_alg_info_der_ser
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Setup predefined values to the uninitialized class dependencies.
@@ -1144,7 +1127,8 @@ vscf_alg_info_der_serializer_serialize_inplace(vscf_alg_info_der_serializer_t *s
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
     case vscf_alg_id_FALCON:
-    case vscf_alg_id_ROUND5_ND_1CCA_5D:
+    case vscf_alg_id_ML_KEM_768:
+    case vscf_alg_id_ML_DSA_65:
     case vscf_alg_id_RANDOM_PADDING:
         return vscf_alg_info_der_serializer_serialize_simple_alg_info(self, alg_info);
 
@@ -1209,7 +1193,8 @@ vscf_alg_info_der_serializer_serialized_len(const vscf_alg_info_der_serializer_t
     case vscf_alg_id_ED25519:
     case vscf_alg_id_CURVE25519:
     case vscf_alg_id_FALCON:
-    case vscf_alg_id_ROUND5_ND_1CCA_5D:
+    case vscf_alg_id_ML_KEM_768:
+    case vscf_alg_id_ML_DSA_65:
     case vscf_alg_id_RANDOM_PADDING:
         return vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self, alg_info);
 

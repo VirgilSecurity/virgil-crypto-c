@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -34,75 +34,41 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initFoundationInterfaceTag = (Module, modules) => {
     const FoundationInterfaceTag = Object.freeze({
-
         ALG: 1,
-
         ALG_INFO: 2,
-
         ALG_INFO_DESERIALIZER: 3,
-
         ALG_INFO_SERIALIZER: 4,
-
         ASN1_READER: 5,
-
         ASN1_WRITER: 6,
-
         AUTH_DECRYPT: 7,
-
         AUTH_ENCRYPT: 8,
-
         CIPHER: 9,
-
         CIPHER_AUTH: 10,
-
         CIPHER_AUTH_INFO: 11,
-
         CIPHER_INFO: 12,
-
         COMPUTE_SHARED_KEY: 13,
-
         DECRYPT: 14,
-
         ENCRYPT: 15,
-
         ENTROPY_SOURCE: 16,
-
         HASH: 17,
-
         KDF: 18,
-
         KEM: 19,
-
         KEY: 20,
-
         KEY_ALG: 21,
-
         KEY_CIPHER: 22,
-
         KEY_DESERIALIZER: 23,
-
         KEY_SERIALIZER: 24,
-
         KEY_SIGNER: 25,
-
         MAC: 26,
-
         MESSAGE_INFO_FOOTER_SERIALIZER: 27,
-
         MESSAGE_INFO_SERIALIZER: 28,
-
         PADDING: 29,
-
         PRIVATE_KEY: 30,
-
         PUBLIC_KEY: 31,
-
         RANDOM: 32,
-
-        SALTED_KDF: 33
+        SALTED_KDF: 33,
     });
 
     return FoundationInterfaceTag;

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -62,7 +62,8 @@
 #include "vscf_compound_key_alg.h"
 #include "vscf_hybrid_key_alg.h"
 #include "vscf_falcon.h"
-#include "vscf_round5.h"
+#include "vscf_ml_kem.h"
+#include "vscf_ml_dsa.h"
 
 // clang-format on
 //  @end
@@ -80,7 +81,6 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Create a key algorithm based on an identifier.
@@ -195,15 +195,26 @@ vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_t alg_id, const vscf_impl_t 
     }
 #endif // VSCF_FALCON
 
-#if VSCF_ROUND5
-    case vscf_alg_id_ROUND5_ND_1CCA_5D: {
-        vscf_round5_t *round5 = vscf_round5_new();
+#if VSCF_ML_KEM
+    case vscf_alg_id_ML_KEM_768: {
+        vscf_ml_kem_t *ml_kem = vscf_ml_kem_new();
         if (random) {
-            vscf_round5_use_random(round5, (vscf_impl_t *)random);
+            vscf_ml_kem_use_random(ml_kem, (vscf_impl_t *)random);
         }
-        return vscf_round5_impl(round5);
+        return vscf_ml_kem_impl(ml_kem);
     }
-#endif // VSCF_ROUND5
+#endif // VSCF_ML_KEM
+
+#if VSCF_ML_DSA
+    case vscf_alg_id_ML_DSA_65: {
+        vscf_ml_dsa_t *ml_dsa = vscf_ml_dsa_new();
+        if (random) {
+            vscf_ml_dsa_use_random(ml_dsa, (vscf_impl_t *)random);
+        }
+        return vscf_ml_dsa_impl(ml_dsa);
+    }
+#endif // VSCF_ML_DSA
+
 #endif // VSCF_POST_QUANTUM
 
     default:
@@ -250,8 +261,11 @@ vscf_key_alg_factory_create_from_key(const vscf_impl_t *key, const vscf_impl_t *
     case vscf_impl_tag_FALCON:
         return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_FALCON, random, error);
 
-    case vscf_impl_tag_ROUND5:
-        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D, random, error);
+    case vscf_impl_tag_ML_KEM:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ML_KEM_768, random, error);
+
+    case vscf_impl_tag_ML_DSA:
+        return vscf_key_alg_factory_create_from_alg_id(vscf_alg_id_ML_DSA_65, random, error);
 
     default:
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);

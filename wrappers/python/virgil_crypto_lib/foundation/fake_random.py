@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from ctypes import *
 from ._c_bridge import VscfFakeRandom
-from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
+from virgil_crypto_lib.common._c_bridge import Buffer
 from .random import Random
 from .entropy_source import EntropySource
 
@@ -56,9 +56,19 @@ class FakeRandom(Random, EntropySource):
         """Destroy underlying C context."""
         self._lib_vscf_fake_random.vscf_fake_random_delete(self.ctx)
 
+    def setup_source_byte(self, byte_source):
+        """Configure random number generator to generate sequence filled with given byte."""
+        self._lib_vscf_fake_random.vscf_fake_random_setup_source_byte(self.ctx, byte_source)
+
+    def setup_source_data(self, data_source):
+        """Configure random number generator to generate random sequence from given data.
+Note, that given data is used as circular source."""
+        d_data_source = Data(data_source)
+        self._lib_vscf_fake_random.vscf_fake_random_setup_source_data(self.ctx, d_data_source.data)
+
     def random(self, data_len):
         """Generate random bytes.
-        All RNG implementations must be thread-safe."""
+All RNG implementations must be thread-safe."""
         data = Buffer(data_len)
         status = self._lib_vscf_fake_random.vscf_fake_random_random(self.ctx, data_len, data.c_buffer)
         VscfStatus.handle_status(status)
@@ -80,16 +90,6 @@ class FakeRandom(Random, EntropySource):
         status = self._lib_vscf_fake_random.vscf_fake_random_gather(self.ctx, len, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
-
-    def setup_source_byte(self, byte_source):
-        """Configure random number generator to generate sequence filled with given byte."""
-        self._lib_vscf_fake_random.vscf_fake_random_setup_source_byte(self.ctx, byte_source)
-
-    def setup_source_data(self, data_source):
-        """Configure random number generator to generate random sequence from given data.
-        Note, that given data is used as circular source."""
-        d_data_source = Data(data_source)
-        self._lib_vscf_fake_random.vscf_fake_random_setup_source_data(self.ctx, d_data_source.data)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Group ticket used to start group session, remove participants or proactive to rotate encryption key.
-*/
 class GroupSessionTicket
 {
 
@@ -68,17 +65,16 @@ class GroupSessionTicket
     }
 
     /**
-    * @param Random $rng
+    *
+    * @param Random $$rng
     * @return void
     */
-    public function useRng(Random $rng): void
+    public function useRng(Random $$rng): void
     {
-        vscf_group_session_ticket_use_rng_php($this->ctx, $rng->getCtx());
+        vscf_group_session_ticket_use_rng_php($this->ctx, $$rng);
     }
 
     /**
-    * Setups default dependencies:
-    * - RNG: CTR DRBG
     *
     * @return void
     * @throws \Exception
@@ -89,19 +85,17 @@ class GroupSessionTicket
     }
 
     /**
-    * Set this ticket to start new group session.
     *
-    * @param string $sessionId
+    * @param string $$sessionId
     * @return void
     * @throws \Exception
     */
-    public function setupTicketAsNew(string $sessionId): void
+    public function setupTicketAsNew(string $$sessionId): void
     {
-        vscf_group_session_ticket_setup_ticket_as_new_php($this->ctx, $sessionId);
+        vscf_group_session_ticket_setup_ticket_as_new_php($this->ctx, $$sessionId);
     }
 
     /**
-    * Returns message that should be sent to all participants using secure channel.
     *
     * @return GroupSessionMessage
     */

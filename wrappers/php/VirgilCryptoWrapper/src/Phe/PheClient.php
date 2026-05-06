@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Phe;
 
-/**
-* Class for client-side PHE crypto operations.
-* This class is thread-safe in case if VSCE_MULTI_THREADING defined.
-*/
 class PheClient
 {
 
@@ -69,25 +65,26 @@ class PheClient
     }
 
     /**
-    * @param \Virgil\CryptoWrapper\Foundation\Random $random
+    *
+    * @param \Virgil\CryptoWrapper\Foundation\Random $$random
     * @return void
     */
-    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $random): void
+    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $$random): void
     {
-        vsce_phe_client_use_random_php($this->ctx, $random->getCtx());
+        vsce_phe_client_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
+    *
+    * @param \Virgil\CryptoWrapper\Foundation\Random $$operationRandom
     * @return void
     */
-    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $$operationRandom): void
     {
-        vsce_phe_client_use_operation_random_php($this->ctx, $operationRandom->getCtx());
+        vsce_phe_client_use_operation_random_php($this->ctx, $$operationRandom);
     }
 
     /**
-    * Setups dependencies with default values.
     *
     * @return void
     * @throws \Exception
@@ -98,22 +95,18 @@ class PheClient
     }
 
     /**
-    * Sets client private and server public key
-    * Call this method before any other methods except `update enrollment record` and `generate client private key`
-    * This function should be called only once
     *
-    * @param string $clientPrivateKey
-    * @param string $serverPublicKey
+    * @param string $$clientPrivateKey
+    * @param string $$serverPublicKey
     * @return void
     * @throws \Exception
     */
-    public function setKeys(string $clientPrivateKey, string $serverPublicKey): void
+    public function setKeys(string $$clientPrivateKey, string $$serverPublicKey): void
     {
-        vsce_phe_client_set_keys_php($this->ctx, $clientPrivateKey, $serverPublicKey);
+        vsce_phe_client_set_keys_php($this->ctx, $$clientPrivateKey, $$serverPublicKey);
     }
 
     /**
-    * Generates client private key
     *
     * @return string
     * @throws \Exception
@@ -124,7 +117,6 @@ class PheClient
     }
 
     /**
-    * Buffer size needed to fit EnrollmentRecord
     *
     * @return int
     */
@@ -134,22 +126,18 @@ class PheClient
     }
 
     /**
-    * Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-    * a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-    * Also generates a random seed which then can be used to generate symmetric or private key to protect user's data
     *
-    * @param string $enrollmentResponse
-    * @param string $password
+    * @param string $$enrollmentResponse
+    * @param string $$password
     * @return array
     * @throws \Exception
     */
-    public function enrollAccount(string $enrollmentResponse, string $password): array // [enrollment_record, account_key]
+    public function enrollAccount(string $$enrollmentResponse, string $$password)
     {
-        return vsce_phe_client_enroll_account_php($this->ctx, $enrollmentResponse, $password);
+        return vsce_phe_client_enroll_account_php($this->ctx, $$enrollmentResponse, $$password);
     }
 
     /**
-    * Buffer size needed to fit VerifyPasswordRequest
     *
     * @return int
     */
@@ -159,58 +147,51 @@ class PheClient
     }
 
     /**
-    * Creates a request for further password verification at the PHE server side.
     *
-    * @param string $password
-    * @param string $enrollmentRecord
+    * @param string $$password
+    * @param string $$enrollmentRecord
     * @return string
     * @throws \Exception
     */
-    public function createVerifyPasswordRequest(string $password, string $enrollmentRecord): string
+    public function createVerifyPasswordRequest(string $$password, string $$enrollmentRecord): string
     {
-        return vsce_phe_client_create_verify_password_request_php($this->ctx, $password, $enrollmentRecord);
+        return vsce_phe_client_create_verify_password_request_php($this->ctx, $$password, $$enrollmentRecord);
     }
 
     /**
-    * Verifies PHE server's answer
-    * If login succeeded, extracts account key
-    * If login failed account key will be empty
     *
-    * @param string $password
-    * @param string $enrollmentRecord
-    * @param string $verifyPasswordResponse
+    * @param string $$password
+    * @param string $$enrollmentRecord
+    * @param string $$verifyPasswordResponse
     * @return string
     * @throws \Exception
     */
-    public function checkResponseAndDecrypt(string $password, string $enrollmentRecord, string $verifyPasswordResponse): string
+    public function checkResponseAndDecrypt(string $$password, string $$enrollmentRecord, string $$verifyPasswordResponse): string
     {
-        return vsce_phe_client_check_response_and_decrypt_php($this->ctx, $password, $enrollmentRecord, $verifyPasswordResponse);
+        return vsce_phe_client_check_response_and_decrypt_php($this->ctx, $$password, $$enrollmentRecord, $$verifyPasswordResponse);
     }
 
     /**
-    * Updates client's private key and server's public key using server's update token
-    * Use output values to instantiate new client instance with new keys
     *
-    * @param string $updateToken
+    * @param string $$updateToken
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $updateToken): array // [new_client_private_key, new_server_public_key]
+    public function rotateKeys(string $$updateToken)
     {
-        return vsce_phe_client_rotate_keys_php($this->ctx, $updateToken);
+        return vsce_phe_client_rotate_keys_php($this->ctx, $$updateToken);
     }
 
     /**
-    * Updates EnrollmentRecord using server's update token
     *
-    * @param string $enrollmentRecord
-    * @param string $updateToken
+    * @param string $$enrollmentRecord
+    * @param string $$updateToken
     * @return string
     * @throws \Exception
     */
-    public function updateEnrollmentRecord(string $enrollmentRecord, string $updateToken): string
+    public function updateEnrollmentRecord(string $$enrollmentRecord, string $$updateToken): string
     {
-        return vsce_phe_client_update_enrollment_record_php($this->ctx, $enrollmentRecord, $updateToken);
+        return vsce_phe_client_update_enrollment_record_php($this->ctx, $$enrollmentRecord, $$updateToken);
     }
 
     /**

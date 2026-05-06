@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -37,11 +37,11 @@ from ctypes import *
 from ._c_bridge import VscfFalcon
 from ._c_bridge import VscfImplTag
 from ._c_bridge import VscfStatus
-from ._c_bridge._vscf_error import vscf_error_t
-from .raw_public_key import RawPublicKey
-from .raw_private_key import RawPrivateKey
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscf_error import vscf_error_t
+from .raw_private_key import RawPrivateKey
+from .raw_public_key import RawPublicKey
 from .alg import Alg
 from .key_alg import KeyAlg
 from .key_signer import KeySigner
@@ -49,8 +49,11 @@ from .key_signer import KeySigner
 
 class Falcon(Alg, KeyAlg, KeySigner):
     """Provide post-quantum signature based on the falcon implementation.
-    For algorithm details check https://falcon-sign.info."""
+For algorithm details check https://falcon-sign.info."""
 
+    SEED_LEN = 48
+    LOGN_512 = 9
+    LOGN_1024 = 10
     # Defines whether a public key can be imported or not.
     CAN_IMPORT_PUBLIC_KEY = True
     # Define whether a public key can be exported or not.
@@ -74,6 +77,20 @@ class Falcon(Alg, KeyAlg, KeySigner):
     def set_random(self, random):
         self._lib_vscf_falcon.vscf_falcon_use_random(self.ctx, random.c_impl)
 
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        status = self._lib_vscf_falcon.vscf_falcon_setup_defaults(self.ctx)
+        VscfStatus.handle_status(status)
+
+    def generate_key(self):
+        """Generate new private key.
+Note, this operation might be slow."""
+        error = vscf_error_t()
+        result = self._lib_vscf_falcon.vscf_falcon_generate_key(self.ctx, error)
+        VscfStatus.handle_status(error.status)
+        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        return instance
+
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_falcon.vscf_falcon_alg_id(self.ctx)
@@ -92,7 +109,7 @@ class Falcon(Alg, KeyAlg, KeySigner):
 
     def generate_ephemeral_key(self, key):
         """Generate ephemeral private key of the same type.
-        Note, this operation might be slow."""
+Note, this operation might be slow."""
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_generate_ephemeral_key(self.ctx, key.c_impl, error)
         VscfStatus.handle_status(error.status)
@@ -102,12 +119,12 @@ class Falcon(Alg, KeyAlg, KeySigner):
     def import_public_key(self, raw_key):
         """Import public key from the raw binary format.
 
-        Return public key that is adopted and optimized to be used
-        with this particular algorithm.
+Return public key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be imported from the format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be imported from the format defined in
+RFC 3447 Appendix A.1.1."""
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_import_public_key(self.ctx, raw_key.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -117,24 +134,23 @@ class Falcon(Alg, KeyAlg, KeySigner):
     def export_public_key(self, public_key):
         """Export public key to the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA public key must be exported in format defined in
-        RFC 3447 Appendix A.1.1."""
+Binary format must be defined in the key specification.
+For instance, RSA public key must be exported in format defined in
+RFC 3447 Appendix A.1.1."""
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_export_public_key(self.ctx, public_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        instance = RawPublicKey.take_c_ctx(result)
-        return instance
+        return RawPublicKey.take_c_ctx(result)
 
     def import_private_key(self, raw_key):
         """Import private key from the raw binary format.
 
-        Return private key that is adopted and optimized to be used
-        with this particular algorithm.
+Return private key that is adopted and optimized to be used
+with this particular algorithm.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be imported from the format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be imported from the format defined in
+RFC 3447 Appendix A.1.2."""
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_import_private_key(self.ctx, raw_key.ctx, error)
         VscfStatus.handle_status(error.status)
@@ -144,14 +160,13 @@ class Falcon(Alg, KeyAlg, KeySigner):
     def export_private_key(self, private_key):
         """Export private key in the raw binary format.
 
-        Binary format must be defined in the key specification.
-        For instance, RSA private key must be exported in format defined in
-        RFC 3447 Appendix A.1.2."""
+Binary format must be defined in the key specification.
+For instance, RSA private key must be exported in format defined in
+RFC 3447 Appendix A.1.2."""
         error = vscf_error_t()
         result = self._lib_vscf_falcon.vscf_falcon_export_private_key(self.ctx, private_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        instance = RawPrivateKey.take_c_ctx(result)
-        return instance
+        return RawPrivateKey.take_c_ctx(result)
 
     def can_sign(self, private_key):
         """Check if algorithm can sign data digest with a given key."""
@@ -160,7 +175,7 @@ class Falcon(Alg, KeyAlg, KeySigner):
 
     def signature_len(self, private_key):
         """Return length in bytes required to hold signature.
-        Return zero if a given private key can not produce signatures."""
+Return zero if a given private key can not produce signatures."""
         result = self._lib_vscf_falcon.vscf_falcon_signature_len(self.ctx, private_key.c_impl)
         return result
 
@@ -183,20 +198,6 @@ class Falcon(Alg, KeyAlg, KeySigner):
         d_signature = Data(signature)
         result = self._lib_vscf_falcon.vscf_falcon_verify_hash(self.ctx, public_key.c_impl, hash_id, d_digest.data, d_signature.data)
         return result
-
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        status = self._lib_vscf_falcon.vscf_falcon_setup_defaults(self.ctx)
-        VscfStatus.handle_status(status)
-
-    def generate_key(self):
-        """Generate new private key.
-        Note, this operation might be slow."""
-        error = vscf_error_t()
-        result = self._lib_vscf_falcon.vscf_falcon_generate_key(self.ctx, error)
-        VscfStatus.handle_status(error.status)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
-        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

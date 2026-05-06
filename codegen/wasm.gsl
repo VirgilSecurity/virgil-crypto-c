@@ -1164,7 +1164,6 @@ function wasm_create_project_module(project, wrapper)
         .name = my.project.name
         .prefix = my.project.prefix
         .lib_name = "lib$(0.name:c)"
-        .asmjs_lib_name = "lib$(0.name:c).asmjs"
         .module_name = "$(0.name:Pascal)Module"
         .description = string_to_singleline(wasm_project)
         .source_dir = cat_path(my.wrapper.source_dir, 0.name)
@@ -1758,21 +1757,6 @@ function wasm_create_project_cmake_module(wasm_project)
                             )
                 endfunction()
 
-                function(wasm_add_common_asmjs_options target)
-                    target_sources(${target} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/fake.c")
-                    target_sources(${target} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/exported_functions.json")
-                    target_link_libraries(${target}
-                            "-s WASM=0"
-                            "-s SINGLE_FILE=1"
-                            "-s EXPORTED_FUNCTIONS=\\\\"@${CMAKE_CURRENT_LIST_DIR}/exported_functions.json\\\\""
-                            "-s MODULARIZE=1"
-                            "-s EXPORT_NAME=$(my.wasm_project.module_name:)"
-                            "$<$<CONFIG:Release>:--llvm-lto 1 -O0>"
-                            "$<$<CONFIG:Debug>:--emrun>"
-                            $(my.wasm_project.cmake_c_export_target:)
-                            )
-                endfunction()
-
                 # ---------------------------------------------------------------------------
                 #   Create WebAssembly library
                 # ---------------------------------------------------------------------------
@@ -1791,24 +1775,6 @@ function wasm_create_project_cmake_module(wasm_project)
                 add_executable($(my.wasm_project.cmake_wasm_target:).worker)
                 wasm_add_common_wasm_options($(my.wasm_project.cmake_wasm_target:).worker)
                 target_link_libraries($(my.wasm_project.cmake_wasm_target:).worker
-                        "-s ENVIRONMENT=worker"
-                        )
-
-                add_executable($(my.wasm_project.cmake_wasm_target:).asmjs)
-                wasm_add_common_asmjs_options($(my.wasm_project.cmake_wasm_target:).asmjs)
-                target_link_libraries($(my.wasm_project.cmake_wasm_target:).asmjs
-                        "-s ENVIRONMENT=node"
-                        )
-
-                add_executable($(my.wasm_project.cmake_wasm_target:).browser.asmjs)
-                wasm_add_common_asmjs_options($(my.wasm_project.cmake_wasm_target:).browser.asmjs)
-                target_link_libraries($(my.wasm_project.cmake_wasm_target:).browser.asmjs
-                        "-s ENVIRONMENT=web"
-                        )
-
-                add_executable($(my.wasm_project.cmake_wasm_target:).worker.asmjs)
-                wasm_add_common_asmjs_options($(my.wasm_project.cmake_wasm_target:).worker.asmjs)
-                target_link_libraries($(my.wasm_project.cmake_wasm_target:).worker.asmjs
                         "-s ENVIRONMENT=worker"
                         )
 
@@ -1979,8 +1945,8 @@ function wasm_create_toplevel_modules(wrapper)
             #   Configure
             # ---------------------------------------------------------------------------
             configure_file(
-                    "${CMAKE_CURRENT_LIST_DIR}/rollup.config.js"
-                    "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.js"
+                    "${CMAKE_CURRENT_LIST_DIR}/rollup.config.mjs"
+                    "${CMAKE_CURRENT_BINARY_DIR}/rollup.config.mjs"
                     COPYONLY
                     )
 

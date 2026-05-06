@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -34,11 +34,7 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
-
 const initRatchetError = (Module, modules) => {
-    /**
-     * Defines the library status codes.
-     */
     class RatchetError extends Error {
 
         constructor(message) {
@@ -47,9 +43,6 @@ const initRatchetError = (Module, modules) => {
             this.message = message;
         }
 
-        /**
-         * Throw exception of this class with a message that corresponds to the given status code.
-         */
         static handleStatusCode(statusCode) {
             if (statusCode == 0) {
                 return;
@@ -172,23 +165,20 @@ const initRatchetError = (Module, modules) => {
             }
 
             if (statusCode == -30) {
-                throw new RatchetError("Round5 error.");
+                throw new RatchetError("KEM encapsulate or decapsulate operation failed.");
             }
 
             if (statusCode == -31) {
-                throw new RatchetError("Falcon error.");
+                throw new RatchetError("Signing operation failed.");
             }
 
             if (statusCode == -32) {
                 throw new RatchetError("Decaps signature is invalid.");
             }
 
-            if (statusCode == -33) {
-                throw new RatchetError("Error importing round5 key.");
-            }
-
             throw new RatchetError("Unexpected status code:" + statusCode);
         }
+
     }
 
     return RatchetError;

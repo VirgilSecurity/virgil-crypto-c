@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,19 +46,30 @@
 #ifndef VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
 #define VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscr_library.h"
 
 #include <pb_decode.h>
 #include <pb_encode.h>
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -75,10 +85,7 @@ enum {
     vscr_ratchet_common_hidden_GROUP_MESSAGE_VERSION = 1,
     vscr_ratchet_common_hidden_SESSION_VERSION = 2,
     vscr_ratchet_common_hidden_GROUP_SESSION_VERSION = 1,
-    vscr_ratchet_common_hidden_FALCON_SIGNATURE_LEN = 809,
-    vscr_ratchet_common_hidden_ROUND5_ENCAPSULATED_KEY_LEN = 620,
-    vscr_ratchet_common_hidden_ROUND5_PUBLIC_KEY_LEN = 461,
-    vscr_ratchet_common_hidden_ROUND5_SHARED_KEY_LEN = 16,
+    vscr_ratchet_common_hidden_KEM_SHARED_KEY_LEN = 32,
     vscr_ratchet_common_hidden_SHARED_KEY_LEN = 32,
     vscr_ratchet_common_hidden_KEY_LEN = 32,
     vscr_ratchet_common_hidden_MAX_SKIPPED_MESSAGES = 200,
@@ -90,9 +97,8 @@ enum {
     vscr_ratchet_common_hidden_MAX_GROUP_INFO_MESSAGE_LEN = 82,
     vscr_ratchet_common_hidden_MAX_CIPHER_TEXT_LEN = 32768,
     vscr_ratchet_common_hidden_MAX_GROUP_SESSION_LEN = 4191503,
-    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 46622
+    vscr_ratchet_common_hidden_MAX_SESSION_LEN = 55000
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -100,11 +106,9 @@ enum {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_COMMON_HIDDEN_H_INCLUDED

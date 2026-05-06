@@ -11,7 +11,7 @@ import "runtime"
 * For algorithm details check https://falcon-sign.info.
 */
 type Falcon struct {
-    cCtx *C.vscf_falcon_t /*ct10*/
+    cCtx *C.vscf_falcon_t
 }
 
 func (obj *Falcon) SetRandom(random Random) {
@@ -26,7 +26,7 @@ func (obj *Falcon) SetRandom(random Random) {
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (obj *Falcon) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_falcon_setup_defaults(obj.cCtx)
+    proxyResult := C.vscf_falcon_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -46,7 +46,7 @@ func (obj *Falcon) GenerateKey() (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_falcon_generate_key(obj.cCtx, &error)
+    proxyResult := C.vscf_falcon_generate_key(obj.cCtx, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -55,7 +55,7 @@ func (obj *Falcon) GenerateKey() (PrivateKey, error) {
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -75,7 +75,7 @@ func NewFalcon() *Falcon {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFalconWithCtx(ctx *C.vscf_falcon_t /*ct10*/) *Falcon {
+func newFalconWithCtx(ctx *C.vscf_falcon_t) *Falcon {
     obj := &Falcon {
         cCtx: ctx,
     }
@@ -86,7 +86,7 @@ func newFalconWithCtx(ctx *C.vscf_falcon_t /*ct10*/) *Falcon {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFalconCopy(ctx *C.vscf_falcon_t /*ct10*/) *Falcon {
+func newFalconCopy(ctx *C.vscf_falcon_t) *Falcon {
     obj := &Falcon {
         cCtx: C.vscf_falcon_shallow_copy(ctx),
     }
@@ -116,29 +116,29 @@ func (obj *Falcon) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Falcon) AlgId() AlgId {
-    proxyResult := /*pr4*/C.vscf_falcon_alg_id(obj.cCtx)
+    proxyResult := C.vscf_falcon_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Falcon) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_falcon_produce_alg_info(obj.cCtx)
+    proxyResult := C.vscf_falcon_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
+    return FoundationImplementationWrapAlgInfo(proxyResult)
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Falcon) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := /*pr4*/C.vscf_falcon_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := C.vscf_falcon_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -188,7 +188,7 @@ func (obj *Falcon) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_falcon_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
+    proxyResult := C.vscf_falcon_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -199,7 +199,7 @@ func (obj *Falcon) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -216,7 +216,7 @@ func (obj *Falcon) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_falcon_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := C.vscf_falcon_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -227,7 +227,7 @@ func (obj *Falcon) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult)
 }
 
 /*
@@ -241,7 +241,7 @@ func (obj *Falcon) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_falcon_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := C.vscf_falcon_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -252,7 +252,7 @@ func (obj *Falcon) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, error) {
 
     runtime.KeepAlive(publicKey)
 
-    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+    return newRawPublicKeyWithCtx(proxyResult), nil
 }
 
 /*
@@ -269,7 +269,7 @@ func (obj *Falcon) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_falcon_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := C.vscf_falcon_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -280,7 +280,7 @@ func (obj *Falcon) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, error) {
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -294,7 +294,7 @@ func (obj *Falcon) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_falcon_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := C.vscf_falcon_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -305,20 +305,20 @@ func (obj *Falcon) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey, erro
 
     runtime.KeepAlive(privateKey)
 
-    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+    return newRawPrivateKeyWithCtx(proxyResult), nil
 }
 
 /*
 * Check if algorithm can sign data digest with a given key.
 */
 func (obj *Falcon) CanSign(privateKey PrivateKey) bool {
-    proxyResult := /*pr4*/C.vscf_falcon_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := C.vscf_falcon_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -326,27 +326,27 @@ func (obj *Falcon) CanSign(privateKey PrivateKey) bool {
 * Return zero if a given private key can not produce signatures.
 */
 func (obj *Falcon) SignatureLen(privateKey PrivateKey) uint {
-    proxyResult := /*pr4*/C.vscf_falcon_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := C.vscf_falcon_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Sign data digest with a given private key.
 */
 func (obj *Falcon) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey)))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
     defer signatureBuf.delete()
     digestData := helperWrapData (digest)
 
-    proxyResult := /*pr4*/C.vscf_falcon_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
+    proxyResult := C.vscf_falcon_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -357,20 +357,20 @@ func (obj *Falcon) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) 
 
     runtime.KeepAlive(privateKey)
 
-    return signatureBuf.getData() /* r7 */, nil
+    return signatureBuf.getData(), nil
 }
 
 /*
 * Check if algorithm can verify data digest with a given key.
 */
 func (obj *Falcon) CanVerify(publicKey PublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_falcon_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := C.vscf_falcon_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -380,11 +380,11 @@ func (obj *Falcon) VerifyHash(publicKey PublicKey, hashId AlgId, digest []byte, 
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
-    proxyResult := /*pr4*/C.vscf_falcon_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
+    proxyResult := C.vscf_falcon_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureData)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }

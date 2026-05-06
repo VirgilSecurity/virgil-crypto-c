@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -101,8 +101,7 @@ vscf_asn1wr_swap_elements_of_set(byte *to_start, size_t to_len, byte *from_start
 //  Return true if second element is lexicographical less then first.
 //
 static bool
-vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start,
-        size_t second_len);
+vscf_asn1wr_second_element_of_set_is_less(const byte *first_start, size_t first_len, const byte *second_start, size_t second_len);
 
 //
 //  Perform lexicographical sorting of the given elements of set.
@@ -116,7 +115,6 @@ vscf_asn1wr_sort_elements_of_set(vscf_asn1wr_t *self, size_t len);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Provides initialization of the implementation specific context.
@@ -445,7 +443,7 @@ vscf_asn1wr_reserve(vscf_asn1wr_t *self, size_t len) {
 
     VSCF_ASSERT_PTR(self);
 
-    if (self->start > self->curr - len) {
+    if (len > (size_t)(self->curr - self->start)) {
         self->status = vscf_status_ERROR_SMALL_BUFFER;
         return NULL;
     }

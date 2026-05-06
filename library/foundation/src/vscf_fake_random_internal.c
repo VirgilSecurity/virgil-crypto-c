@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -81,7 +81,7 @@ vscf_fake_random_find_api(vscf_api_tag_t api_tag);
 static const vscf_random_api_t random_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'random' MUST be equal to the 'vscf_api_tag_RANDOM'.
+    //  For interface 'random' MUST be equal to the  'vscf_api_tag_RANDOM'.
     //
     vscf_api_tag_RANDOM,
     //
@@ -105,7 +105,7 @@ static const vscf_random_api_t random_api = {
 static const vscf_entropy_source_api_t entropy_source_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'entropy_source' MUST be equal to the 'vscf_api_tag_ENTROPY_SOURCE'.
+    //  For interface 'entropy source' MUST be equal to the  'vscf_api_tag_ENTROPY_SOURCE'.
     //
     vscf_api_tag_ENTROPY_SOURCE,
     //
@@ -287,9 +287,9 @@ vscf_fake_random_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ENTROPY_SOURCE:
-            return (const vscf_api_t *) &entropy_source_api;
+        return (const vscf_api_t *)                 &entropy_source_api;
         case vscf_api_tag_RANDOM:
-            return (const vscf_api_t *) &random_api;
+        return (const vscf_api_t *)                 &random_api;
         default:
             return NULL;
     }

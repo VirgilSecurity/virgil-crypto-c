@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,34 +36,24 @@
 
 package com.virgilsecurity.crypto.foundation;
 
-/*
-* This is MbedTLS implementation of SHA512.
-*/
 public class Sha512 implements AutoCloseable, Alg, Hash {
 
     public long cCtx;
 
-    /* Create underlying C context. */
     public Sha512() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.sha512_new();
     }
 
-    /* Wrap underlying C context. */
     Sha512(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
-    /*
-    * Acquire C context.
-    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-    */
     public static Sha512 getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new Sha512(ctxHolder);
     }
 
-    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -72,77 +62,48 @@ public class Sha512 implements AutoCloseable, Alg, Hash {
         }
     }
 
-    /* Close resource. */
     public void close() {
         clearResources();
     }
 
-    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
-    /*
-    * Provide algorithm identificator.
-    */
-    public AlgId algId() {
-        return FoundationJNI.INSTANCE.sha512_algId(this.cCtx);
-    }
-
-    /*
-    * Produce object with algorithm information and configuration parameters.
-    */
-    public AlgInfo produceAlgInfo() {
-        return FoundationJNI.INSTANCE.sha512_produceAlgInfo(this.cCtx);
-    }
-
-    /*
-    * Restore algorithm configuration from the given object.
-    */
-    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
-        FoundationJNI.INSTANCE.sha512_restoreAlgInfo(this.cCtx, algInfo);
-    }
-
-    /*
-    * Length of the digest (hashing output) in bytes.
-    */
     public int getDigestLen() {
         return 64;
     }
 
-    /*
-    * Block length of the digest function in bytes.
-    */
     public int getBlockLen() {
         return 128;
     }
 
-    /*
-    * Calculate hash over given data.
-    */
+    public AlgId algId() {
+        return FoundationJNI.INSTANCE.sha512_algId(this.cCtx);
+    }
+
+    public AlgInfo produceAlgInfo() {
+        return FoundationJNI.INSTANCE.sha512_produceAlgInfo(this.cCtx);
+    }
+
+    public void restoreAlgInfo(AlgInfo algInfo) throws FoundationException {
+        FoundationJNI.INSTANCE.sha512_restoreAlgInfo(this.cCtx, algInfo);
+    }
+
     public byte[] hash(byte[] data) {
         return FoundationJNI.INSTANCE.sha512_hash(data);
     }
 
-    /*
-    * Start a new hashing.
-    */
     public void start() {
         FoundationJNI.INSTANCE.sha512_start(this.cCtx);
     }
 
-    /*
-    * Add given data to the hash.
-    */
     public void update(byte[] data) {
         FoundationJNI.INSTANCE.sha512_update(this.cCtx, data);
     }
 
-    /*
-    * Accompilsh hashing and return it's result (a message digest).
-    */
     public byte[] finish() {
         return FoundationJNI.INSTANCE.sha512_finish(this.cCtx);
     }
-}
 
+}

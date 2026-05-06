@@ -6,7 +6,9 @@
 
     <feature name="ERROR C"/>
     <feature name="PLATFORM C"/>
+    <feature name="SHA224 C"/>
     <feature name="SHA256 C"/>
+    <feature name="SHA384 C"/>
     <feature name="SHA512 C"/>
     <feature name="CIPHER C"/>
     <feature name="AES C"/>
@@ -19,7 +21,6 @@
     <feature name="ASN1 WRITE C"/>
     <feature name="GENPRIME"/>
     <feature name="TIMING C"/>
-    <feature name="HAVEGE C"/>
     <feature name="PLATFORM ENTROPY"/>
     <feature name="BASE64 C"/>
     <feature name="THREADING C"/>
@@ -54,7 +55,6 @@
         <require feature="ENTROPY C"/>
         <require>
             <alternative feature="TIMING C"/>
-            <alternative feature="HAVEGE C"/>
             <alternative feature="PLATFORM ENTROPY"/>
         </require>
     </feature>
@@ -83,7 +83,7 @@
     </feature>
 
     <error_message_getter success="0">
-        <require header="mbedtls/config.h"/>
+        <require header="mbedtls/build_info.h"/>
         <require header="mbedtls/error.h"/>
 
         #if defined(MBEDTLS_ERROR_C)

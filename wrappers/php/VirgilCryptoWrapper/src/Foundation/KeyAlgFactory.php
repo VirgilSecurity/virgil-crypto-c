@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,65 +37,59 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Create a bridge between "raw keys" and algorithms that can import them.
-*/
 class KeyAlgFactory
 {
 
     /**
-    * Create a key algorithm based on an identifier.
     *
-    * @param AlgId $algId
-    * @param Random $random
+    * @param AlgId $$algId
+    * @param Random $$random
     * @return KeyAlg
     * @throws \Exception
     */
-    public static function createFromAlgId(AlgId $algId, Random $random): KeyAlg
+    public static function createFromAlgId(AlgId $$algId, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_alg_id_php($algId->getValue(), $random->getCtx());
+        $ctx = vscf_key_alg_factory_create_from_alg_id_php($$algId, $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 
     /**
-    * Create a key algorithm correspond to a specific key.
     *
-    * @param Key $key
-    * @param Random $random
+    * @param Key $$key
+    * @param Random $$random
     * @return KeyAlg
     * @throws \Exception
     */
-    public static function createFromKey(Key $key, Random $random): KeyAlg
+    public static function createFromKey(Key $$key, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_key_php($key->getCtx(), $random->getCtx());
+        $ctx = vscf_key_alg_factory_create_from_key_php($$key->getCtx(), $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 
     /**
-    * Create a key algorithm that can import "raw public key".
     *
-    * @param RawPublicKey $publicKey
-    * @param Random $random
+    * @param RawPublicKey $$publicKey
+    * @param Random $$random
     * @return KeyAlg
     * @throws \Exception
     */
-    public static function createFromRawPublicKey(RawPublicKey $publicKey, Random $random): KeyAlg
+    public static function createFromRawPublicKey(RawPublicKey $$publicKey, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_raw_public_key_php($publicKey->getCtx(), $random->getCtx());
+        $ctx = vscf_key_alg_factory_create_from_raw_public_key_php($$publicKey, $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
 
     /**
-    * Create a key algorithm that can import "raw private key".
     *
-    * @param RawPrivateKey $privateKey
-    * @param Random $random
+    * @param RawPrivateKey $$privateKey
+    * @param Random $$random
     * @return KeyAlg
     * @throws \Exception
     */
-    public static function createFromRawPrivateKey(RawPrivateKey $privateKey, Random $random): KeyAlg
+    public static function createFromRawPrivateKey(RawPrivateKey $$privateKey, Random $$random): KeyAlg
     {
-        $ctx = vscf_key_alg_factory_create_from_raw_private_key_php($privateKey->getCtx(), $random->getCtx());
+        $ctx = vscf_key_alg_factory_create_from_raw_private_key_php($$privateKey, $$random->getCtx());
         return FoundationImplementation::wrapKeyAlg($ctx);
     }
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,40 +38,8 @@
 const precondition = require('./precondition');
 
 const initPaddingParams = (Module, modules) => {
-    /**
-     * Handles padding parameters and constraints.
-     */
     class PaddingParams {
 
-        static get DEFAULT_FRAME_MIN() {
-            return 32;
-        }
-
-        get DEFAULT_FRAME_MIN() {
-            return PaddingParams.DEFAULT_FRAME_MIN;
-        }
-
-        static get DEFAULT_FRAME() {
-            return 160;
-        }
-
-        get DEFAULT_FRAME() {
-            return PaddingParams.DEFAULT_FRAME;
-        }
-
-        static get DEFAULT_FRAME_MAX() {
-            return 256;
-        }
-
-        get DEFAULT_FRAME_MAX() {
-            return PaddingParams.DEFAULT_FRAME_MAX;
-        }
-
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'PaddingParams';
 
@@ -82,29 +50,16 @@ const initPaddingParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PaddingParams(Module._vscf_padding_params_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new PaddingParams(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_padding_params_delete(this.ctxPtr);
@@ -112,42 +67,46 @@ const initPaddingParams = (Module, modules) => {
             }
         }
 
-        /**
-         * Build padding params with given constraints.
-         * Next formula can clarify what frame is: padding_length = data_length MOD frame
-         */
-        static newWithConstraints(frame, frameMax) {
-            precondition.ensureNumber('frame', frame);
-            precondition.ensureNumber('frameMax', frameMax);
-
-            let proxyResult;
-            proxyResult = Module._vscf_padding_params_new_with_constraints(frame, frameMax);
-
-            const jsResult = PaddingParams.newAndTakeCContext(proxyResult);
-            return jsResult;
+        static get DEFAULT_FRAME_MIN() {
+            return 32;
         }
 
-        /**
-         * Return padding frame in bytes.
-         */
+        get DEFAULT_FRAME_MIN() {
+            return 32;
+        }
+
+        static get DEFAULT_FRAME() {
+            return 160;
+        }
+
+        get DEFAULT_FRAME() {
+            return 160;
+        }
+
+        static get DEFAULT_FRAME_MAX() {
+            return 256;
+        }
+
+        get DEFAULT_FRAME_MAX() {
+            return 256;
+        }
+
         frame() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_padding_params_frame(this.ctxPtr);
             return proxyResult;
         }
 
-        /**
-         * Return maximum padding frame in bytes.
-         */
         frameMax() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_padding_params_frame_max(this.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return PaddingParams;

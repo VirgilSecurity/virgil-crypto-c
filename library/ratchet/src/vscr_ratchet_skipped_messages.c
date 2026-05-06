@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -49,6 +49,7 @@
 #include "vscr_assert.h"
 #include "vscr_ratchet_skipped_messages_defs.h"
 #include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
 // clang-format on
 //  @end
@@ -75,6 +76,9 @@ vscr_ratchet_skipped_messages_init_ctx(vscr_ratchet_skipped_messages_t *self);
 //
 static void
 vscr_ratchet_skipped_messages_cleanup_ctx(vscr_ratchet_skipped_messages_t *self);
+
+static uint32_t
+vscr_ratchet_skipped_messages_find_public_key(const vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id);
 
 //
 //  Return size of 'vscr_ratchet_skipped_messages_t'.
@@ -215,7 +219,6 @@ vscr_ratchet_skipped_messages_shallow_copy(vscr_ratchet_skipped_messages_t *self
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_skipped_messages_init() is called.
@@ -267,7 +270,7 @@ vscr_ratchet_skipped_messages_find_key(
     return NULL;
 }
 
-VSCR_PUBLIC uint32_t
+static uint32_t
 vscr_ratchet_skipped_messages_find_public_key(
         const vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id) {
 
@@ -283,7 +286,7 @@ vscr_ratchet_skipped_messages_find_public_key(
     return i;
 }
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_skipped_messages_delete_key(
         vscr_ratchet_skipped_messages_t *self, vscr_ratchet_key_id_t key_id, vscr_ratchet_message_key_t *message_key) {
 
@@ -293,10 +296,12 @@ vscr_ratchet_skipped_messages_delete_key(
     size_t i = vscr_ratchet_skipped_messages_find_public_key(self, key_id);
 
     if (i == self->roots_count) {
-        VSCR_ASSERT(false);
+        return vscr_status_ERROR_SKIPPED_MESSAGE_MISSING;
     }
 
     vscr_ratchet_skipped_messages_root_node_delete_key(self->root_nodes[i], message_key);
+
+    return vscr_status_SUCCESS;
 }
 
 VSCR_PUBLIC void
@@ -359,12 +364,16 @@ vscr_ratchet_skipped_messages_serialize(
     }
 }
 
-VSCR_PUBLIC void
+VSCR_PUBLIC vscr_status_t
 vscr_ratchet_skipped_messages_deserialize(
         const vscr_SkippedMessages *skipped_messages_pb, vscr_ratchet_skipped_messages_t *skipped_messages) {
 
     VSCR_ASSERT_PTR(skipped_messages_pb);
     VSCR_ASSERT_PTR(skipped_messages);
+
+    if (skipped_messages_pb->keys_count > (pb_size_t)vscr_ratchet_common_hidden_MAX_SKIPPED_DH) {
+        return vscr_status_ERROR_PROTOBUF_DECODE;
+    }
 
     skipped_messages->roots_count = skipped_messages_pb->keys_count;
 
@@ -378,4 +387,6 @@ vscr_ratchet_skipped_messages_deserialize(
 
         skipped_messages->root_nodes[i] = root;
     }
+
+    return vscr_status_SUCCESS;
 }

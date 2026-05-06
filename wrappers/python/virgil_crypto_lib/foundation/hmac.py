@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -107,7 +107,7 @@ class Hmac(Alg, Mac):
 
     def reset(self):
         """Prepare to authenticate a new message with the same key
-        as the previous MAC operation."""
+as the previous MAC operation."""
         self._lib_vscf_hmac.vscf_hmac_reset(self.ctx)
 
     @classmethod

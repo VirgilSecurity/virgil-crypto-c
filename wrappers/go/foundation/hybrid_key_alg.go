@@ -12,7 +12,7 @@ import "runtime"
 * Hybrid signatures - TODO
 */
 type HybridKeyAlg struct {
-    cCtx *C.vscf_hybrid_key_alg_t /*ct10*/
+    cCtx *C.vscf_hybrid_key_alg_t
 }
 
 func (obj *HybridKeyAlg) SetRandom(random Random) {
@@ -43,7 +43,7 @@ func (obj *HybridKeyAlg) SetHash(hash Hash) {
 * Setup predefined values to the uninitialized class dependencies.
 */
 func (obj *HybridKeyAlg) SetupDefaults() error {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_setup_defaults(obj.cCtx)
+    proxyResult := C.vscf_hybrid_key_alg_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -62,7 +62,7 @@ func (obj *HybridKeyAlg) MakeKey(firstKey PrivateKey, secondKey PrivateKey) (Pri
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_make_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(firstKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(secondKey.Ctx())), &error)
+    proxyResult := C.vscf_hybrid_key_alg_make_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(firstKey.Ctx())), (*C.vscf_impl_t)(unsafe.Pointer(secondKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -75,7 +75,7 @@ func (obj *HybridKeyAlg) MakeKey(firstKey PrivateKey, secondKey PrivateKey) (Pri
 
     runtime.KeepAlive(secondKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /* Handle underlying C context. */
@@ -95,7 +95,7 @@ func NewHybridKeyAlg() *HybridKeyAlg {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHybridKeyAlgWithCtx(ctx *C.vscf_hybrid_key_alg_t /*ct10*/) *HybridKeyAlg {
+func newHybridKeyAlgWithCtx(ctx *C.vscf_hybrid_key_alg_t) *HybridKeyAlg {
     obj := &HybridKeyAlg {
         cCtx: ctx,
     }
@@ -106,7 +106,7 @@ func newHybridKeyAlgWithCtx(ctx *C.vscf_hybrid_key_alg_t /*ct10*/) *HybridKeyAlg
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHybridKeyAlgCopy(ctx *C.vscf_hybrid_key_alg_t /*ct10*/) *HybridKeyAlg {
+func newHybridKeyAlgCopy(ctx *C.vscf_hybrid_key_alg_t) *HybridKeyAlg {
     obj := &HybridKeyAlg {
         cCtx: C.vscf_hybrid_key_alg_shallow_copy(ctx),
     }
@@ -168,7 +168,7 @@ func (obj *HybridKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
+    proxyResult := C.vscf_hybrid_key_alg_generate_ephemeral_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(key.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -179,7 +179,7 @@ func (obj *HybridKeyAlg) GenerateEphemeralKey(key Key) (PrivateKey, error) {
 
     runtime.KeepAlive(key)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -196,7 +196,7 @@ func (obj *HybridKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := C.vscf_hybrid_key_alg_import_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -207,7 +207,7 @@ func (obj *HybridKeyAlg) ImportPublicKey(rawKey *RawPublicKey) (PublicKey, error
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPublicKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPublicKey(proxyResult)
 }
 
 /*
@@ -221,7 +221,7 @@ func (obj *HybridKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, er
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := C.vscf_hybrid_key_alg_export_public_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -232,7 +232,7 @@ func (obj *HybridKeyAlg) ExportPublicKey(publicKey PublicKey) (*RawPublicKey, er
 
     runtime.KeepAlive(publicKey)
 
-    return newRawPublicKeyWithCtx(proxyResult) /* r6 */, nil
+    return newRawPublicKeyWithCtx(proxyResult), nil
 }
 
 /*
@@ -249,7 +249,7 @@ func (obj *HybridKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, er
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
+    proxyResult := C.vscf_hybrid_key_alg_import_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(rawKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -260,7 +260,7 @@ func (obj *HybridKeyAlg) ImportPrivateKey(rawKey *RawPrivateKey) (PrivateKey, er
 
     runtime.KeepAlive(rawKey)
 
-    return FoundationImplementationWrapPrivateKey(proxyResult) /* r4 */
+    return FoundationImplementationWrapPrivateKey(proxyResult)
 }
 
 /*
@@ -274,7 +274,7 @@ func (obj *HybridKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := C.vscf_hybrid_key_alg_export_private_key(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -285,47 +285,47 @@ func (obj *HybridKeyAlg) ExportPrivateKey(privateKey PrivateKey) (*RawPrivateKey
 
     runtime.KeepAlive(privateKey)
 
-    return newRawPrivateKeyWithCtx(proxyResult) /* r6 */, nil
+    return newRawPrivateKeyWithCtx(proxyResult), nil
 }
 
 /*
 * Check if algorithm can encrypt data with a given key.
 */
 func (obj *HybridKeyAlg) CanEncrypt(publicKey PublicKey, dataLen uint) bool {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := C.vscf_hybrid_key_alg_can_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
 * Calculate required buffer length to hold the encrypted data.
 */
 func (obj *HybridKeyAlg) EncryptedLen(publicKey PublicKey, dataLen uint) uint {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := C.vscf_hybrid_key_alg_encrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), (C.size_t)(dataLen))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Encrypt data with a given public key.
 */
 func (obj *HybridKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey.(PublicKey), uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.EncryptedLen(publicKey, uint(len(data)))))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := C.vscf_hybrid_key_alg_encrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -336,7 +336,7 @@ func (obj *HybridKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, erro
 
     runtime.KeepAlive(publicKey)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }
 
 /*
@@ -344,40 +344,40 @@ func (obj *HybridKeyAlg) Encrypt(publicKey PublicKey, data []byte) ([]byte, erro
 * However, success result of decryption is not guaranteed.
 */
 func (obj *HybridKeyAlg) CanDecrypt(privateKey PrivateKey, dataLen uint) bool {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := C.vscf_hybrid_key_alg_can_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
 * Calculate required buffer length to hold the decrypted data.
 */
 func (obj *HybridKeyAlg) DecryptedLen(privateKey PrivateKey, dataLen uint) uint {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen)/*pa10*/)
+    proxyResult := C.vscf_hybrid_key_alg_decrypted_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), (C.size_t)(dataLen))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Decrypt given data.
 */
 func (obj *HybridKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey.(PrivateKey), uint(len(data))) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.DecryptedLen(privateKey, uint(len(data)))))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
+    proxyResult := C.vscf_hybrid_key_alg_decrypt(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), dataData, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -388,20 +388,20 @@ func (obj *HybridKeyAlg) Decrypt(privateKey PrivateKey, data []byte) ([]byte, er
 
     runtime.KeepAlive(privateKey)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }
 
 /*
 * Check if algorithm can sign data digest with a given key.
 */
 func (obj *HybridKeyAlg) CanSign(privateKey PrivateKey) bool {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := C.vscf_hybrid_key_alg_can_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -409,27 +409,27 @@ func (obj *HybridKeyAlg) CanSign(privateKey PrivateKey) bool {
 * Return zero if a given private key can not produce signatures.
 */
 func (obj *HybridKeyAlg) SignatureLen(privateKey PrivateKey) uint {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := C.vscf_hybrid_key_alg_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Sign data digest with a given private key.
 */
 func (obj *HybridKeyAlg) SignHash(privateKey PrivateKey, hashId AlgId, digest []byte) ([]byte, error) {
-    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey)))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
     defer signatureBuf.delete()
     digestData := helperWrapData (digest)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureBuf.ctx)
+    proxyResult := C.vscf_hybrid_key_alg_sign_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -440,20 +440,20 @@ func (obj *HybridKeyAlg) SignHash(privateKey PrivateKey, hashId AlgId, digest []
 
     runtime.KeepAlive(privateKey)
 
-    return signatureBuf.getData() /* r7 */, nil
+    return signatureBuf.getData(), nil
 }
 
 /*
 * Check if algorithm can verify data digest with a given key.
 */
 func (obj *HybridKeyAlg) CanVerify(publicKey PublicKey) bool {
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := C.vscf_hybrid_key_alg_can_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }
 
 /*
@@ -463,11 +463,11 @@ func (obj *HybridKeyAlg) VerifyHash(publicKey PublicKey, hashId AlgId, digest []
     digestData := helperWrapData (digest)
     signatureData := helperWrapData (signature)
 
-    proxyResult := /*pr4*/C.vscf_hybrid_key_alg_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId) /*pa7*/, digestData, signatureData)
+    proxyResult := C.vscf_hybrid_key_alg_verify_hash(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())), C.vscf_alg_id_t(hashId), digestData, signatureData)
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }

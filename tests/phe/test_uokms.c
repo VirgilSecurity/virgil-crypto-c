@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -39,7 +39,7 @@
 #include "test_utils.h"
 
 
-#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT &&VSCE_PHE_SERVER &&VSCF_CTR_DRBG
+#define TEST_DEPENDENCIES_AVAILABLE VSCE_PHE_CLIENT && VSCE_PHE_SERVER && VSCF_CTR_DRBG
 #if TEST_DEPENDENCIES_AVAILABLE
 
 #include <virgil/crypto/common/private/vsc_buffer_defs.h>

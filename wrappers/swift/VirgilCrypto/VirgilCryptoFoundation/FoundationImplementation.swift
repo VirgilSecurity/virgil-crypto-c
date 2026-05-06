@@ -1,36 +1,36 @@
-/// Copyright (C) 2015-2022 Virgil Security, Inc.
-///
-/// All rights reserved.
-///
-/// Redistribution and use in source and binary forms, with or without
-/// modification, are permitted provided that the following conditions are
-/// met:
-///
-///     (1) Redistributions of source code must retain the above copyright
-///     notice, this list of conditions and the following disclaimer.
-///
-///     (2) Redistributions in binary form must reproduce the above copyright
-///     notice, this list of conditions and the following disclaimer in
-///     the documentation and/or other materials provided with the
-///     distribution.
-///
-///     (3) Neither the name of the copyright holder nor the names of its
-///     contributors may be used to endorse or promote products derived from
-///     this software without specific prior written permission.
-///
-/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-/// POSSIBILITY OF SUCH DAMAGE.
-///
-/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+// Copyright (C) 2015-2026 Virgil Security, Inc.
+//
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     (1) Redistributions of source code must retain the above copyright
+//     notice, this list of conditions and the following disclaimer.
+//
+//     (2) Redistributions in binary form must reproduce the above copyright
+//     notice, this list of conditions and the following disclaimer in
+//     the documentation and/or other materials provided with the
+//     distribution.
+//
+//     (3) Neither the name of the copyright holder nor the names of its
+//     contributors may be used to endorse or promote products derived from
+//     this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+// POSSIBILITY OF SUCH DAMAGE.
+//
+// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
@@ -38,8 +38,7 @@ import VSCFoundation
 
 @objc(VSCFFoundationImplementation) public class FoundationImplementation: NSObject {
 
-    /// Wrap C implementation object to the Swift object that implements protocol Alg.
-    @objc static func wrapAlg(take c_ctx: OpaquePointer) -> Alg {
+    @objc public static func wrapAlg(take c_ctx: OpaquePointer) -> Alg {
         if (!vscf_alg_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Alg.")
         }
@@ -72,6 +71,10 @@ import VSCFoundation
             return Pkcs5Pbes2(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
+        case vscf_impl_tag_ML_KEM:
+            return MlKem(take: c_ctx)
+        case vscf_impl_tag_ML_DSA:
+            return MlDsa(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_RANDOM_PADDING:
@@ -81,14 +84,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Alg.
-    @objc static func wrapAlg(use c_ctx: OpaquePointer) -> Alg {
+    @objc public static func wrapAlg(use c_ctx: OpaquePointer) -> Alg {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAlg(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Hash.
-    @objc static func wrapHash(take c_ctx: OpaquePointer) -> Hash {
+    @objc public static func wrapHash(take c_ctx: OpaquePointer) -> Hash {
         if (!vscf_hash_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Hash.")
         }
@@ -108,14 +109,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Hash.
-    @objc static func wrapHash(use c_ctx: OpaquePointer) -> Hash {
+    @objc public static func wrapHash(use c_ctx: OpaquePointer) -> Hash {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapHash(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Encrypt.
-    @objc static func wrapEncrypt(take c_ctx: OpaquePointer) -> Encrypt {
+    @objc public static func wrapEncrypt(take c_ctx: OpaquePointer) -> Encrypt {
         if (!vscf_encrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Encrypt.")
         }
@@ -133,14 +132,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Encrypt.
-    @objc static func wrapEncrypt(use c_ctx: OpaquePointer) -> Encrypt {
+    @objc public static func wrapEncrypt(use c_ctx: OpaquePointer) -> Encrypt {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapEncrypt(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Decrypt.
-    @objc static func wrapDecrypt(take c_ctx: OpaquePointer) -> Decrypt {
+    @objc public static func wrapDecrypt(take c_ctx: OpaquePointer) -> Decrypt {
         if (!vscf_decrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Decrypt.")
         }
@@ -158,14 +155,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Decrypt.
-    @objc static func wrapDecrypt(use c_ctx: OpaquePointer) -> Decrypt {
+    @objc public static func wrapDecrypt(use c_ctx: OpaquePointer) -> Decrypt {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapDecrypt(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol CipherInfo.
-    @objc static func wrapCipherInfo(take c_ctx: OpaquePointer) -> CipherInfo {
+    @objc public static func wrapCipherInfo(take c_ctx: OpaquePointer) -> CipherInfo {
         if (!vscf_cipher_info_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface CipherInfo.")
         }
@@ -181,14 +176,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol CipherInfo.
-    @objc static func wrapCipherInfo(use c_ctx: OpaquePointer) -> CipherInfo {
+    @objc public static func wrapCipherInfo(use c_ctx: OpaquePointer) -> CipherInfo {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapCipherInfo(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Cipher.
-    @objc static func wrapCipher(take c_ctx: OpaquePointer) -> Cipher {
+    @objc public static func wrapCipher(take c_ctx: OpaquePointer) -> Cipher {
         if (!vscf_cipher_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Cipher.")
         }
@@ -204,14 +197,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Cipher.
-    @objc static func wrapCipher(use c_ctx: OpaquePointer) -> Cipher {
+    @objc public static func wrapCipher(use c_ctx: OpaquePointer) -> Cipher {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapCipher(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol CipherAuthInfo.
-    @objc static func wrapCipherAuthInfo(take c_ctx: OpaquePointer) -> CipherAuthInfo {
+    @objc public static func wrapCipherAuthInfo(take c_ctx: OpaquePointer) -> CipherAuthInfo {
         if (!vscf_cipher_auth_info_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface CipherAuthInfo.")
         }
@@ -225,14 +216,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol CipherAuthInfo.
-    @objc static func wrapCipherAuthInfo(use c_ctx: OpaquePointer) -> CipherAuthInfo {
+    @objc public static func wrapCipherAuthInfo(use c_ctx: OpaquePointer) -> CipherAuthInfo {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapCipherAuthInfo(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AuthEncrypt.
-    @objc static func wrapAuthEncrypt(take c_ctx: OpaquePointer) -> AuthEncrypt {
+    @objc public static func wrapAuthEncrypt(take c_ctx: OpaquePointer) -> AuthEncrypt {
         if (!vscf_auth_encrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AuthEncrypt.")
         }
@@ -246,14 +235,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AuthEncrypt.
-    @objc static func wrapAuthEncrypt(use c_ctx: OpaquePointer) -> AuthEncrypt {
+    @objc public static func wrapAuthEncrypt(use c_ctx: OpaquePointer) -> AuthEncrypt {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAuthEncrypt(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AuthDecrypt.
-    @objc static func wrapAuthDecrypt(take c_ctx: OpaquePointer) -> AuthDecrypt {
+    @objc public static func wrapAuthDecrypt(take c_ctx: OpaquePointer) -> AuthDecrypt {
         if (!vscf_auth_decrypt_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AuthDecrypt.")
         }
@@ -267,14 +254,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AuthDecrypt.
-    @objc static func wrapAuthDecrypt(use c_ctx: OpaquePointer) -> AuthDecrypt {
+    @objc public static func wrapAuthDecrypt(use c_ctx: OpaquePointer) -> AuthDecrypt {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAuthDecrypt(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol CipherAuth.
-    @objc static func wrapCipherAuth(take c_ctx: OpaquePointer) -> CipherAuth {
+    @objc public static func wrapCipherAuth(take c_ctx: OpaquePointer) -> CipherAuth {
         if (!vscf_cipher_auth_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface CipherAuth.")
         }
@@ -288,14 +273,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol CipherAuth.
-    @objc static func wrapCipherAuth(use c_ctx: OpaquePointer) -> CipherAuth {
+    @objc public static func wrapCipherAuth(use c_ctx: OpaquePointer) -> CipherAuth {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapCipherAuth(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Asn1Reader.
-    @objc static func wrapAsn1Reader(take c_ctx: OpaquePointer) -> Asn1Reader {
+    @objc public static func wrapAsn1Reader(take c_ctx: OpaquePointer) -> Asn1Reader {
         if (!vscf_asn1_reader_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Asn1Reader.")
         }
@@ -309,14 +292,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Asn1Reader.
-    @objc static func wrapAsn1Reader(use c_ctx: OpaquePointer) -> Asn1Reader {
+    @objc public static func wrapAsn1Reader(use c_ctx: OpaquePointer) -> Asn1Reader {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAsn1Reader(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Asn1Writer.
-    @objc static func wrapAsn1Writer(take c_ctx: OpaquePointer) -> Asn1Writer {
+    @objc public static func wrapAsn1Writer(take c_ctx: OpaquePointer) -> Asn1Writer {
         if (!vscf_asn1_writer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Asn1Writer.")
         }
@@ -330,14 +311,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Asn1Writer.
-    @objc static func wrapAsn1Writer(use c_ctx: OpaquePointer) -> Asn1Writer {
+    @objc public static func wrapAsn1Writer(use c_ctx: OpaquePointer) -> Asn1Writer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAsn1Writer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Key.
-    @objc static func wrapKey(take c_ctx: OpaquePointer) -> Key {
+    @objc public static func wrapKey(take c_ctx: OpaquePointer) -> Key {
         if (!vscf_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Key.")
         }
@@ -369,14 +348,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Key.
-    @objc static func wrapKey(use c_ctx: OpaquePointer) -> Key {
+    @objc public static func wrapKey(use c_ctx: OpaquePointer) -> Key {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKey(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol PublicKey.
-    @objc static func wrapPublicKey(take c_ctx: OpaquePointer) -> PublicKey {
+    @objc public static func wrapPublicKey(take c_ctx: OpaquePointer) -> PublicKey {
         if (!vscf_public_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface PublicKey.")
         }
@@ -398,14 +375,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol PublicKey.
-    @objc static func wrapPublicKey(use c_ctx: OpaquePointer) -> PublicKey {
+    @objc public static func wrapPublicKey(use c_ctx: OpaquePointer) -> PublicKey {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapPublicKey(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol PrivateKey.
-    @objc static func wrapPrivateKey(take c_ctx: OpaquePointer) -> PrivateKey {
+    @objc public static func wrapPrivateKey(take c_ctx: OpaquePointer) -> PrivateKey {
         if (!vscf_private_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface PrivateKey.")
         }
@@ -427,14 +402,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol PrivateKey.
-    @objc static func wrapPrivateKey(use c_ctx: OpaquePointer) -> PrivateKey {
+    @objc public static func wrapPrivateKey(use c_ctx: OpaquePointer) -> PrivateKey {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapPrivateKey(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeyAlg.
-    @objc static func wrapKeyAlg(take c_ctx: OpaquePointer) -> KeyAlg {
+    @objc public static func wrapKeyAlg(take c_ctx: OpaquePointer) -> KeyAlg {
         if (!vscf_key_alg_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeyAlg.")
         }
@@ -451,8 +424,10 @@ import VSCFoundation
             return Curve25519(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
-        case vscf_impl_tag_ROUND5:
-            return Round5(take: c_ctx)
+        case vscf_impl_tag_ML_KEM:
+            return MlKem(take: c_ctx)
+        case vscf_impl_tag_ML_DSA:
+            return MlDsa(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_HYBRID_KEY_ALG:
@@ -462,14 +437,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeyAlg.
-    @objc static func wrapKeyAlg(use c_ctx: OpaquePointer) -> KeyAlg {
+    @objc public static func wrapKeyAlg(use c_ctx: OpaquePointer) -> KeyAlg {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKeyAlg(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeyCipher.
-    @objc static func wrapKeyCipher(take c_ctx: OpaquePointer) -> KeyCipher {
+    @objc public static func wrapKeyCipher(take c_ctx: OpaquePointer) -> KeyCipher {
         if (!vscf_key_cipher_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeyCipher.")
         }
@@ -493,14 +466,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeyCipher.
-    @objc static func wrapKeyCipher(use c_ctx: OpaquePointer) -> KeyCipher {
+    @objc public static func wrapKeyCipher(use c_ctx: OpaquePointer) -> KeyCipher {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKeyCipher(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeySigner.
-    @objc static func wrapKeySigner(take c_ctx: OpaquePointer) -> KeySigner {
+    @objc public static func wrapKeySigner(take c_ctx: OpaquePointer) -> KeySigner {
         if (!vscf_key_signer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeySigner.")
         }
@@ -515,6 +486,8 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_FALCON:
             return Falcon(take: c_ctx)
+        case vscf_impl_tag_ML_DSA:
+            return MlDsa(take: c_ctx)
         case vscf_impl_tag_COMPOUND_KEY_ALG:
             return CompoundKeyAlg(take: c_ctx)
         case vscf_impl_tag_HYBRID_KEY_ALG:
@@ -524,14 +497,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeySigner.
-    @objc static func wrapKeySigner(use c_ctx: OpaquePointer) -> KeySigner {
+    @objc public static func wrapKeySigner(use c_ctx: OpaquePointer) -> KeySigner {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKeySigner(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol ComputeSharedKey.
-    @objc static func wrapComputeSharedKey(take c_ctx: OpaquePointer) -> ComputeSharedKey {
+    @objc public static func wrapComputeSharedKey(take c_ctx: OpaquePointer) -> ComputeSharedKey {
         if (!vscf_compute_shared_key_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface ComputeSharedKey.")
         }
@@ -549,14 +520,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol ComputeSharedKey.
-    @objc static func wrapComputeSharedKey(use c_ctx: OpaquePointer) -> ComputeSharedKey {
+    @objc public static func wrapComputeSharedKey(use c_ctx: OpaquePointer) -> ComputeSharedKey {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapComputeSharedKey(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Kem.
-    @objc static func wrapKem(take c_ctx: OpaquePointer) -> Kem {
+    @objc public static func wrapKem(take c_ctx: OpaquePointer) -> Kem {
         if (!vscf_kem_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Kem.")
         }
@@ -569,21 +538,19 @@ import VSCFoundation
             return Ed25519(take: c_ctx)
         case vscf_impl_tag_CURVE25519:
             return Curve25519(take: c_ctx)
-        case vscf_impl_tag_ROUND5:
-            return Round5(take: c_ctx)
+        case vscf_impl_tag_ML_KEM:
+            return MlKem(take: c_ctx)
         default:
             fatalError("Unexpected C implementation cast to the Swift implementation.")
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Kem.
-    @objc static func wrapKem(use c_ctx: OpaquePointer) -> Kem {
+    @objc public static func wrapKem(use c_ctx: OpaquePointer) -> Kem {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKem(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol EntropySource.
-    @objc static func wrapEntropySource(take c_ctx: OpaquePointer) -> EntropySource {
+    @objc public static func wrapEntropySource(take c_ctx: OpaquePointer) -> EntropySource {
         if (!vscf_entropy_source_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface EntropySource.")
         }
@@ -601,14 +568,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol EntropySource.
-    @objc static func wrapEntropySource(use c_ctx: OpaquePointer) -> EntropySource {
+    @objc public static func wrapEntropySource(use c_ctx: OpaquePointer) -> EntropySource {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapEntropySource(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Random.
-    @objc static func wrapRandom(take c_ctx: OpaquePointer) -> Random {
+    @objc public static func wrapRandom(take c_ctx: OpaquePointer) -> Random {
         if (!vscf_random_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Random.")
         }
@@ -626,14 +591,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Random.
-    @objc static func wrapRandom(use c_ctx: OpaquePointer) -> Random {
+    @objc public static func wrapRandom(use c_ctx: OpaquePointer) -> Random {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapRandom(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Mac.
-    @objc static func wrapMac(take c_ctx: OpaquePointer) -> Mac {
+    @objc public static func wrapMac(take c_ctx: OpaquePointer) -> Mac {
         if (!vscf_mac_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Mac.")
         }
@@ -647,14 +610,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Mac.
-    @objc static func wrapMac(use c_ctx: OpaquePointer) -> Mac {
+    @objc public static func wrapMac(use c_ctx: OpaquePointer) -> Mac {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapMac(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Kdf.
-    @objc static func wrapKdf(take c_ctx: OpaquePointer) -> Kdf {
+    @objc public static func wrapKdf(take c_ctx: OpaquePointer) -> Kdf {
         if (!vscf_kdf_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Kdf.")
         }
@@ -674,14 +635,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Kdf.
-    @objc static func wrapKdf(use c_ctx: OpaquePointer) -> Kdf {
+    @objc public static func wrapKdf(use c_ctx: OpaquePointer) -> Kdf {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKdf(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol SaltedKdf.
-    @objc static func wrapSaltedKdf(take c_ctx: OpaquePointer) -> SaltedKdf {
+    @objc public static func wrapSaltedKdf(take c_ctx: OpaquePointer) -> SaltedKdf {
         if (!vscf_salted_kdf_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface SaltedKdf.")
         }
@@ -697,14 +656,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol SaltedKdf.
-    @objc static func wrapSaltedKdf(use c_ctx: OpaquePointer) -> SaltedKdf {
+    @objc public static func wrapSaltedKdf(use c_ctx: OpaquePointer) -> SaltedKdf {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapSaltedKdf(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeySerializer.
-    @objc static func wrapKeySerializer(take c_ctx: OpaquePointer) -> KeySerializer {
+    @objc public static func wrapKeySerializer(take c_ctx: OpaquePointer) -> KeySerializer {
         if (!vscf_key_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeySerializer.")
         }
@@ -722,14 +679,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeySerializer.
-    @objc static func wrapKeySerializer(use c_ctx: OpaquePointer) -> KeySerializer {
+    @objc public static func wrapKeySerializer(use c_ctx: OpaquePointer) -> KeySerializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKeySerializer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeyDeserializer.
-    @objc static func wrapKeyDeserializer(take c_ctx: OpaquePointer) -> KeyDeserializer {
+    @objc public static func wrapKeyDeserializer(take c_ctx: OpaquePointer) -> KeyDeserializer {
         if (!vscf_key_deserializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface KeyDeserializer.")
         }
@@ -743,14 +698,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol KeyDeserializer.
-    @objc static func wrapKeyDeserializer(use c_ctx: OpaquePointer) -> KeyDeserializer {
+    @objc public static func wrapKeyDeserializer(use c_ctx: OpaquePointer) -> KeyDeserializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapKeyDeserializer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AlgInfo.
-    @objc static func wrapAlgInfo(take c_ctx: OpaquePointer) -> AlgInfo {
+    @objc public static func wrapAlgInfo(take c_ctx: OpaquePointer) -> AlgInfo {
         if (!vscf_alg_info_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AlgInfo.")
         }
@@ -778,14 +731,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AlgInfo.
-    @objc static func wrapAlgInfo(use c_ctx: OpaquePointer) -> AlgInfo {
+    @objc public static func wrapAlgInfo(use c_ctx: OpaquePointer) -> AlgInfo {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAlgInfo(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AlgInfoSerializer.
-    @objc static func wrapAlgInfoSerializer(take c_ctx: OpaquePointer) -> AlgInfoSerializer {
+    @objc public static func wrapAlgInfoSerializer(take c_ctx: OpaquePointer) -> AlgInfoSerializer {
         if (!vscf_alg_info_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AlgInfoSerializer.")
         }
@@ -799,14 +750,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AlgInfoSerializer.
-    @objc static func wrapAlgInfoSerializer(use c_ctx: OpaquePointer) -> AlgInfoSerializer {
+    @objc public static func wrapAlgInfoSerializer(use c_ctx: OpaquePointer) -> AlgInfoSerializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAlgInfoSerializer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AlgInfoDeserializer.
-    @objc static func wrapAlgInfoDeserializer(take c_ctx: OpaquePointer) -> AlgInfoDeserializer {
+    @objc public static func wrapAlgInfoDeserializer(take c_ctx: OpaquePointer) -> AlgInfoDeserializer {
         if (!vscf_alg_info_deserializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface AlgInfoDeserializer.")
         }
@@ -820,14 +769,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol AlgInfoDeserializer.
-    @objc static func wrapAlgInfoDeserializer(use c_ctx: OpaquePointer) -> AlgInfoDeserializer {
+    @objc public static func wrapAlgInfoDeserializer(use c_ctx: OpaquePointer) -> AlgInfoDeserializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapAlgInfoDeserializer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol MessageInfoSerializer.
-    @objc static func wrapMessageInfoSerializer(take c_ctx: OpaquePointer) -> MessageInfoSerializer {
+    @objc public static func wrapMessageInfoSerializer(take c_ctx: OpaquePointer) -> MessageInfoSerializer {
         if (!vscf_message_info_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface MessageInfoSerializer.")
         }
@@ -841,14 +788,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol MessageInfoSerializer.
-    @objc static func wrapMessageInfoSerializer(use c_ctx: OpaquePointer) -> MessageInfoSerializer {
+    @objc public static func wrapMessageInfoSerializer(use c_ctx: OpaquePointer) -> MessageInfoSerializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapMessageInfoSerializer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol MessageInfoFooterSerializer.
-    @objc static func wrapMessageInfoFooterSerializer(take c_ctx: OpaquePointer) -> MessageInfoFooterSerializer {
+    @objc public static func wrapMessageInfoFooterSerializer(take c_ctx: OpaquePointer) -> MessageInfoFooterSerializer {
         if (!vscf_message_info_footer_serializer_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface MessageInfoFooterSerializer.")
         }
@@ -862,14 +807,12 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol MessageInfoFooterSerializer.
-    @objc static func wrapMessageInfoFooterSerializer(use c_ctx: OpaquePointer) -> MessageInfoFooterSerializer {
+    @objc public static func wrapMessageInfoFooterSerializer(use c_ctx: OpaquePointer) -> MessageInfoFooterSerializer {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapMessageInfoFooterSerializer(take:shallowCopy)
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Padding.
-    @objc static func wrapPadding(take c_ctx: OpaquePointer) -> Padding {
+    @objc public static func wrapPadding(take c_ctx: OpaquePointer) -> Padding {
         if (!vscf_padding_is_implemented(c_ctx)) {
             fatalError("Given C implementation does not implement interface Padding.")
         }
@@ -883,9 +826,9 @@ import VSCFoundation
         }
     }
 
-    /// Wrap C implementation object to the Swift object that implements protocol Padding.
-    @objc static func wrapPadding(use c_ctx: OpaquePointer) -> Padding {
+    @objc public static func wrapPadding(use c_ctx: OpaquePointer) -> Padding {
         let shallowCopy = vscf_impl_shallow_copy(c_ctx)!
         return FoundationImplementation.wrapPadding(take:shallowCopy)
     }
+
 }

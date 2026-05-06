@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -94,18 +94,13 @@ static void
 vscf_message_cipher_cleanup_ctx(vscf_message_cipher_t *self);
 
 static void
-vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt);
+vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt);
 
 static vscf_status_t
-vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
+vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t plain_text, vsc_data_t additional_data, vsc_buffer_t *buffer);
 
 static vscf_status_t
-vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key,
-        const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data,
-        vsc_buffer_t *buffer) VSCF_NODISCARD;
+vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_session_symmetric_key_t key, const vscf_group_session_salt_t salt, vsc_data_t cipher_text, vsc_data_t additional_data, vsc_buffer_t *buffer);
 
 //
 //  Return size of 'vscf_message_cipher_t'.
@@ -246,7 +241,6 @@ vscf_message_cipher_shallow_copy(vscf_message_cipher_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_message_cipher_init() is called.
@@ -308,8 +302,8 @@ vscf_message_cipher_setup_cipher(vscf_message_cipher_t *self, const vscf_group_s
     vsc_buffer_use(&buffer, derived_secret, sizeof(derived_secret));
 
     vscf_hkdf_set_info(hkdf, vsc_data(group_session_kdf_cipher_info, sizeof(group_session_kdf_cipher_info)));
-    vscf_hkdf_reset(hkdf, vsc_data(salt, sizeof(vscf_group_session_salt_t)), 0);
-    vscf_hkdf_derive(hkdf, vsc_data(key, sizeof(vscf_group_session_symmetric_key_t)), sizeof(derived_secret), &buffer);
+    vscf_hkdf_reset(hkdf, vsc_data(salt.bytes, sizeof(salt.bytes)), 0);
+    vscf_hkdf_derive(hkdf, vsc_data(key.bytes, sizeof(key.bytes)), sizeof(derived_secret), &buffer);
 
     vscf_hkdf_destroy(&hkdf);
 
@@ -330,7 +324,7 @@ vscf_message_cipher_encrypt(vscf_message_cipher_t *self, const vscf_group_sessio
 
     VSCF_ASSERT(vsc_buffer_unused_len(buffer) >= vscf_message_cipher_encrypt_len(self, plain_text.len));
 
-    vscf_message_cipher_setup_cipher(self, salt, key);
+    vscf_message_cipher_setup_cipher(self, key, salt);
 
     vscf_status_t result = vscf_aes256_gcm_auth_encrypt(self->aes256_gcm, plain_text, additional_data, buffer, NULL);
 
@@ -347,7 +341,7 @@ vscf_message_cipher_decrypt(vscf_message_cipher_t *self, const vscf_group_sessio
 
     VSCF_ASSERT(vsc_buffer_unused_len(buffer) >= vscf_message_cipher_decrypt_len(self, cipher_text.len));
 
-    vscf_message_cipher_setup_cipher(self, salt, key);
+    vscf_message_cipher_setup_cipher(self, key, salt);
 
     vscf_status_t result =
             vscf_aes256_gcm_auth_decrypt(self->aes256_gcm, cipher_text, additional_data, vsc_data_empty(), buffer);
@@ -362,7 +356,6 @@ vscf_message_cipher_pad_then_encrypt(vscf_message_cipher_t *self, vscf_message_p
 
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(padding);
-    VSCF_ASSERT_PTR(key);
     VSCF_ASSERT_PTR(cipher_text);
 
     size_t size = vscf_message_padding_padded_len(data.len);
@@ -377,7 +370,7 @@ vscf_message_cipher_pad_then_encrypt(vscf_message_cipher_t *self, vscf_message_p
         goto err;
     }
 
-    result = vscf_message_cipher_encrypt(self, salt, key, vsc_buffer_data(temp), ad, cipher_text);
+    result = vscf_message_cipher_encrypt(self, key, salt, vsc_buffer_data(temp), ad, cipher_text);
 
 err:
     vsc_buffer_destroy(&temp);
@@ -391,14 +384,13 @@ vscf_message_cipher_decrypt_then_remove_pad(vscf_message_cipher_t *self, vsc_dat
         vsc_buffer_t *plain_text) {
 
     VSCF_ASSERT_PTR(self);
-    VSCF_ASSERT_PTR(key);
     VSCF_ASSERT_PTR(plain_text);
 
     size_t size = vscf_message_cipher_decrypt_len(self, data.len);
     vsc_buffer_t *temp = vsc_buffer_new_with_capacity(size);
     vsc_buffer_make_secure(temp);
 
-    vscf_status_t result = vscf_message_cipher_decrypt(self, salt, key, data, ad, temp);
+    vscf_status_t result = vscf_message_cipher_decrypt(self, key, salt, data, ad, temp);
 
     if (result != vscf_status_SUCCESS) {
         goto err;

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -47,6 +46,15 @@
 #ifndef VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED
 #define VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscr_library.h"
 #include "vscr_atomic.h"
 #include "vscr_ratchet_typedefs.h"
@@ -55,14 +63,16 @@
 #include "vscr_ratchet_skipped_messages_root_node.h"
 #include "vscr_ratchet_message_key_node.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -75,19 +85,10 @@ extern "C" {
 //
 typedef struct vscr_ratchet_skipped_messages_root_node_t vscr_ratchet_skipped_messages_root_node_t;
 struct vscr_ratchet_skipped_messages_root_node_t {
-    //
-    //  Function do deallocate self context.
-    //
     vscr_dealloc_fn self_dealloc_cb;
-    //
-    //  Reference counter.
-    //
     VSCR_ATOMIC size_t refcnt;
-
     uint32_t count;
-
     vscr_ratchet_message_key_node_t *first;
-
     vscr_ratchet_message_key_node_t *last;
 };
 
@@ -136,25 +137,19 @@ VSCR_PUBLIC vscr_ratchet_skipped_messages_root_node_t *
 vscr_ratchet_skipped_messages_root_node_shallow_copy(vscr_ratchet_skipped_messages_root_node_t *self);
 
 VSCR_PUBLIC vscr_ratchet_message_key_t *
-vscr_ratchet_skipped_messages_root_node_find_key(const vscr_ratchet_skipped_messages_root_node_t *self,
-        uint32_t counter);
+vscr_ratchet_skipped_messages_root_node_find_key(const vscr_ratchet_skipped_messages_root_node_t *self, uint32_t counter);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_delete_key(vscr_ratchet_skipped_messages_root_node_t *self,
-        vscr_ratchet_message_key_t *message_key);
+vscr_ratchet_skipped_messages_root_node_delete_key(vscr_ratchet_skipped_messages_root_node_t *self, vscr_ratchet_message_key_t *message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_add_key(vscr_ratchet_skipped_messages_root_node_t *self,
-        vscr_ratchet_message_key_t *message_key);
+vscr_ratchet_skipped_messages_root_node_add_key(vscr_ratchet_skipped_messages_root_node_t *self, vscr_ratchet_message_key_t *message_key);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_serialize(const vscr_ratchet_skipped_messages_root_node_t *self,
-        vscr_MessageKey **skipped_messages_pb, pb_size_t *count);
+vscr_ratchet_skipped_messages_root_node_serialize(const vscr_ratchet_skipped_messages_root_node_t *self, vscr_MessageKey **skipped_messages_pb, pb_size_t *count);
 
 VSCR_PUBLIC void
-vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipped_messages_pb, pb_size_t count,
-        vscr_ratchet_skipped_messages_root_node_t *skipped_messages);
-
+vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipped_messages_pb, pb_size_t count, vscr_ratchet_skipped_messages_root_node_t *skipped_messages);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -162,11 +157,9 @@ vscr_ratchet_skipped_messages_root_node_deserialize(const vscr_MessageKey *skipp
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_SKIPPED_MESSAGES_ROOT_NODE_H_INCLUDED

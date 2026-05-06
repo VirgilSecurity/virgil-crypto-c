@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2018 Virgil Security Inc.
+ * Copyright (C) 2015-2026 Virgil Security Inc.
 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
