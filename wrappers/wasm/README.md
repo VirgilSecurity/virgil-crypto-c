@@ -167,8 +167,7 @@ WASM heap memory. Failing to do so causes memory leaks in long-lived processes.
 
 ```bash
 # 1. Configure and build WASM libraries via CMake (from repo root)
-emcmake cmake -DCMAKE_BUILD_TYPE=Release -Bbuild-wasm -S. \
-    -DVIRGIL_LIB_PYTHIA=OFF
+emcmake cmake -DCMAKE_BUILD_TYPE=Release -Bbuild-wasm -S.
 cmake --build build-wasm -j$(nproc)
 
 # 2. Install npm dependencies

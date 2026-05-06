@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Resolve project paths ---
-ALL_PROJECTS="common foundation phe pythia ratchet"
+ALL_PROJECTS="common foundation phe ratchet"
 
 resolve_project_paths() {
   local proj="$1"
@@ -106,14 +106,6 @@ resolve_project_paths() {
       GO_RESTORE_PATHS=("wrappers/go/phe")
       CMAKE_TARGET="phe"
       CMAKE_TEST_TARGET="test_phe"
-      ;;
-    pythia)
-      LIB_RESTORE_PATHS=(
-        "library/pythia/include/virgil/crypto/pythia"
-        "library/pythia/src"
-      )
-      CMAKE_TARGET="pythia"
-      CMAKE_TEST_TARGET="test_pythia"
       ;;
     ratchet)
       LIB_RESTORE_PATHS=(
