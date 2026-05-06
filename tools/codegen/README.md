@@ -12,7 +12,7 @@ python3 tools/codegen/common_bootstrap.py --project foundation --apply
 python3 tools/codegen/common_bootstrap.py --project foundation --out /tmp/codegen_test
 
 # Generate all projects
-for proj in common foundation phe pythia ratchet; do
+for proj in common foundation phe ratchet; do
     python3 tools/codegen/common_bootstrap.py --project $proj --apply
 done
 ```
@@ -24,7 +24,6 @@ done
 | common     |    Yes    |   -   |   -   |  Yes   |   -   |   -   |   -   |
 | foundation |    Yes    |  Yes  |  Yes  |  Yes   |  Yes  |  Yes  |  Yes  |
 | phe        |    Yes    |  Yes  |   -   |  Yes   |  Yes  |  Yes  |  Yes  |
-| pythia     |    Yes    |   -   |  Yes  |  Yes   |  Yes  |  Yes  |  Yes  |
 | ratchet    |    Yes    |   -   |  Yes  |   -    |  Yes  |   -   |  Yes  |
 
 ## Architecture

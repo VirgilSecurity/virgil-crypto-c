@@ -52,16 +52,6 @@ class PheFileCountTests(unittest.TestCase):
         self.assertEqual(len(self.files), 21)
 
 
-class PythiaFileCountTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.ir = _load_ir("pythia")
-        cls.files = generate_java_files(cls.ir, repo_root=str(REPO_ROOT))
-
-    def test_total_file_count(self) -> None:
-        self.assertEqual(len(self.files), 10)
-
-
 class RatchetFileCountTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

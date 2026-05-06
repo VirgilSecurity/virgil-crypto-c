@@ -60,7 +60,6 @@ _C_LICENSE = ""      # populated by generate_php_files()
 _PROJECT_PREFIX = {
     "common": "vsc",
     "foundation": "vscf",
-    "pythia": "vscp",
     "ratchet": "vscr",
     "phe": "vsce",
 }
