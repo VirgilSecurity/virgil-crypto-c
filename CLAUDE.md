@@ -69,3 +69,4 @@ cd build && ctest --output-on-failure
     the repo root means an in-source build happened and must be cleaned up with
     `git rm -r --cached <dirs>`.
   - Do not add yourself as co-author.
+  - Do not create feature PRs to `main` branch.
