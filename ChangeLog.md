@@ -4,11 +4,11 @@
 
 ### Breaking changes
 
-- Wrapper/JS (WASM): Pythia module removed from `@virgilsecurity/crypto`. The npm package no longer ships `pythia/` bundles or types. Pythia remains available via the C library, Swift, Java, Python, and PHP wrappers.
+- Pythia library and Relic thirdparty removed entirely. The `VIRGIL_LIB_PYTHIA` CMake option no longer exists. Pythia modules have been removed from all wrappers (C, Swift, Java, Android, Python, PHP) and the `@virgilsecurity/crypto` npm package. Pre-built xcframework, Go static libs, and Java JNI binaries for Pythia are also removed.
 
 ### Changes
 
-- WASM build: `thirdparty/relic` is no longer linked into the WASM artifact. Pythia was relic's only WASM consumer; with the WASM pythia wrapper removed, the WASM toolchain no longer compiles relic. `configs/wasm-config.cmake` now sets `VIRGIL_LIB_PYTHIA OFF` by default.
+- `thirdparty/relic` removed. Relic (BLS12-381 pairing) was exclusively consumed by Pythia; with Pythia removed, Relic is no longer needed or fetched at build time.
 
 
 ## Version 0.17.2 released 2026-02-10

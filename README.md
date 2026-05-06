@@ -72,7 +72,7 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 ```bash
 git clone https://github.com/VirgilSecurity/virgil-crypto-c.git
 cd virgil-crypto-c
-cmake -Bbuild -H.
+cmake -Bbuild -S.
 cmake --build build
 cmake --build build --target install
 ```
@@ -82,7 +82,7 @@ cmake --build build --target install
 ```bash
 cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_BENCHMARKING=ON \
       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
-      -Bbuild -H.
+      -Bbuild -S.
 
 cmake --build build -- -j10
 

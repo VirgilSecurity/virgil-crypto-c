@@ -6,7 +6,7 @@
 #    bash tools/codegen/new_codegen.sh [OPTIONS] [PROJECT]
 #
 #  Arguments:
-#    PROJECT           Project to generate (common, foundation). Default: common
+#    PROJECT           Project to generate (common, foundation, phe, ratchet, all). Default: common
 #
 #  Options:
 #    --apply           Write generated code into the repo source tree
@@ -36,6 +36,8 @@
 #    bash tools/codegen/new_codegen.sh --build common       # generate + build common
 #    bash tools/codegen/new_codegen.sh --verify common      # full validation (CI mode)
 #    bash tools/codegen/new_codegen.sh --verify foundation  # full validation for foundation
+#    bash tools/codegen/new_codegen.sh --verify phe         # full validation for phe
+#    bash tools/codegen/new_codegen.sh --verify ratchet     # full validation for ratchet
 # ---------------------------------------------------------------------------
 set -euo pipefail
 

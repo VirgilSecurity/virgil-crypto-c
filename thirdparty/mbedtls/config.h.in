@@ -91,7 +91,7 @@ vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_THREADING_SRWLOCK
 
 //
-//  Required by library vsc::pythia
+//  Required by library vsc::foundation
 //
 #cmakedefine MBEDTLS_CTR_DRBG_C
 #cmakedefine MBEDTLS_ENTROPY_C
