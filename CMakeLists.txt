@@ -97,7 +97,6 @@ option(VIRGIL_C_MT_TESTING "On/Off C library multi-threading tests." OFF)
 #
 option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
-option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
@@ -194,15 +193,8 @@ add_compile_definitions(MBEDTLS_ALLOW_PRIVATE_ACCESS)
 #
 # MbedTLS
 #
-if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
+if(VIRGIL_LIB_FOUNDATION)
     add_subdirectory("thirdparty/mbedtls")
-endif()
-
-#
-# Relic
-#
-if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/relic")
 endif()
 
 #
@@ -237,7 +229,6 @@ if(VIRGIL_DISABLE_MULTI_THREADING)
     set(VSC_MULTI_THREADING  OFF CACHE BOOL "" FORCE)
     set(VSCF_MULTI_THREADING OFF CACHE BOOL "" FORCE)
     set(VSCE_MULTI_THREADING OFF CACHE BOOL "" FORCE)
-    set(VSCP_MULTI_THREADING OFF CACHE BOOL "" FORCE)
     set(VSCR_MULTI_THREADING OFF CACHE BOOL "" FORCE)
 endif()
 
@@ -249,10 +240,6 @@ endif()
 
 if(VIRGIL_LIB_FOUNDATION)
     add_subdirectory("library/foundation")
-endif()
-
-if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("library/pythia")
 endif()
 
 if(VIRGIL_LIB_RATCHET)
@@ -332,14 +319,6 @@ if(CLOC_EXECUTABLE)
             COMMENT "Calculate lines of the 'foundation' library..."
             )
 
-    add_custom_target(cloc-pythia
-            COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
-            COMMENT "Calculate lines of the 'pythia' library..."
-            )
-
     add_custom_target(cloc-ratchet
             COMMAND ${CLOC_EXECUTABLE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet"
@@ -349,7 +328,7 @@ if(CLOC_EXECUTABLE)
             )
 
     add_custom_target(cloc)
-    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
+    add_dependencies(cloc cloc-common cloc-foundation cloc-ratchet)
 endif()
 
 

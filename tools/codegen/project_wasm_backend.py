@@ -141,7 +141,6 @@ def _cmake_enable_option(project_ir: IRProject) -> str:
 _PROJECT_PREFIX_FALLBACK: dict[str, str] = {
     "common": "vsc",
     "foundation": "vscf",
-    "pythia": "vscp",
     "ratchet": "vscr",
     "phe": "vsce",
 }

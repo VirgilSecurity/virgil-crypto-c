@@ -218,7 +218,6 @@ def _detect_cross_project_imports(
     _ns_map = {
         "common": "VirgilCryptoCommon",
         "foundation": "VirgilCryptoFoundation",
-        "pythia": "VirgilCryptoPythia",
         "ratchet": "VirgilCryptoRatchet",
         "phe": "VirgilCryptoPhe",
     }

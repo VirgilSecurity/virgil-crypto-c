@@ -170,23 +170,5 @@ class RatchetEnumParityTests(unittest.TestCase):
         self.assertEqual(len(self.files), 8)
 
 
-# ---------------------------------------------------------------------------
-# Pythia — no public enums
-# ---------------------------------------------------------------------------
-
-class PythiaTests(unittest.TestCase):
-    """Pythia project file count test."""
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        src = load_named_project_source("pythia", str(REPO_ROOT))
-        cls.ir = project_to_ir(src)
-        cls.files = generate_swift_files(cls.ir, repo_root=str(REPO_ROOT))
-
-    def test_pythia_file_count(self) -> None:
-        # Pythia has 4 Swift files: CContext, PythiaError, Pythia, PythiaImplementation
-        self.assertEqual(len(self.files), 4)
-
-
 if __name__ == "__main__":
     unittest.main()

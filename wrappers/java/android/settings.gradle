@@ -1,2 +1,2 @@
-include ':app', ':common', ':foundation', ':phe', ':pythia', ':ratchet'
+include ':app', ':common', ':foundation', ':phe', ':ratchet'
 //, ':benchmark'

@@ -166,7 +166,6 @@ jobs:
           cmake -G"NMake Makefiles" ^
           -C"configs\\php-config.cmake" ^
           -DPHP_DEVEL_HOME="${{ steps.develpack.outputs.php_devel_home }}" ^
-          -DVIRGIL_LIB_PYTHIA=OFF ^
           -DCMAKE_BUILD_TYPE=Release ^
           -DVIRGIL_PACKAGE_PLATFORM_ARCH="${{ matrix.arch }}" ^
           -DVIRGIL_PACKAGE_PLATFORM=windows ^

@@ -544,7 +544,7 @@ def _generate_method_body(
     return lines
 
 
-_JAVA_WRAPPER_PROJECTS = {"common", "foundation", "phe", "pythia", "ratchet"}
+_JAVA_WRAPPER_PROJECTS = {"common", "foundation", "phe", "ratchet"}
 
 
 def _collect_cross_project_imports(
@@ -991,7 +991,7 @@ def _generate_jni_java(project_ir: IRProject) -> str:
             # Skip methods that reference external library types
             has_ext_lib = False
             for a in method.arguments + method.returns:
-                if a.library and a.library not in ("common", "foundation", "phe", "pythia", "ratchet"):
+                if a.library and a.library not in ("common", "foundation", "phe", "ratchet"):
                     has_ext_lib = True
                     break
             if has_ext_lib:
@@ -1140,7 +1140,6 @@ _PROJECT_PREFIX_MAP = {
     "common": "vsc",
     "foundation": "vscf",
     "phe": "vsce",
-    "pythia": "vscp",
     "ratchet": "vscr",
 }
 

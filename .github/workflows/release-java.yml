@@ -89,7 +89,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           ./mvnw clean deploy \
-            -P foundation,phe,pythia,ratchet,release \
+            -P foundation,phe,ratchet,release \
             -Dgpg.passphrase="${GPG_PASSPHRASE}" \
             -DskipTests
 
@@ -157,7 +157,6 @@ jobs:
           ./gradlew -q help --task :common:publishReleasePublicationToCentralBundleRepository
           ./gradlew -q help --task :foundation:publishReleasePublicationToCentralBundleRepository
           ./gradlew -q help --task :phe:publishReleasePublicationToCentralBundleRepository
-          ./gradlew -q help --task :pythia:publishReleasePublicationToCentralBundleRepository
           ./gradlew -q help --task :ratchet:publishReleasePublicationToCentralBundleRepository
 
       - name: Publish Android artifacts to local bundle repo
@@ -173,7 +172,6 @@ jobs:
             :common:publishReleasePublicationToCentralBundleRepository \
             :foundation:publishReleasePublicationToCentralBundleRepository \
             :phe:publishReleasePublicationToCentralBundleRepository \
-            :pythia:publishReleasePublicationToCentralBundleRepository \
             :ratchet:publishReleasePublicationToCentralBundleRepository \
             -PsigningKey="${SIGNING_KEY}" \
             -PsigningPassword="${SIGNING_PASSWORD}" \
@@ -192,7 +190,7 @@ jobs:
           find build/central-bundle-repo -type f -name '*.pom' | sort | head -n 100
 
           # Central requires that each artifact directory ultimately contains a POM.
-          for a in common-android foundation-android phe-android pythia-android ratchet-android; do
+          for a in common-android foundation-android phe-android ratchet-android; do
             echo "Files directly under artifact dir (${a}):"
             find "build/central-bundle-repo/com/virgilsecurity/crypto/${a}" -maxdepth 1 -type f 2>/dev/null | sort || true
             COUNT=$(find "build/central-bundle-repo/com/virgilsecurity/crypto/${a}" -type f -name '*.pom' 2>/dev/null | wc -l | tr -d '[:space:]')

@@ -161,7 +161,7 @@ def _resolve_requirement_feature(
                 break
         if target_prefix is None:
             # Static fallback
-            prefix_map = {"common": "vsc", "foundation": "vscf", "pythia": "vscp", "ratchet": "vscr", "phe": "vsce"}
+            prefix_map = {"common": "vsc", "foundation": "vscf", "ratchet": "vscr", "phe": "vsce"}
             target_prefix = prefix_map.get(req_project, req_project)
     else:
         target_prefix = project_ir.prefix

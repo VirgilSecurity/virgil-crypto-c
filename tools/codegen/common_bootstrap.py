@@ -51,7 +51,7 @@ GENERATED_END = "//  @end"
 # Supported projects
 # ---------------------------------------------------------------------------
 
-_SUPPORTED_PROJECTS = ("common", "foundation", "phe", "pythia", "ratchet")
+_SUPPORTED_PROJECTS = ("common", "foundation", "phe", "ratchet")
 
 
 def supported_projects() -> tuple[str, ...]:
@@ -1292,7 +1292,7 @@ def main() -> int:
         # --- Go wrapper files ---
         # Only projects that declare ``go`` in their ``wrappers`` attribute
         # ship Go bindings. Today that's foundation and phe; other projects
-        # (common, pythia, ratchet) get no Go output at all.
+        # (common, ratchet) get no Go output at all.
         wrappers_attr = project_ir.attrs.get("wrappers", "")
         wrappers_set = {w.strip() for w in wrappers_attr.split(",") if w.strip()}
         if "go" in wrappers_set:

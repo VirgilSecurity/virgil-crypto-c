@@ -171,7 +171,6 @@ jobs:
                 -Cconfigs/java-config.cmake ^
                 -DCMAKE_BUILD_TYPE=Release ^
                 -DCMAKE_INSTALL_PREFIX="wrappers/java/binaries/windows" ^
-                -DVIRGIL_LIB_PYTHIA=OFF ^
                 -DENABLE_CLANGFORMAT=OFF ^
                 -Bbuild -S.
           cmake --build build --target install
@@ -367,4 +366,4 @@ jobs:
 
       - name: Test with Maven
         working-directory: wrappers/java
-        run: ./mvnw clean verify -P foundation,phe,pythia,ratchet
+        run: ./mvnw clean verify -P foundation,phe,ratchet

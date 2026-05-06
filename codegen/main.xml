@@ -3,7 +3,6 @@
     <library name="mbedtls"/>
     <library name="ed25519"/>
     <library name="nanopb"/>
-    <library name="relic"/>
     <library name="mlkem"/>
     <library name="mldsa"/>
     <library name="falcon"/>
@@ -12,7 +11,6 @@
 
     <project name="common" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="foundation" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
-    <project name="pythia" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="ratchet" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
     <project name="phe" skip_codegen="0" skip_codegen_c="0" skip_codegen_wrappers="0"/>
 

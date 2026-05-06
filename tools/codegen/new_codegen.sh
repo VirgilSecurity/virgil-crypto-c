@@ -6,7 +6,7 @@
 #    bash tools/codegen/new_codegen.sh [OPTIONS] [PROJECT]
 #
 #  Arguments:
-#    PROJECT           Project to generate (common, foundation). Default: common
+#    PROJECT           Project to generate (common, foundation, phe, ratchet, all). Default: common
 #
 #  Options:
 #    --apply           Write generated code into the repo source tree
@@ -36,6 +36,8 @@
 #    bash tools/codegen/new_codegen.sh --build common       # generate + build common
 #    bash tools/codegen/new_codegen.sh --verify common      # full validation (CI mode)
 #    bash tools/codegen/new_codegen.sh --verify foundation  # full validation for foundation
+#    bash tools/codegen/new_codegen.sh --verify phe         # full validation for phe
+#    bash tools/codegen/new_codegen.sh --verify ratchet     # full validation for ratchet
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
@@ -72,7 +74,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Resolve project paths ---
-ALL_PROJECTS="common foundation phe pythia ratchet"
+ALL_PROJECTS="common foundation phe ratchet"
 
 resolve_project_paths() {
   local proj="$1"
@@ -106,14 +108,6 @@ resolve_project_paths() {
       GO_RESTORE_PATHS=("wrappers/go/phe")
       CMAKE_TARGET="phe"
       CMAKE_TEST_TARGET="test_phe"
-      ;;
-    pythia)
-      LIB_RESTORE_PATHS=(
-        "library/pythia/include/virgil/crypto/pythia"
-        "library/pythia/src"
-      )
-      CMAKE_TARGET="pythia"
-      CMAKE_TEST_TARGET="test_pythia"
       ;;
     ratchet)
       LIB_RESTORE_PATHS=(

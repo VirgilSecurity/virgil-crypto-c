@@ -48,16 +48,6 @@ class PheFileCountTests(unittest.TestCase):
         self.assertEqual(len(self.files), 10)
 
 
-class PythiaFileCountTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.ir = _load_ir("pythia")
-        cls.files = generate_php_files(cls.ir, repo_root=str(REPO_ROOT))
-
-    def test_total_file_count(self) -> None:
-        self.assertEqual(len(self.files), 4)
-
-
 class StructuralTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

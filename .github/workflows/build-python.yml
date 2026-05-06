@@ -36,7 +36,7 @@ jobs:
           - name: windows-x86_64
             os: windows-latest
             cibw_archs: AMD64
-            extra_cmake_args: "-DVIRGIL_LIB_PYTHIA=OFF"
+            extra_cmake_args: ""
 
     steps:
       - uses: actions/checkout@v6

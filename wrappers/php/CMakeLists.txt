@@ -117,4 +117,3 @@ endif()
 # ---------------------------------------------------------------------------
 add_subdirectory(VirgilCryptoWrapper/extensions/foundation)
 add_subdirectory(VirgilCryptoWrapper/extensions/phe)
-add_subdirectory(VirgilCryptoWrapper/extensions/pythia)

@@ -39,7 +39,6 @@ _PROJECT_PREFIX_MAP = {
     "common": "vsc",
     "foundation": "vscf",
     "phe": "vsce",
-    "pythia": "vscp",
 }
 
 # Projects where certain class names have a project-specific prefix that

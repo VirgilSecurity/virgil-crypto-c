@@ -1006,7 +1006,6 @@ def _c_enum_type(project_ir: IRProject, enum_name: str) -> str:
 _PROJECT_PREFIX_FALLBACK = {
     "common": "vsc",
     "foundation": "vscf",
-    "pythia": "vscp",
     "ratchet": "vscr",
     "phe": "vsce",
 }
