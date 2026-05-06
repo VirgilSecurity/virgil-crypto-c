@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,60 +37,69 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Simple PEM wrapper.
+*/
 class Pem
 {
 
     /**
+    * Return length in bytes required to hold wrapped PEM format.
     *
-    * @param string $$title
-    * @param int $$dataLen
+    * @param string $title
+    * @param int $dataLen
     * @return int
     */
-    public static function wrappedLen(string $$title, int $$dataLen): int
+    public static function wrappedLen(string $title, int $dataLen): int
     {
-        return vscf_pem_wrapped_len_php($$title, $$dataLen);
+        return vscf_pem_wrapped_len_php($title, $dataLen);
     }
 
     /**
+    * Takes binary data and wraps it to the simple PEM format - no
+    * additional information just header-base64-footer.
+    * Note, written buffer is NOT null-terminated.
     *
-    * @param string $$title
-    * @param string $$data
+    * @param string $title
+    * @param string $data
     * @return string
     */
-    public static function wrap(string $$title, string $$data): string
+    public static function wrap(string $title, string $data): string
     {
-        return vscf_pem_wrap_php($$title, $$data);
+        return vscf_pem_wrap_php($title, $data);
     }
 
     /**
+    * Return length in bytes required to hold unwrapped binary.
     *
-    * @param int $$pemLen
+    * @param int $pemLen
     * @return int
     */
-    public static function unwrappedLen(int $$pemLen): int
+    public static function unwrappedLen(int $pemLen): int
     {
-        return vscf_pem_unwrapped_len_php($$pemLen);
+        return vscf_pem_unwrapped_len_php($pemLen);
     }
 
     /**
+    * Takes PEM data and extract binary data from it.
     *
-    * @param string $$pem
+    * @param string $pem
     * @return string
     * @throws \Exception
     */
-    public static function unwrap(string $$pem): string
+    public static function unwrap(string $pem): string
     {
-        return vscf_pem_unwrap_php($$pem);
+        return vscf_pem_unwrap_php($pem);
     }
 
     /**
+    * Returns PEM title if PEM data is valid, otherwise - empty data.
     *
-    * @param string $$pem
+    * @param string $pem
     * @return string
     */
-    public static function title(string $$pem): string
+    public static function title(string $pem): string
     {
-        return vscf_pem_title_php($$pem);
+        return vscf_pem_title_php($pem);
     }
-
 }

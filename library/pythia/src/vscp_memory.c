@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -145,19 +145,7 @@ vscp_alloc(size_t size) {
 VSCP_PUBLIC void *
 vscp_calloc(size_t count, size_t size) {
 
-    if (size != 0 && count > SIZE_MAX / size) {
-        return NULL;
-    }
-
-    size_t total = count * size;
-
-    void *ptr = inner_alloc(total);
-    if (ptr == NULL) {
-        return NULL;
-    }
-
-    vscp_zeroize(ptr, total);
-    return ptr;
+    return inner_alloc(count * size);
 }
 
 //
@@ -227,31 +215,6 @@ vscp_memory_secure_equal(const void *a, const void *b, size_t len) {
     }
 
     return c == 0;
-}
-
-//
-//  Perform constant-time memory comparison, then copy source to destination only if they differ.
-//  Returns true if the memory regions are equal (duplicate / reused value detected).
-//  Returns false if they differed (source was copied into destination successfully).
-//
-VSCP_PUBLIC bool
-vscp_memory_secure_unique_copy(void *dest, const void *src, size_t len) {
-
-    VSCP_ASSERT_PTR(dest);
-    VSCP_ASSERT_PTR(src);
-
-    const volatile uint8_t *in_src = (const uint8_t *)src;
-    const volatile uint8_t *in_dest = (const uint8_t *)dest;
-    uint8_t *out = (uint8_t *)dest;
-    volatile uint8_t diff = 0x00;
-
-    for (size_t i = 0; i < len; ++i) {
-        uint8_t s = in_src[i];
-        diff |= in_dest[i] ^ s;
-        out[i] = s;
-    }
-
-    return diff == 0;
 }
 
 //

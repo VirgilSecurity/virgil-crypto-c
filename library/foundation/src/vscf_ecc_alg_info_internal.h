@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,30 +54,19 @@
 #ifndef VSCF_ECC_ALG_INFO_INTERNAL_H_INCLUDED
 #define VSCF_ECC_ALG_INFO_INTERNAL_H_INCLUDED
 
-// clang-format on
-//  @end
-
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
 #include "vscf_library.h"
 #include "vscf_ecc_alg_info.h"
 #include "vscf_alg_id.h"
 #include "vscf_oid_id.h"
 
-// --------------------------------------------------------------------------
-//  Generated section end.
 // clang-format on
-// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -103,7 +94,9 @@ vscf_ecc_alg_info_cleanup_ctx(vscf_ecc_alg_info_t *self);
 //  Create algorithm info with EC generic key identificator, EC domain group identificator.
 //
 VSCF_PUBLIC void
-vscf_ecc_alg_info_init_ctx_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id, vscf_oid_id_t domain_id);
+vscf_ecc_alg_info_init_ctx_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t alg_id, vscf_oid_id_t key_id,
+        vscf_oid_id_t domain_id);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -111,9 +104,11 @@ vscf_ecc_alg_info_init_ctx_with_members(vscf_ecc_alg_info_t *self, vscf_alg_id_t
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_ECC_ALG_INFO_INTERNAL_H_INCLUDED

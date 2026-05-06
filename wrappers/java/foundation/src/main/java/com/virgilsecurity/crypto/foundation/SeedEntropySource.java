@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,24 +36,41 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Deterministic entropy source that is based only on the given seed.
+*/
 public class SeedEntropySource implements AutoCloseable, EntropySource {
 
     public long cCtx;
 
+    /* Create underlying C context. */
     public SeedEntropySource() {
         super();
         this.cCtx = FoundationJNI.INSTANCE.seedEntropySource_new();
     }
 
+    /* Wrap underlying C context. */
     SeedEntropySource(FoundationContextHolder contextHolder) {
         this.cCtx = contextHolder.cCtx;
     }
 
+    /*
+    * Set a new seed as an entropy source.
+    */
+    public void resetSeed(byte[] seed) {
+        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
+    }
+
+    /*
+    * Acquire C context.
+    * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+    */
     public static SeedEntropySource getInstance(long cCtx) {
         FoundationContextHolder ctxHolder = new FoundationContextHolder(cCtx);
         return new SeedEntropySource(ctxHolder);
     }
 
+    /* Clear resources. */
     private void clearResources() {
         long ctx = this.cCtx;
         if (this.cCtx > 0) {
@@ -62,24 +79,28 @@ public class SeedEntropySource implements AutoCloseable, EntropySource {
         }
     }
 
+    /* Close resource. */
     public void close() {
         clearResources();
     }
 
+    /* Finalize resource. */
     protected void finalize() throws Throwable {
         clearResources();
     }
 
+    /*
+    * Defines that implemented source is strong.
+    */
     public boolean isStrong() {
         return FoundationJNI.INSTANCE.seedEntropySource_isStrong(this.cCtx);
     }
 
+    /*
+    * Gather entropy of the requested length.
+    */
     public byte[] gather(int len) throws FoundationException {
         return FoundationJNI.INSTANCE.seedEntropySource_gather(this.cCtx, len);
     }
-
-    public void resetSeed(byte[] seed) {
-        FoundationJNI.INSTANCE.seedEntropySource_resetSeed(this.cCtx, seed);
-    }
-
 }
+

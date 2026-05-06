@@ -1,5 +1,0 @@
-<library name="mlkem" path="../thirdparty/mlkem-native">
-    External library: https://github.com/pq-code-package/mlkem-native
-
-    <feature name="library" default="${VIRGIL_POST_QUANTUM}"/>
-</library>

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2026 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * (1) Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  *
- *     (2) Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
+ * (2) Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
  *
- *     (3) Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
+ * (3) Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -34,27 +34,50 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+
 const initAsn1Tag = (Module, modules) => {
+    /**
+     * ASN.1 constants.
+     */
     const Asn1Tag = Object.freeze({
-        BOOLEAN: 0x01,
-        INTEGER: 0x02,
-        BIT_STRING: 0x03,
-        OCTET_STRING: 0x04,
-        NULL: 0x05,
-        OID: 0x06,
-        UTF8_STRING: 0x0C,
-        SEQUENCE: 0x10,
-        SET: 0x11,
-        PRINTABLE_STRING: 0x13,
-        T61_STRING: 0x14,
-        IA5_STRING: 0x16,
-        UTC_TIME: 0x17,
-        GENERALIZED_TIME: 0x18,
-        UNIVERSAL_STRING: 0x1C,
-        BMP_STRING: 0x1E,
-        PRIMITIVE: 0x00,
-        CONSTRUCTED: 0x20,
-        CONTEXT_SPECIFIC: 0x80,
+
+        BOOLEAN: 0,
+
+        INTEGER: 1,
+
+        BIT_STRING: 2,
+
+        OCTET_STRING: 3,
+
+        NULL: 4,
+
+        OID: 5,
+
+        UTF8_STRING: 6,
+
+        SEQUENCE: 7,
+
+        SET: 8,
+
+        PRINTABLE_STRING: 9,
+
+        T61_STRING: 10,
+
+        IA5_STRING: 11,
+
+        UTC_TIME: 12,
+
+        GENERALIZED_TIME: 13,
+
+        UNIVERSAL_STRING: 14,
+
+        BMP_STRING: 15,
+
+        PRIMITIVE: 16,
+
+        CONSTRUCTED: 17,
+
+        CONTEXT_SPECIFIC: 18
     });
 
     return Asn1Tag;

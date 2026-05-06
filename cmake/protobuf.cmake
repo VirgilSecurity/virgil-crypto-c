@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -72,10 +72,36 @@ function(target_protobuf_sources target)
     #
     # Check nanopb plug-in.
     #
-    find_program(PROTOC_GEN_NANOPB  protoc-gen-nanopb PATHS "$ENV{VIRTUAL_ENV}/bin" NO_CMAKE_FIND_ROOT_PATH)
-    if(NOT PROTOC_GEN_NANOPB)
-        message(FATAL_ERROR "Nanopb generator is not found nigher in system path nor in $ENV{VIRTUAL_ENV}/bin/protoc-gen-nanopb")
+    set(_nanopb_plugin_search_paths "")
+
+    if(PROTOC_EXE)
+        get_filename_component(_protoc_dir "${PROTOC_EXE}" DIRECTORY)
+        list(APPEND _nanopb_plugin_search_paths "${_protoc_dir}")
     endif()
+
+    if(DEFINED ENV{VIRTUAL_ENV} AND EXISTS "$ENV{VIRTUAL_ENV}/bin")
+        list(APPEND _nanopb_plugin_search_paths "$ENV{VIRTUAL_ENV}/bin")
+    endif()
+
+    if(EXISTS "${CMAKE_SOURCE_DIR}/.venv/bin")
+        list(APPEND _nanopb_plugin_search_paths "${CMAKE_SOURCE_DIR}/.venv/bin")
+    endif()
+
+    find_program(PROTOC_GEN_NANOPB
+        NAMES protoc-gen-nanopb
+        PATHS ${_nanopb_plugin_search_paths}
+        NO_CMAKE_FIND_ROOT_PATH
+    )
+    if(NOT PROTOC_GEN_NANOPB)
+        message(FATAL_ERROR
+                "Nanopb generator 'protoc-gen-nanopb${HOST_EXECUTABLE_SUFFIX}' is not found. "
+                "Searched system PATH and: ${_nanopb_plugin_search_paths}. "
+                "If installed via pip into .venv, ensure it exists at ${CMAKE_SOURCE_DIR}/.venv/bin/protoc-gen-nanopb."
+                )
+    endif()
+
+    message(STATUS "Nanopb generator: ${PROTOC_GEN_NANOPB}")
+    message(STATUS "Nanopb generator search paths: ${_nanopb_plugin_search_paths}")
 
     #
     # Create generation command per proto file

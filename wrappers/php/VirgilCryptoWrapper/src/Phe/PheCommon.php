@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -39,7 +39,6 @@ namespace Virgil\CryptoWrapper\Phe;
 
 class PheCommon
 {
-
     const PHE_POINT_LENGTH = 65;
     const PHE_MAX_PASSWORD_LENGTH = 128;
     const PHE_SERVER_IDENTIFIER_LENGTH = 32;
@@ -48,8 +47,7 @@ class PheCommon
     const PHE_PRIVATE_KEY_LENGTH = 32;
     const PHE_PUBLIC_KEY_LENGTH = 65;
     const PHE_HASH_LEN = 32;
-    const PHE_MAX_ENCRYPT_LEN = 1048512;
-    const PHE_MAX_DECRYPT_LEN = 1048576;
+    const PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64;
+    const PHE_MAX_DECRYPT_LEN = 1024 * 1024;
     const PHE_MAX_AUTH_LEN = 1024;
-
 }

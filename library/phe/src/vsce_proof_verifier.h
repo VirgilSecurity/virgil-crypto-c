@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -45,6 +46,12 @@
 
 #ifndef VSCE_PROOF_VERIFIER_H_INCLUDED
 #define VSCE_PROOF_VERIFIER_H_INCLUDED
+
+#include "vsce_library.h"
+#include "vsce_phe_common.h"
+#include "vsce_status.h"
+
+#include <mbedtls/ecp.h>
 
 #if !VSCE_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
 #   include <virgil/crypto/foundation/vscf_impl.h>
@@ -57,28 +64,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vsce_library.h"
-#include "vsce_phe_common.h"
-#include "vsce_status.h"
-
-#include <mbedtls/ecp.h>
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -174,7 +164,11 @@ VSCE_PUBLIC void
 vsce_proof_verifier_release_operation_random(vsce_proof_verifier_t *self);
 
 VSCE_PUBLIC vsce_status_t
-vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group, const mbedtls_ecp_point *pub, const mbedtls_mpi *blind_x, const mbedtls_ecp_point *term1, const mbedtls_ecp_point *term2, const mbedtls_ecp_point *term3, const mbedtls_ecp_point *p1, const mbedtls_ecp_point *p2, const mbedtls_ecp_point *q1, const mbedtls_ecp_point *q2) VSCE_NODISCARD;
+vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp_group *op_group,
+        const mbedtls_ecp_point *pub, const mbedtls_mpi *blind_x, const mbedtls_ecp_point *term1,
+        const mbedtls_ecp_point *term2, const mbedtls_ecp_point *term3, const mbedtls_ecp_point *p1,
+        const mbedtls_ecp_point *p2, const mbedtls_ecp_point *q1, const mbedtls_ecp_point *q2) VSCE_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -182,9 +176,11 @@ vsce_proof_verifier_check_success_proof(vsce_proof_verifier_t *self, mbedtls_ecp
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCE_PROOF_VERIFIER_H_INCLUDED

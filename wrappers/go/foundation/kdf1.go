@@ -10,7 +10,7 @@ import "runtime"
 * Virgil Security implementation of the KDF1 (ISO-18033-2) algorithm.
 */
 type Kdf1 struct {
-    cCtx *C.vscf_kdf1_t
+    cCtx *C.vscf_kdf1_t /*ct10*/
 }
 
 func (obj *Kdf1) SetHash(hash Hash) {
@@ -38,7 +38,7 @@ func NewKdf1() *Kdf1 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKdf1WithCtx(ctx *C.vscf_kdf1_t) *Kdf1 {
+func newKdf1WithCtx(ctx *C.vscf_kdf1_t /*ct10*/) *Kdf1 {
     obj := &Kdf1 {
         cCtx: ctx,
     }
@@ -49,7 +49,7 @@ func newKdf1WithCtx(ctx *C.vscf_kdf1_t) *Kdf1 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKdf1Copy(ctx *C.vscf_kdf1_t) *Kdf1 {
+func newKdf1Copy(ctx *C.vscf_kdf1_t /*ct10*/) *Kdf1 {
     obj := &Kdf1 {
         cCtx: C.vscf_kdf1_shallow_copy(ctx),
     }
@@ -79,29 +79,29 @@ func (obj *Kdf1) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Kdf1) AlgId() AlgId {
-    proxyResult := C.vscf_kdf1_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_kdf1_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Kdf1) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_kdf1_produce_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_kdf1_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult)
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Kdf1) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := C.vscf_kdf1_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_kdf1_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -126,9 +126,9 @@ func (obj *Kdf1) Derive(data []byte, keyLen uint) []byte {
     defer keyBuf.delete()
     dataData := helperWrapData (data)
 
-    C.vscf_kdf1_derive(obj.cCtx, dataData, (C.size_t)(keyLen), keyBuf.ctx)
+    C.vscf_kdf1_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
     runtime.KeepAlive(obj)
 
-    return keyBuf.getData()
+    return keyBuf.getData() /* r7 */
 }

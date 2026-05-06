@@ -1,4 +1,4 @@
-# Copyright (C) 2016-2026 Virgil Security Inc.
+# Copyright (C) 2016-2018 Virgil Security Inc.
 #
 # Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 #

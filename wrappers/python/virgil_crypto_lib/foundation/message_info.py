@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,15 +36,15 @@
 from ctypes import *
 from ._c_bridge import VscfMessageInfo
 from ._c_bridge import VscfImplTag
-from .footer_info import FooterInfo
 from .key_recipient_info_list import KeyRecipientInfoList
-from .message_info_custom_params import MessageInfoCustomParams
 from .password_recipient_info_list import PasswordRecipientInfoList
+from .message_info_custom_params import MessageInfoCustomParams
+from .footer_info import FooterInfo
 
 
 class MessageInfo(object):
     """Handle information about an encrypted message and algorithms
-that was used for encryption."""
+    that was used for encryption."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -58,18 +58,20 @@ that was used for encryption."""
     def data_encryption_alg_info(self):
         """Return information about algorithm that was used for the data encryption."""
         result = self._lib_vscf_message_info.vscf_message_info_data_encryption_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def key_recipient_info_list(self):
         """Return list with a "key recipient info" elements."""
         result = self._lib_vscf_message_info.vscf_message_info_key_recipient_info_list(self.ctx)
-        return KeyRecipientInfoList.use_c_ctx(result)
+        instance = KeyRecipientInfoList.use_c_ctx(result)
+        return instance
 
     def password_recipient_info_list(self):
         """Return list with a "password recipient info" elements."""
         result = self._lib_vscf_message_info.vscf_message_info_password_recipient_info_list(self.ctx)
-        return PasswordRecipientInfoList.use_c_ctx(result)
+        instance = PasswordRecipientInfoList.use_c_ctx(result)
+        return instance
 
     def has_custom_params(self):
         """Return true if message info contains at least one custom param."""
@@ -78,10 +80,11 @@ that was used for encryption."""
 
     def custom_params(self):
         """Provide access to the custom params object.
-The returned object can be used to add custom params or read it.
-If custom params object was not set then new empty object is created."""
+        The returned object can be used to add custom params or read it.
+        If custom params object was not set then new empty object is created."""
         result = self._lib_vscf_message_info.vscf_message_info_custom_params(self.ctx)
-        return MessageInfoCustomParams.use_c_ctx(result)
+        instance = MessageInfoCustomParams.use_c_ctx(result)
+        return instance
 
     def has_cipher_kdf_alg_info(self):
         """Return true if cipher kdf alg info exists."""
@@ -91,7 +94,7 @@ If custom params object was not set then new empty object is created."""
     def cipher_kdf_alg_info(self):
         """Return cipher kdf alg info."""
         result = self._lib_vscf_message_info.vscf_message_info_cipher_kdf_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def has_cipher_padding_alg_info(self):
@@ -102,7 +105,7 @@ If custom params object was not set then new empty object is created."""
     def cipher_padding_alg_info(self):
         """Return cipher padding alg info."""
         result = self._lib_vscf_message_info.vscf_message_info_cipher_padding_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def has_footer_info(self):
@@ -113,7 +116,8 @@ If custom params object was not set then new empty object is created."""
     def footer_info(self):
         """Return footer info."""
         result = self._lib_vscf_message_info.vscf_message_info_footer_info(self.ctx)
-        return FooterInfo.use_c_ctx(result)
+        instance = FooterInfo.use_c_ctx(result)
+        return instance
 
     def clear(self):
         """Remove all infos."""

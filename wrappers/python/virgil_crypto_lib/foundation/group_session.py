@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -37,9 +37,9 @@ from ctypes import *
 from ._c_bridge import VscfGroupSession
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge._vscf_error import vscf_error_t
 from .group_session_message import GroupSessionMessage
+from virgil_crypto_lib.common._c_bridge import Buffer
 from .group_session_ticket import GroupSessionTicket
 
 
@@ -75,7 +75,7 @@ class GroupSession(object):
 
     def setup_defaults(self):
         """Setups default dependencies:
-- RNG: CTR DRBG"""
+        - RNG: CTR DRBG"""
         status = self._lib_vscf_group_session.vscf_group_session_setup_defaults(self.ctx)
         VscfStatus.handle_status(status)
 
@@ -88,7 +88,7 @@ class GroupSession(object):
 
     def add_epoch(self, message):
         """Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
-Epoch message should be encrypted and signed by trusted group chat member (admin)."""
+        Epoch message should be encrypted and signed by trusted group chat member (admin)."""
         status = self._lib_vscf_group_session.vscf_group_session_add_epoch(self.ctx, message.ctx)
         VscfStatus.handle_status(status)
 
@@ -98,7 +98,8 @@ Epoch message should be encrypted and signed by trusted group chat member (admin
         error = vscf_error_t()
         result = self._lib_vscf_group_session.vscf_group_session_encrypt(self.ctx, d_plain_text.data, private_key.c_impl, error)
         VscfStatus.handle_status(error.status)
-        return GroupSessionMessage.take_c_ctx(result)
+        instance = GroupSessionMessage.take_c_ctx(result)
+        return instance
 
     def decrypt_len(self, message):
         """Calculates size of buffer sufficient to store decrypted message"""
@@ -117,7 +118,8 @@ Epoch message should be encrypted and signed by trusted group chat member (admin
         error = vscf_error_t()
         result = self._lib_vscf_group_session.vscf_group_session_create_group_ticket(self.ctx, error)
         VscfStatus.handle_status(error.status)
-        return GroupSessionTicket.take_c_ctx(result)
+        instance = GroupSessionTicket.take_c_ctx(result)
+        return instance
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

@@ -10,7 +10,7 @@ import "runtime"
 * Handle information about recipient that is defined by a password.
 */
 type PasswordRecipientInfo struct {
-    cCtx *C.vscf_password_recipient_info_t
+    cCtx *C.vscf_password_recipient_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewPasswordRecipientInfo() *PasswordRecipientInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPasswordRecipientInfoWithCtx(ctx *C.vscf_password_recipient_info_t) *PasswordRecipientInfo {
+func newPasswordRecipientInfoWithCtx(ctx *C.vscf_password_recipient_info_t /*ct2*/) *PasswordRecipientInfo {
     obj := &PasswordRecipientInfo {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newPasswordRecipientInfoWithCtx(ctx *C.vscf_password_recipient_info_t) *Pas
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPasswordRecipientInfoCopy(ctx *C.vscf_password_recipient_info_t) *PasswordRecipientInfo {
+func newPasswordRecipientInfoCopy(ctx *C.vscf_password_recipient_info_t /*ct2*/) *PasswordRecipientInfo {
     obj := &PasswordRecipientInfo {
         cCtx: C.vscf_password_recipient_info_shallow_copy(ctx),
     }
@@ -71,10 +71,11 @@ func (obj *PasswordRecipientInfo) delete() {
 * Create object and define all properties.
 */
 func NewPasswordRecipientInfoWithMembers(keyEncryptionAlgorithm AlgInfo, encryptedKey []byte) *PasswordRecipientInfo {
-    keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(keyEncryptionAlgorithm.Ctx())))
     encryptedKeyData := helperWrapData (encryptedKey)
 
-    proxyResult := C.vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, encryptedKeyData)
+    keyEncryptionAlgorithmCopy := C.vscf_impl_shallow_copy((*C.vscf_impl_t)(unsafe.Pointer(keyEncryptionAlgorithm.Ctx())))
+
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_new_with_members(&keyEncryptionAlgorithmCopy, encryptedKeyData)
 
     runtime.KeepAlive(keyEncryptionAlgorithm)
 
@@ -90,20 +91,20 @@ func NewPasswordRecipientInfoWithMembers(keyEncryptionAlgorithm AlgInfo, encrypt
 * a data encryption key.
 */
 func (obj *PasswordRecipientInfo) KeyEncryptionAlgorithm() (AlgInfo, error) {
-    proxyResult := C.vscf_password_recipient_info_key_encryption_algorithm(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_key_encryption_algorithm(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Return an encrypted data encryption key.
 */
 func (obj *PasswordRecipientInfo) EncryptedKey() []byte {
-    proxyResult := C.vscf_password_recipient_info_encrypted_key(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_password_recipient_info_encrypted_key(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }

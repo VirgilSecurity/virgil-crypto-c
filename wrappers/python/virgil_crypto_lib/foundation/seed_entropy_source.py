@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,17 +35,14 @@
 
 from ctypes import *
 from ._c_bridge import VscfSeedEntropySource
+from virgil_crypto_lib.common._c_bridge import Buffer
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
-from virgil_crypto_lib.common._c_bridge import Buffer
 from .entropy_source import EntropySource
 
 
 class SeedEntropySource(EntropySource):
     """Deterministic entropy source that is based only on the given seed."""
-
-    # The maximum length of the entropy requested at once.
-    GATHER_LEN_MAX = 48
 
     def __init__(self):
         """Create underlying C context."""
@@ -58,15 +55,6 @@ class SeedEntropySource(EntropySource):
         """Destroy underlying C context."""
         self._lib_vscf_seed_entropy_source.vscf_seed_entropy_source_delete(self.ctx)
 
-    def reset_seed(self, seed):
-        """Set a new seed as an entropy source."""
-        d_seed = Data(seed)
-        self._lib_vscf_seed_entropy_source.vscf_seed_entropy_source_reset_seed(self.ctx, d_seed.data)
-
-    def move_forward(self):
-        """Current source is exhausted and must be refreshed."""
-        self._lib_vscf_seed_entropy_source.vscf_seed_entropy_source_move_forward(self.ctx)
-
     def is_strong(self):
         """Defines that implemented source is strong."""
         result = self._lib_vscf_seed_entropy_source.vscf_seed_entropy_source_is_strong(self.ctx)
@@ -78,6 +66,11 @@ class SeedEntropySource(EntropySource):
         status = self._lib_vscf_seed_entropy_source.vscf_seed_entropy_source_gather(self.ctx, len, out.c_buffer)
         VscfStatus.handle_status(status)
         return out.get_bytes()
+
+    def reset_seed(self, seed):
+        """Set a new seed as an entropy source."""
+        d_seed = Data(seed)
+        self._lib_vscf_seed_entropy_source.vscf_seed_entropy_source_reset_seed(self.ctx, d_seed.data)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

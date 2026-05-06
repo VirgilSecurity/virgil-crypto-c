@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,10 +36,26 @@
 
 package com.virgilsecurity.crypto.phe;
 
+import com.virgilsecurity.crypto.foundation.*;
 
+/* Encapsulate result of method uokms client.rotateKeys() */
 public class UokmsClientRotateKeysResult {
 
     private byte[] newClientPrivateKey;
+
+    private byte[] newServerPublicKey;
+
+    /* Create new instance of UokmsClientRotateKeysResult. */
+    UokmsClientRotateKeysResult() {
+        super();
+    }
+
+    /** Initialize all properties. */
+    UokmsClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
+        super();
+        this.newClientPrivateKey = newClientPrivateKey;
+        this.newServerPublicKey = newServerPublicKey;
+    }
 
     public byte[] getNewClientPrivateKey() {
         return this.newClientPrivateKey;
@@ -49,8 +65,6 @@ public class UokmsClientRotateKeysResult {
         this.newClientPrivateKey = newClientPrivateKey;
     }
 
-    private byte[] newServerPublicKey;
-
     public byte[] getNewServerPublicKey() {
         return this.newServerPublicKey;
     }
@@ -58,15 +72,5 @@ public class UokmsClientRotateKeysResult {
     public void setNewServerPublicKey(byte[] newServerPublicKey) {
         this.newServerPublicKey = newServerPublicKey;
     }
-
-    UokmsClientRotateKeysResult() {
-        super();
-    }
-
-    UokmsClientRotateKeysResult(byte[] newClientPrivateKey, byte[] newServerPublicKey) {
-        super();
-        this.newClientPrivateKey = newClientPrivateKey;
-        this.newServerPublicKey = newServerPublicKey;
-    }
-
 }
+

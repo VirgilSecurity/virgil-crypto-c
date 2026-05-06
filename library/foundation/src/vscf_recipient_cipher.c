@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -114,40 +114,41 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self);
 //  Note, this method change decryption state.
 //
 static vscf_status_t
-vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self, vsc_data_t decryption_key);
+vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
+        vsc_data_t decryption_key) VSCF_NODISCARD;
 
 //
 //  Decrypt data encryption key with a password.
 //
 static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Decrypt data encryption key with a private key.
 //
 static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_decrypt_data_encryption_key_with_private_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Decrypt data encryption key and configure underlying cipher.
 //
 static vscf_status_t
-vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_decrypt_data_encryption_key(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Deserialize given message info from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info);
+vscf_recipient_cipher_unpack_message_info(vscf_recipient_cipher_t *self, vsc_data_t message_info) VSCF_NODISCARD;
 
 //
 //  Deserialize given message info footer from the given data or extracted data.
 //
 static vscf_status_t
-vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_unpack_message_info_footer(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data);
+vscf_recipient_cipher_extract_message_info(vscf_recipient_cipher_t *self, vsc_data_t data) VSCF_NODISCARD;
 
 //
 //  For signed encryption set serialized footer info as
@@ -162,7 +163,7 @@ vscf_recipient_cipher_set_cipher_auth_data(vscf_recipient_cipher_t *self, vscf_i
 //  Encrypt message info footer.
 //
 static vscf_status_t
-vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_accomplish_signed_encryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Calculate data digest.
@@ -195,16 +196,16 @@ vscf_recipient_cipher_footer_derived_nonce(const vscf_recipient_cipher_t *self, 
 //  Setup default algorithms required for encryption.
 //
 static vscf_status_t
-vscf_recipient_cipher_setup_encryption_defaults(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_setup_encryption_defaults(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_configure_encryption_cipher(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_recipient_cipher_configure_kdf_feeded_encryption_cipher(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_configure_kdf_feeded_encryption_cipher(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_recipient_cipher_encrypt_cipher_key_for_recipients(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_encrypt_cipher_key_for_recipients(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 static vsc_data_t
 vscf_recipient_cipher_filter_message_info_footer(vscf_recipient_cipher_t *self, vsc_data_t data);
@@ -216,13 +217,14 @@ vscf_recipient_cipher_decrypt_chunk(vscf_recipient_cipher_t *self, vsc_data_t da
 //  Add information related to encryption to a message info.
 //
 static vscf_status_t
-vscf_recipient_cipher_update_message_info_for_encryption(vscf_recipient_cipher_t *self);
+vscf_recipient_cipher_update_message_info_for_encryption(vscf_recipient_cipher_t *self) VSCF_NODISCARD;
 
 //
 //  Configure padding cipher with given padding and cipher.
 //
 static void
-vscf_recipient_cipher_configure_padding_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *padding, vscf_impl_t *cipher);
+vscf_recipient_cipher_configure_padding_cipher(vscf_recipient_cipher_t *self, vscf_impl_t *padding,
+        vscf_impl_t *cipher);
 
 //
 //  Return size of 'vscf_recipient_cipher_t'.
@@ -261,13 +263,9 @@ vscf_recipient_cipher_cleanup(vscf_recipient_cipher_t *self) {
     vscf_recipient_cipher_cleanup_ctx(self);
 
     vscf_recipient_cipher_release_random(self);
-
     vscf_recipient_cipher_release_encryption_cipher(self);
-
     vscf_recipient_cipher_release_encryption_padding(self);
-
     vscf_recipient_cipher_release_padding_params(self);
-
     vscf_recipient_cipher_release_signer_hash(self);
 
     vscf_zeroize(self, sizeof(vscf_recipient_cipher_t));
@@ -579,6 +577,7 @@ vscf_recipient_cipher_release_signer_hash(vscf_recipient_cipher_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_recipient_cipher_init() is called.
@@ -627,7 +626,6 @@ vscf_recipient_cipher_cleanup_ctx(vscf_recipient_cipher_t *self) {
     vscf_message_info_destroy(&self->message_info);
     vscf_message_info_footer_destroy(&self->message_info_footer);
     vscf_padding_cipher_destroy(&self->padding_cipher);
-    vsc_buffer_destroy(&self->decryption_staging);
 }
 
 //
@@ -954,22 +952,18 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 
     vscf_status_t status = vscf_status_SUCCESS;
 
-    if (self->encryption_padding) {
-        VSCF_ASSERT_PTR(self->padding_cipher);
-        status = vscf_padding_cipher_finish(self->padding_cipher, out);
-    } else {
-        status = vscf_cipher_finish(self->encryption_cipher, out);
-    }
-
-    if (status != vscf_status_SUCCESS) {
-        goto cleanup;
-    }
-
     if (self->is_signed_operation) {
         status = vscf_recipient_cipher_accomplish_signed_encryption(self);
         if (status != vscf_status_SUCCESS) {
             goto cleanup;
         }
+    }
+
+    if (self->encryption_padding) {
+        VSCF_ASSERT_PTR(self->padding_cipher);
+        status = vscf_padding_cipher_finish(self->padding_cipher, out);
+    } else {
+        status = vscf_cipher_finish(self->encryption_cipher, out);
     }
 
 cleanup:
@@ -1076,16 +1070,8 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
     }
 
     if (self->decryption_padding) {
-        if (data_len == 0 && self->decryption_staging) {
-            //  Finish call: all plaintext is held in staging; report the true size.
-            len += vsc_buffer_len(self->decryption_staging);
-        }
         len += vscf_padding_cipher_decrypted_out_len(self->padding_cipher, data_len);
     } else if (self->decryption_cipher) {
-        if (data_len == 0 && self->decryption_staging) {
-            //  Finish call: all plaintext is held in staging; report the true size.
-            len += vsc_buffer_len(self->decryption_staging);
-        }
         len += vscf_cipher_decrypted_out_len(self->decryption_cipher, data_len);
     } else {
         //
@@ -1151,7 +1137,7 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     VSCF_ASSERT_PTR(self);
     VSCF_ASSERT_PTR(out);
     VSCF_ASSERT(vsc_buffer_is_valid(out));
-    VSCF_ASSERT_PTR(self->decryption_staging);
+    VSCF_ASSERT(vsc_buffer_unused_len(out) >= vscf_recipient_cipher_decryption_out_len(self, 0));
 
     if (self->decryption_state != vscf_recipient_cipher_decryption_state_PROCESSING_DATA) {
         return vscf_status_ERROR_BAD_ENCRYPTED_DATA;
@@ -1159,42 +1145,27 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
 
     VSCF_ASSERT_PTR(self->decryption_cipher);
 
-    //
-    //  Finish decryption into a temp buffer, hash it if needed, then append to
-    //  the secure staging buffer (not the caller's buffer yet).
-    //
-    size_t finish_needed;
-    if (self->decryption_padding) {
-        VSCF_ASSERT_PTR(self->padding_cipher);
-        finish_needed = vscf_padding_cipher_decrypted_out_len(self->padding_cipher, 0);
-    } else {
-        finish_needed = vscf_cipher_decrypted_out_len(self->decryption_cipher, 0);
-    }
-
-    vsc_buffer_t *finish_out = vsc_buffer_new_with_capacity(finish_needed);
-    vsc_buffer_make_secure(finish_out);
+    const size_t len_before = vsc_buffer_len(out);
 
     vscf_status_t status = vscf_status_SUCCESS;
     if (self->decryption_padding) {
-        status = vscf_padding_cipher_finish(self->padding_cipher, finish_out);
+        VSCF_ASSERT_PTR(self->padding_cipher);
+        status = vscf_padding_cipher_finish(self->padding_cipher, out);
     } else {
-        status = vscf_cipher_finish(self->decryption_cipher, finish_out);
+        status = vscf_cipher_finish(self->decryption_cipher, out);
     }
 
     if (status != vscf_status_SUCCESS) {
-        vsc_buffer_destroy(&finish_out);
-        vsc_buffer_destroy(&self->decryption_staging);
         return status;
     }
 
+    const size_t len_after = vsc_buffer_len(out);
     if (self->is_signed_operation) {
-        vscf_hash_update(self->verifier_hash, vsc_buffer_data(finish_out));
+        const size_t written_len = len_after - len_before;
+        vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
     }
 
-    vsc_buffer_append_data(self->decryption_staging, vsc_buffer_data(finish_out));
-    vsc_buffer_destroy(&finish_out);
-
-    if (vscf_message_info_has_footer_info(self->message_info)) {
+    if (vscf_status_SUCCESS == status && vscf_message_info_has_footer_info(self->message_info)) {
         status = vscf_recipient_cipher_unpack_message_info_footer(self);
     }
 
@@ -1205,17 +1176,6 @@ vscf_recipient_cipher_finish_decryption(vscf_recipient_cipher_t *self, vsc_buffe
     }
 
     vsc_buffer_release(self->derived_keys);
-
-    //
-    //  Authentication verified. Copy plaintext to the caller's buffer.
-    //  Plaintext never leaves the staging buffer on any failure path above.
-    //
-    if (status == vscf_status_SUCCESS) {
-        VSCF_ASSERT(vsc_buffer_unused_len(out) >= vsc_buffer_len(self->decryption_staging));
-        vsc_buffer_write_data(out, vsc_buffer_data(self->decryption_staging));
-    }
-
-    vsc_buffer_destroy(&self->decryption_staging);
 
     return status;
 }
@@ -1372,15 +1332,6 @@ vscf_recipient_cipher_configure_decryption_cipher(vscf_recipient_cipher_t *self,
     //
     vscf_recipient_cipher_configure_verifier_hash(self);
 
-    //
-    //  Allocate secure staging buffer for EFAIL mitigation: plaintext is held here
-    //  until the authentication tag is verified in finish_decryption, then copied to
-    //  the caller's output buffer. Callers never receive unauthenticated plaintext.
-    //
-    vsc_buffer_destroy(&self->decryption_staging);
-    self->decryption_staging = vsc_buffer_new_with_capacity(0);
-    vsc_buffer_make_secure(self->decryption_staging);
-
     self->decryption_state = vscf_recipient_cipher_decryption_state_PROCESSING_DATA;
 
     return vscf_status_SUCCESS;
@@ -1396,7 +1347,7 @@ vscf_recipient_cipher_decrypt_data_encryption_key_with_password(vscf_recipient_c
     VSCF_ASSERT_PTR(self->message_info);
     VSCF_ASSERT_PTR(self->decryption_password);
 
-    return vscf_status_ERROR_UNSUPPORTED_ALGORITHM;
+    return vscf_status_SUCCESS;
 }
 
 //
@@ -2198,34 +2149,20 @@ vscf_recipient_cipher_decrypt_chunk(vscf_recipient_cipher_t *self, vsc_data_t da
         return;
     }
 
-    //
-    //  Decrypt into a per-chunk temp buffer, then append to the secure staging
-    //  buffer.  Plaintext is released to the caller only after the authentication
-    //  tag is verified in finish_decryption (EFAIL mitigation).
-    //
-    size_t needed;
+    const size_t len_before = vsc_buffer_len(out);
+
     if (self->decryption_padding) {
         VSCF_ASSERT_PTR(self->padding_cipher);
-        needed = vscf_padding_cipher_decrypted_out_len(self->padding_cipher, filtered_data.len);
+        vscf_padding_cipher_update(self->padding_cipher, filtered_data, out);
     } else {
-        needed = vscf_cipher_decrypted_out_len(self->decryption_cipher, filtered_data.len);
+        vscf_cipher_update(self->decryption_cipher, filtered_data, out);
     }
 
-    vsc_buffer_t *chunk_out = vsc_buffer_new_with_capacity(needed);
-    vsc_buffer_make_secure(chunk_out);
-
-    if (self->decryption_padding) {
-        vscf_padding_cipher_update(self->padding_cipher, filtered_data, chunk_out);
-    } else {
-        vscf_cipher_update(self->decryption_cipher, filtered_data, chunk_out);
-    }
-
+    const size_t len_after = vsc_buffer_len(out);
+    const size_t written_len = len_after - len_before;
     if (self->is_signed_operation) {
-        vscf_hash_update(self->verifier_hash, vsc_buffer_data(chunk_out));
+        vscf_hash_update(self->verifier_hash, vsc_data_slice_beg(vsc_buffer_data(out), len_before, written_len));
     }
-
-    vsc_buffer_append_data(self->decryption_staging, vsc_buffer_data(chunk_out));
-    vsc_buffer_destroy(&chunk_out);
 }
 
 //

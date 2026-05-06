@@ -7,7 +7,7 @@ import "runtime"
 
 
 type KeyInfo struct {
-    cCtx *C.vscf_key_info_t
+    cCtx *C.vscf_key_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -27,7 +27,7 @@ func NewKeyInfo() *KeyInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyInfoWithCtx(ctx *C.vscf_key_info_t) *KeyInfo {
+func newKeyInfoWithCtx(ctx *C.vscf_key_info_t /*ct2*/) *KeyInfo {
     obj := &KeyInfo {
         cCtx: ctx,
     }
@@ -38,7 +38,7 @@ func newKeyInfoWithCtx(ctx *C.vscf_key_info_t) *KeyInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyInfoCopy(ctx *C.vscf_key_info_t) *KeyInfo {
+func newKeyInfoCopy(ctx *C.vscf_key_info_t /*ct2*/) *KeyInfo {
     obj := &KeyInfo {
         cCtx: C.vscf_key_info_shallow_copy(ctx),
     }
@@ -68,7 +68,7 @@ func (obj *KeyInfo) delete() {
 * Build key information based on the generic algorithm information.
 */
 func NewKeyInfoWithAlgInfo(algInfo AlgInfo) *KeyInfo {
-    proxyResult := C.vscf_key_info_new_with_alg_info((*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_key_info_new_with_alg_info((*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     runtime.KeepAlive(algInfo)
 
@@ -83,22 +83,22 @@ func NewKeyInfoWithAlgInfo(algInfo AlgInfo) *KeyInfo {
 * Return true if a key is a compound key
 */
 func (obj *KeyInfo) IsCompound() bool {
-    proxyResult := C.vscf_key_info_is_compound(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return true if a key is a hybrid key
 */
 func (obj *KeyInfo) IsHybrid() bool {
-    proxyResult := C.vscf_key_info_is_hybrid(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_hybrid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -106,11 +106,11 @@ func (obj *KeyInfo) IsHybrid() bool {
 * and signer key are hybrid keys.
 */
 func (obj *KeyInfo) IsCompoundHybrid() bool {
-    proxyResult := C.vscf_key_info_is_compound_hybrid(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound_hybrid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -118,11 +118,11 @@ func (obj *KeyInfo) IsCompoundHybrid() bool {
 * is a hybrid key.
 */
 func (obj *KeyInfo) IsCompoundHybridCipher() bool {
-    proxyResult := C.vscf_key_info_is_compound_hybrid_cipher(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound_hybrid_cipher(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -130,11 +130,11 @@ func (obj *KeyInfo) IsCompoundHybridCipher() bool {
 * is a hybrid key.
 */
 func (obj *KeyInfo) IsCompoundHybridSigner() bool {
-    proxyResult := C.vscf_key_info_is_compound_hybrid_signer(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_compound_hybrid_signer(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -143,11 +143,11 @@ func (obj *KeyInfo) IsCompoundHybridSigner() bool {
 * contains a combination of classic keys and post-quantum keys.
 */
 func (obj *KeyInfo) IsHybridPostQuantum() bool {
-    proxyResult := C.vscf_key_info_is_hybrid_post_quantum(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_hybrid_post_quantum(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -156,11 +156,11 @@ func (obj *KeyInfo) IsHybridPostQuantum() bool {
 * a post-quantum key.
 */
 func (obj *KeyInfo) IsHybridPostQuantumCipher() bool {
-    proxyResult := C.vscf_key_info_is_hybrid_post_quantum_cipher(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_hybrid_post_quantum_cipher(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -169,22 +169,22 @@ func (obj *KeyInfo) IsHybridPostQuantumCipher() bool {
 * a post-quantum key.
 */
 func (obj *KeyInfo) IsHybridPostQuantumSigner() bool {
-    proxyResult := C.vscf_key_info_is_hybrid_post_quantum_signer(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_is_hybrid_post_quantum_signer(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return common type of the key.
 */
 func (obj *KeyInfo) AlgId() AlgId {
-    proxyResult := C.vscf_key_info_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -192,11 +192,11 @@ func (obj *KeyInfo) AlgId() AlgId {
 * Return None, otherwise.
 */
 func (obj *KeyInfo) CompoundCipherAlgId() AlgId {
-    proxyResult := C.vscf_key_info_compound_cipher_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_compound_cipher_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -204,11 +204,11 @@ func (obj *KeyInfo) CompoundCipherAlgId() AlgId {
 * Return None, otherwise.
 */
 func (obj *KeyInfo) CompoundSignerAlgId() AlgId {
-    proxyResult := C.vscf_key_info_compound_signer_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_compound_signer_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -216,11 +216,11 @@ func (obj *KeyInfo) CompoundSignerAlgId() AlgId {
 * Return None, otherwise.
 */
 func (obj *KeyInfo) HybridFirstKeyAlgId() AlgId {
-    proxyResult := C.vscf_key_info_hybrid_first_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_hybrid_first_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -228,11 +228,11 @@ func (obj *KeyInfo) HybridFirstKeyAlgId() AlgId {
 * Return None, otherwise.
 */
 func (obj *KeyInfo) HybridSecondKeyAlgId() AlgId {
-    proxyResult := C.vscf_key_info_hybrid_second_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_hybrid_second_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -240,11 +240,11 @@ func (obj *KeyInfo) HybridSecondKeyAlgId() AlgId {
 * if key is compound(hybrid, ...), None - otherwise.
 */
 func (obj *KeyInfo) CompoundHybridCipherFirstKeyAlgId() AlgId {
-    proxyResult := C.vscf_key_info_compound_hybrid_cipher_first_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_cipher_first_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -252,11 +252,11 @@ func (obj *KeyInfo) CompoundHybridCipherFirstKeyAlgId() AlgId {
 * if key is compound(hybrid, ...), None - otherwise.
 */
 func (obj *KeyInfo) CompoundHybridCipherSecondKeyAlgId() AlgId {
-    proxyResult := C.vscf_key_info_compound_hybrid_cipher_second_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_cipher_second_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -264,11 +264,11 @@ func (obj *KeyInfo) CompoundHybridCipherSecondKeyAlgId() AlgId {
 * if key is compound(..., hybrid), None - otherwise.
 */
 func (obj *KeyInfo) CompoundHybridSignerFirstKeyAlgId() AlgId {
-    proxyResult := C.vscf_key_info_compound_hybrid_signer_first_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_signer_first_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
@@ -276,9 +276,9 @@ func (obj *KeyInfo) CompoundHybridSignerFirstKeyAlgId() AlgId {
 * if key is compound(..., hybrid), None - otherwise.
 */
 func (obj *KeyInfo) CompoundHybridSignerSecondKeyAlgId() AlgId {
-    proxyResult := C.vscf_key_info_compound_hybrid_signer_second_key_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_info_compound_hybrid_signer_second_key_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }

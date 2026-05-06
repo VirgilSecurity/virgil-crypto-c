@@ -11,7 +11,7 @@ import foundation "virgil/foundation"
 * Class implements UOKMS for server-side.
 */
 type UokmsServer struct {
-    cCtx *C.vsce_uokms_server_t
+    cCtx *C.vsce_uokms_server_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -31,7 +31,7 @@ func NewUokmsServer() *UokmsServer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newUokmsServerWithCtx(ctx *C.vsce_uokms_server_t) *UokmsServer {
+func newUokmsServerWithCtx(ctx *C.vsce_uokms_server_t /*ct2*/) *UokmsServer {
     obj := &UokmsServer {
         cCtx: ctx,
     }
@@ -42,7 +42,7 @@ func newUokmsServerWithCtx(ctx *C.vsce_uokms_server_t) *UokmsServer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newUokmsServerCopy(ctx *C.vsce_uokms_server_t) *UokmsServer {
+func newUokmsServerCopy(ctx *C.vsce_uokms_server_t /*ct2*/) *UokmsServer {
     obj := &UokmsServer {
         cCtx: C.vsce_uokms_server_shallow_copy(ctx),
     }
@@ -68,6 +68,9 @@ func (obj *UokmsServer) delete() {
     C.vsce_uokms_server_delete(obj.cCtx)
 }
 
+/*
+* Random used for key generation, proofs, etc.
+*/
 func (obj *UokmsServer) SetRandom(random foundation.Random) {
     C.vsce_uokms_server_release_random(obj.cCtx)
     C.vsce_uokms_server_use_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(random.Ctx())))
@@ -76,6 +79,9 @@ func (obj *UokmsServer) SetRandom(random foundation.Random) {
     runtime.KeepAlive(obj)
 }
 
+/*
+* Random used for crypto operations to make them const-time
+*/
 func (obj *UokmsServer) SetOperationRandom(operationRandom foundation.Random) {
     C.vsce_uokms_server_release_operation_random(obj.cCtx)
     C.vsce_uokms_server_use_operation_random(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(operationRandom.Ctx())))
@@ -88,7 +94,7 @@ func (obj *UokmsServer) SetOperationRandom(operationRandom foundation.Random) {
 * Setups dependencies with default values.
 */
 func (obj *UokmsServer) SetupDefaults() error {
-    proxyResult := C.vsce_uokms_server_setup_defaults(obj.cCtx)
+    proxyResult := /*pr4*/C.vsce_uokms_server_setup_defaults(obj.cCtx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -104,20 +110,20 @@ func (obj *UokmsServer) SetupDefaults() error {
 * Generates new NIST P-256 server key pair for some client
 */
 func (obj *UokmsServer) GenerateServerKeyPair() ([]byte, []byte, error) {
-    serverPrivateKeyBuf, serverPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength))
+    serverPrivateKeyBuf, serverPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if serverPrivateKeyBufErr != nil {
         return nil, nil, serverPrivateKeyBufErr
     }
     defer serverPrivateKeyBuf.delete()
 
-    serverPublicKeyBuf, serverPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength))
+    serverPublicKeyBuf, serverPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if serverPublicKeyBufErr != nil {
         return nil, nil, serverPublicKeyBufErr
     }
     defer serverPublicKeyBuf.delete()
 
 
-    proxyResult := C.vsce_uokms_server_generate_server_key_pair(obj.cCtx, serverPrivateKeyBuf.ctx, serverPublicKeyBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_uokms_server_generate_server_key_pair(obj.cCtx, serverPrivateKeyBuf.ctx, serverPublicKeyBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -126,25 +132,25 @@ func (obj *UokmsServer) GenerateServerKeyPair() ([]byte, []byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return serverPrivateKeyBuf.getData(), serverPublicKeyBuf.getData(), nil
+    return serverPrivateKeyBuf.getData() /* r7 */, serverPublicKeyBuf.getData() /* r7 */, nil
 }
 
 /*
 * Buffer size needed to fit DecryptResponse
 */
 func (obj *UokmsServer) DecryptResponseLen() uint {
-    proxyResult := C.vsce_uokms_server_decrypt_response_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vsce_uokms_server_decrypt_response_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Processed client's decrypt request
 */
 func (obj *UokmsServer) ProcessDecryptRequest(serverPrivateKey []byte, decryptRequest []byte) ([]byte, error) {
-    decryptResponseBuf, decryptResponseBufErr := newBuffer(int(obj.DecryptResponseLen()))
+    decryptResponseBuf, decryptResponseBufErr := newBuffer(int(obj.DecryptResponseLen() /* lg2 */))
     if decryptResponseBufErr != nil {
         return nil, decryptResponseBufErr
     }
@@ -152,7 +158,7 @@ func (obj *UokmsServer) ProcessDecryptRequest(serverPrivateKey []byte, decryptRe
     serverPrivateKeyData := helperWrapData (serverPrivateKey)
     decryptRequestData := helperWrapData (decryptRequest)
 
-    proxyResult := C.vsce_uokms_server_process_decrypt_request(obj.cCtx, serverPrivateKeyData, decryptRequestData, decryptResponseBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_uokms_server_process_decrypt_request(obj.cCtx, serverPrivateKeyData, decryptRequestData, decryptResponseBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -161,33 +167,33 @@ func (obj *UokmsServer) ProcessDecryptRequest(serverPrivateKey []byte, decryptRe
 
     runtime.KeepAlive(obj)
 
-    return decryptResponseBuf.getData(), nil
+    return decryptResponseBuf.getData() /* r7 */, nil
 }
 
 /*
 * Updates server's private and public keys and issues an update token for use on client's side
 */
 func (obj *UokmsServer) RotateKeys(serverPrivateKey []byte) ([]byte, []byte, []byte, error) {
-    newServerPrivateKeyBuf, newServerPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength))
+    newServerPrivateKeyBuf, newServerPrivateKeyBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if newServerPrivateKeyBufErr != nil {
         return nil, nil, nil, newServerPrivateKeyBufErr
     }
     defer newServerPrivateKeyBuf.delete()
 
-    newServerPublicKeyBuf, newServerPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength))
+    newServerPublicKeyBuf, newServerPublicKeyBufErr := newBuffer(int(PheCommonPhePublicKeyLength /* lg4 */))
     if newServerPublicKeyBufErr != nil {
         return nil, nil, nil, newServerPublicKeyBufErr
     }
     defer newServerPublicKeyBuf.delete()
 
-    updateTokenBuf, updateTokenBufErr := newBuffer(int(PheCommonPhePrivateKeyLength))
+    updateTokenBuf, updateTokenBufErr := newBuffer(int(PheCommonPhePrivateKeyLength /* lg4 */))
     if updateTokenBufErr != nil {
         return nil, nil, nil, updateTokenBufErr
     }
     defer updateTokenBuf.delete()
     serverPrivateKeyData := helperWrapData (serverPrivateKey)
 
-    proxyResult := C.vsce_uokms_server_rotate_keys(obj.cCtx, serverPrivateKeyData, newServerPrivateKeyBuf.ctx, newServerPublicKeyBuf.ctx, updateTokenBuf.ctx)
+    proxyResult := /*pr4*/C.vsce_uokms_server_rotate_keys(obj.cCtx, serverPrivateKeyData, newServerPrivateKeyBuf.ctx, newServerPublicKeyBuf.ctx, updateTokenBuf.ctx)
 
     err := PheErrorHandleStatus(proxyResult)
     if err != nil {
@@ -196,5 +202,5 @@ func (obj *UokmsServer) RotateKeys(serverPrivateKey []byte) ([]byte, []byte, []b
 
     runtime.KeepAlive(obj)
 
-    return newServerPrivateKeyBuf.getData(), newServerPublicKeyBuf.getData(), updateTokenBuf.getData(), nil
+    return newServerPrivateKeyBuf.getData() /* r7 */, newServerPublicKeyBuf.getData() /* r7 */, updateTokenBuf.getData() /* r7 */, nil
 }

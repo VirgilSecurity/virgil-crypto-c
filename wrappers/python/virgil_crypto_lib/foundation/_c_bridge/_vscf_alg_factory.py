@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -40,7 +40,6 @@ from ._vscf_impl import vscf_impl_t
 
 class VscfAlgFactory(object):
     """Create algorithms based on the given information."""
-
 
     def __init__(self):
         """Create underlying C context."""

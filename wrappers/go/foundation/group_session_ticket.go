@@ -10,7 +10,7 @@ import "runtime"
 * Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 */
 type GroupSessionTicket struct {
-    cCtx *C.vscf_group_session_ticket_t
+    cCtx *C.vscf_group_session_ticket_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewGroupSessionTicket() *GroupSessionTicket {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newGroupSessionTicketWithCtx(ctx *C.vscf_group_session_ticket_t) *GroupSessionTicket {
+func newGroupSessionTicketWithCtx(ctx *C.vscf_group_session_ticket_t /*ct2*/) *GroupSessionTicket {
     obj := &GroupSessionTicket {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newGroupSessionTicketWithCtx(ctx *C.vscf_group_session_ticket_t) *GroupSess
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t) *GroupSessionTicket {
+func newGroupSessionTicketCopy(ctx *C.vscf_group_session_ticket_t /*ct2*/) *GroupSessionTicket {
     obj := &GroupSessionTicket {
         cCtx: C.vscf_group_session_ticket_shallow_copy(ctx),
     }
@@ -67,6 +67,9 @@ func (obj *GroupSessionTicket) delete() {
     C.vscf_group_session_ticket_delete(obj.cCtx)
 }
 
+/*
+* Random used to generate keys
+*/
 func (obj *GroupSessionTicket) SetRng(rng Random) {
     C.vscf_group_session_ticket_release_rng(obj.cCtx)
     C.vscf_group_session_ticket_use_rng(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(rng.Ctx())))
@@ -80,7 +83,7 @@ func (obj *GroupSessionTicket) SetRng(rng Random) {
 * - RNG: CTR DRBG
 */
 func (obj *GroupSessionTicket) SetupDefaults() error {
-    proxyResult := C.vscf_group_session_ticket_setup_defaults(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_defaults(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -98,7 +101,7 @@ func (obj *GroupSessionTicket) SetupDefaults() error {
 func (obj *GroupSessionTicket) SetupTicketAsNew(sessionId []byte) error {
     sessionIdData := helperWrapData (sessionId)
 
-    proxyResult := C.vscf_group_session_ticket_setup_ticket_as_new(obj.cCtx, sessionIdData)
+    proxyResult := /*pr4*/C.vscf_group_session_ticket_setup_ticket_as_new(obj.cCtx, sessionIdData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -114,9 +117,9 @@ func (obj *GroupSessionTicket) SetupTicketAsNew(sessionId []byte) error {
 * Returns message that should be sent to all participants using secure channel.
 */
 func (obj *GroupSessionTicket) GetTicketMessage() *GroupSessionMessage {
-    proxyResult := C.vscf_group_session_ticket_get_ticket_message(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_group_session_ticket_get_ticket_message(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return newGroupSessionMessageCopy(proxyResult)
+    return newGroupSessionMessageCopy(proxyResult) /* r5 */
 }

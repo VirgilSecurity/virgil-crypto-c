@@ -43,27 +43,5 @@ Carthage
 .venv*/
 venv*/
 
-# Python bytecode caches
-__pycache__/
-*.pyc
-
 # Copilot
 .codegpt
-
-# Gas Town / Claude Code workspace
-.beads/
-.runtime/
-.serena/
-
-# Go wrapper pre-built libs (built locally or by CI)
-wrappers/go/pkg/
-
-# pi agent workspace
-.pi/
-
-# Taskplane runtime artifacts (machine-specific, do not commit)
-.worktrees/
-
-# Compound Engineering local config
-.compound-engineering/*.local.yaml
-bugs.md

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -61,10 +61,6 @@ class Pkcs5Pbkdf2(Alg, Kdf, SaltedKdf):
     def set_hmac(self, hmac):
         self._lib_vscf_pkcs5_pbkdf2.vscf_pkcs5_pbkdf2_use_hmac(self.ctx, hmac.c_impl)
 
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        self._lib_vscf_pkcs5_pbkdf2.vscf_pkcs5_pbkdf2_setup_defaults(self.ctx)
-
     def alg_id(self):
         """Provide algorithm identificator."""
         result = self._lib_vscf_pkcs5_pbkdf2.vscf_pkcs5_pbkdf2_alg_id(self.ctx)
@@ -95,9 +91,13 @@ class Pkcs5Pbkdf2(Alg, Kdf, SaltedKdf):
 
     def set_info(self, info):
         """Setup application specific information (optional).
-Can be empty."""
+        Can be empty."""
         d_info = Data(info)
         self._lib_vscf_pkcs5_pbkdf2.vscf_pkcs5_pbkdf2_set_info(self.ctx, d_info.data)
+
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        self._lib_vscf_pkcs5_pbkdf2.vscf_pkcs5_pbkdf2_setup_defaults(self.ctx)
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

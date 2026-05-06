@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -77,63 +77,6 @@
 //  Generated section start.
 // --------------------------------------------------------------------------
 
-//
-//  Setup dependency to the interface 'random' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_use_random(vscf_hybrid_key_alg_t *self, vscf_impl_t *random);
-
-//
-//  Setup dependency to the interface 'random' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_take_random(vscf_hybrid_key_alg_t *self, vscf_impl_t *random);
-
-//
-//  Release dependency to the interface 'random'.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_release_random(vscf_hybrid_key_alg_t *self);
-
-//
-//  Setup dependency to the interface 'cipher auth' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_use_cipher(vscf_hybrid_key_alg_t *self, vscf_impl_t *cipher);
-
-//
-//  Setup dependency to the interface 'cipher auth' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_take_cipher(vscf_hybrid_key_alg_t *self, vscf_impl_t *cipher);
-
-//
-//  Release dependency to the interface 'cipher auth'.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_release_cipher(vscf_hybrid_key_alg_t *self);
-
-//
-//  Setup dependency to the interface 'hash' with shared ownership.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_use_hash(vscf_hybrid_key_alg_t *self, vscf_impl_t *hash);
-
-//
-//  Setup dependency to the interface 'hash' and transfer ownership.
-//  Note, transfer ownership does not mean that object is uniquely owned by the target object.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_take_hash(vscf_hybrid_key_alg_t *self, vscf_impl_t *hash);
-
-//
-//  Release dependency to the interface 'hash'.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_release_hash(vscf_hybrid_key_alg_t *self);
-
 static const vscf_api_t *
 vscf_hybrid_key_alg_find_api(vscf_api_tag_t api_tag);
 
@@ -143,7 +86,7 @@ vscf_hybrid_key_alg_find_api(vscf_api_tag_t api_tag);
 static const vscf_key_alg_api_t key_alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key alg' MUST be equal to the  'vscf_api_tag_KEY_ALG'.
+    //  For interface 'key_alg' MUST be equal to the 'vscf_api_tag_KEY_ALG'.
     //
     vscf_api_tag_KEY_ALG,
     //
@@ -249,7 +192,7 @@ static const vscf_key_alg_api_t key_alg_api = {
 static const vscf_key_cipher_api_t key_cipher_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key cipher' MUST be equal to the  'vscf_api_tag_KEY_CIPHER'.
+    //  For interface 'key_cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
     //
     vscf_api_tag_KEY_CIPHER,
     //
@@ -293,7 +236,7 @@ static const vscf_key_cipher_api_t key_cipher_api = {
 static const vscf_key_signer_api_t key_signer_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key signer' MUST be equal to the  'vscf_api_tag_KEY_SIGNER'.
+    //  For interface 'key_signer' MUST be equal to the 'vscf_api_tag_KEY_SIGNER'.
     //
     vscf_api_tag_KEY_SIGNER,
     //
@@ -349,6 +292,143 @@ static const vscf_impl_info_t info = {
     //
     (vscf_impl_delete_fn)vscf_hybrid_key_alg_delete
 };
+
+//
+//  Perform initialization of preallocated implementation context.
+//
+VSCF_PUBLIC void
+vscf_hybrid_key_alg_init(vscf_hybrid_key_alg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+
+    vscf_zeroize(self, sizeof(vscf_hybrid_key_alg_t));
+
+    self->info = &info;
+    self->refcnt = 1;
+}
+
+//
+//  Cleanup implementation context and release dependencies.
+//  This is a reverse action of the function 'vscf_hybrid_key_alg_init()'.
+//
+VSCF_PUBLIC void
+vscf_hybrid_key_alg_cleanup(vscf_hybrid_key_alg_t *self) {
+
+    if (self == NULL) {
+        return;
+    }
+
+    vscf_hybrid_key_alg_release_random(self);
+    vscf_hybrid_key_alg_release_cipher(self);
+    vscf_hybrid_key_alg_release_hash(self);
+
+    vscf_zeroize(self, sizeof(vscf_hybrid_key_alg_t));
+}
+
+//
+//  Allocate implementation context and perform it's initialization.
+//  Postcondition: check memory allocation result.
+//
+VSCF_PUBLIC vscf_hybrid_key_alg_t *
+vscf_hybrid_key_alg_new(void) {
+
+    vscf_hybrid_key_alg_t *self = (vscf_hybrid_key_alg_t *) vscf_alloc(sizeof (vscf_hybrid_key_alg_t));
+    VSCF_ASSERT_ALLOC(self);
+
+    vscf_hybrid_key_alg_init(self);
+
+    return self;
+}
+
+//
+//  Delete given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_hybrid_key_alg_new()'.
+//
+VSCF_PUBLIC void
+vscf_hybrid_key_alg_delete(vscf_hybrid_key_alg_t *self) {
+
+    if (self == NULL) {
+        return;
+    }
+
+    size_t old_counter = self->refcnt;
+    VSCF_ASSERT(old_counter != 0);
+    size_t new_counter = old_counter - 1;
+
+    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
+    //  CAS loop
+    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
+        old_counter = self->refcnt;
+        VSCF_ASSERT(old_counter != 0);
+        new_counter = old_counter - 1;
+    }
+    #else
+    self->refcnt = new_counter;
+    #endif
+
+    if (new_counter > 0) {
+        return;
+    }
+
+    vscf_hybrid_key_alg_cleanup(self);
+
+    vscf_dealloc(self);
+}
+
+//
+//  Destroy given implementation context and it's dependencies.
+//  This is a reverse action of the function 'vscf_hybrid_key_alg_new()'.
+//  Given reference is nullified.
+//
+VSCF_PUBLIC void
+vscf_hybrid_key_alg_destroy(vscf_hybrid_key_alg_t **self_ref) {
+
+    VSCF_ASSERT_PTR(self_ref);
+
+    vscf_hybrid_key_alg_t *self = *self_ref;
+    *self_ref = NULL;
+
+    vscf_hybrid_key_alg_delete(self);
+}
+
+//
+//  Copy given implementation context by increasing reference counter.
+//
+VSCF_PUBLIC vscf_hybrid_key_alg_t *
+vscf_hybrid_key_alg_shallow_copy(vscf_hybrid_key_alg_t *self) {
+
+    // Proxy to the parent implementation.
+    return (vscf_hybrid_key_alg_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
+}
+
+//
+//  Return size of 'vscf_hybrid_key_alg_t' type.
+//
+VSCF_PUBLIC size_t
+vscf_hybrid_key_alg_impl_size(void) {
+
+    return sizeof (vscf_hybrid_key_alg_t);
+}
+
+//
+//  Cast to the 'vscf_impl_t' type.
+//
+VSCF_PUBLIC vscf_impl_t *
+vscf_hybrid_key_alg_impl(vscf_hybrid_key_alg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (vscf_impl_t *)(self);
+}
+
+//
+//  Cast to the const 'vscf_impl_t' type.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_hybrid_key_alg_impl_const(const vscf_hybrid_key_alg_t *self) {
+
+    VSCF_ASSERT_PTR(self);
+    return (const vscf_impl_t *)(self);
+}
 
 //
 //  Setup dependency to the interface 'random' with shared ownership.
@@ -476,181 +556,16 @@ vscf_hybrid_key_alg_release_hash(vscf_hybrid_key_alg_t *self) {
     vscf_impl_destroy(&self->hash);
 }
 
-//
-//  Perform initialization of preallocated implementation context.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_init(vscf_hybrid_key_alg_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-
-    vscf_zeroize(self, sizeof(vscf_hybrid_key_alg_t));
-
-    self->info = &info;
-    self->refcnt = 1;
-
-    vscf_hybrid_key_alg_init_ctx(self);
-}
-
-//
-//  Cleanup implementation context and release dependencies.
-//  This is a reverse action of the function 'vscf_hybrid_key_alg_init()'.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_cleanup(vscf_hybrid_key_alg_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    vscf_hybrid_key_alg_release_random(self);
-
-    vscf_hybrid_key_alg_release_cipher(self);
-
-    vscf_hybrid_key_alg_release_hash(self);
-
-    vscf_hybrid_key_alg_cleanup_ctx(self);
-
-    vscf_zeroize(self, sizeof(vscf_hybrid_key_alg_t));
-}
-
-//
-//  Allocate implementation context and perform it's initialization.
-//  Postcondition: check memory allocation result.
-//
-VSCF_PUBLIC vscf_hybrid_key_alg_t *
-vscf_hybrid_key_alg_new(void) {
-
-    vscf_hybrid_key_alg_t *self = (vscf_hybrid_key_alg_t *) vscf_alloc(sizeof (vscf_hybrid_key_alg_t));
-    VSCF_ASSERT_ALLOC(self);
-
-    vscf_hybrid_key_alg_init(self);
-
-    return self;
-}
-
-//
-//  Delete given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hybrid_key_alg_new()'.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_delete(vscf_hybrid_key_alg_t *self) {
-
-    if (self == NULL) {
-        return;
-    }
-
-    size_t old_counter = self->refcnt;
-    VSCF_ASSERT(old_counter != 0);
-    size_t new_counter = old_counter - 1;
-
-    #if defined(VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK)
-    //  CAS loop
-    while (!VSCF_ATOMIC_COMPARE_EXCHANGE_WEAK(&self->refcnt, &old_counter, new_counter)) {
-        old_counter = self->refcnt;
-        VSCF_ASSERT(old_counter != 0);
-        new_counter = old_counter - 1;
-    }
-    #else
-    self->refcnt = new_counter;
-    #endif
-
-    if (new_counter > 0) {
-        return;
-    }
-
-    vscf_hybrid_key_alg_cleanup(self);
-
-    vscf_dealloc(self);
-}
-
-//
-//  Destroy given implementation context and it's dependencies.
-//  This is a reverse action of the function 'vscf_hybrid_key_alg_new()'.
-//  Given reference is nullified.
-//
-VSCF_PUBLIC void
-vscf_hybrid_key_alg_destroy(vscf_hybrid_key_alg_t **self_ref) {
-
-    VSCF_ASSERT_PTR(self_ref);
-
-    vscf_hybrid_key_alg_t *self = *self_ref;
-    *self_ref = NULL;
-
-    vscf_hybrid_key_alg_delete(self);
-}
-
-//
-//  Copy given implementation context by increasing reference counter.
-//
-VSCF_PUBLIC vscf_hybrid_key_alg_t *
-vscf_hybrid_key_alg_shallow_copy(vscf_hybrid_key_alg_t *self) {
-
-    // Proxy to the parent implementation.
-    return (vscf_hybrid_key_alg_t *)vscf_impl_shallow_copy((vscf_impl_t *)self);
-}
-
-//
-//  Provides initialization of the implementation specific context.
-//  Note, this method is called automatically when method vscf_hybrid_key_alg_init() is called.
-//  Note, that context is already zeroed.
-//
-VSCF_PRIVATE void
-vscf_hybrid_key_alg_init_ctx(vscf_hybrid_key_alg_t *self) {
-
-    VSCF_UNUSED(self);
-}
-
-//
-//  Release resources of the implementation specific context.
-//  Note, this method is called automatically once when class is completely cleaning up.
-//  Note, that context will be zeroed automatically next this method.
-//
-VSCF_PRIVATE void
-vscf_hybrid_key_alg_cleanup_ctx(vscf_hybrid_key_alg_t *self) {
-
-    VSCF_UNUSED(self);
-}
-
-//
-//  Return size of 'vscf_hybrid_key_alg_t' type.
-//
-VSCF_PUBLIC size_t
-vscf_hybrid_key_alg_impl_size(void) {
-
-    return sizeof (vscf_hybrid_key_alg_t);
-}
-
-//
-//  Cast to the 'vscf_impl_t' type.
-//
-VSCF_PUBLIC vscf_impl_t *
-vscf_hybrid_key_alg_impl(vscf_hybrid_key_alg_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return (vscf_impl_t *)(self);
-}
-
-//
-//  Cast to the const 'vscf_impl_t' type.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_hybrid_key_alg_impl_const(const vscf_hybrid_key_alg_t *self) {
-
-    VSCF_ASSERT_PTR(self);
-    return (const vscf_impl_t *)(self);
-}
-
 static const vscf_api_t *
 vscf_hybrid_key_alg_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_KEY_ALG:
-        return (const vscf_api_t *)                 &key_alg_api;
+            return (const vscf_api_t *) &key_alg_api;
         case vscf_api_tag_KEY_CIPHER:
-        return (const vscf_api_t *)                 &key_cipher_api;
+            return (const vscf_api_t *) &key_cipher_api;
         case vscf_api_tag_KEY_SIGNER:
-        return (const vscf_api_t *)                 &key_signer_api;
+            return (const vscf_api_t *) &key_signer_api;
         default:
             return NULL;
     }

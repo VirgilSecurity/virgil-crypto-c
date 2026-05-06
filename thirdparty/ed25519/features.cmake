@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -8,17 +8,17 @@
 #   modification, are permitted provided that the following conditions are
 #   met:
 #
-#   (1) Redistributions of source code must retain the above copyright
-#   notice, this list of conditions and the following disclaimer.
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
 #
-#   (2) Redistributions in binary form must reproduce the above copyright
-#   notice, this list of conditions and the following disclaimer in
-#   the documentation and/or other materials provided with the
-#   distribution.
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
 #
-#   (3) Neither the name of the copyright holder nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -47,8 +47,10 @@ include_guard()
 
 option(ED25519_LIBRARY "Enable build of the 'ed25519' library" ON)
 option(ED25519_REF10 "Using REF10 implementation of ed25519." ON)
-option(ED25519_AMD64_RADIX_64_24K "Using radix 2^64 and a 24KB precomputed table optimized implementation of ed25519 curve on the x86_64 processor." OFF)
-option(ED25519_AMD64_RADIX_51_30K "Using radix 2^51 and a 30KB precomputed table optimized implementation of ed25519 curve on the x86_64 processor." OFF)
+option(ED25519_AMD64_RADIX_64_24K "Using radix 2^64 and a 24KB precomputed table optimized
+            implementation of ed25519 curve on the x86_64 processor." OFF)
+option(ED25519_AMD64_RADIX_51_30K "Using radix 2^51 and a 30KB precomputed table optimized
+            implementation of ed25519 curve on the x86_64 processor." OFF)
 mark_as_advanced(
         ED25519_LIBRARY
         ED25519_REF10
@@ -91,4 +93,3 @@ if(NOT (ED25519_REF10 OR ED25519_AMD64_RADIX_64_24K OR ED25519_AMD64_RADIX_51_30
     message("--")
     message(FATAL_ERROR)
 endif()
-

@@ -41,7 +41,7 @@ message vscr_Ratchet {
 	optional vscr_ReceiverChain receiver_chain = 3;
 	required bytes root_key = 4;
 	required vscr_SkippedMessages skipped_messages = 5;
-	optional bool enable_post_quantum = 6;
+	required bool enable_post_quantum = 6;
 }
 
 message vscr_SessionPqcInfo {
@@ -55,7 +55,7 @@ message vscr_Session {
 	required uint32 version = 1;
 	required bool received_first_response = 2;
 	required bool is_initiator = 3;
-	optional bool enable_post_quantum = 4;
+	required bool enable_post_quantum = 4;
 	required bool receiver_has_one_time_public_key = 5;
 	optional bytes sender_identity_key_id = 6;
 	optional bytes sender_ephemeral_key = 7;

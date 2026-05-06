@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -75,6 +75,7 @@
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Provides initialization of the implementation specific context.
 //  Note, this method is called automatically when method vscf_entropy_accumulator_init() is called.
@@ -115,11 +116,20 @@ vscf_entropy_accumulator_setup_defaults(vscf_entropy_accumulator_t *self) {
     bool has_strong = 0;
 
 #if defined(MBEDTLS_PLATFORM_ENTROPY)
-    int mbedtls_status = mbedtls_entropy_add_source(
-            &self->ctx, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
-    if (mbedtls_status == 0) {
-        has_strong = true;
-    }
+    mbedtls_entropy_add_source(&self->ctx, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
+    has_strong = true;
+#endif
+
+#if defined(MBEDTLS_TIMING_C)
+    mbedtls_entropy_add_source(
+            &self->ctx, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
+#endif
+
+#if defined(MBEDTLS_HAVEGE_C)
+    mbedtls_entropy_add_source(&self->ctx, mbedtls_havege_poll, &self->ctx.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
+    has_strong = true;
 #endif
 
     VSCF_ASSERT(has_strong);

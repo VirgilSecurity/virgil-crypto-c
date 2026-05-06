@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -86,6 +86,7 @@ vsc_data_ctx_size(void) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Creates data from the preallocated bytes.
@@ -224,8 +225,7 @@ VSC_PUBLIC vsc_data_t
 vsc_data_slice_beg(vsc_data_t self, size_t offset, size_t len) {
 
     VSC_ASSERT(vsc_data_is_valid(self));
-    VSC_ASSERT(offset <= self.len);
-    VSC_ASSERT(len <= self.len - offset);
+    VSC_ASSERT(self.len >= offset + len);
 
     return (vsc_data_t){self.bytes + offset, len};
 }
@@ -237,8 +237,7 @@ VSC_PUBLIC vsc_data_t
 vsc_data_slice_end(vsc_data_t self, size_t offset, size_t len) {
 
     VSC_ASSERT(vsc_data_is_valid(self));
-    VSC_ASSERT(offset <= self.len);
-    VSC_ASSERT(len <= self.len - offset);
+    VSC_ASSERT(self.len >= offset + len);
 
     return (vsc_data_t){self.bytes + self.len - offset - len, len};
 }

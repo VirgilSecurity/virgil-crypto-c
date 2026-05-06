@@ -10,7 +10,7 @@ import "runtime"
 * This is MbedTLS implementation of SHA256.
 */
 type Sha256 struct {
-    cCtx *C.vscf_sha256_t
+    cCtx *C.vscf_sha256_t /*ct10*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewSha256() *Sha256 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSha256WithCtx(ctx *C.vscf_sha256_t) *Sha256 {
+func newSha256WithCtx(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
     obj := &Sha256 {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newSha256WithCtx(ctx *C.vscf_sha256_t) *Sha256 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSha256Copy(ctx *C.vscf_sha256_t) *Sha256 {
+func newSha256Copy(ctx *C.vscf_sha256_t /*ct10*/) *Sha256 {
     obj := &Sha256 {
         cCtx: C.vscf_sha256_shallow_copy(ctx),
     }
@@ -71,29 +71,29 @@ func (obj *Sha256) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Sha256) AlgId() AlgId {
-    proxyResult := C.vscf_sha256_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_sha256_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Sha256) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_sha256_produce_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_sha256_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult)
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Sha256) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := C.vscf_sha256_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_sha256_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -125,7 +125,7 @@ func (obj *Sha256) GetBlockLen() uint {
 * Calculate hash over given data.
 */
 func (obj *Sha256) Hash(data []byte) []byte {
-    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen()))
+    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen() /* lg3 */))
     if digestBufErr != nil {
         return nil
     }
@@ -136,7 +136,7 @@ func (obj *Sha256) Hash(data []byte) []byte {
 
     runtime.KeepAlive(obj)
 
-    return digestBuf.getData()
+    return digestBuf.getData() /* r7 */
 }
 
 /*
@@ -167,7 +167,7 @@ func (obj *Sha256) Update(data []byte) {
 * Accompilsh hashing and return it's result (a message digest).
 */
 func (obj *Sha256) Finish() []byte {
-    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen()))
+    digestBuf, digestBufErr := newBuffer(int(obj.GetDigestLen() /* lg3 */))
     if digestBufErr != nil {
         return nil
     }
@@ -178,5 +178,5 @@ func (obj *Sha256) Finish() []byte {
 
     runtime.KeepAlive(obj)
 
-    return digestBuf.getData()
+    return digestBuf.getData() /* r7 */
 }

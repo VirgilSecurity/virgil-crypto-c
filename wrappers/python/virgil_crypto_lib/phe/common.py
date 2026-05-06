@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -34,7 +34,6 @@
 
 
 from ctypes import *
-from ._c_bridge import VscePheCommon
 
 
 class Common(object):
@@ -56,12 +55,8 @@ class Common(object):
     # PHE hash length
     PHE_HASH_LEN = 32
     # Maximum data size to encrypt
-    PHE_MAX_ENCRYPT_LEN = 1048512
+    PHE_MAX_ENCRYPT_LEN = 1024 * 1024 - 64
     # Maximum data size to decrypt
-    PHE_MAX_DECRYPT_LEN = 1048576
+    PHE_MAX_DECRYPT_LEN = 1024 * 1024
     # Maximum data to authenticate
     PHE_MAX_AUTH_LEN = 1024
-
-    def __init__(self):
-        """Create underlying C context."""
-        self._lib_vsce_phe_common = VscePheCommon()

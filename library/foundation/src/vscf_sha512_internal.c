@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -81,7 +81,7 @@ vscf_sha512_find_api(vscf_api_tag_t api_tag);
 static const vscf_alg_api_t alg_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'alg' MUST be equal to the  'vscf_api_tag_ALG'.
+    //  For interface 'alg' MUST be equal to the 'vscf_api_tag_ALG'.
     //
     vscf_api_tag_ALG,
     //
@@ -108,7 +108,7 @@ static const vscf_alg_api_t alg_api = {
 static const vscf_hash_api_t hash_api = {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'hash' MUST be equal to the  'vscf_api_tag_HASH'.
+    //  For interface 'hash' MUST be equal to the 'vscf_api_tag_HASH'.
     //
     vscf_api_tag_HASH,
     //
@@ -306,9 +306,9 @@ vscf_sha512_find_api(vscf_api_tag_t api_tag) {
 
     switch(api_tag) {
         case vscf_api_tag_ALG:
-        return (const vscf_api_t *)                 &alg_api;
+            return (const vscf_api_t *) &alg_api;
         case vscf_api_tag_HASH:
-        return (const vscf_api_t *)                 &hash_api;
+            return (const vscf_api_t *) &hash_api;
         default:
             return NULL;
     }

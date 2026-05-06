@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,26 +45,26 @@ class KeySerializer(object):
     def serialized_public_key_len(self, public_key):
         """Calculate buffer size enough to hold serialized public key.
 
-Precondition: public key must be exportable."""
+        Precondition: public key must be exportable."""
         raise NotImplementedError()
 
     @abstractmethod
     def serialize_public_key(self, public_key):
         """Serialize given public key to an interchangeable format.
 
-Precondition: public key must be exportable."""
+        Precondition: public key must be exportable."""
         raise NotImplementedError()
 
     @abstractmethod
     def serialized_private_key_len(self, private_key):
         """Calculate buffer size enough to hold serialized private key.
 
-Precondition: private key must be exportable."""
+        Precondition: private key must be exportable."""
         raise NotImplementedError()
 
     @abstractmethod
     def serialize_private_key(self, private_key):
         """Serialize given private key to an interchangeable format.
 
-Precondition: private key must be exportable."""
+        Precondition: private key must be exportable."""
         raise NotImplementedError()

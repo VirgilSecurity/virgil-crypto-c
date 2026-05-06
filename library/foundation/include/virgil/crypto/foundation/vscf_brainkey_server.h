@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -45,6 +46,10 @@
 
 #ifndef VSCF_BRAINKEY_SERVER_H_INCLUDED
 #define VSCF_BRAINKEY_SERVER_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -59,28 +64,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
-#include "vscf_error.h"
-#include "vscf_random.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -93,8 +81,7 @@ extern "C" {
 //
 enum {
     vscf_brainkey_server_POINT_LEN = 65,
-    vscf_brainkey_server_MPI_LEN = 32,
-    vscf_brainkey_server_PROOF_VALUE_LEN = 32
+    vscf_brainkey_server_MPI_LEN = 32
 };
 
 //
@@ -196,25 +183,13 @@ VSCF_PUBLIC vscf_status_t
 vscf_brainkey_server_setup_defaults(vscf_brainkey_server_t *self) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self, vsc_buffer_t *identity_secret) VSCF_NODISCARD;
+vscf_brainkey_server_generate_identity_secret(vscf_brainkey_server_t *self,
+        vsc_buffer_t *identity_secret) VSCF_NODISCARD;
 
 VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point, vsc_buffer_t *hardened_point) VSCF_NODISCARD;
+vscf_brainkey_server_harden(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_data_t blinded_point,
+        vsc_buffer_t *hardened_point) VSCF_NODISCARD;
 
-//
-//  Computes the server's public key G_x = x*G from the given identity secret x.
-//  Required by the client to verify DLEQ proofs.
-//
-VSCF_PUBLIC vscf_status_t
-vscf_brainkey_server_compute_public_key(vscf_brainkey_server_t *self, vsc_data_t identity_secret, vsc_buffer_t *public_key) VSCF_NODISCARD;
-
-//
-//  Generates a DLEQ proof that hardened_point = x * blinded_point using the same
-//  identity secret x as server_public_key = x * G.
-//  Client must call verify() before deblind() to authenticate the server response.
-//
-VSCF_PUBLIC bool
-vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_point, vsc_data_t hardened_point, vsc_data_t identity_secret, vsc_data_t server_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_s, vscf_error_t *error);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -222,9 +197,11 @@ vscf_brainkey_server_prove(vscf_brainkey_server_t *self, vsc_data_t blinded_poin
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_BRAINKEY_SERVER_H_INCLUDED

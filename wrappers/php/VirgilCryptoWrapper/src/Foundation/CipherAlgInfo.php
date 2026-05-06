@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handle symmetric cipher algorithm information.
+*/
 class CipherAlgInfo implements AlgInfo
 {
 
@@ -44,6 +47,19 @@ class CipherAlgInfo implements AlgInfo
     * @var
     */
     private $ctx;
+
+    /**
+    * Create symmetric cipher algorithm info with identificator and input vector.
+    *
+    * @param AlgId $algId
+    * @param string $nonce
+    * @return CipherAlgInfo
+    */
+    public static function withMembers(AlgId $algId, string $nonce): CipherAlgInfo
+    {
+        $ctx = vscf_cipher_alg_info_with_members_php($algId, $nonce);
+        return new CipherAlgInfo($ctx);
+    }
 
     /**
     * Create underlying C context.
@@ -65,6 +81,17 @@ class CipherAlgInfo implements AlgInfo
     }
 
     /**
+    * Return IV.
+    *
+    * @return string
+    */
+    public function nonce(): string
+    {
+        return vscf_cipher_alg_info_nonce_php($this->ctx);
+    }
+
+    /**
+    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -72,15 +99,6 @@ class CipherAlgInfo implements AlgInfo
     {
         $enum = vscf_cipher_alg_info_alg_id_php($this->ctx);
         return new AlgId($enum);
-    }
-
-    /**
-    *
-    * @return string
-    */
-    public function nonce(): string
-    {
-        return vscf_cipher_alg_info_nonce_php($this->ctx);
     }
 
     /**

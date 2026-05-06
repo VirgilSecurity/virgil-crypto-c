@@ -1,8 +1,0 @@
-<class name="group session public key" scope="internal" context="public" lifecycle="none">
-    Group session participant's public key, 32 bytes.
-
-    <property name="bytes" type="byte">
-        <array length="fixed" length_constant="32"/>
-    </property>
-
-</class>

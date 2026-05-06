@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from ctypes import *
 from ._c_bridge import VscfMessageInfoFooter
+from .signer_info_list import SignerInfoList
 from ._c_bridge import VscfImplTag
 from virgil_crypto_lib.common._c_bridge import Data
-from .signer_info_list import SignerInfoList
 
 
 class MessageInfoFooter(object):
@@ -60,12 +60,13 @@ class MessageInfoFooter(object):
     def signer_infos(self):
         """Return list with a "signer info" elements."""
         result = self._lib_vscf_message_info_footer.vscf_message_info_footer_signer_infos(self.ctx)
-        return SignerInfoList.use_c_ctx(result)
+        instance = SignerInfoList.use_c_ctx(result)
+        return instance
 
     def signer_hash_alg_info(self):
         """Return information about algorithm that was used for data hashing."""
         result = self._lib_vscf_message_info_footer.vscf_message_info_footer_signer_hash_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def signer_digest(self):

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -50,6 +52,10 @@
 
 #ifndef VSCP_PYTHIA_H_INCLUDED
 #define VSCP_PYTHIA_H_INCLUDED
+
+#include "vscp_library.h"
+#include "vscp_error.h"
+#include "vscp_status.h"
 
 #if !VSCP_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -64,26 +70,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscp_library.h"
-#include "vscp_error.h"
-#include "vscp_status.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -170,32 +161,39 @@ vscp_pythia_blind(vsc_data_t password, vsc_buffer_t *blinded_password, vsc_buffe
 //  Deblinds 'transformed password' value with previously returned 'blinding secret' from blind().
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_deblind(vsc_data_t transformed_password, vsc_data_t blinding_secret, vsc_buffer_t *deblinded_password) VSCP_NODISCARD;
+vscp_pythia_deblind(vsc_data_t transformed_password, vsc_data_t blinding_secret,
+        vsc_buffer_t *deblinded_password) VSCP_NODISCARD;
 
 //
 //  Computes transformation private and public key.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_compute_transformation_key_pair(vsc_data_t transformation_key_id, vsc_data_t pythia_secret, vsc_data_t pythia_scope_secret, vsc_buffer_t *transformation_private_key, vsc_buffer_t *transformation_public_key) VSCP_NODISCARD;
+vscp_pythia_compute_transformation_key_pair(vsc_data_t transformation_key_id, vsc_data_t pythia_secret,
+        vsc_data_t pythia_scope_secret, vsc_buffer_t *transformation_private_key,
+        vsc_buffer_t *transformation_public_key) VSCP_NODISCARD;
 
 //
 //  Transforms blinded password using transformation private key.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_transform(vsc_data_t blinded_password, vsc_data_t tweak, vsc_data_t transformation_private_key, vsc_buffer_t *transformed_password, vsc_buffer_t *transformed_tweak) VSCP_NODISCARD;
+vscp_pythia_transform(vsc_data_t blinded_password, vsc_data_t tweak, vsc_data_t transformation_private_key,
+        vsc_buffer_t *transformed_password, vsc_buffer_t *transformed_tweak) VSCP_NODISCARD;
 
 //
 //  Generates proof that server possesses secret values that were used to transform password.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_prove(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t transformed_tweak, vsc_data_t transformation_private_key, vsc_data_t transformation_public_key, vsc_buffer_t *proof_value_c, vsc_buffer_t *proof_value_u) VSCP_NODISCARD;
+vscp_pythia_prove(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t transformed_tweak,
+        vsc_data_t transformation_private_key, vsc_data_t transformation_public_key, vsc_buffer_t *proof_value_c,
+        vsc_buffer_t *proof_value_u) VSCP_NODISCARD;
 
 //
 //  This operation allows client to verify that the output of transform() is correct,
 //  assuming that client has previously stored transformation public key.
 //
 VSCP_PUBLIC bool
-vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t tweak, vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u, vscp_error_t *error);
+vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password, vsc_data_t tweak,
+        vsc_data_t transformation_public_key, vsc_data_t proof_value_c, vsc_data_t proof_value_u, vscp_error_t *error);
 
 //
 //  Rotates old transformation key to new transformation key and generates 'password update token',
@@ -204,14 +202,17 @@ vscp_pythia_verify(vsc_data_t transformed_password, vsc_data_t blinded_password,
 //  This action should increment version of the 'pythia scope secret'.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_get_password_update_token(vsc_data_t previous_transformation_private_key, vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token) VSCP_NODISCARD;
+vscp_pythia_get_password_update_token(vsc_data_t previous_transformation_private_key,
+        vsc_data_t new_transformation_private_key, vsc_buffer_t *password_update_token) VSCP_NODISCARD;
 
 //
 //  Updates previously stored 'deblinded password' with 'password update token'.
 //  After this call, 'transform()' called with new arguments will return corresponding values.
 //
 VSCP_PUBLIC vscp_status_t
-vscp_pythia_update_deblinded_with_token(vsc_data_t deblinded_password, vsc_data_t password_update_token, vsc_buffer_t *updated_deblinded_password) VSCP_NODISCARD;
+vscp_pythia_update_deblinded_with_token(vsc_data_t deblinded_password, vsc_data_t password_update_token,
+        vsc_buffer_t *updated_deblinded_password) VSCP_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -219,9 +220,11 @@ vscp_pythia_update_deblinded_with_token(vsc_data_t deblinded_password, vsc_data_
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCP_PYTHIA_H_INCLUDED

@@ -10,7 +10,7 @@ import "runtime"
 * Virgil Security implementation of the PBKDF2 (RFC 8018) algorithm.
 */
 type Pkcs5Pbkdf2 struct {
-    cCtx *C.vscf_pkcs5_pbkdf2_t
+    cCtx *C.vscf_pkcs5_pbkdf2_t /*ct10*/
 }
 
 func (obj *Pkcs5Pbkdf2) SetHmac(hmac Mac) {
@@ -49,7 +49,7 @@ func NewPkcs5Pbkdf2() *Pkcs5Pbkdf2 {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPkcs5Pbkdf2WithCtx(ctx *C.vscf_pkcs5_pbkdf2_t) *Pkcs5Pbkdf2 {
+func newPkcs5Pbkdf2WithCtx(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: ctx,
     }
@@ -60,7 +60,7 @@ func newPkcs5Pbkdf2WithCtx(ctx *C.vscf_pkcs5_pbkdf2_t) *Pkcs5Pbkdf2 {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newPkcs5Pbkdf2Copy(ctx *C.vscf_pkcs5_pbkdf2_t) *Pkcs5Pbkdf2 {
+func newPkcs5Pbkdf2Copy(ctx *C.vscf_pkcs5_pbkdf2_t /*ct10*/) *Pkcs5Pbkdf2 {
     obj := &Pkcs5Pbkdf2 {
         cCtx: C.vscf_pkcs5_pbkdf2_shallow_copy(ctx),
     }
@@ -90,29 +90,29 @@ func (obj *Pkcs5Pbkdf2) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Pkcs5Pbkdf2) AlgId() AlgId {
-    proxyResult := C.vscf_pkcs5_pbkdf2_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Pkcs5Pbkdf2) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_pkcs5_pbkdf2_produce_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult)
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Pkcs5Pbkdf2) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := C.vscf_pkcs5_pbkdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_pkcs5_pbkdf2_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -137,11 +137,11 @@ func (obj *Pkcs5Pbkdf2) Derive(data []byte, keyLen uint) []byte {
     defer keyBuf.delete()
     dataData := helperWrapData (data)
 
-    C.vscf_pkcs5_pbkdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen), keyBuf.ctx)
+    C.vscf_pkcs5_pbkdf2_derive(obj.cCtx, dataData, (C.size_t)(keyLen)/*pa10*/, keyBuf.ctx)
 
     runtime.KeepAlive(obj)
 
-    return keyBuf.getData()
+    return keyBuf.getData() /* r7 */
 }
 
 /*
@@ -150,7 +150,7 @@ func (obj *Pkcs5Pbkdf2) Derive(data []byte, keyLen uint) []byte {
 func (obj *Pkcs5Pbkdf2) Reset(salt []byte, iterationCount uint) {
     saltData := helperWrapData (salt)
 
-    C.vscf_pkcs5_pbkdf2_reset(obj.cCtx, saltData, (C.size_t)(iterationCount))
+    C.vscf_pkcs5_pbkdf2_reset(obj.cCtx, saltData, (C.size_t)(iterationCount)/*pa10*/)
 
     runtime.KeepAlive(obj)
 

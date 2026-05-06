@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -53,22 +53,22 @@ class HybridKeyAlgInfo(AlgInfo):
         """Destroy underlying C context."""
         self._lib_vscf_hybrid_key_alg_info.vscf_hybrid_key_alg_info_delete(self.ctx)
 
+    def alg_id(self):
+        """Provide algorithm identificator."""
+        result = self._lib_vscf_hybrid_key_alg_info.vscf_hybrid_key_alg_info_alg_id(self.ctx)
+        return result
+
     def first_key_alg_info(self):
         """Return algorithm information about the first key."""
         result = self._lib_vscf_hybrid_key_alg_info.vscf_hybrid_key_alg_info_first_key_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
 
     def second_key_alg_info(self):
         """Return algorithm information about the second key."""
         result = self._lib_vscf_hybrid_key_alg_info.vscf_hybrid_key_alg_info_second_key_alg_info(self.ctx)
-        instance = VscfImplTag.get_type(result)[0].take_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
+        instance = VscfImplTag.get_type(result)[0].use_c_ctx(cast(result, POINTER(VscfImplTag.get_type(result)[1])))
         return instance
-
-    def alg_id(self):
-        """Provide algorithm identificator."""
-        result = self._lib_vscf_hybrid_key_alg_info.vscf_hybrid_key_alg_info_alg_id(self.ctx)
-        return result
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

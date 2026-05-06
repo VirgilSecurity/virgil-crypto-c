@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Phe;
 
+/**
+* Implements wrap rotation.
+*/
 class UokmsWrapRotation
 {
 
@@ -65,16 +68,16 @@ class UokmsWrapRotation
     }
 
     /**
-    *
-    * @param \Virgil\CryptoWrapper\Foundation\Random $$operationRandom
+    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
     * @return void
     */
-    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $$operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
     {
-        vsce_uokms_wrap_rotation_use_operation_random_php($this->ctx, $$operationRandom);
+        vsce_uokms_wrap_rotation_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }
 
     /**
+    * Setups dependencies with default values.
     *
     * @return void
     * @throws \Exception
@@ -85,25 +88,27 @@ class UokmsWrapRotation
     }
 
     /**
+    * Sets update token. Should be called only once and before any other function
     *
-    * @param string $$updateToken
+    * @param string $updateToken
     * @return void
     * @throws \Exception
     */
-    public function setUpdateToken(string $$updateToken): void
+    public function setUpdateToken(string $updateToken): void
     {
-        vsce_uokms_wrap_rotation_set_update_token_php($this->ctx, $$updateToken);
+        vsce_uokms_wrap_rotation_set_update_token_php($this->ctx, $updateToken);
     }
 
     /**
+    * Updates EnrollmentRecord using server's update token
     *
-    * @param string $$wrap
+    * @param string $wrap
     * @return string
     * @throws \Exception
     */
-    public function updateWrap(string $$wrap): string
+    public function updateWrap(string $wrap): string
     {
-        return vsce_uokms_wrap_rotation_update_wrap_php($this->ctx, $$wrap);
+        return vsce_uokms_wrap_rotation_update_wrap_php($this->ctx, $wrap);
     }
 
     /**

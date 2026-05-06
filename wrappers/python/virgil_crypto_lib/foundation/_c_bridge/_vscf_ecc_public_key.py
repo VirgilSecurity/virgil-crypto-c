@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,7 +44,6 @@ class vscf_ecc_public_key_t(Structure):
 
 class VscfEccPublicKey(object):
     """Handles ECC public key."""
-
 
     def __init__(self):
         """Create underlying C context."""
@@ -93,7 +92,7 @@ class VscfEccPublicKey(object):
 
     def vscf_ecc_public_key_is_valid(self, ctx):
         """Check that key is valid.
-Note, this operation can be slow."""
+        Note, this operation can be slow."""
         vscf_ecc_public_key_is_valid = self._lib.vscf_ecc_public_key_is_valid
         vscf_ecc_public_key_is_valid.argtypes = [POINTER(vscf_ecc_public_key_t)]
         vscf_ecc_public_key_is_valid.restype = c_bool

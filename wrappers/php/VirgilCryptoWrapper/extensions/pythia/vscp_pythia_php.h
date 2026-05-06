@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2015-2026 Virgil Security, Inc.
+// Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 // All rights reserved.
 //
@@ -43,7 +43,7 @@ extern "C" {
 
 
 #if defined(_WIN32) || defined(__CYGWIN__)
-#   if VSCF_PHP_SHARED_LIBRARY
+#   if VSCP_PHP_SHARED_LIBRARY
 #       if defined(VSCP_PHP_INTERNAL_BUILD)
 #           ifdef __GNUC__
 #               define VSCP_PHP_PUBLIC __attribute__ ((dllexport))
@@ -73,9 +73,11 @@ extern "C" {
 //
 // Constants
 //
+
 //
 // Registered resources
 //
+
 #ifdef __cplusplus
 }
 #endif

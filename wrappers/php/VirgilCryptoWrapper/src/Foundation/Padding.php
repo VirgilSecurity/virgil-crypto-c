@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,112 +37,96 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Provide an interface to add and remove data padding.
+*/
 interface Padding extends Ctx
 {
 
     /**
+    * Set new padding parameters.
     *
-    * @param PaddingParams $$params
+    * @param PaddingParams $params
     * @return void
     */
-    public function configure(PaddingParams $$params): void
-    {
-        ($this->ctx, $$params);
-    }
+    public function configure(PaddingParams $params): void;
 
     /**
+    * Return length in bytes of a data with a padding.
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function paddedDataLen(int $$dataLen): int
-    {
-        return ($this->ctx, $$dataLen);
-    }
+    public function paddedDataLen(int $dataLen): int;
 
     /**
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
     *
     * @return int
     */
-    public function len(): int
-    {
-        return ($this->ctx);
-    }
+    public function len(): int;
 
     /**
+    * Return a maximum number of padding in bytes.
     *
     * @return int
     */
-    public function lenMax(): int
-    {
-        return ($this->ctx);
-    }
+    public function lenMax(): int;
 
     /**
+    * Prepare the algorithm to process data.
     *
     * @return void
     */
-    public function startDataProcessing(): void
-    {
-        ($this->ctx);
-    }
+    public function startDataProcessing(): void;
 
     /**
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     */
-    public function processData(string $$data): string
-    {
-        return ($this->ctx, $$data);
-    }
+    public function processData(string $data): string;
 
     /**
+    * Accomplish data processing and return padding.
     *
     * @return string
     * @throws \Exception
     */
-    public function finishDataProcessing(): string
-    {
-        return ($this->ctx);
-    }
+    public function finishDataProcessing(): string;
 
     /**
+    * Prepare the algorithm to process padded data.
     *
     * @return void
     */
-    public function startPaddedDataProcessing(): void
-    {
-        ($this->ctx);
-    }
+    public function startPaddedDataProcessing(): void;
 
     /**
+    * Process padded data.
+    * Return filtered data without padding.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     */
-    public function processPaddedData(string $$data): string
-    {
-        return ($this->ctx, $$data);
-    }
+    public function processPaddedData(string $data): string;
 
     /**
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
     *
     * @return int
     */
-    public function finishPaddedDataProcessingOutLen(): int
-    {
-        return ($this->ctx);
-    }
+    public function finishPaddedDataProcessingOutLen(): int;
 
     /**
+    * Accomplish padded data processing and return left data without a padding.
     *
     * @return string
     * @throws \Exception
     */
-    public function finishPaddedDataProcessing(): string
-    {
-        return ($this->ctx);
-    }
-
+    public function finishPaddedDataProcessing(): string;
 }

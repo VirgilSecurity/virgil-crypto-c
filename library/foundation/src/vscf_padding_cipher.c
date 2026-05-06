@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -94,10 +94,10 @@ static void
 vscf_padding_cipher_reset_buffer(vsc_buffer_t *buffer, size_t capacity);
 
 static vscf_status_t
-vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out);
+vscf_padding_cipher_finish_encryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 static vscf_status_t
-vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t *out);
+vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Return size of 'vscf_padding_cipher_t'.
@@ -136,7 +136,6 @@ vscf_padding_cipher_cleanup(vscf_padding_cipher_t *self) {
     vscf_padding_cipher_cleanup_ctx(self);
 
     vscf_padding_cipher_release_cipher(self);
-
     vscf_padding_cipher_release_padding(self);
 
     vscf_zeroize(self, sizeof(vscf_padding_cipher_t));
@@ -325,6 +324,7 @@ vscf_padding_cipher_release_padding(vscf_padding_cipher_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Perform context specific initialization.
@@ -554,7 +554,7 @@ vscf_padding_cipher_finish_decryption(vscf_padding_cipher_t *self, vsc_buffer_t 
 
     const vscf_status_t trim_status = vscf_padding_finish_padded_data_processing(self->padding, out);
     if (trim_status != vscf_status_SUCCESS) {
-        return trim_status;
+        return status;
     }
 
     return vscf_status_SUCCESS;

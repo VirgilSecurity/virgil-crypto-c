@@ -10,7 +10,7 @@ import "runtime"
 * Virgil Security implementation of HMAC algorithm (RFC 2104) (FIPS PUB 198-1).
 */
 type Hmac struct {
-    cCtx *C.vscf_hmac_t
+    cCtx *C.vscf_hmac_t /*ct10*/
 }
 
 func (obj *Hmac) SetHash(hash Hash) {
@@ -38,7 +38,7 @@ func NewHmac() *Hmac {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHmacWithCtx(ctx *C.vscf_hmac_t) *Hmac {
+func newHmacWithCtx(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: ctx,
     }
@@ -49,7 +49,7 @@ func newHmacWithCtx(ctx *C.vscf_hmac_t) *Hmac {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newHmacCopy(ctx *C.vscf_hmac_t) *Hmac {
+func newHmacCopy(ctx *C.vscf_hmac_t /*ct10*/) *Hmac {
     obj := &Hmac {
         cCtx: C.vscf_hmac_shallow_copy(ctx),
     }
@@ -79,29 +79,29 @@ func (obj *Hmac) delete() {
 * Provide algorithm identificator.
 */
 func (obj *Hmac) AlgId() AlgId {
-    proxyResult := C.vscf_hmac_alg_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_hmac_alg_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return AlgId(proxyResult)
+    return AlgId(proxyResult) /* r8 */
 }
 
 /*
 * Produce object with algorithm information and configuration parameters.
 */
 func (obj *Hmac) ProduceAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_hmac_produce_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_hmac_produce_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfo(proxyResult)
+    return FoundationImplementationWrapAlgInfo(proxyResult) /* r4 */
 }
 
 /*
 * Restore algorithm configuration from the given object.
 */
 func (obj *Hmac) RestoreAlgInfo(algInfo AlgInfo) error {
-    proxyResult := C.vscf_hmac_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
+    proxyResult := /*pr4*/C.vscf_hmac_restore_alg_info(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(algInfo.Ctx())))
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -119,18 +119,18 @@ func (obj *Hmac) RestoreAlgInfo(algInfo AlgInfo) error {
 * Size of the digest (mac output) in bytes.
 */
 func (obj *Hmac) DigestLen() uint {
-    proxyResult := C.vscf_hmac_digest_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_hmac_digest_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Calculate MAC over given data.
 */
 func (obj *Hmac) Mac(key []byte, data []byte) []byte {
-    macBuf, macBufErr := newBuffer(int(obj.DigestLen()))
+    macBuf, macBufErr := newBuffer(int(obj.DigestLen() /* lg2 */))
     if macBufErr != nil {
         return nil
     }
@@ -142,7 +142,7 @@ func (obj *Hmac) Mac(key []byte, data []byte) []byte {
 
     runtime.KeepAlive(obj)
 
-    return macBuf.getData()
+    return macBuf.getData() /* r7 */
 }
 
 /*
@@ -175,7 +175,7 @@ func (obj *Hmac) Update(data []byte) {
 * Accomplish MAC and return it's result (a message digest).
 */
 func (obj *Hmac) Finish() []byte {
-    macBuf, macBufErr := newBuffer(int(obj.DigestLen()))
+    macBuf, macBufErr := newBuffer(int(obj.DigestLen() /* lg2 */))
     if macBufErr != nil {
         return nil
     }
@@ -186,7 +186,7 @@ func (obj *Hmac) Finish() []byte {
 
     runtime.KeepAlive(obj)
 
-    return macBuf.getData()
+    return macBuf.getData() /* r7 */
 }
 
 /*

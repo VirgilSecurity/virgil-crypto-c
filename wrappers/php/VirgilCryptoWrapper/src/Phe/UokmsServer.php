@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Phe;
 
+/**
+* Class implements UOKMS for server-side.
+*/
 class UokmsServer
 {
 
@@ -65,26 +68,25 @@ class UokmsServer
     }
 
     /**
-    *
-    * @param \Virgil\CryptoWrapper\Foundation\Random $$random
+    * @param \Virgil\CryptoWrapper\Foundation\Random $random
     * @return void
     */
-    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $$random): void
+    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $random): void
     {
-        vsce_uokms_server_use_random_php($this->ctx, $$random);
+        vsce_uokms_server_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
-    *
-    * @param \Virgil\CryptoWrapper\Foundation\Random $$operationRandom
+    * @param \Virgil\CryptoWrapper\Foundation\Random $operationRandom
     * @return void
     */
-    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $$operationRandom): void
+    public function useOperationRandom(\Virgil\CryptoWrapper\Foundation\Random $operationRandom): void
     {
-        vsce_uokms_server_use_operation_random_php($this->ctx, $$operationRandom);
+        vsce_uokms_server_use_operation_random_php($this->ctx, $operationRandom->getCtx());
     }
 
     /**
+    * Setups dependencies with default values.
     *
     * @return void
     * @throws \Exception
@@ -95,16 +97,18 @@ class UokmsServer
     }
 
     /**
+    * Generates new NIST P-256 server key pair for some client
     *
     * @return array
     * @throws \Exception
     */
-    public function generateServerKeyPair()
+    public function generateServerKeyPair(): array // [server_private_key, server_public_key]
     {
         return vsce_uokms_server_generate_server_key_pair_php($this->ctx);
     }
 
     /**
+    * Buffer size needed to fit DecryptResponse
     *
     * @return int
     */
@@ -114,26 +118,28 @@ class UokmsServer
     }
 
     /**
+    * Processed client's decrypt request
     *
-    * @param string $$serverPrivateKey
-    * @param string $$decryptRequest
+    * @param string $serverPrivateKey
+    * @param string $decryptRequest
     * @return string
     * @throws \Exception
     */
-    public function processDecryptRequest(string $$serverPrivateKey, string $$decryptRequest): string
+    public function processDecryptRequest(string $serverPrivateKey, string $decryptRequest): string
     {
-        return vsce_uokms_server_process_decrypt_request_php($this->ctx, $$serverPrivateKey, $$decryptRequest);
+        return vsce_uokms_server_process_decrypt_request_php($this->ctx, $serverPrivateKey, $decryptRequest);
     }
 
     /**
+    * Updates server's private and public keys and issues an update token for use on client's side
     *
-    * @param string $$serverPrivateKey
+    * @param string $serverPrivateKey
     * @return array
     * @throws \Exception
     */
-    public function rotateKeys(string $$serverPrivateKey)
+    public function rotateKeys(string $serverPrivateKey): array // [new_server_private_key, new_server_public_key, update_token]
     {
-        return vsce_uokms_server_rotate_keys_php($this->ctx, $$serverPrivateKey);
+        return vsce_uokms_server_rotate_keys_php($this->ctx, $serverPrivateKey);
     }
 
     /**

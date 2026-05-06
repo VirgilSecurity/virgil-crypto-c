@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -78,7 +78,7 @@ class VscfGroupSessionMessage(object):
 
     def vscf_group_session_message_get_session_id(self, ctx):
         """Returns session id.
-This method should be called only for group info type."""
+        This method should be called only for group info type."""
         vscf_group_session_message_get_session_id = self._lib.vscf_group_session_message_get_session_id
         vscf_group_session_message_get_session_id.argtypes = [POINTER(vscf_group_session_message_t)]
         vscf_group_session_message_get_session_id.restype = vsc_data_t
@@ -109,7 +109,7 @@ This method should be called only for group info type."""
         """Deserializes instance."""
         vscf_group_session_message_deserialize = self._lib.vscf_group_session_message_deserialize
         vscf_group_session_message_deserialize.argtypes = [vsc_data_t, POINTER(vscf_error_t)]
-        vscf_group_session_message_deserialize.restype = POINTER(vscf_self_t)
+        vscf_group_session_message_deserialize.restype = POINTER(vscf_group_session_message_t)
         return vscf_group_session_message_deserialize(input, error)
 
     def vscf_group_session_message_shallow_copy(self, ctx):

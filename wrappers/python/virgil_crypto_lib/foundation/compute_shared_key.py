@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -44,11 +44,11 @@ class ComputeSharedKey(object):
     @abstractmethod
     def compute_shared_key(self, public_key, private_key):
         """Compute shared key for 2 asymmetric keys.
-Note, computed shared key can be used only within symmetric cryptography."""
+        Note, computed shared key can be used only within symmetric cryptography."""
         raise NotImplementedError()
 
     @abstractmethod
     def shared_key_len(self, key):
         """Return number of bytes required to hold shared key.
-Expect Public Key or Private Key."""
+        Expect Public Key or Private Key."""
         raise NotImplementedError()

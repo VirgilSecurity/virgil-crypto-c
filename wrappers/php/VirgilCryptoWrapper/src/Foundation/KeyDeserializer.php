@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,31 +37,25 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Public and private key deserialization from an interchangeable format.
+*/
 interface KeyDeserializer extends Ctx
 {
 
     /**
+    * Deserialize given public key as an interchangeable format to the object.
     *
-    * @param string $$publicKeyData
+    * @param string $publicKeyData
     * @return RawPublicKey
-    * @throws \Exception
     */
-    public function deserializePublicKey(string $$publicKeyData): RawPublicKey
-    {
-        $ctx = ($this->ctx, $$publicKeyData);
-        return new RawPublicKey($ctx);
-    }
+    public function deserializePublicKey(string $publicKeyData): RawPublicKey;
 
     /**
+    * Deserialize given private key as an interchangeable format to the object.
     *
-    * @param string $$privateKeyData
+    * @param string $privateKeyData
     * @return RawPrivateKey
-    * @throws \Exception
     */
-    public function deserializePrivateKey(string $$privateKeyData): RawPrivateKey
-    {
-        $ctx = ($this->ctx, $$privateKeyData);
-        return new RawPrivateKey($ctx);
-    }
-
+    public function deserializePrivateKey(string $privateKeyData): RawPrivateKey;
 }

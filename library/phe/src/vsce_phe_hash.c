@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -225,6 +225,7 @@ vsce_phe_hash_shallow_copy(vsce_phe_hash_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Perform context specific initialization.
@@ -555,10 +556,10 @@ vsce_phe_hash_push_points_to_buffer(vsce_phe_hash_t *self, vsc_buffer_t *buffer,
         const mbedtls_ecp_point *p = va_arg(points, const mbedtls_ecp_point *);
 
         if (p != NULL) {
-            mbedtls_status = mbedtls_ecp_point_write_binary(&self->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
+            mbedtls_ecp_point_write_binary(&self->group, p, MBEDTLS_ECP_PF_UNCOMPRESSED, &olen,
                     vsc_buffer_unused_bytes(buffer), vsc_buffer_unused_len(buffer));
-            VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
             vsc_buffer_inc_used(buffer, olen);
+            VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
             VSCE_ASSERT(olen == vsce_phe_common_PHE_POINT_LENGTH);
         }
     }

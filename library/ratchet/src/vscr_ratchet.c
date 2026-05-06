@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -56,7 +56,6 @@
 #include <virgil/crypto/foundation/vscf_random.h>
 #include <virgil/crypto/foundation/vscf_private_key.h>
 #include <virgil/crypto/foundation/vscf_public_key.h>
-#include <virgil/crypto/foundation/vscf_ml_kem.h>
 #include <virgil/crypto/foundation/vscf_sha512.h>
 #include <virgil/crypto/foundation/vscf_hmac.h>
 #include <virgil/crypto/foundation/vscf_hkdf.h>
@@ -102,13 +101,17 @@ static void
 vscr_ratchet_did_release_rng(vscr_ratchet_t *self);
 
 static vscr_status_t
-vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key, const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header, vsc_buffer_t *buffer);
+vscr_ratchet_decrypt_for_existing_chain(vscr_ratchet_t *self, const vscr_ratchet_chain_key_t *chain_key,
+        const vscr_RegularMessage *message, const vscr_RegularMessageHeader *regular_message_header,
+        vsc_buffer_t *buffer) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_sender_chain_t *sender_chain);
+vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self,
+        vscr_ratchet_sender_chain_t *sender_chain) VSCR_NODISCARD;
 
 static vscr_status_t
-vscr_ratchet_generate_skipped_keys(vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain, uint32_t counter);
+vscr_ratchet_generate_skipped_keys(vscr_ratchet_t *self, vscr_ratchet_receiver_chain_t *receiver_chain,
+        uint32_t counter) VSCR_NODISCARD;
 
 //
 //  Return size of 'vscr_ratchet_t'.
@@ -299,6 +302,7 @@ vscr_ratchet_release_rng(vscr_ratchet_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_init() is called.
@@ -314,7 +318,7 @@ vscr_ratchet_init_ctx(vscr_ratchet_t *self) {
     self->padding = vscf_message_padding_new();
     self->ratchet_keys = vscr_ratchet_keys_new();
     self->ratchet_key_utils = vscr_ratchet_key_utils_new();
-    self->kem = vscf_ml_kem_impl(vscf_ml_kem_new());
+    self->round5 = vscf_round5_new();
 }
 
 //
@@ -333,7 +337,7 @@ vscr_ratchet_cleanup_ctx(vscr_ratchet_t *self) {
     vscr_ratchet_cipher_destroy(&self->cipher);
     vscf_message_padding_destroy(&self->padding);
     vscr_ratchet_keys_destroy(&self->ratchet_keys);
-    vscf_impl_destroy(&self->kem);
+    vscf_round5_destroy(&self->round5);
     vscr_ratchet_key_utils_destroy(&self->ratchet_key_utils);
 }
 
@@ -348,7 +352,7 @@ vscr_ratchet_did_setup_rng(vscr_ratchet_t *self) {
     if (self->rng) {
         vscf_message_padding_use_rng(self->padding, self->rng);
         vscr_ratchet_keys_use_rng(self->ratchet_keys, self->rng);
-        vscf_ml_kem_use_random((vscf_ml_kem_t *)self->kem, self->rng);
+        vscf_round5_use_random(self->round5, self->rng);
     }
 }
 
@@ -416,14 +420,6 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
         goto err;
     }
 
-    if (enable_post_quantum) {
-        if (regular_message_header->pqc_info.encapsulated_key == NULL ||
-                regular_message_header->pqc_info.public_key == NULL) {
-            status = vscr_status_ERROR_BAD_MESSAGE_TYPE;
-            goto err;
-        }
-    }
-
     vscr_ratchet_receiver_chain_t *receiver_chain = vscr_ratchet_receiver_chain_new();
 
     status = vscr_ratchet_keys_create_chain_key_receiver(self->ratchet_keys, shared_key,
@@ -442,7 +438,7 @@ vscr_ratchet_respond(vscr_ratchet_t *self, vscr_ratchet_symmetric_key_t shared_k
 
     if (enable_post_quantum) {
         status = vscr_ratchet_pb_utils_deserialize_public_key(
-                regular_message_header->pqc_info.public_key, &receiver_chain->public_key_second);
+                self->round5, regular_message_header->pqc_info.public_key, &receiver_chain->public_key_second);
 
         if (status != vscr_status_SUCCESS) {
             vscr_ratchet_receiver_chain_destroy(&receiver_chain);
@@ -630,16 +626,14 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
                     vsc_data(regular_message->cipher_text->bytes, regular_message->cipher_text->size),
                     skipped_message_key, vsc_data(regular_message->header->bytes, regular_message->header->size),
                     plain_text);
+
             if (result != vscr_status_SUCCESS) {
                 return result;
             }
 
-            result = vscr_ratchet_skipped_messages_delete_key(self->skipped_messages, key_id, skipped_message_key);
-            if (result != vscr_status_SUCCESS) {
-                return result;
-            }
+            vscr_ratchet_skipped_messages_delete_key(self->skipped_messages, key_id, skipped_message_key);
 
-            return result;
+            return vscr_status_SUCCESS;
         }
     }
 
@@ -666,7 +660,7 @@ vscr_ratchet_decrypt(vscr_ratchet_t *self, const vscr_RegularMessage *regular_me
 
         if (self->enable_post_quantum) {
             status = vscr_ratchet_pb_utils_deserialize_public_key(
-                    regular_message_header->pqc_info.public_key, &public_key);
+                    self->round5, regular_message_header->pqc_info.public_key, &public_key);
 
             if (status != vscr_status_SUCCESS) {
                 goto err;
@@ -824,7 +818,8 @@ vscr_ratchet_generate_sender_chain_keypair(vscr_ratchet_t *self, vscr_ratchet_se
         vscf_error_t error_ctx;
         vscf_error_reset(&error_ctx);
 
-        sender_chain->private_key_second = vscf_ml_kem_generate_key((vscf_ml_kem_t *)self->kem, &error_ctx);
+        sender_chain->private_key_second =
+                vscf_round5_generate_key(self->round5, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
 
         if (error_ctx.status != vscf_status_SUCCESS) {
             status = vscr_status_ERROR_RNG_FAILED;
@@ -871,7 +866,6 @@ vscr_ratchet_serialize(const vscr_ratchet_t *self, vscr_Ratchet *ratchet_pb) {
     }
 
     ratchet_pb->prev_sender_chain_count = self->prev_sender_chain_count;
-    ratchet_pb->has_enable_post_quantum = true;
     ratchet_pb->enable_post_quantum = self->enable_post_quantum;
 
     if (self->receiver_chain) {
@@ -896,7 +890,8 @@ vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet
 
     if (ratchet_pb->has_sender_chain) {
         ratchet->sender_chain = vscr_ratchet_sender_chain_new();
-        status = vscr_ratchet_sender_chain_deserialize(&ratchet_pb->sender_chain, ratchet->sender_chain);
+        status = vscr_ratchet_sender_chain_deserialize(
+                &ratchet_pb->sender_chain, ratchet->sender_chain, ratchet->round5);
         if (status != vscr_status_SUCCESS) {
             goto err;
         }
@@ -907,7 +902,8 @@ vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet
 
     if (ratchet_pb->has_receiver_chain) {
         ratchet->receiver_chain = vscr_ratchet_receiver_chain_new();
-        status = vscr_ratchet_receiver_chain_deserialize(&ratchet_pb->receiver_chain, ratchet->receiver_chain);
+        status = vscr_ratchet_receiver_chain_deserialize(
+                &ratchet_pb->receiver_chain, ratchet->receiver_chain, ratchet->round5);
 
         if (status != vscr_status_SUCCESS) {
             goto err;
@@ -916,10 +912,7 @@ vscr_ratchet_deserialize(const vscr_Ratchet *ratchet_pb, vscr_ratchet_t *ratchet
 
     memcpy(ratchet->root_key, ratchet_pb->root_key, sizeof(ratchet->root_key));
 
-    status = vscr_ratchet_skipped_messages_deserialize(&ratchet_pb->skipped_messages, ratchet->skipped_messages);
-    if (status != vscr_status_SUCCESS) {
-        goto err;
-    }
+    vscr_ratchet_skipped_messages_deserialize(&ratchet_pb->skipped_messages, ratchet->skipped_messages);
 
 err:
     return status;

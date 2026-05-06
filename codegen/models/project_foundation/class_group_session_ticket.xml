@@ -1,8 +1,7 @@
 <class name="group session ticket" context="private">
     Group ticket used to start group session, remove participants or proactive to rotate encryption key.
 
-    <require class="group session symmetric key" scope="context"/>
-    <require class="group session id" scope="context"/>
+    <require module="group session typedefs" scope="context"/>
 
     <require module="buffer defs" project="common" scope="private"/>
     <require module="group session message" scope="private"/>

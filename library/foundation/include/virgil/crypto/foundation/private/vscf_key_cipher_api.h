@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -50,6 +52,12 @@
 
 #ifndef VSCF_KEY_CIPHER_API_H_INCLUDED
 #define VSCF_KEY_CIPHER_API_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_api.h"
+#include "vscf_impl.h"
+#include "vscf_key_alg.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -64,28 +72,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_api.h"
-#include "vscf_impl.h"
-#include "vscf_key_alg.h"
-#include "vscf_status.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -96,33 +87,39 @@ extern "C" {
 //
 //  Callback. Check if algorithm can encrypt data with a given key.
 //
-typedef bool (*vscf_key_cipher_api_can_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key, size_t data_len);
+typedef bool (*vscf_key_cipher_api_can_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        size_t data_len);
 
 //
 //  Callback. Calculate required buffer length to hold the encrypted data.
 //
-typedef size_t (*vscf_key_cipher_api_encrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key, size_t data_len);
+typedef size_t (*vscf_key_cipher_api_encrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        size_t data_len);
 
 //
 //  Callback. Encrypt data with a given public key.
 //
-typedef vscf_status_t (*vscf_key_cipher_api_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key, vsc_data_t data, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_key_cipher_api_encrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *public_key,
+        vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Callback. Check if algorithm can decrypt data with a given key.
-//  However, success result of decryption is not guaranteed.
+//          However, success result of decryption is not guaranteed.
 //
-typedef bool (*vscf_key_cipher_api_can_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key, size_t data_len);
+typedef bool (*vscf_key_cipher_api_can_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        size_t data_len);
 
 //
 //  Callback. Calculate required buffer length to hold the decrypted data.
 //
-typedef size_t (*vscf_key_cipher_api_decrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key, size_t data_len);
+typedef size_t (*vscf_key_cipher_api_decrypted_len_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        size_t data_len);
 
 //
 //  Callback. Decrypt given data.
 //
-typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key, vsc_data_t data, vsc_buffer_t *out);
+typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl, const vscf_impl_t *private_key,
+        vsc_data_t data, vsc_buffer_t *out);
 
 //
 //  Contains API requirements of the interface 'key cipher'.
@@ -130,7 +127,7 @@ typedef vscf_status_t (*vscf_key_cipher_api_decrypt_fn)(const vscf_impl_t *impl,
 struct vscf_key_cipher_api_t {
     //
     //  API's unique identifier, MUST be first in the structure.
-    //  For interface 'key cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
+    //  For interface 'key_cipher' MUST be equal to the 'vscf_api_tag_KEY_CIPHER'.
     //
     vscf_api_tag_t api_tag;
     //
@@ -168,15 +165,18 @@ struct vscf_key_cipher_api_t {
     vscf_key_cipher_api_decrypt_fn decrypt_cb;
 };
 
+
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_KEY_CIPHER_API_H_INCLUDED

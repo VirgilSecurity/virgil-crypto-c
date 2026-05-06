@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -47,7 +47,6 @@ class vscf_ecies_t(Structure):
 class VscfEcies(object):
     """Virgil implementation of the ECIES algorithm."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -90,6 +89,9 @@ class VscfEcies(object):
         return vscf_ecies_use_kdf(ctx, kdf)
 
     def vscf_ecies_use_ephemeral_key(self, ctx, ephemeral_key):
+        """Set ephemeral key that used for data encryption.
+        Public and ephemeral keys should belong to the same curve.
+        This dependency is optional."""
         vscf_ecies_use_ephemeral_key = self._lib.vscf_ecies_use_ephemeral_key
         vscf_ecies_use_ephemeral_key.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t)]
         vscf_ecies_use_ephemeral_key.restype = None
@@ -97,7 +99,7 @@ class VscfEcies(object):
 
     def vscf_ecies_set_key_alg(self, ctx, key_alg):
         """Set weak reference to the key algorithm.
-Key algorithm MUST support shared key computation as well."""
+        Key algorithm MUST support shared key computation as well."""
         vscf_ecies_set_key_alg = self._lib.vscf_ecies_set_key_alg
         vscf_ecies_set_key_alg.argtypes = [POINTER(vscf_ecies_t), POINTER(vscf_impl_t)]
         vscf_ecies_set_key_alg.restype = None
@@ -119,7 +121,7 @@ Key algorithm MUST support shared key computation as well."""
 
     def vscf_ecies_setup_defaults_no_random(self, ctx):
         """Setup predefined values to the uninitialized class dependencies
-except random."""
+        except random."""
         vscf_ecies_setup_defaults_no_random = self._lib.vscf_ecies_setup_defaults_no_random
         vscf_ecies_setup_defaults_no_random.argtypes = [POINTER(vscf_ecies_t)]
         vscf_ecies_setup_defaults_no_random.restype = None

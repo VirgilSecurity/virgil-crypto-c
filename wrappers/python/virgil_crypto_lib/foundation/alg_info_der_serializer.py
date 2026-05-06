@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -56,189 +56,6 @@ class AlgInfoDerSerializer(AlgInfoSerializer):
     def set_asn1_writer(self, asn1_writer):
         self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_use_asn1_writer(self.ctx, asn1_writer.c_impl)
 
-    def setup_defaults(self):
-        """Setup predefined values to the uninitialized class dependencies."""
-        self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_setup_defaults(self.ctx)
-
-    def is_alg_require_null_params(self, alg_id):
-        """Return true if algorithm identifier requires that optional
-parameter will be NULL."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_is_alg_require_null_params(alg_id)
-        return result
-
-    def serialized_simple_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-AlgorithmIdentifier with no parameters."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_simple_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_simple_alg_info(self, alg_info):
-        """Serialize class "simple alg info" to the ASN.1 structure
-AlgorithmIdentifier with no parameters."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_simple_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_kdf_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"KeyDerivationFunction" from the ISO/IEC 18033-2."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_kdf_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_kdf_alg_info(self, alg_info):
-        """Serialize class "hash based alg info" to the ASN.1 structure
-"KeyDerivationFunction" from the ISO/IEC 18033-2."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_kdf_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_hkdf_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_hkdf_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_hkdf_alg_info(self, alg_info):
-        """Serialize class "hash based alg info" to the ASN.1 structure
-"KeyDevAlgs" from the https://tools.ietf.org/html/draft-housley-hkdf-oids-00."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_hkdf_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_hmac_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"DigestAlgorithm" from the RFC 4231."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_hmac_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_hmac_alg_info(self, alg_info):
-        """Serialize class "hash based alg info" to the ASN.1 structure
-"DigestAlgorithm" from the RFC 4231."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_hmac_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_cipher_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"AlgorithmIdentifier" with AES parameters:
-    - defined in the RFC 3565;
-    - defined in the RFC 5084."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_cipher_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_cipher_alg_info(self, alg_info):
-        """Serialize class "cipher alg info" to the ASN.1 structure
-"AlgorithmIdentifier" with AES parameters defined in the RFC 5084."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_cipher_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_pbkdf2_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"PBKDF2Algorithm" from the RFC 8018."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_pbkdf2_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_pbkdf2_alg_info(self, alg_info):
-        """Serialize class "salted kdf alg info" to the ASN.1 structure
-"PBKDF2Algorithm" from the RFC 8018."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_pbkdf2_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_pbes2_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"PBESF2Algorithm" from the RFC 8018."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_pbes2_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_pbes2_alg_info(self, alg_info):
-        """Serialize class "salted kdf alg info" to the ASN.1 structure
-"PBES2Algorithm" from the RFC 8018."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_pbes2_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_ecc_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"AlgorithmIdentifier" with "ECParameters" from the RFC 5480."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_ecc_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_ecc_alg_info(self, alg_info):
-        """Serialize class "ecc alg info" to the ASN.1 structure
-"AlgorithmIdentifier" with "ECParameters" from the RFC 5480."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_ecc_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_compound_key_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"AlgorithmIdentifier" with "CompoundKeyParams" parameters.
-
-CompoundKeyAlgorithms ALGORITHM ::= {
-    { OID id-CompoundKey parameters CompoundKeyParams }
-}
-
-id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
-
-CompoundKeyParams ::= SEQUENCE {
-    cipherAlgorithm AlgorithmIdentifier,
-    signerAlgorithm AlgorithmIdentifier
-}"""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_compound_key_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_compound_key_alg_info(self, alg_info):
-        """Serialize class "compound key alg info" to the ASN.1 structure
-"AlgorithmIdentifier" with "CompoundKeyParams" parameters.
-
-CompoundKeyAlgorithms ALGORITHM ::= {
-    { OID id-CompoundKey parameters CompoundKeyParams }
-}
-
-id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
-
-CompoundKeyParams ::= SEQUENCE {
-    cipherAlgorithm AlgorithmIdentifier,
-    signerAlgorithm AlgorithmIdentifier
-}"""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_compound_key_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialized_hybrid_key_alg_info_len(self, alg_info):
-        """Return buffer size enough to hold ASN.1 structure
-"AlgorithmIdentifier" with "HybridKeyParams" parameters.
-
-HybridKeyAlgorithms ALGORITHM ::= {
-    { OID id-HybridKey parameters HybridKeyParams }
-}
-
-id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
-
-HybridKeyParams ::= SEQUENCE {
-    firstKeyAlgorithm AlgorithmIdentifier,
-    secondKeyAlgorithm AlgorithmIdentifier
-}"""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_hybrid_key_alg_info_len(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_hybrid_key_alg_info(self, alg_info):
-        """Serialize class "hybrid key alg info" to the ASN.1 structure
-"AlgorithmIdentifier" with "HybridKeyParams" parameters.
-
-HybridKeyAlgorithms ALGORITHM ::= {
-    { OID id-HybridKey parameters HybridKeyParams }
-}
-
-id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
-
-HybridKeyParams ::= SEQUENCE {
-    firstKeyAlgorithm AlgorithmIdentifier,
-    secondKeyAlgorithm AlgorithmIdentifier
-}"""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_hybrid_key_alg_info(self.ctx, alg_info.c_impl)
-        return result
-
-    def serialize_inplace(self, alg_info):
-        """Serialize by using internal ASN.1 writer.
-Note, that caller code is responsible to reset ASN.1 writer with
-an output buffer."""
-        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_inplace(self.ctx, alg_info.c_impl)
-        return result
-
     def serialized_len(self, alg_info):
         """Return buffer size enough to hold serialized algorithm."""
         result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialized_len(self.ctx, alg_info.c_impl)
@@ -249,6 +66,17 @@ an output buffer."""
         out = Buffer(self.serialized_len(alg_info=alg_info))
         self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize(self.ctx, alg_info.c_impl, out.c_buffer)
         return out.get_bytes()
+
+    def setup_defaults(self):
+        """Setup predefined values to the uninitialized class dependencies."""
+        self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_setup_defaults(self.ctx)
+
+    def serialize_inplace(self, alg_info):
+        """Serialize by using internal ASN.1 writer.
+        Note, that caller code is responsible to reset ASN.1 writer with
+        an output buffer."""
+        result = self._lib_vscf_alg_info_der_serializer.vscf_alg_info_der_serializer_serialize_inplace(self.ctx, alg_info.c_impl)
+        return result
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

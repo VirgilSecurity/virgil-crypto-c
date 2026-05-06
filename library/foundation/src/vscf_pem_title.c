@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -67,9 +67,7 @@
 //
 //  Contains constant string "PUBLIC KEY".
 //
-VSCF_PUBLIC const char vscf_pem_title_public_key[] = {
-    "PUBLIC KEY"
-};
+VSCF_PUBLIC const char vscf_pem_title_public_key[] = "PUBLIC KEY";
 
 //
 //  Contains length in bytes of string "PUBLIC KEY".
@@ -79,9 +77,7 @@ VSCF_PUBLIC const size_t vscf_pem_title_public_key_len = sizeof(vscf_pem_title_p
 //
 //  Contains constant string "PRIVATE KEY".
 //
-VSCF_PUBLIC const char vscf_pem_title_private_key[] = {
-    "PRIVATE KEY"
-};
+VSCF_PUBLIC const char vscf_pem_title_private_key[] = "PRIVATE KEY";
 
 //
 //  Contains length in bytes of string "PRIVATE KEY".
@@ -91,9 +87,7 @@ VSCF_PUBLIC const size_t vscf_pem_title_private_key_len = sizeof(vscf_pem_title_
 //
 //  Contains constant string "ENCRYPTED PRIVATE KEY".
 //
-VSCF_PUBLIC const char vscf_pem_title_encrypted_private_key[] = {
-    "ENCRYPTED PRIVATE KEY"
-};
+VSCF_PUBLIC const char vscf_pem_title_encrypted_private_key[] = "ENCRYPTED PRIVATE KEY";
 
 //
 //  Contains length in bytes of string "ENCRYPTED PRIVATE KEY".

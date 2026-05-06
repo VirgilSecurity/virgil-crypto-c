@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,10 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handle information about an encrypted message and algorithms
+* that was used for encryption.
+*/
 class MessageInfo
 {
 
@@ -65,8 +69,10 @@ class MessageInfo
     }
 
     /**
+    * Return information about algorithm that was used for the data encryption.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function dataEncryptionAlgInfo(): AlgInfo
     {
@@ -75,6 +81,7 @@ class MessageInfo
     }
 
     /**
+    * Return list with a "key recipient info" elements.
     *
     * @return KeyRecipientInfoList
     */
@@ -85,6 +92,7 @@ class MessageInfo
     }
 
     /**
+    * Return list with a "password recipient info" elements.
     *
     * @return PasswordRecipientInfoList
     */
@@ -95,6 +103,7 @@ class MessageInfo
     }
 
     /**
+    * Return true if message info contains at least one custom param.
     *
     * @return bool
     */
@@ -104,6 +113,9 @@ class MessageInfo
     }
 
     /**
+    * Provide access to the custom params object.
+    * The returned object can be used to add custom params or read it.
+    * If custom params object was not set then new empty object is created.
     *
     * @return MessageInfoCustomParams
     */
@@ -114,6 +126,7 @@ class MessageInfo
     }
 
     /**
+    * Return true if cipher kdf alg info exists.
     *
     * @return bool
     */
@@ -123,8 +136,10 @@ class MessageInfo
     }
 
     /**
+    * Return cipher kdf alg info.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function cipherKdfAlgInfo(): AlgInfo
     {
@@ -133,6 +148,7 @@ class MessageInfo
     }
 
     /**
+    * Return true if cipher padding alg info exists.
     *
     * @return bool
     */
@@ -142,8 +158,10 @@ class MessageInfo
     }
 
     /**
+    * Return cipher padding alg info.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function cipherPaddingAlgInfo(): AlgInfo
     {
@@ -152,6 +170,7 @@ class MessageInfo
     }
 
     /**
+    * Return true if footer info exists.
     *
     * @return bool
     */
@@ -161,6 +180,7 @@ class MessageInfo
     }
 
     /**
+    * Return footer info.
     *
     * @return FooterInfo
     */
@@ -171,6 +191,7 @@ class MessageInfo
     }
 
     /**
+    * Remove all infos.
     *
     * @return void
     */

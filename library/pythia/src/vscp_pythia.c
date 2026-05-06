@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -59,6 +59,7 @@
 #include <pythia_buf_sizes.h>
 #include <mbedtls/ctr_drbg.h>
 #include <mbedtls/entropy.h>
+#include <mbedtls/entropy_poll.h>
 
 // clang-format on
 //  @end
@@ -78,14 +79,12 @@ static mbedtls_ctr_drbg_context g_rng;
 //
 //  Create pythia_buf_t object initializer from common class 'buffer'.
 //
-#define VSCP_PYTHIA_BUFFER_FROM_DATA(X) \
-        {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
+#define VSCP_PYTHIA_BUFFER_FROM_DATA(X) {.p = (uint8_t *)X.bytes, .allocated = X.len, .len = X.len}
 
 //
 //  Create pythia_buf_t object initializer from common class 'buffer'.
 //
-#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) \
-        {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
+#define VSCP_PYTHIA_BUFFER_FROM_BUFFER(X) {.p = (uint8_t *)vsc_buffer_unused_bytes(X), .allocated = vsc_buffer_unused_len(X), .len = 0}
 
 //
 //  Callback for the pythia random.
@@ -99,6 +98,7 @@ vscp_pythia_random_handler(byte *out, int out_len, void *ctx);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Performs global initialization of the pythia library.
@@ -122,7 +122,18 @@ vscp_pythia_configure(void) {
     mbedtls_ctr_drbg_init(&g_rng);
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
-    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, 32, MBEDTLS_ENTROPY_SOURCE_STRONG);
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_platform_entropy_poll, NULL, MBEDTLS_ENTROPY_MIN_PLATFORM,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
+#endif
+
+#if defined(MBEDTLS_TIMING_C)
+    mbedtls_entropy_add_source(
+            &g_entropy, mbedtls_hardclock_poll, NULL, MBEDTLS_ENTROPY_MIN_HARDCLOCK, MBEDTLS_ENTROPY_SOURCE_WEAK);
+#endif
+
+#if defined(MBEDTLS_HAVEGE_C)
+    mbedtls_entropy_add_source(&g_entropy, mbedtls_havege_poll, &g_entropy.havege_data, MBEDTLS_ENTROPY_MIN_HAVEGE,
+            MBEDTLS_ENTROPY_SOURCE_STRONG);
 #endif
 
     const unsigned char pers[] = "vscp_pythia";

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,6 +36,7 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -45,23 +46,6 @@
 
 #ifndef VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
 #define VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED
-
-#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <virgil/crypto/foundation/vscf_impl.h>
-#endif
-
-#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
-#   include <VSCFoundation/vscf_impl.h>
-#endif
-
-// clang-format on
-//  @end
-
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
@@ -76,16 +60,24 @@
 #include <pb_decode.h>
 #include <pb_encode.h>
 
-// --------------------------------------------------------------------------
-//  Generated section end.
+#if !VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <virgil/crypto/foundation/vscf_impl.h>
+#   include <virgil/crypto/foundation/vscf_round5.h>
+#endif
+
+#if VSCR_IMPORT_PROJECT_FOUNDATION_FROM_FRAMEWORK
+#   include <VSCFoundation/vscf_impl.h>
+#   include <VSCFoundation/vscf_round5.h>
+#endif
+
 // clang-format on
-// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -98,11 +90,21 @@ extern "C" {
 //
 typedef struct vscr_ratchet_receiver_chain_t vscr_ratchet_receiver_chain_t;
 struct vscr_ratchet_receiver_chain_t {
+    //
+    //  Function do deallocate self context.
+    //
     vscr_dealloc_fn self_dealloc_cb;
+    //
+    //  Reference counter.
+    //
     VSCR_ATOMIC size_t refcnt;
+
     vscr_ratchet_key_id_t public_key_id;
+
     vscr_ratchet_public_key_t public_key_first;
+
     vscf_impl_t *public_key_second;
+
     vscr_ratchet_chain_key_t chain_key;
 };
 
@@ -154,7 +156,9 @@ VSCR_PUBLIC void
 vscr_ratchet_receiver_chain_serialize(const vscr_ratchet_receiver_chain_t *self, vscr_ReceiverChain *receiver_chain_pb);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) VSCR_NODISCARD;
+vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain_pb,
+        vscr_ratchet_receiver_chain_t *receiver_chain, vscf_round5_t *round5) VSCR_NODISCARD;
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -162,9 +166,11 @@ vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCR_RATCHET_RECEIVER_CHAIN_H_INCLUDED

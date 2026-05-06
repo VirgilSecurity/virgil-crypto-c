@@ -10,7 +10,7 @@ import "runtime"
 * Sign data of any size.
 */
 type Signer struct {
-    cCtx *C.vscf_signer_t
+    cCtx *C.vscf_signer_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewSigner() *Signer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerWithCtx(ctx *C.vscf_signer_t) *Signer {
+func newSignerWithCtx(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newSignerWithCtx(ctx *C.vscf_signer_t) *Signer {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerCopy(ctx *C.vscf_signer_t) *Signer {
+func newSignerCopy(ctx *C.vscf_signer_t /*ct2*/) *Signer {
     obj := &Signer {
         cCtx: C.vscf_signer_shallow_copy(ctx),
     }
@@ -111,27 +111,27 @@ func (obj *Signer) AppendData(data []byte) {
 * Return length of the signature.
 */
 func (obj *Signer) SignatureLen(privateKey PrivateKey) uint {
-    proxyResult := C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_signer_signature_len(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Accomplish signing and return signature.
 */
 func (obj *Signer) Sign(privateKey PrivateKey) ([]byte, error) {
-    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey)))
+    signatureBuf, signatureBufErr := newBuffer(int(obj.SignatureLen(privateKey.(PrivateKey)) /* lg2 */))
     if signatureBufErr != nil {
         return nil, signatureBufErr
     }
     defer signatureBuf.delete()
 
 
-    proxyResult := C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), signatureBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_signer_sign(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(privateKey.Ctx())), signatureBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -142,5 +142,5 @@ func (obj *Signer) Sign(privateKey PrivateKey) ([]byte, error) {
 
     runtime.KeepAlive(privateKey)
 
-    return signatureBuf.getData(), nil
+    return signatureBuf.getData() /* r7 */, nil
 }

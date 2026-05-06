@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,8 +45,7 @@ class vscf_hybrid_private_key_t(Structure):
 class VscfHybridPrivateKey(object):
     """Handles a hybrid private key.
 
-The hybrid private key contains 2 private keys."""
-
+    The hybrid private key contains 2 private keys."""
 
     def __init__(self):
         """Create underlying C context."""
@@ -64,20 +63,6 @@ The hybrid private key contains 2 private keys."""
         vscf_hybrid_private_key_delete.argtypes = [POINTER(vscf_hybrid_private_key_t)]
         vscf_hybrid_private_key_delete.restype = None
         return vscf_hybrid_private_key_delete(ctx)
-
-    def vscf_hybrid_private_key_first_key(self, ctx):
-        """Return first private key."""
-        vscf_hybrid_private_key_first_key = self._lib.vscf_hybrid_private_key_first_key
-        vscf_hybrid_private_key_first_key.argtypes = [POINTER(vscf_hybrid_private_key_t)]
-        vscf_hybrid_private_key_first_key.restype = POINTER(vscf_impl_t)
-        return vscf_hybrid_private_key_first_key(ctx)
-
-    def vscf_hybrid_private_key_second_key(self, ctx):
-        """Return second private key."""
-        vscf_hybrid_private_key_second_key = self._lib.vscf_hybrid_private_key_second_key
-        vscf_hybrid_private_key_second_key.argtypes = [POINTER(vscf_hybrid_private_key_t)]
-        vscf_hybrid_private_key_second_key.restype = POINTER(vscf_impl_t)
-        return vscf_hybrid_private_key_second_key(ctx)
 
     def vscf_hybrid_private_key_alg_id(self, ctx):
         """Algorithm identifier the key belongs to."""
@@ -109,7 +94,7 @@ The hybrid private key contains 2 private keys."""
 
     def vscf_hybrid_private_key_is_valid(self, ctx):
         """Check that key is valid.
-Note, this operation can be slow."""
+        Note, this operation can be slow."""
         vscf_hybrid_private_key_is_valid = self._lib.vscf_hybrid_private_key_is_valid
         vscf_hybrid_private_key_is_valid.argtypes = [POINTER(vscf_hybrid_private_key_t)]
         vscf_hybrid_private_key_is_valid.restype = c_bool
@@ -121,6 +106,20 @@ Note, this operation can be slow."""
         vscf_hybrid_private_key_extract_public_key.argtypes = [POINTER(vscf_hybrid_private_key_t)]
         vscf_hybrid_private_key_extract_public_key.restype = POINTER(vscf_impl_t)
         return vscf_hybrid_private_key_extract_public_key(ctx)
+
+    def vscf_hybrid_private_key_first_key(self, ctx):
+        """Return first private key."""
+        vscf_hybrid_private_key_first_key = self._lib.vscf_hybrid_private_key_first_key
+        vscf_hybrid_private_key_first_key.argtypes = [POINTER(vscf_hybrid_private_key_t)]
+        vscf_hybrid_private_key_first_key.restype = POINTER(vscf_impl_t)
+        return vscf_hybrid_private_key_first_key(ctx)
+
+    def vscf_hybrid_private_key_second_key(self, ctx):
+        """Return second private key."""
+        vscf_hybrid_private_key_second_key = self._lib.vscf_hybrid_private_key_second_key
+        vscf_hybrid_private_key_second_key.argtypes = [POINTER(vscf_hybrid_private_key_t)]
+        vscf_hybrid_private_key_second_key.restype = POINTER(vscf_impl_t)
+        return vscf_hybrid_private_key_second_key(ctx)
 
     def vscf_hybrid_private_key_shallow_copy(self, ctx):
         vscf_hybrid_private_key_shallow_copy = self._lib.vscf_hybrid_private_key_shallow_copy

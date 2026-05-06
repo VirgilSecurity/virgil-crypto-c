@@ -20,7 +20,7 @@
 
     <require module="buffer defs" scope="private" project="common"/>
 
-    <require class="group session id" scope="context"/>
+    <require module="group session typedefs" scope="context"/>
 
     <require impl="ctr drbg" scope="private"/>
     <require impl="ed25519" scope="private"/>

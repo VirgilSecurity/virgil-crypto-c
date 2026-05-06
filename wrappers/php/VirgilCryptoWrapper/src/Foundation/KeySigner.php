@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,63 +37,57 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-interface KeySigner extends Ctx, KeyAlg
+/**
+* Provide an interface for signing and verifying data digest
+* with asymmetric keys.
+*/
+interface KeySigner extends Ctx
 {
 
     /**
+    * Check if algorithm can sign data digest with a given key.
     *
-    * @param PrivateKey $$privateKey
+    * @param PrivateKey $privateKey
     * @return bool
     */
-    public function canSign(PrivateKey $$privateKey): bool
-    {
-        return ($this->ctx, $$privateKey->getCtx());
-    }
+    public function canSign(PrivateKey $privateKey): bool;
 
     /**
+    * Return length in bytes required to hold signature.
+    * Return zero if a given private key can not produce signatures.
     *
-    * @param PrivateKey $$privateKey
+    * @param PrivateKey $privateKey
     * @return int
     */
-    public function signatureLen(PrivateKey $$privateKey): int
-    {
-        return ($this->ctx, $$privateKey->getCtx());
-    }
+    public function signatureLen(PrivateKey $privateKey): int;
 
     /**
+    * Sign data digest with a given private key.
     *
-    * @param PrivateKey $$privateKey
-    * @param AlgId $$hashId
-    * @param string $$digest
+    * @param PrivateKey $privateKey
+    * @param AlgId $hashId
+    * @param string $digest
     * @return string
     * @throws \Exception
     */
-    public function signHash(PrivateKey $$privateKey, AlgId $$hashId, string $$digest): string
-    {
-        return ($this->ctx, $$privateKey->getCtx(), $$hashId, $$digest);
-    }
+    public function signHash(PrivateKey $privateKey, AlgId $hashId, string $digest): string;
 
     /**
+    * Check if algorithm can verify data digest with a given key.
     *
-    * @param PublicKey $$publicKey
+    * @param PublicKey $publicKey
     * @return bool
     */
-    public function canVerify(PublicKey $$publicKey): bool
-    {
-        return ($this->ctx, $$publicKey->getCtx());
-    }
+    public function canVerify(PublicKey $publicKey): bool;
 
     /**
+    * Verify data digest with a given public key and signature.
     *
-    * @param PublicKey $$publicKey
-    * @param AlgId $$hashId
-    * @param string $$digest
-    * @param string $$signature
+    * @param PublicKey $publicKey
+    * @param AlgId $hashId
+    * @param string $digest
+    * @param string $signature
     * @return bool
     */
-    public function verifyHash(PublicKey $$publicKey, AlgId $$hashId, string $$digest, string $$signature): bool
-    {
-        return ($this->ctx, $$publicKey->getCtx(), $$hashId, $$digest, $$signature);
-    }
-
+    public function verifyHash(PublicKey $publicKey, AlgId $hashId, string $digest, string $signature): bool;
 }

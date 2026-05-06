@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -66,6 +66,5 @@ class OidId(object):
     COMPOUND_KEY = 25
     HYBRID_KEY = 26
     FALCON = 27
-    RANDOM_PADDING = 28
-    ML_KEM_768 = 29
-    ML_DSA_65 = 30
+    ROUND5_ND_1CCA_5D = 28
+    RANDOM_PADDING = 29

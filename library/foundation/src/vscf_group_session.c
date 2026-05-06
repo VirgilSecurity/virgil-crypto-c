@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -299,6 +299,7 @@ vscf_group_session_release_rng(vscf_group_session_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_group_session_init() is called.
@@ -399,7 +400,7 @@ vscf_group_session_get_session_id(const vscf_group_session_t *self) {
     if (self->last_epoch == NULL) {
         return vsc_data_empty();
     } else {
-        return vsc_data(self->session_id.bytes, sizeof(self->session_id.bytes));
+        return vsc_data(self->session_id, sizeof(self->session_id));
     }
 }
 
@@ -415,7 +416,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
     VSCF_ASSERT(message->message_pb.has_group_info);
 
     if (self->last_epoch &&
-            memcmp(&self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id)) != 0) {
+            memcmp(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id)) != 0) {
         return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
     }
 
@@ -424,7 +425,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
     uint32_t msg_epoch = message->message_pb.group_info.epoch;
 
     if (self->last_epoch == NULL) {
-        memcpy(&self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id));
+        memcpy(self->session_id, message->message_pb.group_info.session_id, sizeof(self->session_id));
     }
 
     vscf_group_session_epoch_node_t *left = NULL, *right = NULL;
@@ -443,7 +444,7 @@ vscf_group_session_add_epoch(vscf_group_session_t *self, const vscf_group_sessio
 
     vscf_group_session_epoch_t *value = vscf_group_session_epoch_new();
     value->epoch_number = message->message_pb.group_info.epoch;
-    memcpy(&value->key, message->message_pb.group_info.key, sizeof(value->key));
+    memcpy(value->key, message->message_pb.group_info.key, sizeof(value->key));
 
     vscf_group_session_epoch_node_t *new_node = vscf_group_session_epoch_node_new();
     new_node->value = value;
@@ -504,7 +505,6 @@ vscf_group_session_encrypt(
     }
 
     vscf_status_t status;
-    vscf_group_session_message_t *msg = NULL;
 
     vsc_buffer_t *salt = vsc_buffer_new_with_capacity(vscf_group_session_SALT_SIZE);
 
@@ -514,12 +514,12 @@ vscf_group_session_encrypt(
         goto err1;
     }
 
-    msg = vscf_group_session_message_new();
+    vscf_group_session_message_t *msg = vscf_group_session_message_new();
 
     vscf_group_session_message_set_type(msg, vscf_group_msg_type_REGULAR);
 
     memcpy(msg->header_pb->salt, vsc_buffer_bytes(salt), sizeof(msg->header_pb->salt));
-    memcpy(msg->header_pb->session_id, &self->session_id, sizeof(self->session_id));
+    memcpy(msg->header_pb->session_id, self->session_id, sizeof(msg->header_pb->session_id));
     msg->header_pb->epoch = self->last_epoch->value->epoch_number;
 
     pb_ostream_t header_stream = pb_ostream_from_buffer(
@@ -537,10 +537,8 @@ vscf_group_session_encrypt(
     vsc_buffer_init(&cipher_text);
     vsc_buffer_use(&cipher_text, msg->message_pb.regular_message.cipher_text->bytes, len);
 
-    vscf_group_session_salt_t msg_salt;
-    memcpy(&msg_salt, vsc_buffer_bytes(salt), sizeof(msg_salt));
     status = vscf_message_cipher_pad_then_encrypt(self->cipher, self->padding, plain_text, self->last_epoch->value->key,
-            msg_salt,
+            vsc_buffer_bytes(salt),
             vsc_data(msg->message_pb.regular_message.header.bytes, msg->message_pb.regular_message.header.size),
             &cipher_text);
 
@@ -619,7 +617,7 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
         return vscf_status_ERROR_WRONG_KEY_TYPE;
     }
 
-    if (memcmp(&self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
+    if (memcmp(self->session_id, message->header_pb->session_id, sizeof(self->session_id)) != 0) {
         return vscf_status_ERROR_SESSION_ID_DOESNT_MATCH;
     }
 
@@ -650,12 +648,10 @@ vscf_group_session_decrypt(vscf_group_session_t *self, const vscf_group_session_
         goto err;
     }
 
-    vscf_group_session_salt_t decrypt_salt;
-    memcpy(&decrypt_salt, message->header_pb->salt, sizeof(decrypt_salt));
     status = vscf_message_cipher_decrypt_then_remove_pad(self->cipher,
             vsc_data(message->message_pb.regular_message.cipher_text->bytes,
                     message->message_pb.regular_message.cipher_text->size),
-            epoch->value->key, decrypt_salt,
+            epoch->value->key, message->header_pb->salt,
             vsc_data(message->message_pb.regular_message.header.bytes, message->message_pb.regular_message.header.size),
             plain_text);
 
@@ -677,9 +673,8 @@ vscf_group_session_create_group_ticket(const vscf_group_session_t *self, vscf_er
     vscf_group_session_ticket_t *ticket = vscf_group_session_ticket_new();
     vscf_group_session_ticket_use_rng(ticket, self->rng);
 
-    vscf_status_t status =
-            vscf_group_session_ticket_setup_ticket_internal(ticket, self->last_epoch->value->epoch_number + 1,
-                    vsc_data(self->session_id.bytes, sizeof(self->session_id.bytes)));
+    vscf_status_t status = vscf_group_session_ticket_setup_ticket_internal(
+            ticket, self->last_epoch->value->epoch_number + 1, vsc_data(self->session_id, sizeof(self->session_id)));
 
     if (status != vscf_status_SUCCESS) {
         VSCF_ERROR_SAFE_UPDATE(error, status);

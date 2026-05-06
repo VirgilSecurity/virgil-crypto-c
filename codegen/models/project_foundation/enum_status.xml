@@ -139,6 +139,18 @@
         Post-quantum Falcon-Sign private key is corrupted.
     </constant>
 
+    <constant name="error round5" value="-229">
+        Generic Round5 library error.
+    </constant>
+
+    <constant name="error bad round5 public key" value="-230">
+        Post-quantum NIST Round5 public key is corrupted.
+    </constant>
+
+    <constant name="error bad round5 private key" value="-231">
+        Post-quantum NIST Round5 private key is corrupted.
+    </constant>
+
     <constant name="error bad compound public key" value="-232">
         Compound public key is corrupted.
     </constant>
@@ -169,22 +181,6 @@
 
     <constant name="error bad asn1 algorithm hybrid key" value="-239">
         ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.
-    </constant>
-
-    <constant name="error bad ml kem public key" value="-240">
-        Post-quantum ML-KEM-768 public key is corrupted.
-    </constant>
-
-    <constant name="error bad ml kem private key" value="-241">
-        Post-quantum ML-KEM-768 private key is corrupted.
-    </constant>
-
-    <constant name="error bad ml dsa public key" value="-242">
-        Post-quantum ML-DSA-65 public key is corrupted.
-    </constant>
-
-    <constant name="error bad ml dsa private key" value="-243">
-        Post-quantum ML-DSA-65 private key is corrupted.
     </constant>
 
     <constant name="error no message info" value="-301">

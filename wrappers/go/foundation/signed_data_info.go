@@ -10,7 +10,7 @@ import "runtime"
 * Handle meta information about signed data.
 */
 type SignedDataInfo struct {
-    cCtx *C.vscf_signed_data_info_t
+    cCtx *C.vscf_signed_data_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewSignedDataInfo() *SignedDataInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignedDataInfoWithCtx(ctx *C.vscf_signed_data_info_t) *SignedDataInfo {
+func newSignedDataInfoWithCtx(ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDataInfo {
     obj := &SignedDataInfo {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newSignedDataInfoWithCtx(ctx *C.vscf_signed_data_info_t) *SignedDataInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignedDataInfoCopy(ctx *C.vscf_signed_data_info_t) *SignedDataInfo {
+func newSignedDataInfoCopy(ctx *C.vscf_signed_data_info_t /*ct2*/) *SignedDataInfo {
     obj := &SignedDataInfo {
         cCtx: C.vscf_signed_data_info_shallow_copy(ctx),
     }
@@ -71,9 +71,9 @@ func (obj *SignedDataInfo) delete() {
 * Return information about algorithm that was used to produce data digest.
 */
 func (obj *SignedDataInfo) HashAlgInfo() (AlgInfo, error) {
-    proxyResult := C.vscf_signed_data_info_hash_alg_info(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_signed_data_info_hash_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }

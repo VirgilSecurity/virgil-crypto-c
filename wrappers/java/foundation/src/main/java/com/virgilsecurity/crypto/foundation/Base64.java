@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,22 +36,38 @@
 
 package com.virgilsecurity.crypto.foundation;
 
+/*
+* Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
+*/
 public class Base64 {
 
+    /*
+    * Calculate length in bytes required to hold an encoded base64 string.
+    */
     public static int encodedLen(int dataLen) {
         return FoundationJNI.INSTANCE.base64_encodedLen(dataLen);
     }
 
+    /*
+    * Encode given data to the base64 format.
+    * Note, written buffer is NOT null-terminated.
+    */
     public static byte[] encode(byte[] data) {
         return FoundationJNI.INSTANCE.base64_encode(data);
     }
 
+    /*
+    * Calculate length in bytes required to hold a decoded base64 string.
+    */
     public static int decodedLen(int strLen) {
         return FoundationJNI.INSTANCE.base64_decodedLen(strLen);
     }
 
+    /*
+    * Decode given data from the base64 format.
+    */
     public static byte[] decode(byte[] str) throws FoundationException {
         return FoundationJNI.INSTANCE.base64_decode(str);
     }
-
 }
+

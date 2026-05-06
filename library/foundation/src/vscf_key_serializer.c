@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -85,7 +85,8 @@ vscf_key_serializer_serialized_public_key_len(const vscf_impl_t *impl, const vsc
 //  Precondition: public key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_raw_public_key_t *public_key, vsc_buffer_t *out) {
+vscf_key_serializer_serialize_public_key(vscf_impl_t *impl, const vscf_raw_public_key_t *public_key,
+        vsc_buffer_t *out) {
 
     const vscf_key_serializer_api_t *key_serializer_api = vscf_key_serializer_api(impl);
     VSCF_ASSERT_PTR (key_serializer_api);
@@ -115,7 +116,8 @@ vscf_key_serializer_serialized_private_key_len(const vscf_impl_t *impl, const vs
 //  Precondition: private key must be exportable.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_raw_private_key_t *private_key, vsc_buffer_t *out) {
+vscf_key_serializer_serialize_private_key(vscf_impl_t *impl, const vscf_raw_private_key_t *private_key,
+        vsc_buffer_t *out) {
 
     const vscf_key_serializer_api_t *key_serializer_api = vscf_key_serializer_api(impl);
     VSCF_ASSERT_PTR (key_serializer_api);

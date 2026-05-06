@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -70,8 +70,7 @@
 #include "vscf_curve25519.h"
 #include "vscf_ecc.h"
 #include "vscf_falcon.h"
-#include "vscf_ml_kem.h"
-#include "vscf_ml_dsa.h"
+#include "vscf_round5.h"
 #include "vscf_compound_key_alg.h"
 #include "vscf_compound_key_alg_defs.h"
 #include "vscf_hybrid_key_alg.h"
@@ -286,6 +285,7 @@ vscf_key_provider_release_random(vscf_key_provider_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscf_key_provider_init() is called.
@@ -419,26 +419,15 @@ vscf_key_provider_generate_private_key(vscf_key_provider_t *self, vscf_alg_id_t 
     }
 #endif // VSCF_FALCON
 
-#if VSCF_ML_KEM
-    case vscf_alg_id_ML_KEM_768: {
-        vscf_ml_kem_t *ml_kem = vscf_ml_kem_new();
-        vscf_ml_kem_use_random(ml_kem, self->random);
-        key = vscf_ml_kem_generate_key(ml_kem, error);
-        vscf_ml_kem_destroy(&ml_kem);
+#if VSCF_ROUND5
+    case vscf_alg_id_ROUND5_ND_1CCA_5D: {
+        vscf_round5_t *round5 = vscf_round5_new();
+        vscf_round5_use_random(round5, self->random);
+        key = vscf_round5_generate_key(round5, vscf_alg_id_ROUND5_ND_1CCA_5D, error);
+        vscf_round5_destroy(&round5);
         break;
     }
-#endif // VSCF_ML_KEM
-
-#if VSCF_ML_DSA
-    case vscf_alg_id_ML_DSA_65: {
-        vscf_ml_dsa_t *ml_dsa = vscf_ml_dsa_new();
-        vscf_ml_dsa_use_random(ml_dsa, self->random);
-        key = vscf_ml_dsa_generate_key(ml_dsa, error);
-        vscf_ml_dsa_destroy(&ml_dsa);
-        break;
-    }
-#endif // VSCF_ML_DSA
-
+#endif // VSCF_ROUND5
 #endif // VSCF_POST_QUANTUM
 
     default:
@@ -466,13 +455,13 @@ vscf_key_provider_generate_post_quantum_private_key(vscf_key_provider_t *self, v
 
     VSCF_ASSERT_PTR(self);
 
-#if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ML_KEM
-    return vscf_key_provider_generate_compound_hybrid_private_key(
-            self, vscf_alg_id_CURVE25519, vscf_alg_id_ML_KEM_768, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
+#if VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
+    return vscf_key_provider_generate_compound_hybrid_private_key(self, vscf_alg_id_CURVE25519,
+            vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_alg_id_ED25519, vscf_alg_id_FALCON, error);
 #else
     VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_UNSUPPORTED_ALGORITHM);
     return NULL;
-#endif // VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ML_KEM
+#endif // VSCF_POST_QUANTUM && VSCF_CURVE25519 && VSCF_ED25519 && VSCF_FALCON && VSCF_ROUND5
 }
 
 //

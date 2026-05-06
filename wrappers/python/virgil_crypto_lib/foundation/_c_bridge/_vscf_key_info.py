@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,6 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
+from ._vscf_impl import vscf_impl_t
 
 
 class vscf_key_info_t(Structure):
@@ -42,7 +43,6 @@ class vscf_key_info_t(Structure):
 
 
 class VscfKeyInfo(object):
-
 
     def __init__(self):
         """Create underlying C context."""
@@ -61,6 +61,13 @@ class VscfKeyInfo(object):
         vscf_key_info_delete.restype = None
         return vscf_key_info_delete(ctx)
 
+    def vscf_key_info_new_with_alg_info(self, alg_info):
+        """Build key information based on the generic algorithm information."""
+        vscf_key_info_new_with_alg_info = self._lib.vscf_key_info_new_with_alg_info
+        vscf_key_info_new_with_alg_info.argtypes = [POINTER(vscf_impl_t)]
+        vscf_key_info_new_with_alg_info.restype = POINTER(vscf_key_info_t)
+        return vscf_key_info_new_with_alg_info(alg_info)
+
     def vscf_key_info_is_compound(self, ctx):
         """Return true if a key is a compound key"""
         vscf_key_info_is_compound = self._lib.vscf_key_info_is_compound
@@ -77,7 +84,7 @@ class VscfKeyInfo(object):
 
     def vscf_key_info_is_compound_hybrid(self, ctx):
         """Return true if a key is a compound key and compounds cipher key
-and signer key are hybrid keys."""
+        and signer key are hybrid keys."""
         vscf_key_info_is_compound_hybrid = self._lib.vscf_key_info_is_compound_hybrid
         vscf_key_info_is_compound_hybrid.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_is_compound_hybrid.restype = c_bool
@@ -85,7 +92,7 @@ and signer key are hybrid keys."""
 
     def vscf_key_info_is_compound_hybrid_cipher(self, ctx):
         """Return true if a key is a compound key and compounds cipher key
-is a hybrid key."""
+        is a hybrid key."""
         vscf_key_info_is_compound_hybrid_cipher = self._lib.vscf_key_info_is_compound_hybrid_cipher
         vscf_key_info_is_compound_hybrid_cipher.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_is_compound_hybrid_cipher.restype = c_bool
@@ -93,7 +100,7 @@ is a hybrid key."""
 
     def vscf_key_info_is_compound_hybrid_signer(self, ctx):
         """Return true if a key is a compound key and compounds signer key
-is a hybrid key."""
+        is a hybrid key."""
         vscf_key_info_is_compound_hybrid_signer = self._lib.vscf_key_info_is_compound_hybrid_signer
         vscf_key_info_is_compound_hybrid_signer.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_is_compound_hybrid_signer.restype = c_bool
@@ -101,8 +108,8 @@ is a hybrid key."""
 
     def vscf_key_info_is_hybrid_post_quantum(self, ctx):
         """Return true if a key is a compound key that contains hybrid keys
-for encryption/decryption and signing/verifying that itself
-contains a combination of classic keys and post-quantum keys."""
+        for encryption/decryption and signing/verifying that itself
+        contains a combination of classic keys and post-quantum keys."""
         vscf_key_info_is_hybrid_post_quantum = self._lib.vscf_key_info_is_hybrid_post_quantum
         vscf_key_info_is_hybrid_post_quantum.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_is_hybrid_post_quantum.restype = c_bool
@@ -110,8 +117,8 @@ contains a combination of classic keys and post-quantum keys."""
 
     def vscf_key_info_is_hybrid_post_quantum_cipher(self, ctx):
         """Return true if a key is a compound key that contains a hybrid key
-for encryption/decryption that contains a classic key and
-a post-quantum key."""
+        for encryption/decryption that contains a classic key and
+        a post-quantum key."""
         vscf_key_info_is_hybrid_post_quantum_cipher = self._lib.vscf_key_info_is_hybrid_post_quantum_cipher
         vscf_key_info_is_hybrid_post_quantum_cipher.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_is_hybrid_post_quantum_cipher.restype = c_bool
@@ -119,8 +126,8 @@ a post-quantum key."""
 
     def vscf_key_info_is_hybrid_post_quantum_signer(self, ctx):
         """Return true if a key is a compound key that contains a hybrid key
-for signing/verifying that contains a classic key and
-a post-quantum key."""
+        for signing/verifying that contains a classic key and
+        a post-quantum key."""
         vscf_key_info_is_hybrid_post_quantum_signer = self._lib.vscf_key_info_is_hybrid_post_quantum_signer
         vscf_key_info_is_hybrid_post_quantum_signer.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_is_hybrid_post_quantum_signer.restype = c_bool
@@ -135,7 +142,7 @@ a post-quantum key."""
 
     def vscf_key_info_compound_cipher_alg_id(self, ctx):
         """Return compound's cipher key id, if key is compound.
-Return None, otherwise."""
+        Return None, otherwise."""
         vscf_key_info_compound_cipher_alg_id = self._lib.vscf_key_info_compound_cipher_alg_id
         vscf_key_info_compound_cipher_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_compound_cipher_alg_id.restype = c_int
@@ -143,7 +150,7 @@ Return None, otherwise."""
 
     def vscf_key_info_compound_signer_alg_id(self, ctx):
         """Return compound's signer key id, if key is compound.
-Return None, otherwise."""
+        Return None, otherwise."""
         vscf_key_info_compound_signer_alg_id = self._lib.vscf_key_info_compound_signer_alg_id
         vscf_key_info_compound_signer_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_compound_signer_alg_id.restype = c_int
@@ -151,7 +158,7 @@ Return None, otherwise."""
 
     def vscf_key_info_hybrid_first_key_alg_id(self, ctx):
         """Return hybrid's first key id, if key is hybrid.
-Return None, otherwise."""
+        Return None, otherwise."""
         vscf_key_info_hybrid_first_key_alg_id = self._lib.vscf_key_info_hybrid_first_key_alg_id
         vscf_key_info_hybrid_first_key_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_hybrid_first_key_alg_id.restype = c_int
@@ -159,7 +166,7 @@ Return None, otherwise."""
 
     def vscf_key_info_hybrid_second_key_alg_id(self, ctx):
         """Return hybrid's second key id, if key is hybrid.
-Return None, otherwise."""
+        Return None, otherwise."""
         vscf_key_info_hybrid_second_key_alg_id = self._lib.vscf_key_info_hybrid_second_key_alg_id
         vscf_key_info_hybrid_second_key_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_hybrid_second_key_alg_id.restype = c_int
@@ -167,7 +174,7 @@ Return None, otherwise."""
 
     def vscf_key_info_compound_hybrid_cipher_first_key_alg_id(self, ctx):
         """Return hybrid's first key id of compound's cipher key,
-if key is compound(hybrid, ...), None - otherwise."""
+        if key is compound(hybrid, ...), None - otherwise."""
         vscf_key_info_compound_hybrid_cipher_first_key_alg_id = self._lib.vscf_key_info_compound_hybrid_cipher_first_key_alg_id
         vscf_key_info_compound_hybrid_cipher_first_key_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_compound_hybrid_cipher_first_key_alg_id.restype = c_int
@@ -175,7 +182,7 @@ if key is compound(hybrid, ...), None - otherwise."""
 
     def vscf_key_info_compound_hybrid_cipher_second_key_alg_id(self, ctx):
         """Return hybrid's second key id of compound's cipher key,
-if key is compound(hybrid, ...), None - otherwise."""
+        if key is compound(hybrid, ...), None - otherwise."""
         vscf_key_info_compound_hybrid_cipher_second_key_alg_id = self._lib.vscf_key_info_compound_hybrid_cipher_second_key_alg_id
         vscf_key_info_compound_hybrid_cipher_second_key_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_compound_hybrid_cipher_second_key_alg_id.restype = c_int
@@ -183,7 +190,7 @@ if key is compound(hybrid, ...), None - otherwise."""
 
     def vscf_key_info_compound_hybrid_signer_first_key_alg_id(self, ctx):
         """Return hybrid's first key id of compound's signer key,
-if key is compound(..., hybrid), None - otherwise."""
+        if key is compound(..., hybrid), None - otherwise."""
         vscf_key_info_compound_hybrid_signer_first_key_alg_id = self._lib.vscf_key_info_compound_hybrid_signer_first_key_alg_id
         vscf_key_info_compound_hybrid_signer_first_key_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_compound_hybrid_signer_first_key_alg_id.restype = c_int
@@ -191,7 +198,7 @@ if key is compound(..., hybrid), None - otherwise."""
 
     def vscf_key_info_compound_hybrid_signer_second_key_alg_id(self, ctx):
         """Return hybrid's second key id of compound's signer key,
-if key is compound(..., hybrid), None - otherwise."""
+        if key is compound(..., hybrid), None - otherwise."""
         vscf_key_info_compound_hybrid_signer_second_key_alg_id = self._lib.vscf_key_info_compound_hybrid_signer_second_key_alg_id
         vscf_key_info_compound_hybrid_signer_second_key_alg_id.argtypes = [POINTER(vscf_key_info_t)]
         vscf_key_info_compound_hybrid_signer_second_key_alg_id.restype = c_int

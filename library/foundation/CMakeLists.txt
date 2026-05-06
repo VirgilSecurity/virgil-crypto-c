@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -91,9 +91,8 @@ target_link_libraries(foundation
             vsc::foundation_pb
             vsc::common
             mbed::crypto ed25519
+            $<$<BOOL:${VSCF_POST_QUANTUM}>:round5>
             $<$<BOOL:${VSCF_POST_QUANTUM}>:falcon>
-            $<$<BOOL:${VSCF_POST_QUANTUM}>:mlkem768>
-            $<$<BOOL:${VSCF_POST_QUANTUM}>:mldsa65>
         )
 
 #
@@ -104,10 +103,9 @@ target_link_libraries(foundation
 target_compile_definitions(foundation
         PUBLIC
             $<BUILD_INTERFACE:MBEDTLS_LIBRARY=$<BOOL:${MBEDTLS_LIBRARY}>>
+            $<BUILD_INTERFACE:ROUND5_LIBRARY=$<BOOL:${ROUND5_LIBRARY}>>
             $<BUILD_INTERFACE:KECCAK_LIBRARY=$<BOOL:${KECCAK_LIBRARY}>>
             $<BUILD_INTERFACE:FALCON_LIBRARY=$<BOOL:${FALCON_LIBRARY}>>
-            $<BUILD_INTERFACE:MLKEM_LIBRARY=$<BOOL:${MLKEM_LIBRARY}>>
-            $<BUILD_INTERFACE:MLDSA_LIBRARY=$<BOOL:${MLDSA_LIBRARY}>>
         )
 
 #

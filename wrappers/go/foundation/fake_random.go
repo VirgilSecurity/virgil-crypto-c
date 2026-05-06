@@ -2,22 +2,22 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
 * Random number generator that is used for test purposes only.
 */
 type FakeRandom struct {
-    cCtx *C.vscf_fake_random_t
+    cCtx *C.vscf_fake_random_t /*ct10*/
 }
 
 /*
 * Configure random number generator to generate sequence filled with given byte.
 */
 func (obj *FakeRandom) SetupSourceByte(byteSource byte) {
-    C.vscf_fake_random_setup_source_byte(obj.cCtx, (C.byte)(byteSource))
+    C.vscf_fake_random_setup_source_byte(obj.cCtx, (C.byte)(byteSource)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
@@ -55,7 +55,7 @@ func NewFakeRandom() *FakeRandom {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t) *FakeRandom {
+func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: ctx,
     }
@@ -66,7 +66,7 @@ func newFakeRandomWithCtx(ctx *C.vscf_fake_random_t) *FakeRandom {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newFakeRandomCopy(ctx *C.vscf_fake_random_t) *FakeRandom {
+func newFakeRandomCopy(ctx *C.vscf_fake_random_t /*ct10*/) *FakeRandom {
     obj := &FakeRandom {
         cCtx: C.vscf_fake_random_shallow_copy(ctx),
     }
@@ -104,7 +104,7 @@ func (obj *FakeRandom) Random(dataLen uint) ([]byte, error) {
     defer dataBuf.delete()
 
 
-    proxyResult := C.vscf_fake_random_random(obj.cCtx, (C.size_t)(dataLen), dataBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_fake_random_random(obj.cCtx, (C.size_t)(dataLen)/*pa10*/, dataBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -113,14 +113,14 @@ func (obj *FakeRandom) Random(dataLen uint) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return dataBuf.getData(), nil
+    return dataBuf.getData() /* r7 */, nil
 }
 
 /*
 * Retrieve new seed data from the entropy sources.
 */
 func (obj *FakeRandom) Reseed() error {
-    proxyResult := C.vscf_fake_random_reseed(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_fake_random_reseed(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -136,11 +136,11 @@ func (obj *FakeRandom) Reseed() error {
 * Defines that implemented source is strong.
 */
 func (obj *FakeRandom) IsStrong() bool {
-    proxyResult := C.vscf_fake_random_is_strong(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_fake_random_is_strong(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -154,7 +154,7 @@ func (obj *FakeRandom) Gather(len uint) ([]byte, error) {
     defer outBuf.delete()
 
 
-    proxyResult := C.vscf_fake_random_gather(obj.cCtx, (C.size_t)(len), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_fake_random_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -163,5 +163,5 @@ func (obj *FakeRandom) Gather(len uint) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return outBuf.getData(), nil
+    return outBuf.getData() /* r7 */, nil
 }

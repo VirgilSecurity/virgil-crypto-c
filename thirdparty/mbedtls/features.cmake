@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2026 Virgil Security, Inc.
+#   Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -8,17 +8,17 @@
 #   modification, are permitted provided that the following conditions are
 #   met:
 #
-#   (1) Redistributions of source code must retain the above copyright
-#   notice, this list of conditions and the following disclaimer.
+#       (1) Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
 #
-#   (2) Redistributions in binary form must reproduce the above copyright
-#   notice, this list of conditions and the following disclaimer in
-#   the documentation and/or other materials provided with the
-#   distribution.
+#       (2) Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in
+#       the documentation and/or other materials provided with the
+#       distribution.
 #
-#   (3) Neither the name of the copyright holder nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
+#       (3) Neither the name of the copyright holder nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -46,47 +46,44 @@
 include_guard()
 
 option(MBEDTLS_LIBRARY "Enable build of the 'mbedtls' library" ON)
-option(MBEDTLS_ERROR_C "Enable feature 'ERROR C'." ON)
-option(MBEDTLS_PLATFORM_C "Enable feature 'PLATFORM C'." ON)
-option(MBEDTLS_SHA224_C "Enable feature 'SHA224 C'." ON)
-option(MBEDTLS_SHA256_C "Enable feature 'SHA256 C'." ON)
-option(MBEDTLS_SHA384_C "Enable feature 'SHA384 C'." ON)
-option(MBEDTLS_SHA512_C "Enable feature 'SHA512 C'." ON)
-option(MBEDTLS_CIPHER_C "Enable feature 'CIPHER C'." ON)
-option(MBEDTLS_AES_C "Enable feature 'AES C'." ON)
-option(MBEDTLS_GCM_C "Enable feature 'GCM C'." ON)
-option(MBEDTLS_MD_C "Enable feature 'MD C'." ON)
-option(MBEDTLS_BIGNUM_C "Enable feature 'BIGNUM C'." ON)
-option(MBEDTLS_PKCS1_V21 "Enable feature 'PKCS1 V21'." ON)
-option(MBEDTLS_OID_C "Enable feature 'OID C'." ON)
-option(MBEDTLS_ASN1_PARSE_C "Enable feature 'ASN1 PARSE C'." ON)
-option(MBEDTLS_ASN1_WRITE_C "Enable feature 'ASN1 WRITE C'." ON)
-option(MBEDTLS_GENPRIME "Enable feature 'GENPRIME'." ON)
-option(MBEDTLS_TIMING_C "Enable feature 'TIMING C'." ON)
-option(MBEDTLS_PLATFORM_ENTROPY "Enable feature 'PLATFORM ENTROPY'." ON)
-option(MBEDTLS_BASE64_C "Enable feature 'BASE64 C'." ON)
-option(MBEDTLS_THREADING_C "Enable feature 'THREADING C'." ON)
-option(MBEDTLS_CIPHER_MODE_CBC "Enable feature 'CIPHER MODE CBC'." ON)
-option(MBEDTLS_CIPHER_MODE_WITH_PADDING "Enable feature 'CIPHER MODE WITH PADDING'." ON)
-option(MBEDTLS_CIPHER_PADDING_PKCS7 "Enable feature 'CIPHER PADDING PKCS7'." ON)
-option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "Enable feature 'ECP_DP_SECP256R1_ENABLED'." ON)
-option(MBEDTLS_ECP_C "Enable feature 'ECP C'." ON)
-option(MBEDTLS_ECDH_C "Enable feature 'ECDH C'." ON)
-option(MBEDTLS_ECDSA_C "Enable feature 'ECDSA C'." ON)
-option(MBEDTLS_RSA_C "Enable feature 'RSA C'." ON)
-option(MBEDTLS_CTR_DRBG_C "Enable feature 'CTR_DRBG C'." ON)
-option(MBEDTLS_ENTROPY_C "Enable feature 'ENTROPY C'." ON)
-option(MBEDTLS_SHA256_ALT "Enable feature 'SHA256 ALT'." OFF)
-option(MBEDTLS_SHA512_ALT "Enable feature 'SHA512 ALT'." OFF)
-option(MBEDTLS_AES_ALT "Enable feature 'AES ALT'." OFF)
-option(MBEDTLS_GCM_ALT "Enable feature 'GCM ALT'." OFF)
+option(MBEDTLS_ERROR_C "" ON)
+option(MBEDTLS_PLATFORM_C "" ON)
+option(MBEDTLS_SHA256_C "" ON)
+option(MBEDTLS_SHA512_C "" ON)
+option(MBEDTLS_CIPHER_C "" ON)
+option(MBEDTLS_AES_C "" ON)
+option(MBEDTLS_GCM_C "" ON)
+option(MBEDTLS_MD_C "" ON)
+option(MBEDTLS_BIGNUM_C "" ON)
+option(MBEDTLS_PKCS1_V21 "" ON)
+option(MBEDTLS_OID_C "" ON)
+option(MBEDTLS_ASN1_PARSE_C "" ON)
+option(MBEDTLS_ASN1_WRITE_C "" ON)
+option(MBEDTLS_GENPRIME "" ON)
+option(MBEDTLS_TIMING_C "" ON)
+option(MBEDTLS_HAVEGE_C "" ON)
+option(MBEDTLS_PLATFORM_ENTROPY "" ON)
+option(MBEDTLS_BASE64_C "" ON)
+option(MBEDTLS_THREADING_C "" ON)
+option(MBEDTLS_CIPHER_MODE_CBC "" ON)
+option(MBEDTLS_CIPHER_MODE_WITH_PADDING "" ON)
+option(MBEDTLS_CIPHER_PADDING_PKCS7 "" ON)
+option(MBEDTLS_ECP_DP_SECP256R1_ENABLED "" ON)
+option(MBEDTLS_ECP_C "" ON)
+option(MBEDTLS_ECDH_C "" ON)
+option(MBEDTLS_ECDSA_C "" ON)
+option(MBEDTLS_RSA_C "" ON)
+option(MBEDTLS_CTR_DRBG_C "" ON)
+option(MBEDTLS_ENTROPY_C "" ON)
+option(MBEDTLS_SHA256_ALT "" OFF)
+option(MBEDTLS_SHA512_ALT "" OFF)
+option(MBEDTLS_AES_ALT "" OFF)
+option(MBEDTLS_GCM_ALT "" OFF)
 mark_as_advanced(
         MBEDTLS_LIBRARY
         MBEDTLS_ERROR_C
         MBEDTLS_PLATFORM_C
-        MBEDTLS_SHA224_C
         MBEDTLS_SHA256_C
-        MBEDTLS_SHA384_C
         MBEDTLS_SHA512_C
         MBEDTLS_CIPHER_C
         MBEDTLS_AES_C
@@ -99,6 +96,7 @@ mark_as_advanced(
         MBEDTLS_ASN1_WRITE_C
         MBEDTLS_GENPRIME
         MBEDTLS_TIMING_C
+        MBEDTLS_HAVEGE_C
         MBEDTLS_PLATFORM_ENTROPY
         MBEDTLS_BASE64_C
         MBEDTLS_THREADING_C
@@ -130,8 +128,8 @@ endif()
 if(MBEDTLS_ECP_C AND NOT MBEDTLS_ECP_DP_SECP256R1_ENABLED)
     message("-- error --")
     message("--")
-    message("Feature MBEDTLS_ECP_C depends on the feature:")
-    message("     MBEDTLS_ECP_DP_SECP256R1_ENABLED - which is disabled.")
+    message("Feature MBEDTLS_ECP_C depends on one of the features:")
+    message("     MBEDTLS_ECP_DP_SECP256R1_ENABLED - which are disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -199,22 +197,20 @@ if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_ENTROPY_C)
     message(FATAL_ERROR)
 endif()
 
-if(MBEDTLS_CTR_DRBG_C AND NOT (MBEDTLS_TIMING_C OR MBEDTLS_PLATFORM_ENTROPY))
+if(MBEDTLS_CTR_DRBG_C AND NOT MBEDTLS_TIMING_C AND NOT MBEDTLS_HAVEGE_C AND NOT MBEDTLS_PLATFORM_ENTROPY)
     message("-- error --")
     message("--")
-    message("Feature MBEDTLS_CTR_DRBG_C requires at least one of:")
-    message("     MBEDTLS_TIMING_C")
-    message("     MBEDTLS_PLATFORM_ENTROPY")
+    message("Feature MBEDTLS_CTR_DRBG_C depends on one of the features:")
+    message("     MBEDTLS_TIMING_C, MBEDTLS_HAVEGE_C, MBEDTLS_PLATFORM_ENTROPY - which are disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
 
-if(MBEDTLS_ENTROPY_C AND NOT (MBEDTLS_SHA256_C OR MBEDTLS_SHA512_C))
+if(MBEDTLS_ENTROPY_C AND NOT MBEDTLS_SHA256_C AND NOT MBEDTLS_SHA512_C)
     message("-- error --")
     message("--")
-    message("Feature MBEDTLS_ENTROPY_C requires at least one of:")
-    message("     MBEDTLS_SHA256_C")
-    message("     MBEDTLS_SHA512_C")
+    message("Feature MBEDTLS_ENTROPY_C depends on one of the features:")
+    message("     MBEDTLS_SHA256_C, MBEDTLS_SHA512_C - which are disabled.")
     message("--")
     message(FATAL_ERROR)
 endif()
@@ -254,4 +250,3 @@ if(MBEDTLS_GCM_ALT AND NOT MBEDTLS_GCM_C)
     message("--")
     message(FATAL_ERROR)
 endif()
-

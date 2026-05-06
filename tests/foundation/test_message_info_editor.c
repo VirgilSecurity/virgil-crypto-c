@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -128,16 +128,20 @@ test__add_key_recipient__rsa2048_to_message_info_with_ed25519__correct(void) {
 void
 test__remove_key_recipient__ed25519_from_message_info_with_ed25519_and_rsa2048__correct(void) {
     //
-    //  Prepare helpers (real RNG required — mbedTLS 3.x RSA decrypt needs proper randomness for blinding).
+    //  Prepare helpers.
     //
     vscf_error_t error;
     vscf_error_reset(&error);
 
+    vscf_fake_random_t *fake_random = vscf_fake_random_new();
+    vscf_fake_random_setup_source_byte(fake_random, 0xAB);
+
     vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_fake_random_impl(fake_random));
     TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
 
     vscf_message_info_editor_t *message_info_editor = vscf_message_info_editor_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_message_info_editor_setup_defaults(message_info_editor));
+    vscf_message_info_editor_use_random(message_info_editor, vscf_fake_random_impl(fake_random));
 
     //
     //  Prepare recipients.
@@ -175,27 +179,19 @@ test__remove_key_recipient__ed25519_from_message_info_with_ed25519_and_rsa2048__
     vscf_message_info_editor_pack(message_info_editor, new_packed_message_info);
 
     //
-    //  Verify roundtrip: unpack the edited message info and unlock with the remaining RSA key.
-    //  (Byte comparison is not possible because RSA OAEP re-encryption uses non-deterministic padding.)
+    //  Check
     //
-    vscf_message_info_editor_t *verify_editor = vscf_message_info_editor_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_message_info_editor_setup_defaults(verify_editor));
-
-    status = vscf_message_info_editor_unpack(verify_editor, vsc_buffer_data(new_packed_message_info));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
-
-    status = vscf_message_info_editor_unlock(
-            verify_editor, test_data_message_info_RSA2048_RECIPIENT_ID, rsa2048_private_key);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, status);
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(
+            test_data_message_info_MESSAGE_INFO_WITH_ONE_RSA2048_RECIPIENT, new_packed_message_info);
 
     //
     //  Cleanup
     //
-    vscf_message_info_editor_destroy(&verify_editor);
     vsc_buffer_destroy(&new_packed_message_info);
     vscf_impl_destroy(&rsa2048_private_key);
     vscf_message_info_editor_destroy(&message_info_editor);
     vscf_key_provider_destroy(&key_provider);
+    vscf_fake_random_destroy(&fake_random);
 }
 
 void

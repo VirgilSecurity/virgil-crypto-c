@@ -19,5 +19,6 @@
 /vendor/
 /Godeps/
 
-# Other temporary files
+# Other temporaty files
 /binaries/
+/pkg/

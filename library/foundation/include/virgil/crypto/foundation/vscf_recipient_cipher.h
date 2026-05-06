@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,6 +54,14 @@
 
 #ifndef VSCF_RECIPIENT_CIPHER_H_INCLUDED
 #define VSCF_RECIPIENT_CIPHER_H_INCLUDED
+
+#include "vscf_library.h"
+#include "vscf_padding_params.h"
+#include "vscf_message_info_custom_params.h"
+#include "vscf_signer_info_list.h"
+#include "vscf_signer_info.h"
+#include "vscf_impl.h"
+#include "vscf_status.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -66,36 +76,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscf_library.h"
-#include "vscf_padding_params.h"
-#include "vscf_message_info_custom_params.h"
-#include "vscf_signer_info_list.h"
-#include "vscf_signer_info.h"
-#include "vscf_impl.h"
-#include "vscf_status.h"
-#include "vscf_message_info.h"
-#include "vscf_message_info_footer.h"
-#include "vscf_random.h"
-#include "vscf_cipher.h"
-#include "vscf_padding.h"
-#include "vscf_hash.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -258,7 +243,8 @@ vscf_recipient_cipher_has_key_recipient(const vscf_recipient_cipher_t *self, vsc
 //  Add recipient defined with id and public key.
 //
 VSCF_PUBLIC void
-vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *public_key);
+vscf_recipient_cipher_add_key_recipient(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
+        vscf_impl_t *public_key);
 
 //
 //  Remove all recipients.
@@ -271,7 +257,8 @@ vscf_recipient_cipher_clear_recipients(vscf_recipient_cipher_t *self);
 //  Return error if the private key can not sign.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id, vscf_impl_t *private_key) VSCF_NODISCARD;
+vscf_recipient_cipher_add_signer(vscf_recipient_cipher_t *self, vsc_data_t signer_id,
+        vscf_impl_t *private_key) VSCF_NODISCARD;
 
 //
 //  Remove all signers.
@@ -335,7 +322,8 @@ vscf_recipient_cipher_encryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Process encryption of a new portion of data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_recipient_cipher_process_encryption(vscf_recipient_cipher_t *self, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Accomplish encryption.
@@ -348,7 +336,8 @@ vscf_recipient_cipher_finish_encryption(vscf_recipient_cipher_t *self, vsc_buffe
 //  Message Info can be empty if it was embedded to encrypted data.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info) VSCF_NODISCARD;
+vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
+        vscf_impl_t *private_key, vsc_data_t message_info) VSCF_NODISCARD;
 
 //
 //  Initiate decryption process with a recipient private key.
@@ -357,7 +346,8 @@ vscf_recipient_cipher_start_decryption_with_key(vscf_recipient_cipher_t *self, v
 //  If footer was embedded, method "start decryption with key" can be used.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id, vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer) VSCF_NODISCARD;
+vscf_recipient_cipher_start_verified_decryption_with_key(vscf_recipient_cipher_t *self, vsc_data_t recipient_id,
+        vscf_impl_t *private_key, vsc_data_t message_info, vsc_data_t message_info_footer) VSCF_NODISCARD;
 
 //
 //  Return buffer length required to hold output of the method
@@ -371,7 +361,8 @@ vscf_recipient_cipher_decryption_out_len(vscf_recipient_cipher_t *self, size_t d
 //  Return error if data can not be encrypted or decrypted.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data, vsc_buffer_t *out) VSCF_NODISCARD;
+vscf_recipient_cipher_process_decryption(vscf_recipient_cipher_t *self, vsc_data_t data,
+        vsc_buffer_t *out) VSCF_NODISCARD;
 
 //
 //  Accomplish decryption.
@@ -400,7 +391,8 @@ vscf_recipient_cipher_signer_infos(const vscf_recipient_cipher_t *self);
 //  Verify given cipher info.
 //
 VSCF_PUBLIC bool
-vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, const vscf_signer_info_t *signer_info, const vscf_impl_t *public_key);
+vscf_recipient_cipher_verify_signer_info(vscf_recipient_cipher_t *self, const vscf_signer_info_t *signer_info,
+        const vscf_impl_t *public_key);
 
 //
 //  Return buffer length required to hold message footer returned by the
@@ -424,15 +416,18 @@ vscf_recipient_cipher_message_info_footer_len(const vscf_recipient_cipher_t *sel
 VSCF_PUBLIC vscf_status_t
 vscf_recipient_cipher_pack_message_info_footer(vscf_recipient_cipher_t *self, vsc_buffer_t *out) VSCF_NODISCARD;
 
+
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCF_RECIPIENT_CIPHER_H_INCLUDED

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -45,7 +45,6 @@ class vscf_simple_alg_info_t(Structure):
 class VscfSimpleAlgInfo(object):
     """Handle simple algorithm information (just id)."""
 
-
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -62,6 +61,13 @@ class VscfSimpleAlgInfo(object):
         vscf_simple_alg_info_delete.argtypes = [POINTER(vscf_simple_alg_info_t)]
         vscf_simple_alg_info_delete.restype = None
         return vscf_simple_alg_info_delete(ctx)
+
+    def vscf_simple_alg_info_new_with_alg_id(self, alg_id):
+        """Create algorithm info with identificator."""
+        vscf_simple_alg_info_new_with_alg_id = self._lib.vscf_simple_alg_info_new_with_alg_id
+        vscf_simple_alg_info_new_with_alg_id.argtypes = [c_int]
+        vscf_simple_alg_info_new_with_alg_id.restype = POINTER(vscf_simple_alg_info_t)
+        return vscf_simple_alg_info_new_with_alg_id(alg_id)
 
     def vscf_simple_alg_info_alg_id(self, ctx):
         """Provide algorithm identificator."""

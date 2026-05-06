@@ -1,56 +1,62 @@
-// Copyright (C) 2015-2026 Virgil Security, Inc.
-//
-// All rights reserved.
-//
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     (1) Redistributions of source code must retain the above copyright
-//     notice, this list of conditions and the following disclaimer.
-//
-//     (2) Redistributions in binary form must reproduce the above copyright
-//     notice, this list of conditions and the following disclaimer in
-//     the documentation and/or other materials provided with the
-//     distribution.
-//
-//     (3) Neither the name of the copyright holder nor the names of its
-//     contributors may be used to endorse or promote products derived from
-//     this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
-// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
-// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-// POSSIBILITY OF SUCH DAMAGE.
-//
-// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
+/// Copyright (C) 2015-2022 Virgil Security, Inc.
+///
+/// All rights reserved.
+///
+/// Redistribution and use in source and binary forms, with or without
+/// modification, are permitted provided that the following conditions are
+/// met:
+///
+///     (1) Redistributions of source code must retain the above copyright
+///     notice, this list of conditions and the following disclaimer.
+///
+///     (2) Redistributions in binary form must reproduce the above copyright
+///     notice, this list of conditions and the following disclaimer in
+///     the documentation and/or other materials provided with the
+///     distribution.
+///
+///     (3) Neither the name of the copyright holder nor the names of its
+///     contributors may be used to endorse or promote products derived from
+///     this software without specific prior written permission.
+///
+/// THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
+/// IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+/// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+/// DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
+/// INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+/// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+/// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+/// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+/// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+/// IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+/// POSSIBILITY OF SUCH DAMAGE.
+///
+/// Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 
 
 import Foundation
 import VSCFoundation
 
+/// This is MbedTLS implementation of ASN.1 writer.
 @objc(VSCFAsn1wr) public class Asn1wr: NSObject, Asn1Writer {
 
     /// Handle underlying C context.
     @objc public let c_ctx: OpaquePointer
 
+    /// Create underlying C context.
     public override init() {
         self.c_ctx = vscf_asn1wr_new()
         super.init()
     }
 
+    /// Acquire C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(take c_ctx: OpaquePointer) {
         self.c_ctx = c_ctx
         super.init()
     }
 
+    /// Acquire retained C context.
+    /// Note. This method is used in generated code only, and SHOULD NOT be used in another way.
     public init(use c_ctx: OpaquePointer) {
         self.c_ctx = vscf_asn1wr_shallow_copy(c_ctx)
         super.init()
@@ -251,8 +257,9 @@ import VSCFoundation
     /// Write ASN.1 type: OCTET STRING.
     /// Return count of written bytes.
     @objc public func writeOctetStr(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) in
-            vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_octet_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -262,8 +269,9 @@ import VSCFoundation
     ///
     /// Return count of written bytes.
     @objc public func writeOctetStrAsBitstring(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) in
-            vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_octet_str_as_bitstring(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -273,8 +281,9 @@ import VSCFoundation
     /// Return count of written bytes.
     /// Note, use this method carefully.
     @objc public func writeData(data: Data) -> Int {
-        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) in
-            vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
+        let proxyResult = data.withUnsafeBytes({ (dataPointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_data(self.c_ctx, vsc_data(dataPointer.bindMemory(to: byte.self).baseAddress, data.count))
         })
 
         return proxyResult
@@ -283,8 +292,9 @@ import VSCFoundation
     /// Write ASN.1 type: UTF8String.
     /// Return count of written bytes.
     @objc public func writeUtf8Str(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) in
-            vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_utf8_str(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -293,8 +303,9 @@ import VSCFoundation
     /// Write ASN.1 type: OID.
     /// Return count of written bytes.
     @objc public func writeOid(value: Data) -> Int {
-        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) in
-            vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
+        let proxyResult = value.withUnsafeBytes({ (valuePointer: UnsafeRawBufferPointer) -> Int in
+
+            return vscf_asn1wr_write_oid(self.c_ctx, vsc_data(valuePointer.bindMemory(to: byte.self).baseAddress, value.count))
         })
 
         return proxyResult
@@ -315,5 +326,4 @@ import VSCFoundation
 
         return proxyResult
     }
-
 }

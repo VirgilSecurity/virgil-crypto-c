@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -48,10 +48,9 @@
 #include "vscf_aes256_gcm.h"
 #include "vscf_random_padding.h"
 
-#include "vscf_private_key.h"
-
 #include "test_data_recipient_cipher.h"
 #include "test_data_compound_key.h"
+#include "test_data_post_quantum.h"
 
 
 // --------------------------------------------------------------------------
@@ -145,35 +144,24 @@ test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success(v
 }
 
 void
-test__encrypt_decrypt__with_pqc_curve25519_ml_kem_768_ed25519_falcon_key_recipient__success(void) {
-#if VSCF_POST_QUANTUM && MLKEM_LIBRARY && VSCF_FALCON
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
-
-    vscf_impl_t *private_key = vscf_key_provider_generate_post_quantum_private_key(key_provider, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
-
-    vsc_buffer_t *pub_der =
-            vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_export_public_key(key_provider, public_key, pub_der));
-
-    vsc_buffer_t *priv_der =
-            vsc_buffer_new_with_capacity(vscf_key_provider_exported_private_key_len(key_provider, private_key));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_export_private_key(key_provider, private_key, priv_der));
-
-    inner_test__encrypt_decrypt__with_one_key_recipient__success(vsc_buffer_data(pub_der), vsc_buffer_data(priv_der));
-
-    vsc_buffer_destroy(&pub_der);
-    vsc_buffer_destroy(&priv_der);
-    vscf_impl_destroy(&public_key);
-    vscf_impl_destroy(&private_key);
-    vscf_key_provider_destroy(&key_provider);
+test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__encrypt_decrypt__with_one_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY and/or VSCF_FALCON are disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success(void) {
+#if VSCF_POST_QUANTUM
+    inner_test__encrypt_decrypt__with_one_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
 }
 
@@ -431,37 +419,25 @@ test__sign_then_encrypt_and_decrypt_then_verify__with_compound_curve25519_ed2551
 }
 
 void
-test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_ml_kem_768_ed25519_falcon_key_recipient__success(
-        void) {
-#if VSCF_POST_QUANTUM && MLKEM_LIBRARY && VSCF_FALCON
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
-
-    vscf_impl_t *private_key = vscf_key_provider_generate_post_quantum_private_key(key_provider, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-    vscf_impl_t *public_key = vscf_private_key_extract_public_key(private_key);
-
-    vsc_buffer_t *pub_der =
-            vsc_buffer_new_with_capacity(vscf_key_provider_exported_public_key_len(key_provider, public_key));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_export_public_key(key_provider, public_key, pub_der));
-
-    vsc_buffer_t *priv_der =
-            vsc_buffer_new_with_capacity(vscf_key_provider_exported_private_key_len(key_provider, private_key));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_export_private_key(key_provider, private_key, priv_der));
-
+test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success(void) {
+#if VSCF_POST_QUANTUM
     inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
-            vsc_buffer_data(pub_der), vsc_buffer_data(priv_der));
-
-    vsc_buffer_destroy(&pub_der);
-    vsc_buffer_destroy(&priv_der);
-    vscf_impl_destroy(&public_key);
-    vscf_impl_destroy(&private_key);
-    vscf_key_provider_destroy(&key_provider);
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_FALCON_PRIVATE_KEY_PKCS8_DER);
 #else
-    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM and/or MLKEM_LIBRARY and/or VSCF_FALCON are disabled");
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
+#endif
+}
+
+void
+test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success(
+        void) {
+#if VSCF_POST_QUANTUM
+    inner_test__sign_then_encrypt_and_decrypt_then_verify__with_self_signed_key_recipient__success(
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PUBLIC_KEY_PKCS8_DER,
+            test_data_pqc_CURVE25519_ROUND5_ND_1CCA_5D_ED25519_FALCON_PRIVATE_KEY_PKCS8_DER);
+#else
+    TEST_IGNORE_MESSAGE("Feature VSCF_POST_QUANTUM is disabled");
 #endif
 }
 
@@ -1294,167 +1270,6 @@ test__decrypt__set2_with_ed25519_key_recipient__success(void) {
     vscf_key_provider_destroy(&key_provider);
 }
 
-// --------------------------------------------------------------------------
-//  EFAIL / staging-buffer mitigation tests
-// --------------------------------------------------------------------------
-void
-test__decrypt__tampered_ciphertext__auth_fails_and_output_is_empty(void) {
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
-
-    vscf_impl_t *public_key =
-            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-
-    vscf_impl_t *private_key =
-            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-
-    vscf_recipient_cipher_t *enc_cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_add_key_recipient(enc_cipher, test_data_recipient_cipher_RECIPIENT_ID, public_key);
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(enc_cipher));
-
-    const size_t msg_info_len = vscf_recipient_cipher_message_info_len(enc_cipher);
-    const size_t enc_len =
-            vscf_recipient_cipher_encryption_out_len(enc_cipher, test_data_recipient_cipher_MESSAGE.len) +
-            vscf_recipient_cipher_encryption_out_len(enc_cipher, 0);
-
-    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(msg_info_len + enc_len);
-    vscf_recipient_cipher_pack_message_info(enc_cipher, enc_msg);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_recipient_cipher_process_encryption(enc_cipher, test_data_recipient_cipher_MESSAGE, enc_msg));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(enc_cipher, enc_msg));
-    vscf_recipient_cipher_destroy(&enc_cipher);
-
-    //
-    //  Tamper: flip the last byte of the encrypted message (always within the GCM auth tag).
-    //
-    TEST_ASSERT(vsc_buffer_len(enc_msg) > 0);
-    vsc_buffer_begin(enc_msg)[vsc_buffer_len(enc_msg) - 1] ^= 0xFF;
-
-    //
-    //  Attempt decryption — must fail with AUTH_FAILED; output must be empty.
-    //
-    vscf_recipient_cipher_t *dec_cipher = vscf_recipient_cipher_new();
-
-    TEST_ASSERT_EQUAL(
-            vscf_status_SUCCESS, vscf_recipient_cipher_start_decryption_with_key(dec_cipher,
-                                         test_data_recipient_cipher_RECIPIENT_ID, private_key, vsc_data_empty()));
-
-    const size_t out_len = vscf_recipient_cipher_decryption_out_len(dec_cipher, vsc_buffer_len(enc_msg)) +
-                           vscf_recipient_cipher_decryption_out_len(dec_cipher, 0);
-    vsc_buffer_t *out = vsc_buffer_new_with_capacity(out_len);
-
-    TEST_ASSERT_EQUAL(
-            vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(dec_cipher, vsc_buffer_data(enc_msg), out));
-
-    //
-    //  process_decryption must write NOTHING to caller's buffer (staging holds it).
-    //
-    TEST_ASSERT_EQUAL(0, vsc_buffer_len(out));
-
-    const vscf_status_t status = vscf_recipient_cipher_finish_decryption(dec_cipher, out);
-    TEST_ASSERT_EQUAL(vscf_status_ERROR_AUTH_FAILED, status);
-
-    //
-    //  After auth failure, caller's buffer must still be empty — no plaintext exposed.
-    //
-    TEST_ASSERT_EQUAL(0, vsc_buffer_len(out));
-
-    vsc_buffer_destroy(&out);
-    vsc_buffer_destroy(&enc_msg);
-    vscf_recipient_cipher_destroy(&dec_cipher);
-    vscf_impl_destroy(&private_key);
-    vscf_impl_destroy(&public_key);
-    vscf_key_provider_destroy(&key_provider);
-}
-
-void
-test__decrypt_chunks__tampered_ciphertext__auth_fails_and_all_chunk_buffers_are_empty(void) {
-    vscf_error_t error;
-    vscf_error_reset(&error);
-
-    vscf_key_provider_t *key_provider = vscf_key_provider_new();
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_key_provider_setup_defaults(key_provider));
-
-    vscf_impl_t *public_key =
-            vscf_key_provider_import_public_key(key_provider, test_data_recipient_cipher_ED25519_PUBLIC_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-
-    vscf_impl_t *private_key =
-            vscf_key_provider_import_private_key(key_provider, test_data_recipient_cipher_ED25519_PRIVATE_KEY, &error);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_error_status(&error));
-
-    vscf_recipient_cipher_t *enc_cipher = vscf_recipient_cipher_new();
-    vscf_recipient_cipher_add_key_recipient(enc_cipher, test_data_recipient_cipher_RECIPIENT_ID, public_key);
-
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_start_encryption(enc_cipher));
-
-    const size_t msg_info_len = vscf_recipient_cipher_message_info_len(enc_cipher);
-    const size_t enc_len =
-            vscf_recipient_cipher_encryption_out_len(enc_cipher, test_data_recipient_cipher_MESSAGE.len) +
-            vscf_recipient_cipher_encryption_out_len(enc_cipher, 0);
-
-    vsc_buffer_t *enc_msg = vsc_buffer_new_with_capacity(msg_info_len + enc_len);
-    vscf_recipient_cipher_pack_message_info(enc_cipher, enc_msg);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_recipient_cipher_process_encryption(enc_cipher, test_data_recipient_cipher_MESSAGE, enc_msg));
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_finish_encryption(enc_cipher, enc_msg));
-    vscf_recipient_cipher_destroy(&enc_cipher);
-
-    //
-    //  Tamper: flip the last byte of the encrypted message (always within the GCM auth tag).
-    //
-    TEST_ASSERT(vsc_buffer_len(enc_msg) > 0);
-    vsc_buffer_begin(enc_msg)[vsc_buffer_len(enc_msg) - 1] ^= 0xFF;
-
-    //
-    //  Feed tampered ciphertext in two chunks; verify buffers are empty throughout.
-    //
-    vscf_recipient_cipher_t *dec_cipher = vscf_recipient_cipher_new();
-
-    TEST_ASSERT_EQUAL(
-            vscf_status_SUCCESS, vscf_recipient_cipher_start_decryption_with_key(dec_cipher,
-                                         test_data_recipient_cipher_RECIPIENT_ID, private_key, vsc_data_empty()));
-
-    const vsc_data_t full = vsc_buffer_data(enc_msg);
-    const size_t half = full.len / 2;
-
-    const size_t chunk1_out_len = vscf_recipient_cipher_decryption_out_len(dec_cipher, half);
-    vsc_buffer_t *out1 = vsc_buffer_new_with_capacity(chunk1_out_len);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS,
-            vscf_recipient_cipher_process_decryption(dec_cipher, vsc_data_slice_beg(full, 0, half), out1));
-    TEST_ASSERT_EQUAL(0, vsc_buffer_len(out1));
-
-    const size_t chunk2_out_len = vscf_recipient_cipher_decryption_out_len(dec_cipher, full.len - half);
-    vsc_buffer_t *out2 = vsc_buffer_new_with_capacity(chunk2_out_len);
-    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_recipient_cipher_process_decryption(
-                                                   dec_cipher, vsc_data_slice_beg(full, half, full.len - half), out2));
-    TEST_ASSERT_EQUAL(0, vsc_buffer_len(out2));
-
-    //
-    //  finish_decryption must return AUTH_FAILED and write nothing to finish buffer.
-    //
-    const size_t finish_out_len = vscf_recipient_cipher_decryption_out_len(dec_cipher, 0);
-    vsc_buffer_t *out3 = vsc_buffer_new_with_capacity(finish_out_len);
-    const vscf_status_t status = vscf_recipient_cipher_finish_decryption(dec_cipher, out3);
-    TEST_ASSERT_EQUAL(vscf_status_ERROR_AUTH_FAILED, status);
-    TEST_ASSERT_EQUAL(0, vsc_buffer_len(out3));
-
-    vsc_buffer_destroy(&out1);
-    vsc_buffer_destroy(&out2);
-    vsc_buffer_destroy(&out3);
-    vsc_buffer_destroy(&enc_msg);
-    vscf_recipient_cipher_destroy(&dec_cipher);
-    vscf_impl_destroy(&private_key);
-    vscf_impl_destroy(&public_key);
-    vscf_key_provider_destroy(&key_provider);
-}
-
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -1468,14 +1283,16 @@ main(void) {
 #if TEST_DEPENDENCIES_AVAILABLE
     RUN_TEST(test__encrypt_decrypt__with_ed25519_key_recipient__success);
     RUN_TEST(test__encrypt_decrypt__with_compound_curve25519_ed25519_key_recipient__success);
-    RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_ml_kem_768_ed25519_falcon_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_falcon_key_recipient__success);
+    RUN_TEST(test__encrypt_decrypt__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success);
     RUN_TEST(test__decrypt__with_ed25519_private_key__success);
     RUN_TEST(test__decrypt__chunks_with_ed25519_key_recipient__success);
 
     RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_ed25519_key_recipient__success);
     RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_compound_curve25519_ed25519_key_recipient__success);
+    RUN_TEST(test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_falcon_key_recipient__success);
     RUN_TEST(
-            test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_ml_kem_768_ed25519_falcon_key_recipient__success);
+            test__sign_then_encrypt_and_decrypt_then_verify__with_pqc_curve25519_round5_ed25519_falcon_key_recipient__success);
 
     RUN_TEST(test__sign_then_encrypt__with_self_signed_ed25519_key_recipient__success);
     RUN_TEST(test__sign_then_encrypt__with_self_signed_ed25519_key_recipient_and_padding_cipher__success);
@@ -1499,9 +1316,6 @@ main(void) {
     RUN_TEST(test__has_key_recipient__with_added_ed25519_recipient_with_empty_and_non_empty_id__return_false);
 
     RUN_TEST(test__decrypt__set2_with_ed25519_key_recipient__success);
-
-    RUN_TEST(test__decrypt__tampered_ciphertext__auth_fails_and_output_is_empty);
-    RUN_TEST(test__decrypt_chunks__tampered_ciphertext__auth_fails_and_all_chunk_buffers_are_empty);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Append a random number of padding bytes to a data.
+*/
 class RandomPadding implements Alg, Padding
 {
 
@@ -46,7 +49,7 @@ class RandomPadding implements Alg, Padding
     private $ctx;
 
     const PADDING_SIZE_LEN = 4;
-    const PADDING_LEN_MIN = 5;
+    const PADDING_LEN_MIN = vscf_random_padding_PADDING_SIZE_LEN + 1;
 
     /**
     * Create underlying C context.
@@ -68,16 +71,16 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
-    *
-    * @param Random $$random
+    * @param Random $random
     * @return void
     */
-    public function useRandom(Random $$random): void
+    public function useRandom(Random $random): void
     {
-        vscf_random_padding_use_random_php($this->ctx, $$random);
+        vscf_random_padding_use_random_php($this->ctx, $random->getCtx());
     }
 
     /**
+    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -88,8 +91,10 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -98,37 +103,42 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $$algInfo): void
+    public function restoreAlgInfo(AlgInfo $algInfo): void
     {
-        vscf_random_padding_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
+        vscf_random_padding_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
+    * Set new padding parameters.
     *
-    * @param PaddingParams $$params
+    * @param PaddingParams $params
     * @return void
     */
-    public function configure(PaddingParams $$params): void
+    public function configure(PaddingParams $params): void
     {
-        vscf_random_padding_configure_php($this->ctx, $$params);
+        vscf_random_padding_configure_php($this->ctx, $params->getCtx());
     }
 
     /**
+    * Return length in bytes of a data with a padding.
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public function paddedDataLen(int $$dataLen): int
+    public function paddedDataLen(int $dataLen): int
     {
-        return vscf_random_padding_padded_data_len_php($this->ctx, $$dataLen);
+        return vscf_random_padding_padded_data_len_php($this->ctx, $dataLen);
     }
 
     /**
+    * Return an actual number of padding in bytes.
+    * Note, this method might be called right before "finish data processing".
     *
     * @return int
     */
@@ -138,6 +148,7 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Return a maximum number of padding in bytes.
     *
     * @return int
     */
@@ -147,6 +158,7 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Prepare the algorithm to process data.
     *
     * @return void
     */
@@ -156,16 +168,19 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Only data length is needed to produce padding later.
+    * Return data that should be further proceeded.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     */
-    public function processData(string $$data): string
+    public function processData(string $data): string
     {
-        return vscf_random_padding_process_data_php($this->ctx, $$data);
+        return vscf_random_padding_process_data_php($this->ctx, $data);
     }
 
     /**
+    * Accomplish data processing and return padding.
     *
     * @return string
     * @throws \Exception
@@ -176,6 +191,7 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Prepare the algorithm to process padded data.
     *
     * @return void
     */
@@ -185,16 +201,20 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Process padded data.
+    * Return filtered data without padding.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     */
-    public function processPaddedData(string $$data): string
+    public function processPaddedData(string $data): string
     {
-        return vscf_random_padding_process_padded_data_php($this->ctx, $$data);
+        return vscf_random_padding_process_padded_data_php($this->ctx, $data);
     }
 
     /**
+    * Return length in bytes required hold output of the method
+    * "finish padded data processing".
     *
     * @return int
     */
@@ -204,6 +224,7 @@ class RandomPadding implements Alg, Padding
     }
 
     /**
+    * Accomplish padded data processing and return left data without a padding.
     *
     * @return string
     * @throws \Exception

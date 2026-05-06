@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2026 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * (1) Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  *
- *     (2) Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
+ * (2) Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
  *
- *     (3) Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
+ * (3) Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,8 +38,60 @@
 const precondition = require('./precondition');
 
 const initGroupSession = (Module, modules) => {
+    /**
+     * Group chat encryption session.
+     */
     class GroupSession {
 
+        /**
+         * Sender id len
+         */
+        static get SENDER_ID_LEN() {
+            return 32;
+        }
+
+        get SENDER_ID_LEN() {
+            return GroupSession.SENDER_ID_LEN;
+        }
+
+        /**
+         * Max plain text len
+         */
+        static get MAX_PLAIN_TEXT_LEN() {
+            return 30000;
+        }
+
+        get MAX_PLAIN_TEXT_LEN() {
+            return GroupSession.MAX_PLAIN_TEXT_LEN;
+        }
+
+        /**
+         * Max epochs count
+         */
+        static get MAX_EPOCHS_COUNT() {
+            return 50;
+        }
+
+        get MAX_EPOCHS_COUNT() {
+            return GroupSession.MAX_EPOCHS_COUNT;
+        }
+
+        /**
+         * Salt size
+         */
+        static get SALT_SIZE() {
+            return 32;
+        }
+
+        get SALT_SIZE() {
+            return GroupSession.SALT_SIZE;
+        }
+
+        /**
+         * Create object with underlying C context.
+         *
+         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
+         */
         constructor(ctxPtr) {
             this.name = 'GroupSession';
 
@@ -50,16 +102,29 @@ const initGroupSession = (Module, modules) => {
             }
         }
 
+        /**
+         * Acquire C context by making it's shallow copy.
+         *
+         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new GroupSession(Module._vscf_group_session_shallow_copy(ctxPtr));
         }
 
+        /**
+         * Acquire C context by taking it ownership.
+         *
+         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
+         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new GroupSession(ctxPtr);
         }
 
+        /**
+         * Release underlying C context.
+         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_group_session_delete(this.ctxPtr);
@@ -67,6 +132,9 @@ const initGroupSession = (Module, modules) => {
             }
         }
 
+        /**
+         * Random
+         */
         set rng(rng) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureImplementInterface('rng', rng, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
@@ -74,57 +142,53 @@ const initGroupSession = (Module, modules) => {
             Module._vscf_group_session_use_rng(this.ctxPtr, rng.ctxPtr)
         }
 
-        static get SENDER_ID_LEN() {
-            return 32;
-        }
-
-        get SENDER_ID_LEN() {
-            return 32;
-        }
-
-        static get MAX_PLAIN_TEXT_LEN() {
-            return 30000;
-        }
-
-        get MAX_PLAIN_TEXT_LEN() {
-            return 30000;
-        }
-
-        static get MAX_EPOCHS_COUNT() {
-            return 50;
-        }
-
-        get MAX_EPOCHS_COUNT() {
-            return 50;
-        }
-
-        static get SALT_SIZE() {
-            return 32;
-        }
-
-        get SALT_SIZE() {
-            return 32;
-        }
-
+        /**
+         * Returns current epoch.
+         */
         getCurrentEpoch() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_group_session_get_current_epoch(this.ctxPtr);
             return proxyResult;
         }
 
+        /**
+         * Setups default dependencies:
+         * - RNG: CTR DRBG
+         */
         setupDefaults() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             const proxyResult = Module._vscf_group_session_setup_defaults(this.ctxPtr);
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
+        /**
+         * Returns session id.
+         */
         getSessionId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            Module._vscf_group_session_get_session_id(this.ctxPtr);
+
+            //  Create C structure vsc_data_t.
+            const dataResultCtxSize = Module._vsc_data_ctx_size();
+            const dataResultCtxPtr = Module._malloc(dataResultCtxSize);
+
+            try {
+                Module._vscf_group_session_get_session_id(dataResultCtxPtr, this.ctxPtr);
+
+                const dataResultSize = Module._vsc_data_len(dataResultCtxPtr);
+                const dataResultPtr = Module._vsc_data_bytes(dataResultCtxPtr);
+                const dataResult = Module.HEAPU8.slice(dataResultPtr, dataResultPtr + dataResultSize);
+                return dataResult;
+            } finally {
+                Module._free(dataResultCtxPtr);
+            }
         }
 
+        /**
+         * Adds epoch. New epoch should be generated for member removal or proactive to rotate encryption key.
+         * Epoch message should be encrypted and signed by trusted group chat member (admin).
+         */
         addEpoch(message) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.GroupSessionMessage);
@@ -132,35 +196,38 @@ const initGroupSession = (Module, modules) => {
             modules.FoundationError.handleStatusCode(proxyResult);
         }
 
+        /**
+         * Encrypts data
+         */
         encrypt(plainText, privateKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureByteArray('plainText', plainText);
             precondition.ensureImplementInterface('privateKey', privateKey, 'Foundation.PrivateKey', modules.FoundationInterfaceTag.PRIVATE_KEY, modules.FoundationInterface);
-            
-            // Copy bytes from JS memory to the WASM memory.
+
+            //  Copy bytes from JS memory to the WASM memory.
             const plainTextSize = plainText.length * plainText.BYTES_PER_ELEMENT;
             const plainTextPtr = Module._malloc(plainTextSize);
             Module.HEAP8.set(plainText, plainTextPtr);
-            
-            // Create C structure vsc_data_t.
+
+            //  Create C structure vsc_data_t.
             const plainTextCtxSize = Module._vsc_data_ctx_size();
             const plainTextCtxPtr = Module._malloc(plainTextCtxSize);
-            
-            // Point created vsc_data_t object to the copied bytes.
+
+            //  Point created vsc_data_t object to the copied bytes.
             Module._vsc_data(plainTextCtxPtr, plainTextPtr, plainTextSize);
-            
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
-            
+
             let proxyResult;
-            
+
             try {
                 proxyResult = Module._vscf_group_session_encrypt(this.ctxPtr, plainTextCtxPtr, privateKey.ctxPtr, errorCtxPtr);
-            
+
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
-            
+
                 const jsResult = modules.GroupSessionMessage.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
@@ -170,27 +237,33 @@ const initGroupSession = (Module, modules) => {
             }
         }
 
+        /**
+         * Calculates size of buffer sufficient to store decrypted message
+         */
         decryptLen(message) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.GroupSessionMessage);
-            
+
             let proxyResult;
             proxyResult = Module._vscf_group_session_decrypt_len(this.ctxPtr, message.ctxPtr);
             return proxyResult;
         }
 
+        /**
+         * Decrypts message
+         */
         decrypt(message, publicKey) {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
             precondition.ensureClass('message', message, modules.GroupSessionMessage);
             precondition.ensureImplementInterface('publicKey', publicKey, 'Foundation.PublicKey', modules.FoundationInterfaceTag.PUBLIC_KEY, modules.FoundationInterface);
-            
+
             const plainTextCapacity = this.decryptLen(message);
             const plainTextCtxPtr = Module._vsc_buffer_new_with_capacity(plainTextCapacity);
-            
+
             try {
                 const proxyResult = Module._vscf_group_session_decrypt(this.ctxPtr, message.ctxPtr, publicKey.ctxPtr, plainTextCtxPtr);
                 modules.FoundationError.handleStatusCode(proxyResult);
-            
+
                 const plainTextPtr = Module._vsc_buffer_bytes(plainTextCtxPtr);
                 const plainTextPtrLen = Module._vsc_buffer_len(plainTextCtxPtr);
                 const plainText = Module.HEAPU8.slice(plainTextPtr, plainTextPtr + plainTextPtrLen);
@@ -200,28 +273,30 @@ const initGroupSession = (Module, modules) => {
             }
         }
 
+        /**
+         * Creates ticket with new key for removing participants or proactive to rotate encryption key.
+         */
         createGroupTicket() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-            
+
             const errorCtxSize = Module._vscf_error_ctx_size();
             const errorCtxPtr = Module._malloc(errorCtxSize);
             Module._vscf_error_reset(errorCtxPtr);
-            
+
             let proxyResult;
-            
+
             try {
                 proxyResult = Module._vscf_group_session_create_group_ticket(this.ctxPtr, errorCtxPtr);
-            
+
                 const errorStatus = Module._vscf_error_status(errorCtxPtr);
                 modules.FoundationError.handleStatusCode(errorStatus);
-            
+
                 const jsResult = modules.GroupSessionTicket.newAndTakeCContext(proxyResult);
                 return jsResult;
             } finally {
                 Module._free(errorCtxPtr);
             }
         }
-
     }
 
     return GroupSession;

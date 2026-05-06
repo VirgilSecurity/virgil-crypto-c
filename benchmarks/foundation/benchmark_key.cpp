@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -35,7 +35,6 @@
 
 #include "benchmark/benchmark.h"
 
-#include "vscf_platform.h"
 #include "vscf_key_provider.h"
 #include "vscf_key_alg_factory.h"
 
@@ -71,15 +70,3 @@ generate_exported_key(benchmark::State &state) {
 BENCHMARK(generate_exported_key)->ArgNames({"Ed25519"})->Arg(vscf_alg_id_ED25519);
 BENCHMARK(generate_exported_key)->ArgNames({"secp256r1"})->Arg(vscf_alg_id_SECP256R1);
 BENCHMARK(generate_exported_key)->ArgNames({"RSA"})->Args({vscf_alg_id_RSA, 4096});
-
-#if VSCF_FALCON
-BENCHMARK(generate_exported_key)->ArgNames({"Falcon"})->Arg(vscf_alg_id_FALCON);
-#endif
-
-#if VSCF_ML_KEM
-BENCHMARK(generate_exported_key)->ArgNames({"MlKem768"})->Arg(vscf_alg_id_ML_KEM_768);
-#endif
-
-#if VSCF_ML_DSA
-BENCHMARK(generate_exported_key)->ArgNames({"MlDsa65"})->Arg(vscf_alg_id_ML_DSA_65);
-#endif

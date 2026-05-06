@@ -10,7 +10,7 @@ import "runtime"
 * This is MbedTLS implementation of ASN.1 reader.
 */
 type Asn1rd struct {
-    cCtx *C.vscf_asn1rd_t
+    cCtx *C.vscf_asn1rd_t /*ct10*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewAsn1rd() *Asn1rd {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAsn1rdWithCtx(ctx *C.vscf_asn1rd_t) *Asn1rd {
+func newAsn1rdWithCtx(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newAsn1rdWithCtx(ctx *C.vscf_asn1rd_t) *Asn1rd {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newAsn1rdCopy(ctx *C.vscf_asn1rd_t) *Asn1rd {
+func newAsn1rdCopy(ctx *C.vscf_asn1rd_t /*ct10*/) *Asn1rd {
     obj := &Asn1rd {
         cCtx: C.vscf_asn1rd_shallow_copy(ctx),
     }
@@ -84,29 +84,29 @@ func (obj *Asn1rd) Reset(data []byte) {
 * Return length in bytes how many bytes are left for reading.
 */
 func (obj *Asn1rd) LeftLen() uint {
-    proxyResult := C.vscf_asn1rd_left_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_left_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Return true if status is not "success".
 */
 func (obj *Asn1rd) HasError() bool {
-    proxyResult := C.vscf_asn1rd_has_error(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_has_error(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
 * Return error code.
 */
 func (obj *Asn1rd) Status() error {
-    proxyResult := C.vscf_asn1rd_status(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_status(obj.cCtx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -122,33 +122,33 @@ func (obj *Asn1rd) Status() error {
 * Get tag of the current ASN.1 element.
 */
 func (obj *Asn1rd) GetTag() int32 {
-    proxyResult := C.vscf_asn1rd_get_tag(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_get_tag(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int32(proxyResult)
+    return int32(proxyResult) /* r9 */
 }
 
 /*
 * Get length of the current ASN.1 element.
 */
 func (obj *Asn1rd) GetLen() uint {
-    proxyResult := C.vscf_asn1rd_get_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_get_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Get length of the current ASN.1 element with tag and length itself.
 */
 func (obj *Asn1rd) GetDataLen() uint {
-    proxyResult := C.vscf_asn1rd_get_data_len(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_get_data_len(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -156,11 +156,11 @@ func (obj *Asn1rd) GetDataLen() uint {
 * Return element length.
 */
 func (obj *Asn1rd) ReadTag(tag int32) uint {
-    proxyResult := C.vscf_asn1rd_read_tag(obj.cCtx, (C.int32_t)(tag))
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_tag(obj.cCtx, (C.int32_t)(tag)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -169,132 +169,132 @@ func (obj *Asn1rd) ReadTag(tag int32) uint {
 * Return 0 if current position do not points to the requested tag.
 */
 func (obj *Asn1rd) ReadContextTag(tag int32) uint {
-    proxyResult := C.vscf_asn1rd_read_context_tag(obj.cCtx, (C.int32_t)(tag))
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_context_tag(obj.cCtx, (C.int32_t)(tag)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadInt() int32 {
-    proxyResult := C.vscf_asn1rd_read_int(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_int(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int32(proxyResult)
+    return int32(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadInt8() int8 {
-    proxyResult := C.vscf_asn1rd_read_int8(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_int8(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int8(proxyResult)
+    return int8(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadInt16() int16 {
-    proxyResult := C.vscf_asn1rd_read_int16(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_int16(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int16(proxyResult)
+    return int16(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadInt32() int32 {
-    proxyResult := C.vscf_asn1rd_read_int32(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_int32(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int32(proxyResult)
+    return int32(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadInt64() int64 {
-    proxyResult := C.vscf_asn1rd_read_int64(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_int64(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return int64(proxyResult)
+    return int64(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadUint() uint32 {
-    proxyResult := C.vscf_asn1rd_read_uint(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_uint(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult)
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadUint8() uint8 {
-    proxyResult := C.vscf_asn1rd_read_uint8(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_uint8(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint8(proxyResult)
+    return uint8(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadUint16() uint16 {
-    proxyResult := C.vscf_asn1rd_read_uint16(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_uint16(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint16(proxyResult)
+    return uint16(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadUint32() uint32 {
-    proxyResult := C.vscf_asn1rd_read_uint32(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_uint32(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint32(proxyResult)
+    return uint32(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: INTEGER.
 */
 func (obj *Asn1rd) ReadUint64() uint64 {
-    proxyResult := C.vscf_asn1rd_read_uint64(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_uint64(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint64(proxyResult)
+    return uint64(proxyResult) /* r9 */
 }
 
 /*
 * Read ASN.1 type: BOOLEAN.
 */
 func (obj *Asn1rd) ReadBool() bool {
-    proxyResult := C.vscf_asn1rd_read_bool(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_bool(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -324,55 +324,55 @@ func (obj *Asn1rd) ReadNullOptional() {
 * Read ASN.1 type: OCTET STRING.
 */
 func (obj *Asn1rd) ReadOctetStr() []byte {
-    proxyResult := C.vscf_asn1rd_read_octet_str(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_octet_str(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Read ASN.1 type: BIT STRING.
 */
 func (obj *Asn1rd) ReadBitstringAsOctetStr() []byte {
-    proxyResult := C.vscf_asn1rd_read_bitstring_as_octet_str(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_bitstring_as_octet_str(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Read ASN.1 type: UTF8String.
 */
 func (obj *Asn1rd) ReadUtf8Str() []byte {
-    proxyResult := C.vscf_asn1rd_read_utf8_str(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_utf8_str(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Read ASN.1 type: OID.
 */
 func (obj *Asn1rd) ReadOid() []byte {
-    proxyResult := C.vscf_asn1rd_read_oid(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_oid(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
 * Read raw data of given length.
 */
 func (obj *Asn1rd) ReadData(len uint) []byte {
-    proxyResult := C.vscf_asn1rd_read_data(obj.cCtx, (C.size_t)(len))
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_data(obj.cCtx, (C.size_t)(len)/*pa10*/)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -380,11 +380,11 @@ func (obj *Asn1rd) ReadData(len uint) []byte {
 * Return element length.
 */
 func (obj *Asn1rd) ReadSequence() uint {
-    proxyResult := C.vscf_asn1rd_read_sequence(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_sequence(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }
 
 /*
@@ -392,9 +392,9 @@ func (obj *Asn1rd) ReadSequence() uint {
 * Return element length.
 */
 func (obj *Asn1rd) ReadSet() uint {
-    proxyResult := C.vscf_asn1rd_read_set(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_asn1rd_read_set(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult)
+    return uint(proxyResult) /* r9 */
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2026 Virgil Security, Inc.
+ * Copyright (C) 2015-2022 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- *     (1) Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
+ * (1) Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
  *
- *     (2) Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
+ * (2) Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in
+ * the documentation and/or other materials provided with the
+ * distribution.
  *
- *     (3) Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
+ * (3) Neither the name of the copyright holder nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -34,7 +34,11 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+
 const initFoundationError = (Module, modules) => {
+    /**
+     * Defines the library status codes.
+     */
     class FoundationError extends Error {
 
         constructor(message) {
@@ -43,6 +47,9 @@ const initFoundationError = (Module, modules) => {
             this.message = message;
         }
 
+        /**
+         * Throw exception of this class with a message that corresponds to the given status code.
+         */
         static handleStatusCode(statusCode) {
             if (statusCode == 0) {
                 return;
@@ -180,6 +187,18 @@ const initFoundationError = (Module, modules) => {
                 throw new FoundationError("Post-quantum Falcon-Sign private key is corrupted.");
             }
 
+            if (statusCode == -229) {
+                throw new FoundationError("Generic Round5 library error.");
+            }
+
+            if (statusCode == -230) {
+                throw new FoundationError("Post-quantum NIST Round5 public key is corrupted.");
+            }
+
+            if (statusCode == -231) {
+                throw new FoundationError("Post-quantum NIST Round5 private key is corrupted.");
+            }
+
             if (statusCode == -232) {
                 throw new FoundationError("Compound public key is corrupted.");
             }
@@ -210,22 +229,6 @@ const initFoundationError = (Module, modules) => {
 
             if (statusCode == -239) {
                 throw new FoundationError("ASN.1 AlgorithmIdentifer with HybridKeyParams is corrupted.");
-            }
-
-            if (statusCode == -240) {
-                throw new FoundationError("Post-quantum ML-KEM-768 public key is corrupted.");
-            }
-
-            if (statusCode == -241) {
-                throw new FoundationError("Post-quantum ML-KEM-768 private key is corrupted.");
-            }
-
-            if (statusCode == -242) {
-                throw new FoundationError("Post-quantum ML-DSA-65 public key is corrupted.");
-            }
-
-            if (statusCode == -243) {
-                throw new FoundationError("Post-quantum ML-DSA-65 private key is corrupted.");
             }
 
             if (statusCode == -301) {
@@ -346,7 +349,6 @@ const initFoundationError = (Module, modules) => {
 
             throw new FoundationError("Unexpected status code:" + statusCode);
         }
-
     }
 
     return FoundationError;

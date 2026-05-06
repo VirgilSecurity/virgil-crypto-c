@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -96,7 +96,8 @@ test__create_chain_key_pqc__fixed_keys__should_match(void) {
     vscf_error_t error_ctx;
     vscf_error_reset(&error_ctx);
 
-    vscf_impl_t *private_key = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ML_KEM_768, &error_ctx);
+    vscf_impl_t *private_key =
+            vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ROUND5_ND_1CCA_5D, &error_ctx);
 
     TEST_ASSERT(!vscf_error_has_error(&error_ctx));
 

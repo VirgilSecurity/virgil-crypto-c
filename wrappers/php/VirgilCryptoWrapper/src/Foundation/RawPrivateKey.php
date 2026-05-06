@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Handles interchangeable private key representation.
+*/
 class RawPrivateKey implements Key, PrivateKey
 {
 
@@ -65,6 +68,49 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Return key data.
+    *
+    * @return string
+    */
+    public function data(): string
+    {
+        return vscf_raw_private_key_data_php($this->ctx);
+    }
+
+    /**
+    * Return true if private key contains public key.
+    *
+    * @return bool
+    */
+    public function hasPublicKey(): bool
+    {
+        return vscf_raw_private_key_has_public_key_php($this->ctx);
+    }
+
+    /**
+    * Setup public key related to the private key.
+    *
+    * @param RawPublicKey $rawPublicKey
+    * @return void
+    */
+    public function setPublicKey(RawPublicKey $rawPublicKey): void
+    {
+        vscf_raw_private_key_set_public_key_php($this->ctx, $rawPublicKey->getCtx());
+    }
+
+    /**
+    * Return public key related to the private key.
+    *
+    * @return RawPublicKey
+    */
+    public function getPublicKey(): RawPublicKey
+    {
+        $ctx = vscf_raw_private_key_get_public_key_php($this->ctx);
+        return new RawPublicKey($ctx);
+    }
+
+    /**
+    * Algorithm identifier the key belongs to.
     *
     * @return AlgId
     */
@@ -75,8 +121,10 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Return algorithm information that can be used for serialization.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function algInfo(): AlgInfo
     {
@@ -85,6 +133,7 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Length of the key in bytes.
     *
     * @return int
     */
@@ -94,6 +143,7 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Length of the key in bits.
     *
     * @return int
     */
@@ -103,6 +153,8 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Check that key is valid.
+    * Note, this operation can be slow.
     *
     * @return bool
     */
@@ -112,51 +164,15 @@ class RawPrivateKey implements Key, PrivateKey
     }
 
     /**
+    * Extract public key from the private key.
     *
     * @return PublicKey
+    * @throws \Exception
     */
     public function extractPublicKey(): PublicKey
     {
         $ctx = vscf_raw_private_key_extract_public_key_php($this->ctx);
         return FoundationImplementation::wrapPublicKey($ctx);
-    }
-
-    /**
-    *
-    * @return string
-    */
-    public function data(): string
-    {
-        return vscf_raw_private_key_data_php($this->ctx);
-    }
-
-    /**
-    *
-    * @return bool
-    */
-    public function hasPublicKey(): bool
-    {
-        return vscf_raw_private_key_has_public_key_php($this->ctx);
-    }
-
-    /**
-    *
-    * @param RawPublicKey $$rawPublicKey
-    * @return void
-    */
-    public function setPublicKey(RawPublicKey $$rawPublicKey): void
-    {
-        vscf_raw_private_key_set_public_key_php($this->ctx, $$rawPublicKey);
-    }
-
-    /**
-    *
-    * @return RawPublicKey
-    */
-    public function getPublicKey(): RawPublicKey
-    {
-        $ctx = vscf_raw_private_key_get_public_key_php($this->ctx);
-        return new RawPublicKey($ctx);
     }
 
     /**

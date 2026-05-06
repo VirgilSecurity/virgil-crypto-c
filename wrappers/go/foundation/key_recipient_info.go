@@ -10,7 +10,7 @@ import "runtime"
 * Handle information about recipient that is defined by a Public Key.
 */
 type KeyRecipientInfo struct {
-    cCtx *C.vscf_key_recipient_info_t
+    cCtx *C.vscf_key_recipient_info_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -30,7 +30,7 @@ func NewKeyRecipientInfo() *KeyRecipientInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyRecipientInfoWithCtx(ctx *C.vscf_key_recipient_info_t) *KeyRecipientInfo {
+func newKeyRecipientInfoWithCtx(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecipientInfo {
     obj := &KeyRecipientInfo {
         cCtx: ctx,
     }
@@ -41,7 +41,7 @@ func newKeyRecipientInfoWithCtx(ctx *C.vscf_key_recipient_info_t) *KeyRecipientI
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t) *KeyRecipientInfo {
+func newKeyRecipientInfoCopy(ctx *C.vscf_key_recipient_info_t /*ct2*/) *KeyRecipientInfo {
     obj := &KeyRecipientInfo {
         cCtx: C.vscf_key_recipient_info_shallow_copy(ctx),
     }
@@ -74,7 +74,7 @@ func NewKeyRecipientInfoWithData(recipientId []byte, keyEncryptionAlgorithm AlgI
     recipientIdData := helperWrapData (recipientId)
     encryptedKeyData := helperWrapData (encryptedKey)
 
-    proxyResult := C.vscf_key_recipient_info_new_with_data(recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(keyEncryptionAlgorithm.Ctx())), encryptedKeyData)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_new_with_data(recipientIdData, (*C.vscf_impl_t)(unsafe.Pointer(keyEncryptionAlgorithm.Ctx())), encryptedKeyData)
 
     runtime.KeepAlive(keyEncryptionAlgorithm)
 
@@ -89,11 +89,11 @@ func NewKeyRecipientInfoWithData(recipientId []byte, keyEncryptionAlgorithm AlgI
 * Return recipient identifier.
 */
 func (obj *KeyRecipientInfo) RecipientId() []byte {
-    proxyResult := C.vscf_key_recipient_info_recipient_id(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_recipient_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }
 
 /*
@@ -101,20 +101,20 @@ func (obj *KeyRecipientInfo) RecipientId() []byte {
 * a data encryption key.
 */
 func (obj *KeyRecipientInfo) KeyEncryptionAlgorithm() (AlgInfo, error) {
-    proxyResult := C.vscf_key_recipient_info_key_encryption_algorithm(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_key_encryption_algorithm(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
 }
 
 /*
 * Return an encrypted data encryption key.
 */
 func (obj *KeyRecipientInfo) EncryptedKey() []byte {
-    proxyResult := C.vscf_key_recipient_info_encrypted_key(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_key_recipient_info_encrypted_key(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult)
+    return helperExtractData(proxyResult) /* r1 */
 }

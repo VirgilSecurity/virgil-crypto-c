@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,48 +37,55 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Implementation of the Base64 algorithm RFC 1421 and RFC 2045.
+*/
 class Base64
 {
 
     /**
+    * Calculate length in bytes required to hold an encoded base64 string.
     *
-    * @param int $$dataLen
+    * @param int $dataLen
     * @return int
     */
-    public static function encodedLen(int $$dataLen): int
+    public static function encodedLen(int $dataLen): int
     {
-        return vscf_base64_encoded_len_php($$dataLen);
+        return vscf_base64_encoded_len_php($dataLen);
     }
 
     /**
+    * Encode given data to the base64 format.
+    * Note, written buffer is NOT null-terminated.
     *
-    * @param string $$data
+    * @param string $data
     * @return string
     */
-    public static function encode(string $$data): string
+    public static function encode(string $data): string
     {
-        return vscf_base64_encode_php($$data);
+        return vscf_base64_encode_php($data);
     }
 
     /**
+    * Calculate length in bytes required to hold a decoded base64 string.
     *
-    * @param int $$strLen
+    * @param int $strLen
     * @return int
     */
-    public static function decodedLen(int $$strLen): int
+    public static function decodedLen(int $strLen): int
     {
-        return vscf_base64_decoded_len_php($$strLen);
+        return vscf_base64_decoded_len_php($strLen);
     }
 
     /**
+    * Decode given data from the base64 format.
     *
-    * @param string $$str
+    * @param string $str
     * @return string
     * @throws \Exception
     */
-    public static function decode(string $$str): string
+    public static function decode(string $str): string
     {
-        return vscf_base64_decode_php($$str);
+        return vscf_base64_decode_php($str);
     }
-
 }

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -79,6 +79,7 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
+
 
 //
 //  Provides initialization of the implementation specific context.
@@ -160,9 +161,8 @@ vscf_pkcs5_pbkdf2_restore_alg_info(vscf_pkcs5_pbkdf2_t *self, const vscf_impl_t 
     const vscf_salted_kdf_alg_info_t *salted_kdf_alg_info = (const vscf_salted_kdf_alg_info_t *)alg_info;
 
     vscf_impl_t *hmac =
-            vscf_alg_factory_create_mac_from_info(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
-    VSCF_ASSERT_PTR(hmac);
-    VSCF_ASSERT(vscf_alg_alg_id(hmac) == vscf_alg_id_HMAC);
+            vscf_alg_factory_create_hash_from_info(vscf_salted_kdf_alg_info_hash_alg_info(salted_kdf_alg_info));
+    VSCF_ASSERT(vscf_alg_info_alg_id(alg_info) == vscf_alg_id_HMAC);
 
     vscf_pkcs5_pbkdf2_release_hmac(self);
     vscf_pkcs5_pbkdf2_take_hmac(self, hmac);
@@ -192,8 +192,6 @@ vscf_pkcs5_pbkdf2_derive(vscf_pkcs5_pbkdf2_t *self, vsc_data_t data, size_t key_
 
     vsc_buffer_t *u_1 = vsc_buffer_new_with_capacity(hash_len);
     vsc_buffer_t *u_2 = vsc_buffer_new_with_capacity(hash_len);
-    vsc_buffer_make_secure(u_1);
-    vsc_buffer_make_secure(u_2);
 
     for (size_t counter = 1; counter < hash_count + 1; ++counter) {
         counter_string[0] = (byte)((counter >> 24) & 255);

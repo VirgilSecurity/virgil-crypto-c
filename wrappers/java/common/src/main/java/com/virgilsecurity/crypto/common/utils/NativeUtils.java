@@ -98,15 +98,13 @@ public class NativeUtils {
 	}
 
 	private static final String getResourceDirectory(String os, String osArch) {
-		// Normalize aarch64 -> arm64 to match the directory names used in the pom
-		String arch = "aarch64".equals(osArch) ? "arm64" : osArch;
 		StringBuilder sb = new StringBuilder("/");
 		switch (os) {
 		case LINUX_OS_NAME:
 			sb.append(LINUX_LIBS_DIRECTORY);
 			break;
 		case MACOS_OS_NAME:
-			sb.append(MACOS_LIBS_DIRECTORY + "_" + arch);
+			sb.append(MACOS_LIBS_DIRECTORY + "_" + osArch);
 			break;
 		case WINDOWS_OS_NAME:
 			sb.append(WINDOWS_LIBS_DIRECTORY);

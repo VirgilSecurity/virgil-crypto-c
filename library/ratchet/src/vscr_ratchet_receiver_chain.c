@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -215,6 +215,7 @@ vscr_ratchet_receiver_chain_shallow_copy(vscr_ratchet_receiver_chain_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
+
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vscr_ratchet_receiver_chain_init() is called.
@@ -258,9 +259,10 @@ vscr_ratchet_receiver_chain_serialize(
 }
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_receiver_chain_deserialize(
-        const vscr_ReceiverChain *receiver_chain_pb, vscr_ratchet_receiver_chain_t *receiver_chain) {
+vscr_ratchet_receiver_chain_deserialize(const vscr_ReceiverChain *receiver_chain_pb,
+        vscr_ratchet_receiver_chain_t *receiver_chain, vscf_round5_t *round5) {
 
+    VSCR_ASSERT_PTR(round5);
     VSCR_ASSERT_PTR(receiver_chain);
     VSCR_ASSERT_PTR(receiver_chain_pb);
 
@@ -273,7 +275,7 @@ vscr_ratchet_receiver_chain_deserialize(
 
     if (receiver_chain_pb->public_key_second != NULL) {
         status = vscr_ratchet_pb_utils_deserialize_public_key(
-                receiver_chain_pb->public_key_second, &receiver_chain->public_key_second);
+                round5, receiver_chain_pb->public_key_second, &receiver_chain->public_key_second);
         if (status != vscr_status_SUCCESS) {
             goto err;
         }

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from ctypes import *
 from ._c_bridge import VscfBase64
-from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge import VscfStatus
 
 
 class Base64(object):
@@ -54,7 +54,7 @@ class Base64(object):
 
     def encode(self, data):
         """Encode given data to the base64 format.
-Note, written buffer is NOT null-terminated."""
+        Note, written buffer is NOT null-terminated."""
         d_data = Data(data)
         str = Buffer(self.encoded_len(data_len=len(data)))
         self._lib_vscf_base64.vscf_base64_encode(d_data.data, str.c_buffer)

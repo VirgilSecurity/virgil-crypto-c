@@ -11,7 +11,7 @@ import "runtime"
 * Compatible with the class "signer".
 */
 type Verifier struct {
-    cCtx *C.vscf_verifier_t
+    cCtx *C.vscf_verifier_t /*ct2*/
 }
 
 /* Handle underlying C context. */
@@ -31,7 +31,7 @@ func NewVerifier() *Verifier {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newVerifierWithCtx(ctx *C.vscf_verifier_t) *Verifier {
+func newVerifierWithCtx(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: ctx,
     }
@@ -42,7 +42,7 @@ func newVerifierWithCtx(ctx *C.vscf_verifier_t) *Verifier {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newVerifierCopy(ctx *C.vscf_verifier_t) *Verifier {
+func newVerifierCopy(ctx *C.vscf_verifier_t /*ct2*/) *Verifier {
     obj := &Verifier {
         cCtx: C.vscf_verifier_shallow_copy(ctx),
     }
@@ -74,7 +74,7 @@ func (obj *Verifier) delete() {
 func (obj *Verifier) Reset(signature []byte) error {
     signatureData := helperWrapData (signature)
 
-    proxyResult := C.vscf_verifier_reset(obj.cCtx, signatureData)
+    proxyResult := /*pr4*/C.vscf_verifier_reset(obj.cCtx, signatureData)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -103,11 +103,11 @@ func (obj *Verifier) AppendData(data []byte) {
 * Verify accumulated data.
 */
 func (obj *Verifier) Verify(publicKey PublicKey) bool {
-    proxyResult := C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := /*pr4*/C.vscf_verifier_verify(obj.cCtx, (*C.vscf_impl_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }

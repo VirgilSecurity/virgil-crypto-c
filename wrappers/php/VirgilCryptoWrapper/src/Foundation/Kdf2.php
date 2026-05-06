@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2026 Virgil Security, Inc.
+* Copyright (C) 2015-2022 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-*     (1) Redistributions of source code must retain the above copyright
-*     notice, this list of conditions and the following disclaimer.
+* (1) Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
 *
-*     (2) Redistributions in binary form must reproduce the above copyright
-*     notice, this list of conditions and the following disclaimer in
-*     the documentation and/or other materials provided with the
-*     distribution.
+* (2) Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in
+* the documentation and/or other materials provided with the
+* distribution.
 *
-*     (3) Neither the name of the copyright holder nor the names of its
-*     contributors may be used to endorse or promote products derived from
-*     this software without specific prior written permission.
+* (3) Neither the name of the copyright holder nor the names of its
+* contributors may be used to endorse or promote products derived from
+* this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,6 +37,9 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
+/**
+* Virgil Security implementation of the KDF2 (ISO-18033-2) algorithm.
+*/
 class Kdf2 implements Alg, Kdf
 {
 
@@ -65,16 +68,16 @@ class Kdf2 implements Alg, Kdf
     }
 
     /**
-    *
-    * @param Hash $$hash
+    * @param Hash $hash
     * @return void
     */
-    public function useHash(Hash $$hash): void
+    public function useHash(Hash $hash): void
     {
-        vscf_kdf2_use_hash_php($this->ctx, $$hash);
+        vscf_kdf2_use_hash_php($this->ctx, $hash->getCtx());
     }
 
     /**
+    * Provide algorithm identificator.
     *
     * @return AlgId
     */
@@ -85,8 +88,10 @@ class Kdf2 implements Alg, Kdf
     }
 
     /**
+    * Produce object with algorithm information and configuration parameters.
     *
     * @return AlgInfo
+    * @throws \Exception
     */
     public function produceAlgInfo(): AlgInfo
     {
@@ -95,25 +100,27 @@ class Kdf2 implements Alg, Kdf
     }
 
     /**
+    * Restore algorithm configuration from the given object.
     *
-    * @param AlgInfo $$algInfo
+    * @param AlgInfo $algInfo
     * @return void
     * @throws \Exception
     */
-    public function restoreAlgInfo(AlgInfo $$algInfo): void
+    public function restoreAlgInfo(AlgInfo $algInfo): void
     {
-        vscf_kdf2_restore_alg_info_php($this->ctx, $$algInfo->getCtx());
+        vscf_kdf2_restore_alg_info_php($this->ctx, $algInfo->getCtx());
     }
 
     /**
+    * Derive key of the requested length from the given data.
     *
-    * @param string $$data
-    * @param int $$keyLen
+    * @param string $data
+    * @param int $keyLen
     * @return string
     */
-    public function derive(string $$data, int $$keyLen): string
+    public function derive(string $data, int $keyLen): string
     {
-        return vscf_kdf2_derive_php($this->ctx, $$data, $$keyLen);
+        return vscf_kdf2_derive_php($this->ctx, $data, $keyLen);
     }
 
     /**

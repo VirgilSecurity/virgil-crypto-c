@@ -2,15 +2,15 @@ package foundation
 
 // #include <virgil/crypto/foundation/vscf_foundation_public.h>
 import "C"
-import unsafe "unsafe"
 import "runtime"
+import unsafe "unsafe"
 
 
 /*
 * Deterministic entropy source that is based only on the given seed.
 */
 type SeedEntropySource struct {
-    cCtx *C.vscf_seed_entropy_source_t
+    cCtx *C.vscf_seed_entropy_source_t /*ct10*/
 }
 
 /*
@@ -43,7 +43,7 @@ func NewSeedEntropySource() *SeedEntropySource {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSeedEntropySourceWithCtx(ctx *C.vscf_seed_entropy_source_t) *SeedEntropySource {
+func newSeedEntropySourceWithCtx(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *SeedEntropySource {
     obj := &SeedEntropySource {
         cCtx: ctx,
     }
@@ -54,7 +54,7 @@ func newSeedEntropySourceWithCtx(ctx *C.vscf_seed_entropy_source_t) *SeedEntropy
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSeedEntropySourceCopy(ctx *C.vscf_seed_entropy_source_t) *SeedEntropySource {
+func newSeedEntropySourceCopy(ctx *C.vscf_seed_entropy_source_t /*ct10*/) *SeedEntropySource {
     obj := &SeedEntropySource {
         cCtx: C.vscf_seed_entropy_source_shallow_copy(ctx),
     }
@@ -84,11 +84,11 @@ func (obj *SeedEntropySource) delete() {
 * Defines that implemented source is strong.
 */
 func (obj *SeedEntropySource) IsStrong() bool {
-    proxyResult := C.vscf_seed_entropy_source_is_strong(obj.cCtx)
+    proxyResult := /*pr4*/C.vscf_seed_entropy_source_is_strong(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return bool(proxyResult)
+    return bool(proxyResult) /* r9 */
 }
 
 /*
@@ -102,7 +102,7 @@ func (obj *SeedEntropySource) Gather(len uint) ([]byte, error) {
     defer outBuf.delete()
 
 
-    proxyResult := C.vscf_seed_entropy_source_gather(obj.cCtx, (C.size_t)(len), outBuf.ctx)
+    proxyResult := /*pr4*/C.vscf_seed_entropy_source_gather(obj.cCtx, (C.size_t)(len)/*pa10*/, outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -111,5 +111,5 @@ func (obj *SeedEntropySource) Gather(len uint) ([]byte, error) {
 
     runtime.KeepAlive(obj)
 
-    return outBuf.getData(), nil
+    return outBuf.getData() /* r7 */, nil
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2026 Virgil Security, Inc.
+# Copyright (C) 2015-2022 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -58,7 +58,8 @@ class SignerInfoList(object):
     def item(self):
         """Return list item."""
         result = self._lib_vscf_signer_info_list.vscf_signer_info_list_item(self.ctx)
-        return SignerInfo.use_c_ctx(result)
+        instance = SignerInfo.use_c_ctx(result)
+        return instance
 
     def has_next(self):
         """Return true if list has next item."""
@@ -68,7 +69,8 @@ class SignerInfoList(object):
     def next(self):
         """Return next list node if exists, or NULL otherwise."""
         result = self._lib_vscf_signer_info_list.vscf_signer_info_list_next(self.ctx)
-        return Self.use_c_ctx(result)
+        instance = SignerInfoList.take_c_ctx(result)
+        return instance
 
     def has_prev(self):
         """Return true if list has previous item."""
@@ -78,7 +80,8 @@ class SignerInfoList(object):
     def prev(self):
         """Return previous list node if exists, or NULL otherwise."""
         result = self._lib_vscf_signer_info_list.vscf_signer_info_list_prev(self.ctx)
-        return Self.use_c_ctx(result)
+        instance = SignerInfoList.take_c_ctx(result)
+        return instance
 
     def clear(self):
         """Remove all items."""

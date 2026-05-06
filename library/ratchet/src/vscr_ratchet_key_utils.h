@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2026 Virgil Security, Inc.
+//  Copyright (C) 2015-2022 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//  (1) Redistributions of source code must retain the above copyright
-//  notice, this list of conditions and the following disclaimer.
+//      (1) Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//  (2) Redistributions in binary form must reproduce the above copyright
-//  notice, this list of conditions and the following disclaimer in
-//  the documentation and/or other materials provided with the
-//  distribution.
+//      (2) Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in
+//      the documentation and/or other materials provided with the
+//      distribution.
 //
-//  (3) Neither the name of the copyright holder nor the names of its
-//  contributors may be used to endorse or promote products derived from
-//  this software without specific prior written permission.
+//      (3) Neither the name of the copyright holder nor the names of its
+//      contributors may be used to endorse or promote products derived from
+//      this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,12 +36,14 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
+
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
+
 
 //  @description
 // --------------------------------------------------------------------------
@@ -50,6 +52,12 @@
 
 #ifndef VSCR_RATCHET_KEY_UTILS_H_INCLUDED
 #define VSCR_RATCHET_KEY_UTILS_H_INCLUDED
+
+#include "vscr_library.h"
+#include "vscr_ratchet_common.h"
+#include "vscr_error.h"
+#include "vscr_ratchet_chain_key.h"
+#include "vscr_status.h"
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -72,28 +80,11 @@
 // clang-format on
 //  @end
 
-//  @generated_header_includes
-// --------------------------------------------------------------------------
-// clang-format off
-//  Generated header includes start.
-// --------------------------------------------------------------------------
-
-#include "vscr_library.h"
-#include "vscr_ratchet_common.h"
-#include "vscr_error.h"
-#include "vscr_ratchet_chain_key.h"
-#include "vscr_status.h"
-
-// --------------------------------------------------------------------------
-//  Generated section end.
-// clang-format on
-// --------------------------------------------------------------------------
-//  @end
-
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -151,22 +142,31 @@ VSCR_PUBLIC vscr_ratchet_key_utils_t *
 vscr_ratchet_key_utils_shallow_copy(vscr_ratchet_key_utils_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key, vscr_ratchet_private_key_t *private_key_first, const vscf_impl_t * *private_key_second_ref, const vscf_impl_t * *private_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
+vscr_ratchet_key_utils_import_private_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *private_key,
+        vscr_ratchet_private_key_t *private_key_first, const vscf_impl_t **private_key_second_ref,
+        const vscf_impl_t **private_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *public_key, vscr_ratchet_public_key_t *public_key_first, const vscf_impl_t * *public_key_second_ref, const vscf_impl_t * *public_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
+vscr_ratchet_key_utils_import_public_key(vscr_ratchet_key_utils_t *self, const vscf_impl_t *public_key,
+        vscr_ratchet_public_key_t *public_key_first, const vscf_impl_t **public_key_second_ref,
+        const vscf_impl_t **public_key_second_signer_ref, bool enable_post_quantum, bool with_signer) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
-vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self, const vscr_ratchet_public_key_t public_key_first, vsc_data_t public_key_second, vscr_ratchet_key_id_t key_id);
+vscr_ratchet_key_utils_compute_public_key_id(vscr_ratchet_key_utils_t *self,
+        const vscr_ratchet_public_key_t public_key_first, vsc_data_t public_key_second, vscr_ratchet_key_id_t key_id);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519, bool curve25519, bool convert_to_curve25519, vscr_error_t *error);
+vscr_ratchet_key_utils_extract_ratchet_public_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
+        bool curve25519, bool convert_to_curve25519, vscr_error_t *error);
 
 VSCR_PUBLIC vsc_buffer_t *
-vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519, bool curve25519, bool convert_to_curve25519, vscr_error_t *error);
+vscr_ratchet_key_utils_extract_ratchet_private_key(vscr_ratchet_key_utils_t *self, vsc_data_t data, bool ed25519,
+        bool curve25519, bool convert_to_curve25519, vscr_error_t *error);
 
 VSCR_PUBLIC vscr_ratchet_chain_key_t *
-vscr_ratchet_key_utils_derive_participant_key(const vscr_ratchet_symmetric_key_t root_key, const vscr_ratchet_participant_id_t participant_id);
+vscr_ratchet_key_utils_derive_participant_key(const vscr_ratchet_symmetric_key_t root_key,
+        const vscr_ratchet_participant_id_t participant_id);
+
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -174,9 +174,11 @@ vscr_ratchet_key_utils_derive_participant_key(const vscr_ratchet_symmetric_key_t
 // --------------------------------------------------------------------------
 //  @end
 
+
 #ifdef __cplusplus
 }
 #endif
+
 
 //  @footer
 #endif // VSCR_RATCHET_KEY_UTILS_H_INCLUDED
