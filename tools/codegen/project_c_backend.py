@@ -1203,22 +1203,50 @@ def discover_renderers(
 ) -> dict[str, DirectCRenderer]:
     """Walk the project IR and build a complete renderer map for all renderable entities.
 
+    A *renderer* is a ``DirectCRenderer`` callable with signature
+    ``(repo_root: Path) -> ET.Element``.  The returned ``ET.Element`` is the
+    root of the codegen XML that ``render_one`` turns into a C header or source
+    file.  The renderer map key is the ``xml_name`` (the bare filename of the
+    codegen XML descriptor, e.g. ``"vscf_hash.xml"``).
+
     Parameters
     ----------
     project_ir:
-        The fully-resolved project IR.
+        The fully-resolved project IR (all entities, fallback_projects, prefix, …).
     entity_kinds:
         Optional filter.  When provided only entities whose kind is in the set
         are included (e.g. ``{"enum"}`` or ``{"module", "class"}``).
         When *None* (the default) all supported kinds are discovered.
     custom_overrides:
-        A ``{xml_name: renderer}`` dict of custom renderers that replace the
-        default IR-driven renderer for the corresponding output file.
+        A ``{xml_name: renderer}`` dict that REPLACES (not wraps) the default
+        IR-driven renderer for the corresponding output file.  Replacement is
+        intentional: overrides opt out of IR-driven generation entirely, usually
+        to supply a hand-crafted or migration-parity renderer for a specific file.
+
+    WHY default-argument capture in lambdas
+    ----------------------------------------
+    Every renderer lambda uses ``_pir=project_ir, _e=enum`` default-argument
+    capture rather than closing over ``project_ir`` and ``enum`` directly.
+    This is the standard Python workaround for the loop late-binding trap:
+    a plain ``lambda: f(project_ir, enum)`` inside a loop would capture the
+    *variable* ``enum``, not its *value at iteration time* — so every renderer
+    would call ``f(project_ir, last_enum)``.  Default arguments are evaluated
+    at the time the lambda is created, binding the correct object immediately.
+
+    WHY overrides are added last (after the IR loop)
+    --------------------------------------------------
+    The final loop copies any override keys that don't correspond to a known IR
+    entity (e.g. derived outputs like ``vscf_buffer_defs.h``).  This lets
+    callers inject entirely new renderers without needing an IR entity to attach
+    them to.
     """
     overrides = custom_overrides or {}
     renderers: dict[str, DirectCRenderer] = {}
     include_all = entity_kinds is None
 
+    # Each block below follows the same pattern: iterate IR entities, check for
+    # a custom override (which replaces the whole renderer), otherwise build a
+    # lambda that captures the current entity by value (see docstring WHY).
     if include_all or "enum" in entity_kinds:  # type: ignore[operator]
         for enum in project_ir.enums:
             xml_name = direct_xml_name(cast(IROutputTarget, enum.output))
@@ -1248,14 +1276,12 @@ def discover_renderers(
                 renderers[xml_name] = (
                     lambda _repo_root, _pir=project_ir, _c=cls: render_class_c_module(_pir, _c)
                 )
-            # Defs module for non-value-type classes with a struct context.
-            # Skip when struct is inlined (value types, no lifecycle, or
-            # scope="internal" + context="public" which inlines the struct).
-            is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+            # --- defs module (render_class_defs_c_module) ---
+            # A separate _defs.h is emitted when the struct must NOT be visible
+            # in the public header.  See _should_inline_struct for the full rationale.
             context = cls.attrs.get("context", "public")
             cls_scope = cls.attrs.get("scope", "public")
-            has_lifecycle = cls.attrs.get("lifecycle") != "none"
-            inline_struct = is_value_type or not has_lifecycle or (cls_scope == "internal" and context == "public")
+            inline_struct = _should_inline_struct(cls)
             if not inline_struct and context != "none":
                 defs_out = class_defs_output(cast(IROutputTarget, cls.output), context=context, scope=cls_scope)
                 defs_xml = direct_xml_name(defs_out)
@@ -1339,7 +1365,10 @@ def discover_renderers(
                     )
 
     # --- project-global impl infrastructure modules ---
-    # Only registered during full discovery (no entity_kinds filter)
+    # These are shared modules (e.g. vscf_impl.h, vscf_impl_private.h) that
+    # are generated once per project rather than once per implementation entity.
+    # They are only registered during full discovery (no entity_kinds filter)
+    # because they depend on the complete set of implementations being known.
     if include_all:
         _register_impl_infra_renderers(project_ir, renderers, overrides)
 
@@ -2338,6 +2367,22 @@ def _module_return_from_source(parent: ET.Element, src: dict[str, str], *, proje
 
 
 def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Element:
+    """Render a C module XML element for a plain IR module (not a class or enum).
+
+    Unlike render_class_c_module, {prefix}_library.h is NOT injected
+    unconditionally here.  Modules that need it carry an explicit
+    ``<require module="library"/>`` entry in their IR; that require is emitted
+    by the requires loop below.  Pure-typedef or system-include-only modules
+    (e.g. vscr_ratchet_typedefs.h) do NOT carry this require, so they
+    correctly won't get library.h — which matters because those headers have
+    no public API symbols and including library.h would pull in VSCF_PUBLIC
+    macros they don't use.
+
+    Previously library.h was added unconditionally (mirroring render_class_c_module),
+    but that was wrong for pure-typedef modules that carry no API symbols.
+    It was removed when the unconditional injection was found to cause stale
+    includes in typedef-only headers during the wrong-prefix bug investigation.
+    """
     output = cast(IROutputTarget, module.output)
     placeholders = _module_placeholder_map(project_ir)
     root = c_module_root(output, entity_id=snake_name(module.name), scope=module.attrs.get("scope", "public"))
@@ -2351,6 +2396,8 @@ def render_module_c_module(project_ir: IRProject, module: IRModule) -> ET.Elemen
             include_attrs["if"] = _resolve_module_placeholders(include_attrs["if"], placeholders, project_prefix=project_ir.prefix) or ""
         include_attrs.setdefault("scope", "public")
         text_element(root, "c_include", **include_attrs)
+    # {prefix}_library.h reaches here only when the module has require module="library" in its IR.
+    # Pure modules like typedefs or constants that don't use VSCF_PUBLIC don't carry this require.
     for require in module.requires:
         req_attrs = require.attrs
         scope = req_attrs.get("scope", "public")
@@ -2764,6 +2811,33 @@ def _class_uses_library_types(cls: IRClass) -> bool:
 
 
 
+def _should_inline_struct(cls: IRClass) -> bool:
+    """Return True when the class struct definition should be inlined in the public header.
+
+    When True, the struct definition lives directly in the public ``.h`` file
+    (no separate ``_defs.h``).  A new contributor should read this function
+    before modifying discover_renderers or render_class_c_module.
+
+    Three cases where the caller *must* see the struct layout:
+
+    1. **Value type** (``is_value_type="1"``): passed by copy, so the compiler
+       must see the full layout at every call site.
+    2. **No lifecycle** (``lifecycle="none"``): the class has no ref-counter and
+       is not heap-allocated; there is no benefit to hiding the layout.
+    3. **Internal scope + public context** (``scope="internal"`` and
+       ``context="public"``): the struct is exposed to the same translation unit
+       that defines it, so inlining the definition is intentional.
+
+    In all other cases the struct goes into ``_defs.h`` so external headers only
+    need a forward declaration.
+    """
+    is_value_type = cls.attrs.get("is_value_type") in {"1", "true"}
+    has_lifecycle = cls.attrs.get("lifecycle") != "none"
+    cls_scope = cls.attrs.get("scope", "public")
+    context = cls.attrs.get("context", "public")
+    return is_value_type or not has_lifecycle or (cls_scope == "internal" and context == "public")
+
+
 def _dependency_type_symbol(project_ir: IRProject, dep: IRDependency) -> str:
     """Return the C type symbol for a dependency field.
 
@@ -2800,6 +2874,28 @@ def _dep_prefix(project_ir: IRProject, dep: IRDependency) -> str:
     return project_ir.prefix
 
 
+def _project_prefix_for(project_ir: IRProject, project_name: str | None) -> str:
+    """Return the C prefix for a named project, falling back to project_ir's own prefix.
+
+    ``project_ir.fallback_projects`` is a list of IRProject objects that represent
+    other projects whose types are referenced by this project (cross-project
+    dependencies).  For example, a class in ``foundation`` may use an interface
+    defined in ``common``, so ``common`` appears as a fallback project.
+
+    When ``project_name`` matches one of those fallback projects we return its
+    prefix so that generated include paths and symbol names use the correct
+    project-level namespace.  When no match is found we fall back to
+    ``project_ir.prefix``, which means the referenced type lives in the same
+    project as the class being generated.
+    """
+    if project_name is None:
+        return project_ir.prefix
+    return next(
+        (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == project_name),
+        project_ir.prefix,
+    )
+
+
 def _dependency_shallow_copy_call(project_ir: IRProject, dep: IRDependency) -> str:
     """Return the shallow_copy call expression for a dependency (use method).
 
@@ -2830,17 +2926,37 @@ def _class_dependency_includes(
     scope_filter: str | None = None,
     include_struct_fields: bool = True,
 ) -> list[str]:
-    """Collect includes needed by *cls*.
+    """Collect includes needed by *cls* via three independent scans.
+
+    **Scan 1 — cls.dependencies** (direct interface/impl/class deps declared in
+    the class IR): emits the dep's own header (e.g. ``vscf_hash.h``) plus adds
+    its project prefix to *impl_prefixes* so ``{project}_impl.h`` is emitted.
+
+    **Scan 2 — method arguments** (all constructors and methods): a class can
+    *use* an interface without storing it as a field — e.g. a method that
+    accepts ``vscf_impl_t *`` as a parameter.  These arg-level interface/impl
+    refs are not covered by scan 1, so we scan them separately and add their
+    project prefix to *impl_prefixes*.  ``arg.project`` is set by the IR for
+    cross-project arguments.
+
+    **Scan 3 — struct fields** (only when *include_struct_fields* is ``True``):
+    the struct definition lives in the public header, so field types must be
+    included there; skipped when the struct is private.
+
+    *fallback_projects* (``project_ir.fallback_projects``) is the list of
+    ``IRProject`` objects for projects this project depends on.  It is used by
+    :func:`_dep_prefix` and :func:`_project_prefix_for` to resolve cross-project
+    C prefixes: e.g. a ratchet class with a foundation dep looks up ``"foundation"``
+    in *fallback_projects* to obtain prefix ``"vscf"`` and emit
+    ``vscf_impl.h`` instead of the wrong ``vscr_impl.h``.
+
+    *impl_prefixes* is a ``set`` (not a list) so that multiple deps or args
+    from the same project deduplicate naturally — each ``{project}_impl.h``
+    appears exactly once in the output.
 
     When *scope_filter* is ``None`` (default) only public-scope items are
-    considered (struct fields, variables, public methods).  When set to a
-    specific scope string (e.g. ``"internal"``) only methods matching that
-    scope are scanned.
-
-    *include_struct_fields* controls whether struct-field type includes are
-    collected.  Pass ``False`` when the struct definition lives in a private
-    file (will_inline_struct is False) so that field types do not leak into
-    the public header.
+    considered.  When set to a specific scope string (e.g. ``"internal"``) only
+    methods matching that scope are scanned.
     """
     includes: list[str] = []
     seen: set[str] = set()
@@ -2883,19 +2999,16 @@ def _class_dependency_includes(
                     seen.add(iface_include)
                     includes.append(iface_include)
                 impl_prefixes.add(dep_prefix)
+        # Scan method args separately from deps: a method can accept a cross-project interface
+        # parameter (kind="interface", project="foundation") without the class having that interface
+        # as a stored dependency.  arg.project is set by the IR for cross-project args.
         # Method args of interface/impl kind also need {source_project}_impl.h.
         # IRCArgument carries a 'project' attribute when the interface is cross-project.
         for method in [*cls.constructors, *cls.methods]:
             for arg in [*method.arguments, *method.returns]:
                 if arg.kind in {"interface", "impl"}:
                     arg_project = getattr(arg, "project", None)
-                    if arg_project:
-                        pfx = next(
-                            (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == arg_project),
-                            project_ir.prefix,
-                        )
-                    else:
-                        pfx = project_ir.prefix
+                    pfx = _project_prefix_for(project_ir, arg_project)
                     impl_prefixes.add(pfx)
         for pfx in sorted(impl_prefixes):
             impl_include = f"{pfx}_impl.h"
@@ -2988,7 +3101,11 @@ def render_class_c_module(
             if req.name not in resolved_system_includes:
                 resolved_system_includes.append(req.name)
     if will_inline_struct:
-        # When the struct is inlined, we need all the includes that _defs.h would have.
+        # WHY this block runs only when will_inline_struct is True:
+        # When the struct lives in a private _defs.h file, field-type includes
+        # are the responsibility of render_class_defs_c_module instead.  This
+        # block is the will_inline_struct path's parallel to _defs — it mirrors
+        # exactly what _defs.h would add, but into the public header directly.
         # vscf_atomic.h is only needed when the class has a lifecycle (refs counter field).
         if has_lifecycle:
             atomic_inc = f"{project_ir.prefix}_atomic.h"
@@ -3007,11 +3124,15 @@ def render_class_c_module(
                 except KeyError:
                     pass
             if field.interface_name:
+                # WHY _project_prefix_for instead of project_ir.prefix:
+                # field.project is set in the IR when this interface type comes from a
+                # different project.  E.g. a ratchet class holding a "random" interface
+                # field must use vscf_impl.h (foundation), not vscr_impl.h (ratchet).
+                # Using project_ir.prefix unconditionally would be wrong for cross-project
+                # fields.  This is one of three fix sites for the wrong-prefix bug (see
+                # also _class_dependency_includes and render_class_defs_c_module).
                 field_project = getattr(field, "project", None)
-                field_pfx = next(
-                    (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == field_project),
-                    project_ir.prefix,
-                ) if field_project else project_ir.prefix
+                field_pfx = _project_prefix_for(project_ir, field_project)
                 impl_inc = f"{field_pfx}_impl.h"
                 if impl_inc not in resolved_public_includes:
                     resolved_public_includes.append(impl_inc)
@@ -3024,6 +3145,9 @@ def render_class_c_module(
                 except KeyError:
                     pass
             elif dep.type_kind in {"interface", "impl"}:
+                # _dep_prefix resolves to the source project's prefix for cross-project
+                # interface deps (via dep.project + fallback_projects lookup). Same
+                # wrong-prefix fix as the field.interface_name branch above.
                 impl_inc = f"{_dep_prefix(project_ir, dep)}_impl.h"
                 if impl_inc not in resolved_public_includes:
                     resolved_public_includes.append(impl_inc)
@@ -5090,11 +5214,15 @@ def render_class_defs_c_module(
                     pass
         if field.interface_name is not None:
             # Interface field becomes {source_project}_impl_t pointer.
+            # WHY _project_prefix_for: field.project is set by the IR when the interface
+            # comes from a different project (cross-project dependency).  For example, a
+            # ratchet struct field of type "random" (from foundation) must generate
+            # vscf_impl.h, not vscr_impl.h.  Using project_ir.prefix unconditionally
+            # would silently emit the wrong include.  This is one of three fix sites for
+            # the wrong-prefix bug (see also render_class_c_module's will_inline_struct
+            # block and _class_dependency_includes).
             field_project = getattr(field, "project", None)
-            field_pfx = next(
-                (fp.prefix for fp in (project_ir.fallback_projects or []) if fp.name == field_project),
-                prefix,
-            ) if field_project else prefix
+            field_pfx = _project_prefix_for(project_ir, field_project)
             _add_include(f"{field_pfx}_impl.h")
         if field.enum_name is not None:
             enum_name = field.enum_name
@@ -5115,6 +5243,8 @@ def render_class_defs_c_module(
             except KeyError:
                 pass
         elif dep.type_kind in {"interface", "impl"}:
+            # _dep_prefix resolves to the source project's prefix for cross-project interface dependencies.
+            # See _project_prefix_for / _dep_prefix for the fallback_projects lookup invariant.
             dep_prefix = _dep_prefix(project_ir, dep)
             _add_include(f"{dep_prefix}_impl.h")
 
@@ -6316,15 +6446,40 @@ def render_implementation_c_module(
     *,
     fallback_projects: list[IRProject] | None = None,
 ) -> ET.Element:
-    """Render the main module for an implementation.
+    """Render the public C module XML for an implementation entity.
 
-    Produces:
-    - Interface binding constants (enum)
-    - Struct declaration (definition is in defs module)
-    - Lifecycle methods: init, cleanup, new, delete, destroy, shallow_copy
-    - impl_size, impl, impl_const cast helpers
-    - init_ctx, cleanup_ctx stubs
-    - Interface method implementation stubs
+    An *implementation* in the IR is a concrete class that implements one or
+    more interfaces (e.g. ``vscf_sha256`` implements ``vscf_hash``).  This
+    function renders the *public* header/source module — the entry point for
+    the three-module split that every implementation gets:
+
+    * **Public module** (this function) — ``vscf_sha256.h/.c``:
+      interface binding constants, struct forward declaration, lifecycle API,
+      cast helpers, and interface-method stubs visible to callers.
+    * **Defs module** (``render_implementation_defs_c_module``) — ``vscf_sha256_defs.h``:
+      the actual struct definition (fields, embedded impl tag, ref counter).
+      Kept separate so callers only need the forward declaration.
+    * **Internal module** (``render_implementation_internal_c_module``) — ``vscf_sha256_internal.h/.c``:
+      private helpers, init/cleanup bodies, and interface-method implementations.
+
+    WHY three output targets are computed at the top (*impl_output*, *defs_output*,
+    *internal_output*): they share a naming convention derived from *impl_output*
+    so all three must be in scope when building cross-references (e.g. the public
+    header includes the defs header for the struct, the internal header includes
+    both).  Computing them once at the top avoids scattered ``*_output(...)`` calls
+    throughout the function body.
+
+    WHY *fallback_projects* parameter: when an implementation uses interface types
+    from a different project (e.g. a ratchet impl accepting a foundation ``random``
+    interface), the generated includes must use the dependency's C prefix (``vscf_``).
+    ``fallback_projects`` carries the list of upstream ``IRProject`` objects needed
+    for that prefix lookup.  It mirrors the ``project_ir.fallback_projects`` field
+    but is passed explicitly so call sites can override it (e.g. in tests).
+
+    The function is intentionally long (~590 lines) because it mirrors the full
+    structure of a generated C header: includes → constants → struct → lifecycle →
+    cast helpers → context methods → interface bindings.  Each section is marked
+    with a ``# ---`` comment header.
     """
     impl_output = cast(IROutputTarget, impl.output)
     defs_output = implementation_defs_output(impl_output)
@@ -6813,6 +6968,57 @@ def argument_from_source(
     project_ir: IRProject | None = None,
     owner_class: str = "data",
 ) -> ET.Element:
+    """Map one IR argument dict to a ``c_argument`` XML element appended to *parent*.
+
+    Parameters
+    ----------
+    parent:
+        The XML element that will receive the new ``c_argument`` child.
+    src:
+        An IR argument dict as produced by the IR loader.  Relevant keys:
+
+        * ``interface`` – name of an interface type (mutually exclusive with ``class``/``type``)
+        * ``class``     – name of a class type; the special value ``"self"`` refers to the
+                          owning class resolved via *owner_class*
+        * ``library``   – truthy when the type comes from an external library (skips IR lookup)
+        * ``access``    – pre-resolved access mode: ``"readonly"``, ``"readwrite"``,
+                          ``"writeonly"``, or ``"disown"``
+        * ``project``   – source project name for cross-project interface types
+        * ``name``      – argument name (overridden by the *name* kwarg when provided)
+        * ``passed_by`` – ``"reference"`` forces double-pointer for self-typed args
+        * ``type``      – primitive type tag (``"byte"``, ``"string"``, ``"varargs"``, …)
+
+    name:
+        Override for the argument name; falls back to ``src["name"]`` when ``None``.
+    project_ir:
+        IR of the project that owns the method being emitted.  Pass ``None`` when the
+        caller has no project context (e.g. during stand-alone snippet rendering); a
+        best-effort fallback to ``"vscf"`` prefixes is used in that case.
+    owner_class:
+        The name of the class that owns the method.  Used when ``src["class"] == "self"``
+        to resolve the concrete struct type.
+
+    Returns
+    -------
+    ET.Element
+        The newly created ``c_argument`` element (already attached to *parent*).
+
+    Three main dispatch branches
+    ----------------------------
+    (a) ``src["interface"]`` is set
+        The argument accepts *any* implementation of the named interface, so it maps to a
+        ``{prefix}_impl_t *`` pointer.  ``effective_access == "disown"`` upgrades to a
+        double-pointer (``**``) with a ``_ref`` name suffix — see inline WHY comments.
+    (b) ``src["class"]`` is set
+        The argument is a concrete struct.  Access mode, value-type flag, and array markers
+        determine whether it is passed by value, pointer, or double-pointer.
+    (c) Fallback (buffer, enum, string, primitive, varargs, callback)
+        All other IR type tags fall through to specialised sub-branches that handle the
+        ``type_map`` primitive table, string conventions, varargs, and callback signatures.
+    """
+    # WHY attrs = src: they are the exact same dict.  ``attrs`` is a local alias kept
+    # for readability — it mirrors the naming convention used throughout the codebase
+    # where "attributes" describes the IR dict entries being interrogated.
     attrs = src
     arg_name = name if name is not None else attrs.get("name", "")
     if attrs.get("interface") is not None:
@@ -6821,6 +7027,12 @@ def argument_from_source(
         arg_project = attrs.get("project")
         if arg_project and project_ir is not None:
             prefix = project_ir.prefix  # default
+            # WHY fallback_projects loop: when an interface is declared in a *different*
+            # project (e.g. a ``common`` interface referenced from ``foundation``), the
+            # impl_t type must carry that dependency's prefix, not the current project's
+            # prefix.  ``fallback_projects`` is the list of project IRs that were loaded
+            # as transitive dependencies, so we scan it to find the right prefix instead
+            # of hard-coding the cross-project name.
             for fp in (project_ir.fallback_projects or []):
                 if fp.name == arg_project:
                     prefix = fp.prefix
@@ -6829,11 +7041,18 @@ def argument_from_source(
             prefix = project_ir.prefix if project_ir is not None else "vscf"
         type_name = f"{prefix}_impl_t"
         extra: dict[str, str] = {}
-        # Access is pre-resolved in the IR
+        # WHY effective_access vs raw attrs.get("access"): access is fully resolved in
+        # the IR (inheritances, defaults applied) before reaching this function, so we
+        # read it once into ``effective_access`` and treat it as the canonical value
+        # rather than re-reading the raw key multiple times.
         effective_access = attrs.get("access", "readonly")
         if effective_access == "readonly":
             extra["is_const_type"] = "1"
-        # Disown access → double pointer (reference) with _ref suffix
+        # WHY "disown" produces a _ref suffix with double-pointer (reference) access:
+        # the "disown" convention signals transfer-of-ownership — the callee takes
+        # exclusive ownership of the object and NULLs the caller's pointer.  C
+        # represents this as a ``T **`` parameter (double pointer), and the ``_ref``
+        # suffix makes the intent visible at the call site.
         if effective_access == "disown":
             return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
         return text_element(parent, "c_argument", name=arg_name, accessed_by="pointer", type=type_name, type_is="class", **extra)
@@ -6890,7 +7109,10 @@ def argument_from_source(
         # Only apply const for readonly pointer types (not value types)
         if effective_cls_access == "readonly" and accessed_by == "pointer":
             extra["is_const_type"] = "1"
-        # Disown access → double pointer (reference) with _ref suffix
+        # WHY "disown" produces a _ref suffix with double-pointer (reference) access:
+        # same transfer-of-ownership convention as for interface-typed args above — the
+        # callee takes ownership and NULLs the caller's pointer via ``T **``.  Self-typed
+        # arguments are excluded because the owning struct is never disowned through itself.
         if attrs.get("access") == "disown" and attrs.get("class") != "self":
             return text_element(parent, "c_argument", name=f"{arg_name}_ref", accessed_by="reference", type=type_name, type_is="class", **extra)
         return text_element(parent, "c_argument", name=arg_name, accessed_by=accessed_by, type=type_name, type_is="class", **extra)
