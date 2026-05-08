@@ -86,7 +86,7 @@ vsce_handle_throw_exception(vsce_status_t status) {
 //
 // Constants
 //
-const char VSCE_PHE_PHP_VERSION[] = "0.18.0";
+const char VSCE_PHE_PHP_VERSION[] = "0.19.0";
 const char VSCE_PHE_PHP_EXTNAME[] = "vsce_phe_php";
 
 static const char VSCE_PHE_CIPHER_T_PHP_RES_NAME[] = "vsce_phe_cipher_t";
