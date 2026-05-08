@@ -67,3 +67,4 @@ wrappers/go/pkg/
 # Compound Engineering local config
 .compound-engineering/*.local.yaml
 bugs.md
+.context/
