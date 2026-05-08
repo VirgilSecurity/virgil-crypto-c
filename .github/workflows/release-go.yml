@@ -83,4 +83,4 @@ jobs:
       - name: Create Go module tag
         run: |
           git tag "${{ steps.version.outputs.go_module_tag }}"
-          git push origin "${{ steps.version.outputs.go_module_tag }}"
+          git push origin "refs/tags/${{ steps.version.outputs.go_module_tag }}"
