@@ -194,21 +194,21 @@ import VSCFoundation
 
         try FoundationError.handleStatus(fromC: error.status)
 
-        return BrainkeyServerProveResult(return: proxyResult, proofValueC: proofValueC, proofValueS: proofValueS)
+        return BrainkeyServerProveResult(`return`: proxyResult, proofValueC: proofValueC, proofValueS: proofValueS)
     }
 
 }
 
 @objc(VSCFBrainkeyServerProveResult) public class BrainkeyServerProveResult: NSObject {
 
-    @objc public let return: Bool
+    @objc public let `return`: Bool
 
     @objc public let proofValueC: Data
 
     @objc public let proofValueS: Data
 
-    internal init(return: Bool, proofValueC: Data, proofValueS: Data) {
-        self.return = return
+    internal init(`return`: Bool, proofValueC: Data, proofValueS: Data) {
+        self.`return` = `return`
         self.proofValueC = proofValueC
         self.proofValueS = proofValueS
         super.init()

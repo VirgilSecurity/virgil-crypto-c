@@ -30,6 +30,24 @@ from tools.codegen.project_ir import (
 )
 
 
+# Swift keywords that must be backtick-escaped when used as identifiers.
+_SWIFT_KEYWORDS = frozenset({
+    "return", "class", "struct", "init", "deinit", "func", "var", "let",
+    "if", "else", "for", "while", "do", "switch", "case", "default",
+    "break", "continue", "fallthrough", "throw", "throws", "rethrows",
+    "try", "catch", "import", "typealias", "protocol", "extension", "enum",
+    "in", "is", "as", "nil", "true", "false", "super", "self", "Self",
+    "where", "static", "final", "override", "open", "public", "internal",
+    "private", "fileprivate", "mutating", "nonmutating", "lazy", "weak",
+    "unowned", "operator", "precedencegroup", "associativity", "infix",
+    "prefix", "postfix", "repeat", "guard", "defer", "type",
+})
+
+
+def _escape_swift_keyword(name: str) -> str:
+    return f"`{name}`" if name in _SWIFT_KEYWORDS else name
+
+
 # ---------------------------------------------------------------------------
 # Per-project configuration derived from IRProject
 # ---------------------------------------------------------------------------
@@ -118,12 +136,13 @@ def swift_case_name(constant_name: str) -> str:
 
 
 def swift_method_name(method_name: str) -> str:
-    """Derive a Swift method name (camelCase).
+    """Derive a Swift method name (camelCase), backtick-escaping reserved keywords.
 
     ``"alg id"`` -> ``"algId"``
     ``"encrypt data"`` -> ``"encryptData"``
+    ``"return"`` -> ``"`return`"``
     """
-    return swift_case_name(method_name)
+    return _escape_swift_keyword(swift_case_name(method_name))
 
 
 def _c_enum_type(project_ir: IRProject, enum: IREnum) -> str:
