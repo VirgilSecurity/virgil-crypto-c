@@ -62,7 +62,6 @@
 
 #include "vscf_library.h"
 #include "vscf_atomic.h"
-#include "vscf_group_session_typedefs.h"
 #include "vscf_group_session_message.h"
 #include "vscf_impl.h"
 

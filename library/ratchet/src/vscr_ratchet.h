@@ -74,8 +74,6 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_ratchet.h"
 #include "vscr_status.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_sender_chain.h"

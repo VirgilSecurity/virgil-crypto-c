@@ -58,7 +58,6 @@
 #include "vscr_library.h"
 #include "vscr_atomic.h"
 #include "vscr_ratchet_message_key.h"
-#include "vscr_ratchet_message_key_node.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

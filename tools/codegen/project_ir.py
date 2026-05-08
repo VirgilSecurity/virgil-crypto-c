@@ -445,7 +445,7 @@ def _method_to_ir(src: MethodSource) -> IRCMethod:
         attrs=src.attrs,
         description=src.description,
         arguments=[_arg_from_attrs(a.name, a.attrs, a.description) for a in src.arguments],
-        returns=[_arg_from_attrs("return", r) for r in src.returns],
+        returns=[_arg_from_attrs(r.get("name") or ("is success" if r.get("type") == "boolean" else "return"), r) for r in src.returns],
         members=[_ref(m.kind, m.name, m.attrs, m.description) for m in src.members],
         code_blocks=src.code_blocks,
     )

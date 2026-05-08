@@ -74,9 +74,9 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_library.h"
+#include "vscr_status.h"
 #include "vscr_ratchet_chain_key.h"
 #include "vscr_ratchet_message_key.h"
-#include "vscr_status.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.

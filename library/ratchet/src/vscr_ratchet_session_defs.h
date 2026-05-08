@@ -78,9 +78,7 @@
 
 #include "vscr_library.h"
 #include "vscr_atomic.h"
-#include "vscr_ratchet_pb_utils.h"
 #include "vscr_ratchet_common_hidden.h"
-#include "vscr_ratchet_typedefs.h"
 #include "vscr_ratchet_key_utils.h"
 #include "vscr_ratchet_xxdh.h"
 #include "vscr_ratchet.h"

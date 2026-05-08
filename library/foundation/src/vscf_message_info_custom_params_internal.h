@@ -64,9 +64,9 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_message_info_custom_params.h"
-#include "vscf_list_key_value_node.h"
 #include "vscf_error.h"
 #include "vscf_library.h"
+#include "vscf_list_key_value_node.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
