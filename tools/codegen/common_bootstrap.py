@@ -1048,7 +1048,10 @@ def _merge_header_includes(
     lib_dir = repo_root / "library" / project
     _known_bare: set[str] | None = None
     if lib_dir.is_dir():
-        _known_bare = {p.name for p in lib_dir.rglob("*.h")}
+        # WHY include/ only: src/ holds internal-scope class headers that must never appear
+        # in @generated_header_includes. Scanning only the public include tree prevents stale
+        # src/ artifacts from being mistaken for valid public includes.
+        _known_bare = {p.name for p in (lib_dir / "include").rglob("*.h") if lib_dir.is_dir()}
 
     existing_section_includes: list[str] = []
     if GENERATED_HEADER_INCLUDES_START in merged:
