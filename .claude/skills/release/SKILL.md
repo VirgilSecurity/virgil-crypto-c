@@ -1,56 +1,50 @@
 ---
 name: release
-description: Create a versioned release for virgil-crypto-c. Bumps version, builds Apple frameworks, updates Go module, creates annotated tag, and pushes. Use when the user says "release", "tag", or "cut a release".
-compatibility: Requires macOS with Xcode (for Apple frameworks), Java (for Maven version bump).
+description: Trigger a CI release for virgil-crypto-c. Runs the unified release.yml workflow_dispatch that builds Go static libs and Apple xcframeworks in CI, bumps the version, commits binaries, and creates both version tags. Use when the user says "release", "tag", or "cut a release".
+compatibility: Requires gh CLI authenticated to the VirgilSecurity/virgil-crypto-c repo.
 allowed-tools: Bash Read
 ---
 
 # Release
 
-Create a versioned release with separate commits for each step.
+Trigger the unified CI release workflow and monitor it to completion.
 
 ## Steps
 
-1. **Ask the user for the version** if not provided (e.g., `0.18.0`, `0.18.0-rc1`, `0.18.0-dev.1`)
+1. **Ask for version** if not provided (e.g., `0.19.0`, `0.19.0-rc1`, `0.19.0-dev.1`)
 
-2. **Bump version** across all wrappers:
+2. **Ask for branch** if releasing from a non-default branch (default: `develop`)
+
+3. **Trigger the workflow**:
    ```bash
-   ./scripts/bumpver.sh $VERSION
-   git add -A
-   git commit -m "Bump version to v$VERSION"
+   gh workflow run release.yml \
+     --field version=X.Y.Z \
+     --field branch=<branch>
    ```
 
-3. **Build Apple xcframeworks**:
+4. **Find and monitor the run**:
    ```bash
-   ./scripts/build_apple_frameworks.sh
-   git add -A
-   git commit -m "Build Apple xcframeworks for v$VERSION"
+   # Get the run ID (wait a moment for it to appear)
+   gh run list --workflow release.yml --limit 1
+   # Watch it to completion
+   gh run watch <run-id>
    ```
 
-4. **Update Go module** version references in `wrappers/go/` if needed:
+5. **Verify on success**: confirm both tags were created:
    ```bash
-   git add -A
-   git commit -m "Update Go module for v$VERSION"
-   ```
-   Skip this commit if there are no Go module changes.
-
-5. **Create annotated tag**:
-   ```bash
-   git tag -a v$VERSION -m "v$VERSION"
+   git fetch --tags
+   git tag | grep "X.Y.Z"
    ```
 
-6. **Push current branch and tags**:
-   ```bash
-   git push origin HEAD --tags
-   ```
+## What the workflow does
 
-## Version format
+| Step | Action |
+|------|--------|
+| `build-go` (parallel) | Cross-compiles Go static libs for 5 platforms using CI matrix |
+| `build-apple` (parallel) | Builds Apple xcframeworks on `macos-26` |
+| `release-commit` | Bumps version, merges all binaries, runs `swift build` + `swift test`, commits to source branch with `--force-with-lease`, pushes `wrappers/go/vX.Y.Z` and `vX.Y.Z` tags |
 
-- Production: `MAJOR.MINOR.PATCH` (e.g., `0.18.0`)
-- Pre-release: `MAJOR.MINOR.PATCH-LABEL` (e.g., `0.18.0-rc1`, `0.18.0-dev.1`)
-- Python PEP 440 conversion is automatic (`0.18.0-dev.1` becomes `0.18.0.dev1`)
-
-## What the tag triggers
+## What the release tag triggers
 
 | Workflow | Action |
 |----------|--------|
@@ -58,11 +52,43 @@ Create a versioned release with separate commits for each step.
 | `release-java.yml` | Java/Android to Maven Central + creates GitHub Release |
 | `release-php.yml` | PHP packages uploaded to GitHub Release |
 | `release-swift.yml` | XCFrameworks to GitHub Release |
-| `release-go.yml` | Go static libs cross-compile, commit, Go module tag |
 | `release-wasm.yml` | WASM bundle to npm |
 
-## Edge cases
+## Version format
 
-- If Java is not installed, `bumpver.sh` will fail on Maven version update. Warn the user and suggest manually updating `wrappers/java/` POM versions.
-- If not on macOS, skip the Apple frameworks step and warn the user.
-- Pre-release tags (containing `-`) route Python wheels to TestPyPI. Production tags route to PyPI.
+- Production: `MAJOR.MINOR.PATCH` (e.g., `0.18.0`)
+- Pre-release: `MAJOR.MINOR.PATCH-LABEL` (e.g., `0.18.0-rc1`, `0.18.0-dev.1`)
+- Python PEP 440 conversion is automatic (`0.18.0-dev.1` becomes `0.18.0.dev1`)
+
+## Partial failure recovery
+
+If the workflow log shows the release commit was pushed (step "Push to source branch" succeeded) but one or both tag pushes failed, recover manually:
+
+```bash
+git fetch origin <branch>
+SHA=$(git rev-parse origin/<branch>)
+
+# If Go module tag is missing:
+git tag "wrappers/go/vX.Y.Z" "$SHA"
+git push origin "refs/tags/wrappers/go/vX.Y.Z"
+
+# If release tag is missing:
+git tag "vX.Y.Z" -m "vX.Y.Z" "$SHA"
+git push origin "refs/tags/vX.Y.Z"
+```
+
+## Releasing from a non-develop branch
+
+Branch protection must allow `github-actions[bot]` to push directly before running the workflow. `develop` is already configured. For `main` or `release-*`, apply the same settings first:
+
+```bash
+gh api -X PUT repos/VirgilSecurity/virgil-crypto-c/branches/<branch>/protection \
+  --input - <<'EOF'
+{
+  "required_status_checks": null,
+  "enforce_admins": false,
+  "required_pull_request_reviews": null,
+  "restrictions": { "users": [], "teams": [], "apps": ["github-actions"] }
+}
+EOF
+```
