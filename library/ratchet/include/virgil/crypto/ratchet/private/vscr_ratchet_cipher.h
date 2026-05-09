@@ -66,6 +66,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
 #include "vscr_status.h"
 #include "vscr_ratchet_message_key.h"
 

@@ -1048,10 +1048,11 @@ def _merge_header_includes(
     lib_dir = repo_root / "library" / project
     _known_bare: set[str] | None = None
     if lib_dir.is_dir():
-        # WHY include/ only: src/ holds internal-scope class headers that must never appear
-        # in @generated_header_includes. Scanning only the public include tree prevents stale
-        # src/ artifacts from being mistaken for valid public includes.
-        _known_bare = {p.name for p in (lib_dir / "include").rglob("*.h") if lib_dir.is_dir()}
+        # Scan both include/ and src/ so private headers that reference other private headers
+        # (e.g. vscf_group_session_epoch.h → vscf_group_session_typedefs.h) pass the
+        # existence check. Internal-scope headers removed from the public bundle are handled
+        # by explicit removal from @generated_header_includes sections, not by this filter.
+        _known_bare = {p.name for p in lib_dir.rglob("*.h")}
 
     existing_section_includes: list[str] = []
     if GENERATED_HEADER_INCLUDES_START in merged:

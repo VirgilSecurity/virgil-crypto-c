@@ -75,6 +75,7 @@
 #include "vscf_impl_private.h"
 #include "vscf_random_padding.h"
 #include "vscf_atomic.h"
+#include "vscf_tail_filter.h"
 #include "vscf_impl.h"
 
 // --------------------------------------------------------------------------

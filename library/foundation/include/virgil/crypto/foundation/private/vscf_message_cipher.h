@@ -66,6 +66,7 @@
 // --------------------------------------------------------------------------
 
 #include "vscf_library.h"
+#include "vscf_group_session_typedefs.h"
 #include "vscf_message_padding.h"
 #include "vscf_status.h"
 
