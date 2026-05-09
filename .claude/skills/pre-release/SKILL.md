@@ -61,24 +61,16 @@ git push origin release/X.Y.Z
 git checkout -
 ```
 
-### 4. Configure branch protection
+### 4. Remove any branch protection (allow all)
 
-The release branch must allow `github-actions[bot]` to push the release commit back.
-**Do not use `restrictions.apps: ["github-actions"]`** — that pattern silently breaks `GITHUB_TOKEN` pushes since GitHub's 2023 token changes. Use `restrictions: null` with force-pushes enabled:
+New branches have no restrictions by default. As a safety net — in case an org-level rule applied protection automatically — remove any protection that exists:
 
 ```bash
-gh api -X PUT repos/VirgilSecurity/virgil-crypto-c/branches/release%2FX.Y.Z/protection \
-  --input - <<'EOF'
-{
-  "required_status_checks": null,
-  "enforce_admins": false,
-  "required_pull_request_reviews": null,
-  "restrictions": null
-}
-EOF
+gh api -X DELETE repos/VirgilSecurity/virgil-crypto-c/branches/release%2FX.Y.Z/protection \
+  2>/dev/null || true
 ```
 
-Note the URL-encoded slash: `release%2FX.Y.Z`.
+Note the URL-encoded slash: `release%2FX.Y.Z`. The `|| true` makes the step a no-op if no protection existed.
 
 ### 5. Trigger the release workflow
 
