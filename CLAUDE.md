@@ -60,6 +60,7 @@ cd build && ctest --output-on-failure
 ## Forbidden
 
 - **Do not push without a local build and test check**: Before any `git push`, run the C build (`cmake --build build -j$(nproc)`) and test suite (`cd build && ctest --output-on-failure`). For codegen changes, also run `python3 -m pytest tools/codegen/ -q`. Push only after confirming no regressions.
+- **Verify Swift build and tests after each Apple frameworks build**: After running `./scripts/build_apple_frameworks.sh`, set `useLocalBinaries = true` in `Package.swift`, run `swift build` and `swift test`, then restore `useLocalBinaries = false`. Fix any Swift errors before proceeding to tag and push.
 - **CMake in-source builds**: Always pass `-B<builddir> -S.` to keep build artifacts out of the
   source tree. Never run `cmake .` or `cmake <srcdir>` without a `-B` flag. Build dirs to use:
   - Default C: `build/`

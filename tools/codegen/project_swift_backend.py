@@ -699,19 +699,22 @@ def _swift_method_body(
     # Determine the closure return type
     if has_status_return:
         closure_return_type = status_type
-    elif value_returns and not buffer_outputs:
-        # Single value return with no buffers
+    elif value_returns:
         ret = value_returns[0]
-        if ret.class_name == "data":
+        if (ret.type_name or "").lower() == "boolean":
+            # Bool return must propagate through closures even when buffer outputs
+            # are also present (e.g. brainkey_server_prove returns bool + 2 buffers).
+            closure_return_type = "Bool"
+        elif buffer_outputs:
+            # Other non-status value returns alongside buffer outputs are uncommon;
+            # keep existing Void-chain behaviour to avoid unintended regressions.
+            closure_return_type = None
+        elif ret.class_name == "data":
             closure_return_type = "vsc_data_t"
         elif ret.enum_name:
             closure_return_type = _c_enum_type_by_name(project_ir, ret.enum_name)
         elif ret.interface_name or (ret.class_name and ret.class_name not in {"data", "buffer"}):
             closure_return_type = "OpaquePointer?"
-        elif (ret.type_name or "").lower() in {"size", "integer", "unsigned"}:
-            closure_return_type = None  # Direct Int return
-        elif (ret.type_name or "").lower() == "boolean":
-            closure_return_type = None
         else:
             closure_return_type = None
     else:

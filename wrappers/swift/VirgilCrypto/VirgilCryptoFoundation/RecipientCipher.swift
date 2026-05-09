@@ -89,8 +89,8 @@ import VSCFoundation
     /// Return true if a key recipient with a given id has been added.
     /// Note, operation has O(N) time complexity.
     @objc public func hasKeyRecipient(recipientId: Data) -> Bool {
-        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) in
-            vscf_recipient_cipher_has_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
+        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> Bool in
+            return vscf_recipient_cipher_has_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
         })
 
         return proxyResult

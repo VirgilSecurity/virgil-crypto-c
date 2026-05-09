@@ -172,17 +172,17 @@ import VSCFoundation
             vsc_buffer_delete(proofValueSBuf)
         }
 
-        let proxyResult = blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) in
-            hardenedPoint.withUnsafeBytes({ (hardenedPointPointer: UnsafeRawBufferPointer) in
-                identitySecret.withUnsafeBytes({ (identitySecretPointer: UnsafeRawBufferPointer) in
-                    serverPublicKey.withUnsafeBytes({ (serverPublicKeyPointer: UnsafeRawBufferPointer) in
-                        proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutableRawBufferPointer) in
+        let proxyResult = blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) -> Bool in
+            return hardenedPoint.withUnsafeBytes({ (hardenedPointPointer: UnsafeRawBufferPointer) -> Bool in
+                return identitySecret.withUnsafeBytes({ (identitySecretPointer: UnsafeRawBufferPointer) -> Bool in
+                    return serverPublicKey.withUnsafeBytes({ (serverPublicKeyPointer: UnsafeRawBufferPointer) -> Bool in
+                        return proofValueC.withUnsafeMutableBytes({ (proofValueCPointer: UnsafeMutableRawBufferPointer) -> Bool in
                             vsc_buffer_use(proofValueCBuf, proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueCCount)
 
-                            proofValueS.withUnsafeMutableBytes({ (proofValueSPointer: UnsafeMutableRawBufferPointer) in
+                            return proofValueS.withUnsafeMutableBytes({ (proofValueSPointer: UnsafeMutableRawBufferPointer) -> Bool in
                                 vsc_buffer_use(proofValueSBuf, proofValueSPointer.bindMemory(to: byte.self).baseAddress, proofValueSCount)
 
-                                vscf_brainkey_server_prove(self.c_ctx, vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(identitySecretPointer.bindMemory(to: byte.self).baseAddress, identitySecret.count), vsc_data(serverPublicKeyPointer.bindMemory(to: byte.self).baseAddress, serverPublicKey.count), proofValueCBuf, proofValueSBuf, &error)
+                                return vscf_brainkey_server_prove(self.c_ctx, vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(identitySecretPointer.bindMemory(to: byte.self).baseAddress, identitySecret.count), vsc_data(serverPublicKeyPointer.bindMemory(to: byte.self).baseAddress, serverPublicKey.count), proofValueCBuf, proofValueSBuf, &error)
                             })
                         })
                     })

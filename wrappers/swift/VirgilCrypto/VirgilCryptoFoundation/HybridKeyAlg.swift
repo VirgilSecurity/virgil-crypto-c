@@ -312,9 +312,9 @@ import VSCFoundation
 
     /// Verify data digest with a given public key and signature.
     @objc public func verifyHash(publicKey: PublicKey, hashId: AlgId, digest: Data, signature: Data) -> Bool {
-        let proxyResult = digest.withUnsafeBytes({ (digestPointer: UnsafeRawBufferPointer) in
-            signature.withUnsafeBytes({ (signaturePointer: UnsafeRawBufferPointer) in
-                vscf_hybrid_key_alg_verify_hash(self.c_ctx, publicKey.c_ctx, vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(digestPointer.bindMemory(to: byte.self).baseAddress, digest.count), vsc_data(signaturePointer.bindMemory(to: byte.self).baseAddress, signature.count))
+        let proxyResult = digest.withUnsafeBytes({ (digestPointer: UnsafeRawBufferPointer) -> Bool in
+            return signature.withUnsafeBytes({ (signaturePointer: UnsafeRawBufferPointer) -> Bool in
+                return vscf_hybrid_key_alg_verify_hash(self.c_ctx, publicKey.c_ctx, vscf_alg_id_t(rawValue: UInt32(hashId.rawValue)), vsc_data(digestPointer.bindMemory(to: byte.self).baseAddress, digest.count), vsc_data(signaturePointer.bindMemory(to: byte.self).baseAddress, signature.count))
             })
         })
 

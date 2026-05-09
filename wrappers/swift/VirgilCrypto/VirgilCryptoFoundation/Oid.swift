@@ -79,9 +79,9 @@ import VSCFoundation
 
     /// Return true if given OIDs are equal.
     @objc public static func equal(lhs: Data, rhs: Data) -> Bool {
-        let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafeRawBufferPointer) in
-            rhs.withUnsafeBytes({ (rhsPointer: UnsafeRawBufferPointer) in
-                vscf_oid_equal(vsc_data(lhsPointer.bindMemory(to: byte.self).baseAddress, lhs.count), vsc_data(rhsPointer.bindMemory(to: byte.self).baseAddress, rhs.count))
+        let proxyResult = lhs.withUnsafeBytes({ (lhsPointer: UnsafeRawBufferPointer) -> Bool in
+            return rhs.withUnsafeBytes({ (rhsPointer: UnsafeRawBufferPointer) -> Bool in
+                return vscf_oid_equal(vsc_data(lhsPointer.bindMemory(to: byte.self).baseAddress, lhs.count), vsc_data(rhsPointer.bindMemory(to: byte.self).baseAddress, rhs.count))
             })
         })
 

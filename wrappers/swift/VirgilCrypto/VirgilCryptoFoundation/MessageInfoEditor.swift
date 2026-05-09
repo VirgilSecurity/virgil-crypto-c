@@ -106,8 +106,8 @@ import VSCFoundation
     /// Remove recipient with a given id.
     /// Return false if recipient with given id was not found.
     @objc public func removeKeyRecipient(recipientId: Data) -> Bool {
-        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) in
-            vscf_message_info_editor_remove_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
+        let proxyResult = recipientId.withUnsafeBytes({ (recipientIdPointer: UnsafeRawBufferPointer) -> Bool in
+            return vscf_message_info_editor_remove_key_recipient(self.c_ctx, vsc_data(recipientIdPointer.bindMemory(to: byte.self).baseAddress, recipientId.count))
         })
 
         return proxyResult

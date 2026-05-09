@@ -156,12 +156,12 @@ import VSCFoundation
         var error: vscf_error_t = vscf_error_t()
         vscf_error_reset(&error)
 
-        let proxyResult = blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) in
-            hardenedPoint.withUnsafeBytes({ (hardenedPointPointer: UnsafeRawBufferPointer) in
-                serverPublicKey.withUnsafeBytes({ (serverPublicKeyPointer: UnsafeRawBufferPointer) in
-                    proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafeRawBufferPointer) in
-                        proofValueS.withUnsafeBytes({ (proofValueSPointer: UnsafeRawBufferPointer) in
-                            vscf_brainkey_client_verify(self.c_ctx, vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(serverPublicKeyPointer.bindMemory(to: byte.self).baseAddress, serverPublicKey.count), vsc_data(proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueC.count), vsc_data(proofValueSPointer.bindMemory(to: byte.self).baseAddress, proofValueS.count), &error)
+        let proxyResult = blindedPoint.withUnsafeBytes({ (blindedPointPointer: UnsafeRawBufferPointer) -> Bool in
+            return hardenedPoint.withUnsafeBytes({ (hardenedPointPointer: UnsafeRawBufferPointer) -> Bool in
+                return serverPublicKey.withUnsafeBytes({ (serverPublicKeyPointer: UnsafeRawBufferPointer) -> Bool in
+                    return proofValueC.withUnsafeBytes({ (proofValueCPointer: UnsafeRawBufferPointer) -> Bool in
+                        return proofValueS.withUnsafeBytes({ (proofValueSPointer: UnsafeRawBufferPointer) -> Bool in
+                            return vscf_brainkey_client_verify(self.c_ctx, vsc_data(blindedPointPointer.bindMemory(to: byte.self).baseAddress, blindedPoint.count), vsc_data(hardenedPointPointer.bindMemory(to: byte.self).baseAddress, hardenedPoint.count), vsc_data(serverPublicKeyPointer.bindMemory(to: byte.self).baseAddress, serverPublicKey.count), vsc_data(proofValueCPointer.bindMemory(to: byte.self).baseAddress, proofValueC.count), vsc_data(proofValueSPointer.bindMemory(to: byte.self).baseAddress, proofValueS.count), &error)
                         })
                     })
                 })
