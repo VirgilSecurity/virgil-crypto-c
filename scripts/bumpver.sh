@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -126,18 +126,35 @@ done
 # ###########################################################################
 show_info "Change version within Python wrapper files."
 
-sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py"
+# Build PEP 440 version: strip hyphen, map alpha->a, beta->b, strip dots in label
+if [ -z "${VERSION_LABEL}" ]; then
+    VERSION_PEP440="${VERSION}"
+else
+    # Normalize: strip dots within label (e.g. dev.1 -> dev1)
+    PEP440_LABEL="${VERSION_LABEL//./}"
+    # Map long pre-release names to PEP 440 abbreviations
+    PEP440_LABEL="${PEP440_LABEL/alpha/a}"
+    PEP440_LABEL="${PEP440_LABEL/beta/b}"
+    # dev releases use a dot separator in PEP 440 (e.g. 0.17.2.dev1)
+    if [[ $PEP440_LABEL == dev* ]]; then
+        VERSION_PEP440="${VERSION}.${PEP440_LABEL}"
+    else
+        VERSION_PEP440="${VERSION}${PEP440_LABEL}"
+    fi
+fi
+
+sed_replace "__version__ = \".*\"" "__version__ = \"${VERSION_PEP440}\"" "${ROOT_DIR}/wrappers/python/virgil_crypto_lib/__init__.py"
 
 if [ ! -z "${VERSION_LABEL}" ]; then
     if [[ $VERSION_LABEL == *"alpha"* ]]; then
-        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 3 - Alpha\"" "${ROOT_DIR}/wrappers/python/setup.py"
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 3 - Alpha\"" "${ROOT_DIR}/wrappers/python/pyproject.toml"
     elif [[ $VERSION_LABEL == *"beta"* ]] || [[ $VERSION_LABEL == *"rc"* ]]; then
-        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 4 - Beta\"" "${ROOT_DIR}/wrappers/python/setup.py"
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 4 - Beta\"" "${ROOT_DIR}/wrappers/python/pyproject.toml"
     else
-        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 2 - Pre-Alpha\"" "${ROOT_DIR}/wrappers/python/setup.py"
+        sed_replace "\"Development Status :: .*\"" "\"Development Status :: 2 - Pre-Alpha\"" "${ROOT_DIR}/wrappers/python/pyproject.toml"
     fi
 else
-    sed_replace "\"Development Status :: .*\"" "\"Development Status :: 5 - Production\/Stable\"" "${ROOT_DIR}/wrappers/python/setup.py"
+    sed_replace "\"Development Status :: .*\"" "\"Development Status :: 5 - Production\/Stable\"" "${ROOT_DIR}/wrappers/python/pyproject.toml"
 fi
 
 # ###########################################################################
@@ -152,11 +169,11 @@ sed_replace "version \".*\"" "version \"${VERSION_FULL}\"" "${ROOT_DIR}/wrappers
 
 # ###########################################################################
 show_info "Change version within JS package.json file."
-sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION}\"\2" "${ROOT_DIR}/wrappers/wasm/package.json"
+sed_replace "(\"version\")[^,]+([,]?)" "\1: \"${VERSION_FULL}\"\2" "${ROOT_DIR}/wrappers/wasm/package.json"
 
 # ###########################################################################
 show_info "Add version within Carthage spec files."
-for PROJ in VSCCommon VSCFoundation VSCPythia VSCRatchet; do
+for PROJ in VSCCommon VSCFoundation VSCRatchet; do
 cat <<EOF > "${ROOT_DIR}/carthage-specs/${PROJ}.json"
 {
     "${VERSION_FULL}": "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v${VERSION_FULL}/${PROJ}.xcframework.zip"

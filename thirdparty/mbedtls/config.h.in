@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -35,8 +35,10 @@
 //  Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
 // --------------------------------------------------------------------------
 
-#ifndef MBEDTLS_CONFIG_H
-#define MBEDTLS_CONFIG_H
+#ifndef VIRGIL_MBEDTLS_CONFIG_H
+#define VIRGIL_MBEDTLS_CONFIG_H
+
+#define MBEDTLS_CONFIG_VERSION 0x03060500
 
 #include <stddef.h> // size_t
 
@@ -46,8 +48,10 @@
 #cmakedefine MBEDTLS_ERROR_C
 #cmakedefine MBEDTLS_PLATFORM_C
 
-void *vsc_calloc(size_t count, size_t size);
-void *vsc_dealloc(size_t size);
+void *
+vsc_calloc(size_t count, size_t size);
+void *
+vsc_dealloc(size_t size);
 
 #define MBEDTLS_PLATFORM_MEMORY
 #define MBEDTLS_PLATFORM_CALLOC vsc_calloc
@@ -56,7 +60,9 @@ void *vsc_dealloc(size_t size);
 //
 //  Required by library vsc::foundation
 //
+#cmakedefine MBEDTLS_SHA224_C
 #cmakedefine MBEDTLS_SHA256_C
+#cmakedefine MBEDTLS_SHA384_C
 #cmakedefine MBEDTLS_SHA512_C
 #cmakedefine MBEDTLS_CIPHER_C
 #cmakedefine MBEDTLS_AES_C
@@ -71,14 +77,13 @@ void *vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_GENPRIME
 #cmakedefine MBEDTLS_PLATFORM_ENTROPY
 #cmakedefine MBEDTLS_TIMING_C
-#cmakedefine MBEDTLS_HAVEGE_C
 #cmakedefine MBEDTLS_BASE64_C
 #cmakedefine MBEDTLS_CIPHER_MODE_CBC
 #cmakedefine MBEDTLS_CIPHER_MODE_WITH_PADDING
 #cmakedefine MBEDTLS_CIPHER_PADDING_PKCS7
 
 #if !defined(MBEDTLS_PLATFORM_ENTROPY)
-#   define MBEDTLS_NO_PLATFORM_ENTROPY
+#define MBEDTLS_NO_PLATFORM_ENTROPY
 #endif
 
 #cmakedefine MBEDTLS_THREADING_C
@@ -86,7 +91,7 @@ void *vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_THREADING_SRWLOCK
 
 //
-//  Required by library vsc::pythia
+//  Required by library vsc::foundation
 //
 #cmakedefine MBEDTLS_CTR_DRBG_C
 #cmakedefine MBEDTLS_ENTROPY_C
@@ -100,8 +105,8 @@ void *vsc_dealloc(size_t size);
 #cmakedefine MBEDTLS_ECDSA_C
 
 #if defined(MBEDTLS_ECDSA_C)
-#    define MBEDTLS_ECDSA_DETERMINISTIC
-#    define MBEDTLS_HMAC_DRBG_C
+#define MBEDTLS_ECDSA_DETERMINISTIC
+#define MBEDTLS_HMAC_DRBG_C
 #endif
 
 //
@@ -123,6 +128,4 @@ void *vsc_dealloc(size_t size);
 #define MBEDTLS_ECP_NIST_OPTIM 1
 #define MBEDTLS_ECP_FIXED_POINT_OPTIM 1
 
-#include "check_config.h"
-
-#endif /* MBEDTLS_CONFIG_H */
+#endif /* VIRGIL_MBEDTLS_CONFIG_H */

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,12 +35,16 @@
 
 from ctypes import *
 from ._c_bridge import VscfMessageInfoCustomParams
+from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from ._c_bridge._vscf_error import vscf_error_t
-from ._c_bridge import VscfStatus
 
 
 class MessageInfoCustomParams(object):
+
+    OF_INT_TYPE = 1
+    OF_STRING_TYPE = 2
+    OF_DATA_TYPE = 3
 
     def __init__(self):
         """Create underlying C context."""

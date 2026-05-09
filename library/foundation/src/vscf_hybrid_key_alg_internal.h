@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -54,24 +52,17 @@
 #ifndef VSCF_HYBRID_KEY_ALG_INTERNAL_H_INCLUDED
 #define VSCF_HYBRID_KEY_ALG_INTERNAL_H_INCLUDED
 
-#include "vscf_library.h"
-#include "vscf_hybrid_key_alg.h"
-
 // clang-format on
 //  @end
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-
-//  @generated
+//  @generated_header_includes
 // --------------------------------------------------------------------------
 // clang-format off
-//  Generated section start.
+//  Generated header includes start.
 // --------------------------------------------------------------------------
 
+#include "vscf_library.h"
+#include "vscf_hybrid_key_alg.h"
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -81,9 +72,40 @@ extern "C" {
 
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
+//  @generated
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated section start.
+// --------------------------------------------------------------------------
+
+//
+//  Provides initialization of the implementation specific context.
+//  Note, this method is called automatically when method vscf_hybrid_key_alg_init() is called.
+//  Note, that context is already zeroed.
+//
+VSCF_PRIVATE void
+vscf_hybrid_key_alg_init_ctx(vscf_hybrid_key_alg_t *self);
+
+//
+//  Release resources of the implementation specific context.
+//  Note, this method is called automatically once when class is completely cleaning up.
+//  Note, that context will be zeroed automatically next this method.
+//
+VSCF_PRIVATE void
+vscf_hybrid_key_alg_cleanup_ctx(vscf_hybrid_key_alg_t *self);
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
+#ifdef __cplusplus
+}
+#endif
 
 //  @footer
 #endif // VSCF_HYBRID_KEY_ALG_INTERNAL_H_INCLUDED

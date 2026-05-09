@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -89,7 +89,6 @@ vscf_asn1rd_read_tag_data(vscf_asn1rd_t *self, int tag);
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Provides initialization of the implementation specific context.
@@ -309,6 +308,11 @@ vscf_asn1rd_get_data_len(vscf_asn1rd_t *self) {
 
     byte *p = self->curr + 1; // skip tag
 
+    if (p >= self->end) {
+        self->status = vscf_status_ERROR_OUT_OF_DATA;
+        return 0;
+    }
+
     size_t length_len = 1;
     if ((*p & 0x80) > 0) {
         length_len += *p & 0x7F;
@@ -437,7 +441,7 @@ vscf_asn1rd_read_int16(vscf_asn1rd_t *self) {
         return 0;
     }
 
-    if (value > (int64_t)INT16_MAX) {
+    if (value > (int64_t)INT16_MAX || value < (int64_t)INT16_MIN) {
         self->status = vscf_status_ERROR_ASN1_LOSSY_TYPE_NARROWING;
         return 0;
     }
@@ -682,7 +686,10 @@ vscf_asn1rd_read_null(vscf_asn1rd_t *self) {
         return;
     }
 
-    VSCF_ASSERT(0 == len && "length of the NULL must be 0");
+    if (len != 0) {
+        self->status = vscf_status_ERROR_BAD_ASN1;
+        return;
+    }
 }
 
 //

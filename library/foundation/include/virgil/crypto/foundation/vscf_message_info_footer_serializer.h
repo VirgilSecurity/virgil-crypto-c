@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,12 +50,6 @@
 
 #ifndef VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_H_INCLUDED
 #define VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_message_info_footer.h"
-#include "vscf_error.h"
-#include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -72,11 +64,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_message_info_footer.h"
+#include "vscf_error.h"
+#include "vscf_api.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -93,15 +102,13 @@ typedef struct vscf_message_info_footer_serializer_api_t vscf_message_info_foote
 //  Return buffer size enough to hold serialized message info footer.
 //
 VSCF_PUBLIC size_t
-vscf_message_info_footer_serializer_serialized_footer_len(vscf_impl_t *impl,
-        const vscf_message_info_footer_t *message_info_footer);
+vscf_message_info_footer_serializer_serialized_footer_len(vscf_impl_t *impl, const vscf_message_info_footer_t *message_info_footer);
 
 //
 //  Serialize class "message info footer".
 //
 VSCF_PUBLIC void
-vscf_message_info_footer_serializer_serialize_footer(vscf_impl_t *impl,
-        const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
+vscf_message_info_footer_serializer_serialize_footer(vscf_impl_t *impl, const vscf_message_info_footer_t *message_info_footer, vsc_buffer_t *out);
 
 //
 //  Deserialize class "message info footer".
@@ -125,9 +132,7 @@ vscf_message_info_footer_serializer_is_implemented(const vscf_impl_t *impl);
 //  Returns interface unique identifier.
 //
 VSCF_PUBLIC vscf_api_tag_t
-vscf_message_info_footer_serializer_api_tag(
-        const vscf_message_info_footer_serializer_api_t *message_info_footer_serializer_api);
-
+vscf_message_info_footer_serializer_api_tag(const vscf_message_info_footer_serializer_api_t *message_info_footer_serializer_api);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -135,11 +140,9 @@ vscf_message_info_footer_serializer_api_tag(
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_MESSAGE_INFO_FOOTER_SERIALIZER_H_INCLUDED

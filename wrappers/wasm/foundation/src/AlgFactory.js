@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,89 +38,69 @@
 const precondition = require('./precondition');
 
 const initAlgFactory = (Module, modules) => {
-    /**
-     * Create algorithms based on the given information.
-     */
     class AlgFactory {
 
-        /**
-         * Create algorithm that implements "hash stream" interface.
-         */
         static createHashFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_hash_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "mac stream" interface.
-         */
         static createMacFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_mac_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "kdf" interface.
-         */
         static createKdfFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_kdf_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "salted kdf" interface.
-         */
         static createSaltedKdfFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_salted_kdf_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "cipher" interface.
-         */
         static createCipherFromInfo(algInfo) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_cipher_from_info(algInfo.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
 
-        /**
-         * Create algorithm that implements "padding" interface.
-         */
         static createPaddingFromInfo(algInfo, random) {
             precondition.ensureImplementInterface('algInfo', algInfo, 'Foundation.AlgInfo', modules.FoundationInterfaceTag.ALG_INFO, modules.FoundationInterface);
             precondition.ensureImplementInterface('random', random, 'Foundation.Random', modules.FoundationInterfaceTag.RANDOM, modules.FoundationInterface);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_alg_factory_create_padding_from_info(algInfo.ctxPtr, random.ctxPtr);
-
+            
             const jsResult = modules.FoundationInterface.newAndTakeCContext(proxyResult);
             return jsResult;
         }
+
     }
 
     return AlgFactory;

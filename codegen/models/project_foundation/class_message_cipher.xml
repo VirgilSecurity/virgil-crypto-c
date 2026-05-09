@@ -4,7 +4,8 @@
     <require impl="hkdf" scope="private"/>
     <require module="buffer defs" scope="private" project="common"/>
 
-    <require module="group session typedefs" scope="public"/>
+    <require class="group session symmetric key" scope="public"/>
+    <require class="group session salt" scope="public"/>
 
     <property name="aes256 gcm" impl="aes256 gcm"/>
 

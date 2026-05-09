@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -82,7 +82,6 @@
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  This method is called when class 'ecies' was setup.
@@ -605,6 +604,15 @@ vscf_curve25519_compute_shared_key(const vscf_curve25519_t *self, const vscf_imp
             curve25519_key_exchange(vsc_buffer_unused_bytes(shared_key), public_key_data.bytes, private_key_data.bytes);
 
     if (status != 0) {
+        return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
+    }
+
+    const byte *const dh_out = vsc_buffer_unused_bytes(shared_key);
+    byte zero_check = 0;
+    for (size_t i = 0; i < ED25519_DH_LEN; i++) {
+        zero_check |= dh_out[i];
+    }
+    if (zero_check == 0) {
         return vscf_status_ERROR_SHARED_KEY_EXCHANGE_FAILED;
     }
 

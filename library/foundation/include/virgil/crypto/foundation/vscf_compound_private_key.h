@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,18 +51,29 @@
 #ifndef VSCF_COMPOUND_PRIVATE_KEY_H_INCLUDED
 #define VSCF_COMPOUND_PRIVATE_KEY_H_INCLUDED
 
+// clang-format on
+//  @end
+
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
 #include "vscf_library.h"
 #include "vscf_impl.h"
 #include "vscf_alg_id.h"
 
+// --------------------------------------------------------------------------
+//  Generated section end.
 // clang-format on
+// --------------------------------------------------------------------------
 //  @end
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -142,8 +151,7 @@ vscf_compound_private_key_shallow_copy(vscf_compound_private_key_t *self);
 //  a signer private key.
 //
 VSCF_PRIVATE void
-vscf_compound_private_key_init_with_keys(vscf_compound_private_key_t *self, vscf_impl_t **alg_info_ref,
-        const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key);
+vscf_compound_private_key_init_with_keys(vscf_compound_private_key_t *self, vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -151,8 +159,7 @@ vscf_compound_private_key_init_with_keys(vscf_compound_private_key_t *self, vscf
 //  a signer private key.
 //
 VSCF_PRIVATE vscf_compound_private_key_t *
-vscf_compound_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key,
-        const vscf_impl_t *signer_key);
+vscf_compound_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_impl_t *cipher_key, const vscf_impl_t *signer_key);
 
 //
 //  Perform initialization of pre-allocated context.
@@ -160,8 +167,7 @@ vscf_compound_private_key_new_with_keys(vscf_impl_t **alg_info_ref, const vscf_i
 //  a signer private key.
 //
 VSCF_PRIVATE void
-vscf_compound_private_key_init_with_keys_disown(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info,
-        vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
+vscf_compound_private_key_init_with_keys_disown(vscf_compound_private_key_t *self, const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
 
 //
 //  Allocate implementation context and perform it's initialization.
@@ -169,20 +175,7 @@ vscf_compound_private_key_init_with_keys_disown(vscf_compound_private_key_t *sel
 //  a signer private key.
 //
 VSCF_PRIVATE vscf_compound_private_key_t *
-vscf_compound_private_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref,
-        vscf_impl_t **signer_key_ref);
-
-//
-//  Return primary private key suitable for a final decryption.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_private_key_cipher_key(const vscf_compound_private_key_t *self);
-
-//
-//  Return private key suitable for signing.
-//
-VSCF_PUBLIC const vscf_impl_t *
-vscf_compound_private_key_signer_key(const vscf_compound_private_key_t *self);
+vscf_compound_private_key_new_with_keys_disown(const vscf_impl_t *alg_info, vscf_impl_t **cipher_key_ref, vscf_impl_t **signer_key_ref);
 
 //
 //  Algorithm identifier the key belongs to.
@@ -227,6 +220,17 @@ vscf_compound_private_key_is_valid(const vscf_compound_private_key_t *self);
 VSCF_PUBLIC vscf_impl_t *
 vscf_compound_private_key_extract_public_key(const vscf_compound_private_key_t *self);
 
+//
+//  Return primary private key suitable for a final decryption.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_compound_private_key_cipher_key(const vscf_compound_private_key_t *self);
+
+//
+//  Return private key suitable for signing.
+//
+VSCF_PUBLIC const vscf_impl_t *
+vscf_compound_private_key_signer_key(const vscf_compound_private_key_t *self);
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -234,11 +238,9 @@ vscf_compound_private_key_extract_public_key(const vscf_compound_private_key_t *
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_COMPOUND_PRIVATE_KEY_H_INCLUDED

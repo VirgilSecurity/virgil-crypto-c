@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -69,12 +69,6 @@ class LowLevelLibs(object):
             self.LIB_PREFIXES[platform.system()],
             self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
         )
-
-        if platform.system() != "Windows":
-            self.pythia = CDLL(os.path.join(self.__lib_path, "{0}_pythia.{1}".format(
-                self.LIB_PREFIXES[platform.system()],
-                self.SHARED_OBJECT_EXTENSIONS[platform.system()]))
-            )
 
         self.ratchet = CDLL(os.path.join(self.__lib_path, "{0}_ratchet.{1}".format(
             self.LIB_PREFIXES[platform.system()],

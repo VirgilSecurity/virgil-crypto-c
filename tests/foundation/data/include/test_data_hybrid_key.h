@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -43,11 +43,6 @@ extern const vsc_data_t test_data_hybrid_key_CURVE25519_CURVE25519_PUBLIC_KEY;
 extern const vsc_data_t test_data_hybrid_key_CURVE25519_CURVE25519_PRIVATE_KEY;
 extern const vsc_data_t test_data_hybrid_key_CURVE25519_CURVE25519_PUBLIC_KEY_PKCS8_DER;
 extern const vsc_data_t test_data_hybrid_key_CURVE25519_CURVE25519_PRIVATE_KEY_PKCS8_DER;
-
-extern const vsc_data_t test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY;
-extern const vsc_data_t test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY;
-extern const vsc_data_t test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PUBLIC_KEY_PKCS8_DER;
-extern const vsc_data_t test_data_hybrid_key_CURVE25519_ROUND5_ND_1CCA_5D_PRIVATE_KEY_PKCS8_DER;
 
 extern const vsc_data_t test_data_hybrid_key_ED25519_ED25519_PUBLIC_KEY;
 extern const vsc_data_t test_data_hybrid_key_ED25519_ED25519_PRIVATE_KEY;

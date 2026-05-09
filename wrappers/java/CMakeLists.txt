@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2026 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -65,5 +65,4 @@ target_include_directories(jni SYSTEM INTERFACE "${JNI_INCLUDE_DIRS}")
 # ---------------------------------------------------------------------------
 add_subdirectory(foundation)
 add_subdirectory(phe)
-add_subdirectory(pythia)
 add_subdirectory(ratchet)

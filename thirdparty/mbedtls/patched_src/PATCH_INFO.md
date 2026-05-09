@@ -1,22 +1,28 @@
-## Patched MbedTLS version:  v2.26.0
+## Patched MbedTLS version:  v3.6.5
 
-## Patch 1 - Add Windows Threading
+## Patch 1 - Add Windows Threading (SRWLOCK)
 
 ### File `check_config.h`
+
+Based on upstream v3.6.5 `check_config.h` with the following addition
+after the `MBEDTLS_THREADING_PTHREAD` check block:
 
 ```c
 // --------------------------------------------------------------------------
 //  Added by Virgil Security, Inc.
 #if defined(MBEDTLS_THREADING_SRWLOCK)
 #if !defined(MBEDTLS_THREADING_C) || defined(MBEDTLS_THREADING_IMPL)
-#error "MBEDTLS_THREADING_PTHREAD defined, but not all prerequisites"
+#error "MBEDTLS_THREADING_SRWLOCK defined, but not all prerequisites"
 #endif
-#define MBEDTLS_THREADING_IMPL
+#define MBEDTLS_THREADING_IMPL // undef at the end of this paragraph
 #endif
 // --------------------------------------------------------------------------
 ```
 
 ### File `threading.h`
+
+Based on upstream v3.6.5 `threading.h` with the following addition
+after the `MBEDTLS_THREADING_PTHREAD` typedef block:
 
 ```c
 // --------------------------------------------------------------------------
@@ -26,8 +32,7 @@
 #include <windows.h>
 #include <synchapi.h>
 #undef WIN32_LEAN_AND_MEAN
-typedef struct mbedtls_threading_mutex_t
-{
+typedef struct mbedtls_threading_mutex_t {
     SRWLOCK lock;
 } mbedtls_threading_mutex_t;
 #endif
@@ -36,59 +41,65 @@ typedef struct mbedtls_threading_mutex_t
 
 ### File `threading.c`
 
+Based on upstream v3.6.5 `threading.c` with the following addition
+after the `MBEDTLS_THREADING_PTHREAD` implementation block:
+
 ```c
 // --------------------------------------------------------------------------
 //  Added by Virgil Security, Inc.
 #if defined(MBEDTLS_THREADING_SRWLOCK)
-static void threading_mutex_init_pthread( mbedtls_threading_mutex_t *mutex )
+static void threading_mutex_init_srwlock(mbedtls_threading_mutex_t *mutex)
 {
-    if( mutex == NULL )
+    if (mutex == NULL) {
         return;
+    }
 
-   InitializeSRWLock( &mutex->lock );
+    InitializeSRWLock(&mutex->lock);
 }
 
-static void threading_mutex_free_pthread( mbedtls_threading_mutex_t *mutex )
+static void threading_mutex_free_srwlock(mbedtls_threading_mutex_t *mutex)
 {
-    if( mutex == NULL )
+    if (mutex == NULL) {
         return;
+    }
 
     /*
      * SRW locks do not need to be explicitly destroyed.
      */
 }
 
-static int threading_mutex_lock_pthread( mbedtls_threading_mutex_t *mutex )
+static int threading_mutex_lock_srwlock(mbedtls_threading_mutex_t *mutex)
 {
-    if( mutex == NULL )
-        return( MBEDTLS_ERR_THREADING_BAD_INPUT_DATA );
+    if (mutex == NULL) {
+        return MBEDTLS_ERR_THREADING_BAD_INPUT_DATA;
+    }
 
-    AcquireSRWLockExclusive( &mutex->lock );
+    AcquireSRWLockExclusive(&mutex->lock);
 
-    return( 0 );
+    return 0;
 }
 
-static int threading_mutex_unlock_pthread( mbedtls_threading_mutex_t *mutex )
+static int threading_mutex_unlock_srwlock(mbedtls_threading_mutex_t *mutex)
 {
-    if( mutex == NULL )
-        return( MBEDTLS_ERR_THREADING_BAD_INPUT_DATA );
+    if (mutex == NULL) {
+        return MBEDTLS_ERR_THREADING_BAD_INPUT_DATA;
+    }
 
-    ReleaseSRWLockExclusive( &mutex->lock );
+    ReleaseSRWLockExclusive(&mutex->lock);
 
-    return( 0 );
+    return 0;
 }
 
-void (*mbedtls_mutex_init)( mbedtls_threading_mutex_t * ) = threading_mutex_init_pthread;
-void (*mbedtls_mutex_free)( mbedtls_threading_mutex_t * ) = threading_mutex_free_pthread;
-int (*mbedtls_mutex_lock)( mbedtls_threading_mutex_t * ) = threading_mutex_lock_pthread;
-int (*mbedtls_mutex_unlock)( mbedtls_threading_mutex_t * ) = threading_mutex_unlock_pthread;
+void (*mbedtls_mutex_init)(mbedtls_threading_mutex_t *) = threading_mutex_init_srwlock;
+void (*mbedtls_mutex_free)(mbedtls_threading_mutex_t *) = threading_mutex_free_srwlock;
+int (*mbedtls_mutex_lock)(mbedtls_threading_mutex_t *) = threading_mutex_lock_srwlock;
+int (*mbedtls_mutex_unlock)(mbedtls_threading_mutex_t *) = threading_mutex_unlock_srwlock;
 
 /*
  * With SRW Lock we can statically initialize mutexes
  */
-#define MUTEX_INIT  = SRWLOCK_INIT
+#define MUTEX_INIT  = { SRWLOCK_INIT }
 
 #endif /* MBEDTLS_THREADING_SRWLOCK */
 // --------------------------------------------------------------------------
 ```
-

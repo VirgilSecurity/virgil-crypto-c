@@ -1,4 +1,4 @@
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -177,7 +177,7 @@ test__curve25519_ed25519_hybrid_key_alg_info__is_valid(void) {
 }
 
 void
-test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(void) {
+test__curve25519_ml_kem_768_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(void) {
 
     //
     //  Create key alg info.
@@ -187,13 +187,13 @@ test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(vo
 
     vscf_impl_t *ed25519_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ED25519));
 
-    vscf_impl_t *round5_info =
-            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ROUND5_ND_1CCA_5D));
+    vscf_impl_t *ml_kem_768_info =
+            vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_ML_KEM_768));
 
     vscf_impl_t *falcon_info = vscf_simple_alg_info_impl(vscf_simple_alg_info_new_with_alg_id(vscf_alg_id_FALCON));
 
     vscf_impl_t *cipher_alg_info = vscf_hybrid_key_alg_info_impl(
-            vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_HYBRID_KEY, &curve25519_info, &round5_info));
+            vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_HYBRID_KEY, &curve25519_info, &ml_kem_768_info));
 
     vscf_impl_t *signer_alg_info = vscf_hybrid_key_alg_info_impl(
             vscf_hybrid_key_alg_info_new_with_infos_disown(vscf_alg_id_HYBRID_KEY, &ed25519_info, &falcon_info));
@@ -221,7 +221,7 @@ test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid(vo
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_first_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_NONE, vscf_key_info_hybrid_second_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_CURVE25519, vscf_key_info_compound_hybrid_cipher_first_key_alg_id(key_info));
-    TEST_ASSERT_EQUAL(vscf_alg_id_ROUND5_ND_1CCA_5D, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
+    TEST_ASSERT_EQUAL(vscf_alg_id_ML_KEM_768, vscf_key_info_compound_hybrid_cipher_second_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_ED25519, vscf_key_info_compound_hybrid_signer_first_key_alg_id(key_info));
     TEST_ASSERT_EQUAL(vscf_alg_id_FALCON, vscf_key_info_compound_hybrid_signer_second_key_alg_id(key_info));
 
@@ -245,7 +245,7 @@ main(void) {
     RUN_TEST(test__ed25519_simple_alg_info__is_valid);
     RUN_TEST(test__curve25519_ed25519_compound_key_alg_info__is_valid);
     RUN_TEST(test__curve25519_ed25519_hybrid_key_alg_info__is_valid);
-    RUN_TEST(test__curve25519_round5_ed25519_falcon_compound_hybrid_key_alg_info__is_valid);
+    RUN_TEST(test__curve25519_ml_kem_768_ed25519_falcon_compound_hybrid_key_alg_info__is_valid);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

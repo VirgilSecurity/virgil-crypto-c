@@ -8,11 +8,11 @@ import "runtime"
 
 /*
 * Implements key serialization in the ASN.1 format (DER / PEM):
-* - SEC1 - for EC private keys;
-* - PKCS#8 - for other keys.
+*     - SEC1 - for EC private keys;
+*     - PKCS#8 - for other keys.
 */
 type KeyAsn1Serializer struct {
-    cCtx *C.vscf_key_asn1_serializer_t /*ct10*/
+    cCtx *C.vscf_key_asn1_serializer_t
 }
 
 func (obj *KeyAsn1Serializer) SetAsn1Writer(asn1Writer Asn1Writer) {
@@ -43,7 +43,7 @@ func (obj *KeyAsn1Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey)
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), &error)
+    proxyResult := C.vscf_key_asn1_serializer_serialize_public_key_inplace(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -54,7 +54,7 @@ func (obj *KeyAsn1Serializer) SerializePublicKeyInplace(publicKey *RawPublicKey)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult) /* r9 */, nil
+    return uint(proxyResult), nil
 }
 
 /*
@@ -66,7 +66,7 @@ func (obj *KeyAsn1Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateK
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), &error)
+    proxyResult := C.vscf_key_asn1_serializer_serialize_private_key_inplace(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -77,7 +77,7 @@ func (obj *KeyAsn1Serializer) SerializePrivateKeyInplace(privateKey *RawPrivateK
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult) /* r9 */, nil
+    return uint(proxyResult), nil
 }
 
 /* Handle underlying C context. */
@@ -97,7 +97,7 @@ func NewKeyAsn1Serializer() *KeyAsn1Serializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyAsn1SerializerWithCtx(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAsn1Serializer {
+func newKeyAsn1SerializerWithCtx(ctx *C.vscf_key_asn1_serializer_t) *KeyAsn1Serializer {
     obj := &KeyAsn1Serializer {
         cCtx: ctx,
     }
@@ -108,7 +108,7 @@ func newKeyAsn1SerializerWithCtx(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *Ke
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newKeyAsn1SerializerCopy(ctx *C.vscf_key_asn1_serializer_t /*ct10*/) *KeyAsn1Serializer {
+func newKeyAsn1SerializerCopy(ctx *C.vscf_key_asn1_serializer_t) *KeyAsn1Serializer {
     obj := &KeyAsn1Serializer {
         cCtx: C.vscf_key_asn1_serializer_shallow_copy(ctx),
     }
@@ -140,13 +140,13 @@ func (obj *KeyAsn1Serializer) delete() {
 * Precondition: public key must be exportable.
 */
 func (obj *KeyAsn1Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) uint {
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())))
+    proxyResult := C.vscf_key_asn1_serializer_serialized_public_key_len(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(publicKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -155,14 +155,14 @@ func (obj *KeyAsn1Serializer) SerializedPublicKeyLen(publicKey *RawPublicKey) ui
 * Precondition: public key must be exportable.
 */
 func (obj *KeyAsn1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.SerializedPublicKeyLen(publicKey) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedPublicKeyLen(publicKey)))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
+    proxyResult := C.vscf_key_asn1_serializer_serialize_public_key(obj.cCtx, (*C.vscf_raw_public_key_t)(unsafe.Pointer(publicKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -173,7 +173,7 @@ func (obj *KeyAsn1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byt
 
     runtime.KeepAlive(publicKey)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }
 
 /*
@@ -182,13 +182,13 @@ func (obj *KeyAsn1Serializer) SerializePublicKey(publicKey *RawPublicKey) ([]byt
 * Precondition: private key must be exportable.
 */
 func (obj *KeyAsn1Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey) uint {
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())))
+    proxyResult := C.vscf_key_asn1_serializer_serialized_private_key_len(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(privateKey)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -197,14 +197,14 @@ func (obj *KeyAsn1Serializer) SerializedPrivateKeyLen(privateKey *RawPrivateKey)
 * Precondition: private key must be exportable.
 */
 func (obj *KeyAsn1Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]byte, error) {
-    outBuf, outBufErr := newBuffer(int(obj.SerializedPrivateKeyLen(privateKey) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedPrivateKeyLen(privateKey)))
     if outBufErr != nil {
         return nil, outBufErr
     }
     defer outBuf.delete()
 
 
-    proxyResult := /*pr4*/C.vscf_key_asn1_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
+    proxyResult := C.vscf_key_asn1_serializer_serialize_private_key(obj.cCtx, (*C.vscf_raw_private_key_t)(unsafe.Pointer(privateKey.Ctx())), outBuf.ctx)
 
     err := FoundationErrorHandleStatus(proxyResult)
     if err != nil {
@@ -215,5 +215,5 @@ func (obj *KeyAsn1Serializer) SerializePrivateKey(privateKey *RawPrivateKey) ([]
 
     runtime.KeepAlive(privateKey)
 
-    return outBuf.getData() /* r7 */, nil
+    return outBuf.getData(), nil
 }

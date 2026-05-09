@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -36,10 +36,12 @@
 from virgil_crypto_lib._libs import *
 from ctypes import *
 from ._vscf_impl import vscf_impl_t
-from ._vscf_key_recipient_info_list import vscf_key_recipient_info_list_t
-from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
-from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
 from ._vscf_footer_info import vscf_footer_info_t
+from ._vscf_key_recipient_info import vscf_key_recipient_info_t
+from ._vscf_key_recipient_info_list import vscf_key_recipient_info_list_t
+from ._vscf_message_info_custom_params import vscf_message_info_custom_params_t
+from ._vscf_password_recipient_info import vscf_password_recipient_info_t
+from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 
 
 class vscf_message_info_t(Structure):
@@ -48,7 +50,8 @@ class vscf_message_info_t(Structure):
 
 class VscfMessageInfo(object):
     """Handle information about an encrypted message and algorithms
-    that was used for encryption."""
+that was used for encryption."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -97,8 +100,8 @@ class VscfMessageInfo(object):
 
     def vscf_message_info_custom_params(self, ctx):
         """Provide access to the custom params object.
-        The returned object can be used to add custom params or read it.
-        If custom params object was not set then new empty object is created."""
+The returned object can be used to add custom params or read it.
+If custom params object was not set then new empty object is created."""
         vscf_message_info_custom_params = self._lib.vscf_message_info_custom_params
         vscf_message_info_custom_params.argtypes = [POINTER(vscf_message_info_t)]
         vscf_message_info_custom_params.restype = POINTER(vscf_message_info_custom_params_t)

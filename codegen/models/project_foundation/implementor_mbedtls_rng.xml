@@ -14,7 +14,6 @@
 
         <context>
             <require header="mbedtls/entropy.h" library="mbedtls"/>
-            <require header="mbedtls/entropy_poll.h" library="mbedtls"/>
             <property name="ctx" class="mbedtls_entropy_context" library="mbedtls" is_reference="0"/>
             <property name="sources" interface="entropy source" access="readwrite">
                 <array length="fixed" length_constant=".(class_entropy_accumulator_constant_sources_max)"/>

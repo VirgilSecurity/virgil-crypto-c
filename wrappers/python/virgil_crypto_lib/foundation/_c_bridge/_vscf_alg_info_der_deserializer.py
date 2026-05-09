@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -47,6 +47,7 @@ class vscf_alg_info_der_deserializer_t(Structure):
 class VscfAlgInfoDerDeserializer(object):
     """Provide DER deserializer of algorithm information."""
 
+
     def __init__(self):
         """Create underlying C context."""
         self._ll = LowLevelLibs()
@@ -70,13 +71,6 @@ class VscfAlgInfoDerDeserializer(object):
         vscf_alg_info_der_deserializer_use_asn1_reader.restype = None
         return vscf_alg_info_der_deserializer_use_asn1_reader(ctx, asn1_reader)
 
-    def vscf_alg_info_der_deserializer_deserialize(self, ctx, data, error):
-        """Deserialize algorithm from the data."""
-        vscf_alg_info_der_deserializer_deserialize = self._lib.vscf_alg_info_der_deserializer_deserialize
-        vscf_alg_info_der_deserializer_deserialize.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), vsc_data_t, POINTER(vscf_error_t)]
-        vscf_alg_info_der_deserializer_deserialize.restype = POINTER(vscf_impl_t)
-        return vscf_alg_info_der_deserializer_deserialize(ctx, data, error)
-
     def vscf_alg_info_der_deserializer_setup_defaults(self, ctx):
         """Setup predefined values to the uninitialized class dependencies."""
         vscf_alg_info_der_deserializer_setup_defaults = self._lib.vscf_alg_info_der_deserializer_setup_defaults
@@ -84,14 +78,121 @@ class VscfAlgInfoDerDeserializer(object):
         vscf_alg_info_der_deserializer_setup_defaults.restype = None
         return vscf_alg_info_der_deserializer_setup_defaults(ctx)
 
+    def vscf_alg_info_der_deserializer_deserialize_simple_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with optional NULL parameter."""
+        vscf_alg_info_der_deserializer_deserialize_simple_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_simple_alg_info
+        vscf_alg_info_der_deserializer_deserialize_simple_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_simple_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_simple_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "KeyDerivationFunction" from the ISO/IEC 18033-2."""
+        vscf_alg_info_der_deserializer_deserialize_kdf_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_kdf_alg_info
+        vscf_alg_info_der_deserializer_deserialize_kdf_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_kdf_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_kdf_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "KeyDevAlgs" from the
+https://tools.ietf.org/html/draft-housley-hkdf-oids-00."""
+        vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info
+        vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_hkdf_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "DigestAlgorithm" from the RFC 4231."""
+        vscf_alg_info_der_deserializer_deserialize_hmac_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_hmac_alg_info
+        vscf_alg_info_der_deserializer_deserialize_hmac_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_hmac_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_hmac_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with AES parameters:
+    - defined in the RFC 3565;
+    - defined in the RFC 5084."""
+        vscf_alg_info_der_deserializer_deserialize_cipher_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_cipher_alg_info
+        vscf_alg_info_der_deserializer_deserialize_cipher_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_cipher_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_cipher_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with PBKDF2 parameters
+defined in the RFC 8018."""
+        vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info
+        vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_pbkdf2_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with PBES2 parameters
+defined in the RFC 8018."""
+        vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info
+        vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_pbes2_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with ECParameters
+parameters defined in the RFC 5480."""
+        vscf_alg_info_der_deserializer_deserialize_ecc_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_ecc_alg_info
+        vscf_alg_info_der_deserializer_deserialize_ecc_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_ecc_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_ecc_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with
+"CompoundKeyParams" parameters.
+
+CompoundKeyAlgorithms ALGORITHM ::= {
+    { OID id-CompoundKey parameters CompoundKeyParams }
+}
+
+id-CompoundKey ::= { 1 3 6 1 4 1 54811 1 1 }
+
+CompoundKeyParams ::= SEQUENCE {
+    cipherAlgorithm AlgorithmIdentifier,
+    signerAlgorithm AlgorithmIdentifier
+}"""
+        vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info
+        vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_compound_key_alg_info(ctx, oid_id, error)
+
+    def vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(self, ctx, oid_id, error):
+        """Parse ASN.1 structure "AlgorithmIdentifier" with
+"HybridKeyParams" parameters.
+
+HybridKeyAlgorithms ALGORITHM ::= {
+    { OID id-HybridKey parameters HybridKeyParams }
+}
+
+id-HybridKey ::= { 1 3 6 1 4 1 54811 1 2 }
+
+HybridKeyParams ::= SEQUENCE {
+    firstKeyAlgorithm AlgorithmIdentifier,
+    secondKeyAlgorithm AlgorithmIdentifier
+}"""
+        vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info = self._lib.vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info
+        vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), c_int, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize_hybrid_key_alg_info(ctx, oid_id, error)
+
     def vscf_alg_info_der_deserializer_deserialize_inplace(self, ctx, error):
         """Deserialize by using internal ASN.1 reader.
-        Note, that caller code is responsible to reset ASN.1 reader with
-        an input buffer."""
+Note, that caller code is responsible to reset ASN.1 reader with
+an input buffer."""
         vscf_alg_info_der_deserializer_deserialize_inplace = self._lib.vscf_alg_info_der_deserializer_deserialize_inplace
         vscf_alg_info_der_deserializer_deserialize_inplace.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), POINTER(vscf_error_t)]
         vscf_alg_info_der_deserializer_deserialize_inplace.restype = POINTER(vscf_impl_t)
         return vscf_alg_info_der_deserializer_deserialize_inplace(ctx, error)
+
+    def vscf_alg_info_der_deserializer_deserialize(self, ctx, data, error):
+        """Deserialize algorithm from the data."""
+        vscf_alg_info_der_deserializer_deserialize = self._lib.vscf_alg_info_der_deserializer_deserialize
+        vscf_alg_info_der_deserializer_deserialize.argtypes = [POINTER(vscf_alg_info_der_deserializer_t), vsc_data_t, POINTER(vscf_error_t)]
+        vscf_alg_info_der_deserializer_deserialize.restype = POINTER(vscf_impl_t)
+        return vscf_alg_info_der_deserializer_deserialize(ctx, data, error)
 
     def vscf_alg_info_der_deserializer_shallow_copy(self, ctx):
         vscf_alg_info_der_deserializer_shallow_copy = self._lib.vscf_alg_info_der_deserializer_shallow_copy

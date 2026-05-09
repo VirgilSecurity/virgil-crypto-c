@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -69,22 +69,22 @@ class Cipher(object):
     @abstractmethod
     def out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an current mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an current mode.
+Pass zero length to define buffer length of the method "finish"."""
         raise NotImplementedError()
 
     @abstractmethod
     def encrypted_out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an encryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an encryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         raise NotImplementedError()
 
     @abstractmethod
     def decrypted_out_len(self, data_len):
         """Return buffer length required to hold an output of the methods
-        "update" or "finish" in an decryption mode.
-        Pass zero length to define buffer length of the method "finish"."""
+"update" or "finish" in an decryption mode.
+Pass zero length to define buffer length of the method "finish"."""
         raise NotImplementedError()
 
     @abstractmethod

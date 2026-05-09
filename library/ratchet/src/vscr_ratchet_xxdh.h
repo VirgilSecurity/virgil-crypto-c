@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,7 +36,6 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
@@ -46,12 +45,6 @@
 
 #ifndef VSCR_RATCHET_XXDH_H_INCLUDED
 #define VSCR_RATCHET_XXDH_H_INCLUDED
-
-#include "vscr_library.h"
-#include "vscr_ratchet_typedefs.h"
-#include "vscr_status.h"
-
-#include <virgil/crypto/common/vsc_buffer.h>
 
 #if !VSCR_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -73,11 +66,28 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscr_library.h"
+#include "vscr_ratchet_typedefs.h"
+#include "vscr_status.h"
+
+#include <virgil/crypto/common/vsc_buffer.h>
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -154,62 +164,25 @@ VSCR_PUBLIC void
 vscr_ratchet_xxdh_release_rng(vscr_ratchet_xxdh_t *self);
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_encapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl_t *public_key,
-        vsc_buffer_t **encapsulated_key_ref, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+vscr_ratchet_xxdh_encapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl_t *public_key, vsc_buffer_t **encapsulated_key_ref, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl_t *private_key,
-        vsc_data_t encapsulated_key, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+vscr_ratchet_xxdh_decapsulate_pqc_key(vscr_ratchet_xxdh_t *self, const vscf_impl_t *private_key, vsc_data_t encapsulated_key, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self,
-        const vscr_ratchet_private_key_t sender_identity_private_key_first,
-        const vscr_ratchet_public_key_t receiver_identity_public_key_first,
-        const vscr_ratchet_public_key_t receiver_long_term_public_key_first, bool receiver_has_one_time_key,
-        const vscr_ratchet_public_key_t receiver_one_time_public_key_first,
-        vscr_ratchet_public_key_t ephemeral_public_key_first,
-        const vscf_impl_t *sender_identity_private_key_second_signer,
-        const vscf_impl_t *receiver_identity_public_key_second,
-        const vscf_impl_t *receiver_long_term_public_key_second,
-        const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref,
-        vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
-        vsc_buffer_t **decapsulated_keys_signature_ref, vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+vscr_ratchet_xxdh_compute_initiator_xxdh_secret(vscr_ratchet_xxdh_t *self, const vscr_ratchet_private_key_t sender_identity_private_key_first, const vscr_ratchet_public_key_t receiver_identity_public_key_first, const vscr_ratchet_public_key_t receiver_long_term_public_key_first, bool receiver_has_one_time_key, const vscr_ratchet_public_key_t receiver_one_time_public_key_first, vscr_ratchet_public_key_t ephemeral_public_key_first, const vscf_impl_t *sender_identity_private_key_second_signer, const vscf_impl_t *receiver_identity_public_key_second, const vscf_impl_t *receiver_long_term_public_key_second, const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref, vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref, vsc_buffer_t **decapsulated_keys_signature_ref, vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
-        const vscf_impl_t *sender_identity_private_key_second_signer,
-        const vscf_impl_t *receiver_identity_public_key_second,
-        const vscf_impl_t *receiver_long_term_public_key_second,
-        const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref,
-        vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref,
-        vsc_buffer_t **decapsulated_keys_signature_ref, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self, const vscf_impl_t *sender_identity_private_key_second_signer, const vscf_impl_t *receiver_identity_public_key_second, const vscf_impl_t *receiver_long_term_public_key_second, const vscf_impl_t *receiver_one_time_public_key_second, vsc_buffer_t **encapsulated_key_1_ref, vsc_buffer_t **encapsulated_key_2_ref, vsc_buffer_t **encapsulated_key_3_ref, vsc_buffer_t **decapsulated_keys_signature_ref, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self,
-        const vscr_ratchet_public_key_t sender_identity_public_key_first,
-        const vscr_ratchet_private_key_t receiver_identity_private_key_first,
-        const vscr_ratchet_private_key_t receiver_long_term_private_key_first, bool receiver_has_one_time_key,
-        const vscr_ratchet_private_key_t receiver_one_time_private_key_first,
-        const vscr_ratchet_public_key_t sender_ephemeral_public_key_first,
-        const vscf_impl_t *sender_identity_public_key_second_verifier,
-        const vscf_impl_t *receiver_identity_private_key_second,
-        const vscf_impl_t *receiver_long_term_private_key_second,
-        const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1,
-        vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
-        vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
+vscr_ratchet_xxdh_compute_responder_xxdh_secret(vscr_ratchet_xxdh_t *self, const vscr_ratchet_public_key_t sender_identity_public_key_first, const vscr_ratchet_private_key_t receiver_identity_private_key_first, const vscr_ratchet_private_key_t receiver_long_term_private_key_first, bool receiver_has_one_time_key, const vscr_ratchet_private_key_t receiver_one_time_private_key_first, const vscr_ratchet_public_key_t sender_ephemeral_public_key_first, const vscf_impl_t *sender_identity_public_key_second_verifier, const vscf_impl_t *receiver_identity_private_key_second, const vscf_impl_t *receiver_long_term_private_key_second, const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1, vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature, vscr_ratchet_symmetric_key_t shared_key) VSCR_NODISCARD;
 
 VSCR_PUBLIC vscr_status_t
-vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
-        const vscf_impl_t *sender_identity_public_key_second_verifier,
-        const vscf_impl_t *receiver_identity_private_key_second,
-        const vscf_impl_t *receiver_long_term_private_key_second,
-        const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1,
-        vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature,
-        vsc_buffer_t *shared_secret) VSCR_NODISCARD;
+vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self, const vscf_impl_t *sender_identity_public_key_second_verifier, const vscf_impl_t *receiver_identity_private_key_second, const vscf_impl_t *receiver_long_term_private_key_second, const vscf_impl_t *receiver_one_time_private_key_second, vsc_data_t encapsulated_key_1, vsc_data_t encapsulated_key_2, vsc_data_t encapsulated_key_3, vsc_data_t decapsulated_keys_signature, vsc_buffer_t *shared_secret) VSCR_NODISCARD;
 
 VSCR_PUBLIC void
 vscr_ratchet_xxdh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_key_t shared_key);
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -217,11 +190,9 @@ vscr_ratchet_xxdh_derive_key(vsc_data_t shared_secret, vscr_ratchet_symmetric_ke
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCR_RATCHET_XXDH_H_INCLUDED

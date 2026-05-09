@@ -41,10 +41,6 @@ This library contains basic cryptographic algorithms and can be used as building
 
 The cryptographic background for the [Password-Hardened Encryption (PHE) protocol](https://virgilsecurity.com/wp-content/uploads/2018/11/PHE-Whitepaper-2018.pdf) that provides developers the technology to protect user passwords from offline attacks and render stolen passwords useless even if your database has been compromised. The service implementation can be found [here](https://github.com/VirgilSecurity/virgil-phe-go).
 
-### Library: Pythia
-
-The cryptographic background for the  [Pythia PRF Service](http://pages.cs.wisc.edu/~ace/papers/pythia-full.pdf).
-
 ### Library: Ratchet
 
 Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/Double_Ratchet_Algorithm).
@@ -55,7 +51,6 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 | Library    | Platforms    | Languages / Binaries                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ---------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | foundation | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [Go](https://github.com/VirgilSecurity/virgil-sdk-go/tree/master/crypto/internal), [PHP](https://github.com/VirgilSecurity/virgil-cryptowrapper-php) |
-| pythia     | linux, macOS | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [PHP](https://github.com/VirgilSecurity/virgil-cryptowrapper-php)                                                                                    |
 | phe        | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [PHP](https://cdn.virgilsecurity.com/virgil-crypto-c/php), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [Go](https://github.com/VirgilSecurity/virgil-sdk-go/tree/master/crypto/internal), [PHP](https://github.com/VirgilSecurity/virgil-cryptowrapper-php)         |
 | ratchet    | all          | [C](https://cdn.virgilsecurity.com/virgil-crypto-c/c), [Swift](https://github.com/VirgilSecurity/virgil-cryptowrapper-x), [Java](https://mvnrepository.com/artifact/com.virgilsecurity.crypto), [JS](https://github.com/VirgilSecurity/virgil-crypto-javascript), [Python](https://pypi.org/project/virgil-crypto-lib), [Go](https://github.com/VirgilSecurity/virgil-sdk-go/tree/master/crypto/internal)                                                                    |
 
@@ -77,7 +72,7 @@ Implementation of the [Double Ratchet Algorithm](https://en.wikipedia.org/wiki/D
 ```bash
 git clone https://github.com/VirgilSecurity/virgil-crypto-c.git
 cd virgil-crypto-c
-cmake -Bbuild -H.
+cmake -Bbuild -S.
 cmake --build build
 cmake --build build --target install
 ```
@@ -87,12 +82,43 @@ cmake --build build --target install
 ```bash
 cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_BENCHMARKING=ON \
       -DED25519_AMD64_RADIX_64_24K=ON -DED25519_REF10=OFF \
-      -Bbuild -H.
+      -Bbuild -S.
 
 cmake --build build -- -j10
 
 ./build/benchmarks/foundation/bench
 ```
+
+## Releasing
+
+Releases are fully automated through CI. No local builds required.
+
+### How to cut a release
+
+Trigger the unified release workflow via the `/release` skill in Claude Code, or directly with `gh`:
+
+```bash
+gh workflow run release.yml \
+  --field version=0.19.0 \
+  --field branch=develop
+```
+
+Version format: bare `MAJOR.MINOR.PATCH` for production or `MAJOR.MINOR.PATCH-LABEL` for pre-releases (e.g. `0.19.0-dev.7`, `0.19.0-rc1`). No leading `v` — the workflow adds that.
+
+### What the workflow does
+
+| Stage | Action |
+|-------|--------|
+| `validate` | Rejects malformed version strings immediately |
+| `build-go` (parallel) | Cross-compiles static libs for 5 platforms (linux amd64/arm64, darwin amd64/arm64, windows amd64) |
+| `build-apple` (parallel) | Builds Apple xcframeworks on macOS |
+| `release-commit` | Bumps version across all wrappers, merges all compiled artifacts, verifies xcframework checksums, runs `swift build` + `swift test`, commits binaries to the source branch, pushes both the Go module tag (`wrappers/go/vX.Y.Z`) and the release tag (`vX.Y.Z`) atomically |
+
+The release tag then triggers downstream workflows that publish to PyPI, Maven Central, npm, GitHub Releases, and PHP repositories.
+
+### Incompatible change from previous releases
+
+`release-go.yml` has been removed. It previously compiled Go static libs in response to `v*` tag pushes. That tag-triggered behavior no longer exists — Go lib compilation is now part of `release.yml`. Downstream repositories or scripts that depended on `release-go.yml` running on tag pushes will see no effect from tags created by the new workflow. The Go static libs are bundled into the release commit before the tag is created.
 
 ## Support
 

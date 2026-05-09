@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,8 +35,8 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
 
 
 class vscf_signer_info_t(Structure):
@@ -45,7 +45,8 @@ class vscf_signer_info_t(Structure):
 
 class VscfSignerInfo(object):
     """Handle information about signer that is defined by an identifer and
-    a Public Key."""
+a Public Key."""
+
 
     def __init__(self):
         """Create underlying C context."""

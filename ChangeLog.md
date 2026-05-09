@@ -1,5 +1,16 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Unreleased
+
+### Breaking changes
+
+- Pythia library and Relic thirdparty removed entirely. The `VIRGIL_LIB_PYTHIA` CMake option no longer exists. Pythia modules have been removed from all wrappers (C, Swift, Java, Android, Python, PHP) and the `@virgilsecurity/crypto` npm package. Pre-built xcframework, Go static libs, and Java JNI binaries for Pythia are also removed.
+
+### Changes
+
+- `thirdparty/relic` removed. Relic (BLS12-381 pairing) was exclusively consumed by Pythia; with Pythia removed, Relic is no longer needed or fetched at build time.
+
+
 ## Version 0.17.2 released 2026-02-10
 
 ### Changes

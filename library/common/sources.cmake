@@ -1,6 +1,6 @@
 #   @license
 #   -------------------------------------------------------------------------
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -8,17 +8,17 @@
 #   modification, are permitted provided that the following conditions are
 #   met:
 #
-#       (1) Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
+#   (1) Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
 #
-#       (2) Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in
-#       the documentation and/or other materials provided with the
-#       distribution.
+#   (2) Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in
+#   the documentation and/or other materials provided with the
+#   distribution.
 #
-#       (3) Neither the name of the copyright holder nor the names of its
-#       contributors may be used to endorse or promote products derived from
-#       this software without specific prior written permission.
+#   (3) Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
 #
 #   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 #   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -79,12 +79,12 @@ set_property(
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
 set_property(
-    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h"
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
 
@@ -99,19 +99,21 @@ target_sources(common
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_library.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_memory.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_atomic.h"
+            "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_platform.h.in"
             "${CMAKE_CURRENT_BINARY_DIR}/include/virgil/crypto/common/vsc_platform.h"
-            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h>"
-            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h>"
-            "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h>"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_common_public.h"
             "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_common_private.h"
+            "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_data.h>"
+            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/vsc_buffer.h>"
+            "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/common/private/vsc_buffer_defs.h>"
 
             "${CMAKE_CURRENT_LIST_DIR}/src/vsc_assert.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsc_library.c"
             "${CMAKE_CURRENT_LIST_DIR}/src/vsc_memory.c"
+            "${CMAKE_CURRENT_LIST_DIR}/src/vsc_atomic.c"
+            "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer.c>"
             "$<$<BOOL:${VSC_BUFFER}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_buffer_defs.c>"
-            "$<$<BOOL:${VSC_DATA}>:${CMAKE_CURRENT_LIST_DIR}/src/vsc_data.c>"
         )
 
 target_include_directories(common

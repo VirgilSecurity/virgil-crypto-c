@@ -14,9 +14,9 @@ type Oid struct {
 * Return OID for given algorithm identifier.
 */
 func OidFromAlgId(algId AlgId) []byte {
-    proxyResult := /*pr4*/C.vscf_oid_from_alg_id(C.vscf_alg_id_t(algId) /*pa7*/)
+    proxyResult := C.vscf_oid_from_alg_id(C.vscf_alg_id_t(algId))
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }
 
 /*
@@ -25,18 +25,18 @@ func OidFromAlgId(algId AlgId) []byte {
 func OidToAlgId(oid []byte) AlgId {
     oidData := helperWrapData (oid)
 
-    proxyResult := /*pr4*/C.vscf_oid_to_alg_id(oidData)
+    proxyResult := C.vscf_oid_to_alg_id(oidData)
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
 * Return OID for a given identifier.
 */
 func OidFromId(oidId OidId) []byte {
-    proxyResult := /*pr4*/C.vscf_oid_from_id(C.vscf_oid_id_t(oidId) /*pa7*/)
+    proxyResult := C.vscf_oid_from_id(C.vscf_oid_id_t(oidId))
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }
 
 /*
@@ -45,18 +45,18 @@ func OidFromId(oidId OidId) []byte {
 func OidToId(oid []byte) OidId {
     oidData := helperWrapData (oid)
 
-    proxyResult := /*pr4*/C.vscf_oid_to_id(oidData)
+    proxyResult := C.vscf_oid_to_id(oidData)
 
-    return OidId(proxyResult) /* r8 */
+    return OidId(proxyResult)
 }
 
 /*
 * Map oid identifier to the algorithm identifier.
 */
 func OidIdToAlgId(oidId OidId) AlgId {
-    proxyResult := /*pr4*/C.vscf_oid_id_to_alg_id(C.vscf_oid_id_t(oidId) /*pa7*/)
+    proxyResult := C.vscf_oid_id_to_alg_id(C.vscf_oid_id_t(oidId))
 
-    return AlgId(proxyResult) /* r8 */
+    return AlgId(proxyResult)
 }
 
 /*
@@ -66,7 +66,7 @@ func OidEqual(lhs []byte, rhs []byte) bool {
     lhsData := helperWrapData (lhs)
     rhsData := helperWrapData (rhs)
 
-    proxyResult := /*pr4*/C.vscf_oid_equal(lhsData, rhsData)
+    proxyResult := C.vscf_oid_equal(lhsData, rhsData)
 
-    return bool(proxyResult) /* r9 */
+    return bool(proxyResult)
 }

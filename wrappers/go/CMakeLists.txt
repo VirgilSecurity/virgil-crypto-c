@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -44,7 +44,6 @@ if(VIRGIL_INSTALL_WRAP_SRCS)
     install(
             DIRECTORY
                 "${CMAKE_CURRENT_LIST_DIR}/foundation"
-                "${CMAKE_CURRENT_LIST_DIR}/pythia"
             DESTINATION
                 "${VIRGIL_INSTALL_GO_SRCDIR}"
             FILES_MATCHING PATTERN

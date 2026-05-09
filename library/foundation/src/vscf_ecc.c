@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -120,7 +120,6 @@ vscf_ecc_produce_alg_info_for_key(const vscf_ecc_t *self, const vscf_impl_t *key
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  This method is called when class 'ecies' was setup.
@@ -267,7 +266,7 @@ vscf_ecc_generate_key(const vscf_ecc_t *self, vscf_alg_id_t alg_id, vscf_error_t
 
     const int mbed_status = mbedtls_ecp_gen_keypair(&private_key->ecc_grp, &private_key->ecc_priv,
             &private_key->ecc_pub, vscf_mbedtls_bridge_random, self->random);
-    VSCF_ASSERT_ALLOC(status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
+    VSCF_ASSERT_ALLOC(mbed_status != MBEDTLS_ERR_MPI_ALLOC_FAILED);
 
     if (mbed_status != 0) {
         vscf_ecc_private_key_destroy(&private_key);
@@ -372,6 +371,13 @@ vscf_ecc_import_public_key_data(
             &ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub, key_data.bytes, key_data.len);
 
     if (mbed_status != 0) {
+        VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY);
+        vscf_ecc_public_key_destroy(&ecc_public_key);
+        return NULL;
+    }
+
+    const int check_status = mbedtls_ecp_check_pubkey(&ecc_public_key->ecc_grp, &ecc_public_key->ecc_pub);
+    if (check_status != 0) {
         VSCF_ERROR_SAFE_UPDATE(error, vscf_status_ERROR_BAD_SEC1_PUBLIC_KEY);
         vscf_ecc_public_key_destroy(&ecc_public_key);
         return NULL;
@@ -841,8 +847,8 @@ vscf_ecc_sign_hash(const vscf_ecc_t *self, const vscf_impl_t *private_key, vscf_
                 vscf_mbedtls_bridge_random, (void *)self->random);
     } else {
         mbedtls_md_type_t md_alg = vscf_mbedtls_md_from_alg_id(hash_id);
-        mbed_status = mbedtls_ecdsa_sign_det(
-                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg);
+        mbed_status = mbedtls_ecdsa_sign_det_ext(
+                &tmp_ecp_grp, &r, &s, &ecc_private_key->ecc_priv, digest.bytes, digest.len, md_alg, NULL, NULL);
     }
 
     if (mbed_status != 0) {
@@ -860,7 +866,9 @@ cleanup:
         return vscf_status_ERROR_RANDOM_FAILED;
     }
 
-    VSCF_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbed_status);
+    if (mbed_status != 0) {
+        return vscf_status_ERROR_BAD_ARGUMENTS;
+    }
     return vscf_status_SUCCESS;
 }
 

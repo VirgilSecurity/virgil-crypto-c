@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,10 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Phe;
 
-/**
-* Class for encryption using PHE account key
-* This class is thread-safe.
-*/
 class PheCipher
 {
 
@@ -48,10 +44,6 @@ class PheCipher
     * @var
     */
     private $ctx;
-
-    const SALT_LEN = 32;
-    const KEY_LEN = 32;
-    const NONCE_LEN = 12;
 
     /**
     * Create underlying C context.
@@ -73,16 +65,16 @@ class PheCipher
     }
 
     /**
-    * @param \Virgil\CryptoWrapper\Foundation\Random $random
+    *
+    * @param \Virgil\CryptoWrapper\Foundation\Random $$random
     * @return void
     */
-    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $random): void
+    public function useRandom(\Virgil\CryptoWrapper\Foundation\Random $$random): void
     {
-        vsce_phe_cipher_use_random_php($this->ctx, $random->getCtx());
+        vsce_phe_cipher_use_random_php($this->ctx, $$random);
     }
 
     /**
-    * Setups dependencies with default values.
     *
     * @return void
     * @throws \Exception
@@ -93,79 +85,73 @@ class PheCipher
     }
 
     /**
-    * Returns buffer capacity needed to fit cipher text
     *
-    * @param int $plainTextLen
+    * @param int $$plainTextLen
     * @return int
     */
-    public function encryptLen(int $plainTextLen): int
+    public function encryptLen(int $$plainTextLen): int
     {
-        return vsce_phe_cipher_encrypt_len_php($this->ctx, $plainTextLen);
+        return vsce_phe_cipher_encrypt_len_php($this->ctx, $$plainTextLen);
     }
 
     /**
-    * Returns buffer capacity needed to fit plain text
     *
-    * @param int $cipherTextLen
+    * @param int $$cipherTextLen
     * @return int
     */
-    public function decryptLen(int $cipherTextLen): int
+    public function decryptLen(int $$cipherTextLen): int
     {
-        return vsce_phe_cipher_decrypt_len_php($this->ctx, $cipherTextLen);
+        return vsce_phe_cipher_decrypt_len_php($this->ctx, $$cipherTextLen);
     }
 
     /**
-    * Encrypts data using account key
     *
-    * @param string $plainText
-    * @param string $accountKey
+    * @param string $$plainText
+    * @param string $$accountKey
     * @return string
     * @throws \Exception
     */
-    public function encrypt(string $plainText, string $accountKey): string
+    public function encrypt(string $$plainText, string $$accountKey): string
     {
-        return vsce_phe_cipher_encrypt_php($this->ctx, $plainText, $accountKey);
+        return vsce_phe_cipher_encrypt_php($this->ctx, $$plainText, $$accountKey);
     }
 
     /**
-    * Decrypts data using account key
     *
-    * @param string $cipherText
-    * @param string $accountKey
+    * @param string $$cipherText
+    * @param string $$accountKey
     * @return string
     * @throws \Exception
     */
-    public function decrypt(string $cipherText, string $accountKey): string
+    public function decrypt(string $$cipherText, string $$accountKey): string
     {
-        return vsce_phe_cipher_decrypt_php($this->ctx, $cipherText, $accountKey);
+        return vsce_phe_cipher_decrypt_php($this->ctx, $$cipherText, $$accountKey);
     }
 
     /**
-    * Encrypts data (and authenticates additional data) using account key
     *
-    * @param string $plainText
-    * @param string $additionalData
-    * @param string $accountKey
+    * @param string $$plainText
+    * @param string $$additionalData
+    * @param string $$accountKey
     * @return string
     * @throws \Exception
     */
-    public function authEncrypt(string $plainText, string $additionalData, string $accountKey): string
+    public function authEncrypt(string $$plainText, string $$additionalData, string $$accountKey): string
     {
-        return vsce_phe_cipher_auth_encrypt_php($this->ctx, $plainText, $additionalData, $accountKey);
+        return vsce_phe_cipher_auth_encrypt_php($this->ctx, $$plainText, $$additionalData, $$accountKey);
     }
 
     /**
-    * Decrypts data (and verifies additional data) using account key
     *
-    * @param string $cipherText
-    * @param string $additionalData
-    * @param string $accountKey
+    * @param string $$cipherText
+    * @param string $$additionalData
+    * @param string $$accountKey
     * @return string
     * @throws \Exception
     */
-    public function authDecrypt(string $cipherText, string $additionalData, string $accountKey): string
+    public function authDecrypt(string $$cipherText, string $$additionalData, string $$accountKey): string
     {
-        return vsce_phe_cipher_auth_decrypt_php($this->ctx, $cipherText, $additionalData, $accountKey);
+        return vsce_phe_cipher_auth_decrypt_php($this->ctx, $$cipherText, $$additionalData, $$accountKey);
     }
 
     /**

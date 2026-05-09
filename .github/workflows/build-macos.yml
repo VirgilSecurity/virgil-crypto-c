@@ -1,22 +1,27 @@
-name: build-macos
+name: Build macOS
 on:
   push:
     branches:
-      - "main"
-      - "develop"
-      - "release/**"
-      - "hotfix/**"
+      - main
+      - develop
+      - 'release/**'
+      - 'hotfix/**'
+      - 'feature/**'
+  pull_request:
+    branches:
+      - develop
+      - main
 jobs:
   build-macos:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check Xcode
         run: |
           xcode-select -p
           xcodebuild -version
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
       - name: Setup Python virtual environment
@@ -31,7 +36,8 @@ jobs:
           cmake -S. -Bbuild \
           -DVIRGIL_C_MT_TESTING=ON \
           -DENABLE_BENCHMARKING=ON \
-          -DVIRGIL_PROGRAMS=ON
+          -DVIRGIL_PROGRAMS=ON \
+          -DVIRGIL_POST_QUANTUM=ON
       - name: Build project
         run: cmake --build build -- -j$(sysctl -n hw.physicalcpu)
       - name: Run tests
@@ -41,7 +47,7 @@ jobs:
   SPM:
     runs-on: macos-26
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Check Xcode
         run: |
           xcode-select -p

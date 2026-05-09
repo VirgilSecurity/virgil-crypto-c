@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -38,6 +38,7 @@ from ._c_bridge import VscfBrainkeyClient
 from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
+from ._c_bridge._vscf_error import vscf_error_t
 
 
 class BrainkeyClient(object):
@@ -86,6 +87,20 @@ class BrainkeyClient(object):
         status = self._lib_vscf_brainkey_client.vscf_brainkey_client_deblind(self.ctx, d_password.data, d_hardened_point.data, d_deblind_factor.data, d_key_name.data, seed.c_buffer)
         VscfStatus.handle_status(status)
         return seed.get_bytes()
+
+    def verify(self, blinded_point, hardened_point, server_public_key, proof_value_c, proof_value_s):
+        """Verifies the DLEQ proof that hardened_point = x * blinded_point where x corresponds
+to server_public_key = x * G. Must be called before deblind() to authenticate
+the server response."""
+        d_blinded_point = Data(blinded_point)
+        d_hardened_point = Data(hardened_point)
+        d_server_public_key = Data(server_public_key)
+        d_proof_value_c = Data(proof_value_c)
+        d_proof_value_s = Data(proof_value_s)
+        error = vscf_error_t()
+        result = self._lib_vscf_brainkey_client.vscf_brainkey_client_verify(self.ctx, d_blinded_point.data, d_hardened_point.data, d_server_public_key.data, d_proof_value_c.data, d_proof_value_s.data, error)
+        VscfStatus.handle_status(error.status)
+        return result
 
     @classmethod
     def take_c_ctx(cls, c_ctx):

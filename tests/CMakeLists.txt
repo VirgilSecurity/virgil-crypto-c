@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -49,10 +49,6 @@ endif()
 
 if(TARGET vsc::foundation)
     add_subdirectory(foundation)
-endif()
-
-if(TARGET vsc::pythia)
-    add_subdirectory(pythia)
 endif()
 
 if(TARGET vsc::ratchet)

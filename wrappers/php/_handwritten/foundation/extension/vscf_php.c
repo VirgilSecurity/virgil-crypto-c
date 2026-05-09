@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2019 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -58,7 +58,7 @@
 // --------------------------------------------------------------------------
 //  Constants
 // --------------------------------------------------------------------------
-const char VSCF_PHP_VERSION[] = "0.17.2";
+const char VSCF_PHP_VERSION[] = "0.19.0";
 const char VSCF_PHP_EXTNAME[] = "vscf_php";
 
 const char VSCF_IMPL_PHP_RES_NAME[] = "vscf_php";

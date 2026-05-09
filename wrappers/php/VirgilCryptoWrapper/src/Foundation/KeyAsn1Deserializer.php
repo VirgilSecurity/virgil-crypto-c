@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,9 +37,6 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Implements PKCS#8 and SEC1 key deserialization from DER / PEM format.
-*/
 class KeyAsn1Deserializer implements KeyDeserializer
 {
 
@@ -68,16 +65,40 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * @param Asn1Reader $asn1Reader
+    *
+    * @param Asn1Reader $$asn1Reader
     * @return void
     */
-    public function useAsn1Reader(Asn1Reader $asn1Reader): void
+    public function useAsn1Reader(Asn1Reader $$asn1Reader): void
     {
-        vscf_key_asn1_deserializer_use_asn1_reader_php($this->ctx, $asn1Reader->getCtx());
+        vscf_key_asn1_deserializer_use_asn1_reader_php($this->ctx, $$asn1Reader);
     }
 
     /**
-    * Setup predefined values to the uninitialized class dependencies.
+    *
+    * @param string $$publicKeyData
+    * @return RawPublicKey
+    * @throws \Exception
+    */
+    public function deserializePublicKey(string $$publicKeyData): RawPublicKey
+    {
+        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_php($this->ctx, $$publicKeyData);
+        return new RawPublicKey($ctx);
+    }
+
+    /**
+    *
+    * @param string $$privateKeyData
+    * @return RawPrivateKey
+    * @throws \Exception
+    */
+    public function deserializePrivateKey(string $$privateKeyData): RawPrivateKey
+    {
+        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $$privateKeyData);
+        return new RawPrivateKey($ctx);
+    }
+
+    /**
     *
     * @return void
     */
@@ -87,11 +108,9 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * Deserialize Public Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
     *
     * @return RawPublicKey
+    * @throws \Exception
     */
     public function deserializePublicKeyInplace(): RawPublicKey
     {
@@ -100,11 +119,9 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * Deserialize Private Key by using internal ASN.1 reader.
-    * Note, that caller code is responsible to reset ASN.1 reader with
-    * an input buffer.
     *
     * @return RawPrivateKey
+    * @throws \Exception
     */
     public function deserializePrivateKeyInplace(): RawPrivateKey
     {
@@ -113,26 +130,29 @@ class KeyAsn1Deserializer implements KeyDeserializer
     }
 
     /**
-    * Deserialize given public key as an interchangeable format to the object.
     *
-    * @param string $publicKeyData
-    * @return RawPublicKey
+    * @param int $$seqLeftLen
+    * @param int $$version
+    * @return RawPrivateKey
+    * @throws \Exception
     */
-    public function deserializePublicKey(string $publicKeyData): RawPublicKey
+    public function deserializePkcs8PrivateKeyInplace(int $$seqLeftLen, int $$version): RawPrivateKey
     {
-        $ctx = vscf_key_asn1_deserializer_deserialize_public_key_php($this->ctx, $publicKeyData);
-        return new RawPublicKey($ctx);
+        $ctx = vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace_php($this->ctx, $$seqLeftLen, $$version);
+        return new RawPrivateKey($ctx);
     }
 
     /**
-    * Deserialize given private key as an interchangeable format to the object.
     *
-    * @param string $privateKeyData
+    * @param int $$seqLeftLen
+    * @param int $$version
+    * @param AlgInfo $$algInfo
     * @return RawPrivateKey
+    * @throws \Exception
     */
-    public function deserializePrivateKey(string $privateKeyData): RawPrivateKey
+    public function deserializeSec1PrivateKeyInplace(int $$seqLeftLen, int $$version, AlgInfo $$algInfo): RawPrivateKey
     {
-        $ctx = vscf_key_asn1_deserializer_deserialize_private_key_php($this->ctx, $privateKeyData);
+        $ctx = vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace_php($this->ctx, $$seqLeftLen, $$version, $$algInfo->getCtx());
         return new RawPrivateKey($ctx);
     }
 

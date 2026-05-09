@@ -28,7 +28,6 @@ android {
 dependencies {
     implementation project(':foundation')
     implementation project(':phe')
-    implementation project(':pythia')
     implementation project(':ratchet')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

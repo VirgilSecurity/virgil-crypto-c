@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -52,18 +50,6 @@
 
 #ifndef VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
 #define VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_atomic.h"
-#include "vscf_key_recipient_list.h"
-#include "vscf_signer_list.h"
-#include "vscf_message_info.h"
-#include "vscf_message_info_footer.h"
-#include "vscf_impl.h"
-#include "vscf_padding_params.h"
-#include "vscf_padding_cipher.h"
-#include "vscf_message_info_der_serializer.h"
-#include "vscf_recipient_cipher_decryption_state.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_buffer.h>
@@ -76,11 +62,34 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_atomic.h"
+#include "vscf_message_info.h"
+#include "vscf_message_info_footer.h"
+#include "vscf_impl.h"
+#include "vscf_padding_params.h"
+#include "vscf_message_info_der_serializer.h"
+#include "vscf_recipient_cipher_decryption_state.h"
+#include "vscf_key_recipient_list.h"
+#include "vscf_signer_list.h"
+#include "vscf_padding_cipher.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -120,50 +129,29 @@ struct vscf_recipient_cipher_t {
     //  Dependency to the interface 'hash'.
     //
     vscf_impl_t *signer_hash;
-
     vscf_key_recipient_list_t *key_recipients;
-
     vscf_signer_list_t *signers;
-
     vsc_buffer_t *master_key;
-
     vsc_buffer_t *derived_keys;
-
     vsc_buffer_t *data_digest;
-
     vsc_buffer_t *decryption_recipient_id;
-
     vscf_impl_t *decryption_recipient_key;
-
     vsc_buffer_t *decryption_password;
-
     vscf_impl_t *decryption_cipher;
-
     vscf_impl_t *decryption_padding;
-
     vscf_padding_cipher_t *padding_cipher;
-
     vscf_impl_t *verifier_hash;
-
     vscf_message_info_t *message_info;
-
     vscf_message_info_der_serializer_t *message_info_der_serializer;
-
     vsc_buffer_t *message_info_buffer;
-
     vscf_message_info_footer_t *message_info_footer;
-
     vsc_buffer_t *message_info_footer_enc;
-
     size_t message_info_expected_len;
-
     size_t processed_encrypted_data_len;
-
     vscf_recipient_cipher_decryption_state_t decryption_state;
-
     bool is_signed_operation;
+    vsc_buffer_t *decryption_staging;
 };
-
 
 // --------------------------------------------------------------------------
 //  Generated section end.
@@ -171,11 +159,9 @@ struct vscf_recipient_cipher_t {
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_RECIPIENT_CIPHER_DEFS_H_INCLUDED

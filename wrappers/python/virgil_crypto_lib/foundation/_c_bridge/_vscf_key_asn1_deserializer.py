@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -38,8 +38,8 @@ from ctypes import *
 from ._vscf_impl import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_error import vscf_error_t
-from ._vscf_raw_public_key import vscf_raw_public_key_t
 from ._vscf_raw_private_key import vscf_raw_private_key_t
+from ._vscf_raw_public_key import vscf_raw_public_key_t
 
 
 class vscf_key_asn1_deserializer_t(Structure):
@@ -48,6 +48,7 @@ class vscf_key_asn1_deserializer_t(Structure):
 
 class VscfKeyAsn1Deserializer(object):
     """Implements PKCS#8 and SEC1 key deserialization from DER / PEM format."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -72,6 +73,46 @@ class VscfKeyAsn1Deserializer(object):
         vscf_key_asn1_deserializer_use_asn1_reader.restype = None
         return vscf_key_asn1_deserializer_use_asn1_reader(ctx, asn1_reader)
 
+    def vscf_key_asn1_deserializer_setup_defaults(self, ctx):
+        """Setup predefined values to the uninitialized class dependencies."""
+        vscf_key_asn1_deserializer_setup_defaults = self._lib.vscf_key_asn1_deserializer_setup_defaults
+        vscf_key_asn1_deserializer_setup_defaults.argtypes = [POINTER(vscf_key_asn1_deserializer_t)]
+        vscf_key_asn1_deserializer_setup_defaults.restype = None
+        return vscf_key_asn1_deserializer_setup_defaults(ctx)
+
+    def vscf_key_asn1_deserializer_deserialize_public_key_inplace(self, ctx, error):
+        """Deserialize Public Key by using internal ASN.1 reader.
+Note, that caller code is responsible to reset ASN.1 reader with
+an input buffer."""
+        vscf_key_asn1_deserializer_deserialize_public_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_public_key_inplace
+        vscf_key_asn1_deserializer_deserialize_public_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), POINTER(vscf_error_t)]
+        vscf_key_asn1_deserializer_deserialize_public_key_inplace.restype = POINTER(vscf_raw_public_key_t)
+        return vscf_key_asn1_deserializer_deserialize_public_key_inplace(ctx, error)
+
+    def vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, ctx, error):
+        """Deserialize Private Key by using internal ASN.1 reader.
+Note, that caller code is responsible to reset ASN.1 reader with
+an input buffer."""
+        vscf_key_asn1_deserializer_deserialize_private_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_private_key_inplace
+        vscf_key_asn1_deserializer_deserialize_private_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), POINTER(vscf_error_t)]
+        vscf_key_asn1_deserializer_deserialize_private_key_inplace.restype = POINTER(vscf_raw_private_key_t)
+        return vscf_key_asn1_deserializer_deserialize_private_key_inplace(ctx, error)
+
+    def vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(self, ctx, seq_left_len, version, error):
+        """Deserialize PKCS#8 Private Key by using internal ASN.1 reader."""
+        vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace
+        vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), c_size_t, c_int, POINTER(vscf_error_t)]
+        vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace.restype = POINTER(vscf_raw_private_key_t)
+        return vscf_key_asn1_deserializer_deserialize_pkcs8_private_key_inplace(ctx, seq_left_len, version, error)
+
+    def vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(self, ctx, seq_left_len, version, alg_info, error):
+        """Deserialize SEC1 Private Key by using internal ASN.1 reader.
+Argument "alg info" can be NULL."""
+        vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace
+        vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), c_size_t, c_int, POINTER(vscf_impl_t), POINTER(vscf_error_t)]
+        vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace.restype = POINTER(vscf_raw_private_key_t)
+        return vscf_key_asn1_deserializer_deserialize_sec1_private_key_inplace(ctx, seq_left_len, version, alg_info, error)
+
     def vscf_key_asn1_deserializer_deserialize_public_key(self, ctx, public_key_data, error):
         """Deserialize given public key as an interchangeable format to the object."""
         vscf_key_asn1_deserializer_deserialize_public_key = self._lib.vscf_key_asn1_deserializer_deserialize_public_key
@@ -85,31 +126,6 @@ class VscfKeyAsn1Deserializer(object):
         vscf_key_asn1_deserializer_deserialize_private_key.argtypes = [POINTER(vscf_key_asn1_deserializer_t), vsc_data_t, POINTER(vscf_error_t)]
         vscf_key_asn1_deserializer_deserialize_private_key.restype = POINTER(vscf_raw_private_key_t)
         return vscf_key_asn1_deserializer_deserialize_private_key(ctx, private_key_data, error)
-
-    def vscf_key_asn1_deserializer_setup_defaults(self, ctx):
-        """Setup predefined values to the uninitialized class dependencies."""
-        vscf_key_asn1_deserializer_setup_defaults = self._lib.vscf_key_asn1_deserializer_setup_defaults
-        vscf_key_asn1_deserializer_setup_defaults.argtypes = [POINTER(vscf_key_asn1_deserializer_t)]
-        vscf_key_asn1_deserializer_setup_defaults.restype = None
-        return vscf_key_asn1_deserializer_setup_defaults(ctx)
-
-    def vscf_key_asn1_deserializer_deserialize_public_key_inplace(self, ctx, error):
-        """Deserialize Public Key by using internal ASN.1 reader.
-        Note, that caller code is responsible to reset ASN.1 reader with
-        an input buffer."""
-        vscf_key_asn1_deserializer_deserialize_public_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_public_key_inplace
-        vscf_key_asn1_deserializer_deserialize_public_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), POINTER(vscf_error_t)]
-        vscf_key_asn1_deserializer_deserialize_public_key_inplace.restype = POINTER(vscf_raw_public_key_t)
-        return vscf_key_asn1_deserializer_deserialize_public_key_inplace(ctx, error)
-
-    def vscf_key_asn1_deserializer_deserialize_private_key_inplace(self, ctx, error):
-        """Deserialize Private Key by using internal ASN.1 reader.
-        Note, that caller code is responsible to reset ASN.1 reader with
-        an input buffer."""
-        vscf_key_asn1_deserializer_deserialize_private_key_inplace = self._lib.vscf_key_asn1_deserializer_deserialize_private_key_inplace
-        vscf_key_asn1_deserializer_deserialize_private_key_inplace.argtypes = [POINTER(vscf_key_asn1_deserializer_t), POINTER(vscf_error_t)]
-        vscf_key_asn1_deserializer_deserialize_private_key_inplace.restype = POINTER(vscf_raw_private_key_t)
-        return vscf_key_asn1_deserializer_deserialize_private_key_inplace(ctx, error)
 
     def vscf_key_asn1_deserializer_shallow_copy(self, ctx):
         vscf_key_asn1_deserializer_shallow_copy = self._lib.vscf_key_asn1_deserializer_shallow_copy

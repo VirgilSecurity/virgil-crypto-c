@@ -11,7 +11,7 @@ import "runtime"
 * a Public Key.
 */
 type SignerInfo struct {
-    cCtx *C.vscf_signer_info_t /*ct2*/
+    cCtx *C.vscf_signer_info_t
 }
 
 /* Handle underlying C context. */
@@ -31,7 +31,7 @@ func NewSignerInfo() *SignerInfo {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerInfoWithCtx(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
+func newSignerInfoWithCtx(ctx *C.vscf_signer_info_t) *SignerInfo {
     obj := &SignerInfo {
         cCtx: ctx,
     }
@@ -42,7 +42,7 @@ func newSignerInfoWithCtx(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newSignerInfoCopy(ctx *C.vscf_signer_info_t /*ct2*/) *SignerInfo {
+func newSignerInfoCopy(ctx *C.vscf_signer_info_t) *SignerInfo {
     obj := &SignerInfo {
         cCtx: C.vscf_signer_info_shallow_copy(ctx),
     }
@@ -72,31 +72,31 @@ func (obj *SignerInfo) delete() {
 * Return signer identifier.
 */
 func (obj *SignerInfo) SignerId() []byte {
-    proxyResult := /*pr4*/C.vscf_signer_info_signer_id(obj.cCtx)
+    proxyResult := C.vscf_signer_info_signer_id(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }
 
 /*
 * Return algorithm information that was used for data signing.
 */
 func (obj *SignerInfo) SignerAlgInfo() (AlgInfo, error) {
-    proxyResult := /*pr4*/C.vscf_signer_info_signer_alg_info(obj.cCtx)
+    proxyResult := C.vscf_signer_info_signer_alg_info(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return FoundationImplementationWrapAlgInfoCopy(proxyResult) /* r4.1 */
+    return FoundationImplementationWrapAlgInfoCopy(proxyResult)
 }
 
 /*
 * Return data signature.
 */
 func (obj *SignerInfo) Signature() []byte {
-    proxyResult := /*pr4*/C.vscf_signer_info_signature(obj.cCtx)
+    proxyResult := C.vscf_signer_info_signature(obj.cCtx)
 
     runtime.KeepAlive(obj)
 
-    return helperExtractData(proxyResult) /* r1 */
+    return helperExtractData(proxyResult)
 }

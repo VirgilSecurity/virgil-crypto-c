@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -34,7 +34,7 @@
 
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(virgil_crypto VERSION 0.17.2 LANGUAGES C)
+project(virgil_crypto VERSION 0.19.0 LANGUAGES C)
 
 
 # ---------------------------------------------------------------------------
@@ -64,7 +64,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "dev.6" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
@@ -97,7 +97,6 @@ option(VIRGIL_C_MT_TESTING "On/Off C library multi-threading tests." OFF)
 #
 option(VIRGIL_LIB_COMMON "Build 'common' library" ON)
 option(VIRGIL_LIB_FOUNDATION "Build 'foundation' library" ON)
-option(VIRGIL_LIB_PYTHIA "Build 'pythia' library" ON)
 option(VIRGIL_LIB_ED25519 "Build 'ed25519' library" ON)
 option(VIRGIL_LIB_RATCHET "Build 'ratchet' library" ON)
 option(VIRGIL_LIB_PHE "Build 'phe' library" ON)
@@ -110,7 +109,12 @@ option(VIRGIL_PROGRAMS "Build programs." OFF)
 #
 # Features
 #
-option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography [experimental]." ON)
+option(VIRGIL_POST_QUANTUM "Enable post-quantum cryptography." ON)
+
+#
+# Threading
+#
+option(VIRGIL_DISABLE_MULTI_THREADING "Disable multi-threading safety across all libraries (single-threaded targets only)." OFF)
 
 #
 # Wrappers
@@ -182,17 +186,15 @@ execute_process(COMMAND pip3 install -U -r "${CMAKE_CURRENT_SOURCE_DIR}/requirem
 # ---------------------------------------------------------------------------
 
 #
-# MbedTLS
+# Allow access to mbedTLS private struct members during 2.x -> 3.x migration.
 #
-if(VIRGIL_LIB_FOUNDATION OR VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/mbedtls")
-endif()
+add_compile_definitions(MBEDTLS_ALLOW_PRIVATE_ACCESS)
 
 #
-# Relic
+# MbedTLS
 #
-if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("thirdparty/relic")
+if(VIRGIL_LIB_FOUNDATION)
+    add_subdirectory("thirdparty/mbedtls")
 endif()
 
 #
@@ -211,13 +213,24 @@ add_subdirectory("thirdparty/nanopb")
 # Post-quantum
 #
 if(VIRGIL_POST_QUANTUM)
-    add_subdirectory("thirdparty/round5")
+    set(VSCF_POST_QUANTUM ON CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
     add_subdirectory("thirdparty/falcon")
+    add_subdirectory("thirdparty/mlkem-native")
+    add_subdirectory("thirdparty/mldsa-native")
+else()
+    set(VSCF_POST_QUANTUM OFF CACHE BOOL "Enable post-quantum cryptography for foundation library." FORCE)
 endif()
 
 # ---------------------------------------------------------------------------
 #   Library core libraries
 # ---------------------------------------------------------------------------
+
+if(VIRGIL_DISABLE_MULTI_THREADING)
+    set(VSC_MULTI_THREADING  OFF CACHE BOOL "" FORCE)
+    set(VSCF_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCE_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+    set(VSCR_MULTI_THREADING OFF CACHE BOOL "" FORCE)
+endif()
 
 add_subdirectory("library/platform")
 
@@ -227,10 +240,6 @@ endif()
 
 if(VIRGIL_LIB_FOUNDATION)
     add_subdirectory("library/foundation")
-endif()
-
-if(VIRGIL_LIB_PYTHIA)
-    add_subdirectory("library/pythia")
 endif()
 
 if(VIRGIL_LIB_RATCHET)
@@ -310,14 +319,6 @@ if(CLOC_EXECUTABLE)
             COMMENT "Calculate lines of the 'foundation' library..."
             )
 
-    add_custom_target(cloc-pythia
-            COMMAND ${CLOC_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/include/virgil/crypto/pythia/private"
-                "${CMAKE_CURRENT_LIST_DIR}/library/pythia/src"
-            COMMENT "Calculate lines of the 'pythia' library..."
-            )
-
     add_custom_target(cloc-ratchet
             COMMAND ${CLOC_EXECUTABLE}
                 "${CMAKE_CURRENT_LIST_DIR}/library/ratchet/include/virgil/crypto/ratchet"
@@ -327,7 +328,7 @@ if(CLOC_EXECUTABLE)
             )
 
     add_custom_target(cloc)
-    add_dependencies(cloc cloc-common cloc-foundation cloc-pythia cloc-ratchet)
+    add_dependencies(cloc cloc-common cloc-foundation cloc-ratchet)
 endif()
 
 

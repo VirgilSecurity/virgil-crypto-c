@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,14 +36,12 @@
 // --------------------------------------------------------------------------
 // clang-format off
 
-
 //  @warning
 // --------------------------------------------------------------------------
 //  This file is partially generated.
 //  Generated blocks are enclosed between tags [@<tag>, @end].
 //  User's code can be added between tags [@end, @<tag>].
 // --------------------------------------------------------------------------
-
 
 //  @description
 // --------------------------------------------------------------------------
@@ -53,13 +51,6 @@
 
 #ifndef VSCF_KEY_SIGNER_H_INCLUDED
 #define VSCF_KEY_SIGNER_H_INCLUDED
-
-#include "vscf_library.h"
-#include "vscf_impl.h"
-#include "vscf_key_alg.h"
-#include "vscf_alg_id.h"
-#include "vscf_status.h"
-#include "vscf_api.h"
 
 #if !VSCF_IMPORT_PROJECT_COMMON_FROM_FRAMEWORK
 #   include <virgil/crypto/common/vsc_data.h>
@@ -74,11 +65,29 @@
 // clang-format on
 //  @end
 
+//  @generated_header_includes
+// --------------------------------------------------------------------------
+// clang-format off
+//  Generated header includes start.
+// --------------------------------------------------------------------------
+
+#include "vscf_library.h"
+#include "vscf_impl.h"
+#include "vscf_key_alg.h"
+#include "vscf_alg_id.h"
+#include "vscf_status.h"
+#include "vscf_api.h"
+
+// --------------------------------------------------------------------------
+//  Generated section end.
+// clang-format on
+// --------------------------------------------------------------------------
+//  @end
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 //  @generated
 // --------------------------------------------------------------------------
@@ -108,8 +117,7 @@ vscf_key_signer_signature_len(const vscf_impl_t *impl, const vscf_impl_t *privat
 //  Sign data digest with a given private key.
 //
 VSCF_PUBLIC vscf_status_t
-vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_buffer_t *signature) VSCF_NODISCARD;
+vscf_key_signer_sign_hash(const vscf_impl_t *impl, const vscf_impl_t *private_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_buffer_t *signature) VSCF_NODISCARD;
 
 //
 //  Check if algorithm can verify data digest with a given key.
@@ -121,8 +129,7 @@ vscf_key_signer_can_verify(const vscf_impl_t *impl, const vscf_impl_t *public_ke
 //  Verify data digest with a given public key and signature.
 //
 VSCF_PUBLIC bool
-vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id,
-        vsc_data_t digest, vsc_data_t signature);
+vscf_key_signer_verify_hash(const vscf_impl_t *impl, const vscf_impl_t *public_key, vscf_alg_id_t hash_id, vsc_data_t digest, vsc_data_t signature);
 
 //
 //  Return key signer API, or NULL if it is not implemented.
@@ -148,18 +155,15 @@ vscf_key_signer_is_implemented(const vscf_impl_t *impl);
 VSCF_PUBLIC vscf_api_tag_t
 vscf_key_signer_api_tag(const vscf_key_signer_api_t *key_signer_api);
 
-
 // --------------------------------------------------------------------------
 //  Generated section end.
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 //  @footer
 #endif // VSCF_KEY_SIGNER_H_INCLUDED

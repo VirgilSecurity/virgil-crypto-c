@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,85 +37,95 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for symmetric ciphers.
-*/
-interface Cipher extends Ctx
+interface Cipher extends Ctx, Encrypt, Decrypt, CipherInfo
 {
 
     /**
-    * Setup IV or nonce.
     *
-    * @param string $nonce
+    * @param string $$nonce
     * @return void
     */
-    public function setNonce(string $nonce): void;
+    public function setNonce(string $$nonce): void
+    {
+        ($this->ctx, $$nonce);
+    }
 
     /**
-    * Set cipher encryption / decryption key.
     *
-    * @param string $key
+    * @param string $$key
     * @return void
     */
-    public function setKey(string $key): void;
+    public function setKey(string $$key): void
+    {
+        ($this->ctx, $$key);
+    }
 
     /**
-    * Start sequential encryption.
-    *
-    * @return void
-    */
-    public function startEncryption(): void;
-
-    /**
-    * Start sequential decryption.
     *
     * @return void
     */
-    public function startDecryption(): void;
+    public function startEncryption(): void
+    {
+        ($this->ctx);
+    }
 
     /**
-    * Process encryption or decryption of the given data chunk.
     *
-    * @param string $data
+    * @return void
+    */
+    public function startDecryption(): void
+    {
+        ($this->ctx);
+    }
+
+    /**
+    *
+    * @param string $$data
     * @return string
     */
-    public function update(string $data): string;
+    public function update(string $$data): string
+    {
+        return ($this->ctx, $$data);
+    }
 
     /**
-    * Return buffer length required to hold an output of the methods
-    * "update" or "finish" in an current mode.
-    * Pass zero length to define buffer length of the method "finish".
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function outLen(int $dataLen): int;
+    public function outLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
 
     /**
-    * Return buffer length required to hold an output of the methods
-    * "update" or "finish" in an encryption mode.
-    * Pass zero length to define buffer length of the method "finish".
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function encryptedOutLen(int $dataLen): int;
+    public function encryptedOutLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
 
     /**
-    * Return buffer length required to hold an output of the methods
-    * "update" or "finish" in an decryption mode.
-    * Pass zero length to define buffer length of the method "finish".
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function decryptedOutLen(int $dataLen): int;
+    public function decryptedOutLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
 
     /**
-    * Accomplish encryption or decryption process.
     *
     * @return string
     * @throws \Exception
     */
-    public function finish(): string;
+    public function finish(): string
+    {
+        return ($this->ctx);
+    }
+
 }

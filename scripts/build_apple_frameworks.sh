@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -140,14 +140,12 @@ function build_ios {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=IOS \
-                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=IOS_SIM \
-                        -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j$(sysctl -n hw.physicalcpu)
@@ -166,14 +164,12 @@ function build_tvos {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=TVOS \
-                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=TVOS_SIM \
-                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j$(sysctl -n hw.physicalcpu)
@@ -192,14 +188,12 @@ function build_watchos {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS \
-                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=WATCHOS_SIM \
-                        -DRELIC_USE_PTHREAD=OFF \
                         -DCMAKE_INSTALL_LIBDIR=sim \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/sim"
     cmake --build "${BUILD_DIR}/sim" --target install -- -j$(sysctl -n hw.physicalcpu)
@@ -218,7 +212,6 @@ function build_macosx {
 
     cmake ${CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX="${FRAMEWORKS_DIR}" \
                         -DAPPLE_PLATFORM=MACOS \
-                        -DRELIC_USE_PTHREAD=ON \
                         -DCMAKE_INSTALL_LIBDIR=dev \
                         -H"${SRC_DIR}" -B"${BUILD_DIR}/dev"
     cmake --build "${BUILD_DIR}/dev" --target install -- -j$(sysctl -n hw.physicalcpu)
@@ -233,7 +226,6 @@ build_macosx "${BUILD_DIR}/macOS" "${MACOS_DESTINATION_DIR}"
 
 make_xcarchive VSCCommon "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
 make_xcarchive VSCFoundation "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
-make_xcarchive VSCPythia "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
 make_xcarchive VSCRatchet "${DESTINATION_DIR}" "${XCFRAMEWORKS_DESTINATION_DIR}"
 
 

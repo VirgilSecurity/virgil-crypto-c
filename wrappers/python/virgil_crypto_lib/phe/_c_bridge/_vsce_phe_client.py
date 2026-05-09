@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,7 +35,7 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.foundation._c_bridge._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.foundation._c_bridge import vscf_impl_t
 from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from virgil_crypto_lib.common._c_bridge import vsc_buffer_t
 
@@ -46,7 +46,8 @@ class vsce_phe_client_t(Structure):
 
 class VscePheClient(object):
     """Class for client-side PHE crypto operations.
-    This class is thread-safe in case if VSCE_MULTI_THREADING defined."""
+This class is thread-safe in case if .(c_global_macros_multi_threading) defined."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -66,14 +67,12 @@ class VscePheClient(object):
         return vsce_phe_client_delete(ctx)
 
     def vsce_phe_client_use_random(self, ctx, random):
-        """Random used for key generation, proofs, etc."""
         vsce_phe_client_use_random = self._lib.vsce_phe_client_use_random
         vsce_phe_client_use_random.argtypes = [POINTER(vsce_phe_client_t), POINTER(vscf_impl_t)]
         vsce_phe_client_use_random.restype = None
         return vsce_phe_client_use_random(ctx, random)
 
     def vsce_phe_client_use_operation_random(self, ctx, operation_random):
-        """Random used for crypto operations to make them const-time"""
         vsce_phe_client_use_operation_random = self._lib.vsce_phe_client_use_operation_random
         vsce_phe_client_use_operation_random.argtypes = [POINTER(vsce_phe_client_t), POINTER(vscf_impl_t)]
         vsce_phe_client_use_operation_random.restype = None
@@ -88,8 +87,8 @@ class VscePheClient(object):
 
     def vsce_phe_client_set_keys(self, ctx, client_private_key, server_public_key):
         """Sets client private and server public key
-        Call this method before any other methods except `update enrollment record` and `generate client private key`
-        This function should be called only once"""
+Call this method before any other methods except `update enrollment record` and `generate client private key`
+This function should be called only once"""
         vsce_phe_client_set_keys = self._lib.vsce_phe_client_set_keys
         vsce_phe_client_set_keys.argtypes = [POINTER(vsce_phe_client_t), vsc_data_t, vsc_data_t]
         vsce_phe_client_set_keys.restype = c_int
@@ -111,8 +110,8 @@ class VscePheClient(object):
 
     def vsce_phe_client_enroll_account(self, ctx, enrollment_response, password, enrollment_record, account_key):
         """Uses fresh EnrollmentResponse from PHE server (see get enrollment func) and user's password (or its hash) to create
-        a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
-        Also generates a random seed which then can be used to generate symmetric or private key to protect user's data"""
+a new EnrollmentRecord which is then supposed to be stored in a database for further authentication
+Also generates a random seed which then can be used to generate symmetric or private key to protect user's data"""
         vsce_phe_client_enroll_account = self._lib.vsce_phe_client_enroll_account
         vsce_phe_client_enroll_account.argtypes = [POINTER(vsce_phe_client_t), vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vsce_phe_client_enroll_account.restype = c_int
@@ -134,8 +133,8 @@ class VscePheClient(object):
 
     def vsce_phe_client_check_response_and_decrypt(self, ctx, password, enrollment_record, verify_password_response, account_key):
         """Verifies PHE server's answer
-        If login succeeded, extracts account key
-        If login failed account key will be empty"""
+If login succeeded, extracts account key
+If login failed account key will be empty"""
         vsce_phe_client_check_response_and_decrypt = self._lib.vsce_phe_client_check_response_and_decrypt
         vsce_phe_client_check_response_and_decrypt.argtypes = [POINTER(vsce_phe_client_t), vsc_data_t, vsc_data_t, vsc_data_t, POINTER(vsc_buffer_t)]
         vsce_phe_client_check_response_and_decrypt.restype = c_int
@@ -143,7 +142,7 @@ class VscePheClient(object):
 
     def vsce_phe_client_rotate_keys(self, ctx, update_token, new_client_private_key, new_server_public_key):
         """Updates client's private key and server's public key using server's update token
-        Use output values to instantiate new client instance with new keys"""
+Use output values to instantiate new client instance with new keys"""
         vsce_phe_client_rotate_keys = self._lib.vsce_phe_client_rotate_keys
         vsce_phe_client_rotate_keys.argtypes = [POINTER(vsce_phe_client_t), vsc_data_t, POINTER(vsc_buffer_t), POINTER(vsc_buffer_t)]
         vsce_phe_client_rotate_keys.restype = c_int

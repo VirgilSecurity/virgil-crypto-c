@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,9 +35,9 @@
 
 from ctypes import *
 from ._c_bridge import VscfPem
+from ._c_bridge import VscfStatus
 from virgil_crypto_lib.common._c_bridge import Data
 from virgil_crypto_lib.common._c_bridge import Buffer
-from ._c_bridge import VscfStatus
 
 
 class Pem(object):
@@ -54,8 +54,8 @@ class Pem(object):
 
     def wrap(self, title, data):
         """Takes binary data and wraps it to the simple PEM format - no
-        additional information just header-base64-footer.
-        Note, written buffer is NOT null-terminated."""
+additional information just header-base64-footer.
+Note, written buffer is NOT null-terminated."""
         d_data = Data(data)
         pem = Buffer(self.wrapped_len(title=title, data_len=len(data)))
         self._lib_vscf_pem.vscf_pem_wrap(title, d_data.data, pem.c_buffer)

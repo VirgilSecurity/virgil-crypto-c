@@ -10,7 +10,7 @@ import "runtime"
 * CMS based serialization of the class "message info".
 */
 type MessageInfoDerSerializer struct {
-    cCtx *C.vscf_message_info_der_serializer_t /*ct10*/
+    cCtx *C.vscf_message_info_der_serializer_t
 }
 
 func (obj *MessageInfoDerSerializer) SetAsn1Reader(asn1Reader Asn1Reader) {
@@ -57,7 +57,7 @@ func NewMessageInfoDerSerializer() *MessageInfoDerSerializer {
 /* Acquire C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoDerSerializerWithCtx(ctx *C.vscf_message_info_der_serializer_t /*ct10*/) *MessageInfoDerSerializer {
+func newMessageInfoDerSerializerWithCtx(ctx *C.vscf_message_info_der_serializer_t) *MessageInfoDerSerializer {
     obj := &MessageInfoDerSerializer {
         cCtx: ctx,
     }
@@ -68,7 +68,7 @@ func newMessageInfoDerSerializerWithCtx(ctx *C.vscf_message_info_der_serializer_
 /* Acquire retained C context.
 * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
 */
-func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t /*ct10*/) *MessageInfoDerSerializer {
+func newMessageInfoDerSerializerCopy(ctx *C.vscf_message_info_der_serializer_t) *MessageInfoDerSerializer {
     obj := &MessageInfoDerSerializer {
         cCtx: C.vscf_message_info_der_serializer_shallow_copy(ctx),
     }
@@ -102,20 +102,20 @@ func (obj *MessageInfoDerSerializer) GetPrefixLen() uint {
 * Return buffer size enough to hold serialized message info.
 */
 func (obj *MessageInfoDerSerializer) SerializedLen(messageInfo *MessageInfo) uint {
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())))
+    proxyResult := C.vscf_message_info_der_serializer_serialized_len(obj.cCtx, (*C.vscf_message_info_t)(unsafe.Pointer(messageInfo.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(messageInfo)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Serialize class "message info".
 */
 func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte {
-    outBuf, outBufErr := newBuffer(int(obj.SerializedLen(messageInfo) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedLen(messageInfo)))
     if outBufErr != nil {
         return nil
     }
@@ -128,7 +128,7 @@ func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte 
 
     runtime.KeepAlive(messageInfo)
 
-    return outBuf.getData() /* r7 */
+    return outBuf.getData()
 }
 
 /*
@@ -141,11 +141,11 @@ func (obj *MessageInfoDerSerializer) Serialize(messageInfo *MessageInfo) []byte 
 func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) uint {
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_read_prefix(obj.cCtx, dataData)
+    proxyResult := C.vscf_message_info_der_serializer_read_prefix(obj.cCtx, dataData)
 
     runtime.KeepAlive(obj)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
@@ -154,9 +154,10 @@ func (obj *MessageInfoDerSerializer) ReadPrefix(data []byte) uint {
 func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_deserialize(obj.cCtx, dataData, &error)
+    proxyResult := C.vscf_message_info_der_serializer_deserialize(obj.cCtx, dataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -165,27 +166,27 @@ func (obj *MessageInfoDerSerializer) Deserialize(data []byte) (*MessageInfo, err
 
     runtime.KeepAlive(obj)
 
-    return newMessageInfoWithCtx(proxyResult) /* r6 */, nil
+    return newMessageInfoWithCtx(proxyResult), nil
 }
 
 /*
 * Return buffer size enough to hold serialized message info footer.
 */
 func (obj *MessageInfoDerSerializer) SerializedFooterLen(messageInfoFooter *MessageInfoFooter) uint {
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())))
+    proxyResult := C.vscf_message_info_der_serializer_serialized_footer_len(obj.cCtx, (*C.vscf_message_info_footer_t)(unsafe.Pointer(messageInfoFooter.Ctx())))
 
     runtime.KeepAlive(obj)
 
     runtime.KeepAlive(messageInfoFooter)
 
-    return uint(proxyResult) /* r9 */
+    return uint(proxyResult)
 }
 
 /*
 * Serialize class "message info footer".
 */
 func (obj *MessageInfoDerSerializer) SerializeFooter(messageInfoFooter *MessageInfoFooter) []byte {
-    outBuf, outBufErr := newBuffer(int(obj.SerializedFooterLen(messageInfoFooter) /* lg2 */))
+    outBuf, outBufErr := newBuffer(int(obj.SerializedFooterLen(messageInfoFooter)))
     if outBufErr != nil {
         return nil
     }
@@ -198,7 +199,7 @@ func (obj *MessageInfoDerSerializer) SerializeFooter(messageInfoFooter *MessageI
 
     runtime.KeepAlive(messageInfoFooter)
 
-    return outBuf.getData() /* r7 */
+    return outBuf.getData()
 }
 
 /*
@@ -207,9 +208,10 @@ func (obj *MessageInfoDerSerializer) SerializeFooter(messageInfoFooter *MessageI
 func (obj *MessageInfoDerSerializer) DeserializeFooter(data []byte) (*MessageInfoFooter, error) {
     var error C.vscf_error_t
     C.vscf_error_reset(&error)
+
     dataData := helperWrapData (data)
 
-    proxyResult := /*pr4*/C.vscf_message_info_der_serializer_deserialize_footer(obj.cCtx, dataData, &error)
+    proxyResult := C.vscf_message_info_der_serializer_deserialize_footer(obj.cCtx, dataData, &error)
 
     err := FoundationErrorHandleStatus(error.status)
     if err != nil {
@@ -218,5 +220,5 @@ func (obj *MessageInfoDerSerializer) DeserializeFooter(data []byte) (*MessageInf
 
     runtime.KeepAlive(obj)
 
-    return newMessageInfoFooterWithCtx(proxyResult) /* r6 */, nil
+    return newMessageInfoFooterWithCtx(proxyResult), nil
 }

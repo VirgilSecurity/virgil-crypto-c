@@ -33,6 +33,8 @@
     <method name="delete key">
         <argument name="key id" class="vscr_ratchet_key_id_t" is_reference="0" library="internal"/>
         <argument name="message key" class="ratchet message key" access="readwrite"/>
+
+        <return enum="status"/>
     </method>
 
     <method name="add public key">
@@ -51,5 +53,7 @@
     <method name="deserialize" is_static="1">
         <argument name="skipped messages pb" class="vscr_SkippedMessages" library="nanopb"/>
         <argument name="skipped messages" class="self" access="readwrite"/>
+
+        <return enum="status"/>
     </method>
 </class>

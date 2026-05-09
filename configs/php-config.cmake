@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2018 Virgil Security Inc.
+#   Copyright (C) 2015-2026 Virgil Security Inc.
 #
 #   All rights reserved.
 #
@@ -47,3 +47,4 @@ set(VIRGIL_INSTALL_WRAP_LIBS ON CACHE BOOL "")
 set(VIRGIL_INSTALL_WRAP_SRCS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_PHP_SRCDIR src CACHE STRING "")
 set(VIRGIL_PACKAGE_LANGUAGE php CACHE STRING "")
+set(VIRGIL_POST_QUANTUM ON CACHE BOOL "")

@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -158,6 +158,7 @@ vsce_phe_client_cleanup(vsce_phe_client_t *self) {
     vsce_phe_client_cleanup_ctx(self);
 
     vsce_phe_client_release_random(self);
+
     vsce_phe_client_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_phe_client_t));
@@ -367,7 +368,6 @@ vsce_phe_client_release_operation_random(vsce_phe_client_t *self) {
 // --------------------------------------------------------------------------
 //  @end
 
-
 //
 //  Perform context specific initialization.
 //  Note, this method is called automatically when method vsce_phe_client_init() is called.
@@ -517,8 +517,6 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
     VSCE_ASSERT_PTR(self);
     VSCE_ASSERT(!self->keys_are_set);
 
-    self->keys_are_set = true;
-
     VSCE_ASSERT(client_private_key.len == vsce_phe_common_PHE_PRIVATE_KEY_LENGTH);
     VSCE_ASSERT(server_public_key.len == vsce_phe_common_PHE_PUBLIC_KEY_LENGTH);
     memcpy(self->server_public_key, server_public_key.bytes, server_public_key.len);
@@ -548,6 +546,8 @@ vsce_phe_client_set_keys(vsce_phe_client_t *self, vsc_data_t client_private_key,
         status = vsce_status_ERROR_INVALID_PUBLIC_KEY;
         goto err;
     }
+
+    self->keys_are_set = true;
 
 err:
     return status;
@@ -666,6 +666,9 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     vsc_buffer_init(&nc);
     vsc_buffer_use(&nc, record.nc, sizeof(record.nc));
 
+    vsc_buffer_t rnd_m;
+    vsc_buffer_init(&rnd_m);
+
     vscf_status_t f_status;
     f_status = vscf_random(self->random, vsce_phe_common_PHE_CLIENT_IDENTIFIER_LENGTH, &nc);
 
@@ -675,9 +678,6 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
     }
 
     byte rnd_m_buffer[vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH];
-
-    vsc_buffer_t rnd_m;
-    vsc_buffer_init(&rnd_m);
     vsc_buffer_use(&rnd_m, rnd_m_buffer, sizeof(rnd_m_buffer));
 
     f_status = vscf_random(self->random, vsce_phe_common_PHE_ACCOUNT_KEY_LENGTH, &rnd_m);
@@ -725,9 +725,13 @@ vsce_phe_client_enroll_account(vsce_phe_client_t *self, vsc_data_t enrollment_re
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             vsc_buffer_unused_bytes(enrollment_record), vsc_buffer_unused_len(enrollment_record));
-    VSCE_ASSERT(pb_encode(&ostream, EnrollmentRecord_fields, &record));
-    vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
+    bool pb_ok = pb_encode(&ostream, EnrollmentRecord_fields, &record);
     vsce_zeroize(&record, sizeof(record));
+    if (!pb_ok) {
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
+    } else {
+        vsc_buffer_inc_used(enrollment_record, ostream.bytes_written);
+    }
 
     mbedtls_ecp_point_free(&t0);
     mbedtls_ecp_point_free(&t1);
@@ -829,9 +833,13 @@ vsce_phe_client_create_verify_password_request(vsce_phe_client_t *self, vsc_data
 
     pb_ostream_t ostream = pb_ostream_from_buffer(
             vsc_buffer_unused_bytes(verify_password_request), vsc_buffer_unused_len(verify_password_request));
-    VSCE_ASSERT(pb_encode(&ostream, VerifyPasswordRequest_fields, &request));
-    vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
+    bool pb_ok = pb_encode(&ostream, VerifyPasswordRequest_fields, &request);
     vsce_zeroize(&request, sizeof(request));
+    if (!pb_ok) {
+        status = vsce_status_ERROR_PROTOBUF_DECODE_FAILED;
+    } else {
+        vsc_buffer_inc_used(verify_password_request, ostream.bytes_written);
+    }
 
     mbedtls_ecp_point_free(&c0);
     mbedtls_ecp_point_free(&hc0);
@@ -840,7 +848,7 @@ ecp_err:
     mbedtls_ecp_point_free(&t0);
 
 pb_err:
-    vsce_zeroize(&record, sizeof(&record));
+    vsce_zeroize(&record, sizeof(record));
     vsce_phe_client_free_op_group(op_group);
 
     return status;

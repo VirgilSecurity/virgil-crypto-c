@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2022 Virgil Security, Inc.
+ * Copyright (C) 2015-2026 Virgil Security, Inc.
  *
  * All rights reserved.
  *
@@ -7,17 +7,17 @@
  * modification, are permitted provided that the following conditions are
  * met:
  *
- * (1) Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
+ *     (1) Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
  *
- * (2) Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in
- * the documentation and/or other materials provided with the
- * distribution.
+ *     (2) Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in
+ *     the documentation and/or other materials provided with the
+ *     distribution.
  *
- * (3) Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from
- * this software without specific prior written permission.
+ *     (3) Neither the name of the copyright holder nor the names of its
+ *     contributors may be used to endorse or promote products derived from
+ *     this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -38,16 +38,8 @@
 const precondition = require('./precondition');
 
 const initEccAlgInfo = (Module, modules) => {
-    /**
-     * Handle algorithm information about ECP.
-     */
     class EccAlgInfo {
 
-        /**
-         * Create object with underlying C context.
-         *
-         * Note. Parameter 'ctxPtr' SHOULD be passed from the generated code only.
-         */
         constructor(ctxPtr) {
             this.name = 'EccAlgInfo';
 
@@ -58,29 +50,16 @@ const initEccAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Acquire C context by making it's shallow copy.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndUseCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new EccAlgInfo(Module._vscf_ecc_alg_info_shallow_copy(ctxPtr));
         }
 
-        /**
-         * Acquire C context by taking it ownership.
-         *
-         * Note. This method is used in generated code only, and SHOULD NOT be used in another way.
-         */
         static newAndTakeCContext(ctxPtr) {
             // assert(typeof ctxPtr === 'number');
             return new EccAlgInfo(ctxPtr);
         }
 
-        /**
-         * Release underlying C context.
-         */
         delete() {
             if (typeof this.ctxPtr !== 'undefined' && this.ctxPtr !== null) {
                 Module._vscf_ecc_alg_info_delete(this.ctxPtr);
@@ -88,53 +67,30 @@ const initEccAlgInfo = (Module, modules) => {
             }
         }
 
-        /**
-         * Create algorithm info with EC generic key identificator, EC domain group identificator.
-         */
-        static newWithMembers(algId, keyId, domainId) {
-            precondition.ensureNumber('algId', algId);
-            precondition.ensureNumber('keyId', keyId);
-            precondition.ensureNumber('domainId', domainId);
-
-            let proxyResult;
-            proxyResult = Module._vscf_ecc_alg_info_new_with_members(algId, keyId, domainId);
-
-            const jsResult = EccAlgInfo.newAndTakeCContext(proxyResult);
-            return jsResult;
-        }
-
-        /**
-         * Provide algorithm identificator.
-         */
         algId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_alg_info_alg_id(this.ctxPtr);
             return proxyResult;
         }
 
-        /**
-         * Return EC specific algorithm identificator {unrestricted, ecDH, ecMQV}.
-         */
         keyId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_alg_info_key_id(this.ctxPtr);
             return proxyResult;
         }
 
-        /**
-         * Return EC domain group identificator.
-         */
         domainId() {
             precondition.ensureNotNull('this.ctxPtr', this.ctxPtr);
-
+            
             let proxyResult;
             proxyResult = Module._vscf_ecc_alg_info_domain_id(this.ctxPtr);
             return proxyResult;
         }
+
     }
 
     return EccAlgInfo;

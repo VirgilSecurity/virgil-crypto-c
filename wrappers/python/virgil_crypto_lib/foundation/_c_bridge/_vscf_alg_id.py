@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -59,5 +59,6 @@ class VscfAlgId(object):
     COMPOUND_KEY = 17
     HYBRID_KEY = 18
     FALCON = 19
-    ROUND5_ND_1CCA_5D = 20
-    RANDOM_PADDING = 21
+    RANDOM_PADDING = 20
+    ML_KEM_768 = 21
+    ML_DSA_65 = 22

@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -7,17 +7,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -36,11 +36,6 @@
 
 package com.virgilsecurity.crypto.ratchet;
 
-import com.virgilsecurity.crypto.foundation.*;
-
-/*
-* Defines the library status codes.
-*/
 public class RatchetException extends RuntimeException {
 
     public static final int SUCCESS = 0;
@@ -103,17 +98,14 @@ public class RatchetException extends RuntimeException {
 
     public static final int ERROR_MYSELF_IS_INCLUDED_IN_INFO = -29;
 
-    public static final int ERROR_ROUND5 = -30;
+    public static final int ERROR_KEM_FAILED = -30;
 
-    public static final int ERROR_FALCON = -31;
+    public static final int ERROR_SIGN_FAILED = -31;
 
     public static final int ERROR_DECAPS_SIGNATURE_INVALID = -32;
 
-    public static final int ERROR_ROUND5_IMPORT_KEY = -33;
-
     private int statusCode;
 
-    /* Create new instance. */
     public RatchetException(int statusCode) {
         super();
         this.statusCode = statusCode;
@@ -185,17 +177,15 @@ public class RatchetException extends RuntimeException {
             return "Simultaneous group user operation.";
         case ERROR_MYSELF_IS_INCLUDED_IN_INFO:
             return "Myself is included in info.";
-        case ERROR_ROUND5:
-            return "Round5 error.";
-        case ERROR_FALCON:
-            return "Falcon error.";
+        case ERROR_KEM_FAILED:
+            return "KEM encapsulate or decapsulate operation failed.";
+        case ERROR_SIGN_FAILED:
+            return "Signing operation failed.";
         case ERROR_DECAPS_SIGNATURE_INVALID:
             return "Decaps signature is invalid.";
-        case ERROR_ROUND5_IMPORT_KEY:
-            return "Error importing round5 key.";
         default:
             return "Unknown error";
         }
     }
-}
 
+}

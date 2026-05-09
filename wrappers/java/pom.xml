@@ -36,7 +36,7 @@
 	<groupId>com.virgilsecurity.crypto</groupId>
 	<artifactId>parent</artifactId>
 	<packaging>pom</packaging>
-	<version>0.17.2</version>
+	<version>0.19.0-dev.6</version>
 
 	<name>Virgil Security Crypto Library</name>
 	<description>
@@ -242,7 +242,6 @@
 			<modules>
 				<module>foundation</module>
 				<module>phe</module>
-				<module>pythia</module>
 				<module>ratchet</module>
 			</modules>
 		</profile>
@@ -262,12 +261,6 @@
 			<id>phe</id>
 			<modules>
 				<module>phe</module>
-			</modules>
-		</profile>
-		<profile>
-			<id>pythia</id>
-			<modules>
-				<module>pythia</module>
 			</modules>
 		</profile>
 		<profile>

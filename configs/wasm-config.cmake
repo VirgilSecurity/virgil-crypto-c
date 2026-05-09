@@ -1,4 +1,4 @@
-#   Copyright (C) 2015-2022 Virgil Security, Inc.
+#   Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 #   All rights reserved.
 #
@@ -49,3 +49,4 @@ set(VIRGIL_INSTALL_DEPS_CMAKE OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_HDRS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_LIBS OFF CACHE BOOL "")
 set(VIRGIL_INSTALL_CMAKE OFF CACHE BOOL "")
+set(VIRGIL_POST_QUANTUM ON CACHE BOOL "")

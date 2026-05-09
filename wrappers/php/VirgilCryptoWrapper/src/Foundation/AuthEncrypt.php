@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,28 +37,29 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provide interface for authenticated data encryption.
-*/
-interface AuthEncrypt extends Ctx
+interface AuthEncrypt extends Ctx, CipherAuthInfo
 {
 
     /**
-    * Encrypt given data.
-    * If 'tag' is not given, then it will written to the 'enc'.
     *
-    * @param string $data
-    * @param string $authData
+    * @param string $$data
+    * @param string $$authData
     * @return array
     * @throws \Exception
     */
-    public function authEncrypt(string $data, string $authData): array; // [out, tag]
+    public function authEncrypt(string $$data, string $$authData)
+    {
+        return ($this->ctx, $$data, $$authData);
+    }
 
     /**
-    * Calculate required buffer length to hold the authenticated encrypted data.
     *
-    * @param int $dataLen
+    * @param int $$dataLen
     * @return int
     */
-    public function authEncryptedLen(int $dataLen): int;
+    public function authEncryptedLen(int $$dataLen): int
+    {
+        return ($this->ctx, $$dataLen);
+    }
+
 }

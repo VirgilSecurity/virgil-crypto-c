@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -46,6 +46,8 @@ class vscf_hkdf_t(Structure):
 
 class VscfHkdf(object):
     """Virgil Security implementation of the HKDF (RFC 6234) algorithm."""
+
+    HASH_COUNTER_MAX = 255
 
     def __init__(self):
         """Create underlying C context."""
@@ -107,7 +109,7 @@ class VscfHkdf(object):
 
     def vscf_hkdf_set_info(self, ctx, info):
         """Setup application specific information (optional).
-        Can be empty."""
+Can be empty."""
         vscf_hkdf_set_info = self._lib.vscf_hkdf_set_info
         vscf_hkdf_set_info.argtypes = [POINTER(vscf_hkdf_t), vsc_data_t]
         vscf_hkdf_set_info.restype = None

@@ -1,4 +1,4 @@
-# Copyright (C) 2015-2022 Virgil Security, Inc.
+# Copyright (C) 2015-2026 Virgil Security, Inc.
 #
 # All rights reserved.
 #
@@ -35,8 +35,8 @@
 
 from virgil_crypto_lib._libs import *
 from ctypes import *
-from virgil_crypto_lib.common._c_bridge import vsc_data_t
 from ._vscf_impl import vscf_impl_t
+from virgil_crypto_lib.common._c_bridge import vsc_data_t
 
 
 class vscf_key_recipient_info_t(Structure):
@@ -45,6 +45,7 @@ class vscf_key_recipient_info_t(Structure):
 
 class VscfKeyRecipientInfo(object):
     """Handle information about recipient that is defined by a Public Key."""
+
 
     def __init__(self):
         """Create underlying C context."""
@@ -63,13 +64,6 @@ class VscfKeyRecipientInfo(object):
         vscf_key_recipient_info_delete.restype = None
         return vscf_key_recipient_info_delete(ctx)
 
-    def vscf_key_recipient_info_new_with_data(self, recipient_id, key_encryption_algorithm, encrypted_key):
-        """Create object and define all properties."""
-        vscf_key_recipient_info_new_with_data = self._lib.vscf_key_recipient_info_new_with_data
-        vscf_key_recipient_info_new_with_data.argtypes = [vsc_data_t, POINTER(vscf_impl_t), vsc_data_t]
-        vscf_key_recipient_info_new_with_data.restype = POINTER(vscf_key_recipient_info_t)
-        return vscf_key_recipient_info_new_with_data(recipient_id, key_encryption_algorithm, encrypted_key)
-
     def vscf_key_recipient_info_recipient_id(self, ctx):
         """Return recipient identifier."""
         vscf_key_recipient_info_recipient_id = self._lib.vscf_key_recipient_info_recipient_id
@@ -79,7 +73,7 @@ class VscfKeyRecipientInfo(object):
 
     def vscf_key_recipient_info_key_encryption_algorithm(self, ctx):
         """Return algorithm information that was used for encryption
-        a data encryption key."""
+a data encryption key."""
         vscf_key_recipient_info_key_encryption_algorithm = self._lib.vscf_key_recipient_info_key_encryption_algorithm
         vscf_key_recipient_info_key_encryption_algorithm.argtypes = [POINTER(vscf_key_recipient_info_t)]
         vscf_key_recipient_info_key_encryption_algorithm.restype = POINTER(vscf_impl_t)

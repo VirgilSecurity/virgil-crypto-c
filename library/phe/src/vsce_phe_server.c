@@ -1,6 +1,6 @@
 //  @license
 // --------------------------------------------------------------------------
-//  Copyright (C) 2015-2022 Virgil Security, Inc.
+//  Copyright (C) 2015-2026 Virgil Security, Inc.
 //
 //  All rights reserved.
 //
@@ -8,17 +8,17 @@
 //  modification, are permitted provided that the following conditions are
 //  met:
 //
-//      (1) Redistributions of source code must retain the above copyright
-//      notice, this list of conditions and the following disclaimer.
+//  (1) Redistributions of source code must retain the above copyright
+//  notice, this list of conditions and the following disclaimer.
 //
-//      (2) Redistributions in binary form must reproduce the above copyright
-//      notice, this list of conditions and the following disclaimer in
-//      the documentation and/or other materials provided with the
-//      distribution.
+//  (2) Redistributions in binary form must reproduce the above copyright
+//  notice, this list of conditions and the following disclaimer in
+//  the documentation and/or other materials provided with the
+//  distribution.
 //
-//      (3) Neither the name of the copyright holder nor the names of its
-//      contributors may be used to endorse or promote products derived from
-//      this software without specific prior written permission.
+//  (3) Neither the name of the copyright holder nor the names of its
+//  contributors may be used to endorse or promote products derived from
+//  this software without specific prior written permission.
 //
 //  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 //  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -158,6 +158,7 @@ vsce_phe_server_cleanup(vsce_phe_server_t *self) {
     vsce_phe_server_cleanup_ctx(self);
 
     vsce_phe_server_release_random(self);
+
     vsce_phe_server_release_operation_random(self);
 
     vsce_zeroize(self, sizeof(vsce_phe_server_t));
@@ -366,7 +367,6 @@ vsce_phe_server_release_operation_random(vsce_phe_server_t *self) {
 // clang-format on
 // --------------------------------------------------------------------------
 //  @end
-
 
 //
 //  Perform context specific initialization.
@@ -606,9 +606,9 @@ vsce_phe_server_get_enrollment(vsce_phe_server_t *self, vsc_data_t server_privat
     mbedtls_ecp_point_init(&c0);
     mbedtls_ecp_point_init(&c1);
 
-    mbedtls_status = mbedtls_ecp_mul(&self->group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &c0, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
-    mbedtls_status = mbedtls_ecp_mul(&self->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
 
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
@@ -743,7 +743,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
     mbedtls_ecp_point hs0x;
     mbedtls_ecp_point_init(&hs0x);
 
-    mbedtls_status = mbedtls_ecp_mul(&self->group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
+    mbedtls_status = mbedtls_ecp_mul(op_group, &hs0x, &x, &hs0, vscf_mbedtls_bridge_random, self->operation_random);
     VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
     mbedtls_ecp_point c1;
@@ -752,8 +752,7 @@ vsce_phe_server_verify_password(vsce_phe_server_t *self, vsc_data_t server_priva
     if (mbedtls_ecp_point_cmp(&c0, &hs0x) == 0) {
         // Password matches
 
-        mbedtls_status =
-                mbedtls_ecp_mul(&self->group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
+        mbedtls_status = mbedtls_ecp_mul(op_group, &c1, &x, &hs1, vscf_mbedtls_bridge_random, self->operation_random);
         VSCE_ASSERT_LIBRARY_MBEDTLS_SUCCESS(mbedtls_status);
 
         VerifyPasswordResponse response = VerifyPasswordResponse_init_zero;

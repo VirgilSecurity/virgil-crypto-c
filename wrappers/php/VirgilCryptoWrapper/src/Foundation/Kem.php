@@ -1,6 +1,6 @@
 <?php
 /**
-* Copyright (C) 2015-2022 Virgil Security, Inc.
+* Copyright (C) 2015-2026 Virgil Security, Inc.
 *
 * All rights reserved.
 *
@@ -8,17 +8,17 @@
 * modification, are permitted provided that the following conditions are
 * met:
 *
-* (1) Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
+*     (1) Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
 *
-* (2) Redistributions in binary form must reproduce the above copyright
-* notice, this list of conditions and the following disclaimer in
-* the documentation and/or other materials provided with the
-* distribution.
+*     (2) Redistributions in binary form must reproduce the above copyright
+*     notice, this list of conditions and the following disclaimer in
+*     the documentation and/or other materials provided with the
+*     distribution.
 *
-* (3) Neither the name of the copyright holder nor the names of its
-* contributors may be used to endorse or promote products derived from
-* this software without specific prior written permission.
+*     (3) Neither the name of the copyright holder nor the names of its
+*     contributors may be used to endorse or promote products derived from
+*     this software without specific prior written permission.
 *
 * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
 * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -37,44 +37,50 @@
 
 namespace Virgil\CryptoWrapper\Foundation;
 
-/**
-* Provides generic interface to the Key Encapsulation Mechanism (KEM).
-*/
 interface Kem extends Ctx
 {
 
     /**
-    * Return length in bytes required to hold encapsulated shared key.
     *
-    * @param Key $key
+    * @param Key $$key
     * @return int
     */
-    public function kemSharedKeyLen(Key $key): int;
+    public function kemSharedKeyLen(Key $$key): int
+    {
+        return ($this->ctx, $$key->getCtx());
+    }
 
     /**
-    * Return length in bytes required to hold encapsulated key.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return int
     */
-    public function kemEncapsulatedKeyLen(PublicKey $publicKey): int;
+    public function kemEncapsulatedKeyLen(PublicKey $$publicKey): int
+    {
+        return ($this->ctx, $$publicKey->getCtx());
+    }
 
     /**
-    * Generate a shared key and a key encapsulated message.
     *
-    * @param PublicKey $publicKey
+    * @param PublicKey $$publicKey
     * @return array
     * @throws \Exception
     */
-    public function kemEncapsulate(PublicKey $publicKey): array; // [shared_key, encapsulated_key]
+    public function kemEncapsulate(PublicKey $$publicKey)
+    {
+        return ($this->ctx, $$publicKey->getCtx());
+    }
 
     /**
-    * Decapsulate the shared key.
     *
-    * @param string $encapsulatedKey
-    * @param PrivateKey $privateKey
+    * @param string $$encapsulatedKey
+    * @param PrivateKey $$privateKey
     * @return string
     * @throws \Exception
     */
-    public function kemDecapsulate(string $encapsulatedKey, PrivateKey $privateKey): string;
+    public function kemDecapsulate(string $$encapsulatedKey, PrivateKey $$privateKey): string
+    {
+        return ($this->ctx, $$encapsulatedKey, $$privateKey->getCtx());
+    }
+
 }
