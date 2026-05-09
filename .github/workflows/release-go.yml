@@ -78,7 +78,7 @@ jobs:
           git add -f wrappers/go/pkg/ .gitattributes
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore(go): update pre-built static libraries for ${{ steps.version.outputs.tag }}"
-          git push origin HEAD
+          git push origin HEAD:refs/heads/develop
 
       - name: Create Go module tag
         run: |
