@@ -89,6 +89,37 @@ cmake --build build -- -j10
 ./build/benchmarks/foundation/bench
 ```
 
+## Releasing
+
+Releases are fully automated through CI. No local builds required.
+
+### How to cut a release
+
+Trigger the unified release workflow via the `/release` skill in Claude Code, or directly with `gh`:
+
+```bash
+gh workflow run release.yml \
+  --field version=0.19.0 \
+  --field branch=develop
+```
+
+Version format: bare `MAJOR.MINOR.PATCH` for production or `MAJOR.MINOR.PATCH-LABEL` for pre-releases (e.g. `0.19.0-dev.7`, `0.19.0-rc1`). No leading `v` — the workflow adds that.
+
+### What the workflow does
+
+| Stage | Action |
+|-------|--------|
+| `validate` | Rejects malformed version strings immediately |
+| `build-go` (parallel) | Cross-compiles static libs for 5 platforms (linux amd64/arm64, darwin amd64/arm64, windows amd64) |
+| `build-apple` (parallel) | Builds Apple xcframeworks on macOS |
+| `release-commit` | Bumps version across all wrappers, merges all compiled artifacts, verifies xcframework checksums, runs `swift build` + `swift test`, commits binaries to the source branch, pushes both the Go module tag (`wrappers/go/vX.Y.Z`) and the release tag (`vX.Y.Z`) atomically |
+
+The release tag then triggers downstream workflows that publish to PyPI, Maven Central, npm, GitHub Releases, and PHP repositories.
+
+### Incompatible change from previous releases
+
+`release-go.yml` has been removed. It previously compiled Go static libs in response to `v*` tag pushes. That tag-triggered behavior no longer exists — Go lib compilation is now part of `release.yml`. Downstream repositories or scripts that depended on `release-go.yml` running on tag pushes will see no effect from tags created by the new workflow. The Go static libs are bundled into the release commit before the tag is created.
+
 ## Support
 
 Our developer support team is here to help you.
