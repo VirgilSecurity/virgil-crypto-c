@@ -9,6 +9,15 @@ allowed-tools: Bash Read
 
 Trigger the unified CI release workflow and monitor it to completion.
 
+## Pre-flight checklist
+
+For **production releases** (`MAJOR.MINOR.PATCH` with no suffix) only — skip for `dev`, `rc`, `alpha`, `beta`, or any other pre-release label:
+
+- **`ChangeLog.md`** has an entry for this version (date, summary of changes)
+- **`README.md`** reflects the current state (new features, removed APIs, updated platform/language table if anything changed)
+
+If either is stale, update and commit to the source branch first. The release commit created by CI only bumps the version and bundles binaries — it does not update prose docs.
+
 ## Steps
 
 1. **Ask for version** if not provided (e.g., `0.19.0`, `0.19.0-rc1`, `0.19.0-dev.1`)
