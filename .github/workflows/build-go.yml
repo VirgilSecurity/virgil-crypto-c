@@ -18,6 +18,14 @@ on:
         description: 'Upload built libraries as workflow artifacts for release'
         type: boolean
         default: false
+      ref:
+        description: 'Branch or SHA to check out (empty = calling workflow ref)'
+        type: string
+        default: ''
+      version:
+        description: 'Version string to bumpver before building (empty = skip bump)'
+        type: string
+        default: ''
 
 env:
   GO_VERSION: '1.21'
@@ -68,6 +76,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Bump version (release builds only)
+        if: inputs.version != ''
+        shell: bash
+        run: ./scripts/bumpver.sh "${{ inputs.version }}"
 
       - name: Setup Python
         uses: actions/setup-python@v6
