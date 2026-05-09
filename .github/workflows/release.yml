@@ -14,7 +14,17 @@ on:
         type: string
 
 jobs:
+  validate:
+    name: Validate inputs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate version format
+        run: |
+          echo "${{ inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$' \
+            || { echo "ERROR: version '${{ inputs.version }}' does not match MAJOR.MINOR.PATCH[-LABEL]"; exit 1; }
+
   build-go:
+    needs: [validate]
     uses: ./.github/workflows/build-go.yml
     with:
       upload_artifacts: true
@@ -23,6 +33,7 @@ jobs:
 
   build-apple:
     name: Build Apple xcframeworks
+    needs: [validate]
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v6
@@ -122,7 +133,7 @@ jobs:
       - name: Commit release binaries
         run: |
           git add -A
-          git commit -m "chore(release): bump version and update pre-built binaries for v${{ inputs.version }}"
+          git diff --cached --quiet || git commit -m "chore(release): bump version and update pre-built binaries for v${{ inputs.version }}"
 
       - name: Push to source branch
         run: |
@@ -130,6 +141,6 @@ jobs:
 
       - name: Push tags
         run: |
-          git tag "wrappers/go/v${{ inputs.version }}"
-          git tag "v${{ inputs.version }}" -m "v${{ inputs.version }}"
+          git tag -l "wrappers/go/v${{ inputs.version }}" | grep -q . || git tag "wrappers/go/v${{ inputs.version }}"
+          git tag -l "v${{ inputs.version }}" | grep -q . || git tag "v${{ inputs.version }}" -m "v${{ inputs.version }}"
           git push origin "refs/tags/wrappers/go/v${{ inputs.version }}" "refs/tags/v${{ inputs.version }}"
