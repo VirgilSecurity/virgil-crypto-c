@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && 'develop' || github.ref }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
           lfs: true
           fetch-depth: 0
 
@@ -70,20 +70,26 @@ jobs:
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "go_module_tag=wrappers/go/$TAG" >> "$GITHUB_OUTPUT"
+          echo "temp_branch=go-libs/$TAG" >> "$GITHUB_OUTPUT"
 
-      - name: Commit libraries
+      - name: Commit libraries to temp branch and tag
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -f wrappers/go/pkg/ .gitattributes
-          git diff --cached --quiet && echo "No changes to commit" && exit 0
-          git commit -m "chore(go): update pre-built static libraries for ${{ steps.version.outputs.tag }}"
-          BRANCH=$(git branch -r --contains HEAD^ | grep -v '\->' | sed 's|[[:space:]]*origin/||' | head -1)
-          BRANCH="${BRANCH:-develop}"
-          echo "Pushing to branch: $BRANCH"
-          git push origin HEAD:refs/heads/$BRANCH
-
-      - name: Create Go module tag
-        run: |
+          if git diff --cached --quiet; then
+            echo "No library changes — tagging current HEAD"
+          else
+            TEMP_BRANCH="${{ steps.version.outputs.temp_branch }}"
+            git checkout -b "$TEMP_BRANCH"
+            git commit -m "chore(go): update pre-built static libraries for ${{ steps.version.outputs.tag }}"
+            git push origin "$TEMP_BRANCH"
+          fi
           git tag "${{ steps.version.outputs.go_module_tag }}"
           git push origin "refs/tags/${{ steps.version.outputs.go_module_tag }}"
+
+      - name: Delete temp branch
+        if: always()
+        run: |
+          TEMP_BRANCH="${{ steps.version.outputs.temp_branch }}"
+          git push origin --delete "$TEMP_BRANCH" 2>/dev/null || true
