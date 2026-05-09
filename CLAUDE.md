@@ -4,7 +4,7 @@ C crypto library with language wrappers for Python, Java, Android, Swift, PHP, G
 
 ## Quick Reference
 
-- **Release**: Use `/release` skill. Asks for version, then runs: bumpver → build Apple frameworks → update Go module → tag → push. Each step is a separate commit.
+- **Release**: Use `/release` skill. Triggers `release.yml` workflow_dispatch in CI: builds Go static libs + Apple xcframeworks, bumps version, commits binaries, tags. No local build required.
 - **Version bump only**: Use `/bumpver` skill or `./scripts/bumpver.sh <version>`
 - Skills are in `.claude/skills/`
 
@@ -54,13 +54,12 @@ cd build && ctest --output-on-failure
 - mbedTLS was upgraded to 3.6.5 LTS. RSA operations require real RNG (no fake random in tests).
 - Python wheels use cibuildwheel. CI workflow: `.github/workflows/build-python.yml`.
 - Go wrapper uses pre-built static libs in `wrappers/go/pkg/<os>_<arch>/`. Use `-DVIRGIL_WRAP_GO=OFF` when building C libs for Go to avoid gosrc/ install conflicts.
-- Apple frameworks: run `./scripts/build_apple_frameworks.sh` on macOS before tagging a release.
 - Ask for approval to push changes.
 
 ## Forbidden
 
 - **Do not push without a local build and test check**: Before any `git push`, run the C build (`cmake --build build -j$(nproc)`) and test suite (`cd build && ctest --output-on-failure`). For codegen changes, also run `python3 -m pytest tools/codegen/ -q`. Push only after confirming no regressions.
-- **Verify Swift build and tests after each Apple frameworks build**: After running `./scripts/build_apple_frameworks.sh`, set `useLocalBinaries = true` in `Package.swift`, run `swift build` and `swift test`, then restore `useLocalBinaries = false`. Fix any Swift errors before proceeding to tag and push.
+- **Verify Swift build and tests before pushing if `wrappers/swift/` was modified**: If any unpushed commits touch `wrappers/swift/**/*.swift`, run the Swift package verification before pushing: (1) `sed -i '' 's/let useLocalBinaries = false/let useLocalBinaries = true/' Package.swift`, (2) `swift build`, (3) `swift test`, (4) `sed -i '' 's/let useLocalBinaries = true/let useLocalBinaries = false/' Package.swift`. Check with: `git diff origin/<branch>..HEAD -- 'wrappers/swift/**/*.swift'`. Fix any errors before pushing. Release-time xcframework correctness is verified by CI in `release.yml`.
 - **Verify Go build and tests after any Go wrapper changes**: After modifying Go wrapper files or pre-built static libs in `wrappers/go/pkg/`, run `go build ./...` and `go test ./...` from `wrappers/go/`. Fix any errors before pushing. The duplicate-library linker warning from `ld` is benign and can be ignored.
 - **CMake in-source builds**: Always pass `-B<builddir> -S.` to keep build artifacts out of the
   source tree. Never run `cmake .` or `cmake <srcdir>` without a `-B` flag. Build dirs to use:
