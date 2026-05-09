@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version string (e.g. 0.19.0 or 0.19.0-dev.7)'
+        required: true
+        type: string
+      branch:
+        description: 'Source branch to release from'
+        required: false
+        default: 'develop'
+        type: string
+
+jobs:
+  build-go:
+    uses: ./.github/workflows/build-go.yml
+    with:
+      upload_artifacts: true
+      version: ${{ inputs.version }}
+      ref: ${{ inputs.branch }}
+
+  build-apple:
+    name: Build Apple xcframeworks
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.branch }}
+          lfs: true
+
+      - name: Setup Git LFS
+        run: git lfs install
+
+      - name: Bump version
+        run: ./scripts/bumpver.sh "${{ inputs.version }}"
+
+      - name: Build xcframeworks
+        run: ./scripts/build_apple_frameworks.sh
+
+      - name: Upload Apple release files
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-release-files
+          path: |
+            binaries/*.xcframework.zip
+            binaries/*.xcframework.zip.sha256sum
+            Package.swift
+          retention-days: 1
+
+  release-commit:
+    name: Release Commit & Tag
+    needs: [build-go, build-apple]
+    runs-on: macos-26
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.branch }}
+          lfs: true
+          fetch-depth: 0
+
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs track "wrappers/go/pkg/**/*.a"
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        run: ./scripts/bumpver.sh "${{ inputs.version }}"
+
+      - name: Download Apple release files
+        uses: actions/download-artifact@v4
+        with:
+          name: apple-release-files
+          path: _apple-artifact
+
+      - name: Apply xcframework artifacts and checksums
+        run: |
+          cp _apple-artifact/binaries/*.xcframework.zip binaries/
+          cp _apple-artifact/binaries/*.xcframework.zip.sha256sum binaries/
+          # Patch the three checksum constants from the build-apple Package.swift
+          # into the workspace Package.swift (preserving bumpver's let version line).
+          for name in vscCommonChecksum vscFoundationChecksum vscRatchetChecksum; do
+            val=$(grep -E "let ${name} = " _apple-artifact/Package.swift | grep -oE '[a-f0-9]{64}')
+            sed -i "" "s/let ${name} = .*/let ${name} = \"${val}\"/" Package.swift
+          done
+
+      - name: Download Go lib artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: go-libs-*
+          path: wrappers/go/pkg/
+          merge-multiple: false
+
+      - name: Restructure Go artifacts
+        run: |
+          cd wrappers/go/pkg
+          for dir in go-libs-*; do
+            target="${dir#go-libs-}"
+            rm -rf "$target"
+            mv "$dir" "$target"
+          done
+
+      - name: Swift verification
+        run: |
+          trap 'sed -i "" "s/let useLocalBinaries = true/let useLocalBinaries = false/" Package.swift' EXIT
+          sed -i "" 's/let useLocalBinaries = false/let useLocalBinaries = true/' Package.swift
+          swift build
+          swift test
+
+      - name: Commit release binaries
+        run: |
+          git add -A
+          git commit -m "chore(release): bump version and update pre-built binaries for v${{ inputs.version }}"
+
+      - name: Push to source branch
+        run: |
+          git push --force-with-lease origin HEAD:refs/heads/${{ inputs.branch }}
+
+      - name: Push Go module tag
+        run: |
+          git tag "wrappers/go/v${{ inputs.version }}"
+          git push origin "refs/tags/wrappers/go/v${{ inputs.version }}"
+
+      - name: Push release tag
+        run: |
+          git tag "v${{ inputs.version }}" -m "v${{ inputs.version }}"
+          git push origin "refs/tags/v${{ inputs.version }}"
