@@ -43,9 +43,10 @@ Carthage
 .venv*/
 venv*/
 
-# Python bytecode caches
+# Python bytecode
 __pycache__/
 *.pyc
+*.pyo
 
 # Copilot
 .codegpt
