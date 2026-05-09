@@ -58,7 +58,7 @@ cd build && ctest --output-on-failure
 
 ## Forbidden
 
-- **Do not push without a local build and test check**: Before any `git push`, run the C build (`cmake --build build -j$(nproc)`) and test suite (`cd build && ctest --output-on-failure`). For codegen changes, also run `python3 -m pytest tools/codegen/ -q`. Push only after confirming no regressions.
+- **Do not push without a local build and test check**: Before any `git push`, run the C build (`cmake --build build -j$(nproc)`) and test suite (`cd build && ctest --output-on-failure`). For codegen changes, also run `python3 -m pytest tools/codegen/ -q`. Push only after confirming no regressions. (This applies to direct pushes from Claude Code sessions; CI-driven releases via `release.yml` are exempt.)
 - **Verify Swift build and tests before pushing if `wrappers/swift/` was modified**: If any unpushed commits touch `wrappers/swift/**/*.swift`, run the Swift package verification before pushing: (1) `sed -i '' 's/let useLocalBinaries = false/let useLocalBinaries = true/' Package.swift`, (2) `swift build`, (3) `swift test`, (4) `sed -i '' 's/let useLocalBinaries = true/let useLocalBinaries = false/' Package.swift`. Check with: `git diff origin/<branch>..HEAD -- 'wrappers/swift/**/*.swift'`. Fix any errors before pushing. Release-time xcframework correctness is verified by CI in `release.yml`.
 - **Verify Go build and tests after any Go wrapper changes**: After modifying Go wrapper files or pre-built static libs in `wrappers/go/pkg/`, run `go build ./...` and `go test ./...` from `wrappers/go/`. Fix any errors before pushing. The duplicate-library linker warning from `ld` is benign and can be ignored.
 - **CMake in-source builds**: Always pass `-B<builddir> -S.` to keep build artifacts out of the
