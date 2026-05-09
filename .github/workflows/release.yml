@@ -44,6 +44,13 @@ jobs:
       - name: Setup Git LFS
         run: git lfs install
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+
       - name: Bump version
         run: ./scripts/bumpver.sh "${{ inputs.version }}"
 
@@ -82,6 +89,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
 
       - name: Bump version
         run: ./scripts/bumpver.sh "${{ inputs.version }}"
