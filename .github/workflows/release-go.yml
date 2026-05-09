@@ -78,12 +78,8 @@ jobs:
           git add -f wrappers/go/pkg/ .gitattributes
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "chore(go): update pre-built static libraries for ${{ steps.version.outputs.tag }}"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            BRANCH=develop
-          else
-            BRANCH=$(git branch -r --contains HEAD | grep -v '\->' | sed 's|[[:space:]]*origin/||' | head -1)
-            BRANCH="${BRANCH:-develop}"
-          fi
+          BRANCH=$(git branch -r --contains HEAD^ | grep -v '\->' | sed 's|[[:space:]]*origin/||' | head -1)
+          BRANCH="${BRANCH:-develop}"
           echo "Pushing to branch: $BRANCH"
           git push origin HEAD:refs/heads/$BRANCH
 
