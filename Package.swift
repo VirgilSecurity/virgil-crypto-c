@@ -9,7 +9,7 @@ let vscCommonBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCCommon", path: "binaries//VSCCommon.xcframework.zip")
     } else {
-        let vscCommonChecksum = "a2035f5931005d473c338e20c2417330514972d477779e95ee7cf4a6cf0f7dc1"
+        let vscCommonChecksum = "ee527aba06bd8f2ce3b06390ba03d781633d907c2b8ddb98917f8196286c95c8"
         return Target.binaryTarget(
             name: "VSCCommon",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCCommon.xcframework.zip",
@@ -22,7 +22,7 @@ let vscFoundationBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCFoundation", path: "binaries//VSCFoundation.xcframework.zip")
     } else {
-        let vscFoundationChecksum = "cd62b1ae0f6b012f84f86082ee67b018e167ce20e52574c2d47aaae32128b0fa"
+        let vscFoundationChecksum = "fb7045ab37b33047a6be4674cac36b9f3ccb3317daa441cfaa4e58232263cff4"
         return Target.binaryTarget(
             name: "VSCFoundation",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCFoundation.xcframework.zip",
@@ -35,7 +35,7 @@ let vscRatchetBinaryTarget = {
     if (useLocalBinaries) {
         return Target.binaryTarget(name: "VSCRatchet", path: "binaries//VSCRatchet.xcframework.zip")
     } else {
-        let vscRatchetChecksum = "5062c1a02ffbd23181d3acecc6c225172503827498377ace78dad6d107a44935"
+        let vscRatchetChecksum = "e071ec179affef525df638689f4d1dada4c3f6a2ae3aa3e3bffc92ea2e3db1ce"
         return Target.binaryTarget(
             name: "VSCRatchet",
             url: "https://github.com/VirgilSecurity/virgil-crypto-c/releases/download/v\(version)/VSCRatchet.xcframework.zip",
