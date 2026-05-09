@@ -113,6 +113,7 @@ jobs:
             sed -i "" "s/let ${name} = .*/let ${name} = \"${val}\"/" Package.swift
           done
           # Copy to binaries/ only for local Swift verification below — deleted before commit
+          mkdir -p binaries/
           cp _apple-artifact/binaries/*.xcframework.zip binaries/
           cp _apple-artifact/binaries/*.xcframework.zip.sha256sum binaries/
 
