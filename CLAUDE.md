@@ -61,6 +61,7 @@ cd build && ctest --output-on-failure
 
 - **Do not push without a local build and test check**: Before any `git push`, run the C build (`cmake --build build -j$(nproc)`) and test suite (`cd build && ctest --output-on-failure`). For codegen changes, also run `python3 -m pytest tools/codegen/ -q`. Push only after confirming no regressions.
 - **Verify Swift build and tests after each Apple frameworks build**: After running `./scripts/build_apple_frameworks.sh`, set `useLocalBinaries = true` in `Package.swift`, run `swift build` and `swift test`, then restore `useLocalBinaries = false`. Fix any Swift errors before proceeding to tag and push.
+- **Verify Go build and tests after any Go wrapper changes**: After modifying Go wrapper files or pre-built static libs in `wrappers/go/pkg/`, run `go build ./...` and `go test ./...` from `wrappers/go/`. Fix any errors before pushing. The duplicate-library linker warning from `ld` is benign and can be ignored.
 - **CMake in-source builds**: Always pass `-B<builddir> -S.` to keep build artifacts out of the
   source tree. Never run `cmake .` or `cmake <srcdir>` without a `-B` flag. Build dirs to use:
   - Default C: `build/`
