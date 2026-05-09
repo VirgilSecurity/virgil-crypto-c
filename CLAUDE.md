@@ -59,6 +59,7 @@ cd build && ctest --output-on-failure
 
 ## Forbidden
 
+- **Do not push without a local build and test check**: Before any `git push`, run the C build (`cmake --build build -j$(nproc)`) and test suite (`cd build && ctest --output-on-failure`). For codegen changes, also run `python3 -m pytest tools/codegen/ -q`. Push only after confirming no regressions.
 - **CMake in-source builds**: Always pass `-B<builddir> -S.` to keep build artifacts out of the
   source tree. Never run `cmake .` or `cmake <srcdir>` without a `-B` flag. Build dirs to use:
   - Default C: `build/`
