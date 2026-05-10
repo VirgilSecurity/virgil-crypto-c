@@ -145,8 +145,9 @@ jobs:
 
       - name: Commit release binaries
         run: |
-          # xcframeworks ship as GitHub Release assets, not in git — remove before staging
+          # xcframeworks and download artifacts must not be committed
           rm -f binaries/*.xcframework.zip binaries/*.xcframework.zip.sha256sum
+          rm -rf _apple-artifact/
           git add -A
           git diff --cached --quiet || git commit -m "chore(release): bump version and update pre-built binaries for v${{ inputs.version }}"
 
