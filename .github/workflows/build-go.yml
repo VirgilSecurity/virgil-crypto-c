@@ -79,6 +79,14 @@ jobs:
         with:
           ref: ${{ inputs.ref || github.ref }}
 
+      - name: Setup Java (for bumpver Maven step)
+        if: inputs.version != ''
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+          cache: maven
+
       - name: Bump version (release builds only)
         if: inputs.version != ''
         shell: bash

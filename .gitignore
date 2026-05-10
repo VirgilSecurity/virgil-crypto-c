@@ -59,6 +59,10 @@ __pycache__/
 # Go wrapper pre-built libs (built locally or by CI)
 wrappers/go/pkg/
 
+# Apple xcframeworks — built by CI and uploaded as GitHub Release assets, not committed
+binaries/*.xcframework.zip
+binaries/*.xcframework.zip.sha256sum
+
 # pi agent workspace
 .pi/
 

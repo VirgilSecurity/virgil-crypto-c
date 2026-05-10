@@ -160,7 +160,14 @@ fi
 # ###########################################################################
 show_info "Change version within Java project files."
 pushd ${ROOT_DIR}/wrappers/java >/dev/null
-./mvnw versions:set -DnewVersion="${VERSION_FULL}" >/dev/null
+# On MINGW/Cygwin (Git Bash on Windows) the Unix mvnw script passes Unix-style
+# paths to the Windows JVM via -classpath, which the JVM cannot resolve.
+# Use mvnw.cmd instead, which uses native Windows paths throughout.
+if [[ "${OSTYPE:-}" == msys* ]] || [[ "${OSTYPE:-}" == cygwin* ]]; then
+    cmd //c mvnw.cmd versions:set -DnewVersion="${VERSION_FULL}" > /dev/null
+else
+    ./mvnw versions:set -DnewVersion="${VERSION_FULL}" >/dev/null
+fi
 popd >/dev/null
 
 # ###########################################################################
