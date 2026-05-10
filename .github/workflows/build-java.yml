@@ -13,6 +13,11 @@ on:
       - develop
       - main
   workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to checkout'
+        type: string
+        default: ''
     outputs:
       version:
         description: "Project version"
@@ -26,6 +31,8 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Extract version
         id: version
@@ -40,6 +47,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -79,6 +88,8 @@ jobs:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -117,6 +128,8 @@ jobs:
     runs-on: macos-14  # M1/ARM runner
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -150,6 +163,8 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -188,6 +203,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -225,6 +242,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -262,6 +281,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -299,6 +320,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -338,6 +361,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Java
         uses: actions/setup-java@v5

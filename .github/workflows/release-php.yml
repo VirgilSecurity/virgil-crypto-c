@@ -1,15 +1,23 @@
 name: Release PHP
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version string (e.g. 0.19.0-rc.1)'
+        type: string
+        required: true
+      ref:
+        description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
+        type: string
+        required: true
 
 jobs:
   build-php:
     name: Build PHP Packages
     uses: ./.github/workflows/build-php.yml
+    with:
+      ref: ${{ inputs.ref }}
 
   publish-php-assets:
     name: Publish PHP Assets
@@ -26,6 +34,7 @@ jobs:
       - name: Upload PHP assets to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v${{ inputs.version }}
           files: |
             dist/**/*.zip
             dist/**/*.tar.gz

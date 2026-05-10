@@ -1,21 +1,23 @@
 name: Release Java
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      tag:
-        description: 'Tag to release'
-        required: true
+      version:
+        description: 'Version string (e.g. 0.19.0-rc.1)'
         type: string
+        required: true
+      ref:
+        description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
+        type: string
+        required: true
 
 jobs:
   build:
     name: Build Binaries
     uses: ./.github/workflows/build-java.yml
+    with:
+      ref: ${{ inputs.ref }}
 
   publish-jvm-release:
     name: Publish JVM Release
@@ -24,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          ref: ${{ inputs.ref }}
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -61,14 +63,9 @@ jobs:
           gpg --list-secret-keys --keyid-format LONG
 
       - name: Verify version matches tag
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         working-directory: wrappers/java
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG=${{ inputs.tag }}
-          else
-            TAG=${GITHUB_REF#refs/tags/}
-          fi
+          TAG=v${{ inputs.version }}
           TAG_VERSION=${TAG#v}
           # Use Maven to evaluate the effective project version (more robust than grepping XML).
           POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tr -d '[:space:]')
@@ -100,7 +97,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          ref: ${{ inputs.ref }}
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -128,14 +125,9 @@ jobs:
           ls -la
 
       - name: Verify version matches tag
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         working-directory: wrappers/java/android
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            TAG=${{ inputs.tag }}
-          else
-            TAG=${GITHUB_REF#refs/tags/}
-          fi
+          TAG=v${{ inputs.version }}
           TAG_VERSION=${TAG#v}
           # Ask Gradle for the effective project version (no parsing of 'properties' output).
           GRADLE_VERSION=$(./gradlew -q printVersion | tr -d '[:space:]')
@@ -264,7 +256,7 @@ jobs:
             --fail \
             --header "Authorization: Bearer ${CENTRAL_BEARER}" \
             --form "bundle=@build/central-bundle.zip" \
-            "https://central.sonatype.com/api/v1/publisher/upload?publishingType=AUTOMATIC&name=${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}")
+            "https://central.sonatype.com/api/v1/publisher/upload?publishingType=AUTOMATIC&name=v${{ inputs.version }}")
 
           if [ -z "${DEPLOYMENT_ID}" ]; then
             echo "ERROR: Central Portal did not return a deployment ID"
@@ -303,22 +295,3 @@ jobs:
           echo "Timed out waiting for Central Portal publish"
           exit 1
 
-      - name: Create GitHub Release
-        if: github.event_name == 'push' && !contains(github.ref, '-rc')
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create GitHub Pre-release (RC)
-        if: github.event_name == 'push' && contains(github.ref, '-rc')
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          draft: false
-          prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

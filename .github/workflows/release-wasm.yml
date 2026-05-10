@@ -1,16 +1,23 @@
 name: Release WASM
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version string (e.g. 0.19.0-rc.1)'
+        type: string
+        required: true
+      ref:
+        description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
+        type: string
+        required: true
 
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-wasm.yml
     with:
       upload_artifacts: true
+      ref: ${{ inputs.ref }}
 
   is-prerelease:
     name: Check if pre-release
@@ -21,7 +28,7 @@ jobs:
       - name: Detect pre-release tag
         id: check
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="v${{ inputs.version }}"
           if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then
             echo "prerelease=true" >> "$GITHUB_OUTPUT"
           else
@@ -38,6 +45,8 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -65,6 +74,8 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6

@@ -1,7 +1,12 @@
 name: Build PHP
 
 on:
-  workflow_call: {}
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to checkout'
+        type: string
+        default: ''
   push:
     branches:
       - develop
@@ -158,6 +163,8 @@ jobs:
 
       - name: Checkout project
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Configure project
         shell: cmd
@@ -208,6 +215,8 @@ jobs:
         run: php -v
 
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -286,6 +295,8 @@ jobs:
         run: php -v
 
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || '' }}
 
       - name: Setup Python
         uses: actions/setup-python@v6
