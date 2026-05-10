@@ -1,13 +1,21 @@
 name: Release Python
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version string (e.g. 0.19.0-rc.1)'
+        type: string
+        required: true
+      ref:
+        description: 'Git ref to build from (e.g. refs/tags/v0.19.0-rc.1)'
+        type: string
+        required: true
 
 jobs:
   build-and-test:
     uses: ./.github/workflows/build-python.yml
+    with:
+      ref: ${{ inputs.ref }}
 
   is-prerelease:
     name: Check if pre-release
@@ -18,7 +26,7 @@ jobs:
       - name: Detect pre-release tag
         id: check
         run: |
-          TAG="${GITHUB_REF#refs/tags/}"
+          TAG="v${{ inputs.version }}"
           # A tag with a hyphen after the version (e.g. v0.17.3-rc1, v1.0.0-alpha1)
           # indicates a pre-release
           if [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+-.+ ]]; then

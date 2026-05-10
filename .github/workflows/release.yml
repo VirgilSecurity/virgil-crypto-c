@@ -13,6 +13,10 @@ on:
         default: 'develop'
         type: string
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   validate:
     name: Validate inputs
@@ -68,8 +72,6 @@ jobs:
     name: Release Commit & Tag
     needs: [build-go, build-apple]
     runs-on: macos-26
-    permissions:
-      contents: write
     steps:
       - uses: actions/checkout@v6
         with:
@@ -145,8 +147,9 @@ jobs:
 
       - name: Commit release binaries
         run: |
-          # xcframeworks ship as GitHub Release assets, not in git — remove before staging
+          # xcframeworks and download artifacts must not be committed
           rm -f binaries/*.xcframework.zip binaries/*.xcframework.zip.sha256sum
+          rm -rf _apple-artifact/
           git add -A
           git diff --cached --quiet || git commit -m "chore(release): bump version and update pre-built binaries for v${{ inputs.version }}"
 
@@ -160,20 +163,45 @@ jobs:
           git tag -l "v${{ inputs.version }}" | grep -q . || git tag "v${{ inputs.version }}" -m "v${{ inputs.version }}"
           git push origin "refs/tags/wrappers/go/v${{ inputs.version }}" "refs/tags/v${{ inputs.version }}"
 
-      - name: Create GitHub Release with xcframeworks
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          VERSION="${{ inputs.version }}"
-          [[ "$VERSION" == *-* ]] && PRERELEASE="--prerelease" || PRERELEASE=""
-          # Create release; fall back to uploading assets if the release already exists (re-run)
-          gh release create "v${VERSION}" \
-            _apple-artifact/binaries/*.xcframework.zip \
-            _apple-artifact/binaries/*.xcframework.zip.sha256sum \
-            --title "v${VERSION}" \
-            --notes "" \
-            $PRERELEASE \
-          || gh release upload "v${VERSION}" \
-            _apple-artifact/binaries/*.xcframework.zip \
-            _apple-artifact/binaries/*.xcframework.zip.sha256sum \
-            --clobber
+
+  publish-php:
+    name: Publish PHP
+    needs: [release-commit]
+    uses: ./.github/workflows/release-php.yml
+    with:
+      version: ${{ inputs.version }}
+      ref: refs/tags/v${{ inputs.version }}
+
+  publish-java:
+    name: Publish Java
+    needs: [release-commit]
+    uses: ./.github/workflows/release-java.yml
+    with:
+      version: ${{ inputs.version }}
+      ref: refs/tags/v${{ inputs.version }}
+    secrets: inherit
+
+  publish-python:
+    name: Publish Python
+    needs: [release-commit]
+    uses: ./.github/workflows/release-python.yml
+    with:
+      version: ${{ inputs.version }}
+      ref: refs/tags/v${{ inputs.version }}
+    secrets: inherit
+
+  publish-wasm:
+    name: Publish WASM
+    needs: [release-commit]
+    uses: ./.github/workflows/release-wasm.yml
+    with:
+      version: ${{ inputs.version }}
+      ref: refs/tags/v${{ inputs.version }}
+    secrets: inherit
+
+  verify-swift:
+    name: Verify Swift SPM
+    needs: [release-commit]
+    uses: ./.github/workflows/release-swift.yml
+    with:
+      version: ${{ inputs.version }}
