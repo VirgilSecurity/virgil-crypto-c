@@ -12,6 +12,11 @@ on:
       - develop
       - main
   workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to checkout'
+        type: string
+        default: ''
 
 jobs:
   build-wheels:
@@ -41,6 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.ref || '' }}
           submodules: recursive
 
       - uses: actions/setup-python@v6
@@ -117,6 +123,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.ref || '' }}
           submodules: recursive
 
       - uses: actions/setup-python@v6

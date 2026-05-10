@@ -1,34 +1,51 @@
 name: Release Swift
 on:
-  push:
-    tags:
-      - 'v*.*.*'
-      - 'v*.*.*-*'
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version string (e.g. 0.19.0-rc.1)'
+        type: string
+        required: true
 jobs:
   verify-spm:
     name: Verify SPM with released binaries
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: refs/tags/v${{ inputs.version }}
+
+      - name: Download xcframework artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: apple-release-files
+          path: _apple-artifact
+
+      - name: Stage xcframeworks locally
+        run: |
+          mkdir -p binaries/
+          cp _apple-artifact/binaries/*.xcframework.zip binaries/
+          cp _apple-artifact/binaries/*.xcframework.zip.sha256sum binaries/
 
       - name: Check Xcode
         run: |
           xcode-select -p
           xcodebuild -version
 
-      - name: Wait for xcframework assets on the release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="${{ github.ref_name }}"
-          for i in $(seq 1 20); do
-            COUNT=$(gh release view "$TAG" --json assets --jq '.assets | length' 2>/dev/null || echo 0)
-            [ "$COUNT" -gt 0 ] && { echo "Release assets ready ($COUNT files)"; exit 0; }
-            echo "Waiting for release assets... attempt $i/20"
-            sleep 30
-          done
-          echo "ERROR: release assets did not appear after 10 minutes"
-          exit 1
+      - name: Check that SPM has correct xcframeworks hash
+        run: ./scripts/check_spm_xcframeworks.sh
+
+      - name: Test SPM with local binaries
+        run: ./scripts/run_spm_tests_with_local_binaries.sh
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          prerelease: ${{ contains(inputs.version, '-') }}
+          files: |
+            binaries/*.xcframework.zip
+            binaries/*.xcframework.zip.sha256sum
 
       - name: Test SPM with released binaries
         run: swift test
