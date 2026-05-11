@@ -4,7 +4,7 @@ package phe
 import "C"
 import unsafe "unsafe"
 import "runtime"
-import foundation "virgil/foundation"
+import foundation "github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/foundation"
 
 
 /*

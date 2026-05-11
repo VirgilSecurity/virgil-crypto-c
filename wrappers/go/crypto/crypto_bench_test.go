@@ -38,7 +38,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"virgil/crypto"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/crypto"
 )
 
 func BenchmarkSign(b *testing.B) {

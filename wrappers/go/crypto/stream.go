@@ -37,7 +37,7 @@ import (
 	"errors"
 	"io"
 
-	"virgil/foundation"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/foundation"
 )
 
 func NewEncryptWriter(w io.WriteCloser, cipher *foundation.RecipientCipher) *EncryptWriter {
