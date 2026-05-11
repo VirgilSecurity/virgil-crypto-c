@@ -36,7 +36,7 @@ import (
 	"errors"
 	"fmt"
 
-	"virgil/foundation"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/foundation"
 )
 
 // crypto errors

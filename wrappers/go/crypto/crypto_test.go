@@ -39,8 +39,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"virgil/crypto"
-	"virgil/foundation"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/crypto"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/foundation"
 )
 
 func TestSignVerify(t *testing.T) {

@@ -1,4 +1,4 @@
-module virgil
+module github.com/VirgilSecurity/virgil-crypto-c/wrappers/go
 
 go 1.21
 
