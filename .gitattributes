@@ -1,1 +1,0 @@
-wrappers/go/pkg/**/*.a filter=lfs diff=lfs merge=lfs -binary

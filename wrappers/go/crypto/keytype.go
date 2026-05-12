@@ -37,7 +37,7 @@
 package crypto
 
 import (
-	"virgil/foundation"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/foundation"
 )
 
 type KeyType int

@@ -63,6 +63,9 @@ wrappers/go/pkg/
 binaries/*.xcframework.zip
 binaries/*.xcframework.zip.sha256sum
 
+# CI artifact download directory — never commit
+_apple-artifact/
+
 # pi agent workspace
 .pi/
 

@@ -35,7 +35,7 @@ package crypto
 import (
 	"fmt"
 
-	"virgil/foundation"
+	"github.com/VirgilSecurity/virgil-crypto-c/wrappers/go/foundation"
 )
 
 var random foundation.Random
