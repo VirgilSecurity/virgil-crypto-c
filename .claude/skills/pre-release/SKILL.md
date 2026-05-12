@@ -1,29 +1,23 @@
 ---
 name: pre-release
 aliases: [prerelease, pre release]
-description: Create a release branch from develop and cut the first RC pre-release. Use when the user says "pre-release", "prerelease", "cut an RC", or "start a release branch".
+description: Cut the first RC pre-release directly from develop. Use when the user says "pre-release", "prerelease", "cut an RC", or "start a release".
 compatibility: Requires gh CLI authenticated to the VirgilSecurity/virgil-crypto-c repo.
 allowed-tools: Bash Read
 ---
 
 # Pre-release
 
-Create a `release/MAJOR.MINOR.PATCH` branch from `develop`, configure its branch protection so CI can push, and trigger the first release candidate (`MAJOR.MINOR.PATCH-rc.1`) via the unified `release.yml` workflow.
+Trigger the first release candidate (`MAJOR.MINOR.PATCH-rc.1`) directly from `develop` via the unified `release.yml` workflow. No release branch is created — `develop` is the release branch.
 
 ## When to use
 
-Use this skill when you are ready to stabilize a release. It:
-
-1. Branches `develop` → `release/X.Y.Z`
-2. Configures branch protection so `github-actions[bot]` can push the release commit
-3. Runs the release workflow for `X.Y.Z-rc.1` from the new branch
-
-Subsequent RCs on the same branch: use `/release X.Y.Z-rc.2 --branch release/X.Y.Z` directly (or just `/release` and specify both fields when prompted).
+Use this skill when you are ready to cut the first RC for a version. Subsequent RCs and the final production release all run from `develop` via `/release`.
 
 ## Pre-flight checklist
 
 - Confirm `develop` is in the expected state (CI green, no stale WIP commits)
-- `ChangeLog.md` and `README.md` do **not** need entries yet — that is required only before the final production release
+- `ChangeLog.md` and `README.md` do **not** need entries yet — required only before the final production release
 
 ## Steps
 
@@ -37,50 +31,22 @@ The first RC label will be appended automatically: `MAJOR.MINOR.PATCH-rc.1`.
 
 ### 2. Confirm the plan
 
-Show the user the three actions that will happen and ask for confirmation before proceeding:
+Show the user what will happen and ask for confirmation before proceeding:
 
 ```
-Branch:  release/X.Y.Z  (from develop)
-Release: X.Y.Z-rc.1     (via release.yml workflow)
+Release: X.Y.Z-rc.1  (from develop, via release.yml workflow)
 Tags:    wrappers/go/vX.Y.Z-rc.1  and  vX.Y.Z-rc.1
 ```
 
-### 3. Create and push the release branch
-
-```bash
-# Ensure develop is up to date
-git fetch origin develop
-
-# Create the branch from develop tip
-git checkout -b release/X.Y.Z origin/develop
-
-# Push the branch
-git push origin release/X.Y.Z
-
-# Return to the original branch so local state is clean
-git checkout -
-```
-
-### 4. Remove any branch protection (allow all)
-
-New branches have no restrictions by default. As a safety net — in case an org-level rule applied protection automatically — remove any protection that exists:
-
-```bash
-gh api -X DELETE repos/VirgilSecurity/virgil-crypto-c/branches/release%2FX.Y.Z/protection \
-  2>/dev/null || true
-```
-
-Note the URL-encoded slash: `release%2FX.Y.Z`. The `|| true` makes the step a no-op if no protection existed.
-
-### 5. Trigger the release workflow
+### 3. Trigger the release workflow
 
 ```bash
 gh workflow run release.yml \
   --field version=X.Y.Z-rc.1 \
-  --field branch=release/X.Y.Z
+  --field branch=develop
 ```
 
-### 6. Find and monitor the run
+### 4. Find and monitor the run
 
 ```bash
 # Wait a moment for the run to appear, then get its ID
@@ -90,7 +56,7 @@ gh run list --workflow release.yml --limit 1
 gh run watch <run-id>
 ```
 
-### 7. Verify on success
+### 5. Verify on success
 
 ```bash
 git fetch --tags
@@ -107,7 +73,7 @@ Both tags should be present:
 |------|--------|
 | `build-go` (parallel) | Cross-compiles Go static libs for 5 platforms |
 | `build-apple` (parallel) | Builds Apple xcframeworks on `macos-26` |
-| `release-commit` | Bumps version, assembles artifacts, runs `swift build` + `swift test`, commits to `release/X.Y.Z`, pushes both tags |
+| `release-commit` | Bumps version, assembles artifacts, runs `swift build` + `swift test`, commits to `develop`, pushes both tags |
 
 ## What the tags trigger
 
@@ -121,27 +87,27 @@ Both tags should be present:
 
 ## Subsequent RCs
 
-When fixes land on `release/X.Y.Z` and a new RC is needed, trigger directly:
+When fixes land on `develop` and a new RC is needed, use `/release` directly:
 
 ```bash
 gh workflow run release.yml \
   --field version=X.Y.Z-rc.2 \
-  --field branch=release/X.Y.Z
+  --field branch=develop
 ```
 
-Or use `/release` and specify both the version and branch when prompted.
+Or just run `/release` and specify the version and branch when prompted.
 
 ## Promoting to production
 
-When the RC is stable, use `/release` with the bare `X.Y.Z` version from the `release/X.Y.Z` branch. Before doing so, ensure `ChangeLog.md` has an entry for `X.Y.Z` and `README.md` is current (the `/release` skill enforces this for production releases).
+When the RC is stable, run `/release X.Y.Z` (branch defaults to `develop`). Before doing so, ensure `ChangeLog.md` has an entry for `X.Y.Z` and `README.md` is current.
 
 ## Partial failure recovery
 
 If the workflow pushed the release commit but failed to push the tags:
 
 ```bash
-git fetch origin release/X.Y.Z
-SHA=$(git rev-parse origin/release/X.Y.Z)
+git fetch origin develop
+SHA=$(git rev-parse origin/develop)
 
 git tag "wrappers/go/vX.Y.Z-rc.1" "$SHA"
 git push origin "refs/tags/wrappers/go/vX.Y.Z-rc.1"

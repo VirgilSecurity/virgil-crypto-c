@@ -7,7 +7,7 @@ allowed-tools: Bash Read
 
 # Release
 
-Trigger the unified CI release workflow and monitor it to completion.
+Trigger the unified CI release workflow and monitor it to completion. All releases — RCs and production — run from `develop`.
 
 ## Pre-flight checklist
 
@@ -16,22 +16,20 @@ For **production releases** (`MAJOR.MINOR.PATCH` with no suffix) only — skip f
 - **`ChangeLog.md`** has an entry for this version (date, summary of changes)
 - **`README.md`** reflects the current state (new features, removed APIs, updated platform/language table if anything changed)
 
-If either is stale, update and commit to the source branch first. The release commit created by CI only bumps the version and bundles binaries — it does not update prose docs.
+If either is stale, update and commit to `develop` first. The release commit created by CI only bumps the version and bundles binaries — it does not update prose docs.
 
 ## Steps
 
-1. **Ask for version** if not provided (e.g., `0.19.0`, `0.19.0-rc1`, `0.19.0-dev.1`)
+1. **Ask for version** if not provided (e.g., `0.19.0`, `0.19.0-rc.2`, `0.19.0-dev.1`)
 
-2. **Ask for branch** if releasing from a non-default branch (default: `develop`)
-
-3. **Trigger the workflow**:
+2. **Trigger the workflow** (always from `develop` unless the user specifies otherwise):
    ```bash
    gh workflow run release.yml \
      --field version=X.Y.Z \
-     --field branch=<branch>
+     --field branch=develop
    ```
 
-4. **Find and monitor the run**:
+3. **Find and monitor the run**:
    ```bash
    # Get the run ID (wait a moment for it to appear)
    gh run list --workflow release.yml --limit 1
@@ -39,7 +37,7 @@ If either is stale, update and commit to the source branch first. The release co
    gh run watch <run-id>
    ```
 
-5. **Verify on success**: confirm both tags were created:
+4. **Verify on success**: confirm both tags were created:
    ```bash
    git fetch --tags
    git tag | grep "X.Y.Z"
@@ -51,7 +49,7 @@ If either is stale, update and commit to the source branch first. The release co
 |------|--------|
 | `build-go` (parallel) | Cross-compiles Go static libs for 5 platforms using CI matrix |
 | `build-apple` (parallel) | Builds Apple xcframeworks on `macos-26` |
-| `release-commit` | Bumps version, merges all binaries, runs `swift build` + `swift test`, commits to source branch with `--force-with-lease`, pushes `wrappers/go/vX.Y.Z` and `vX.Y.Z` tags |
+| `release-commit` | Bumps version, merges all binaries, runs `swift build` + `swift test`, commits to `develop` with `--force-with-lease`, pushes `wrappers/go/vX.Y.Z` and `vX.Y.Z` tags |
 
 ## What the release tag triggers
 
@@ -65,17 +63,17 @@ If either is stale, update and commit to the source branch first. The release co
 
 ## Version format
 
-- Production: `MAJOR.MINOR.PATCH` (e.g., `0.18.0`)
-- Pre-release: `MAJOR.MINOR.PATCH-LABEL` (e.g., `0.18.0-rc1`, `0.18.0-dev.1`)
-- Python PEP 440 conversion is automatic (`0.18.0-dev.1` becomes `0.18.0.dev1`)
+- Production: `MAJOR.MINOR.PATCH` (e.g., `0.19.0`)
+- Pre-release: `MAJOR.MINOR.PATCH-LABEL` (e.g., `0.19.0-rc.2`, `0.19.0-dev.1`)
+- Python PEP 440 conversion is automatic (`0.19.0-dev.1` becomes `0.19.0.dev1`)
 
 ## Partial failure recovery
 
-If the workflow log shows the release commit was pushed (step "Push to source branch" succeeded) but one or both tag pushes failed, recover manually:
+If the workflow pushed the release commit but one or both tag pushes failed:
 
 ```bash
-git fetch origin <branch>
-SHA=$(git rev-parse origin/<branch>)
+git fetch origin develop
+SHA=$(git rev-parse origin/develop)
 
 # If Go module tag is missing:
 git tag "wrappers/go/vX.Y.Z" "$SHA"
@@ -84,20 +82,4 @@ git push origin "refs/tags/wrappers/go/vX.Y.Z"
 # If release tag is missing:
 git tag "vX.Y.Z" -m "vX.Y.Z" "$SHA"
 git push origin "refs/tags/vX.Y.Z"
-```
-
-## Releasing from a non-develop branch
-
-Branch protection must allow `github-actions[bot]` to push directly before running the workflow. `develop` is already configured. For `main` or `release-*`, apply the same settings first:
-
-```bash
-gh api -X PUT repos/VirgilSecurity/virgil-crypto-c/branches/<branch>/protection \
-  --input - <<'EOF'
-{
-  "required_status_checks": null,
-  "enforce_admins": false,
-  "required_pull_request_reviews": null,
-  "restrictions": { "users": [], "teams": [], "apps": ["github-actions"] }
-}
-EOF
 ```
