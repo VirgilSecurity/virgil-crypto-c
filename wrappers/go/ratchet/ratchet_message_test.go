@@ -42,15 +42,27 @@ func TestRatchetMessage_GetCounter(t *testing.T) {
 	defer alice.Delete()
 	defer bob.Delete()
 
+	// First prekey message always starts at counter 0.
 	require.Equal(t, uint32(0), firstMsg.GetCounter())
 
 	_, err := bob.Decrypt(firstMsg)
 	require.NoError(t, err)
 
-	// Second message from alice increments the counter.
-	second, err := alice.Encrypt([]byte("second"))
+	// Complete the initial exchange so Alice advances past the prekey phase.
+	reply, err := bob.Encrypt([]byte("reply"))
 	require.NoError(t, err)
-	require.Equal(t, uint32(1), second.GetCounter())
+	_, err = alice.Decrypt(reply)
+	require.NoError(t, err)
+
+	// In the regular phase, consecutive messages from Alice increment the
+	// counter within the same DH ratchet step.
+	msg1, err := alice.Encrypt([]byte("a"))
+	require.NoError(t, err)
+	require.Equal(t, uint32(0), msg1.GetCounter())
+
+	msg2, err := alice.Encrypt([]byte("b"))
+	require.NoError(t, err)
+	require.Equal(t, uint32(1), msg2.GetCounter())
 }
 
 func TestRatchetMessage_Serialize_Deserialize(t *testing.T) {
