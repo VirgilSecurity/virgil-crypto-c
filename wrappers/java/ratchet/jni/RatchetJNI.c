@@ -209,6 +209,22 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchet
     vscr_ratchet_session_delete(*(vscr_ratchet_session_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1setRng (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrng) {
+    jclass rng_cls = (*jenv)->GetObjectClass(jenv, jrng);
+    if (NULL == rng_cls) {
+        VSCR_ASSERT("Class Rng not found.");
+    }
+    jfieldID rng_fidCtx = (*jenv)->GetFieldID(jenv, rng_cls, "cCtx", "J");
+    if (NULL == rng_fidCtx) {
+        VSCR_ASSERT("Class 'Rng' has no field 'cCtx'.");
+    }
+    jlong rng_c_ctx = (*jenv)->GetLongField(jenv, jrng, rng_fidCtx);
+    vscf_impl_t */*6*/ rng = *(vscf_impl_t */*6*/*)&rng_c_ctx;
+
+    vscr_ratchet_session_release_rng((vscr_ratchet_session_t /*2*/ *) c_ctx);
+    vscr_ratchet_session_use_rng((vscr_ratchet_session_t /*2*/ *) c_ctx, rng);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_session_t /*9*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*9*/**) &c_ctx;

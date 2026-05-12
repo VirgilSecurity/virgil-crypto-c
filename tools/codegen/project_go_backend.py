@@ -1077,13 +1077,12 @@ def _foreign_projects_for_entity(
     return sorted(found)
 
 
-def _foreign_import_lines(project_ir: IRProject, foreign: list[str]) -> list[str]:
-    """Render ``import foundation "virgil/foundation"`` lines for foreign refs.
+_GO_MODULE_ROOT = "github.com/VirgilSecurity/virgil-crypto-c/wrappers/go"
 
-    Mirrors the legacy GSL output exactly — package alias matches
-    project name, path is ``virgil/<project>``.
-    """
-    return [f'import {p} "virgil/{p}"' for p in foreign]
+
+def _foreign_import_lines(project_ir: IRProject, foreign: list[str]) -> list[str]:
+    """Render cross-project import lines using the canonical module path."""
+    return [f'import {p} "{_GO_MODULE_ROOT}/{p}"' for p in foreign]
 
 
 def _go_to_c_arg_expr(
@@ -1301,6 +1300,15 @@ def _go_return_from_c_expr(
     project_ir: IRProject, ret: IRCArgument, c_expr: str
 ) -> str:
     """Cast a cgo result back into the Go type returned by a method."""
+    if ret.class_name == "buffer":
+        # ``<return class="buffer" access="disown"/>`` — the C function
+        # returns a heap-allocated ``vsc_buffer_t *`` whose ownership is
+        # transferred to the caller.  Extract bytes here; the method body
+        # emits ``defer C.vsc_buffer_delete(proxyResult)`` separately.
+        return (
+            f"C.GoBytes(unsafe.Pointer(C.vsc_buffer_bytes({c_expr})),"
+            f" C.int(C.vsc_buffer_len({c_expr})))"
+        )
     if ret.class_name == "data":
         # ``<return class="data"/>`` surfaces as a Go []byte — the C layer
         # returns a ``vsc_data_t`` that must be unpacked via the helper.
@@ -1933,6 +1941,12 @@ def _instance_method_body(
         lines.append(f"    proxyResult := {call}")
     else:
         lines.append(f"    {call}")
+
+    # Disown buffer return — caller owns the heap-allocated vsc_buffer_t.
+    for ret in resolved_returns:
+        if ret.class_name == "buffer" and ret.access == "disown":
+            lines.append("    defer C.vsc_buffer_delete(proxyResult)")
+            break
 
     # Status dispatch precedes KeepAlive. Three sources of error:
     # - ``status`` enum return -> HandleStatus(proxyResult)

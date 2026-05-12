@@ -70,6 +70,38 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1clos
     vsce_phe_server_delete(*(vsce_phe_server_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCE_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vsce_phe_server_release_random((vsce_phe_server_t /*2*/ *) c_ctx);
+    vsce_phe_server_use_random((vsce_phe_server_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCE_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCE_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vsce_phe_server_release_operation_random((vsce_phe_server_t /*2*/ *) c_ctx);
+    vsce_phe_server_use_operation_random((vsce_phe_server_t /*2*/ *) c_ctx, operation_random);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vsce_phe_server_t /*9*/* phe_server_ctx = *(vsce_phe_server_t /*9*/**) &c_ctx;
@@ -267,6 +299,38 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1new
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vsce_phe_client_delete(*(vsce_phe_client_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCE_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vsce_phe_client_release_random((vsce_phe_client_t /*2*/ *) c_ctx);
+    vsce_phe_client_use_random((vsce_phe_client_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCE_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCE_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vsce_phe_client_release_operation_random((vsce_phe_client_t /*2*/ *) c_ctx);
+    vsce_phe_client_use_operation_random((vsce_phe_client_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -541,6 +605,22 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1clos
     vsce_phe_cipher_delete(*(vsce_phe_cipher_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCE_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vsce_phe_cipher_release_random((vsce_phe_cipher_t /*2*/ *) c_ctx);
+    vsce_phe_cipher_use_random((vsce_phe_cipher_t /*2*/ *) c_ctx, random);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_pheCipher_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vsce_phe_cipher_t /*9*/* phe_cipher_ctx = *(vsce_phe_cipher_t /*9*/**) &c_ctx;
@@ -718,6 +798,38 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1n
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vsce_uokms_client_delete(*(vsce_uokms_client_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCE_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vsce_uokms_client_release_random((vsce_uokms_client_t /*2*/ *) c_ctx);
+    vsce_uokms_client_use_random((vsce_uokms_client_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCE_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCE_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vsce_uokms_client_release_operation_random((vsce_uokms_client_t /*2*/ *) c_ctx);
+    vsce_uokms_client_use_operation_random((vsce_uokms_client_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -1032,6 +1144,38 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1cl
     vsce_uokms_server_delete(*(vsce_uokms_server_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCE_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCE_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vsce_uokms_server_release_random((vsce_uokms_server_t /*2*/ *) c_ctx);
+    vsce_uokms_server_use_random((vsce_uokms_server_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCE_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCE_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vsce_uokms_server_release_operation_random((vsce_uokms_server_t /*2*/ *) c_ctx);
+    vsce_uokms_server_use_operation_random((vsce_uokms_server_t /*2*/ *) c_ctx, operation_random);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vsce_uokms_server_t /*9*/* uokms_server_ctx = *(vsce_uokms_server_t /*9*/**) &c_ctx;
@@ -1174,6 +1318,22 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotat
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vsce_uokms_wrap_rotation_delete(*(vsce_uokms_wrap_rotation_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCE_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCE_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vsce_uokms_wrap_rotation_release_operation_random((vsce_uokms_wrap_rotation_t /*2*/ *) c_ctx);
+    vsce_uokms_wrap_rotation_use_operation_random((vsce_uokms_wrap_rotation_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_phe_PheJNI_uokmsWrapRotation_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
