@@ -145,6 +145,8 @@ jobs:
           # xcframeworks and download artifacts must not be committed
           rm -f binaries/*.xcframework.zip binaries/*.xcframework.zip.sha256sum
           rm -rf _apple-artifact/
+          # wrappers/go/pkg/ is gitignored locally; force-add so CI commits real .a blobs
+          git add --force wrappers/go/pkg/
           git add -A
           git diff --cached --quiet || git commit -m "chore(release): bump version and update pre-built binaries for v${{ inputs.version }}"
 
