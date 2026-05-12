@@ -70,6 +70,10 @@ public class EntropyAccumulator implements AutoCloseable, EntropySource {
         clearResources();
     }
 
+    public int getSourcesMax() {
+        return 15;
+    }
+
     public boolean isStrong() {
         return FoundationJNI.INSTANCE.entropyAccumulator_isStrong(this.cCtx);
     }

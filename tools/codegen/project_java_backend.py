@@ -781,6 +781,7 @@ def _generate_impl_file(project_ir: IRProject, impl: IRImplementation) -> str:
         dependencies=impl.dependencies,
         methods=methods,
         constant_getters=constant_getters,
+        class_constants=impl.constants,
         constructors=impl.constructors,
     )
 

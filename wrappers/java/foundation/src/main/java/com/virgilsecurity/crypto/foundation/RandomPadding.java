@@ -74,6 +74,14 @@ public class RandomPadding implements AutoCloseable, Alg, Padding {
         FoundationJNI.INSTANCE.randomPadding_setRandom(this.cCtx, random);
     }
 
+    public int getPaddingSizeLen() {
+        return 4;
+    }
+
+    public int getPaddingLenMin() {
+        return 5;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.randomPadding_algId(this.cCtx);
     }

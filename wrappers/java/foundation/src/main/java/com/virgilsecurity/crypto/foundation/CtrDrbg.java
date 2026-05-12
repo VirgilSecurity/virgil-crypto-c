@@ -74,6 +74,14 @@ public class CtrDrbg implements AutoCloseable, Random {
         FoundationJNI.INSTANCE.ctrDrbg_setEntropySource(this.cCtx, entropySource);
     }
 
+    public int getReseedInterval() {
+        return 10000;
+    }
+
+    public int getEntropyLen() {
+        return 48;
+    }
+
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.ctrDrbg_random(this.cCtx, dataLen);
     }

@@ -90,6 +90,30 @@ public class MlKem implements AutoCloseable, Alg, KeyAlg, Kem {
         return true;
     }
 
+    public int getSeedLen() {
+        return 64;
+    }
+
+    public int getEncSeedLen() {
+        return 32;
+    }
+
+    public int getPublicKeyLen() {
+        return 1184;
+    }
+
+    public int getSecretKeyLen() {
+        return 2400;
+    }
+
+    public int getCiphertextLen() {
+        return 1088;
+    }
+
+    public int getSharedKeyLen() {
+        return 32;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.mlKem_algId(this.cCtx);
     }

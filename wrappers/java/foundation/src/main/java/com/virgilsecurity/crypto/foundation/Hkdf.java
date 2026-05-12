@@ -74,6 +74,10 @@ public class Hkdf implements AutoCloseable, Alg, Kdf, SaltedKdf {
         FoundationJNI.INSTANCE.hkdf_setHash(this.cCtx, hash);
     }
 
+    public int getHashCounterMax() {
+        return 255;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.hkdf_algId(this.cCtx);
     }

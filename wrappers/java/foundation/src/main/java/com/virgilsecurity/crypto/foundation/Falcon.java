@@ -90,6 +90,18 @@ public class Falcon implements AutoCloseable, Alg, KeyAlg, KeySigner {
         return true;
     }
 
+    public int getSeedLen() {
+        return 48;
+    }
+
+    public int getLogn512() {
+        return 9;
+    }
+
+    public int getLogn1024() {
+        return 10;
+    }
+
     public AlgId algId() {
         return FoundationJNI.INSTANCE.falcon_algId(this.cCtx);
     }

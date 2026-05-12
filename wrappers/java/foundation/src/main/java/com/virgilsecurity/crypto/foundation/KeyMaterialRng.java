@@ -70,6 +70,14 @@ public class KeyMaterialRng implements AutoCloseable, Random {
         clearResources();
     }
 
+    public int getKeyMaterialLenMin() {
+        return 32;
+    }
+
+    public int getKeyMaterialLenMax() {
+        return 512;
+    }
+
     public byte[] random(int dataLen) throws FoundationException {
         return FoundationJNI.INSTANCE.keyMaterialRng_random(this.cCtx, dataLen);
     }
