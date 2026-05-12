@@ -638,10 +638,10 @@ JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_r
 JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_ratchet_RatchetJNI_ratchetSession_1serialize (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscr_ratchet_session_t /*9*/* ratchet_session_ctx = *(vscr_ratchet_session_t /*9*/**) &c_ctx;
-
+    
     vsc_buffer_t *proxyResult = vscr_ratchet_session_serialize(ratchet_session_ctx /*a1*/);
     jbyteArray ret = (*jenv)->NewByteArray(jenv, vsc_buffer_len(proxyResult));
-    (*jenv)->SetByteArrayRegion(jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
+    (*jenv)->SetByteArrayRegion (jenv, ret, 0, vsc_buffer_len(proxyResult), (jbyte*) vsc_buffer_bytes(proxyResult));
     vsc_buffer_delete(proxyResult);
     return ret;
 }
