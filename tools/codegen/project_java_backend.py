@@ -2167,6 +2167,12 @@ def _generate_jni_c(project_ir: IRProject) -> str:
                 ctor_lines = _generate_jni_c_named_constructor(project_ir, cls.name, ctor)
                 lines.extend(ctor_lines)
 
+        # Dependency setters (classes can have dependencies just like impls)
+        if not is_static:
+            for dep in cls.dependencies:
+                dep_lines = _generate_jni_c_dep_setter(project_ir, cls.name, dep)
+                lines.extend(dep_lines)
+
         for m in cls.methods:
             if not _method_should_wrap(m, project_ir):
                 continue
@@ -2324,6 +2330,17 @@ def _generate_jni_h(project_ir: IRProject) -> str:
                 f"(JNIEnv *, jobject, jlong);"
             )
             lines.append("")
+
+            # Dependency setter declarations
+            for dep in cls.dependencies:
+                dep_setter = "set" + _pascal(dep.name)
+                dep_setter_escaped = dep_setter.replace("_", "_1")
+                lines.append(
+                    f"JNIEXPORT void JNICALL "
+                    f"Java_{pkg_path}_{jni_class}_{entity_escaped}_1{dep_setter_escaped} "
+                    f"(JNIEnv *, jobject, jlong, jobject);"
+                )
+                lines.append("")
 
         for m in cls.methods:
             if not _method_should_wrap(m, project_ir):

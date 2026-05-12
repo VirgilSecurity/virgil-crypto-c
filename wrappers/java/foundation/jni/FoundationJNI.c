@@ -2691,6 +2691,86 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_e
     vscf_ecies_delete(*(vscf_ecies_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_ecies_release_random((vscf_ecies_t /*2*/ *) c_ctx);
+    vscf_ecies_use_random((vscf_ecies_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setCipher (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jcipher) {
+    jclass cipher_cls = (*jenv)->GetObjectClass(jenv, jcipher);
+    if (NULL == cipher_cls) {
+        VSCF_ASSERT("Class Cipher not found.");
+    }
+    jfieldID cipher_fidCtx = (*jenv)->GetFieldID(jenv, cipher_cls, "cCtx", "J");
+    if (NULL == cipher_fidCtx) {
+        VSCF_ASSERT("Class 'Cipher' has no field 'cCtx'.");
+    }
+    jlong cipher_c_ctx = (*jenv)->GetLongField(jenv, jcipher, cipher_fidCtx);
+    vscf_impl_t */*6*/ cipher = *(vscf_impl_t */*6*/*)&cipher_c_ctx;
+
+    vscf_ecies_release_cipher((vscf_ecies_t /*2*/ *) c_ctx);
+    vscf_ecies_use_cipher((vscf_ecies_t /*2*/ *) c_ctx, cipher);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setMac (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jmac) {
+    jclass mac_cls = (*jenv)->GetObjectClass(jenv, jmac);
+    if (NULL == mac_cls) {
+        VSCF_ASSERT("Class Mac not found.");
+    }
+    jfieldID mac_fidCtx = (*jenv)->GetFieldID(jenv, mac_cls, "cCtx", "J");
+    if (NULL == mac_fidCtx) {
+        VSCF_ASSERT("Class 'Mac' has no field 'cCtx'.");
+    }
+    jlong mac_c_ctx = (*jenv)->GetLongField(jenv, jmac, mac_fidCtx);
+    vscf_impl_t */*6*/ mac = *(vscf_impl_t */*6*/*)&mac_c_ctx;
+
+    vscf_ecies_release_mac((vscf_ecies_t /*2*/ *) c_ctx);
+    vscf_ecies_use_mac((vscf_ecies_t /*2*/ *) c_ctx, mac);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setKdf (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkdf) {
+    jclass kdf_cls = (*jenv)->GetObjectClass(jenv, jkdf);
+    if (NULL == kdf_cls) {
+        VSCF_ASSERT("Class Kdf not found.");
+    }
+    jfieldID kdf_fidCtx = (*jenv)->GetFieldID(jenv, kdf_cls, "cCtx", "J");
+    if (NULL == kdf_fidCtx) {
+        VSCF_ASSERT("Class 'Kdf' has no field 'cCtx'.");
+    }
+    jlong kdf_c_ctx = (*jenv)->GetLongField(jenv, jkdf, kdf_fidCtx);
+    vscf_impl_t */*6*/ kdf = *(vscf_impl_t */*6*/*)&kdf_c_ctx;
+
+    vscf_ecies_release_kdf((vscf_ecies_t /*2*/ *) c_ctx);
+    vscf_ecies_use_kdf((vscf_ecies_t /*2*/ *) c_ctx, kdf);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setEphemeralKey (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jephemeralKey) {
+    jclass ephemeralKey_cls = (*jenv)->GetObjectClass(jenv, jephemeralKey);
+    if (NULL == ephemeralKey_cls) {
+        VSCF_ASSERT("Class EphemeralKey not found.");
+    }
+    jfieldID ephemeralKey_fidCtx = (*jenv)->GetFieldID(jenv, ephemeralKey_cls, "cCtx", "J");
+    if (NULL == ephemeralKey_fidCtx) {
+        VSCF_ASSERT("Class 'EphemeralKey' has no field 'cCtx'.");
+    }
+    jlong ephemeralKey_c_ctx = (*jenv)->GetLongField(jenv, jephemeralKey, ephemeralKey_fidCtx);
+    vscf_impl_t */*6*/ ephemeral_key = *(vscf_impl_t */*6*/*)&ephemeralKey_c_ctx;
+
+    vscf_ecies_release_ephemeral_key((vscf_ecies_t /*2*/ *) c_ctx);
+    vscf_ecies_use_ephemeral_key((vscf_ecies_t /*2*/ *) c_ctx, ephemeral_key);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_ecies_1setKeyAlg (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jkeyAlg) {
     // Wrap Java interfaces
     jclass key_alg_cls = (*jenv)->GetObjectClass(jenv, jkeyAlg);
@@ -2857,6 +2937,86 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_recipient_cipher_delete(*(vscf_recipient_cipher_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_recipient_cipher_release_random((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_random((vscf_recipient_cipher_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionCipher (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jencryptionCipher) {
+    jclass encryptionCipher_cls = (*jenv)->GetObjectClass(jenv, jencryptionCipher);
+    if (NULL == encryptionCipher_cls) {
+        VSCF_ASSERT("Class EncryptionCipher not found.");
+    }
+    jfieldID encryptionCipher_fidCtx = (*jenv)->GetFieldID(jenv, encryptionCipher_cls, "cCtx", "J");
+    if (NULL == encryptionCipher_fidCtx) {
+        VSCF_ASSERT("Class 'EncryptionCipher' has no field 'cCtx'.");
+    }
+    jlong encryptionCipher_c_ctx = (*jenv)->GetLongField(jenv, jencryptionCipher, encryptionCipher_fidCtx);
+    vscf_impl_t */*6*/ encryption_cipher = *(vscf_impl_t */*6*/*)&encryptionCipher_c_ctx;
+
+    vscf_recipient_cipher_release_encryption_cipher((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_encryption_cipher((vscf_recipient_cipher_t /*2*/ *) c_ctx, encryption_cipher);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setEncryptionPadding (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jencryptionPadding) {
+    jclass encryptionPadding_cls = (*jenv)->GetObjectClass(jenv, jencryptionPadding);
+    if (NULL == encryptionPadding_cls) {
+        VSCF_ASSERT("Class EncryptionPadding not found.");
+    }
+    jfieldID encryptionPadding_fidCtx = (*jenv)->GetFieldID(jenv, encryptionPadding_cls, "cCtx", "J");
+    if (NULL == encryptionPadding_fidCtx) {
+        VSCF_ASSERT("Class 'EncryptionPadding' has no field 'cCtx'.");
+    }
+    jlong encryptionPadding_c_ctx = (*jenv)->GetLongField(jenv, jencryptionPadding, encryptionPadding_fidCtx);
+    vscf_impl_t */*6*/ encryption_padding = *(vscf_impl_t */*6*/*)&encryptionPadding_c_ctx;
+
+    vscf_recipient_cipher_release_encryption_padding((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_encryption_padding((vscf_recipient_cipher_t /*2*/ *) c_ctx, encryption_padding);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setPaddingParams (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jpaddingParams) {
+    jclass paddingParams_cls = (*jenv)->GetObjectClass(jenv, jpaddingParams);
+    if (NULL == paddingParams_cls) {
+        VSCF_ASSERT("Class PaddingParams not found.");
+    }
+    jfieldID paddingParams_fidCtx = (*jenv)->GetFieldID(jenv, paddingParams_cls, "cCtx", "J");
+    if (NULL == paddingParams_fidCtx) {
+        VSCF_ASSERT("Class 'PaddingParams' has no field 'cCtx'.");
+    }
+    jlong paddingParams_c_ctx = (*jenv)->GetLongField(jenv, jpaddingParams, paddingParams_fidCtx);
+    vscf_padding_params_t */*5*/ padding_params = *(vscf_padding_params_t */*5*/*)&paddingParams_c_ctx;
+
+    vscf_recipient_cipher_release_padding_params((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_padding_params((vscf_recipient_cipher_t /*2*/ *) c_ctx, padding_params);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1setSignerHash (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jsignerHash) {
+    jclass signerHash_cls = (*jenv)->GetObjectClass(jenv, jsignerHash);
+    if (NULL == signerHash_cls) {
+        VSCF_ASSERT("Class SignerHash not found.");
+    }
+    jfieldID signerHash_fidCtx = (*jenv)->GetFieldID(jenv, signerHash_cls, "cCtx", "J");
+    if (NULL == signerHash_fidCtx) {
+        VSCF_ASSERT("Class 'SignerHash' has no field 'cCtx'.");
+    }
+    jlong signerHash_c_ctx = (*jenv)->GetLongField(jenv, jsignerHash, signerHash_fidCtx);
+    vscf_impl_t */*6*/ signer_hash = *(vscf_impl_t */*6*/*)&signerHash_c_ctx;
+
+    vscf_recipient_cipher_release_signer_hash((vscf_recipient_cipher_t /*2*/ *) c_ctx);
+    vscf_recipient_cipher_use_signer_hash((vscf_recipient_cipher_t /*2*/ *) c_ctx, signer_hash);
 }
 
 JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_recipientCipher_1hasKeyRecipient (JNIEnv *jenv, jobject jobj, jlong c_ctx, jbyteArray jrecipientId) {
@@ -3443,6 +3603,22 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_k
     vscf_key_provider_delete(*(vscf_key_provider_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_key_provider_release_random((vscf_key_provider_t /*2*/ *) c_ctx);
+    vscf_key_provider_use_random((vscf_key_provider_t /*2*/ *) c_ctx, random);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_keyProvider_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_key_provider_t /*9*/* key_provider_ctx = *(vscf_key_provider_t /*9*/**) &c_ctx;
@@ -3756,6 +3932,38 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_s
     vscf_signer_delete(*(vscf_signer_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1setHash (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jhash) {
+    jclass hash_cls = (*jenv)->GetObjectClass(jenv, jhash);
+    if (NULL == hash_cls) {
+        VSCF_ASSERT("Class Hash not found.");
+    }
+    jfieldID hash_fidCtx = (*jenv)->GetFieldID(jenv, hash_cls, "cCtx", "J");
+    if (NULL == hash_fidCtx) {
+        VSCF_ASSERT("Class 'Hash' has no field 'cCtx'.");
+    }
+    jlong hash_c_ctx = (*jenv)->GetLongField(jenv, jhash, hash_fidCtx);
+    vscf_impl_t */*6*/ hash = *(vscf_impl_t */*6*/*)&hash_c_ctx;
+
+    vscf_signer_release_hash((vscf_signer_t /*2*/ *) c_ctx);
+    vscf_signer_use_hash((vscf_signer_t /*2*/ *) c_ctx, hash);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_signer_release_random((vscf_signer_t /*2*/ *) c_ctx);
+    vscf_signer_use_random((vscf_signer_t /*2*/ *) c_ctx, random);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_signer_1reset (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_signer_t /*9*/* signer_ctx = *(vscf_signer_t /*9*/**) &c_ctx;
@@ -3897,6 +4105,38 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_brainkey_client_delete(*(vscf_brainkey_client_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_brainkey_client_release_random((vscf_brainkey_client_t /*2*/ *) c_ctx);
+    vscf_brainkey_client_use_random((vscf_brainkey_client_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCF_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCF_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vscf_brainkey_client_release_operation_random((vscf_brainkey_client_t /*2*/ *) c_ctx);
+    vscf_brainkey_client_use_operation_random((vscf_brainkey_client_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyClient_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4056,6 +4296,38 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_brainkey_server_delete(*(vscf_brainkey_server_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_brainkey_server_release_random((vscf_brainkey_server_t /*2*/ *) c_ctx);
+    vscf_brainkey_server_use_random((vscf_brainkey_server_t /*2*/ *) c_ctx, random);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setOperationRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject joperationRandom) {
+    jclass operationRandom_cls = (*jenv)->GetObjectClass(jenv, joperationRandom);
+    if (NULL == operationRandom_cls) {
+        VSCF_ASSERT("Class OperationRandom not found.");
+    }
+    jfieldID operationRandom_fidCtx = (*jenv)->GetFieldID(jenv, operationRandom_cls, "cCtx", "J");
+    if (NULL == operationRandom_fidCtx) {
+        VSCF_ASSERT("Class 'OperationRandom' has no field 'cCtx'.");
+    }
+    jlong operationRandom_c_ctx = (*jenv)->GetLongField(jenv, joperationRandom, operationRandom_fidCtx);
+    vscf_impl_t */*6*/ operation_random = *(vscf_impl_t */*6*/*)&operationRandom_c_ctx;
+
+    vscf_brainkey_server_release_operation_random((vscf_brainkey_server_t /*2*/ *) c_ctx);
+    vscf_brainkey_server_use_operation_random((vscf_brainkey_server_t /*2*/ *) c_ctx, operation_random);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_brainkeyServer_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4320,6 +4592,22 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_g
     vscf_group_session_ticket_delete(*(vscf_group_session_ticket_t /*9*/ **) &c_ctx /*5*/);
 }
 
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setRng (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrng) {
+    jclass rng_cls = (*jenv)->GetObjectClass(jenv, jrng);
+    if (NULL == rng_cls) {
+        VSCF_ASSERT("Class Rng not found.");
+    }
+    jfieldID rng_fidCtx = (*jenv)->GetFieldID(jenv, rng_cls, "cCtx", "J");
+    if (NULL == rng_fidCtx) {
+        VSCF_ASSERT("Class 'Rng' has no field 'cCtx'.");
+    }
+    jlong rng_c_ctx = (*jenv)->GetLongField(jenv, jrng, rng_fidCtx);
+    vscf_impl_t */*6*/ rng = *(vscf_impl_t */*6*/*)&rng_c_ctx;
+
+    vscf_group_session_ticket_release_rng((vscf_group_session_ticket_t /*2*/ *) c_ctx);
+    vscf_group_session_ticket_use_rng((vscf_group_session_ticket_t /*2*/ *) c_ctx, rng);
+}
+
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSessionTicket_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     // Cast class context
     vscf_group_session_ticket_t /*9*/* group_session_ticket_ctx = *(vscf_group_session_ticket_t /*9*/**) &c_ctx;
@@ -4375,6 +4663,22 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_group_session_delete(*(vscf_group_session_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1setRng (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrng) {
+    jclass rng_cls = (*jenv)->GetObjectClass(jenv, jrng);
+    if (NULL == rng_cls) {
+        VSCF_ASSERT("Class Rng not found.");
+    }
+    jfieldID rng_fidCtx = (*jenv)->GetFieldID(jenv, rng_cls, "cCtx", "J");
+    if (NULL == rng_fidCtx) {
+        VSCF_ASSERT("Class 'Rng' has no field 'cCtx'.");
+    }
+    jlong rng_c_ctx = (*jenv)->GetLongField(jenv, jrng, rng_fidCtx);
+    vscf_impl_t */*6*/ rng = *(vscf_impl_t */*6*/*)&rng_c_ctx;
+
+    vscf_group_session_release_rng((vscf_group_session_t /*2*/ *) c_ctx);
+    vscf_group_session_use_rng((vscf_group_session_t /*2*/ *) c_ctx, rng);
 }
 
 JNIEXPORT jint JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_groupSession_1getCurrentEpoch (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
@@ -4571,6 +4875,22 @@ JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
     vscf_message_info_editor_delete(*(vscf_message_info_editor_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setRandom (JNIEnv *jenv, jobject jobj, jlong c_ctx, jobject jrandom) {
+    jclass random_cls = (*jenv)->GetObjectClass(jenv, jrandom);
+    if (NULL == random_cls) {
+        VSCF_ASSERT("Class Random not found.");
+    }
+    jfieldID random_fidCtx = (*jenv)->GetFieldID(jenv, random_cls, "cCtx", "J");
+    if (NULL == random_fidCtx) {
+        VSCF_ASSERT("Class 'Random' has no field 'cCtx'.");
+    }
+    jlong random_c_ctx = (*jenv)->GetLongField(jenv, jrandom, random_fidCtx);
+    vscf_impl_t */*6*/ random = *(vscf_impl_t */*6*/*)&random_c_ctx;
+
+    vscf_message_info_editor_release_random((vscf_message_info_editor_t /*2*/ *) c_ctx);
+    vscf_message_info_editor_use_random((vscf_message_info_editor_t /*2*/ *) c_ctx, random);
 }
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_messageInfoEditor_1setupDefaults (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
