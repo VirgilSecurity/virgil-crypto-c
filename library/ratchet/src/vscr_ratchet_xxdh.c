@@ -552,9 +552,9 @@ vscr_ratchet_xxdh_compute_initiator_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
         }
     }
 
-    if (sender_identity_private_key_second_signer != NULL) {
-        size_t length = vsc_buffer_len(shared_secret);
+    size_t length = vsc_buffer_len(shared_secret);
 
+    if (sender_identity_private_key_second_signer != NULL && length > pqc_begin_index) {
         vsc_data_t pqc_shared_secret =
                 vsc_data_slice_beg(vsc_buffer_data(shared_secret), pqc_begin_index, length - pqc_begin_index);
         VSCR_ASSERT(!vsc_data_is_empty(pqc_shared_secret));
@@ -722,9 +722,9 @@ vscr_ratchet_xxdh_compute_responder_pqc_shared_secret(vscr_ratchet_xxdh_t *self,
             goto err;
         }
     }
-    if (sender_identity_public_key_second_verifier != NULL) {
-        size_t length = vsc_buffer_len(shared_secret);
+    size_t length = vsc_buffer_len(shared_secret);
 
+    if (sender_identity_public_key_second_verifier != NULL && length > pqc_begin_index) {
         vsc_data_t pqc_shared_secret =
                 vsc_data_slice_beg(vsc_buffer_data(shared_secret), pqc_begin_index, length - pqc_begin_index);
         VSCR_ASSERT(!vsc_data_is_empty(pqc_shared_secret));

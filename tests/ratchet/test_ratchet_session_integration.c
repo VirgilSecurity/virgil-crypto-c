@@ -43,6 +43,7 @@
 #include "vscr_ratchet_message_defs.h"
 #include "vscr_ratchet_session.h"
 #include "vscf_private_key.h"
+#include "vscf_key_provider.h"
 #include "test_utils_ratchet.h"
 
 // --------------------------------------------------------------------------
@@ -401,6 +402,89 @@ test__pqc_ml_dsa_65__100_messages_with_restore__should_succeed(void) {
     vscf_ctr_drbg_destroy(&rng);
 }
 
+void
+test__curve25519_ed25519_identity_key__non_pqc_lt_key__should_not_crash(void) {
+    // Regression: curve25519Ed25519 compound identity keys (cipher=curve25519, signer=ed25519)
+    // were crashing with VSCR_ASSERT in compute_initiator/responder_pqc_shared_secret because
+    // the Ed25519 signer component was extracted and passed as second_signer even when no KEM
+    // encapsulation occurred (non-PQC long-term key → enable_post_quantum=false).
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
+
+    vscf_impl_t *alice_priv = generate_identity_private_key_curve25519_ed25519(key_provider);
+    vscf_impl_t *alice_pub = vscf_private_key_extract_public_key(alice_priv);
+    vscf_impl_t *bob_priv = generate_identity_private_key_curve25519_ed25519(key_provider);
+    vscf_impl_t *bob_pub = vscf_private_key_extract_public_key(bob_priv);
+    vscf_impl_t *bob_lt_priv = generate_ephemeral_private_key(key_provider, false);
+    vscf_impl_t *bob_lt_pub = vscf_private_key_extract_public_key(bob_lt_priv);
+
+    vsc_buffer_t *alice_id = NULL, *bob_id = NULL, *bob_lt_id = NULL;
+    generate_random_data_of_size(rng, &alice_id, 8);
+    generate_random_data_of_size(rng, &bob_id, 8);
+    generate_random_data_of_size(rng, &bob_lt_id, 8);
+    vsc_buffer_t *no_ot_id = vsc_buffer_new_with_capacity(0);
+
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_setup_defaults(session_alice));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_setup_defaults(session_bob));
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_session_initiate(session_alice, alice_priv, vsc_buffer_data(alice_id), bob_pub,
+                    vsc_buffer_data(bob_id), bob_lt_pub, vsc_buffer_data(bob_lt_id), NULL, vsc_buffer_data(no_ot_id)));
+
+    vscr_error_t error;
+    vscr_error_reset(&error);
+    vsc_buffer_t *text1 = NULL;
+    generate_random_data(rng, &text1);
+
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_session_encrypt(session_alice, vsc_buffer_data(text1), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_session_respond(session_bob, alice_pub, bob_priv, bob_lt_priv, NULL, msg1));
+
+    size_t len1 = vscr_ratchet_session_decrypt_len(session_bob, msg1);
+    vsc_buffer_t *plain1 = vsc_buffer_new_with_capacity(len1);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_decrypt(session_bob, msg1, plain1));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text1), plain1);
+
+    vsc_buffer_t *text2 = NULL;
+    generate_random_data(rng, &text2);
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_session_encrypt(session_bob, vsc_buffer_data(text2), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_alice, msg2);
+    vsc_buffer_t *plain2 = vsc_buffer_new_with_capacity(len2);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_decrypt(session_alice, msg2, plain2));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text2), plain2);
+
+    vscr_ratchet_message_destroy(&msg1);
+    vscr_ratchet_message_destroy(&msg2);
+    vsc_buffer_destroy(&text1);
+    vsc_buffer_destroy(&text2);
+    vsc_buffer_destroy(&plain1);
+    vsc_buffer_destroy(&plain2);
+    vscf_impl_destroy(&alice_priv);
+    vscf_impl_destroy(&alice_pub);
+    vscf_impl_destroy(&bob_priv);
+    vscf_impl_destroy(&bob_pub);
+    vscf_impl_destroy(&bob_lt_priv);
+    vscf_impl_destroy(&bob_lt_pub);
+    vsc_buffer_destroy(&alice_id);
+    vsc_buffer_destroy(&bob_id);
+    vsc_buffer_destroy(&bob_lt_id);
+    vsc_buffer_destroy(&no_ot_id);
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_ctr_drbg_destroy(&rng);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -419,6 +503,7 @@ main(void) {
     RUN_TEST(test__encrypt_decrypt__randomly_skipped_messages__decrypt_should_succeed);
     RUN_TEST(test__pqc_ml_dsa_65__encrypt_decrypt_with_restore__should_succeed);
     RUN_TEST(test__pqc_ml_dsa_65__100_messages_with_restore__should_succeed);
+    RUN_TEST(test__curve25519_ed25519_identity_key__non_pqc_lt_key__should_not_crash);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif
