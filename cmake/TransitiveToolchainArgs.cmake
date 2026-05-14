@@ -96,7 +96,11 @@ function(TRANSITIVE_APPLE_ARGS_ADD)
                 CMAKE_APPLE_SDK_ROOT
                 CMAKE_OSX_ARCHITECTURES)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-        transitive_args_add(CMAKE_OSX_ARCHITECTURES)
+        transitive_args_add(
+                APPLE_PLATFORM
+                MACOS_DEPLOYMENT_TARGET
+                CMAKE_APPLE_SDK_ROOT
+                CMAKE_OSX_ARCHITECTURES)
     endif ()
 endfunction()
 
