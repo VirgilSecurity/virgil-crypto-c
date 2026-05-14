@@ -485,6 +485,114 @@ test__curve25519_ed25519_identity_key__non_pqc_lt_key__should_not_crash(void) {
     vscf_ctr_drbg_destroy(&rng);
 }
 
+static void
+test__non_pqc_identity_key__mlkem_lt_and_otk__should_not_crash(void) {
+    // Regression: when the receiver has ML-KEM hybrid long-term/OTK keys but a non-PQC identity
+    // key, enable_post_quantum=true but encapsulated_key_1 and decapsulated_keys_signature are
+    // NULL. The encrypt and serialize paths were crashing at VSCR_ASSERT_PTR(buffer) because they
+    // unconditionally called serialize_buffer for all PQC fields.
+    vscf_ctr_drbg_t *rng = vscf_ctr_drbg_new();
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, vscf_ctr_drbg_setup_defaults(rng));
+
+    vscf_key_provider_t *key_provider = vscf_key_provider_new();
+    vscf_key_provider_use_random(key_provider, vscf_ctr_drbg_impl(rng));
+
+    vscf_error_t error_ctx;
+    vscf_error_reset(&error_ctx);
+
+    // Both identity keys are plain ED25519 (no PQC component).
+    vscf_impl_t *alice_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error_ctx);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *alice_pub = vscf_private_key_extract_public_key(alice_priv);
+
+    vscf_impl_t *bob_priv = vscf_key_provider_generate_private_key(key_provider, vscf_alg_id_ED25519, &error_ctx);
+    TEST_ASSERT_EQUAL(vscf_status_SUCCESS, error_ctx.status);
+    vscf_impl_t *bob_pub = vscf_private_key_extract_public_key(bob_priv);
+
+    // Bob's long-term and OTK are ML-KEM hybrid → enable_post_quantum=true.
+    vscf_impl_t *bob_lt_priv = generate_ephemeral_private_key(key_provider, true);
+    vscf_impl_t *bob_lt_pub = vscf_private_key_extract_public_key(bob_lt_priv);
+    vscf_impl_t *bob_ot_priv = generate_ephemeral_private_key(key_provider, true);
+    vscf_impl_t *bob_ot_pub = vscf_private_key_extract_public_key(bob_ot_priv);
+
+    vsc_buffer_t *alice_id = NULL, *bob_id = NULL, *bob_lt_id = NULL, *bob_ot_id = NULL;
+    generate_random_data_of_size(rng, &alice_id, 8);
+    generate_random_data_of_size(rng, &bob_id, 8);
+    generate_random_data_of_size(rng, &bob_lt_id, 8);
+    generate_random_data_of_size(rng, &bob_ot_id, 8);
+
+    vscr_ratchet_session_t *session_alice = vscr_ratchet_session_new();
+    vscr_ratchet_session_t *session_bob = vscr_ratchet_session_new();
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_setup_defaults(session_alice));
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_setup_defaults(session_bob));
+
+    TEST_ASSERT_EQUAL(
+            vscr_status_SUCCESS, vscr_ratchet_session_initiate(session_alice, alice_priv, vsc_buffer_data(alice_id),
+                                         bob_pub, vsc_buffer_data(bob_id), bob_lt_pub, vsc_buffer_data(bob_lt_id),
+                                         bob_ot_pub, vsc_buffer_data(bob_ot_id)));
+
+    vscr_error_t error;
+    vscr_error_reset(&error);
+    vsc_buffer_t *text1 = NULL;
+    generate_random_data(rng, &text1);
+
+    // This used to crash at vscr_ratchet_pb_utils.c:267 VSCR_ASSERT_PTR(buffer).
+    vscr_ratchet_message_t *msg1 = vscr_ratchet_session_encrypt(session_alice, vsc_buffer_data(text1), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+    TEST_ASSERT_EQUAL(vscr_msg_type_PREKEY, vscr_ratchet_message_get_type(msg1));
+
+    // Serialize and restore Alice's session (also crashed before the fix).
+    vsc_buffer_t *alice_serialized = vscr_ratchet_session_serialize(session_alice);
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_error_reset(&error);
+    session_alice = vscr_ratchet_session_deserialize(vsc_buffer_data(alice_serialized), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+    vscr_ratchet_session_use_rng(session_alice, vscf_ctr_drbg_impl(rng));
+
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS,
+            vscr_ratchet_session_respond(session_bob, alice_pub, bob_priv, bob_lt_priv, bob_ot_priv, msg1));
+
+    size_t len1 = vscr_ratchet_session_decrypt_len(session_bob, msg1);
+    vsc_buffer_t *plain1 = vsc_buffer_new_with_capacity(len1);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_decrypt(session_bob, msg1, plain1));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text1), plain1);
+
+    vsc_buffer_t *text2 = NULL;
+    generate_random_data(rng, &text2);
+    vscr_error_reset(&error);
+    vscr_ratchet_message_t *msg2 = vscr_ratchet_session_encrypt(session_bob, vsc_buffer_data(text2), &error);
+    TEST_ASSERT_FALSE(vscr_error_has_error(&error));
+
+    size_t len2 = vscr_ratchet_session_decrypt_len(session_alice, msg2);
+    vsc_buffer_t *plain2 = vsc_buffer_new_with_capacity(len2);
+    TEST_ASSERT_EQUAL(vscr_status_SUCCESS, vscr_ratchet_session_decrypt(session_alice, msg2, plain2));
+    TEST_ASSERT_EQUAL_DATA_AND_BUFFER(vsc_buffer_data(text2), plain2);
+
+    vscr_ratchet_message_destroy(&msg1);
+    vscr_ratchet_message_destroy(&msg2);
+    vsc_buffer_destroy(&text1);
+    vsc_buffer_destroy(&text2);
+    vsc_buffer_destroy(&plain1);
+    vsc_buffer_destroy(&plain2);
+    vsc_buffer_destroy(&alice_serialized);
+    vscf_impl_destroy(&alice_priv);
+    vscf_impl_destroy(&alice_pub);
+    vscf_impl_destroy(&bob_priv);
+    vscf_impl_destroy(&bob_pub);
+    vscf_impl_destroy(&bob_lt_priv);
+    vscf_impl_destroy(&bob_lt_pub);
+    vscf_impl_destroy(&bob_ot_priv);
+    vscf_impl_destroy(&bob_ot_pub);
+    vsc_buffer_destroy(&alice_id);
+    vsc_buffer_destroy(&bob_id);
+    vsc_buffer_destroy(&bob_lt_id);
+    vsc_buffer_destroy(&bob_ot_id);
+    vscr_ratchet_session_destroy(&session_alice);
+    vscr_ratchet_session_destroy(&session_bob);
+    vscf_key_provider_destroy(&key_provider);
+    vscf_ctr_drbg_destroy(&rng);
+}
+
 #endif // TEST_DEPENDENCIES_AVAILABLE
 
 
@@ -504,6 +612,7 @@ main(void) {
     RUN_TEST(test__pqc_ml_dsa_65__encrypt_decrypt_with_restore__should_succeed);
     RUN_TEST(test__pqc_ml_dsa_65__100_messages_with_restore__should_succeed);
     RUN_TEST(test__curve25519_ed25519_identity_key__non_pqc_lt_key__should_not_crash);
+    RUN_TEST(test__non_pqc_identity_key__mlkem_lt_and_otk__should_not_crash);
 #else
     RUN_TEST(test__nothing__feature_disabled__must_be_ignored);
 #endif

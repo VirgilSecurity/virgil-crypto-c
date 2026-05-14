@@ -758,14 +758,18 @@ vscr_ratchet_session_encrypt(vscr_ratchet_session_t *self, vsc_data_t plain_text
 
             vscr_PrekeyMessagePqcInfo *pqc_info = &prekey_message->pqc_info;
 
-            vscr_ratchet_pb_utils_serialize_buffer(self->encapsulated_key_1, &pqc_info->encapsulated_key1);
+            if (self->encapsulated_key_1 != NULL) {
+                vscr_ratchet_pb_utils_serialize_buffer(self->encapsulated_key_1, &pqc_info->encapsulated_key1);
+            }
             vscr_ratchet_pb_utils_serialize_buffer(self->encapsulated_key_2, &pqc_info->encapsulated_key2);
 
-            if (self->receiver_has_one_time_key_first) {
+            if (self->receiver_has_one_time_key_first && self->encapsulated_key_3 != NULL) {
                 vscr_ratchet_pb_utils_serialize_buffer(self->encapsulated_key_3, &pqc_info->encapsulated_key3);
             }
-            vscr_ratchet_pb_utils_serialize_buffer(
-                    self->decapsulated_keys_signature, &pqc_info->decapsulated_keys_signature);
+            if (self->decapsulated_keys_signature != NULL) {
+                vscr_ratchet_pb_utils_serialize_buffer(
+                        self->decapsulated_keys_signature, &pqc_info->decapsulated_keys_signature);
+            }
         } else {
             prekey_message->has_pqc_info = false;
         }
@@ -874,16 +878,21 @@ vscr_ratchet_session_serialize(vscr_ratchet_session_t *self) {
 
         if (self->enable_post_quantum) {
             session_pb->has_pqc_info = true;
-            vscr_ratchet_pb_utils_serialize_buffer(self->encapsulated_key_1, &session_pb->pqc_info.encapsulated_key1);
+            if (self->encapsulated_key_1 != NULL) {
+                vscr_ratchet_pb_utils_serialize_buffer(
+                        self->encapsulated_key_1, &session_pb->pqc_info.encapsulated_key1);
+            }
             vscr_ratchet_pb_utils_serialize_buffer(self->encapsulated_key_2, &session_pb->pqc_info.encapsulated_key2);
 
-            if (self->receiver_has_one_time_key_first) {
+            if (self->receiver_has_one_time_key_first && self->encapsulated_key_3 != NULL) {
                 vscr_ratchet_pb_utils_serialize_buffer(
                         self->encapsulated_key_3, &session_pb->pqc_info.encapsulated_key3);
             }
 
-            vscr_ratchet_pb_utils_serialize_buffer(
-                    self->decapsulated_keys_signature, &session_pb->pqc_info.decapsulated_keys_signature);
+            if (self->decapsulated_keys_signature != NULL) {
+                vscr_ratchet_pb_utils_serialize_buffer(
+                        self->decapsulated_keys_signature, &session_pb->pqc_info.decapsulated_keys_signature);
+            }
         } else {
             session_pb->has_pqc_info = false;
         }
@@ -961,8 +970,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
                 goto err;
             }
 
-            if (session_pb->pqc_info.encapsulated_key1 == NULL || session_pb->pqc_info.encapsulated_key2 == NULL ||
-                    session_pb->pqc_info.decapsulated_keys_signature == NULL) {
+            if (session_pb->pqc_info.encapsulated_key2 == NULL) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
 
                 goto err;
@@ -999,7 +1007,7 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
         }
 
         if (session->enable_post_quantum) {
-            if (session_pb->pqc_info.encapsulated_key1->size == 0) {
+            if (session_pb->pqc_info.encapsulated_key1 != NULL && session_pb->pqc_info.encapsulated_key1->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
                 vscr_ratchet_session_destroy(&session);
                 goto err;
@@ -1014,7 +1022,8 @@ vscr_ratchet_session_deserialize(vsc_data_t input, vscr_error_t *error) {
                 vscr_ratchet_session_destroy(&session);
                 goto err;
             }
-            if (session_pb->pqc_info.decapsulated_keys_signature->size == 0) {
+            if (session_pb->pqc_info.decapsulated_keys_signature != NULL &&
+                    session_pb->pqc_info.decapsulated_keys_signature->size == 0) {
                 VSCR_ERROR_SAFE_UPDATE(error, vscr_status_ERROR_PROTOBUF_DECODE);
                 vscr_ratchet_session_destroy(&session);
                 goto err;
