@@ -108,6 +108,17 @@ endfunction()
 # ---------------------------------------------------------------------------
 #   Known ANDROID toolchain configuration arguments.
 # ---------------------------------------------------------------------------
+function(TRANSITIVE_LINUX_CROSS_ARGS_ADD)
+    if(CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT ANDROID)
+        transitive_args_add(
+                CMAKE_C_COMPILER
+                CMAKE_CXX_COMPILER
+                CMAKE_SYSTEM_NAME
+                CMAKE_SYSTEM_PROCESSOR)
+    endif()
+endfunction()
+
+
 function(TRANSITIVE_ANDROID_ARGS_ADD)
     if(CMAKE_CROSSCOMPILING AND ANDROID)
         transitive_args_add(
@@ -141,6 +152,7 @@ function(TRANSITIVE_TOOLCHAIN_ARGS_ADD)
     transitive_common_args_add()
     transitive_apple_args_add()
     transitive_android_args_add()
+    transitive_linux_cross_args_add()
 endfunction()
 
 

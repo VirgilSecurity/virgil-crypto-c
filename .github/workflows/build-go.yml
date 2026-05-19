@@ -137,15 +137,23 @@ jobs:
         if: matrix.expected_elf_arch != ''
         shell: bash
         run: |
-          lib="wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_foundation.a"
-          actual=$(readelf -h "$lib" 2>&1 | awk '/Machine:/{print $NF; exit}')
           expected="${{ matrix.expected_elf_arch }}"
-          if [ "$actual" != "$expected" ]; then
-            echo "ERROR: $lib Machine type '$actual', expected '$expected'"
-            echo "This indicates a cross-compilation misconfiguration (see rc.8 packaging bug)."
-            exit 1
-          fi
-          echo "OK: $lib Machine type is $actual"
+          failed=0
+          for lib in \
+              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_foundation.a \
+              wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_ratchet.a \
+              wrappers/go/pkg/${{ matrix.target }}/lib/libmlkem768.a \
+              wrappers/go/pkg/${{ matrix.target }}/lib/libfalcon.a \
+              wrappers/go/pkg/${{ matrix.target }}/lib/libmbedcrypto.a; do
+            actual=$(readelf -h "$lib" 2>&1 | awk '/Machine:/{print $NF; exit}')
+            if [ "$actual" != "$expected" ]; then
+              echo "ERROR: $lib Machine type '$actual', expected '$expected'"
+              failed=1
+            else
+              echo "OK: $lib ($actual)"
+            fi
+          done
+          [ $failed -eq 0 ] || { echo "Cross-compilation misconfiguration detected."; exit 1; }
 
       - name: Run Go tests
         if: matrix.run_tests
