@@ -64,7 +64,7 @@ include("cmake/protobuf.cmake")
 # ---------------------------------------------------------------------------
 #   Version options
 # ---------------------------------------------------------------------------
-set(VIRGIL_CRYPTO_VERSION_LABEL "rc.14" CACHE STRING "Version label, i.e. beta, rc1.")
+set(VIRGIL_CRYPTO_VERSION_LABEL "rc.15" CACHE STRING "Version label, i.e. beta, rc1.")
 
 # ---------------------------------------------------------------------------
 #   Build options
