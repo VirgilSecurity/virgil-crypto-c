@@ -45,7 +45,7 @@ jobs:
               -DED25519_AMD64_RADIX_64_24K=ON
               -DED25519_REF10=OFF
             run_tests: true
-            expected_elf_arch: x86_64
+            expected_elf_arch: X86-64
 
           - target: linux_arm64
             runner: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
               -DCMAKE_SYSTEM_PROCESSOR=aarch64
             cross_packages: gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
             run_tests: false
-            expected_elf_arch: aarch64
+            expected_elf_arch: AArch64
 
           - target: darwin_amd64
             runner: macos-latest
@@ -138,14 +138,14 @@ jobs:
         shell: bash
         run: |
           lib="wrappers/go/pkg/${{ matrix.target }}/lib/libvsc_foundation.a"
-          actual=$(objdump -f "$lib" 2>&1 | awk '/^architecture:/{print $2; exit}')
+          actual=$(readelf -h "$lib" 2>&1 | awk '/Machine:/{print $NF; exit}')
           expected="${{ matrix.expected_elf_arch }}"
           if [ "$actual" != "$expected" ]; then
-            echo "ERROR: $lib has ELF architecture '$actual', expected '$expected'"
+            echo "ERROR: $lib Machine type '$actual', expected '$expected'"
             echo "This indicates a cross-compilation misconfiguration (see rc.8 packaging bug)."
             exit 1
           fi
-          echo "OK: $lib architecture is $actual"
+          echo "OK: $lib Machine type is $actual"
 
       - name: Run Go tests
         if: matrix.run_tests
