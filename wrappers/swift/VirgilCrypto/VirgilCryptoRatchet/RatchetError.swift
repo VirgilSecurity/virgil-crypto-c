@@ -36,7 +36,7 @@
 import Foundation
 import VSCRatchet
 
-@objc(VSCRRatchetError) public enum RatchetError: Int, Error {
+@objc public enum RatchetError: Int, Error {
 
     /// Error during protobuf deserialization.
     case errorProtobufDecode = -1

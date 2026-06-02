@@ -35,7 +35,7 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFOidId) public enum OidId: Int {
+@objc public enum OidId: Int {
     case none
 
     case rsa

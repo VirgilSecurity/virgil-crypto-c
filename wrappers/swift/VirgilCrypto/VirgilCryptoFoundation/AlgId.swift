@@ -36,7 +36,7 @@ import Foundation
 import VSCFoundation
 
 /// Define implemented algorithm identificator.
-@objc(VSCFAlgId) public enum AlgId: Int {
+@objc public enum AlgId: Int {
     case none
 
     case sha224

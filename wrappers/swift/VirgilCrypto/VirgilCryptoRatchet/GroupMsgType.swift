@@ -36,7 +36,7 @@ import Foundation
 import VSCRatchet
 
 /// Represents group message type
-@objc(VSCRGroupMsgType) public enum GroupMsgType: Int {
+@objc public enum GroupMsgType: Int {
     /// Group info used to create group chat, add or remove participants.
     /// Should be distributed only using secure channels.
     case groupInfo = 1

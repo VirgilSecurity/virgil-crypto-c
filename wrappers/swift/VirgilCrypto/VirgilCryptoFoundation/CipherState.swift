@@ -36,7 +36,7 @@ import Foundation
 import VSCFoundation
 
 /// Enumerates possible sequentail cipher's states.
-@objc(VSCFCipherState) public enum CipherState: Int {
+@objc public enum CipherState: Int {
     /// Cipher is ready for new encryption / decryption operation.
     case initial
 

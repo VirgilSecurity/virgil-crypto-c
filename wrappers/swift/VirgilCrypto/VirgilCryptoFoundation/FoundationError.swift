@@ -36,7 +36,7 @@
 import Foundation
 import VSCFoundation
 
-@objc(VSCFFoundationError) public enum FoundationError: Int, Error {
+@objc public enum FoundationError: Int, Error {
 
     /// This error should not be returned if assertions is enabled.
     case errorBadArguments = -1

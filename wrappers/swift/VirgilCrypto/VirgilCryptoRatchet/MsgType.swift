@@ -36,7 +36,7 @@ import Foundation
 import VSCRatchet
 
 /// Represents message type
-@objc(VSCRMsgType) public enum MsgType: Int {
+@objc public enum MsgType: Int {
     /// Regular message. This message is used all the time except case described in prekey message section.
     case regular = 1
 

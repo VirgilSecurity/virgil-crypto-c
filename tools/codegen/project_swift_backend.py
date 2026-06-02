@@ -296,7 +296,7 @@ def generate_swift_enum(project_ir: IRProject, enum: IREnum) -> str:
     if doc:
         lines.append(f"/// {doc}")
 
-    lines.append(f"@objc({objc_name}) public enum {type_name}: Int {{")
+    lines.append(f"@objc public enum {type_name}: Int {{")
 
     # Enum cases
     next_default = 0
@@ -1456,7 +1456,7 @@ def generate_swift_error(project_ir: IRProject) -> str:
     lines: list[str] = []
     lines.append(_file_header(project_ir))
 
-    lines.append(f"@objc({objc_name}) public enum {type_name}: Int, Error {{")
+    lines.append(f"@objc public enum {type_name}: Int, Error {{")
     lines.append("")
 
     for const in body_constants:
