@@ -1,6 +1,6 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
-## Version 0.19.0 released 2026-06-02
+## Version 0.19.1 released 2026-06-02
 
 ### Breaking changes
 
@@ -27,6 +27,7 @@
 
 ### Bugfix
 
+- **PHP: bump bundled Composer to 2.9.8** — fixes PHP builds failing after GitHub migrated App installation tokens to a JWT format containing hyphens, which Composer 2.9.5 incorrectly rejected.
 - **Ratchet: optional PQC fields handled when identity key has no ML-KEM component**: Sessions with non-PQC identity keys no longer fail to serialize/deserialize.
 - **Ratchet: PQC sign/verify skipped when no KEM encapsulation occurred**: Avoids spurious signature failures in non-PQC sessions.
 - **Foundation: memory leak in `key_asn1_deserializer`** — dependencies were not released before context cleanup.
@@ -34,6 +35,11 @@
 - **Go: canonical import paths and disown-buffer returns fixed** in `phe` and `ratchet` packages — affected code could leak memory or return stale buffers.
 - **Swift: Bool return correctly propagated** through closure chains with buffer outputs.
 - **Swift: reserved keywords backtick-escaped** in result struct field names.
+
+
+## Version 0.19.0 released 2026-06-02
+
+> Not fully released — Java and PHP packages failed to publish. Superseded by 0.19.1.
 
 
 ## Version 0.17.2 released 2026-02-10
