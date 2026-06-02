@@ -1,5 +1,11 @@
 # virgil-crypto-c ChangeLog (Sorted by date)
 
+## Version 0.19.2 released 2026-06-02
+
+### Bugfix
+
+- **Swift: fix enum cases invisible in Xcode 26 / Swift 6** — Removed the explicit ObjC name from `@objc(VSCFAlgId)` annotations on Swift enum types (`AlgId`, `OidId`, `CipherState`, `Asn1Tag`, `GroupMsgType`, `FoundationError`, and Ratchet equivalents). Swift 6 requires the named ObjC form to be backed by `NS_ENUM`; the plain C enums triggered a lookup failure that made all enum cases (including `mlKem768`) invisible to consumers.
+
 ## Version 0.19.1 released 2026-06-02
 
 ### Breaking changes
