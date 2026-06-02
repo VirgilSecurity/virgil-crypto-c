@@ -127,7 +127,7 @@ extern "C" {
 
 #define VSCR_VERSION_MINOR 19
 
-#define VSCR_VERSION_PATCH 1
+#define VSCR_VERSION_PATCH 2
 
 #define VSCR_VERSION_MAKE(major, minor, patch) ((major) * 10000 + (minor) * 100 + (patch))
 

@@ -9,7 +9,7 @@
         wrappers="python"
         >
 
-    <version major="0" minor="19" patch="1"/>
+    <version major="0" minor="19" patch="2"/>
 
     <module name="assert" from="shared"/>
     <module name="library" from="shared"/>
