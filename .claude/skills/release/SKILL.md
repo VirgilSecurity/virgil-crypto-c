@@ -37,6 +37,7 @@ Trigger the unified CI release workflow and monitor it to completion. All releas
 3. **Trigger the workflow** (always from `develop` unless the user specifies otherwise):
    ```bash
    gh workflow run release.yml \
+     --ref develop \
      --field version=X.Y.Z \
      --field branch=develop
    ```
