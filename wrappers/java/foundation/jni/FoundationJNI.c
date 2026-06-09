@@ -2457,6 +2457,178 @@ JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_p
     vscf_password_recipient_info_list_clear(password_recipient_info_list_ctx /*a1*/);
 }
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_kek_recipient_info_t **)&c_ctx = vscf_kek_recipient_info_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_kek_recipient_info_delete(*(vscf_kek_recipient_info_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1new___3BLcom_virgilsecurity_crypto_foundation_AlgInfo_2_3B (JNIEnv *jenv, jobject jobj, jbyteArray jkekId, jobject jkeyEncryptionAlgorithm, jbyteArray jencryptedKey) {
+    // Wrap input data
+    byte* kek_id_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jkekId, NULL);
+    vsc_data_t kek_id = vsc_data(kek_id_arr, (*jenv)->GetArrayLength(jenv, jkekId));
+    
+    // Wrap Java interfaces
+    jclass key_encryption_algorithm_cls = (*jenv)->GetObjectClass(jenv, jkeyEncryptionAlgorithm);
+    if (NULL == key_encryption_algorithm_cls) {
+        VSCF_ASSERT("Class AlgInfo not found.");
+    }
+    jfieldID key_encryption_algorithm_fidCtx = (*jenv)->GetFieldID(jenv, key_encryption_algorithm_cls, "cCtx", "J");
+    if (NULL == key_encryption_algorithm_fidCtx) {
+        VSCF_ASSERT("Class 'AlgInfo' has no field 'cCtx'.");
+    }
+    jlong key_encryption_algorithm_c_ctx = (*jenv)->GetLongField(jenv, jkeyEncryptionAlgorithm, key_encryption_algorithm_fidCtx);
+    vscf_impl_t */*6*/ key_encryption_algorithm = *(vscf_impl_t */*6*/*)&key_encryption_algorithm_c_ctx;
+    
+    // Wrap input data
+    byte* encrypted_key_arr = (byte*) (*jenv)->GetByteArrayElements(jenv, jencryptedKey, NULL);
+    vsc_data_t encrypted_key = vsc_data(encrypted_key_arr, (*jenv)->GetArrayLength(jenv, jencryptedKey));
+    
+    jlong proxyResult = (jlong) vscf_kek_recipient_info_new_with_members(kek_id, key_encryption_algorithm, encrypted_key);
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jkekId, (jbyte*) kek_id_arr, 0);
+    
+    // Free resources
+    (*jenv)->ReleaseByteArrayElements(jenv, jencryptedKey, (jbyte*) encrypted_key_arr, 0);
+    
+    return proxyResult;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1kekId (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_t /*9*/* kek_recipient_info_ctx = *(vscf_kek_recipient_info_t /*9*/**) &c_ctx;
+    
+    const vsc_data_t /*3*/ proxyResult = vscf_kek_recipient_info_kek_id(kek_recipient_info_ctx /*a1*/);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1keyEncryptionAlgorithm (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_t /*9*/* kek_recipient_info_ctx = *(vscf_kek_recipient_info_t /*9*/**) &c_ctx;
+    
+    const vscf_impl_t */*6*/ proxyResult = vscf_kek_recipient_info_key_encryption_algorithm(kek_recipient_info_ctx /*a1*/);
+    vscf_impl_shallow_copy((vscf_impl_t */*6*/) proxyResult);
+    jobject ret = wrapAlgInfo(jenv, jobj, proxyResult);
+    return ret;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1encryptedKey (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_t /*9*/* kek_recipient_info_ctx = *(vscf_kek_recipient_info_t /*9*/**) &c_ctx;
+    
+    const vsc_data_t /*3*/ proxyResult = vscf_kek_recipient_info_encrypted_key(kek_recipient_info_ctx /*a1*/);
+    jbyteArray ret = NULL;
+    if (proxyResult.len > 0) {
+        ret = (*jenv)->NewByteArray(jenv, proxyResult.len);
+        (*jenv)->SetByteArrayRegion (jenv, ret, 0, proxyResult.len, (jbyte*) proxyResult.bytes);
+    }
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1new__ (JNIEnv *jenv, jobject jobj) {
+    jlong c_ctx = 0;
+    *(vscf_kek_recipient_info_list_t **)&c_ctx = vscf_kek_recipient_info_list_new();
+    return c_ctx;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1close (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    vscf_kek_recipient_info_list_delete(*(vscf_kek_recipient_info_list_t /*9*/ **) &c_ctx /*5*/);
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1hasItem (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    jboolean ret = (jboolean) vscf_kek_recipient_info_list_has_item(kek_recipient_info_list_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1item (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    const vscf_kek_recipient_info_t */*5*/ proxyResult = vscf_kek_recipient_info_list_item(kek_recipient_info_list_ctx /*a1*/);
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KekRecipientInfo");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class KekRecipientInfo not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KekRecipientInfo;");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class KekRecipientInfo has no 'getInstance' method.");
+    }
+    vscf_kek_recipient_info_shallow_copy((vscf_kek_recipient_info_t */*5*/) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1hasNext (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    jboolean ret = (jboolean) vscf_kek_recipient_info_list_has_next(kek_recipient_info_list_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1next (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    const vscf_kek_recipient_info_list_t */*5*/ proxyResult = vscf_kek_recipient_info_list_next(kek_recipient_info_list_ctx /*a1*/);
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KekRecipientInfoList");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class KekRecipientInfoList not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KekRecipientInfoList;");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class KekRecipientInfoList has no 'getInstance' method.");
+    }
+    vscf_kek_recipient_info_list_shallow_copy((vscf_kek_recipient_info_list_t */*5*/) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    return ret;
+}
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1hasPrev (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    jboolean ret = (jboolean) vscf_kek_recipient_info_list_has_prev(kek_recipient_info_list_ctx /*a1*/);
+    return ret;
+}
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1prev (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    const vscf_kek_recipient_info_list_t */*5*/ proxyResult = vscf_kek_recipient_info_list_prev(kek_recipient_info_list_ctx /*a1*/);
+    jclass result_cls = (*jenv)->FindClass(jenv, "com/virgilsecurity/crypto/foundation/KekRecipientInfoList");
+    if (NULL == result_cls) {
+        VSCF_ASSERT("Class KekRecipientInfoList not found.");
+    }
+    jmethodID result_methodID = (*jenv)->GetStaticMethodID(jenv, result_cls, "getInstance", "(J)Lcom/virgilsecurity/crypto/foundation/KekRecipientInfoList;");
+    if (NULL == result_methodID) {
+        VSCF_ASSERT("Class KekRecipientInfoList has no 'getInstance' method.");
+    }
+    vscf_kek_recipient_info_list_shallow_copy((vscf_kek_recipient_info_list_t */*5*/) proxyResult);
+    jobject ret = (*jenv)->CallStaticObjectMethod(jenv, result_cls, result_methodID, (jlong) proxyResult);
+    return ret;
+}
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1clear (JNIEnv *jenv, jobject jobj, jlong c_ctx) {
+    // Cast class context
+    vscf_kek_recipient_info_list_t /*9*/* kek_recipient_info_list_ctx = *(vscf_kek_recipient_info_list_t /*9*/**) &c_ctx;
+    
+    vscf_kek_recipient_info_list_clear(kek_recipient_info_list_ctx /*a1*/);
+}
+
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createHashFromInfo (JNIEnv *jenv, jobject jobj, jobject jalgInfo) {
     // Wrap Java interfaces
     jclass alg_info_cls = (*jenv)->GetObjectClass(jenv, jalgInfo);

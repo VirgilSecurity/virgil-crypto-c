@@ -120,6 +120,8 @@
 #include "vscf_kdf.h"
 #include "vscf_kdf1.h"
 #include "vscf_kdf2.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 #include "vscf_kem.h"
 #include "vscf_key.h"
 #include "vscf_key_alg.h"

@@ -159,6 +159,16 @@ set_property(
 )
 
 set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
+    SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info_list.h"
+    PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
+)
+
+set_property(
     SOURCE "${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h"
     PROPERTY MACOSX_PACKAGE_LOCATION "Headers"
 )
@@ -767,6 +777,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_defs.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_password_recipient_info_list.h>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_password_recipient_info_list_defs.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kek_recipient_info_defs.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_kek_recipient_info_list.h>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/private/vscf_kek_recipient_info_list_defs.h>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_alg_factory.h>"
             "$<$<BOOL:${VSCF_KEY_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_key_alg_factory.h>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/include/virgil/crypto/foundation/vscf_ecies.h>"
@@ -1101,6 +1115,10 @@ target_sources(foundation
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_defs.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list.c>"
             "$<$<BOOL:${VSCF_PASSWORD_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_password_recipient_info_list_defs.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info_defs.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info_list.c>"
+            "$<$<BOOL:${VSCF_KEK_RECIPIENT_INFO_LIST}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_kek_recipient_info_list_defs.c>"
             "$<$<BOOL:${VSCF_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_alg_factory.c>"
             "$<$<BOOL:${VSCF_KEY_ALG_FACTORY}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_key_alg_factory.c>"
             "$<$<BOOL:${VSCF_ECIES}>:${CMAKE_CURRENT_LIST_DIR}/src/vscf_ecies.c>"

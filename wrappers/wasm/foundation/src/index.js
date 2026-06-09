@@ -53,6 +53,8 @@ const initKeyRecipientInfo = require('./KeyRecipientInfo');
 const initKeyRecipientInfoList = require('./KeyRecipientInfoList');
 const initPasswordRecipientInfo = require('./PasswordRecipientInfo');
 const initPasswordRecipientInfoList = require('./PasswordRecipientInfoList');
+const initKekRecipientInfo = require('./KekRecipientInfo');
+const initKekRecipientInfoList = require('./KekRecipientInfoList');
 const initAlgFactory = require('./AlgFactory');
 const initKeyAlgFactory = require('./KeyAlgFactory');
 const initEcies = require('./Ecies');
@@ -154,6 +156,8 @@ const initProject = options => {
             modules.KeyRecipientInfoList = initKeyRecipientInfoList(foundationModule, modules);
             modules.PasswordRecipientInfo = initPasswordRecipientInfo(foundationModule, modules);
             modules.PasswordRecipientInfoList = initPasswordRecipientInfoList(foundationModule, modules);
+            modules.KekRecipientInfo = initKekRecipientInfo(foundationModule, modules);
+            modules.KekRecipientInfoList = initKekRecipientInfoList(foundationModule, modules);
             modules.AlgFactory = initAlgFactory(foundationModule, modules);
             modules.KeyAlgFactory = initKeyAlgFactory(foundationModule, modules);
             modules.Ecies = initEcies(foundationModule, modules);

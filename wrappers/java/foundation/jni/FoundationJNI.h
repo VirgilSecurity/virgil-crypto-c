@@ -157,6 +157,36 @@ JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJN
 
 JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_passwordRecipientInfoList_1clear (JNIEnv *, jobject, jlong);
 
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1new__ (JNIEnv *, jobject);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1new___3BLcom_virgilsecurity_crypto_foundation_AlgInfo_2_3B (JNIEnv *, jobject, jbyteArray, jobject, jbyteArray);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1close (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1kekId (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1keyEncryptionAlgorithm (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jbyteArray JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfo_1encryptedKey (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jlong JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1new__ (JNIEnv *, jobject);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1close (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1hasItem (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1item (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1hasNext (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1next (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jboolean JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1hasPrev (JNIEnv *, jobject, jlong);
+
+JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1prev (JNIEnv *, jobject, jlong);
+
+JNIEXPORT void JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_kekRecipientInfoList_1clear (JNIEnv *, jobject, jlong);
+
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createHashFromInfo (JNIEnv *, jobject, jobject);
 
 JNIEXPORT jobject JNICALL Java_com_virgilsecurity_crypto_foundation_FoundationJNI_algFactory_1createMacFromInfo (JNIEnv *, jobject, jobject);

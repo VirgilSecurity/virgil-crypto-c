@@ -166,6 +166,36 @@ public class FoundationJNI {
 
     public native void passwordRecipientInfoList_clear(long cCtx);
 
+    public native long kekRecipientInfo_new();
+
+    public native void kekRecipientInfo_close(long cCtx);
+
+    public native long kekRecipientInfo_new(byte[] kekId, AlgInfo keyEncryptionAlgorithm, byte[] encryptedKey);
+
+    public native byte[] kekRecipientInfo_kekId(long cCtx);
+
+    public native AlgInfo kekRecipientInfo_keyEncryptionAlgorithm(long cCtx);
+
+    public native byte[] kekRecipientInfo_encryptedKey(long cCtx);
+
+    public native long kekRecipientInfoList_new();
+
+    public native void kekRecipientInfoList_close(long cCtx);
+
+    public native boolean kekRecipientInfoList_hasItem(long cCtx);
+
+    public native KekRecipientInfo kekRecipientInfoList_item(long cCtx);
+
+    public native boolean kekRecipientInfoList_hasNext(long cCtx);
+
+    public native KekRecipientInfoList kekRecipientInfoList_next(long cCtx);
+
+    public native boolean kekRecipientInfoList_hasPrev(long cCtx);
+
+    public native KekRecipientInfoList kekRecipientInfoList_prev(long cCtx);
+
+    public native void kekRecipientInfoList_clear(long cCtx);
+
     public native Hash algFactory_createHashFromInfo(AlgInfo algInfo);
 
     public native Mac algFactory_createMacFromInfo(AlgInfo algInfo);

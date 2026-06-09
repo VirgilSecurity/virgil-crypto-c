@@ -68,6 +68,10 @@ from ._vscf_password_recipient_info import vscf_password_recipient_info_t
 from ._vscf_password_recipient_info import VscfPasswordRecipientInfo
 from ._vscf_password_recipient_info_list import vscf_password_recipient_info_list_t
 from ._vscf_password_recipient_info_list import VscfPasswordRecipientInfoList
+from ._vscf_kek_recipient_info import vscf_kek_recipient_info_t
+from ._vscf_kek_recipient_info import VscfKekRecipientInfo
+from ._vscf_kek_recipient_info_list import vscf_kek_recipient_info_list_t
+from ._vscf_kek_recipient_info_list import VscfKekRecipientInfoList
 from ._vscf_ecies import vscf_ecies_t
 from ._vscf_ecies import VscfEcies
 from ._vscf_recipient_cipher import vscf_recipient_cipher_t

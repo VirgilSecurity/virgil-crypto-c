@@ -80,6 +80,8 @@
 #include "vscf_hybrid_public_key.h"
 #include "vscf_kdf1.h"
 #include "vscf_kdf2.h"
+#include "vscf_kek_recipient_info.h"
+#include "vscf_kek_recipient_info_list.h"
 #include "vscf_key_alg_factory.h"
 #include "vscf_key_asn1_deserializer.h"
 #include "vscf_key_asn1_serializer.h"
@@ -407,6 +409,8 @@ static const char VSCF_HYBRID_PRIVATE_KEY_T_PHP_RES_NAME[] = "vscf_hybrid_privat
 static const char VSCF_HYBRID_PUBLIC_KEY_T_PHP_RES_NAME[] = "vscf_hybrid_public_key_t";
 static const char VSCF_KDF1_T_PHP_RES_NAME[] = "vscf_kdf1_t";
 static const char VSCF_KDF2_T_PHP_RES_NAME[] = "vscf_kdf2_t";
+static const char VSCF_KEK_RECIPIENT_INFO_T_PHP_RES_NAME[] = "vscf_kek_recipient_info_t";
+static const char VSCF_KEK_RECIPIENT_INFO_LIST_T_PHP_RES_NAME[] = "vscf_kek_recipient_info_list_t";
 static const char VSCF_KEY_ASN1_DESERIALIZER_T_PHP_RES_NAME[] = "vscf_key_asn1_deserializer_t";
 static const char VSCF_KEY_ASN1_SERIALIZER_T_PHP_RES_NAME[] = "vscf_key_asn1_serializer_t";
 static const char VSCF_KEY_INFO_T_PHP_RES_NAME[] = "vscf_key_info_t";
@@ -610,6 +614,14 @@ VSCF_PHP_PUBLIC const char* vscf_kdf1_t_php_res_name(void) {
 
 VSCF_PHP_PUBLIC const char* vscf_kdf2_t_php_res_name(void) {
     return VSCF_KDF2_T_PHP_RES_NAME;
+}
+
+VSCF_PHP_PUBLIC const char* vscf_kek_recipient_info_t_php_res_name(void) {
+    return VSCF_KEK_RECIPIENT_INFO_T_PHP_RES_NAME;
+}
+
+VSCF_PHP_PUBLIC const char* vscf_kek_recipient_info_list_t_php_res_name(void) {
+    return VSCF_KEK_RECIPIENT_INFO_LIST_T_PHP_RES_NAME;
 }
 
 VSCF_PHP_PUBLIC const char* vscf_key_asn1_deserializer_t_php_res_name(void) {
@@ -819,6 +831,8 @@ int LE_VSCF_HYBRID_PRIVATE_KEY_T;
 int LE_VSCF_HYBRID_PUBLIC_KEY_T;
 int LE_VSCF_KDF1_T;
 int LE_VSCF_KDF2_T;
+int LE_VSCF_KEK_RECIPIENT_INFO_T;
+int LE_VSCF_KEK_RECIPIENT_INFO_LIST_T;
 int LE_VSCF_KEY_ASN1_DESERIALIZER_T;
 int LE_VSCF_KEY_ASN1_SERIALIZER_T;
 int LE_VSCF_KEY_INFO_T;
@@ -1022,6 +1036,14 @@ VSCF_PHP_PUBLIC int le_vscf_kdf1_t(void) {
 
 VSCF_PHP_PUBLIC int le_vscf_kdf2_t(void) {
     return LE_VSCF_KDF2_T;
+}
+
+VSCF_PHP_PUBLIC int le_vscf_kek_recipient_info_t(void) {
+    return LE_VSCF_KEK_RECIPIENT_INFO_T;
+}
+
+VSCF_PHP_PUBLIC int le_vscf_kek_recipient_info_list_t(void) {
+    return LE_VSCF_KEK_RECIPIENT_INFO_LIST_T;
 }
 
 VSCF_PHP_PUBLIC int le_vscf_key_asn1_deserializer_t(void) {
@@ -4081,6 +4103,542 @@ PHP_FUNCTION(vscf_password_recipient_info_list_clear_php) {
     // Call main function
     //
     vscf_password_recipient_info_list_clear(password_recipient_info_list);
+
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_kek_recipient_info_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_new_php) {
+    vscf_kek_recipient_info_t *kek_recipient_info = vscf_kek_recipient_info_new();
+    zend_resource *kek_recipient_info_res = zend_register_resource(kek_recipient_info, le_vscf_kek_recipient_info_t());
+    RETVAL_RES(kek_recipient_info_res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_kek_recipient_info_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_kek_recipient_info_t *kek_recipient_info = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_t_php_res_name(), le_vscf_kek_recipient_info_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_kek_id
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_kek_id_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_kek_id_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_t *kek_recipient_info = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_t_php_res_name(), le_vscf_kek_recipient_info_t());
+
+    //
+    // Call main function
+    //
+    vsc_data_t res =vscf_kek_recipient_info_kek_id(kek_recipient_info);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STRINGL((const char *)res.bytes, res.len);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_key_encryption_algorithm
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_key_encryption_algorithm_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_key_encryption_algorithm_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_t *kek_recipient_info = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_t_php_res_name(), le_vscf_kek_recipient_info_t());
+
+    //
+    // Call main function
+    //
+    vscf_impl_t *alg_info =(vscf_impl_t *)vscf_kek_recipient_info_key_encryption_algorithm(kek_recipient_info);
+
+    //
+    // Write returned result
+    //
+    alg_info = vscf_impl_shallow_copy(alg_info);
+    zend_resource *alg_info_res = zend_register_resource(alg_info, le_vscf_impl_t());
+    RETVAL_RES(alg_info_res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_encrypted_key
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_encrypted_key_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_STRING /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_encrypted_key_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_t *kek_recipient_info = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_t_php_res_name(), le_vscf_kek_recipient_info_t());
+
+    //
+    // Call main function
+    //
+    vsc_data_t res =vscf_kek_recipient_info_encrypted_key(kek_recipient_info);
+
+    //
+    // Write returned result
+    //
+    RETVAL_STRINGL((const char *)res.bytes, res.len);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_new
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_kek_recipient_info_list_new_php,
+        0 /*return_reference*/,
+        0 /*required_num_args*/,
+        IS_RESOURCE /*type*/,
+        0 /*allow_null*/)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_new_php) {
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = vscf_kek_recipient_info_list_new();
+    zend_resource *kek_recipient_info_list_res = zend_register_resource(kek_recipient_info_list, le_vscf_kek_recipient_info_list_t());
+    RETVAL_RES(kek_recipient_info_list_res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_delete
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+        arginfo_vscf_kek_recipient_info_list_delete_php,
+        0 /*return_reference*/,
+        1 /*required_num_args*/,
+        IS_VOID /*type*/,
+        0 /*allow_null*/)
+
+        ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_delete_php) {
+    //
+    // Declare input arguments
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Fetch for type checking and then release
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+    zend_list_close(Z_RES_P(in_ctx));
+    RETURN_TRUE;
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_has_item
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_has_item_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    _IS_BOOL /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_has_item_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    bool res =vscf_kek_recipient_info_list_has_item(kek_recipient_info_list);
+
+    //
+    // Write returned result
+    //
+    RETVAL_BOOL(res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_item
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_item_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_item_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    vscf_kek_recipient_info_t *kek_recipient_info =(vscf_kek_recipient_info_t *)vscf_kek_recipient_info_list_item(kek_recipient_info_list);
+
+    //
+    // Write returned result
+    //
+    kek_recipient_info = vscf_kek_recipient_info_shallow_copy(kek_recipient_info);
+    zend_resource *kek_recipient_info_res = zend_register_resource(kek_recipient_info, le_vscf_kek_recipient_info_t());
+    RETVAL_RES(kek_recipient_info_res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_has_next
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_has_next_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    _IS_BOOL /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_has_next_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    bool res =vscf_kek_recipient_info_list_has_next(kek_recipient_info_list);
+
+    //
+    // Write returned result
+    //
+    RETVAL_BOOL(res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_next
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_next_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_next_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    vscf_kek_recipient_info_list_t *proxy_kek_recipient_info_list =(vscf_kek_recipient_info_list_t *)vscf_kek_recipient_info_list_next(kek_recipient_info_list);
+
+    //
+    // Write returned result
+    //
+    proxy_kek_recipient_info_list = vscf_kek_recipient_info_list_shallow_copy(proxy_kek_recipient_info_list);
+    zend_resource *proxy_kek_recipient_info_list_res = zend_register_resource(proxy_kek_recipient_info_list, le_vscf_kek_recipient_info_list_t());
+    RETVAL_RES(proxy_kek_recipient_info_list_res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_has_prev
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_has_prev_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    _IS_BOOL /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_has_prev_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    bool res =vscf_kek_recipient_info_list_has_prev(kek_recipient_info_list);
+
+    //
+    // Write returned result
+    //
+    RETVAL_BOOL(res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_prev
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_prev_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_RESOURCE /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_prev_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    vscf_kek_recipient_info_list_t *proxy_kek_recipient_info_list =(vscf_kek_recipient_info_list_t *)vscf_kek_recipient_info_list_prev(kek_recipient_info_list);
+
+    //
+    // Write returned result
+    //
+    proxy_kek_recipient_info_list = vscf_kek_recipient_info_list_shallow_copy(proxy_kek_recipient_info_list);
+    zend_resource *proxy_kek_recipient_info_list_res = zend_register_resource(proxy_kek_recipient_info_list, le_vscf_kek_recipient_info_list_t());
+    RETVAL_RES(proxy_kek_recipient_info_list_res);
+}
+
+//
+// Wrap method: vscf_kek_recipient_info_list_clear
+//
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(
+    arginfo_vscf_kek_recipient_info_list_clear_php,
+    0 /*return_reference*/,
+    1 /*required_num_args*/,
+    IS_VOID /*type*/,
+    0 /*allow_null*/)
+
+    ZEND_ARG_TYPE_INFO(0, in_ctx, IS_RESOURCE, 0)
+ZEND_END_ARG_INFO()
+
+PHP_FUNCTION(vscf_kek_recipient_info_list_clear_php) {
+
+    //
+    // Declare input argument
+    //
+    zval *in_ctx = NULL;
+
+    //
+    // Parse arguments
+    //
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+        Z_PARAM_RESOURCE_EX(in_ctx, 1, 0)
+    ZEND_PARSE_PARAMETERS_END();
+
+    //
+    // Proxy call
+    //
+    vscf_kek_recipient_info_list_t *kek_recipient_info_list = zend_fetch_resource_ex(in_ctx, vscf_kek_recipient_info_list_t_php_res_name(), le_vscf_kek_recipient_info_list_t());
+
+    //
+    // Call main function
+    //
+    vscf_kek_recipient_info_list_clear(kek_recipient_info_list);
 
 }
 
@@ -42972,6 +43530,20 @@ static zend_function_entry vscf_foundation_php_functions[] = {
     PHP_FE(vscf_password_recipient_info_list_has_prev_php, arginfo_vscf_password_recipient_info_list_has_prev_php)
     PHP_FE(vscf_password_recipient_info_list_prev_php, arginfo_vscf_password_recipient_info_list_prev_php)
     PHP_FE(vscf_password_recipient_info_list_clear_php, arginfo_vscf_password_recipient_info_list_clear_php)
+    PHP_FE(vscf_kek_recipient_info_new_php, arginfo_vscf_kek_recipient_info_new_php)
+    PHP_FE(vscf_kek_recipient_info_delete_php, arginfo_vscf_kek_recipient_info_delete_php)
+    PHP_FE(vscf_kek_recipient_info_kek_id_php, arginfo_vscf_kek_recipient_info_kek_id_php)
+    PHP_FE(vscf_kek_recipient_info_key_encryption_algorithm_php, arginfo_vscf_kek_recipient_info_key_encryption_algorithm_php)
+    PHP_FE(vscf_kek_recipient_info_encrypted_key_php, arginfo_vscf_kek_recipient_info_encrypted_key_php)
+    PHP_FE(vscf_kek_recipient_info_list_new_php, arginfo_vscf_kek_recipient_info_list_new_php)
+    PHP_FE(vscf_kek_recipient_info_list_delete_php, arginfo_vscf_kek_recipient_info_list_delete_php)
+    PHP_FE(vscf_kek_recipient_info_list_has_item_php, arginfo_vscf_kek_recipient_info_list_has_item_php)
+    PHP_FE(vscf_kek_recipient_info_list_item_php, arginfo_vscf_kek_recipient_info_list_item_php)
+    PHP_FE(vscf_kek_recipient_info_list_has_next_php, arginfo_vscf_kek_recipient_info_list_has_next_php)
+    PHP_FE(vscf_kek_recipient_info_list_next_php, arginfo_vscf_kek_recipient_info_list_next_php)
+    PHP_FE(vscf_kek_recipient_info_list_has_prev_php, arginfo_vscf_kek_recipient_info_list_has_prev_php)
+    PHP_FE(vscf_kek_recipient_info_list_prev_php, arginfo_vscf_kek_recipient_info_list_prev_php)
+    PHP_FE(vscf_kek_recipient_info_list_clear_php, arginfo_vscf_kek_recipient_info_list_clear_php)
     PHP_FE(vscf_ecies_new_php, arginfo_vscf_ecies_new_php)
     PHP_FE(vscf_ecies_delete_php, arginfo_vscf_ecies_delete_php)
     PHP_FE(vscf_ecies_set_key_alg_php, arginfo_vscf_ecies_set_key_alg_php)
@@ -43873,6 +44445,12 @@ static void vscf_group_session_message_dtor_php(zend_resource *rsrc) {
 static void vscf_group_session_ticket_dtor_php(zend_resource *rsrc) {
     vscf_group_session_ticket_delete((vscf_group_session_ticket_t *)rsrc->ptr);
 }
+static void vscf_kek_recipient_info_dtor_php(zend_resource *rsrc) {
+    vscf_kek_recipient_info_delete((vscf_kek_recipient_info_t *)rsrc->ptr);
+}
+static void vscf_kek_recipient_info_list_dtor_php(zend_resource *rsrc) {
+    vscf_kek_recipient_info_list_delete((vscf_kek_recipient_info_list_t *)rsrc->ptr);
+}
 static void vscf_key_info_dtor_php(zend_resource *rsrc) {
     vscf_key_info_delete((vscf_key_info_t *)rsrc->ptr);
 }
@@ -43936,6 +44514,8 @@ PHP_MINIT_FUNCTION(vscf_foundation_php) {
     LE_VSCF_GROUP_SESSION_T = zend_register_list_destructors_ex(vscf_group_session_dtor_php, NULL, vscf_group_session_t_php_res_name(), module_number);
     LE_VSCF_GROUP_SESSION_MESSAGE_T = zend_register_list_destructors_ex(vscf_group_session_message_dtor_php, NULL, vscf_group_session_message_t_php_res_name(), module_number);
     LE_VSCF_GROUP_SESSION_TICKET_T = zend_register_list_destructors_ex(vscf_group_session_ticket_dtor_php, NULL, vscf_group_session_ticket_t_php_res_name(), module_number);
+    LE_VSCF_KEK_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_kek_recipient_info_dtor_php, NULL, vscf_kek_recipient_info_t_php_res_name(), module_number);
+    LE_VSCF_KEK_RECIPIENT_INFO_LIST_T = zend_register_list_destructors_ex(vscf_kek_recipient_info_list_dtor_php, NULL, vscf_kek_recipient_info_list_t_php_res_name(), module_number);
     LE_VSCF_KEY_INFO_T = zend_register_list_destructors_ex(vscf_key_info_dtor_php, NULL, vscf_key_info_t_php_res_name(), module_number);
     LE_VSCF_KEY_PROVIDER_T = zend_register_list_destructors_ex(vscf_key_provider_dtor_php, NULL, vscf_key_provider_t_php_res_name(), module_number);
     LE_VSCF_KEY_RECIPIENT_INFO_T = zend_register_list_destructors_ex(vscf_key_recipient_info_dtor_php, NULL, vscf_key_recipient_info_t_php_res_name(), module_number);

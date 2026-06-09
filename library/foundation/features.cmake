@@ -62,6 +62,8 @@ option(VSCF_KEY_RECIPIENT_INFO "Enable class 'key recipient info'." ON)
 option(VSCF_KEY_RECIPIENT_INFO_LIST "Enable class 'key recipient info list'." ON)
 option(VSCF_PASSWORD_RECIPIENT_INFO "Enable class 'password recipient info'." ON)
 option(VSCF_PASSWORD_RECIPIENT_INFO_LIST "Enable class 'password recipient info list'." ON)
+option(VSCF_KEK_RECIPIENT_INFO "Enable class 'kek recipient info'." ON)
+option(VSCF_KEK_RECIPIENT_INFO_LIST "Enable class 'kek recipient info list'." ON)
 option(VSCF_ALG_FACTORY "Enable class 'alg factory'." ON)
 option(VSCF_KEY_ALG_FACTORY "Enable class 'key alg factory'." ON)
 option(VSCF_ECIES "Enable class 'ecies'." ON)
@@ -207,6 +209,8 @@ mark_as_advanced(
         VSCF_KEY_RECIPIENT_INFO_LIST
         VSCF_PASSWORD_RECIPIENT_INFO
         VSCF_PASSWORD_RECIPIENT_INFO_LIST
+        VSCF_KEK_RECIPIENT_INFO
+        VSCF_KEK_RECIPIENT_INFO_LIST
         VSCF_ALG_FACTORY
         VSCF_KEY_ALG_FACTORY
         VSCF_ECIES

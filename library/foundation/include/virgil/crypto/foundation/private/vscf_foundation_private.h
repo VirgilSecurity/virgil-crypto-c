@@ -111,6 +111,8 @@
 #include "vscf_kdf1_defs.h"
 #include "vscf_kdf2_defs.h"
 #include "vscf_kdf_api.h"
+#include "vscf_kek_recipient_info_defs.h"
+#include "vscf_kek_recipient_info_list_defs.h"
 #include "vscf_kem_api.h"
 #include "vscf_key_alg_api.h"
 #include "vscf_key_api.h"

@@ -48,6 +48,8 @@ from .key_recipient_info import KeyRecipientInfo
 from .key_recipient_info_list import KeyRecipientInfoList
 from .password_recipient_info import PasswordRecipientInfo
 from .password_recipient_info_list import PasswordRecipientInfoList
+from .kek_recipient_info import KekRecipientInfo
+from .kek_recipient_info_list import KekRecipientInfoList
 from .alg_factory import AlgFactory
 from .key_alg_factory import KeyAlgFactory
 from .ecies import Ecies
